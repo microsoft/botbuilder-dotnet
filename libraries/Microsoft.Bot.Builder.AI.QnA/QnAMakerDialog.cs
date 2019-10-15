@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     public class QnAMakerDialog : Dialog
     {
-        private IQnAMakerClient qnaMakerClient;
+        private readonly HttpClient httpClient;
         private Expression knowledgebaseId;
         private Expression endpointkey;
         private Expression hostname;
@@ -51,10 +51,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
             this.ActiveLearningCardTitle = activeLearningCardTitle;
             this.CardNoMatchText = cardNoMatchText;
             this.StrictFilters = strictFilters;
-            this.HttpClient = httpClient;
+            this.httpClient = httpClient;
             this.NoAnswer = new StaticActivityTemplate(noAnswer);
             this.CardNoMatchResponse = new StaticActivityTemplate(cardNoMatchResponse);
-            this.qnaMakerClient = qnaMakerClient;
+            this.QnaMakerClient = qnaMakerClient;
         }
 
         [JsonConstructor]
@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public Metadata[] StrictFilters { get; set; }
 
         [JsonIgnore]
-        public HttpClient HttpClient { get; set; }
+        public IQnAMakerClient QnaMakerClient { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -116,8 +116,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var endpoint = new QnAMakerEndpoint
             {
                 EndpointKey = endpointkey.TryEvaluate(dc.State).error == null ? endpointkey.TryEvaluate(dc.State).value.ToString() : this.EndpointKey,
-                Host = endpointkey.TryEvaluate(dc.State).error == null ? hostname.TryEvaluate(dc.State).value.ToString() : this.HostName,
-                KnowledgeBaseId = endpointkey.TryEvaluate(dc.State).error == null ? knowledgebaseId.TryEvaluate(dc.State).value.ToString() : this.KnowledgeBaseId
+                Host = hostname.TryEvaluate(dc.State).error == null ? hostname.TryEvaluate(dc.State).value.ToString() : this.HostName,
+                KnowledgeBaseId = knowledgebaseId.TryEvaluate(dc.State).error == null ? knowledgebaseId.TryEvaluate(dc.State).value.ToString() : this.KnowledgeBaseId
             };
 
             var qnamakerOptions = new QnAMakerOptions
@@ -126,9 +126,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 StrictFilters = this.StrictFilters
             };
 
-            if (qnaMakerClient == null)
+            if (this.QnaMakerClient == null)
             {
-                qnaMakerClient = new QnAMaker(endpoint, qnamakerOptions, HttpClient);
+                this.QnaMakerClient = new QnAMaker(endpoint, qnamakerOptions, httpClient);
             }
 
             if (dc.Context?.Activity?.Type != ActivityTypes.Message)
@@ -136,7 +136,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 return EndOfTurn;
             }
 
-            return await ExecuteAdaptiveQnAMakerDialog(dc, qnaMakerClient, qnamakerOptions, cancellationToken).ConfigureAwait(false);
+            return await ExecuteAdaptiveQnAMakerDialog(dc, this.QnaMakerClient, qnamakerOptions, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<DialogTurnResult> ExecuteAdaptiveQnAMakerDialog(DialogContext dc, IQnAMakerClient qnaMaker, QnAMakerOptions qnamakerOptions, CancellationToken cancellationToken = default(CancellationToken))

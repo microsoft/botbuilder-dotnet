@@ -386,7 +386,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             var resource = resourceExplorer.GetResource("QnAMakerBot.main.dialog");
             var dialog = DeclarativeTypeLoader.Load<AdaptiveDialog>(resource, resourceExplorer, DebugSupport.SourceMap);
             var qnaMakerDialog = (QnAMakerDialog)dialog.Triggers[0].Actions[0];
-            qnaMakerDialog.HttpClient = httpClient;
+
+            // Creating QnAMaker client.
+            var endpoint = new QnAMakerEndpoint
+            {
+                EndpointKey = "dummy-key",
+                Host = "https://dummy-hostname.azurewebsites.net/qnamaker",
+                KnowledgeBaseId = "dummy-id"
+            };
+
+            var qnamakerOptions = new QnAMakerOptions
+            {
+                ScoreThreshold = qnaMakerDialog.Threshold
+            };
+
+            qnaMakerDialog.QnaMakerClient = new QnAMaker(endpoint, qnamakerOptions, httpClient);
+
             dialog.Triggers[0].Actions[0] = qnaMakerDialog;
 
             return GetTestAdapter(dialog, adapter);
