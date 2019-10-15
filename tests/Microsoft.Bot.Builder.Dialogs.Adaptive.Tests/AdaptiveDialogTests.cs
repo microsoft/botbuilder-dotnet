@@ -1208,8 +1208,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             // request the active input step to re-process user input. 
                             new SetProperty()
                             {
-                                Property = "turn.processInput",
-                                Value = "true"
+                                Property = "turn.interrupted",
+                                Value = "false"
                             }
                         }
                     },
@@ -1304,8 +1304,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             // request the active input step to re-process user input. 
                             new SetProperty()
                             {
-                                Property = "turn.processInput",
-                                Value = "true"
+                                Property = "turn.interrupted",
+                                Value = "false"
                             }
                         }
                     },
@@ -1369,8 +1369,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             // request the active input step to re-process user input. 
                             new SetProperty()
                             {
-                                Property = "turn.processInput",
-                                Value = "true"
+                                Property = "turn.interrupted",
+                                Value = "false"
                             }
                         }
                     },
@@ -1382,8 +1382,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("You said {turn.activity.text}"),
                             new SetProperty()
                             {
-                                Property = "turn.processInput",
-                                Value = "true"
+                                Property = "turn.interrupted",
+                                Value = "false"
                             }
                         }
                     }
@@ -1450,8 +1450,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             // request the active input step to re-process user input. 
                             new SetProperty()
                             {
-                                Property = "turn.processInput",
-                                Value = "true"
+                                Property = "turn.interrupted",
+                                Value = "false"
                             }
                         }
                     },
@@ -1855,11 +1855,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Generator = new TemplateEngineLanguageGenerator(),
                 Triggers = new List<OnCondition>()
                 {
-                    new OnBeginDialog() 
+                    new OnBeginDialog()
                     {
-                        Actions = new List<Dialog>() 
+                        Actions = new List<Dialog>()
                         {
-                            new SetProperty() 
+                            new SetProperty()
                             {
                                 Property = "$colorChoices",
                                 Value = "createArray('red', 'blue', 'green')"

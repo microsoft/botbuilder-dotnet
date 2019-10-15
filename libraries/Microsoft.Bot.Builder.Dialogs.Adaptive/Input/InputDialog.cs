@@ -19,10 +19,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 #pragma warning disable SA1310 // Field should not contain underscore.
         protected const string TURN_COUNT_PROPERTY = "this.turnCount";
         protected const string VALUE_PROPERTY = "this.value";
-
-        // This property can be set by user's code to indicate that the input should re-process incoming user utterance. 
-        // Designed to be a bool property. So user's code can set this to 'true' to signal the input to re-process incoming user utterance.
-        protected const string PROCESS_INPUT_PROPERTY = "turn.processInput";
 #pragma warning restore SA1310 // Field should not contain underscore.
 
         private Expression allowInterruptions;
@@ -115,15 +111,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             dc.State.SetValue(ThisPath.OPTIONS, op);
             dc.State.SetValue(TURN_COUNT_PROPERTY, 0);
 
-            if (!String.IsNullOrEmpty(this.Value))
+            // If AlwaysPrompt is set to true, then clear Property value for turn 0.
+            if (!string.IsNullOrEmpty(this.Property) && this.AlwaysPrompt)
             {
-                if (dc.State.TryGetValue(this.Value,  out var value))
-                {
-                    dc.State.SetValue(VALUE_PROPERTY, value);
-                }
+                dc.State.SetValue(this.Property, null);
             }
 
-            var state = this.AlwaysPrompt ? InputState.Missing : await this.RecognizeInput(dc);
+            var state = this.AlwaysPrompt ? InputState.Missing : await this.RecognizeInput(dc, 0);
             if (state == InputState.Valid)
             {
                 var input = dc.State.GetValue<object>(VALUE_PROPERTY);
@@ -156,7 +150,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, () => 0);
 
             // Perform base recognition
-            var state = interrupted ? InputState.Missing : await this.RecognizeInput(dc);
+            var state = await this.RecognizeInput(dc, interrupted ? 0 : turnCount);
 
             if (state == InputState.Valid)
             {
@@ -325,48 +319,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return await this.Prompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
         }
 
-        private async Task<InputState> RecognizeInput(DialogContext dc)
+        private async Task<InputState> RecognizeInput(DialogContext dc, int turnCount)
         {
             dynamic input = null;
 
-            // If AlwaysPrompt is set to true, the Property value will be cleared.
-            if (!string.IsNullOrEmpty(this.Property) && this.AlwaysPrompt)
+            // Use Property expression for input first
+            if (!string.IsNullOrEmpty(this.Property))
             {
+                dc.State.TryGetValue(this.Property, out input);
+
+                // Clear property to avoid it being stuck on the next turn. It will get written 
+                // back if the value passes validations.
                 dc.State.SetValue(this.Property, null);
             }
 
-            // If AlwaysPrompt is set to false, try to get the Property value first.
-            if (!string.IsNullOrEmpty(this.Property) && !this.AlwaysPrompt)
+            // Use Value expression for input second
+            if (input == null && !string.IsNullOrEmpty(this.Value))
             {
-                input = dc.State.GetValue<object>(this.Property);
+                dc.State.TryGetValue(this.Value, out input);
             }
 
-            if (input == null)
+            // Fallback to using activity
+            if (input == null && turnCount > 0)
             {
-                var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY);
-                var processInput = dc.State.GetBoolValue(PROCESS_INPUT_PROPERTY, false);
-
-                // Go down this path only if the user has not requested to re-process user input via turn.processInput = true.
-                if (turnCount == 0 && !processInput)
+                if (this.GetType().Name == nameof(AttachmentInput))
                 {
-                    input = dc.State.GetValue<object>(VALUE_PROPERTY, () => null);
+                    input = dc.Context.Activity.Attachments;
                 }
                 else
                 {
-                    if (this.GetType().Name == nameof(AttachmentInput))
-                    {
-                        input = dc.Context.Activity.Attachments;
-                    }
-                    else
-                    {
-                        input = dc.Context.Activity.Text;
-                    }
+                    input = dc.Context.Activity.Text;
                 }
-
-                // reset turn.processInput so subsequent actions are not impacted. 
-                dc.State.SetValue(PROCESS_INPUT_PROPERTY, false);
             }
 
+            // Update "this.value" and perform additional recognition and validations
             dc.State.SetValue(VALUE_PROPERTY, input);
             if (input != null)
             {
