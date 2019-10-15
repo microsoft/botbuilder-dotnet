@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             if (httpRequest.Method == HttpMethods.Get)
             {
-                await ConnectWebSocketAsync(bot, httpRequest, httpResponse).ConfigureAwait(false);
+                await UseWebSocketAsync(bot, httpRequest, httpResponse).ConfigureAwait(false);
             }
             else
             {
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="httpRequest">The connection request.</param>
         /// <param name="httpResponse">The response sent on error or connection termination.</param>
         /// <returns>Returns on task completion.</returns>
-        private async Task ConnectWebSocketAsync(IBot bot, HttpRequest httpRequest, HttpResponse httpResponse)
+        private async Task UseWebSocketAsync(IBot bot, HttpRequest httpRequest, HttpResponse httpResponse)
         {
             if (httpRequest == null)
             {
@@ -112,6 +112,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 throw new ArgumentNullException(nameof(httpResponse));
             }
 
+            _connectedBot = bot ?? throw new ArgumentNullException(nameof(bot));
+
             if (!httpRequest.HttpContext.WebSockets.IsWebSocketRequest)
             {
                 httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -122,6 +124,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             if (!await AuthenticateRequestAsync(httpRequest).ConfigureAwait(false))
             {
+                httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                await httpRequest.HttpContext.Response.WriteAsync("Request authentication failed.").ConfigureAwait(false);
+
                 return;
             }
 
@@ -142,7 +147,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             catch (Exception ex)
             {
                 httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                await httpRequest.HttpContext.Response.WriteAsync("Unable to create transport server.").ConfigureAwait(false);
+                await httpRequest.HttpContext.Response.WriteAsync($"Unable to create transport server. Error: {ex.ToString()}").ConfigureAwait(false);
 
                 throw ex;
             }
@@ -160,14 +165,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     if (string.IsNullOrWhiteSpace(authHeader))
                     {
                         await WriteUnauthorizedResponseAsync(AuthHeaderName, httpRequest).ConfigureAwait(false);
-
                         return false;
                     }
 
                     if (string.IsNullOrWhiteSpace(channelId))
                     {
                         await WriteUnauthorizedResponseAsync(ChannelIdHeaderName, httpRequest).ConfigureAwait(false);
-
                         return false;
                     }
 
@@ -175,7 +178,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     if (!claimsIdentity.IsAuthenticated)
                     {
                         httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-
                         return false;
                     }
 

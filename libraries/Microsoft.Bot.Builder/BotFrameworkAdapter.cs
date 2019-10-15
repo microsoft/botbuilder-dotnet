@@ -57,6 +57,7 @@ namespace Microsoft.Bot.Builder
         protected readonly IChannelProvider _channelProvider;
         protected readonly ILogger _logger;
 
+        protected IBot _connectedBot;
         protected ClaimsIdentity _claimsIdentity;
         protected IList<StreamingRequestHandler> _requestHandlers;
 
@@ -929,18 +930,14 @@ namespace Microsoft.Bot.Builder
         /// <param name="bot">The bot to use when processing activities received over the Named Pipe.</param>
         /// <returns>A task that completes only once the StreamingRequestHandler has stopped listening
         /// for incoming requests on the Named Pipe.</returns>
-        public async Task ConnectNamedPipeAsync(string pipeName, IBot bot)
+        public async Task UseNamedPipeAsync(string pipeName, IBot bot)
         {
             if (string.IsNullOrEmpty(pipeName))
             {
                 throw new ArgumentNullException(nameof(pipeName));
             }
 
-            if (bot == null)
-            {
-                throw new ArgumentNullException(nameof(bot));
-            }
-
+            _connectedBot = bot ?? throw new ArgumentNullException(nameof(bot));
             _claimsIdentity = _claimsIdentity ?? new ClaimsIdentity();
 
             if (_requestHandlers == null)
@@ -1019,17 +1016,20 @@ namespace Microsoft.Bot.Builder
             }
             else
             {
+                if (_connectedBot == null)
+                {
+                    throw new InvalidOperationException("No handler can process the incoming message, since no connected bot is registered. Call UseNamedPipe or UseWebSocket to connect a bot to a streaming transport.");
+                }
+
                 // This is a proactive message that will need a new streaming connection opened.
                 // The ServiceUrl of a streaming connection follows the pattern "urn:[ChannelName]:[Protocol]:[Host]".
-                // TODO: This connection needs authentication headers added to it.
                 var connection = new ClientWebSocket();
                 var uri = activity.ServiceUrl.Split(':');
                 var protocol = uri[uri.Length - 2];
                 var host = uri[uri.Length - 1];
                 await connection.ConnectAsync(new Uri(protocol + host + "/api/messages"), cancellationToken).ConfigureAwait(false);
 
-                // TODO: [ccastro] this is wrong
-                var handler = new StreamingRequestHandler(null, this, connection, _logger);
+                var handler = new StreamingRequestHandler(_connectedBot, this, connection, _logger);
 
                 if (_requestHandlers == null)
                 {
@@ -1042,11 +1042,11 @@ namespace Microsoft.Bot.Builder
             }
         }
 
+        /// <summary>
+        /// Creates a streaming specific connector client.
+        /// </summary>
         private IConnectorClient CreateStreamingConnectorClient(Activity activity, StreamingRequestHandler requestHandler)
         {
-            // TODO: When this is merged into the existing adapter it should be moved inside of
-            // the existing CreateConnectorClient and use the serviceURL to determine which
-            // version of the connector to construct.
             var emptyCredentials = (_channelProvider != null && _channelProvider.IsGovernment()) ?
                     MicrosoftGovernmentAppCredentials.Empty :
                     MicrosoftAppCredentials.Empty;

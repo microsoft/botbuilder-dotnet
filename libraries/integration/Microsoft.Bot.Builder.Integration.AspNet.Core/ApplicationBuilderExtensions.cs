@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
 
             var bot = applicationBuilder.ApplicationServices.GetService(typeof(IBot)) as IBot;
-            _ = (applicationBuilder.ApplicationServices.GetService(typeof(IBotFrameworkHttpAdapter)) as BotFrameworkHttpAdapter).ConnectNamedPipeAsync(pipeName, bot);
+            _ = (applicationBuilder.ApplicationServices.GetService(typeof(IBotFrameworkHttpAdapter)) as BotFrameworkHttpAdapter).UseNamedPipeAsync(pipeName, bot);
 
             return applicationBuilder;
         }
