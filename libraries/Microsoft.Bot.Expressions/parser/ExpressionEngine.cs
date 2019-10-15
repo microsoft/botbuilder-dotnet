@@ -33,7 +33,17 @@ namespace Microsoft.Bot.Expressions
         /// </summary>
         /// <param name="expression">Expression to parse.</param>
         /// <returns>Expresion tree.</returns>
-        public Expression Parse(string expression) => new ExpressionTransformer(EvaluatorLookup).Transform(AntlrParse(expression));
+        public Expression Parse(string expression)
+        {
+            if (string.IsNullOrEmpty(expression))
+            {
+                return Expression.ConstantExpression(string.Empty);
+            }
+            else
+            {
+                return new ExpressionTransformer(EvaluatorLookup).Transform(AntlrParse(expression));
+            }
+        }
 
         protected static IParseTree AntlrParse(string expression)
         {

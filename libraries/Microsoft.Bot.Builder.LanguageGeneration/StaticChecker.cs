@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                     if (context.templateBody() == null)
                     {
-                        result.Add(BuildLGDiagnostic($"There is no template body in template {templateName}", context: context.templateNameLine()));
+                        result.Add(BuildLGDiagnostic($"There is no template body in template {templateName}", DiagnosticSeverity.Warning, context.templateNameLine()));
                     }
                     else
                     {
@@ -254,10 +254,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     foreach (var body in bodys)
                     {
                         var line = body.GetText().Trim();
-                        var start = line.IndexOf('=');
-                        if (start < 0 && !IsPureExpression(line))
+                        if (!string.IsNullOrWhiteSpace(line))
                         {
-                            result.Add(BuildLGDiagnostic($"Structured content does not support", context: context.structuredBodyContentLine()));
+                            var start = line.IndexOf('=');
+                            if (start < 0 && !IsPureExpression(line))
+                            {
+                                result.Add(BuildLGDiagnostic($"Structured content does not support", context: context.structuredBodyContentLine()));
+                            }
                         }
                     }
                 }

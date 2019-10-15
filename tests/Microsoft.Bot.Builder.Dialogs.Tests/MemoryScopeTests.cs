@@ -146,15 +146,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             ValidateSetValue(dc, "#test", "turn.recognized.intents.test");
             ValidateSetValue(dc, "$test", "dialog.test");
-            ValidateSetValue(dc, "@test", "turn.recognized.entities.test[0]", entities);
-            dc.State.RemoveValue("turn.recognized.entities");
             ValidateSetValue(dc, "@@test", "turn.recognized.entities.test", entities);
             Assert.AreEqual("test1", dc.State.GetValue<string>("@test"));
             Assert.AreEqual("test2", dc.State.GetValue<string[]>("@@test")[1]);
 
             ValidateRemoveValue(dc, "#test", "turn.recognized.intents.test");
             ValidateRemoveValue(dc, "$test", "dialog.test");
-            ValidateValue(dc, "@test", "turn.recognized.entities.test[0]");
+            ValidateValue(dc, "@test", "turn.recognized.entities.test.first()");
             ValidateRemoveValue(dc, "@@test", "turn.recognized.entities.test");
 
             await dc.Context.SendActivityAsync("next");
