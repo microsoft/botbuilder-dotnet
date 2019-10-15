@@ -115,9 +115,16 @@ namespace Microsoft.Bot.Builder.Teams
             {
                 return new InvokeResponse { Status = (int)HttpStatusCode.NotImplemented };
             }
-            catch (BadRequestArgumentException)
+            catch (InvalidOperationException ex)
             {
-                return new InvokeResponse { Status = (int)HttpStatusCode.BadRequest };
+                if (ex.Source == nameof(TeamsActivityHandler))
+                {
+                    return new InvokeResponse { Status = (int)HttpStatusCode.BadRequest };
+                }
+                else
+                {
+                    throw;
+                }
             }
         }
 
@@ -144,7 +151,10 @@ namespace Microsoft.Bot.Builder.Teams
                     return CreateInvokeResponse();
 
                 default:
-                    throw new BadRequestArgumentException($"Allowed values are 'accept' and 'decline'. Received {fileConsentCardResponse.Action}", "Action");
+                    throw new InvalidOperationException($"Allowed values are 'accept' and 'decline'. Received {fileConsentCardResponse.Action}")
+                    {
+                        Source = nameof(TeamsActivityHandler),  
+                    };
             }
         }
 
@@ -196,7 +206,10 @@ namespace Microsoft.Bot.Builder.Teams
                         return await OnTeamsMessagingExtensionBotMessagePreviewSendAsync(turnContext, action, cancellationToken).ConfigureAwait(false);
 
                     default:
-                        throw new BadRequestArgumentException($"Allowed values are 'edit' and 'send'. Received {action.BotMessagePreviewAction}", "BotMessagePreviewAction");
+                        throw new InvalidOperationException($"Allowed values are 'edit' and 'send'. Received {action.BotMessagePreviewAction}")
+                        {
+                            Source = nameof(TeamsActivityHandler),
+                        };
                 }
             }
             else
@@ -323,14 +336,6 @@ namespace Microsoft.Bot.Builder.Teams
             }
 
             return obj.ToObject<T>();
-        }
-
-        private class BadRequestArgumentException : ArgumentException
-        {
-            public BadRequestArgumentException(string message, string paramName)
-                :base(message, paramName)
-            {
-            }
         }
     }
 }
