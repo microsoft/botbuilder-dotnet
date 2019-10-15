@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
     public class AtPathResolver : AliasPathResolver
     {
         public AtPathResolver()
-            : base(alias: "@", prefix: "turn.recognized.entities.", postfix: "[0]")
+            : base(alias: "@", prefix: "turn.recognized.entities.", postfix: ".first()")
         {
         }
 

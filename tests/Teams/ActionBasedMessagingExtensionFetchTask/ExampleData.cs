@@ -3,8 +3,13 @@
 
 namespace Microsoft.BotBuilderSamples
 {
-    public class SubmitExampleData
+    public class ExampleData
     {
+        public ExampleData()
+        {
+            MultiSelect = "true";
+        }
+
         public string SubmitLocation { get; set; }
 
         public string Question { get; set; }

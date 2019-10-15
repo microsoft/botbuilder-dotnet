@@ -807,6 +807,27 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.IsTrue(
                 JToken.DeepEquals(JObject.Parse("{\"$type\":\"MyStruct\",\"text\":\"hi\"}"), evaled as JObject));
+
+            evaled = engine.EvaluateTemplate("MultiStructuredRef");
+
+            Assert.IsTrue(
+                JToken.DeepEquals(JObject.Parse("{\"$type\":\"MyStruct\",\"list\":[{\"$type\":\"SubStruct\",\"text\":\"hello\"},{\"$type\":\"SubStruct\",\"text\":\"world\"}]}"), evaled as JObject));
+        }
+
+        [TestMethod]
+        public void TestEvaluateOnce()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("EvaluateOnce.lg"));
+
+            var evaled = engine.EvaluateTemplate("templateWithSameParams", new { param = "ms" });
+            Assert.IsNotNull(evaled);
+
+            var resultList = evaled.ToString().Split(" ");
+            Assert.IsTrue(resultList.Length == 2);
+            Assert.IsTrue(resultList[0] == resultList[1]);
+
+            // may be has different values
+            evaled = engine.EvaluateTemplate("templateWithDifferentParams", new { param1 = "ms", param2 = "newms" });
         }
 
         [TestMethod]
