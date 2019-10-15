@@ -644,6 +644,38 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
+        [TestMethod]
+        public async Task TestSigninVerifyState()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "signin/verifyState",
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+           
+            // Assert
+            Assert.AreEqual(2, bot.Record.Count);
+            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnTeamsSigninVerifyStateAsync", bot.Record[1]);
+            Assert.IsNotNull(activitiesToSend);
+            Assert.AreEqual(1, activitiesToSend.Length);
+            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
+            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
         private class NotImplementedAdapter : BotAdapter
         {
             public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
@@ -770,7 +802,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return base.OnTeamsMessagingExtensionCardButtonClickedAsync(turnContext, obj, cancellationToken);
             }
 
-            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
+            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.FromResult(new MessagingExtensionActionResponse());
@@ -824,16 +856,22 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return base.OnTeamsCardActionInvokeAsync(turnContext, cancellationToken);
             }
 
-            protected override Task<TaskModuleTaskInfo> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
+            protected override Task<TaskModuleResponse> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return Task.FromResult(new TaskModuleTaskInfo());
+                return Task.FromResult(new TaskModuleResponse());
             }
 
-            protected override Task<TaskModuleResponseBase> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
+            protected override Task<TaskModuleResponse> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return Task.FromResult(new TaskModuleResponseBase());
+                return Task.FromResult(new TaskModuleResponse());
+            }
+
+            protected override Task OnTeamsSigninVerifyStateAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return Task.CompletedTask;
             }
         }
     }
