@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         public MessagingExtensionResponse(MessagingExtensionResult composeExtension = default(MessagingExtensionResult))
         {
-            MessagingExtension = composeExtension;
+            ComposeExtension = composeExtension;
             CustomInit();
         }
 
@@ -41,10 +41,9 @@ namespace Microsoft.Bot.Schema.Teams
         partial void CustomInit();
 
         /// <summary>
-        /// 
         /// </summary>
         [JsonProperty(PropertyName = "composeExtension")]
-        public MessagingExtensionResult MessagingExtension { get; set; }
+        public MessagingExtensionResult ComposeExtension { get; set; }
 
     }
 }
