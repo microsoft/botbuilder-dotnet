@@ -323,7 +323,7 @@ namespace Microsoft.Bot.Builder.Teams
 
         private class InvokeResponseException : Exception
         {
-            HttpStatusCode StatusCode { get; set; }
+            public HttpStatusCode StatusCode { get; set; }
 
             public InvokeResponseException(HttpStatusCode statusCode)
             {
