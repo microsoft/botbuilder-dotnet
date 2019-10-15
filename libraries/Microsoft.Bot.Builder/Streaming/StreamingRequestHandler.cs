@@ -108,6 +108,7 @@ namespace Microsoft.Bot.Builder.Streaming
         public async Task ListenAsync()
         {
             await _server.StartAsync().ConfigureAwait(false);
+            _logger.LogInformation("Streaming request handler started listening");
         }
 
         /// <summary>
@@ -234,7 +235,8 @@ namespace Microsoft.Bot.Builder.Streaming
             catch (Exception ex)
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                _logger.LogError(ex.Message);
+                response.SetBody(ex.ToString());
+                _logger.LogError(ex.ToString());
             }
 
             return response;
