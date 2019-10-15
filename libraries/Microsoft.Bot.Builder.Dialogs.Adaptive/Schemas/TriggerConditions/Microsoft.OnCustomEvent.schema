@@ -1,0 +1,25 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.ITriggerCondition)",
+    "title": "On custom event",
+    "description": "Actions to perform when a custom event is detected. Use 'Emit a custom event' action to raise a custom event.",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./Microsoft.OnCondition.schema#"
+        },
+        {
+            "properties": {
+                "event": {
+                    "type": "string",
+                    "title": "Custom event name",
+                    "description": "Name of the custom event."
+                }
+            }
+        }
+    ],
+    "required": [
+        "actions",
+        "event"
+    ]
+}

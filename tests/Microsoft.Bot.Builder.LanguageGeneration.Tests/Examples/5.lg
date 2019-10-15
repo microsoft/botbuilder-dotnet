@@ -1,0 +1,45 @@
+> Welcome Phrase template
+> LG runtime will pick a text value from the one-of collection list at random.
+# wPhrase
+- Hi
+- Hello
+- Hiya
+ 
+> Using a template in another template
+> Sometimes the bot will say 'Hi' and other times it will say 'Hi :)'
+# welcome-user
+- [wPhrase]
+- [wPhrase] :)
+ 
+> Using entity references
+# welcome-user2
+- [wPhrase]
+- [wPhrase] @{userName}
+- [wPhrase] @{userName} :)
+
+> Conditional response template
+> Outer list is condition expression; L2 list is one-of collection
+# time-of-day-readout
+- IF: @{timeOfDay == 'morning'}
+    - Good morning
+    - Morning! 
+- ELSE:
+    - Good evening
+    - Evening! 
+
+> Conditional response template
+> Outer list is condition expression; L2 list is one-of collection
+# time-of-day-readout-without-default
+- IF: @{timeOfDay == 'morning'}
+    - Good morning
+    - Morning! 
+- ELSEIF: @{timeOfDay != 'morning'}
+    - Good evening
+    - Evening! 
+
+> Conditional response template
+> Outer list is condition expression; L2 list is one-of collection
+# time-of-day-readout-without-default2
+- IF: @{timeOfDay == 'morning'}
+    - Good morning
+    - Morning! 

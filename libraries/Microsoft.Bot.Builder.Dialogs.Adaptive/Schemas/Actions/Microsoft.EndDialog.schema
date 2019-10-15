@@ -1,0 +1,18 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "End dialog",
+    "description": "End this dialog.",
+    "type": "object",
+    "properties": {
+        "value": {
+            "$role": "expression",
+            "title": "Value",
+            "description": "Result value returned to the parent dialog.",
+            "examples": [
+                "dialog.userName",
+                "'tomato'"
+            ]
+        }
+    }
+}

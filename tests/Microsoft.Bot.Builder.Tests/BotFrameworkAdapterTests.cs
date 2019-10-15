@@ -51,11 +51,11 @@ namespace Microsoft.Bot.Builder.Tests
             const string TenantIdValue = "theTenantId";
             const string EventActivityName = "CreateConversation";
 
-            Func<Task<HttpResponseMessage>> createResponseMessage = async () =>
+            Func<Task<HttpResponseMessage>> createResponseMessage = () =>
             {
                 var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
                 response.Content = new StringContent(new JObject { { ActivityIdName, ActivityIdValue }, { ConversationIdName, ConversationIdValue } }.ToString());
-                return response;
+                return Task.FromResult(response);
             };
 
             var mockCredentialProvider = new Mock<ICredentialProvider>();
