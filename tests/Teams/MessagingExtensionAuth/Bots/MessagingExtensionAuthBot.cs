@@ -54,7 +54,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             }
         }
 
-        protected override async Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
+        protected override async Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
         {
             var tokenResponse = await (turnContext.Adapter as IUserTokenProvider).GetUserTokenAsync(turnContext, _connectionName, string.Empty, cancellationToken: cancellationToken);
             if (tokenResponse == null || string.IsNullOrEmpty(tokenResponse.Token))
@@ -69,7 +69,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                     ComposeExtension = new MessagingExtensionResult
                     {
                         Type = "auth",
-                        SuggestedActions = new MessagingExtensionSuggestedAction
+                        OpenUrlActions = new MessagingExtensionOpenUrlAction
                         {
                             Actions = new List<CardAction>
                             {
@@ -92,7 +92,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             };
         }
 
-        protected override async Task<TaskModuleTaskInfo> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
+        protected override async Task<TaskModuleResponse> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
             // When a user has successfully signed in, the bot receives the Magic Code from Azure Bot Service in
             // the Activity.Value. Use the magic code to obtain the user token.
@@ -100,7 +100,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             if (data != null && data["state"] != null)
             {
                 var tokenResponse = await (turnContext.Adapter as IUserTokenProvider).GetUserTokenAsync(turnContext, _connectionName, data["state"].ToString(), cancellationToken: cancellationToken);
-                return CreateSignedInTaskModuleTaskInfo(tokenResponse.Token);
+                return new TaskModuleResponse() { Task = new TaskModuleContinueResponse( CreateSignedInTaskModuleTaskInfo(tokenResponse.Token) ) };
             }
             else
             {
