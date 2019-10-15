@@ -57,13 +57,11 @@ namespace Microsoft.Bot.Builder.Skills
 
         /// <summary>
         /// CreateConversation([FromBody] ConversationParameters parameters)
-        /// Not supported for skills.
         /// </summary>
         public const string CreateConversation = "CreateConversation";
 
         /// <summary>
         /// GetConversations(string continuationToken = null)
-        /// Not supported for skills.
         /// </summary>
         public const string GetConversations = "GetConversations";
     }

@@ -36,14 +36,14 @@ namespace Microsoft.Bot.Builder.Skills
         }
 
         /// <summary>
-        /// Gets the botAdapter to use to process ChannelAPI call from the skill
+        /// Gets or sets the botAdapter to use to process ChannelAPI call from the skill
         /// </summary>
-        protected BotAdapter ChannelAdapter { get; private set; }
+        public BotAdapter ChannelAdapter { get; set; }
 
         /// <summary>
-        /// Gets the callback to invoke bot logic
+        /// Gets or sets the callback to invoke bot logic
         /// </summary>
-        protected IBot Bot { get; private set; }
+        public IBot Bot { get; set; }
 
         /// <summary>
         /// Forward an activity to a skill.
@@ -308,7 +308,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// <returns>task</returns>
         public virtual Task DeleteConversationMemberAsync(ClaimsIdentity claimsIdentity, string conversationId, string memberId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync(claimsIdentity, ChannelApiMethods.GetConversationPagedMembers, conversationId, memberId);
+            return this.InvokeChannelApiAsync(claimsIdentity, ChannelApiMethods.DeleteConversationMember, conversationId, memberId);
         }
 
         /// <summary>

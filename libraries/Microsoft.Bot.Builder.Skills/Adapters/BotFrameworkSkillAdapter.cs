@@ -347,7 +347,11 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
             var section = configuration?.GetSection($"BotFrameworkSkills");
             if (section != null)
             {
-                this.Skills.AddRange(section?.Get<BotFrameworkSkill[]>());
+                var skills = section?.Get<BotFrameworkSkill[]>();
+                if (skills != null)
+                {
+                    this.Skills.AddRange(skills);
+                }
             }
 
             this.SkillsCallbackEndpoint = configuration?.GetValue<string>("SkillsCallbackEndpoint");
