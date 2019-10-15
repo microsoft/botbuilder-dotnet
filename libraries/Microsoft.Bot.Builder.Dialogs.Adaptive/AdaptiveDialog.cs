@@ -361,9 +361,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // from the stack and we want to detect this so we can stop processing actions.
             var instanceId = this.GetUniqueInstanceId(sequenceContext);
 
+            // Execute queued actions
             var action = this.CreateChildContext(sequenceContext) as SequenceContext;
-
-            if (action != null)
+            while (action != null)
             {
                 // Continue current step
                 var result = await action.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
@@ -389,21 +389,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // End current step
                 await this.EndCurrentActionAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
 
-                // Execute next step
-                // We call continueDialog() on the root dialog to ensure any changes queued up
-                // by the previous actions are applied.
+                // Check for changes to any of our parents
+                var parentChanges = false;
                 DialogContext root = sequenceContext;
-                while (root.Parent != null)
+                DialogContext parent = sequenceContext.Parent;
+                while (parent != null)
                 {
-                    root = root.Parent;
+                    var sc = parent as SequenceContext;
+                    if (sc != null && sc.Changes != null && sc.Changes.Count > 0)
+                    {
+                        parentChanges = true;
+                    }
+                    root = parent;
+                    parent = root.Parent;
                 }
 
-                return await root.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+                // Execute next step
+                if (parentChanges)
+                {
+                    // Recursively call ContinueDialogAsync() to apply parent changes and continue
+                    // execution.
+                    return await root.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    // Apply any local changes and fetch next action
+                    await sequenceContext.ApplyChangesAsync(cancellationToken).ConfigureAwait(false);
+                    action = this.CreateChildContext(sequenceContext) as SequenceContext;
+                }
             }
-            else
-            {
-                return await this.OnEndOfActionsAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
-            }
+
+            return await this.OnEndOfActionsAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
         }
 
         protected Task<bool> EndCurrentActionAsync(SequenceContext sequenceContext, CancellationToken cancellationToken = default(CancellationToken))
