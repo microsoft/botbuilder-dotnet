@@ -160,9 +160,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// Get resource by id
+        /// Get resource by id.
         /// </summary>
-        /// <param name="id">The resource id .</param>
+        /// <param name="id">The resource id.</param>
         /// <returns>The resource, or throws if not found.</returns>
         public IResource GetResource(string id)
         {
@@ -175,11 +175,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// Try to get the resource by id
+        /// Try to get the resource by id.
         /// </summary>
-        /// <param name="id">id</param>
-        /// <param name="resource">resource that was found or null</param>
-        /// <returns>true if found</returns>
+        /// <param name="id">The id.</param>
+        /// <param name="resource">resource that was found or null.</param>
+        /// <returns>true if found.</returns>
         public bool TryGetResource(string id, out IResource resource)
         {
             foreach (var resourceProvider in this.resourceProviders)
