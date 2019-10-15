@@ -22,11 +22,10 @@ namespace Microsoft.Bot.Builder.Skills
     {
         private readonly ILogger logger;
 
-        public SkillAdapter(BotAdapter adapter, BotCallbackHandler callback, string botAppId, ILogger logger = null)
+        public SkillAdapter(BotAdapter adapter, IBot bot, ILogger logger = null)
         {
             this.ChannelAdapter = adapter;
-            this.BotCallback = callback;
-            this.BotAppId = botAppId;
+            this.Bot = bot;
             this.logger = logger ?? NullLogger.Instance;
 
             // make sure there is a channel api middleware
@@ -36,11 +35,15 @@ namespace Microsoft.Bot.Builder.Skills
             }
         }
 
-        public BotAdapter ChannelAdapter { get; private set; }
+        /// <summary>
+        /// Gets the botAdapter to use to process ChannelAPI call from the skill
+        /// </summary>
+        protected BotAdapter ChannelAdapter { get; private set; }
 
-        public BotCallbackHandler BotCallback { get; private set; }
-
-        public string BotAppId { get; private set; }
+        /// <summary>
+        /// Gets the callback to invoke bot logic
+        /// </summary>
+        protected IBot Bot { get; private set; }
 
         /// <summary>
         /// Forward an activity to a skill.
@@ -68,13 +71,14 @@ namespace Microsoft.Bot.Builder.Skills
         /// Each ConversationMembers object contains the ID of the conversation and an
         /// array of ChannelAccounts that describe the members of the conversation.
         /// </remarks>
+        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim</param>
         /// <param name='conversationId'>conversationId</param> 
         /// <param name='continuationToken'>skip or continuation token</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task for ConversationsResult.</returns>
-        public virtual Task<ConversationsResult> GetConversationsAsync(string conversationId, string continuationToken = default(string), CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<ConversationsResult> GetConversationsAsync(ClaimsIdentity claimsIdentity, string conversationId, string continuationToken = default(string), CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<ConversationsResult>(ChannelApiMethods.GetConversations, conversationId, continuationToken);
+            return this.InvokeChannelApiAsync<ConversationsResult>(claimsIdentity, ChannelApiMethods.GetConversations, conversationId, continuationToken);
         }
 
         /// <summary>
@@ -104,13 +108,14 @@ namespace Microsoft.Bot.Builder.Skills
         ///
         /// ```
         /// </remarks>
+        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim</param>
         /// <param name='conversationId'>conversationId</param> 
         /// <param name='parameters'>Parameters to create the conversation from</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task for a conversation resource response</returns>
-        public virtual Task<ConversationResourceResponse> CreateConversationAsync(string conversationId, ConversationParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<ConversationResourceResponse> CreateConversationAsync(ClaimsIdentity claimsIdentity, string conversationId, ConversationParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<ConversationResourceResponse>(ChannelApiMethods.CreateConversation, conversationId, parameters);
+            return this.InvokeChannelApiAsync<ConversationResourceResponse>(claimsIdentity, ChannelApiMethods.CreateConversation, conversationId, parameters);
         }
 
         /// <summary>
@@ -131,13 +136,14 @@ namespace Microsoft.Bot.Builder.Skills
         ///
         /// Use SendToConversation in all other cases.
         /// </remarks>
+        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim</param>
         /// <param name='conversationId'>conversationId</param> 
         /// <param name='activity'>Activity to send</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task for a resource response</returns>
-        public virtual Task<ResourceResponse> SendToConversationAsync(string conversationId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<ResourceResponse> SendToConversationAsync(ClaimsIdentity claimsIdentity, string conversationId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<ResourceResponse>(ChannelApiMethods.SendToConversation, conversationId, activity);
+            return this.InvokeChannelApiAsync<ResourceResponse>(claimsIdentity, ChannelApiMethods.SendToConversation, conversationId, activity);
         }
 
         /// <summary>
@@ -152,13 +158,14 @@ namespace Microsoft.Bot.Builder.Skills
         /// duplicate activities and the timestamps are used by the client to render
         /// the activities in the right order.
         /// </remarks>
+        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim</param>
         /// <param name='conversationId'>Conversation ID</param>
         /// <param name='transcript'>Transcript of activities</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task for a resource response</returns>
-        public virtual Task<ResourceResponse> SendConversationHistoryAsync(string conversationId, Transcript transcript, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<ResourceResponse> SendConversationHistoryAsync(ClaimsIdentity claimsIdentity, string conversationId, Transcript transcript, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<ResourceResponse>(ChannelApiMethods.SendConversationHistory, conversationId, transcript);
+            return this.InvokeChannelApiAsync<ResourceResponse>(claimsIdentity, ChannelApiMethods.SendConversationHistory, conversationId, transcript);
         }
 
         /// <summary>
@@ -173,14 +180,15 @@ namespace Microsoft.Bot.Builder.Skills
         /// For example, you can remove buttons after someone has clicked "Approve"
         /// button.
         /// </remarks>
+        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim</param>
         /// <param name='conversationId'>Conversation ID</param>
         /// <param name='activityId'>activityId to update</param>
         /// <param name='activity'>replacement Activity</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task for a resource response</returns>
-        public virtual Task<ResourceResponse> UpdateActivityAsync(string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<ResourceResponse> UpdateActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<ResourceResponse>(ChannelApiMethods.UpdateActivity, conversationId, activityId, activity);
+            return this.InvokeChannelApiAsync<ResourceResponse>(claimsIdentity, ChannelApiMethods.UpdateActivity, conversationId, activityId, activity);
         }
 
         /// <summary>
@@ -201,14 +209,15 @@ namespace Microsoft.Bot.Builder.Skills
         ///
         /// Use SendToConversation in all other cases.
         /// </remarks>
+        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim</param>
         /// <param name='conversationId'>Conversation ID</param>
         /// <param name='activityId'>activityId the reply is to (OPTIONAL)</param>
         /// <param name='activity'>Activity to send</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task for a resource response</returns>
-        public virtual Task<ResourceResponse> ReplyToActivityAsync(string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<ResourceResponse> ReplyToActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<ResourceResponse>(ChannelApiMethods.ReplyToActivity, conversationId, activityId, activity);
+            return this.InvokeChannelApiAsync<ResourceResponse>(claimsIdentity, ChannelApiMethods.ReplyToActivity, conversationId, activityId, activity);
         }
 
         /// <summary>
@@ -220,13 +229,14 @@ namespace Microsoft.Bot.Builder.Skills
         /// Some channels allow you to delete an existing activity, and if successful
         /// this method will remove the specified activity.
         /// </remarks>
+        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim</param>
         /// <param name='conversationId'>Conversation ID</param>
         /// <param name='activityId'>activityId to delete</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task for a resource response</returns>
-        public virtual Task DeleteActivityAsync(string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task DeleteActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync(ChannelApiMethods.DeleteActivity, conversationId, activityId);
+            return this.InvokeChannelApiAsync(claimsIdentity, ChannelApiMethods.DeleteActivity, conversationId, activityId);
         }
 
         /// <summary>
@@ -238,12 +248,13 @@ namespace Microsoft.Bot.Builder.Skills
         /// This REST API takes a ConversationId and returns an array of ChannelAccount
         /// objects representing the members of the conversation.
         /// </remarks>
+        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim</param>
         /// <param name='conversationId'>Conversation ID</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task for a response</returns>
-        public virtual Task<IList<ChannelAccount>> GetConversationMembersAsync(string conversationId, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<IList<ChannelAccount>> GetConversationMembersAsync(ClaimsIdentity claimsIdentity, string conversationId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<IList<ChannelAccount>>(ChannelApiMethods.GetConversationMembers, conversationId);
+            return this.InvokeChannelApiAsync<IList<ChannelAccount>>(claimsIdentity, ChannelApiMethods.GetConversationMembers, conversationId);
         }
 
         /// <summary>
@@ -268,14 +279,15 @@ namespace Microsoft.Bot.Builder.Skills
         /// A response to a request that has a continuation token from a prior request
         /// may rarely return members from a previous request.
         /// </remarks>
+        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim</param>
         /// <param name='conversationId'>Conversation ID</param>
         /// <param name='pageSize'>Suggested page size</param>
         /// <param name='continuationToken'>Continuation Token</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task for a response</returns>
-        public virtual Task<PagedMembersResult> GetConversationPagedMembersAsync(string conversationId, int? pageSize = default(int?), string continuationToken = default(string), CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<PagedMembersResult> GetConversationPagedMembersAsync(ClaimsIdentity claimsIdentity, string conversationId, int? pageSize = default(int?), string continuationToken = default(string), CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<PagedMembersResult>(ChannelApiMethods.GetConversationPagedMembers, conversationId, pageSize, continuationToken);
+            return this.InvokeChannelApiAsync<PagedMembersResult>(claimsIdentity, ChannelApiMethods.GetConversationPagedMembers, conversationId, pageSize, continuationToken);
         }
 
         /// <summary>
@@ -289,13 +301,14 @@ namespace Microsoft.Bot.Builder.Skills
         /// member
         /// of the conversation, the conversation will also be deleted.
         /// </remarks>
+        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim</param>
         /// <param name='conversationId'>Conversation ID</param>
         /// <param name='memberId'>ID of the member to delete from this conversation</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task</returns>
-        public virtual Task DeleteConversationMemberAsync(string conversationId, string memberId, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task DeleteConversationMemberAsync(ClaimsIdentity claimsIdentity, string conversationId, string memberId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync(ChannelApiMethods.GetConversationPagedMembers, conversationId, memberId);
+            return this.InvokeChannelApiAsync(claimsIdentity, ChannelApiMethods.GetConversationPagedMembers, conversationId, memberId);
         }
 
         /// <summary>
@@ -308,13 +321,14 @@ namespace Microsoft.Bot.Builder.Skills
         /// of ChannelAccount objects representing the members of the particular
         /// activity in the conversation.
         /// </remarks>
+        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim</param>
         /// <param name='conversationId'>Conversation ID</param>
         /// <param name='activityId'>Activity ID</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task with result</returns>
-        public virtual Task<IList<ChannelAccount>> GetActivityMembersAsync(string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<IList<ChannelAccount>> GetActivityMembersAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<IList<ChannelAccount>>(ChannelApiMethods.GetActivityMembers, conversationId, activityId);
+            return this.InvokeChannelApiAsync<IList<ChannelAccount>>(claimsIdentity, ChannelApiMethods.GetActivityMembers, conversationId, activityId);
         }
 
         /// <summary>
@@ -329,22 +343,23 @@ namespace Microsoft.Bot.Builder.Skills
         /// The response is a ResourceResponse which contains an AttachmentId which is
         /// suitable for using with the attachments API.
         /// </remarks>
+        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim</param>
         /// <param name='conversationId'>Conversation ID</param>
         /// <param name='attachmentUpload'>Attachment data</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task with result</returns>
-        public virtual Task<ResourceResponse> UploadAttachmentAsync(string conversationId, AttachmentData attachmentUpload, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<ResourceResponse> UploadAttachmentAsync(ClaimsIdentity claimsIdentity, string conversationId, AttachmentData attachmentUpload, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<ResourceResponse>(ChannelApiMethods.UploadAttachment, conversationId, attachmentUpload);
+            return this.InvokeChannelApiAsync<ResourceResponse>(claimsIdentity, ChannelApiMethods.UploadAttachment, conversationId, attachmentUpload);
         }
 
-        protected async Task InvokeChannelApiAsync(string method, string conversationId, params object[] args)
+        protected async Task InvokeChannelApiAsync(ClaimsIdentity claimsIdentity, string method, string conversationId, params object[] args)
         {
-            await InvokeChannelApiAsync<object>(method, conversationId, args).ConfigureAwait(false);
+            await InvokeChannelApiAsync<object>(claimsIdentity, method, conversationId, args).ConfigureAwait(false);
             return;
         }
 
-        protected async Task<T> InvokeChannelApiAsync<T>(string method, string conversationId, params object[] args)
+        protected async Task<T> InvokeChannelApiAsync<T>(ClaimsIdentity claimsIdentity, string method, string conversationId, params object[] args)
         {
             var skillConversation = new SkillConversation(conversationId);
 
@@ -382,17 +397,17 @@ namespace Microsoft.Bot.Builder.Skills
             };
             channelApiInvokeActivity.Value = channelApiArgs;
 
-            // We call our adapter using the BotAppId claim, so turnContext has the bot claims
-            var claimsIdentity = new ClaimsIdentity(new List<Claim>
-            {
-                // Adding claims for both Emulator and Channel.
-                new Claim(AuthenticationConstants.AudienceClaim, this.BotAppId),
-                new Claim(AuthenticationConstants.AppIdClaim, this.BotAppId),
-                new Claim(AuthenticationConstants.ServiceUrlClaim, skillConversation.ServiceUrl),
-            });
+            //// We call our adapter using the BotAppId claim, so turnContext has the bot claims
+            //var claimsIdentity = new ClaimsIdentity(new List<Claim>
+            //{
+            //    // Adding claims for both Emulator and Channel.
+            //    new Claim(AuthenticationConstants.AudienceClaim, this.BotAppId),
+            //    new Claim(AuthenticationConstants.AppIdClaim, this.BotAppId),
+            //    new Claim(AuthenticationConstants.ServiceUrlClaim, skillConversation.ServiceUrl),
+            //});
 
             // send up to the bot to process it...
-            await this.ChannelAdapter.ProcessActivityAsync(claimsIdentity, (Activity)channelApiInvokeActivity, this.BotCallback, CancellationToken.None).ConfigureAwait(false);
+            await this.ChannelAdapter.ProcessActivityAsync(claimsIdentity, (Activity)channelApiInvokeActivity, this.Bot.OnTurnAsync, CancellationToken.None).ConfigureAwait(false);
 
             // Return the result that was captured in the middleware handler. 
             return (T)channelApiArgs.Result;

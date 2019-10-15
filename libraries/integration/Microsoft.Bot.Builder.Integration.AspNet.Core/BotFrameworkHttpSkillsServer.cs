@@ -138,69 +138,69 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     // [Route("/v3/conversations")]
                     case ChannelApiMethods.CreateConversation:
                         var parameters = await HttpHelper.ReadRequestAsync<ConversationParameters>(httpRequest, cancellationToken).ConfigureAwait(false);
-                        result = await _skillAdapter.CreateConversationAsync(route.Parameters["conversationId"].Value, parameters).ConfigureAwait(false);
+                        result = await _skillAdapter.CreateConversationAsync(claimsIdentity, route.Parameters["conversationId"].Value, parameters).ConfigureAwait(false);
                         break;
 
                     // [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
                     case ChannelApiMethods.DeleteActivity:
                         // TODO: ask Tom why we use the value from the route and not from the activity here.
-                        await _skillAdapter.DeleteActivityAsync(route.Parameters["conversationId"].Value, route.Parameters["activityId"].Value).ConfigureAwait(false);
+                        await _skillAdapter.DeleteActivityAsync(claimsIdentity, route.Parameters["conversationId"].Value, route.Parameters["activityId"].Value).ConfigureAwait(false);
                         break;
 
                     // [Route("/v3/conversations/{conversationId}/members/{memberId}")]
                     case ChannelApiMethods.DeleteConversationMember:
-                        await _skillAdapter.DeleteConversationMemberAsync(route.Parameters["conversationId"].Value, route.Parameters["memberId"].Value).ConfigureAwait(false);
+                        await _skillAdapter.DeleteConversationMemberAsync(claimsIdentity, route.Parameters["conversationId"].Value, route.Parameters["memberId"].Value).ConfigureAwait(false);
                         break;
 
                     // [Route("/v3/conversations/{conversationId}/activities/{activityId}/members")]
                     case ChannelApiMethods.GetActivityMembers:
-                        result = await _skillAdapter.GetActivityMembersAsync(route.Parameters["conversationId"].Value, route.Parameters["activityId"].Value).ConfigureAwait(false);
+                        result = await _skillAdapter.GetActivityMembersAsync(claimsIdentity, route.Parameters["conversationId"].Value, route.Parameters["activityId"].Value).ConfigureAwait(false);
                         break;
 
                     // [Route("/v3/conversations/{conversationId}/members")]
                     case ChannelApiMethods.GetConversationMembers:
-                        result = await _skillAdapter.GetConversationMembersAsync(route.Parameters["conversationId"].Value).ConfigureAwait(false);
+                        result = await _skillAdapter.GetConversationMembersAsync(claimsIdentity, route.Parameters["conversationId"].Value).ConfigureAwait(false);
                         break;
 
                     // [Route("/v3/conversations/{conversationId}/pagedmembers")]
                     case ChannelApiMethods.GetConversationPagedMembers:
                         var pageSize = string.IsNullOrWhiteSpace(route.Parameters["pageSize"].Value) ? -1 : int.Parse(route.Parameters["pageSize"].Value, CultureInfo.InvariantCulture);
-                        result = await _skillAdapter.GetConversationPagedMembersAsync(route.Parameters["conversationId"].Value, pageSize, route.Parameters["continuationToken"].Value).ConfigureAwait(false);
+                        result = await _skillAdapter.GetConversationPagedMembersAsync(claimsIdentity, route.Parameters["conversationId"].Value, pageSize, route.Parameters["continuationToken"].Value).ConfigureAwait(false);
                         break;
 
                     // [Route("/v3/conversations")]
                     case ChannelApiMethods.GetConversations:
-                        result = await _skillAdapter.GetConversationsAsync(route.Parameters["conversationId"].Value).ConfigureAwait(false);
+                        result = await _skillAdapter.GetConversationsAsync(claimsIdentity, route.Parameters["conversationId"].Value).ConfigureAwait(false);
                         break;
 
                     // [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
                     case ChannelApiMethods.ReplyToActivity:
                         var replyToActivity = await HttpHelper.ReadRequestAsync<Activity>(httpRequest, cancellationToken).ConfigureAwait(false);
-                        result = await _skillAdapter.ReplyToActivityAsync(replyToActivity.Conversation.Id, route.Parameters["activityId"].Value, replyToActivity).ConfigureAwait(false);
+                        result = await _skillAdapter.ReplyToActivityAsync(claimsIdentity, replyToActivity.Conversation.Id, route.Parameters["activityId"].Value, replyToActivity).ConfigureAwait(false);
                         break;
 
                     // [Route("/v3/conversations/{conversationId}/activities/history")]
                     case ChannelApiMethods.SendConversationHistory:
                         var history = await HttpHelper.ReadRequestAsync<Transcript>(httpRequest, cancellationToken).ConfigureAwait(false);
-                        result = await _skillAdapter.SendConversationHistoryAsync(route.Parameters["conversationId"].Value, history).ConfigureAwait(false);
+                        result = await _skillAdapter.SendConversationHistoryAsync(claimsIdentity, route.Parameters["conversationId"].Value, history).ConfigureAwait(false);
                         break;
 
                     // [Route("/v3/conversations/{conversationId}/activities")]
                     case ChannelApiMethods.SendToConversation:
                         var sendToConversationActivity = await HttpHelper.ReadRequestAsync<Activity>(httpRequest, cancellationToken).ConfigureAwait(false);
-                        result = await _skillAdapter.SendToConversationAsync(sendToConversationActivity.Conversation.Id, sendToConversationActivity).ConfigureAwait(false);
+                        result = await _skillAdapter.SendToConversationAsync(claimsIdentity, sendToConversationActivity.Conversation.Id, sendToConversationActivity).ConfigureAwait(false);
                         break;
 
                     // [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
                     case ChannelApiMethods.UpdateActivity:
                         var updateActivity = await HttpHelper.ReadRequestAsync<Activity>(httpRequest, cancellationToken).ConfigureAwait(false);
-                        result = await _skillAdapter.UpdateActivityAsync(route.Parameters["conversationId"].Value, route.Parameters["activityId"].Value, updateActivity).ConfigureAwait(false);
+                        result = await _skillAdapter.UpdateActivityAsync(claimsIdentity, route.Parameters["conversationId"].Value, route.Parameters["activityId"].Value, updateActivity).ConfigureAwait(false);
                         break;
 
                     // [Route("/v3/conversations/{conversationId}/attachments")]
                     case ChannelApiMethods.UploadAttachment:
                         var uploadAttachment = await HttpHelper.ReadRequestAsync<AttachmentData>(httpRequest, cancellationToken).ConfigureAwait(false);
-                        result = await _skillAdapter.UploadAttachmentAsync(route.Parameters["conversationId"].Value, uploadAttachment).ConfigureAwait(false);
+                        result = await _skillAdapter.UploadAttachmentAsync(claimsIdentity, route.Parameters["conversationId"].Value, uploadAttachment).ConfigureAwait(false);
                         break;
 
                     default:
