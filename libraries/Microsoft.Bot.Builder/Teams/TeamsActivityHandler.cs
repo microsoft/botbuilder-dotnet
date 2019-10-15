@@ -36,7 +36,9 @@ namespace Microsoft.Bot.Builder.Teams
             {
                 case ActivityTypes.Invoke:
                     var invokeResponse = await OnInvokeActivityAsync(new DelegatingTurnContext<IInvokeActivity>(turnContext), cancellationToken).ConfigureAwait(false);
-                    if (invokeResponse != null)
+                    
+                    // If OnInvokeActivityAsync has already sent an InvokeResponse, do not send another one.
+                    if (invokeResponse != null && null == turnContext.TurnState.Get<Activity>(BotFrameworkAdapter.InvokeResponseKey))
                     {
                         await turnContext.SendActivityAsync(new Activity { Value = invokeResponse, Type = ActivityTypesEx.InvokeResponse }).ConfigureAwait(false);
                     }
@@ -62,7 +64,8 @@ namespace Microsoft.Bot.Builder.Teams
                     switch (turnContext.Activity.Name)
                     {
                         case "signin/verifyState":
-                            return await OnTeamsSigninVerifyStateAsync(turnContext, cancellationToken).ConfigureAwait(false);
+                            await OnTeamsSigninVerifyStateAsync(turnContext, cancellationToken).ConfigureAwait(false);
+                            return CreateInvokeResponse();
 
                         case "fileConsent/invoke":
                             return await OnTeamsFileConsentAsync(turnContext, SafeCast<FileConsentCardResponse>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
@@ -125,7 +128,7 @@ namespace Microsoft.Bot.Builder.Teams
             throw new NotImplementedException();
         }
 
-        protected virtual Task<InvokeResponse> OnTeamsSigninVerifyStateAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task OnTeamsSigninVerifyStateAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
