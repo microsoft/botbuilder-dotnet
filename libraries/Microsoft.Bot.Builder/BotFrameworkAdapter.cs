@@ -926,7 +926,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="bot">The bot to use when processing activities received over the Named Pipe.</param>
         /// <returns>A task that completes only once the StreamingRequestHandler has stopped listening
         /// for incoming requests on the Named Pipe.</returns>
-        public async Task AddNamedPipeConnection(string pipeName, IBot bot)
+        public async Task ConnectNamedPipeAsync(string pipeName, IBot bot)
         {
             if (string.IsNullOrEmpty(pipeName))
             {
@@ -946,7 +946,7 @@ namespace Microsoft.Bot.Builder
             var requestHandler = new StreamingRequestHandler(bot, this, pipeName, _logger);
             _requestHandlers.Add(requestHandler);
 
-            await requestHandler.StartListening().ConfigureAwait(false);
+            await requestHandler.ListenAsync().ConfigureAwait(false);
         }
 
         /// <summary>

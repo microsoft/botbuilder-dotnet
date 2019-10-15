@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 _requestHandlers.Add(requestHandler);
 
-                await requestHandler.StartListening().ConfigureAwait(false);
+                await requestHandler.ListenAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {

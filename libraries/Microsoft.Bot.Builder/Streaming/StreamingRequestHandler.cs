@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// Begins listening for incoming requests over this StreamingRequestHandler's server.
         /// </summary>
         /// <returns>A task that completes once the server is no longer listening.</returns>
-        public async Task StartListening()
+        public async Task ListenAsync()
         {
             await _server.StartAsync().ConfigureAwait(false);
         }
@@ -274,7 +274,7 @@ namespace Microsoft.Bot.Builder.Streaming
             {
                 if (!_serverIsConnected)
                 {
-                    await Reconnect().ConfigureAwait(false);
+                    await ReconnectAsync().ConfigureAwait(false);
                 }
 
                 var serverResponse = await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -304,7 +304,7 @@ namespace Microsoft.Bot.Builder.Streaming
             {
                 if (!_serverIsConnected)
                 {
-                    await Reconnect().ConfigureAwait(false);
+                    await ReconnectAsync().ConfigureAwait(false);
                 }
 
                 var serverResponse = await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -367,7 +367,7 @@ namespace Microsoft.Bot.Builder.Streaming
             _serverIsConnected = false;
         }
 
-        private async Task Reconnect(IDictionary<string, string> requestHeaders = null)
+        private async Task ReconnectAsync(IDictionary<string, string> requestHeaders = null)
         {
             // TODO: Need to get authentication headers from the httpClient on the adapter.
             var clientWebSocket = new ClientWebSocket();
