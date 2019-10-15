@@ -4,6 +4,7 @@ using System.IO.Pipes;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Streaming.Tests.Utilities;
 using Microsoft.Bot.Streaming.Transport.NamedPipes;
 using Xunit;
 
@@ -17,9 +18,9 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             var pipeName = Guid.NewGuid().ToString();
             var readStream = new NamedPipeServerStream(pipeName, PipeDirection.In, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
             var writeStream = new NamedPipeClientStream(".", pipeName, PipeDirection.Out, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
-            new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), pipeName);
+            new StreamingRequestHandler(new Microsoft.Bot.Streaming.UnitTests.Mocks.MockBot(), new BotFrameworkHttpAdapter(), pipeName);
             var reader = new NamedPipeClient(pipeName);
-            var writer = new NamedPipeServer(pipeName, new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), pipeName));
+            var writer = new NamedPipeServer(pipeName, new StreamingRequestHandler(new Microsoft.Bot.Streaming.UnitTests.Mocks.MockBot(), new BotFrameworkHttpAdapter(), pipeName));
 
             try
             {

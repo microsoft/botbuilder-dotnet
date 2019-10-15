@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public void CanBeConstructedWithANamedPipe()
         {
             // Act
-            var handler = new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), "fakePipe");
+            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), "fakePipe");
 
             // Assert
             Assert.NotNull(handler);
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public void CanBeConstructedWithAWebSocket()
         {
             // Act
-            var handler = new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), new FauxSock());
+            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), new FauxSock());
 
             // Assert
             Assert.NotNull(handler);
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async Task RequestHandlerRespondsWith500OnError()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), "fakePipe");
+            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), "fakePipe");
             var conversationId = "testconvoid";
             var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async Task RequestHandlerRemembersConversations()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), "fakePipe");
+            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), "fakePipe");
             var conversationId = "testconvoid";
             var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
@@ -156,7 +156,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async Task RequestHandlerForgetsConversations()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), "fakePipe");
+            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), "fakePipe");
             var conversationId = "testconvoid";
             var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async Task RequestHandlerAssignsAServiceUrl()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), "fakePipe");
+            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), "fakePipe");
             var conversationId = "testconvoid";
             var serviceUrl = "urn:FakeName:fakeProtocol://fakePath";
             var membersAdded = new List<ChannelAccount>();
@@ -235,7 +235,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Arrange
 
             // Act
-            var handler = new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), "fakePipe");
+            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), "fakePipe");
             var activity = new Schema.Activity()
             {
                 Type = "message",
