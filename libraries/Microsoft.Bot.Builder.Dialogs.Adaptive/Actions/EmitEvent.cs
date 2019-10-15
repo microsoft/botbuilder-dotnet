@@ -13,15 +13,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class EmitEvent : Dialog
     {
-        private const string EventValuePropertyValue = "eventValue";
-
         [JsonConstructor]
-        public EmitEvent(string eventName = null, object eventValue = null, bool bubble = true, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public EmitEvent(string eventName = null, string eventValue = null, bool bubble = true, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
             this.EventName = eventName;
-            this.EventValue = EventValue;
+            this.EventValue = eventValue;
             this.BubbleEvent = bubble;
         }
 
@@ -31,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public string EventName { get; set; }
 
         /// <summary>
-        /// Gets or sets the object to send with the event
+        /// Gets or sets the memory property path to use to get the value to send as part of the event
         /// </summary>
         public string EventValue { get; set; }
 
