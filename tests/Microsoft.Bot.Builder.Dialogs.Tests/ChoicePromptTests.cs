@@ -619,6 +619,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogs = new DialogSet(dialogState);
             dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: testCulture));
 
+            var helloLocale = MessageFactory.Text("hello");
+            helloLocale.Locale = testCulture;
+
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
@@ -636,7 +639,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         cancellationToken);
                 }
             })
-                .Send("hello")
+                .Send(helloLocale)
                 .AssertReply((activity) =>
                 {
                     // Use ChoiceFactory to build the expected answer, manually
@@ -680,6 +683,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             dialogs.Add(new ChoicePrompt("ChoicePrompt", customDict, null, culture.Locale));
 
+            var helloLocale = MessageFactory.Text("hello");
+            helloLocale.Locale = culture.Locale;
+
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
@@ -697,7 +703,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         cancellationToken);
                 }
             })
-                .Send("hello")
+                .Send(helloLocale)
                 .AssertReply((activity) =>
                 {
                     // Use ChoiceFactory to build the expected answer, manually
