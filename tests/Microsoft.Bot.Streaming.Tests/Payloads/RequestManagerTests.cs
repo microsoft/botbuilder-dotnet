@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
             var rm = new RequestManager(d);
 
-            var r = await rm.SignalResponse(Guid.NewGuid(), null);
+            var r = await rm.SignalResponseAsync(Guid.NewGuid(), null);
 
             Assert.IsFalse(r);
         }
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             d.TryAdd(g, tcs);
             var rm = new RequestManager(d);
 
-            var r = await rm.SignalResponse(g, null);
+            var r = await rm.SignalResponseAsync(g, null);
 
             Assert.IsTrue(r);
         }
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             d.TryAdd(g, tcs);
             var rm = new RequestManager(d);
 
-            var r = await rm.SignalResponse(g, null);
+            var r = await rm.SignalResponseAsync(g, null);
 
             Assert.IsNull(tcs.Task.Result);
         }
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             var rm = new RequestManager(d);
 
             var resp = new ReceiveResponse();
-            var r = await rm.SignalResponse(g, resp);
+            var r = await rm.SignalResponseAsync(g, resp);
 
             Assert.IsTrue(resp.Equals(tcs.Task.Result));
         }

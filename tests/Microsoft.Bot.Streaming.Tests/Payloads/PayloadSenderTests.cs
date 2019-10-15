@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             var disassembler = new ResponseMessageStreamDisassembler(sender, content);
 
-            await disassembler.Disassemble();
+            await disassembler.DisassembleAsync();
 
             Assert.AreEqual(2, transport.Buffers.Count);
         }
@@ -147,7 +147,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             var disassembler = new ResponseMessageStreamDisassembler(sender, content);
 
-            await disassembler.Disassemble();
+            await disassembler.DisassembleAsync();
 
             Assert.AreEqual(2, transport.Buffers.Count);
         }
@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             var disassembler = new ResponseMessageStreamDisassembler(sender, content);
 
-            await disassembler.Disassemble();
+            await disassembler.DisassembleAsync();
 
             Assert.AreEqual(3, transport.Buffers.Count);
         }
@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             var disassembler = new RequestDisassembler(sender, Guid.NewGuid(), StreamingRequest.CreateGet("/a/b/c"));
 
-            await disassembler.Disassemble();
+            await disassembler.DisassembleAsync();
 
             Assert.AreEqual(2, transport.Buffers.Count);
         }
@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             var disassembler = new ResponseDisassembler(sender, Guid.NewGuid(), StreamingResponse.OK());
 
-            await disassembler.Disassemble();
+            await disassembler.DisassembleAsync();
 
             Assert.AreEqual(2, transport.Buffers.Count);
         }
