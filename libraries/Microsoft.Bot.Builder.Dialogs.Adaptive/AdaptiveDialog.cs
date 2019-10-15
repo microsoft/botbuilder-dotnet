@@ -47,16 +47,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Gets or sets recognizer for processing incoming user input.
         /// </summary>
+        /// <value>
+        /// Recognizer for processing incoming user input.
+        /// </value>
         public IRecognizer Recognizer { get; set; }
 
         /// <summary>
         /// Gets or sets language Generator override.
         /// </summary>
+        /// <value>
+        /// Language Generator override.
+        /// </value>
         public ILanguageGenerator Generator { get; set; }
 
         /// <summary>
         /// Gets or sets trigger handlers to respond to conditions which modifying the executing plan. 
         /// </summary>
+        /// <value>
+        /// Trigger handlers to respond to conditions which modifying the executing plan. 
+        /// </value>
         public virtual List<OnCondition> Triggers { get; set; } = new List<OnCondition>();
 
         /// <summary>
@@ -82,11 +91,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Gets or sets the property to return as the result when the dialog ends when there are no more Actions and AutoEndDialog = true.
         /// </summary>
+        /// <value>
+        /// The property to return as the result when the dialog ends when there are no more Actions and AutoEndDialog = true.
+        /// </value>
         public string DefaultResultProperty { get; set; } = "dialog.result";
 
         /// <summary>
-        /// Gets the dialogs which make up the AdaptiveDialog 
+        /// Gets the dialogs which make up the AdaptiveDialog.
         /// </summary>
+        /// <value>
+        /// The dialogs which make up the AdaptiveDialog.
+        /// </value>
         public DialogSet Dialogs => this._dialogs;
 
         public override IBotTelemetryClient TelemetryClient

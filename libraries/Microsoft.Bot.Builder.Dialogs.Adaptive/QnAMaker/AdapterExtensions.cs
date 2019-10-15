@@ -5,7 +5,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     public static class AdapterExtensions
     {
         /// <summary>
-        /// Register QnAMaker types 
+        /// Register QnAMaker types.
         /// </summary>
         /// <param name="botAdapter">BotAdapter to add middleware to.</param>
         /// <returns>The bot adapter.</returns>

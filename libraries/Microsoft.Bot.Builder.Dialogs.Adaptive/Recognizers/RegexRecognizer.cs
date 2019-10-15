@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         }
 
         /// <summary>
-        /// Gets or sets intent patterns for recognizing intents using regular expressions
+        /// Gets or sets intent patterns for recognizing intents using regular expressions.
         /// </summary>
         /// <value>
         /// Dictionary of patterns -> Intent names.
@@ -33,6 +33,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <summary>
         /// Gets or sets the entity recognizers.
         /// </summary>
+        /// <value>
+        /// The entity recognizers.
+        /// </value>
         [JsonProperty("entities")]
         public List<EntityRecognizer> Entities { get; set; } = new List<EntityRecognizer>();
 

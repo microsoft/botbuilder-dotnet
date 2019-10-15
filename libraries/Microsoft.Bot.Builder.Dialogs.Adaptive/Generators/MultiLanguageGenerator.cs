@@ -19,6 +19,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Gets or sets the language generators for multiple languages.
         /// </summary>
+        /// <value>
+        /// The language generators for multiple languages.
+        /// </value>
         public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>

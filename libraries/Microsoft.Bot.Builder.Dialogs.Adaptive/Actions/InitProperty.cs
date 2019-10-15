@@ -25,6 +25,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets property path to initialize.
         /// </summary>
+        /// <value>
+        /// Property path to initialize.
+        /// </value>
         public string Property { get; set; }
 
         /// <summary>

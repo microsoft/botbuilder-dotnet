@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Actions triggered when an InvokeActivity is received
+    /// Actions triggered when an InvokeActivity is received.
     /// </summary>
     public class OnInvokeActivity : OnActivity
     {
