@@ -9,9 +9,9 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 {
     /// <summary>
-    /// Converter which allows json to be expression to object or static object
+    /// Converter which allows json to be expression to object or static object.
     /// </summary>
-    /// <typeparam name="T">The property type to construct which is IExpressionProperty</typeparam>
+    /// <typeparam name="T">The property type to construct which is IExpressionProperty.</typeparam>
     public class ExpressionPropertyConverter<T> : JsonConverter
         where T : IExpressionProperty, new()
     {
