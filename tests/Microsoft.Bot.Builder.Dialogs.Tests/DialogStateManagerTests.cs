@@ -460,9 +460,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
             {
                 dc.State.SetValue("$name", "testDialog");
-                var name = dc.State.GetValue<String>("$name");
+                var name = dc.State.GetValue<string>("$name");
                 await dc.Context.SendActivityAsync(name);
-                name = dc.State.GetValue<String>("dialog.name");
+                name = dc.State.GetValue<string>("dialog.name");
                 await dc.Context.SendActivityAsync(name);
                 return await dc.BeginDialogAsync("d1");
             }
@@ -549,4 +549,3 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public Bar SubName { get; set; }
     }
 }
-

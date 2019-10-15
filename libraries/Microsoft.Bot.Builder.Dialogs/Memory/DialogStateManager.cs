@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
     /// <summary>
     /// The DialogStateManager manages memory scopes and pathresolvers
     /// MemoryScopes are named root level objects, which can exist either in the dialogcontext or off of turn state
-    /// PathResolvers allow for shortcut behavior for mapping things like $foo -> dialog.foo
+    /// PathResolvers allow for shortcut behavior for mapping things like $foo -> dialog.foo.
     /// </summary>
     public class DialogStateManager : IDictionary<string, object>
     {
@@ -27,11 +27,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         }
 
         /// <summary>
-        /// Gets the path resolvers used to evaluate memory paths
+        /// Gets the path resolvers used to evaluate memory paths.
         /// </summary>
         /// <remarks>
-        /// The built in path resolvers are $,#,@,@@,%.  Additional ones can be added here to handle path resolvers around additional scopes
+        /// The built in path resolvers are $,#,@,@@,%.  Additional ones can be added here to handle path resolvers around additional scopes.
         /// </remarks>
+        /// <value>
+        /// The path resolvers used to evaluate memory paths.
+        /// </value>
         public static List<IPathResolver> PathResolvers { get; private set; } = new List<IPathResolver>()
         {
             new DollarPathResolver(),
@@ -47,6 +50,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <remarks>
         /// components can extend valid scopes by adding to this list, for example to add top level scopes such as Company, Team, etc.
         /// </remarks>
+        /// <value>
+        /// The supported memory scopes for the dialog state manager.  
+        /// </value>
         public static List<MemoryScope> MemoryScopes { get; private set; } = new List<MemoryScope>()
         {
              new MemoryScope(ScopePath.USER),
@@ -69,10 +75,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public object this[string key] { get => this.GetValue<object>(key, () => null); set => this.SetValue(key, value); }
 
         /// <summary>
-        /// Get MemoryScope by name
+        /// Get MemoryScope by name.
         /// </summary>
-        /// <param name="name">name of scope</param>
-        /// <returns>memoryscope</returns>
+        /// <param name="name">Name of scope.</param>
+        /// <returns>A memory scope.</returns>
         public static MemoryScope GetMemoryScope(string name)
         {
             if (name == null)
@@ -88,7 +94,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// </summary>
         /// <param name="path">Incoming path to resolve to scope and remaining path.</param>
         /// <param name="remainingPath">Remaining subpath in scope.</param>
-        /// <returns>memoryscope</returns>
+        /// <returns>The memory scope.</returns>
         public virtual MemoryScope ResolveMemoryScope(string path, out string remainingPath)
         {
             path = path.Trim();
@@ -117,10 +123,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         }
 
         /// <summary>
-        /// Transform the path using the registered PathTransformers
+        /// Transform the path using the registered PathTransformers.
         /// </summary>
-        /// <param name="path">path</param>
-        /// <returns>transformed paths</returns>
+        /// <param name="path">Path to transform.</param>
+        /// <returns>The transformed path.</returns>
         public virtual string TransformPath(string path)
         {
             foreach (var pathResolver in PathResolvers)
@@ -132,13 +138,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         }
 
         /// <summary>
-        /// Get the value from memory using path expression (NOTE: This always returns clone of value)
+        /// Get the value from memory using path expression (NOTE: This always returns clone of value).
         /// </summary>
-        /// <remarks>This always returns a CLONE of the memory, any modifications to the result of this will not be affect memory</remarks>
-        /// <typeparam name="T">the value type to return</typeparam>
-        /// <param name="path">path expression to use</param>
-        /// <param name="value">value</param>
-        /// <returns>true if found, false if not</returns>
+        /// <remarks>This always returns a CLONE of the memory, any modifications to the result of this will not be affect memory.</remarks>
+        /// <typeparam name="T">the value type to return.</typeparam>
+        /// <param name="path">path expression to use.</param>
+        /// <param name="value">Value out parameter.</param>
+        /// <returns>True if found, false if not.</returns>
         public bool TryGetValue<T>(string path, out T value)
         {
             value = default(T);
@@ -159,15 +165,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
         }
 
-
         /// <summary>
-        /// Get the value from memory using path expression (NOTE: This always returns clone of value)
+        /// Get the value from memory using path expression (NOTE: This always returns clone of value).
         /// </summary>
-        /// <remarks>This always returns a CLONE of the memory, any modifications to the result of this will not be affect memory</remarks>
-        /// <typeparam name="T">the value type to return</typeparam>
-        /// <param name="pathExpression">path expression to use</param>
-        /// <param name="defaultValue">function to give default value if there is none (OPTIONAL)</param>
-        /// <returns>result or null if the path is not valid</returns>
+        /// <remarks>This always returns a CLONE of the memory, any modifications to the result of this will not be affect memory.</remarks>
+        /// <typeparam name="T">The value type to return.</typeparam>
+        /// <param name="pathExpression">Path expression to use.</param>
+        /// <param name="defaultValue">Function to give default value if there is none (OPTIONAL).</param>
+        /// <returns>Result or null if the path is not valid.</returns>
         public T GetValue<T>(string pathExpression, Func<T> defaultValue = null)
         {
             if (this.TryGetValue<T>(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)), out T value))
@@ -179,11 +184,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         }
 
         /// <summary>
-        /// Get a int value from memory using a path expression
+        /// Get a int value from memory using a path expression.
         /// </summary>
-        /// <param name="pathExpression">path expression</param>
-        /// <param name="defaultValue">default value if the value doesn't exist</param>
-        /// <returns>value or null if path is not valid</returns>
+        /// <param name="pathExpression">Path expression.</param>
+        /// <param name="defaultValue">Default value if the value doesn't exist.</param>
+        /// <returns>Value or null if path is not valid.</returns>
         public int GetIntValue(string pathExpression, int defaultValue = 0)
         {
             if (this.TryGetValue<int>(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)), out int value))
@@ -195,11 +200,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         }
 
         /// <summary>
-        /// Get a bool value from memory using a path expression
+        /// Get a bool value from memory using a path expression.
         /// </summary>
-        /// <param name="pathExpression">pathExpression</param>
-        /// <param name="defaultValue">default value if the value doesn't exist</param>
-        /// <returns>bool or null if path is not valid</returns>
+        /// <param name="pathExpression">The path expression.</param>
+        /// <param name="defaultValue">Default value if the value doesn't exist.</param>
+        /// <returns>Bool or null if path is not valid.</returns>
         public bool GetBoolValue(string pathExpression, bool defaultValue = false)
         {
             if (this.TryGetValue<bool>(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)), out bool value))
@@ -211,10 +216,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         }
 
         /// <summary>
-        /// Set memory to value
+        /// Set memory to value.
         /// </summary>
-        /// <param name="path">path to memory</param>
-        /// <param name="value">object to set</param>
+        /// <param name="path">Path to memory.</param>
+        /// <param name="value">Object to set.</param>
         public void SetValue(string path, object value)
         {
             if (value is Task)
@@ -236,9 +241,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         }
 
         /// <summary>
-        /// Remove property from memory
+        /// Remove property from memory.
         /// </summary>
-        /// <param name="path">path to remove the leaf property</param>
+        /// <param name="path">Path to remove the leaf property.</param>
         public void RemoveValue(string path)
         {
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
@@ -248,9 +253,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         }
 
         /// <summary>
-        /// Gets all memoryscopes suitable for logging
+        /// Gets all memoryscopes suitable for logging.
         /// </summary>
-        /// <returns>object which represents all memory scopes</returns>
+        /// <returns>object which represents all memory scopes.</returns>
         public JObject GetMemorySnapshot()
         {
             var result = new JObject();

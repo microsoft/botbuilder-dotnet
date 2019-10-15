@@ -171,6 +171,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             AssertOAuthCardActivity(activity);
         }
 
+        private static string GetProjectFolder()
+        {
+            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
+        }
+
         private void AssertMessageActivityAll(Activity activity)
         {
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
@@ -435,11 +440,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(activity.SuggestedActions.Actions[2].DisplayText, "third suggestion");
             Assert.AreEqual(activity.SuggestedActions.Actions[2].Title, "third suggestion");
             Assert.AreEqual(activity.SuggestedActions.Actions[2].Text, "third suggestion");
-        }
-
-        private static string GetProjectFolder()
-        {
-            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
         }
 
         private ITurnContext GetTurnContext(ILanguageGenerator lg)
