@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
@@ -44,7 +45,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             }
 
             // deserialize the incoming Activity
-            var activity = await HttpHelper.ReadRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            var activity = await HttpHelper.ReadRequestAsync<Activity>(httpRequest, cancellationToken).ConfigureAwait(false);
 
             if (string.IsNullOrEmpty(activity?.Type))
             {

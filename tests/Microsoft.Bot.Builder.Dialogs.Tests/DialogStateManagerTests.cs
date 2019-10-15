@@ -1,4 +1,6 @@
-﻿#pragma warning disable SA1402 // File may only contain a single type
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+#pragma warning disable SA1402 // File may only contain a single type
 #pragma warning disable SA1201 // Elements should appear in the correct order
 using System;
 using System.Collections.Generic;
@@ -549,4 +551,3 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public Bar SubName { get; set; }
     }
 }
-

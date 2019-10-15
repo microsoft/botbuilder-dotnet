@@ -475,7 +475,7 @@ namespace Microsoft.Bot.Builder
             _logger.LogInformation($"Received request to forward activity to skill id {skillId}.");
 
             // Get the skill information for the skillId
-            var skill = Skills.FirstOrDefault(s => s.Name == skillId);
+            var skill = Skills.FirstOrDefault(s => s.Id == skillId);
             if (skill == null)
             {
                 throw new ArgumentException($"Skill:{skillId} isn't a registered skill");
@@ -518,7 +518,7 @@ namespace Microsoft.Bot.Builder
                     activity.ServiceUrl,
                 })));
                 activity.ServiceUrl = SkillsCallbackUri.ToString();
-                activity.Recipient.Properties["skillId"] = skill.Name;
+                activity.Recipient.Properties["skillId"] = skill.Id;
                 var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json");
 
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -684,39 +684,6 @@ namespace Microsoft.Bot.Builder
         /// channel server returns results in pages and each page will include a `continuationToken`
         /// that can be used to fetch the next page of results from the server.
         /// </summary>
-        /// <param name="serviceUrl">The URL of the channel server to query.  This can be retrieved
-        /// from `context.activity.serviceUrl`. </param>
-        /// <param name="credentials">The credentials needed for the Bot to connect to the services.</param>
-        /// <param name="continuationToken">The continuation token from the previous page of results.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If the task completes successfully, the result contains a page of the members of the current conversation.
-        /// This overload may be called from outside the context of a conversation, as only the
-        /// bot's service URL and credentials are required.
-        /// </remarks>
-        public virtual async Task<ConversationsResult> GetConversationsAsync(string serviceUrl, MicrosoftAppCredentials credentials, string continuationToken, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrWhiteSpace(serviceUrl))
-            {
-                throw new ArgumentNullException(nameof(serviceUrl));
-            }
-
-            if (credentials == null)
-            {
-                throw new ArgumentNullException(nameof(credentials));
-            }
-
-            var connectorClient = CreateConnectorClient(serviceUrl, credentials);
-            var results = await connectorClient.Conversations.GetConversationsAsync(continuationToken, cancellationToken).ConfigureAwait(false);
-            return results;
-        }
-
-        /// <summary>
-        /// Lists the Conversations in which this bot has participated for a given channel server. The
-        /// channel server returns results in pages and each page will include a `continuationToken`
-        /// that can be used to fetch the next page of results from the server.
-        /// </summary>
         /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="continuationToken">The continuation token from the previous page of results.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
@@ -727,11 +694,26 @@ namespace Microsoft.Bot.Builder
         /// service URL and credentials that are part of the current activity processing pipeline
         /// will be used.
         /// </remarks>
-        public virtual async Task<ConversationsResult> GetConversationsAsync(ITurnContext turnContext, string continuationToken, CancellationToken cancellationToken)
+        public override async Task<ConversationsResult> GetConversationsAsync(ITurnContext turnContext, string continuationToken, CancellationToken cancellationToken)
         {
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
             var results = await connectorClient.Conversations.GetConversationsAsync(continuationToken, cancellationToken).ConfigureAwait(false);
             return results;
+        }
+
+        /// <summary>
+        /// Attempts to retrieve the token for a user that's in a login flow.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="attachmentUpload">attachmentUpload data</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Resource Response.</returns>
+        public override async Task<ResourceResponse> UploadAttachmentAsync(ITurnContext turnContext, AttachmentData attachmentUpload, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+            var conversationId = turnContext.Activity.Conversation.Id;
+            var result = await connectorClient.Conversations.UploadAttachmentAsync(conversationId, attachmentUpload, cancellationToken).ConfigureAwait(false);
+            return result;
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Integration
         /// <value>
         /// Name of the skill.
         /// </value>
-        public string Name { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets appId of the skill.

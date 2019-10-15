@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
 
             // deserialize the incoming Activity
-            var activity = await HttpHelper.ReadRequestAsync(httpRequest).ConfigureAwait(false);
+            var activity = await HttpHelper.ReadRequestAsync<Activity>(httpRequest, cancellationToken).ConfigureAwait(false);
 
             if (string.IsNullOrEmpty(activity?.Type))
             {

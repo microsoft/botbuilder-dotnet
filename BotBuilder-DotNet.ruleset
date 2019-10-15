@@ -71,7 +71,7 @@
     <Rule Id="SA1308" Action="Error" />
     <Rule Id="SA1309" Action="None" />
     <Rule Id="SA1310" Action="Error" />
-    <Rule Id="SA1311" Action="Error" />
+    <Rule Id="SA1311" Action="None" /> <!-- Static readonly fields should begin with upper-case letter-->
     <Rule Id="SA1312" Action="Error" />
     <Rule Id="SA1313" Action="Error" />
     <Rule Id="SA1314" Action="Error" />
@@ -87,7 +87,7 @@
     <Rule Id="SA1410" Action="Error" />
     <Rule Id="SA1411" Action="Error" />
     <Rule Id="SA1412" Action="Error" />
-    <Rule Id="SA1413" Action="Error" />
+    <Rule Id="SA1413" Action="None" /> <!-- USe trailing comma in multi-line initiliazers-->
     <Rule Id="SA1500" Action="Error" />
     <Rule Id="SA1501" Action="Error" />
     <Rule Id="SA1502" Action="Error" />
@@ -106,7 +106,7 @@
     <Rule Id="SA1515" Action="Error" />
     <Rule Id="SA1516" Action="Error" />
     <Rule Id="SA1517" Action="Error" />
-    <Rule Id="SA1518" Action="Error" />
+    <Rule Id="SA1518" Action="None" /> <!-- Don't have trailing whitespace at end of file-->
     <Rule Id="SA1519" Action="Error" />
     <Rule Id="SA1520" Action="Error" />
     <Rule Id="SA1600" Action="None" />

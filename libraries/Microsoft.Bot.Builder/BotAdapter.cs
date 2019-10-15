@@ -169,6 +169,25 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Lists the Conversations in which this bot has participated for a given channel server. The
+        /// channel server returns results in pages and each page will include a `continuationToken`
+        /// that can be used to fetch the next page of results from the server.
+        /// </summary>
+        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="continuationToken">The continuation token from the previous page of results.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task completes successfully, the result contains a page of the members of the current conversation.
+        /// This overload may be called from outside the context of a conversation, as only the
+        /// bot's service URL and credentials are required.
+        /// </remarks>
+        public virtual Task<ConversationsResult> GetConversationsAsync(ITurnContext turnContext, string continuationToken, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Removes a member from the current conversation.
         /// </summary>
         /// <param name="turnContext">The context object for the turn.</param>
@@ -194,13 +213,13 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// UploadAttachment.
+        /// Attempts to retrieve the token for a user that's in a login flow.
         /// </summary>
-        /// <param name="turnContext">turnContext.</param>
-        /// <param name="attachmentUpload">Attachment data.</param>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="attachmentUpload">attachmentUpload data</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>resourceResponse for the attachment.</returns>
-        public virtual Task<ResourceResponse> UploadAttachment(ITurnContext turnContext, AttachmentData attachmentUpload, CancellationToken cancellationToken)
+        /// <returns>Resource Response.</returns>
+        public virtual Task<ResourceResponse> UploadAttachmentAsync(ITurnContext turnContext, AttachmentData attachmentUpload, CancellationToken cancellationToken = default(CancellationToken))
         {
             throw new NotImplementedException();
         }

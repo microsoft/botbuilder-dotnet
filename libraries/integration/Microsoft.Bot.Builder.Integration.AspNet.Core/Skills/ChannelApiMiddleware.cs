@@ -36,35 +36,35 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             {
                 // Send activity(activity)
                 case ChannelApiMethods.SendToConversation:
-                {
-                    var activityPayload = (Activity)invokeArgs.Args[0];
-                    if (activityPayload.Type == ActivityTypes.EndOfConversation)
                     {
-                        await ProcessEndOfConversationAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
-                        invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N"));
+                        var activityPayload = (Activity)invokeArgs.Args[0];
+                        if (activityPayload.Type == ActivityTypes.EndOfConversation)
+                        {
+                            await ProcessEndOfConversationAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
+                            invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N"));
+                            return;
+                        }
+
+                        invokeArgs.Result = await turnContext.SendActivityAsync(activityPayload, cancellationToken).ConfigureAwait(false);
                         return;
                     }
-
-                    invokeArgs.Result = await turnContext.SendActivityAsync(activityPayload, cancellationToken).ConfigureAwait(false);
-                    return;
-                }
 
                 // Send activity(replyToId, activity)
                 case ChannelApiMethods.ReplyToActivity:
-                {
-                    var activityPayload = (Activity)invokeArgs.Args[1];
-                    activityPayload.ReplyToId = (string)invokeArgs.Args[0];
-
-                    if (activityPayload.Type == ActivityTypes.EndOfConversation)
                     {
-                        await ProcessEndOfConversationAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
-                        invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N"));
+                        var activityPayload = (Activity)invokeArgs.Args[1];
+                        activityPayload.ReplyToId = (string)invokeArgs.Args[0];
+
+                        if (activityPayload.Type == ActivityTypes.EndOfConversation)
+                        {
+                            await ProcessEndOfConversationAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
+                            invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N"));
+                            return;
+                        }
+
+                        invokeArgs.Result = await turnContext.SendActivityAsync(activityPayload, cancellationToken).ConfigureAwait(false);
                         return;
                     }
-
-                    invokeArgs.Result = await turnContext.SendActivityAsync(activityPayload, cancellationToken).ConfigureAwait(false);
-                    return;
-                }
 
                 // UpdateActivity(activity)
                 case ChannelApiMethods.UpdateActivity:
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 
                 // UploadAttachment(attachmentData)
                 case ChannelApiMethods.UploadAttachment:
-                    invokeArgs.Result = await turnContext.Adapter.UploadAttachment(turnContext, (AttachmentData)invokeArgs.Args[0], cancellationToken).ConfigureAwait(false);
+                    invokeArgs.Result = await turnContext.Adapter.UploadAttachmentAsync(turnContext, (AttachmentData)invokeArgs.Args[0], cancellationToken).ConfigureAwait(false);
                     break;
             }
         }

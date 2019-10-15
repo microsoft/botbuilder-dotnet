@@ -22,9 +22,9 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 #pragma warning disable SA1401
 #pragma warning disable IDE0034
 #pragma warning disable CS1574 // XML comment has cref attribute that could not be resolved
-                              /// <summary>
-                              /// Used to process incoming requests sent over an <see cref="IStreamingTransport"/> and adhering to the Bot Framework Protocol v3 with Streaming Extensions.
-                              /// </summary>
+    /// <summary>
+    /// Used to process incoming requests sent over an <see cref="IStreamingTransport"/> and adhering to the Bot Framework Protocol v3 with Streaming Extensions.
+    /// </summary>
     public class StreamingRequestHandler : RequestHandler
 #pragma warning restore CS1574 // XML comment has cref attribute that could not be resolved
     {

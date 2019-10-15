@@ -650,7 +650,6 @@ namespace Microsoft.Bot.Expressions.Tests
 
             #region Empty expression
             Test(string.Empty, string.Empty),
-            Test("", ""),
             #endregion
         };
 

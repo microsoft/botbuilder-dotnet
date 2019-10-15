@@ -20,6 +20,7 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("a+b*"),
             Test("fun(a, b, c"),
             Test("func(A,b,b,)"),
+            
             // Test("a.#title"),
             Test("\"hello'"),
             Test("'hello'.length()"), // not supported currently
@@ -108,6 +109,7 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("lessOrEquals(one)"), // function need two parameters
             Test("equals(one)"), // equals must accept two parameters
             Test("exists(1, 2)"), // function need one parameter
+            
             // Test("if(!exists(one), one, hello)"), // the second and third parameters of if must the same type
             Test("not(false, one)"), // function need one parameter
             #endregion

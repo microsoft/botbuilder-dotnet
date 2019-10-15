@@ -173,31 +173,31 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                     // [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
                     case ChannelApiMethods.ReplyToActivity:
-                        var replyToActivity = HttpHelper.ReadRequest<Activity>(httpRequest);
+                        var replyToActivity = await HttpHelper.ReadRequestAsync<Activity>(httpRequest, cancellationToken).ConfigureAwait(false);
                         result = await InvokeChannelApiAsync<ResourceResponse>(route.Method, replyToActivity.Conversation.Id, bot, route.Parameters["activityId"].Value, replyToActivity).ConfigureAwait(false);
                         break;
 
                     // [Route("/v3/conversations/{conversationId}/activities/history")]
                     case ChannelApiMethods.SendConversationHistory:
-                        var history = HttpHelper.ReadRequest<Transcript>(httpRequest);
+                        var history = await HttpHelper.ReadRequestAsync<Transcript>(httpRequest, cancellationToken).ConfigureAwait(false);
                         result = await InvokeChannelApiAsync<ResourceResponse>(route.Method, route.Parameters["conversationId"].Value, bot, history).ConfigureAwait(false);
                         break;
 
                     // [Route("/v3/conversations/{conversationId}/activities")]
                     case ChannelApiMethods.SendToConversation:
-                        var sendToConversationActivity = HttpHelper.ReadRequest<Activity>(httpRequest);
+                        var sendToConversationActivity = await HttpHelper.ReadRequestAsync<Activity>(httpRequest, cancellationToken).ConfigureAwait(false);
                         result = await InvokeChannelApiAsync<ResourceResponse>(route.Method, sendToConversationActivity.Conversation.Id, bot, sendToConversationActivity).ConfigureAwait(false);
                         break;
 
                     // [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
                     case ChannelApiMethods.UpdateActivity:
-                        var updateActivity = HttpHelper.ReadRequest<Activity>(httpRequest);
+                        var updateActivity = await HttpHelper.ReadRequestAsync<Activity>(httpRequest, cancellationToken).ConfigureAwait(false);
                         result = await InvokeChannelApiAsync<ResourceResponse>(route.Method, updateActivity.Conversation.Id, bot, updateActivity).ConfigureAwait(false);
                         break;
 
                     // [Route("/v3/conversations/{conversationId}/attachments")]
                     case ChannelApiMethods.UploadAttachment:
-                        var uploadAttachment = HttpHelper.ReadRequest<AttachmentData>(httpRequest);
+                        var uploadAttachment = await HttpHelper.ReadRequestAsync<AttachmentData>(httpRequest, cancellationToken).ConfigureAwait(false);
                         result = await InvokeChannelApiAsync<ResourceResponse>(route.Method, route.Parameters["conversationId"].Value, bot, uploadAttachment).ConfigureAwait(false);
                         break;
 

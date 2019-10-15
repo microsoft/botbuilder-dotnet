@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             },
         };
 
-        public static async Task<Activity> ReadRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        public static async Task<T> ReadRequestAsync<T>(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             if (request == null)
             {
@@ -36,16 +36,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
             try
             {
-                var activity = await request.Content.ReadAsAsync<Activity>(BotMessageMediaTypeFormatters, cancellationToken).ConfigureAwait(false);
-                return activity;
+                return await request.Content.ReadAsAsync<T>(BotMessageMediaTypeFormatters, cancellationToken).ConfigureAwait(false);
             }
             catch (UnsupportedMediaTypeException)
             {
-                return null;
+                return default(T);
             }
             catch (JsonException)
             {
-                return null;
+                return default(T);
             }
         }
 

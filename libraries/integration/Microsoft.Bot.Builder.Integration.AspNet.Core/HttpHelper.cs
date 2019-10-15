@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Rest.Serialization;
@@ -26,8 +27,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() },
         });
 
-        public static async Task<Activity> ReadRequestAsync(HttpRequest request)
-        public static T ReadRequest<T>(HttpRequest request)
+        public static async Task<T> ReadRequestAsync<T>(HttpRequest request, CancellationToken cancellationToken)
         {
             try
             {
@@ -36,20 +36,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     throw new ArgumentNullException(nameof(request));
                 }
 
-                var activity = default(Activity);
-
-                using (var memoryStream = new MemoryStream())
                 using (var bodyReader = new JsonTextReader(new StreamReader(request.Body, Encoding.UTF8)))
                 {
-                    await request.Body.CopyToAsync(memoryStream).ConfigureAwait(false);
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    using (var bodyReader = new JsonTextReader(new StreamReader(memoryStream, Encoding.UTF8)))
-                    {
-                        activity = BotMessageSerializer.Deserialize<Activity>(bodyReader);
-                    }
-                }
-
-                return activity;
                     return BotMessageSerializer.Deserialize<T>(bodyReader);
                 }
             }
