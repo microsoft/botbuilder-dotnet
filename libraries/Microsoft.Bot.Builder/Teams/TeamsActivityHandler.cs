@@ -107,35 +107,24 @@ namespace Microsoft.Bot.Builder.Teams
                             return CreateInvokeResponse(await OnTeamsTaskModuleSubmitAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
                         default:
-                            throw new NotImplementedException();
+                            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
                     }
                 }
             }
-            catch (NotImplementedException)
+            catch (InvokeResponseException e)
             {
-                return new InvokeResponse { Status = (int)HttpStatusCode.NotImplemented };
-            }
-            catch (InvalidOperationException ex)
-            {
-                if (ex.Source == nameof(TeamsActivityHandler))
-                {
-                    return new InvokeResponse { Status = (int)HttpStatusCode.BadRequest };
-                }
-                else
-                {
-                    throw;
-                }
+                return e.CreateInvokeResponse();
             }
         }
 
         protected virtual Task<InvokeResponse> OnTeamsCardActionInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         protected virtual Task OnTeamsSigninVerifyStateAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         protected virtual async Task<InvokeResponse> OnTeamsFileConsentAsync(ITurnContext<IInvokeActivity> turnContext, FileConsentCardResponse fileConsentCardResponse, CancellationToken cancellationToken)
@@ -151,46 +140,43 @@ namespace Microsoft.Bot.Builder.Teams
                     return CreateInvokeResponse();
 
                 default:
-                    throw new InvalidOperationException($"Allowed values are 'accept' and 'decline'. Received {fileConsentCardResponse.Action}")
-                    {
-                        Source = nameof(TeamsActivityHandler),  
-                    };
+                    throw new InvokeResponseException(HttpStatusCode.BadRequest);
             }
         }
 
         protected virtual Task OnTeamsFileConsentAcceptAsync(ITurnContext<IInvokeActivity> turnContext, FileConsentCardResponse fileConsentCardResponse, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         protected virtual Task OnTeamsFileConsentDeclineAsync(ITurnContext<IInvokeActivity> turnContext, FileConsentCardResponse fileConsentCardResponse, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionQueryAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         protected virtual Task OnTeamsO365ConnectorCardActionAsync(ITurnContext<IInvokeActivity> turnContext, O365ConnectorCardActionQuery query, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         protected virtual Task<MessagingExtensionResponse> OnTeamsAppBasedLinkQueryAsync(ITurnContext<IInvokeActivity> turnContext, AppBasedLinkQuery query, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionSelectItemAsync(ITurnContext<IInvokeActivity> turnContext, JObject query, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         protected virtual async Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionSubmitActionDispatchAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
@@ -206,10 +192,7 @@ namespace Microsoft.Bot.Builder.Teams
                         return await OnTeamsMessagingExtensionBotMessagePreviewSendAsync(turnContext, action, cancellationToken).ConfigureAwait(false);
 
                     default:
-                        throw new InvalidOperationException($"Allowed values are 'edit' and 'send'. Received {action.BotMessagePreviewAction}")
-                        {
-                            Source = nameof(TeamsActivityHandler),
-                        };
+                        throw new InvokeResponseException(HttpStatusCode.BadRequest);
                 }
             }
             else
@@ -220,42 +203,42 @@ namespace Microsoft.Bot.Builder.Teams
 
         protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionSubmitActionAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewEditAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewSendAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingUrlAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         protected virtual Task OnTeamsMessagingExtensionConfigurationSettingAsync(ITurnContext<IInvokeActivity> turnContext, JObject settings, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         protected virtual Task OnTeamsMessagingExtensionCardButtonClickedAsync(ITurnContext<IInvokeActivity> turnContext, JObject cardData, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         protected virtual Task<TaskModuleResponse> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         protected virtual Task<TaskModuleResponse> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         protected override Task OnConversationUpdateActivityAsync(ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
@@ -336,6 +319,21 @@ namespace Microsoft.Bot.Builder.Teams
             }
 
             return obj.ToObject<T>();
+        }
+
+        private class InvokeResponseException : Exception
+        {
+            HttpStatusCode StatusCode { get; set; }
+
+            public InvokeResponseException(HttpStatusCode statusCode)
+            {
+                StatusCode = statusCode;
+            }
+            
+            public InvokeResponse CreateInvokeResponse()
+            {
+                return new InvokeResponse { Status = (int)StatusCode };
+            }
         }
     }
 }
