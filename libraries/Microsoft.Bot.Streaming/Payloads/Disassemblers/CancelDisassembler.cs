@@ -7,7 +7,7 @@ using Microsoft.Bot.Streaming.PayloadTransport;
 
 namespace Microsoft.Bot.Streaming.Payloads
 {
-    internal class CancelDisassembler
+    public class CancelDisassembler
     {
         public CancelDisassembler(IPayloadSender sender, Guid id, char type)
         {

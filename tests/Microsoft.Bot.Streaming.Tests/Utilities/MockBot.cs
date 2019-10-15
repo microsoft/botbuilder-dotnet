@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -6,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
@@ -14,10 +18,10 @@ namespace Microsoft.Bot.Streaming.Tests.Utilities
 {
     public class MockBot : IBot
     {
-        private readonly DirectLineAdapter _adapter;
+        private readonly BotFrameworkHttpAdapter _adapter;
         private readonly Func<Schema.Activity, Task<InvokeResponse>> _processActivityAsync;
 
-        public MockBot(Func<Schema.Activity, Task<InvokeResponse>> processActivityAsync, string pipeName = null, DirectLineAdapter adapter = null)
+        public MockBot(Func<Schema.Activity, Task<InvokeResponse>> processActivityAsync, string pipeName = null, BotFrameworkHttpAdapter adapter = null)
         {
             if (pipeName == null)
             {
@@ -25,8 +29,8 @@ namespace Microsoft.Bot.Streaming.Tests.Utilities
             }
 
             _processActivityAsync = processActivityAsync;
-            _adapter = adapter ?? new DirectLineAdapter(null, this, null);
-            _adapter.AddNamedPipeConnection(pipeName, this);
+            _adapter = adapter ?? new BotFrameworkHttpAdapter();
+            _adapter.UseNamedPipeAsync(pipeName, this);
         }
 
         public List<Schema.Activity> ReceivedActivities { get; private set; } = new List<Schema.Activity>();
@@ -47,7 +51,7 @@ namespace Microsoft.Bot.Streaming.Tests.Utilities
                 request.AddStream(streamContent);
             });
 
-            var serverResponse = await _adapter.ProcessActivityForStreamingChannelAsync(activity, CancellationToken.None).ConfigureAwait(false);
+            var serverResponse = await _adapter.ProcessStreamingActivityAsync(activity, OnTurnAsync, CancellationToken.None).ConfigureAwait(false);
 
             if (serverResponse.Status == (int)HttpStatusCode.OK)
             {
@@ -59,11 +63,8 @@ namespace Microsoft.Bot.Streaming.Tests.Utilities
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
-            turnContext.SendActivityAsync(MessageFactory.Text($"Echo: {turnContext.Activity.Text}"), cancellationToken);
-
+            await turnContext.SendActivityAsync(MessageFactory.Text($"Echo: {turnContext.Activity.Text}"), cancellationToken);
             return;
-
-            // await SendActivityAsync(turnContext.Activity);
         }
 
         public Task<InvokeResponse> ProcessActivityAsync(Schema.Activity activity)

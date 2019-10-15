@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipes;
@@ -57,16 +60,17 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             var client = new NamedPipeClient(pipeName);
             var conversation = new Conversation(conversationId: Guid.NewGuid().ToString());
             var processActivity = TestHelper.ProcessActivityWithAttachments(mockBot, conversation);
-            DirectLineAdapter adapter;
+            BotFrameworkHttpAdapter adapter;
             mockBot = new MockBot(processActivity, pipeName);
-            adapter = new DirectLineAdapter(null, mockBot, null);
+            adapter = new BotFrameworkHttpAdapter();
 
             // Act
             await client.ConnectAsync();
             try
             {
+                // Not awaiting on purpose
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                adapter.AddNamedPipeConnection(pipeName, mockBot);
+                adapter.UseNamedPipeAsync(pipeName, mockBot);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
             catch (Exception ex)
@@ -92,19 +96,20 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             var client = new NamedPipeClient(pipeNameA);
             var conversation = new Conversation(conversationId: Guid.NewGuid().ToString());
             var processActivity = TestHelper.ProcessActivityWithAttachments(mockBot, conversation);
-            DirectLineAdapter adapter;
+            BotFrameworkHttpAdapter adapter;
             mockBot = new MockBot(processActivity, pipeNameA);
-            adapter = new DirectLineAdapter(null, mockBot, null);
+            adapter = new BotFrameworkHttpAdapter();
 
             // Act
             await client.ConnectAsync();
             try
             {
+                // Not awaiting on purpose
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                adapter.AddNamedPipeConnection(pipeNameA, mockBot);
+                adapter.UseNamedPipeAsync(pipeNameA, mockBot);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                adapter.AddNamedPipeConnection(pipeNameB, mockBot);
+                adapter.UseNamedPipeAsync(pipeNameB, mockBot);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
             catch (Exception ex)
@@ -130,19 +135,19 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             var client = new NamedPipeClient(pipeNameA);
             var conversation = new Conversation(conversationId: Guid.NewGuid().ToString());
             var processActivity = TestHelper.ProcessActivityWithAttachments(mockBot, conversation);
-            DirectLineAdapter adapter;
+            BotFrameworkHttpAdapter adapter;
             mockBot = new MockBot(processActivity, pipeNameA);
-            adapter = new DirectLineAdapter(null, mockBot, null);
+            adapter = new BotFrameworkHttpAdapter();
 
             // Act
             await client.ConnectAsync();
             try
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                adapter.AddNamedPipeConnection(pipeNameA, mockBot);
+                adapter.UseNamedPipeAsync(pipeNameA, mockBot);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                adapter.AddNamedPipeConnection(pipeNameB, mockBot);
+                adapter.UseNamedPipeAsync(pipeNameB, mockBot);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
@@ -162,7 +167,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         }
 
         [Fact]
-        public async void EndToEnd_PostActivityWithAttachmentToBot()
+        public async Task EndToEnd_PostActivityWithAttachmentToBot()
         {
             // Arrange
             ReceiveResponse result = null;
@@ -173,19 +178,20 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             var client = new NamedPipeClient(pipeNameA);
             var conversation = new Conversation(conversationId: Guid.NewGuid().ToString());
             var processActivity = TestHelper.ProcessActivityWithAttachments(mockBot, conversation);
-            DirectLineAdapter adapter;
+            BotFrameworkHttpAdapter adapter;
             mockBot = new MockBot(processActivity, pipeNameA);
-            adapter = new DirectLineAdapter(null, mockBot, null);
+            adapter = new BotFrameworkHttpAdapter();
 
             // Act
             await client.ConnectAsync();
             try
             {
+                // Not awaiting on purpose
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                adapter.AddNamedPipeConnection(pipeNameA, mockBot);
+                adapter.UseNamedPipeAsync(pipeNameA, mockBot);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                adapter.AddNamedPipeConnection(pipeNameB, mockBot);
+                adapter.UseNamedPipeAsync(pipeNameB, mockBot);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed

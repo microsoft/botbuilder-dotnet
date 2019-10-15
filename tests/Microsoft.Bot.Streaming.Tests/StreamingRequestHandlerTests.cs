@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.WebSockets;
@@ -6,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming;
 using Microsoft.Bot.Streaming.Payloads;
@@ -20,7 +24,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public void CanBeConstructedWithANamedPipe()
         {
             // Act
-            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
 
             // Assert
             Assert.NotNull(handler);
@@ -35,7 +39,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Act
             try
             {
-                var handler = new StreamingRequestHandler(logger: null, adapter: new DirectLineAdapter(), socket: null);
+                var handler = new StreamingRequestHandler(null, activityProcessor: new BotFrameworkHttpAdapter(), socket: null);
             }
             catch (Exception ex)
             {
@@ -55,7 +59,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Act
             try
             {
-                var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), string.Empty);
+                var handler = new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), string.Empty);
             }
             catch (Exception ex)
             {
@@ -70,7 +74,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public void CanBeConstructedWithAWebSocket()
         {
             // Act
-            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), new FauxSock());
+            var handler = new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), new FauxSock());
 
             // Assert
             Assert.NotNull(handler);
@@ -80,7 +84,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void RequestHandlerRespondsWith500OnError()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
             var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
@@ -117,7 +121,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void RequestHandlerRemembersConversations()
         {
             // Arrange
-            var adapter = new DirectLineAdapter();
+            var adapter = new BotFrameworkHttpAdapter();
             var handler = new StreamingRequestHandler(null, adapter, Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
             var membersAdded = new List<ChannelAccount>();
@@ -155,7 +159,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void RequestHandlerForgetsConversations()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
             var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
@@ -193,7 +197,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void RequestHandlerAssignsAServiceUrl()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
             var serviceUrl = "urn:FakeName:fakeProtocol://fakePath";
             var membersAdded = new List<ChannelAccount>();
@@ -234,7 +238,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Arrange
 
             // Act
-            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
             var activity = new Schema.Activity()
             {
                 Type = "message",

@@ -55,15 +55,15 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             var client = new NamedPipeClient(pipeName);
             var conversation = new Conversation(conversationId: "conversation1");
             var processActivity = ProcessActivityWithAttachments(mockBot, conversation);
-            DirectLineAdapter adapter;
+            BotFrameworkHttpAdapter adapter;
             mockBot = new MockBot(processActivity, pipeName);
-            adapter = new DirectLineAdapter(null, mockBot, null);
+            adapter = new BotFrameworkHttpAdapter();
 
             // Act
             await client.ConnectAsync();
             try
             {
-                adapter.AddNamedPipeConnection(pipeName, mockBot);
+                adapter.UseNamedPipeAsync(pipeName, mockBot);
             }
             catch (Exception ex)
             {
@@ -86,16 +86,16 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             var client = new NamedPipeClient(pipeNameA);
             var conversation = new Conversation(conversationId: "conversation1");
             var processActivity = ProcessActivityWithAttachments(mockBot, conversation);
-            DirectLineAdapter adapter;
+            BotFrameworkHttpAdapter adapter;
             mockBot = new MockBot(processActivity, pipeNameA);
-            adapter = new DirectLineAdapter(null, mockBot, null);
+            adapter = new BotFrameworkHttpAdapter();
 
             // Act
             await client.ConnectAsync();
             try
             {
-                adapter.AddNamedPipeConnection(pipeNameA, mockBot);
-                adapter.AddNamedPipeConnection(pipeNameB, mockBot);
+                adapter.UseNamedPipeAsync(pipeNameA, mockBot);
+                adapter.UseNamedPipeAsync(pipeNameB, mockBot);
             }
             catch (Exception ex)
             {
@@ -118,16 +118,16 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             var client = new NamedPipeClient(pipeNameA);
             var conversation = new Conversation(conversationId: "conversation1");
             var processActivity = ProcessActivityWithAttachments(mockBot, conversation);
-            DirectLineAdapter adapter;
+            BotFrameworkHttpAdapter adapter;
             mockBot = new MockBot(processActivity, pipeNameA);
-            adapter = new DirectLineAdapter(null, mockBot, null);
+            adapter = new BotFrameworkHttpAdapter();
 
             // Act
             await client.ConnectAsync();
             try
             {
-                adapter.AddNamedPipeConnection(pipeNameA, mockBot);
-                adapter.AddNamedPipeConnection(pipeNameB, mockBot);
+                adapter.UseNamedPipeAsync(pipeNameA, mockBot);
+                adapter.UseNamedPipeAsync(pipeNameB, mockBot);
 
                 client.ConnectAsync();
                 result = await client.SendAsync(GetStreamingRequestWithoutAttachments("123"));
@@ -275,14 +275,14 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
 
         private class MockBot : IBot
         {
-            private readonly DirectLineAdapter _adapter;
+            private readonly BotFrameworkHttpAdapter _adapter;
             private readonly Func<Schema.Activity, Task<InvokeResponse>> _processActivityAsync;
 
-            public MockBot(Func<Schema.Activity, Task<InvokeResponse>> processActivityAsync, string pipeName = "testPipes", DirectLineAdapter adapter = null)
+            public MockBot(Func<Schema.Activity, Task<InvokeResponse>> processActivityAsync, string pipeName = "testPipes", BotFrameworkHttpAdapter adapter = null)
             {
                 _processActivityAsync = processActivityAsync;
-                _adapter = adapter ?? new DirectLineAdapter(null, this, null);
-                _adapter.AddNamedPipeConnection(pipeName, this);
+                _adapter = adapter ?? new BotFrameworkHttpAdapter();
+                _adapter.UseNamedPipeAsync(pipeName, this);
             }
 
             public List<Schema.Activity> ReceivedActivities { get; private set; } = new List<Schema.Activity>();
@@ -303,7 +303,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
                     request.AddStream(streamContent);
                 });
 
-                var serverResponse = await _adapter.ProcessActivityForStreamingChannelAsync(activity, CancellationToken.None).ConfigureAwait(false);
+                var serverResponse = await _adapter.ProcessStreamingActivityAsync(activity, OnTurnAsync, CancellationToken.None).ConfigureAwait(false);
 
                 if (serverResponse.Status == (int)HttpStatusCode.OK)
                 {
@@ -316,18 +316,8 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
             {
                 turnContext.SendActivityAsync(MessageFactory.Text($"Echo: {turnContext.Activity.Text}"), cancellationToken);
-
                 return;
-
-                // await SendActivityAsync(turnContext.Activity);
             }
-
-            private Task<InvokeResponse> ProcessActivityAsync(Schema.Activity activity)
-        {
-            ReceivedActivities.Add(activity);
-
-            return _processActivityAsync(activity);
-        }
         }
 
         private class AttachmentStream
