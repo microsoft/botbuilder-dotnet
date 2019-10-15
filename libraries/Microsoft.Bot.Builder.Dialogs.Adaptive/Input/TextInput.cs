@@ -40,7 +40,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public TextInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
-            this.AllowInterruptions = AllowInterruptions.Always;
         }
 
         public TextOutputFormat OutputFormat { get; set; } = TextOutputFormat.None;

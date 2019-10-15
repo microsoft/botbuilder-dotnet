@@ -20,30 +20,12 @@
     <Summary>This library implements Language Generation template library system for the Bot Builder SDK</Summary>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <Company>Microsoft</Company>
-    <Authors>microsoft,BotFramework,nugetbotbuilder</Authors>
-    <Product>Microsoft Bot Builder SDK</Product>
-    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
-    <PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
-    <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
-    <PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <RepositoryUrl>https://github.com/Microsoft/botbuilder-dotnet</RepositoryUrl>
-    <LicenseUrl>https://github.com/Microsoft/BotBuilder-dotnet/blob/master/LICENSE</LicenseUrl>
-    <RepositoryType />
-    <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
-    <NeutralLanguage />
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.AI.LanguageGeneration.xml</DocumentationFile>
-    <CodeAnalysisRuleSet>Microsoft.Bot.Builder.LanguageGeneration.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.AI.LanguageGeneration.xml</DocumentationFile>
-    <CodeAnalysisRuleSet>Microsoft.Bot.Builder.LanguageGeneration.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
@@ -66,15 +48,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Bot.Builder.Expressions" Condition=" '$(PreviewPackageVersion)' == '' " Version="4.6.0-local" />
-    <PackageReference Include="Microsoft.Bot.Builder.Expressions" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.Expressions.Parser" Condition=" '$(PreviewPackageVersion)' == '' " Version="4.6.0-local" />
-    <PackageReference Include="Microsoft.Bot.Builder.Expressions.Parser" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(PreviewPackageVersion)' == '' " Version="4.6.0-local" />
+    <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Expressions.Parser\Microsoft.Bot.Builder.Expressions.Parser.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Expressions\Microsoft.Bot.Builder.Expressions.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Expressions\Microsoft.Bot.Expressions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -85,5 +64,4 @@
       <Generator>MSBuild:Compile</Generator>
     </None>
   </ItemGroup>
-
 </Project>

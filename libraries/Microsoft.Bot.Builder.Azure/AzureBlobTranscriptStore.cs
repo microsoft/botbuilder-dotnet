@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Azure
             {
                 case ActivityTypes.MessageUpdate:
                     {
-                        var blob = await FindActivityBlob(activity).ConfigureAwait(false);
+                        var blob = await FindActivityBlobAsync(activity).ConfigureAwait(false);
                         if (blob != null)
                         {
                             var originalActivity = JsonConvert.DeserializeObject<Activity>(await blob.DownloadTextAsync().ConfigureAwait(false));
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Azure
                             updatedActivity.Type = ActivityTypes.Message; // fixup original type (should be Message)
                             updatedActivity.LocalTimestamp = originalActivity.LocalTimestamp;
                             updatedActivity.Timestamp = originalActivity.Timestamp;
-                            await LogActivity(updatedActivity, blob).ConfigureAwait(false);
+                            await LogActivityAsync(updatedActivity, blob).ConfigureAwait(false);
                         }
 
                         return;
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Azure
 
                 case ActivityTypes.MessageDelete:
                     {
-                        var blob = await FindActivityBlob(activity).ConfigureAwait(false);
+                        var blob = await FindActivityBlobAsync(activity).ConfigureAwait(false);
                         if (blob != null)
                         {
                             var originalActivity = JsonConvert.DeserializeObject<Activity>(await blob.DownloadTextAsync().ConfigureAwait(false));
@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.Azure
                                 ReplyToId = originalActivity.ReplyToId,
                             };
 
-                            await LogActivity(tombstonedActivity, blob).ConfigureAwait(false);
+                            await LogActivityAsync(tombstonedActivity, blob).ConfigureAwait(false);
                         }
 
                         return;
@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Azure
                 default:
                     var blobName = GetBlobName(activity);
                     var blobReference = this.Container.Value.GetBlockBlobReference(blobName);
-                    await LogActivity(activity, blobReference).ConfigureAwait(false);
+                    await LogActivityAsync(activity, blobReference).ConfigureAwait(false);
                     return;
             }
         }
@@ -320,7 +320,7 @@ namespace Microsoft.Bot.Builder.Azure
             while (token != null);
         }
 
-        private static async Task LogActivity(IActivity activity, CloudBlockBlob blobReference)
+        private static async Task LogActivityAsync(IActivity activity, CloudBlockBlob blobReference)
         {
             blobReference.Properties.ContentType = "application/json";
             blobReference.Metadata["Id"] = activity.Id;
@@ -370,7 +370,7 @@ namespace Microsoft.Bot.Builder.Azure
             return Uri.EscapeDataString(key);
         }
 
-        private async Task<CloudBlockBlob> FindActivityBlob(IActivity activity)
+        private async Task<CloudBlockBlob> FindActivityBlobAsync(IActivity activity)
         {
             var dirName = GetDirName(activity.ChannelId, activity.Conversation.Id);
             var dir = this.Container.Value.GetDirectoryReference(dirName);

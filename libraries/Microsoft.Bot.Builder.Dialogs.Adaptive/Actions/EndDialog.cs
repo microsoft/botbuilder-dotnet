@@ -5,8 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Expressions;
-using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -19,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private Expression value;
 
         [JsonConstructor]
-        public EndDialog(string property = null, string value = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public EndDialog(string value = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);

@@ -197,7 +197,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return (Type)Activator.CreateInstance(type);
         }
 
-        private static T MapValueTo<T>(object val)
+        public static T MapValueTo<T>(object val)
         {
             if (val is JValue)
             {

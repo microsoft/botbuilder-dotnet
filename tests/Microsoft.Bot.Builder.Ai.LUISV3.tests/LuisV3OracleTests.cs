@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.Luis.TestUtils;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
@@ -360,7 +359,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             var userAgent = clientHandler.UserAgent;
 
             // And that we added the bot.builder package details.
-            Assert.IsTrue(userAgent.Contains("Microsoft.Bot.Builder.AI.LuisV3/4"));
+            Assert.IsTrue(userAgent.Contains("Microsoft.Bot.Builder.AI.Luis/4"));
         }
 
         [TestMethod]

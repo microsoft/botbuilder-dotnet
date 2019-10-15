@@ -6,8 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using Microsoft.Bot.Builder.Expressions;
-using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Expressions;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -19,8 +18,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Scope = scope;
         }
 
+        public Dictionary<string, object> EvaluatedChildren { get; set; } = new Dictionary<string, object>();
+
         public string TemplateName { get; set; }
 
         public object Scope { get; set; }
+
+        public string GetId()
+        {
+            return TemplateName + Scope?.ToString();
+        }
     }
 }

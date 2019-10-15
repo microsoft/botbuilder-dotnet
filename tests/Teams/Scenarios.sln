@@ -13,11 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Roster", "Roster\Roster.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinkUnfurling", "LinkUnfurling\LinkUnfurling.csproj", "{6CD3219E-A8C4-415B-B008-0E6B265E8E88}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotFrameworkCards", "CardsBotFramework\BotFrameworkCards.csproj", "{890A4C16-C4DC-4CF5-BE1F-80BEFE71C97B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotFrameworkCards", "BotFrameworkCards\BotFrameworkCards.csproj", "{890A4C16-C4DC-4CF5-BE1F-80BEFE71C97B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Office365Card", "CardsOffice365\Office365Card.csproj", "{857BE2A3-9547-4029-966F-71906F4EEAA7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Office365Card", "Office365Card\Office365Card.csproj", "{857BE2A3-9547-4029-966F-71906F4EEAA7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActivityUpdateAndDelete", "Activity Update & Delete\ActivityUpdateAndDelete.csproj", "{DF02065E-364B-4BF4-AD16-199D9CA8FF98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActivityUpdateAndDelete", "ActivityUpdateAndDelete\ActivityUpdateAndDelete.csproj", "{DF02065E-364B-4BF4-AD16-199D9CA8FF98}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReplyToChannel", "ReplyToChannel\ReplyToChannel.csproj", "{2CCA3B1B-79C2-44BA-A434-AB1E5652547A}"
 EndProject
@@ -43,15 +43,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchBasedMessagingExtensi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActionBasedMessagingExtension", "ActionBasedMessagingExtension\ActionBasedMessagingExtension.csproj", "{BC4553C0-E2CB-47A1-84A6-5D27A6EB7DEC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActionBasedMessagingExtensionFetchTask", "ActionBasedMessagingExtension-FetchTask\ActionBasedMessagingExtensionFetchTask.csproj", "{A26E1445-E2D7-44C2-9C33-CBFC3846537A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActionBasedMessagingExtensionFetchTask", "ActionBasedMessagingExtensionFetchTask\ActionBasedMessagingExtensionFetchTask.csproj", "{A26E1445-E2D7-44C2-9C33-CBFC3846537A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProactiveMessages", "ProactiveMessages\ProactiveMessages.csproj", "{FED44219-2A75-49A1-B925-954929D09BD8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationOnly", "NotificationOnly\NotificationOnly.csproj", "{ED2CF41C-3B02-4602-AD2E-654B83374DC5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComposeMessagingExtensions", "ComposeMessagingExtensions\ComposeMessagingExtensions.csproj", "{7824D509-81E9-4C08-9E9A-666915A2935D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagingExtensionAuth", "MessagingExtensionAuth\MessagingExtensionAuth.csproj", "{5289E8CF-0DE0-44D8-93C9-5F0989C03F2A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComposeMessagingExtensionAuth", "ComposeMessagingExtensionAuth\ComposeMessagingExtensionAuth.csproj", "{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagingExtensionConfig", "MessagingExtensionConfig\MessagingExtensionConfig.csproj", "{5229C085-69B6-4D69-8BAE-907CED173616}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -114,8 +114,8 @@ Global
 		{2CCA3B1B-79C2-44BA-A434-AB1E5652547A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CCA3B1B-79C2-44BA-A434-AB1E5652547A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CCA3B1B-79C2-44BA-A434-AB1E5652547A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ABA27014-ECEF-4BEE-BB7C-ADF41C027CB9}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
-		{ABA27014-ECEF-4BEE-BB7C-ADF41C027CB9}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
+		{ABA27014-ECEF-4BEE-BB7C-ADF41C027CB9}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABA27014-ECEF-4BEE-BB7C-ADF41C027CB9}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{ABA27014-ECEF-4BEE-BB7C-ADF41C027CB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ABA27014-ECEF-4BEE-BB7C-ADF41C027CB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABA27014-ECEF-4BEE-BB7C-ADF41C027CB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -126,26 +126,26 @@ Global
 		{71C198B6-DA9C-4159-8724-A3A6704D6585}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71C198B6-DA9C-4159-8724-A3A6704D6585}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71C198B6-DA9C-4159-8724-A3A6704D6585}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7A78CB97-EFD6-4FFC-BE79-32A127E47204}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
-		{7A78CB97-EFD6-4FFC-BE79-32A127E47204}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
+		{7A78CB97-EFD6-4FFC-BE79-32A127E47204}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A78CB97-EFD6-4FFC-BE79-32A127E47204}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{7A78CB97-EFD6-4FFC-BE79-32A127E47204}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7A78CB97-EFD6-4FFC-BE79-32A127E47204}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A78CB97-EFD6-4FFC-BE79-32A127E47204}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A78CB97-EFD6-4FFC-BE79-32A127E47204}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FA874A93-2CDB-482E-9C46-7BDE82B609CA}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
-		{FA874A93-2CDB-482E-9C46-7BDE82B609CA}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
+		{FA874A93-2CDB-482E-9C46-7BDE82B609CA}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA874A93-2CDB-482E-9C46-7BDE82B609CA}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{FA874A93-2CDB-482E-9C46-7BDE82B609CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FA874A93-2CDB-482E-9C46-7BDE82B609CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA874A93-2CDB-482E-9C46-7BDE82B609CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA874A93-2CDB-482E-9C46-7BDE82B609CA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E1A7BC3C-0232-4344-853D-CEFA065AF3D5}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
-		{E1A7BC3C-0232-4344-853D-CEFA065AF3D5}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
+		{E1A7BC3C-0232-4344-853D-CEFA065AF3D5}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1A7BC3C-0232-4344-853D-CEFA065AF3D5}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{E1A7BC3C-0232-4344-853D-CEFA065AF3D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E1A7BC3C-0232-4344-853D-CEFA065AF3D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1A7BC3C-0232-4344-853D-CEFA065AF3D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E1A7BC3C-0232-4344-853D-CEFA065AF3D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A7DC47A2-4F88-44AE-AD9B-46C943964B4D}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
-		{A7DC47A2-4F88-44AE-AD9B-46C943964B4D}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
+		{A7DC47A2-4F88-44AE-AD9B-46C943964B4D}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7DC47A2-4F88-44AE-AD9B-46C943964B4D}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{A7DC47A2-4F88-44AE-AD9B-46C943964B4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A7DC47A2-4F88-44AE-AD9B-46C943964B4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7DC47A2-4F88-44AE-AD9B-46C943964B4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -192,18 +192,18 @@ Global
 		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7824D509-81E9-4C08-9E9A-666915A2935D}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{7824D509-81E9-4C08-9E9A-666915A2935D}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{7824D509-81E9-4C08-9E9A-666915A2935D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7824D509-81E9-4C08-9E9A-666915A2935D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7824D509-81E9-4C08-9E9A-666915A2935D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7824D509-81E9-4C08-9E9A-666915A2935D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5289E8CF-0DE0-44D8-93C9-5F0989C03F2A}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{5289E8CF-0DE0-44D8-93C9-5F0989C03F2A}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{5289E8CF-0DE0-44D8-93C9-5F0989C03F2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5289E8CF-0DE0-44D8-93C9-5F0989C03F2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5289E8CF-0DE0-44D8-93C9-5F0989C03F2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5289E8CF-0DE0-44D8-93C9-5F0989C03F2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5229C085-69B6-4D69-8BAE-907CED173616}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{5229C085-69B6-4D69-8BAE-907CED173616}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{5229C085-69B6-4D69-8BAE-907CED173616}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5229C085-69B6-4D69-8BAE-907CED173616}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5229C085-69B6-4D69-8BAE-907CED173616}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5229C085-69B6-4D69-8BAE-907CED173616}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
