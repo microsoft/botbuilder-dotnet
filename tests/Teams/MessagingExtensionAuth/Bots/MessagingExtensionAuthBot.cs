@@ -66,7 +66,7 @@ namespace Microsoft.BotBuilderSamples.Bots
 
                 return new MessagingExtensionActionResponse
                 {
-                    ComposeExtension = new MessagingExtensionResult
+                    MessagingExtension = new MessagingExtensionResult
                     {
                         Type = "auth",
                         OpenUrlActions = new MessagingExtensionOpenUrlAction

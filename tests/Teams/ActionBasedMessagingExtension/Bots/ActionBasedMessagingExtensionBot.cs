@@ -44,7 +44,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             var createCardData = ((JObject)actionData).ToObject<CreateCardData>();
             var response = new MessagingExtensionActionResponse
             {
-                ComposeExtension = new MessagingExtensionResult
+                MessagingExtension = new MessagingExtensionResult
                 {
                     AttachmentLayout = "list",
                     Type = "result",
@@ -66,7 +66,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                 Preview = card.ToAttachment(),
             });
 
-            response.ComposeExtension.Attachments = attachments;
+            response.MessagingExtension.Attachments = attachments;
             return response;
         }
 
@@ -91,7 +91,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             }
 
             var response = new MessagingExtensionActionResponse();
-            response.ComposeExtension = new MessagingExtensionResult
+            response.MessagingExtension = new MessagingExtensionResult
             {
                 Type = "result",
                 AttachmentLayout = "list",

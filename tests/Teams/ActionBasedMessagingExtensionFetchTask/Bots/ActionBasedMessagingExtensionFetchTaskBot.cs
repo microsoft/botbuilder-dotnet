@@ -100,7 +100,7 @@ namespace Microsoft.BotBuilderSamples.Bots
 
             return new MessagingExtensionActionResponse
             {
-                ComposeExtension = new MessagingExtensionResult
+                MessagingExtension = new MessagingExtensionResult
                 {
                     Type = "botMessagePreview",
                     ActivityPreview = MessageFactory.Attachment(new Attachment

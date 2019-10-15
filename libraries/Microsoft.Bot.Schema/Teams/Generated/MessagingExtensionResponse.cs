@@ -29,9 +29,9 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Initializes a new instance of the MessagingExtensionResponse class.
         /// </summary>
-        public MessagingExtensionResponse(MessagingExtensionResult composeExtension = default(MessagingExtensionResult))
+        public MessagingExtensionResponse(MessagingExtensionResult messagingExtension = default(MessagingExtensionResult))
         {
-            MessagingExtension = composeExtension;
+            MessagingExtension = messagingExtension;
             CustomInit();
         }
 
