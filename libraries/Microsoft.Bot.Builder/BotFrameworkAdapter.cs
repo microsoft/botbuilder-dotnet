@@ -368,10 +368,9 @@ namespace Microsoft.Bot.Builder
                 }
                 else if (activity.IsFromStreamingConnection())
                 {
-                    // The ServiceUrl for streaming channels begin with the string "urn" and contain
-                    // information unique to streaming connections. If the ServiceUrl for this
-                    // activity begins with a "u" we hand it off to be processed via a new or
-                    // existing streaming connection.
+                    // The ServiceUrl for streaming channels begins with the string "urn" and contains
+                    // information unique to streaming connections. Now that we know that this is a streaming
+                    // activity, process it in the streaming pipeline.
                     response = await SendStreamingActivityAsync(activity).ConfigureAwait(false);
                 }
                 else if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
