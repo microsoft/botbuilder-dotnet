@@ -5,10 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema.Teams;
 
-namespace Microsoft.Bot.Builder.Teams
+namespace Microsoft.BotBuilderSamples
 {
     /// <summary>
     /// Filters request based on provided tenant list.
@@ -20,6 +21,15 @@ namespace Microsoft.Bot.Builder.Teams
         /// The tenant map.
         /// </summary>
         private readonly HashSet<string> tenantMap;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TeamsTenantFilteringMiddleware"/> class.
+        /// </summary>
+        /// <param name="allowedTenantId">The allowed tenant.</param>
+        public TeamsTenantFilteringMiddleware(string allowedTenantId)
+            :this(new string[] { allowedTenantId })
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamsTenantFilteringMiddleware"/> class.
@@ -59,6 +69,8 @@ namespace Microsoft.Bot.Builder.Teams
         {
             if (!turnContext.Activity.ChannelId.Equals(Channels.Msteams, StringComparison.OrdinalIgnoreCase))
             {
+                // If the goal is to NOT process messages from other channels, comment out the following line
+                // and message processing will be 'short circuited'.
                 await next(cancellationToken).ConfigureAwait(false);
                 return;
             }
