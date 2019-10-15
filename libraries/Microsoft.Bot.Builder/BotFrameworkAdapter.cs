@@ -49,6 +49,7 @@ namespace Microsoft.Bot.Builder
     public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IUserTokenProvider, IStreamingActivityProcessor
     {
 #pragma warning disable SA1401 // Fields should be private
+
         protected const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
         protected const string BotIdentityKey = "BotIdentity";
 
@@ -58,6 +59,8 @@ namespace Microsoft.Bot.Builder
 
         protected ClaimsIdentity _claimsIdentity;
         protected IList<StreamingRequestHandler> _requestHandlers;
+
+#pragma warning restore SA1401 // Fields should be private
 
         private static readonly HttpClient _defaultHttpClient = new HttpClient();
 
@@ -1172,5 +1175,4 @@ namespace Microsoft.Bot.Builder
             }
         }
     }
-#pragma warning restore SA1401 // Fields should be private
 }
