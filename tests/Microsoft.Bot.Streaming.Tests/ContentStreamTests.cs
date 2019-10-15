@@ -27,6 +27,8 @@ namespace Microsoft.Bot.Streaming.UnitTests
             var c = new ContentStream(id, assembler);
 
             Assert.AreEqual(id, c.Id);
+
+            c.Cancel();
         }
 
         [TestMethod]
@@ -40,6 +42,8 @@ namespace Microsoft.Bot.Streaming.UnitTests
             c.ContentType = type;
 
             Assert.AreEqual(type, c.ContentType);
+
+            c.Cancel();
         }
     }
 }
