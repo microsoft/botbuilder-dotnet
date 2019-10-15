@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
+namespace Microsoft.Bot.Builder.Skills
 {
-    internal static class ChannelApiMethods
+    public static class ChannelApiMethods
     {
         /// <summary>
         /// ReplyToActivity(conversationId, activity).

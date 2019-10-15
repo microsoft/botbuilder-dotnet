@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 
 namespace DialogRootBot.Dialogs
@@ -74,7 +75,7 @@ namespace DialogRootBot.Dialogs
             await _conversationState.SaveChangesAsync(dc.Context, true, cancellationToken);
 
             // TODO: SkillBot is hardcoded here, find a way of making it a parameter.
-            await dc.Context.Adapter.ForwardActivityAsync(dc.Context, "SkillBot", activity, cancellationToken);
+            await dc.Context.TurnState.Get<SkillAdapter>().ForwardActivityAsync(dc.Context, "SkillBot", activity, cancellationToken);
             return EndOfTurn;
         }
     }

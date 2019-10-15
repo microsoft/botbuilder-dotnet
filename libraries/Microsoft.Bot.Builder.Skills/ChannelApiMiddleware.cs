@@ -6,17 +6,28 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
+namespace Microsoft.Bot.Builder.Skills
 {
     /// <summary>
     /// Handles InvokeActivity for ChannelAPI methods calls coming from SkillHostController.
     /// </summary>
     internal class ChannelApiMiddleware : IMiddleware
     {
+        private SkillAdapter skillAdapter;
+
+        internal ChannelApiMiddleware(SkillAdapter skillAdapter)
+        {
+            this.skillAdapter = skillAdapter;
+        }
+
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
         {
+            // register the skill adapter so people can get it to do .ForwardActivityAsync()
+            turnContext.TurnState.Add<SkillAdapter>(this.skillAdapter);
+
             if (turnContext.Activity.Type == ActivityTypes.Invoke && turnContext.Activity.Name == "ChannelAPI")
             {
+                // process Invoke Activity 
                 var invokeActivity = turnContext.Activity.AsInvokeActivity();
                 var invokeArgs = invokeActivity.Value as ChannelApiArgs;
 

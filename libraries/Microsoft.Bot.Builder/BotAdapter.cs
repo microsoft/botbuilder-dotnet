@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -108,19 +109,6 @@ namespace Microsoft.Bot.Builder
         /// reference identifies the activity to delete.</remarks>
         /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
         public abstract Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Forward an activity to another bot (aka skill).
-        /// </summary>
-        /// <param name="turnContext">turnContext.</param>
-        /// <param name="skillId">skillId of the sklil to forward the activity to.</param>
-        /// <param name="activity">acivity to forward.</param>
-        /// <param name="cancellationToken">cancellation Token.</param>
-        /// <returns>Async task with optional InvokeResponse.</returns>
-        public virtual Task<InvokeResponse> ForwardActivityAsync(ITurnContext turnContext, string skillId, Activity activity, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
 
         /// <summary>
         /// CreateConversation.
@@ -302,6 +290,20 @@ namespace Microsoft.Bot.Builder
                     await callback(turnContext, cancellationToken).ConfigureAwait(false);
                 }
             }
+        }
+
+        /// <summary>
+        /// Creates a turn context and runs the middleware pipeline for an incoming activity.
+        /// </summary>
+        /// <param name="identity">A <see cref="ClaimsIdentity"/> for the request.</param>
+        /// <param name="activity">The incoming activity.</param>
+        /// <param name="callback">The code to run at the end of the adapter's middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public virtual Task<InvokeResponse> ProcessActivityAsync(ClaimsIdentity identity, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }
