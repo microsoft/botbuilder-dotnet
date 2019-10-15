@@ -49,7 +49,11 @@ namespace Microsoft.Bot.Builder.Streaming
             {
                 var serverResponse = await _requestHandler.SendStreamingRequestAsync(request, cancellation).ConfigureAwait(false);
 
-                // TODO ccastro serverResponse could be null
+                if (serverResponse == null)
+                {
+                    throw new Exception("Server response from streaming request is null");
+                }
+
                 if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
                 {
                     return serverResponse.ReadBodyAsJson<T>();
@@ -57,7 +61,7 @@ namespace Microsoft.Bot.Builder.Streaming
             }
             catch (Exception ex)
             {
-                this._logger.LogError(ex.Message);
+                this._logger.LogError(ex.ToString());
             }
 
             return default;
