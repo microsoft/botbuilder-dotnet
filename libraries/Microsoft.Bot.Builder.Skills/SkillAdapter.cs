@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -15,39 +14,39 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace Microsoft.Bot.Builder.Skills
 {
     /// <summary>
-    /// A Akill adapter implements API to forward activity to a skill and routes ChannelAPI 
+    /// A Skill adapter implements API to forward activity to a skill and routes ChannelAPI 
     /// calls from the Skill up through the bot/adapter.
     /// </summary>
     public abstract class SkillAdapter
     {
-        private readonly ILogger logger;
+        private readonly ILogger _logger;
 
-        public SkillAdapter(BotAdapter adapter, BotCallbackHandler callback, string botAppId, ILogger logger = null)
+        protected SkillAdapter(BotAdapter adapter, BotCallbackHandler callback, string botAppId, ILogger logger = null)
         {
-            this.ChannelAdapter = adapter;
-            this.BotCallback = callback;
-            this.BotAppId = botAppId;
-            this.logger = logger ?? NullLogger.Instance;
+            ChannelAdapter = adapter;
+            BotCallback = callback;
+            BotAppId = botAppId;
+            _logger = logger ?? NullLogger.Instance;
 
             // make sure there is a channel api middleware
-            if (!this.ChannelAdapter.MiddlewareSet.Any(mw => mw is ChannelApiMiddleware))
+            if (!ChannelAdapter.MiddlewareSet.Any(mw => mw is ChannelApiMiddleware))
             {
-                this.ChannelAdapter.MiddlewareSet.Use(new ChannelApiMiddleware(this));
+                ChannelAdapter.MiddlewareSet.Use(new ChannelApiMiddleware(this));
             }
         }
 
-        public BotAdapter ChannelAdapter { get; private set; }
+        public BotAdapter ChannelAdapter { get; }
 
-        public BotCallbackHandler BotCallback { get; private set; }
+        public BotCallbackHandler BotCallback { get; }
 
-        public string BotAppId { get; private set; }
+        public string BotAppId { get; }
 
         /// <summary>
         /// Forward an activity to a skill.
         /// </summary>
         /// <param name="turnContext">turnContext.</param>
-        /// <param name="skillId">skillId of the sklil to forward the activity to.</param>
-        /// <param name="activity">acivity to forward.</param>
+        /// <param name="skillId">skillId of the skill to forward the activity to.</param>
+        /// <param name="activity">activity to forward.</param>
         /// <param name="cancellationToken">cancellation Token.</param>
         /// <returns>Async task with optional InvokeResponse.</returns>
         public abstract Task<InvokeResponse> ForwardActivityAsync(ITurnContext turnContext, string skillId, Activity activity, CancellationToken cancellationToken);
@@ -74,7 +73,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// <returns>task for ConversationsResult.</returns>
         public virtual Task<ConversationsResult> GetConversationsAsync(string conversationId, string continuationToken = default(string), CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<ConversationsResult>(ChannelApiMethods.GetConversations, conversationId, continuationToken);
+            return InvokeChannelApiAsync<ConversationsResult>(ChannelApiMethods.GetConversations, conversationId, continuationToken);
         }
 
         /// <summary>
@@ -110,7 +109,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// <returns>task for a conversation resource response</returns>
         public virtual Task<ConversationResourceResponse> CreateConversationAsync(string conversationId, ConversationParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<ConversationResourceResponse>(ChannelApiMethods.CreateConversation, conversationId, parameters);
+            return InvokeChannelApiAsync<ConversationResourceResponse>(ChannelApiMethods.CreateConversation, conversationId, parameters);
         }
 
         /// <summary>
@@ -137,7 +136,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// <returns>task for a resource response</returns>
         public virtual Task<ResourceResponse> SendToConversationAsync(string conversationId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<ResourceResponse>(ChannelApiMethods.SendToConversation, conversationId, activity);
+            return InvokeChannelApiAsync<ResourceResponse>(ChannelApiMethods.SendToConversation, conversationId, activity);
         }
 
         /// <summary>
@@ -158,7 +157,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// <returns>task for a resource response</returns>
         public virtual Task<ResourceResponse> SendConversationHistoryAsync(string conversationId, Transcript transcript, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<ResourceResponse>(ChannelApiMethods.SendConversationHistory, conversationId, transcript);
+            return InvokeChannelApiAsync<ResourceResponse>(ChannelApiMethods.SendConversationHistory, conversationId, transcript);
         }
 
         /// <summary>
@@ -180,7 +179,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// <returns>task for a resource response</returns>
         public virtual Task<ResourceResponse> UpdateActivityAsync(string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<ResourceResponse>(ChannelApiMethods.UpdateActivity, conversationId, activityId, activity);
+            return InvokeChannelApiAsync<ResourceResponse>(ChannelApiMethods.UpdateActivity, conversationId, activityId, activity);
         }
 
         /// <summary>
@@ -208,7 +207,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// <returns>task for a resource response</returns>
         public virtual Task<ResourceResponse> ReplyToActivityAsync(string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<ResourceResponse>(ChannelApiMethods.ReplyToActivity, conversationId, activityId, activity);
+            return InvokeChannelApiAsync<ResourceResponse>(ChannelApiMethods.ReplyToActivity, conversationId, activityId, activity);
         }
 
         /// <summary>
@@ -226,7 +225,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// <returns>task for a resource response</returns>
         public virtual Task DeleteActivityAsync(string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync(ChannelApiMethods.DeleteActivity, conversationId, activityId);
+            return InvokeChannelApiAsync(ChannelApiMethods.DeleteActivity, conversationId, activityId);
         }
 
         /// <summary>
@@ -243,7 +242,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// <returns>task for a response</returns>
         public virtual Task<IList<ChannelAccount>> GetConversationMembersAsync(string conversationId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<IList<ChannelAccount>>(ChannelApiMethods.GetConversationMembers, conversationId);
+            return InvokeChannelApiAsync<IList<ChannelAccount>>(ChannelApiMethods.GetConversationMembers, conversationId);
         }
 
         /// <summary>
@@ -275,7 +274,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// <returns>task for a response</returns>
         public virtual Task<PagedMembersResult> GetConversationPagedMembersAsync(string conversationId, int? pageSize = default(int?), string continuationToken = default(string), CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<PagedMembersResult>(ChannelApiMethods.GetConversationPagedMembers, conversationId, pageSize, continuationToken);
+            return InvokeChannelApiAsync<PagedMembersResult>(ChannelApiMethods.GetConversationPagedMembers, conversationId, pageSize, continuationToken);
         }
 
         /// <summary>
@@ -295,7 +294,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// <returns>task</returns>
         public virtual Task DeleteConversationMemberAsync(string conversationId, string memberId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync(ChannelApiMethods.GetConversationPagedMembers, conversationId, memberId);
+            return InvokeChannelApiAsync(ChannelApiMethods.GetConversationPagedMembers, conversationId, memberId);
         }
 
         /// <summary>
@@ -314,7 +313,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// <returns>task with result</returns>
         public virtual Task<IList<ChannelAccount>> GetActivityMembersAsync(string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<IList<ChannelAccount>>(ChannelApiMethods.GetActivityMembers, conversationId, activityId);
+            return InvokeChannelApiAsync<IList<ChannelAccount>>(ChannelApiMethods.GetActivityMembers, conversationId, activityId);
         }
 
         /// <summary>
@@ -335,13 +334,12 @@ namespace Microsoft.Bot.Builder.Skills
         /// <returns>task with result</returns>
         public virtual Task<ResourceResponse> UploadAttachmentAsync(string conversationId, AttachmentData attachmentUpload, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.InvokeChannelApiAsync<ResourceResponse>(ChannelApiMethods.UploadAttachment, conversationId, attachmentUpload);
+            return InvokeChannelApiAsync<ResourceResponse>(ChannelApiMethods.UploadAttachment, conversationId, attachmentUpload);
         }
 
         protected async Task InvokeChannelApiAsync(string method, string conversationId, params object[] args)
         {
             await InvokeChannelApiAsync<object>(method, conversationId, args).ConfigureAwait(false);
-            return;
         }
 
         protected async Task<T> InvokeChannelApiAsync<T>(string method, string conversationId, params object[] args)
@@ -386,13 +384,13 @@ namespace Microsoft.Bot.Builder.Skills
             var claimsIdentity = new ClaimsIdentity(new List<Claim>
             {
                 // Adding claims for both Emulator and Channel.
-                new Claim(AuthenticationConstants.AudienceClaim, this.BotAppId),
-                new Claim(AuthenticationConstants.AppIdClaim, this.BotAppId),
+                new Claim(AuthenticationConstants.AudienceClaim, BotAppId),
+                new Claim(AuthenticationConstants.AppIdClaim, BotAppId),
                 new Claim(AuthenticationConstants.ServiceUrlClaim, skillConversation.ServiceUrl),
             });
 
             // send up to the bot to process it...
-            await this.ChannelAdapter.ProcessActivityAsync(claimsIdentity, (Activity)channelApiInvokeActivity, this.BotCallback, CancellationToken.None).ConfigureAwait(false);
+            await ChannelAdapter.ProcessActivityAsync(claimsIdentity, (Activity)channelApiInvokeActivity, this.BotCallback, CancellationToken.None).ConfigureAwait(false);
 
             // Return the result that was captured in the middleware handler. 
             return (T)channelApiArgs.Result;

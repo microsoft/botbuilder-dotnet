@@ -13,17 +13,17 @@ namespace Microsoft.Bot.Builder.Skills
     /// </summary>
     internal class ChannelApiMiddleware : IMiddleware
     {
-        private SkillAdapter skillAdapter;
+        private readonly SkillAdapter _skillAdapter;
 
         internal ChannelApiMiddleware(SkillAdapter skillAdapter)
         {
-            this.skillAdapter = skillAdapter;
+            _skillAdapter = skillAdapter;
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
         {
             // register the skill adapter so people can get it to do .ForwardActivityAsync()
-            turnContext.TurnState.Add<SkillAdapter>(this.skillAdapter);
+            turnContext.TurnState.Add(_skillAdapter);
 
             if (turnContext.Activity.Type == ActivityTypes.Invoke && turnContext.Activity.Name == "ChannelAPI")
             {

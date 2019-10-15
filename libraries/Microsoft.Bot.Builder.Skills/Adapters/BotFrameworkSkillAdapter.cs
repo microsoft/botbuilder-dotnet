@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
     /// </summary>
     /// <remarks>The skill adapter encapsulates authentication processes  routing
     /// activities from a bot to another bot utilize as a skill. 
-    /// <para>Use <see cref="Use(IMiddleware)"/> to add <see cref="IMiddleware"/> objects
+    /// <para>Use <see cref="IMiddleware"/> to add <see cref="IMiddleware"/> objects
     /// to your adapter’s middleware collection. The adapter processes and directs
     /// incoming activities in through the bot middleware pipeline to your bot’s logic
     /// and then back out again. As each activity flows in and out of the bot, each piece
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         /// <exception cref="ArgumentNullException">
         /// <paramref name="credentialProvider"/> is <c>null</c>.</exception>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
-        /// components in the constructor. Use the <see cref="Use(IMiddleware)"/> method to
+        /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
         public BotFrameworkSkillAdapter(
@@ -108,7 +108,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         /// <exception cref="ArgumentNullException">
         /// <paramref name="credentialProvider"/> is <c>null</c>.</exception>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
-        /// components in the constructor. Use the <see cref="Use(IMiddleware)"/> method to
+        /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
         public BotFrameworkSkillAdapter(
@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         /// <exception cref="ArgumentNullException">throw ArgumentNullException</exception>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
-        /// components in the constructor. Use the <see cref="Use(IMiddleware)"/> method to
+        /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
         public BotFrameworkSkillAdapter(
@@ -239,7 +239,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
                 // Encode original bot service URL and ConversationId in the new conversation ID so we can unpack it later.
                 // var skillConversation = new SkillConversation() { ServiceUrl = activity.ServiceUrl, ConversationId = activity.Conversation.Id };
                 // activity.Conversation.Id = skillConversation.GetSkillConversationId()
-                activity.Conversation.Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new string[]
+                activity.Conversation.Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new[]
                 {
                     activity.Conversation.Id,
                     activity.ServiceUrl,
