@@ -941,6 +941,8 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(bot));
             }
 
+            _claimsIdentity = _claimsIdentity ?? new ClaimsIdentity();
+
             if (_requestHandlers == null)
             {
                 _requestHandlers = new List<StreamingRequestHandler>();
