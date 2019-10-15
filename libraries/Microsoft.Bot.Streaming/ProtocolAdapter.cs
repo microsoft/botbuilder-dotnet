@@ -31,23 +31,28 @@ namespace Microsoft.Bot.Streaming
 
             _sendOperations = new SendOperations(_payloadSender);
             _streamManager = new StreamManager(OnCancelStream);
-            _assemblerManager = new PayloadAssemblerManager(_streamManager, OnReceiveRequest, OnReceiveResponse);
+            _assemblerManager = new PayloadAssemblerManager(_streamManager, OnReceiveRequestAsync, OnReceiveResponseAsync);
 
             _payloadReceiver.Subscribe(_assemblerManager.GetPayloadStream, _assemblerManager.OnReceive);
         }
 
         public async Task<ReceiveResponse> SendRequestAsync(StreamingRequest request, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             var requestId = Guid.NewGuid();
             var responseTask = _requestManager.GetResponseAsync(requestId, cancellationToken);
-            var requestTask = _sendOperations.SendRequestAsync(requestId, request);
+            var requestTask = _sendOperations.SendRequestAsync(requestId, request, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
             await Task.WhenAll(requestTask, responseTask).ConfigureAwait(false);
 
             return responseTask.Result;
         }
 
-        private async Task OnReceiveRequest(Guid id, ReceiveRequest request)
+        private async Task OnReceiveRequestAsync(Guid id, ReceiveRequest request)
         {
             // request is done, we can handle it
             if (_requestHandler != null)
@@ -61,10 +66,10 @@ namespace Microsoft.Bot.Streaming
             }
         }
 
-        private async Task OnReceiveResponse(Guid id, ReceiveResponse response)
+        private async Task OnReceiveResponseAsync(Guid id, ReceiveResponse response)
         {
             // we received the response to something, signal it
-            await _requestManager.SignalResponse(id, response).ConfigureAwait(false);
+            await _requestManager.SignalResponseAsync(id, response).ConfigureAwait(false);
         }
 
         private void OnCancelStream(IAssembler contentStreamAssembler)

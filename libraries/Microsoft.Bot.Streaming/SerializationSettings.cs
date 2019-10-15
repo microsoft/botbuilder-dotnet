@@ -47,10 +47,10 @@ namespace Microsoft.Bot.Streaming
         /// </summary>
         public static readonly JsonSerializerSettings DefaultDeserializationSettings = new JsonSerializerSettings
         {
-            DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
-            DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc,
-            NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-            ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
+            DateFormatHandling = DateFormatHandling.IsoDateFormat,
+            DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+            NullValueHandling = NullValueHandling.Ignore,
+            ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
         };
     }
 }

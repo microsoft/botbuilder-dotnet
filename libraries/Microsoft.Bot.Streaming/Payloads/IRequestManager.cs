@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Streaming.Payloads
 {
     internal interface IRequestManager
     {
-        Task<bool> SignalResponse(Guid requestId, ReceiveResponse response);
+        Task<bool> SignalResponseAsync(Guid requestId, ReceiveResponse response);
 
         Task<ReceiveResponse> GetResponseAsync(Guid requestId, CancellationToken cancellationToken);
     }

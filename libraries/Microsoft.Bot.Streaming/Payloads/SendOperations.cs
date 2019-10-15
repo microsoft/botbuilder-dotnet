@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Streaming.PayloadTransport;
 
@@ -18,11 +19,11 @@ namespace Microsoft.Bot.Streaming.Payloads
             _payloadSender = payloadSender;
         }
 
-        public async Task SendRequestAsync(Guid id, StreamingRequest request)
+        public async Task SendRequestAsync(Guid id, StreamingRequest request, CancellationToken cancellationToken = default(CancellationToken))
         {
             var disassembler = new RequestDisassembler(_payloadSender, id, request);
 
-            await disassembler.Disassemble().ConfigureAwait(false);
+            await disassembler.DisassembleAsync().ConfigureAwait(false);
 
             if (request.Streams != null)
             {
@@ -31,7 +32,7 @@ namespace Microsoft.Bot.Streaming.Payloads
                 {
                     var contentDisassembler = new ResponseMessageStreamDisassembler(_payloadSender, contentStream);
 
-                    tasks.Add(contentDisassembler.Disassemble());
+                    tasks.Add(contentDisassembler.DisassembleAsync());
                 }
 
                 await Task.WhenAll(tasks).ConfigureAwait(false);
@@ -42,7 +43,7 @@ namespace Microsoft.Bot.Streaming.Payloads
         {
             var disassembler = new ResponseDisassembler(_payloadSender, id, response);
 
-            await disassembler.Disassemble().ConfigureAwait(false);
+            await disassembler.DisassembleAsync().ConfigureAwait(false);
 
             if (response.Streams != null)
             {
@@ -51,7 +52,7 @@ namespace Microsoft.Bot.Streaming.Payloads
                 {
                     var contentDisassembler = new ResponseMessageStreamDisassembler(_payloadSender, contentStream);
 
-                    tasks.Add(contentDisassembler.Disassemble());
+                    tasks.Add(contentDisassembler.DisassembleAsync());
                 }
 
                 await Task.WhenAll(tasks).ConfigureAwait(false);

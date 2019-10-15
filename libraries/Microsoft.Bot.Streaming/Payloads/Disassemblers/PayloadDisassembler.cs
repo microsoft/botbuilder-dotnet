@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Streaming.PayloadTransport;
 using Microsoft.Bot.Streaming.Transport;
@@ -41,17 +42,17 @@ namespace Microsoft.Bot.Streaming.Payloads
 
         private bool IsEnd { get; set; } = false;
 
-        public abstract Task<StreamWrapper> GetStream();
+        public abstract Task<StreamWrapper> GetStreamAsync();
 
-        public async Task Disassemble()
+        public async Task DisassembleAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            var w = await GetStream().ConfigureAwait(false);
+            var w = await GetStreamAsync().ConfigureAwait(false);
 
             Stream = w.Stream;
             StreamLength = w.StreamLength;
             SendOffset = 0;
 
-            await Send().ConfigureAwait(false);
+            await SendAsync().ConfigureAwait(false);
         }
 
         protected static StreamDescription GetStreamDescription(ResponseMessageStream stream)
@@ -98,7 +99,7 @@ namespace Microsoft.Bot.Streaming.Payloads
             stream.Position = 0;
         }
 
-        private Task Send()
+        private Task SendAsync()
         {
             // determine if we know the length we can send and whether we can tell if this is the end
             bool isLengthKnown = IsEnd;
@@ -135,7 +136,7 @@ namespace Microsoft.Bot.Streaming.Payloads
             }
             else
             {
-                await Send().ConfigureAwait(false);
+                await SendAsync().ConfigureAwait(false);
             }
         }
     }

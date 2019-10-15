@@ -9,10 +9,10 @@ namespace Microsoft.Bot.Streaming
 {
     internal static class StreamExtensions
     {
-#pragma warning disable SA1611
         /// <summary>
         /// Read the contents of the stream and convert to an Utf8 string.
         /// </summary>
+        /// <param name="stream">The stream.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task<string> ReadAsUtf8StringAsync(this Stream stream)
         {
@@ -25,6 +25,7 @@ namespace Microsoft.Bot.Streaming
         /// <summary>
         /// Read the contents of the stream and convert to an Utf8 string.
         /// </summary>
+        /// <param name="stream">The stream.</param>
         /// <returns>Stream contents as string.</returns>
         public static string ReadAsUtf8String(this Stream stream)
         {
@@ -33,6 +34,5 @@ namespace Microsoft.Bot.Streaming
                 return reader.ReadToEnd();
             }
         }
-#pragma warning restore SA1611 // Element parameters should be documented
     }
 }

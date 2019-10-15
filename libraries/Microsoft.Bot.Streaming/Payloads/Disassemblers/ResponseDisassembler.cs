@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Streaming.Payloads
 
         public override char Type => PayloadTypes.Response;
 
-        public override Task<StreamWrapper> GetStream()
+        public override Task<StreamWrapper> GetStreamAsync()
         {
             var payload = new ResponsePayload()
             {

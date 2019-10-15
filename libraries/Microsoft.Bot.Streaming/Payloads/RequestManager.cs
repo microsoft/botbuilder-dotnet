@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Streaming.Payloads
             _responseTasks = responseTasks;
         }
 
-        public Task<bool> SignalResponse(Guid requestId, ReceiveResponse response)
+        public Task<bool> SignalResponseAsync(Guid requestId, ReceiveResponse response)
         {
             if (_responseTasks.TryGetValue(requestId, out TaskCompletionSource<ReceiveResponse> signal))
             {

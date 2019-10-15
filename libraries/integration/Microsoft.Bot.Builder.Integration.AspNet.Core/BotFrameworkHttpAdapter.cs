@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             if (httpRequest.Method == HttpMethods.Get)
             {
-                await ConnectWebSocket(bot, httpRequest, httpResponse).ConfigureAwait(false);
+                await ConnectWebSocketAsync(bot, httpRequest, httpResponse).ConfigureAwait(false);
             }
             else
             {
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="httpRequest">The connection request.</param>
         /// <param name="httpResponse">The response sent on error or connection termination.</param>
         /// <returns>Returns on task completion.</returns>
-        private async Task ConnectWebSocket(IBot bot, HttpRequest httpRequest, HttpResponse httpResponse)
+        private async Task ConnectWebSocketAsync(IBot bot, HttpRequest httpRequest, HttpResponse httpResponse)
         {
             if (httpRequest == null)
             {
@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 return;
             }
 
-            if (!await AuthCheck(httpRequest).ConfigureAwait(false))
+            if (!await AuthenticateRequestAsync(httpRequest).ConfigureAwait(false))
             {
                 return;
             }
@@ -148,25 +148,25 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
         }
 
-        private async Task<bool> AuthCheck(HttpRequest httpRequest)
+        private async Task<bool> AuthenticateRequestAsync(HttpRequest httpRequest)
         {
             try
             {
                 if (!await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
                 {
-                    var authHeader = httpRequest.Headers.Where(x => x.Key.ToLower() == AuthHeaderName).FirstOrDefault().Value.FirstOrDefault();
-                    var channelId = httpRequest.Headers.Where(x => x.Key.ToLower() == ChannelIdHeaderName).FirstOrDefault().Value.FirstOrDefault();
+                    var authHeader = httpRequest.Headers.First(x => x.Key.ToLower() == AuthHeaderName).Value.FirstOrDefault();
+                    var channelId = httpRequest.Headers.First(x => x.Key.ToLower() == ChannelIdHeaderName).Value.FirstOrDefault();
 
                     if (string.IsNullOrWhiteSpace(authHeader))
                     {
-                        await MissingAuthHeaderHelperAsync(AuthHeaderName, httpRequest).ConfigureAwait(false);
+                        await WriteUnauthorizedResponseAsync(AuthHeaderName, httpRequest).ConfigureAwait(false);
 
                         return false;
                     }
 
                     if (string.IsNullOrWhiteSpace(channelId))
                     {
-                        await MissingAuthHeaderHelperAsync(ChannelIdHeaderName, httpRequest).ConfigureAwait(false);
+                        await WriteUnauthorizedResponseAsync(ChannelIdHeaderName, httpRequest).ConfigureAwait(false);
 
                         return false;
                     }
@@ -193,10 +193,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
         }
 
-        private async Task MissingAuthHeaderHelperAsync(string headerName, HttpRequest httpRequest)
+        private async Task WriteUnauthorizedResponseAsync(string headerName, HttpRequest httpRequest)
         {
             httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            await httpRequest.HttpContext.Response.WriteAsync($"Unable to authentiate. Missing header: {headerName}").ConfigureAwait(false);
+            await httpRequest.HttpContext.Response.WriteAsync($"Unable to authenticate. Missing header: {headerName}").ConfigureAwait(false);
         }
     }
 }
