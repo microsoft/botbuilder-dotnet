@@ -770,7 +770,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return base.OnTeamsMessagingExtensionCardButtonClickedAsync(turnContext, obj, cancellationToken);
             }
 
-            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
+            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.FromResult(new MessagingExtensionActionResponse());

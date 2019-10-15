@@ -563,45 +563,6 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         }
 
         [TestMethod]
-        public async Task TestFileConsentBadAction()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "fileConsent/invoke",
-                Value = JObject.FromObject(new FileConsentCardResponse
-                {
-                    Action = "this.is.a.bad.action",
-                    UploadInfo = new FileUploadInfo
-                    {
-                        UniqueId = "uniqueId",
-                        FileType = "fileType",
-                        UploadUrl = "uploadUrl",
-                    },
-                }),
-            };
-
-            Activity[] activitiesToSend = null;
-            void CaptureSend(Activity[] arg)
-            {
-                activitiesToSend = arg;
-            }
-
-            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
-
-            // Act
-            var bot = new TestActivityHandlerFileConsent();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
-        }
-
-        [TestMethod]
         public async Task TestMessagingExtensionSubmitActionPreviewActionEditImplemented()
         {
             // Arrange
@@ -665,39 +626,6 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.AreEqual(1, activitiesToSend.Length);
             Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
             Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
-        }
-
-        [TestMethod]
-        public async Task TestMessagingExtensionSubmitActionPreviewBadAction()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                Value = JObject.FromObject(new MessagingExtensionAction
-                {
-                    BotMessagePreviewAction = "this.is.a.bad.action",
-                }),
-            };
-
-            Activity[] activitiesToSend = null;
-            void CaptureSend(Activity[] arg)
-            {
-                activitiesToSend = arg;
-            }
-
-            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
-
-            // Act
-            var bot = new TestActivityHandlerPrevieAction();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
         private class TestActivityHandler : TeamsActivityHandler

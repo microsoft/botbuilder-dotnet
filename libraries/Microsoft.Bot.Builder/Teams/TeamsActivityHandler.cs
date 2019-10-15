@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Teams
                             return CreateInvokeResponse(await OnTeamsMessagingExtensionSubmitActionDispatchAsync(turnContext, SafeCast<MessagingExtensionAction>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
                         case "composeExtension/fetchTask":
-                            return CreateInvokeResponse(await OnTeamsMessagingExtensionFetchTaskAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
+                            return CreateInvokeResponse(await OnTeamsMessagingExtensionFetchTaskAsync(turnContext, SafeCast<MessagingExtensionAction>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
                         case "composeExtension/querySettingUrl":
                             return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationQuerySettingUrlAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
@@ -96,6 +96,7 @@ namespace Microsoft.Bot.Builder.Teams
                         case "composeExtension/onCardButtonClicked":
                             await OnTeamsMessagingExtensionCardButtonClickedAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false);
                             return CreateInvokeResponse();
+
                         case "task/fetch":
                             var fetchResponse = await OnTeamsTaskModuleFetchAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
                             return CreateInvokeResponse(new TaskModuleResponse { Task = new TaskModuleContinueResponse(fetchResponse) });
@@ -112,6 +113,10 @@ namespace Microsoft.Bot.Builder.Teams
             catch (NotImplementedException)
             {
                 return new InvokeResponse { Status = (int)HttpStatusCode.NotImplemented };
+            }
+            catch (BadRequestArgumentException)
+            {
+                return new InvokeResponse { Status = (int)HttpStatusCode.BadRequest };
             }
         }
 
@@ -138,7 +143,7 @@ namespace Microsoft.Bot.Builder.Teams
                     return CreateInvokeResponse();
 
                 default:
-                    throw new NotImplementedException();
+                    throw new BadRequestArgumentException($"Allowed values are 'accept' and 'decline'. Received {fileConsentCardResponse.Action}", "Action");
             }
         }
 
@@ -172,7 +177,7 @@ namespace Microsoft.Bot.Builder.Teams
             throw new NotImplementedException();
         }
 
-        protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
+        protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -190,7 +195,7 @@ namespace Microsoft.Bot.Builder.Teams
                         return await OnTeamsMessagingExtensionBotMessagePreviewSendAsync(turnContext, action, cancellationToken).ConfigureAwait(false);
 
                     default:
-                        throw new NotImplementedException();
+                        throw new BadRequestArgumentException($"Allowed values are 'edit' and 'send'. Received {action.BotMessagePreviewAction}", "BotMessagePreviewAction");
                 }
             }
             else
@@ -317,6 +322,14 @@ namespace Microsoft.Bot.Builder.Teams
             }
 
             return obj.ToObject<T>();
+        }
+
+        private class BadRequestArgumentException : ArgumentException
+        {
+            public BadRequestArgumentException(string message, string paramName)
+                :base(message, paramName)
+            {
+            }
         }
     }
 }
