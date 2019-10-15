@@ -69,7 +69,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                     ComposeExtension = new MessagingExtensionResult
                     {
                         Type = "auth",
-                        SuggestedActions = new MessagingExtensionSuggestedAction
+                        OpenUrlActions = new MessagingExtensionOpenUrlAction
                         {
                             Actions = new List<CardAction>
                             {
