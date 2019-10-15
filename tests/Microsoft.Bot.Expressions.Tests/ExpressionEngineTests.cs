@@ -595,10 +595,10 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("lastIndexOf(newGuid(), '-')", 23),
             Test("lastIndexOf(hello, '-')", -1),
             Test("length(newGuid())", 36),
-            Test("orderBy(items)", new List<object> { "one", "two", "zero" }),
-            Test("orderBy(nestedItems, 'x')[0].x", 1),
-            Test("orderByDescending(items)", new List<object> { "zero", "two", "one" }),
-            Test("orderByDescending(nestedItems, 'x')[0].x", 3),
+            Test("sortBy(items)", new List<object> { "one", "two", "zero" }),
+            Test("sortBy(nestedItems, 'x')[0].x", 1),
+            Test("sortByDescending(items)", new List<object> { "zero", "two", "one" }),
+            Test("sortByDescending(nestedItems, 'x')[0].x", 3),
             #endregion
 
             #region  Object manipulation and construction functions

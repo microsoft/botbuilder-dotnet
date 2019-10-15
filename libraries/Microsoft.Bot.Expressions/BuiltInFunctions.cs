@@ -2296,7 +2296,7 @@ namespace Microsoft.Bot.Expressions
             return (result, error);
         }
 
-        private static EvaluateExpressionDelegate OrderBy(bool isDescending)
+        private static EvaluateExpressionDelegate SortBy(bool isDescending)
            => (expression, state) =>
            {
                object result = null;
@@ -2511,13 +2511,13 @@ namespace Microsoft.Bot.Expressions
                     ReturnType.Object,
                     (expression) => BuiltInFunctions.ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Object, ReturnType.Number)),
                 new ExpressionEvaluator(
-                    ExpressionType.OrderBy,
-                    OrderBy(false),
+                    ExpressionType.SortBy,
+                    SortBy(false),
                     ReturnType.Object,
                     (expression) => BuiltInFunctions.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
                 new ExpressionEvaluator(
-                    ExpressionType.OrderByDescending,
-                    OrderBy(true),
+                    ExpressionType.SortByDescending,
+                    SortBy(true),
                     ReturnType.Object,
                     (expression) => BuiltInFunctions.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
 
