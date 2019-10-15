@@ -4,7 +4,7 @@
 namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
 {
     /// <summary>
-    /// Maps %xxx => settings.xxx (aka activeDialog.Instance.xxx)
+    /// Maps %xxx => settings.xxx (aka activeDialog.Instance.xxx).
     /// </summary>
     public class PercentPathResolver : AliasPathResolver
     {

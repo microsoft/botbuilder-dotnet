@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
     /// Resolve $xxx.
     /// </summary>
     /// <remarks>
-    /// $xxx -> dialog.x 
+    /// $xxx -> dialog.x.
     /// </remarks>
     public class DollarPathResolver : AliasPathResolver
     {

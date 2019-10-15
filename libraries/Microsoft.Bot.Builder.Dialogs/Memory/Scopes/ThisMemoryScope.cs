@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 {
     /// <summary>
-    /// DialogMemoryScope maps "this" -> dc.ActiveDialog.State
+    /// DialogMemoryScope maps "this" -> dc.ActiveDialog.State.
     /// </summary>
     public class ThisMemoryScope : MemoryScope
     {
