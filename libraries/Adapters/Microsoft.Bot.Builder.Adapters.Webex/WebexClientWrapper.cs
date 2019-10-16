@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         private const string ActionsUrl = "https://api.ciscospark.com/v1/attachment/actions";
 
         private readonly TeamsAPIClient _api;
-        private readonly WebexAdapterOptions Options;
+        public readonly WebexAdapterOptions Options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebexClientWrapper"/> class.
