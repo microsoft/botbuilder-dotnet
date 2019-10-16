@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -113,7 +114,15 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 throw new ArgumentNullException(nameof(bot));
             }
 
-            var activity = await TwilioHelper.RequestToActivity(httpRequest, _twilioClient.Options.ValidationUrl,  _twilioClient.Options.AuthToken).ConfigureAwait(false);
+            Dictionary<string, string> bodyDictionary;
+            using (var bodyStream = new StreamReader(httpRequest.Body))
+            {
+                bodyDictionary = TwilioHelper.QueryStringToDictionary(await bodyStream.ReadToEndAsync().ConfigureAwait(false));
+            }
+
+            TwilioHelper.ValidateRequest(httpRequest, bodyDictionary, _twilioClient.Options.ValidationUrl, _twilioClient.Options.AuthToken);
+
+            var activity = TwilioHelper.PayloadToActivity(bodyDictionary);
 
             // create a conversation reference
             using (var context = new TurnContext(this, activity))
@@ -121,11 +130,10 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 context.TurnState.Add("httpStatus", HttpStatusCode.OK.ToString("D"));
                 await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
-                httpResponse.StatusCode = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), CultureInfo.InvariantCulture);
-                httpResponse.ContentType = "text/plain";
+                var statusCode = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), CultureInfo.InvariantCulture);
                 var text = context.TurnState.Get<object>("httpBody") != null ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
 
-                await TwilioHelper.WriteAsync(httpResponse, httpResponse.StatusCode, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+                await TwilioHelper.WriteAsync(httpResponse, statusCode, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
             }
         }
 

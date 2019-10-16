@@ -107,21 +107,13 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <returns>The activity object.</returns>
         /// <seealso cref="TwilioAdapter.ProcessAsync(HttpRequest, HttpResponse, IBot, System.Threading.CancellationToken)"/>
         /// <seealso cref="TwilioAdapterOptions.ValidationUrl"/>
-        public static async Task<Activity> RequestToActivity(HttpRequest httpRequest, Uri validationUrl, string authToken)
+        public static Activity PayloadToActivity(Dictionary<string, string> body)
         {
-            if (httpRequest == null)
+            if (body == null)
             {
                 return null;
             }
-
-            Dictionary<string, string> body;
-            using (var bodyStream = new StreamReader(httpRequest.Body))
-            {
-                body = QueryStringToDictionary(await bodyStream.ReadToEndAsync().ConfigureAwait(false));
-            }
-
-            ValidateRequest(httpRequest, body, validationUrl, authToken);
-
+            
             var twilioMessage = JsonConvert.DeserializeObject<TwilioMessage>(JsonConvert.SerializeObject(body));
 
             return new Activity()
@@ -157,7 +149,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// generated URL signature used to validate incoming requests.</param>
         /// <param name="authToken">The authentication token for the Twilio app.</param>
         /// <exception cref="AuthenticationException">Validation failed.</exception>
-        private static void ValidateRequest(HttpRequest httpRequest, Dictionary<string, string> body, Uri validationUrl, string authToken)
+        public static void ValidateRequest(HttpRequest httpRequest, Dictionary<string, string> body, Uri validationUrl, string authToken)
         {
             var twilioSignature = httpRequest.Headers["x-twilio-signature"];
             var urlString = validationUrl?.ToString();
@@ -183,7 +175,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="numMedia">The number of media items to pull from the message body.</param>
         /// <param name="message">A dictionary containing the Twilio message elements.</param>
         /// <returns>An Attachments array with the converted attachments.</returns>
-        private static List<Attachment> GetMessageAttachments(int numMedia, Dictionary<string, string> message)
+        public static List<Attachment> GetMessageAttachments(int numMedia, Dictionary<string, string> message)
         {
             var attachments = new List<Attachment>();
             for (var i = 0; i < numMedia; i++)
@@ -208,7 +200,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// </summary>
         /// <param name="query">The query string to convert.</param>
         /// <returns>A dictionary with the query values.</returns>
-        private static Dictionary<string, string> QueryStringToDictionary(string query)
+        public static Dictionary<string, string> QueryStringToDictionary(string query)
         {
             var values = new Dictionary<string, string>();
             if (string.IsNullOrWhiteSpace(query))

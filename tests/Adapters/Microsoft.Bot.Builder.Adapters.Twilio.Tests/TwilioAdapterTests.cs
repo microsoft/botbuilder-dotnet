@@ -21,17 +21,17 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         private readonly TwilioAdapterOptions _testOptions = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
 
         [Fact]
+        public void ConstructorWithTwilioAPIWrapperSucceeds()
+        {
+            Assert.NotNull(new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object));
+        }
+
+        [Fact]
         public void ConstructorShouldFailWithNullTwilioAPIWrapper()
         {
             TwilioClientWrapper twilioClientWrapper = null;
 
             Assert.Throws<ArgumentNullException>(() => { new TwilioAdapter(twilioClientWrapper); });
-        }
-
-        [Fact]
-        public void ConstructorWithTwilioAPIWrapperSucceeds()
-        {
-            Assert.NotNull(new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object));
         }
 
         [Fact]
@@ -53,45 +53,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         }
 
         [Fact]
-        public async void ProcessAsyncShouldFailWithNullHttpRequest()
-        {
-            var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
-            var httpResponse = new Mock<HttpResponse>();
-            var bot = new Mock<IBot>();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            {
-                await twilioAdapter.ProcessAsync(null, httpResponse.Object, bot.Object, default(CancellationToken));
-            });
-        }
-
-        [Fact]
-        public async void ProcessAsyncShouldFailWithNullHttpResponse()
-        {
-            var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
-            var httpRequest = new Mock<HttpRequest>();
-            var bot = new Mock<IBot>();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            {
-                await twilioAdapter.ProcessAsync(httpRequest.Object, null, bot.Object, default(CancellationToken));
-            });
-        }
-
-        [Fact]
-        public async void ProcessAsyncShouldFailWithNullBot()
-        {
-            var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
-            var httpRequest = new Mock<HttpRequest>();
-            var httpResponse = new Mock<HttpResponse>();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            {
-                await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, null, default(CancellationToken));
-            });
-        }
-
-        [Fact]
         public async void ProcessAsyncShouldSucceedWithHttpBody()
         {
             var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
@@ -102,7 +63,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
             var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_testOptions.AuthToken));
             var builder = new StringBuilder(_testOptions.ValidationUrl.ToString());
-            var byteArray = Encoding.ASCII.GetBytes(payload);
             var values = new Dictionary<string, string>();
             var pairs = payload.Replace("+", "%20").Split('&');
 
@@ -152,7 +112,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
             var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_testOptions.AuthToken));
             var builder = new StringBuilder(_testOptions.ValidationUrl.ToString());
-            var byteArray = Encoding.ASCII.GetBytes(payload);
             var values = new Dictionary<string, string>();
             var pairs = payload.Replace("+", "%20").Split('&');
 
@@ -192,6 +151,45 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         }
 
         [Fact]
+        public async void ProcessAsyncShouldFailWithNullHttpRequest()
+        {
+            var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
+            var httpResponse = new Mock<HttpResponse>();
+            var bot = new Mock<IBot>();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await twilioAdapter.ProcessAsync(null, httpResponse.Object, bot.Object, default(CancellationToken));
+            });
+        }
+
+        [Fact]
+        public async void ProcessAsyncShouldFailWithNullHttpResponse()
+        {
+            var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
+            var httpRequest = new Mock<HttpRequest>();
+            var bot = new Mock<IBot>();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await twilioAdapter.ProcessAsync(httpRequest.Object, null, bot.Object, default(CancellationToken));
+            });
+        }
+
+        [Fact]
+        public async void ProcessAsyncShouldFailWithNullBot()
+        {
+            var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
+            var httpRequest = new Mock<HttpRequest>();
+            var httpResponse = new Mock<HttpResponse>();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, null, default(CancellationToken));
+            });
+        }
+
+        [Fact]
         public async void UpdateActivityAsyncShouldThrowNotSupportedException()
         {
             var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
@@ -210,6 +208,23 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             var conversationReference = new ConversationReference();
 
             await Assert.ThrowsAsync<NotSupportedException>(async () => { await twilioAdapter.DeleteActivityAsync(turnContext, conversationReference, default); });
+        }
+
+        [Fact]
+        public async void ContinueConversationAsyncShouldSucceed()
+        {
+            bool callbackInvoked = false;
+            var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
+            var conversationReference = new ConversationReference();
+
+            Task BotsLogic(ITurnContext turnContext, CancellationToken cancellationToken)
+            {
+                callbackInvoked = true;
+                return Task.CompletedTask;
+            }
+
+            await twilioAdapter.ContinueConversationAsync(conversationReference, BotsLogic, default);
+            Assert.True(callbackInvoked);
         }
 
         [Fact]
@@ -232,23 +247,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             var conversationReference = new ConversationReference();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => { await twilioAdapter.ContinueConversationAsync(conversationReference, null, default); });
-        }
-
-        [Fact]
-        public async void ContinueConversationAsyncShouldSucceed()
-        {
-            bool callbackInvoked = false;
-            var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
-            var conversationReference = new ConversationReference();
-
-            Task BotsLogic(ITurnContext turnContext, CancellationToken cancellationToken)
-            {
-                callbackInvoked = true;
-                return Task.CompletedTask;
-            }
-
-            await twilioAdapter.ContinueConversationAsync(conversationReference, BotsLogic, default);
-            Assert.True(callbackInvoked);
         }
 
         [Fact]
