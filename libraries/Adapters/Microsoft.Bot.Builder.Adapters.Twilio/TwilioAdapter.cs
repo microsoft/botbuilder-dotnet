@@ -28,10 +28,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
         /// <remarks>
         /// The configuration keys are:
-        /// AccessToken: An access token for the bot.
-        /// PublicAddress: The root URL of the bot application.
-        /// Secret: The secret used to validate incoming webhooks.
-        /// WebhookName: A name for the webhook subscription.
+        /// TwilioNumber: The phone number associanted with the Twilio account.
+        /// AccountSid: The string identifier of the account. See https://www.twilio.com/docs/glossary/what-is-a-sid
+        /// AuthToken: The authentication token for the account.
         /// </remarks>
         public TwilioAdapter(IConfiguration configuration)
             : this(new TwilioClientWrapper(new TwilioAdapterOptions(configuration["TwilioNumber"], configuration["AccountSid"], configuration["AuthToken"], new Uri(configuration["ValidationUrl"]))))
@@ -41,9 +40,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <summary>
         /// Initializes a new instance of the <see cref="TwilioAdapter"/> class.
         /// </summary>
-        /// <param name="options">The options to use to authenticate the bot with the Twilio service.</param>
         /// <param name="twilioClient">The Twilio client to connect to.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="options"/> is <c>null</c>.</exception>
         public TwilioAdapter(TwilioClientWrapper twilioClient)
         {
             _twilioClient = twilioClient ?? throw new ArgumentNullException(nameof(twilioClient));
