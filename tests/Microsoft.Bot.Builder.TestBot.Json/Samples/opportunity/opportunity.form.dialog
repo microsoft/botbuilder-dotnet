@@ -1,0 +1,93 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "Account": {
+            "type": "string",
+            "$mappings": [
+                "utterance"
+            ]
+        },
+        "Topic": {
+            "type": "string",
+            "$mappings": [
+                "utterance"
+            ]
+        },
+        "Territory": {
+            "type": "string",
+            "$mappings": [
+                "utterance"
+            ]
+        },
+        "Description": {
+            "type": "string",
+            "$mappings": [
+                "utterance"
+            ]
+        },
+        "ContactPhone": {
+            "type": "string",
+            "$mappings": [
+                "utterance"
+            ]
+        },
+        "ContactEmail": {
+            "type": "string",
+            "$mappings": [
+                "email"
+            ]
+        },
+        "EstimatedCloseDate": {
+            "type": "string",
+            "$mappings": [
+                "datetime"
+            ]
+        },
+        "PurchaseTimeframe": {
+            "type": "string",
+            "$mappings": [
+                "datetime"
+            ]
+        },
+        "Confirmation": {
+            "type": "string",
+            "enum": [
+                "yes",
+                "no"
+            ],
+            "$templates": []
+        },
+        "CancelConfirmation": {
+            "type": "string",
+            "$mappings": [
+                "Confirmation"
+            ],
+            "$templates": []
+        },
+        "CompleteConfirmation": {
+            "type": "string",
+            "$mappings": [
+                "Confirmation"
+            ],
+            "$templates": []
+        },
+        "PropertyToChange": {
+            "type": "string",
+            "$mappings": [
+                "PROPERTYNAME"
+            ],
+            "$templates": []
+        }
+    },
+    "required": [
+        "Account",
+        "Topic",
+        "Territory",
+        "Description",
+        "ContactEmail",
+        "ContactPhone",
+        "EstimatedCloseDate",
+        "PurchaseTimeframe"
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$type": "Microsoft.FormDialog",
+    "recognizer": "opportunity.lu",
+    "generator": "opportunity.lg",
+    "schema": "opportunity.form",
+    "triggers": [ "opportunity-AccountAsk", "opportunity-AccountSet", "opportunity-TopicAsk", "opportunity-TopicSet", "opportunity-TerritorySet", "opportunity-TerritoryAsk", "opportunity-DescriptionAsk", "opportunity-DescriptionSet", "opportunity-ContactPhoneAsk", "opportunity-ContactPhoneSet", "opportunity-ContactEmailAsk", "opportunity-ContactEmailSet", "opportunity-EstimatedCloseDateAsk", "opportunity-EstimatedCloseDateSet", "opportunity-PurchaseTimeframeAsk", "opportunity-PurchaseTimeframeSet", "opportunity-begindialog", "opportunity-cancelconfirmation", "opportunity-cancelconfirmationset", "opportunity-chooseproperty", "opportunity-complete", "opportunity-completeconfirmationset", "opportunity-help", "opportunity-propertytochangeset" ]
+}

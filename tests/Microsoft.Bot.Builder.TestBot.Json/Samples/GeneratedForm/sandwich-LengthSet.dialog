@@ -1,0 +1,60 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$type": "Microsoft.OnSetProperty",
+    "property": "Length",
+    "actions": [
+        {
+            "$type": "Microsoft.SwitchCondition",
+            "condition": "turn.schema.properties['Length'].$mappings[0]",
+            "cases": [
+                {
+                    "value": "utterance",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SetProperty",
+                            "property": "$Length",
+                            "value": "@utterance"
+                        }
+                    ]
+                },
+                {
+                    "value": "datetime",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SetProperty",
+                            "property": "$Length",
+                            "value": "join(@datetime.timex,', ')"
+                        }
+                    ]
+                },
+                {
+                    "value": "datetimeV2",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SetProperty",
+                            "property": "$Length",
+                            "value": "join(@datetime.timex,', ')"
+                        }
+                    ]
+                },
+                {
+                    "value": "email",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SetProperty",
+                            "property": "$Length",
+                            "value": "@email"
+                        }
+                    ]
+                }
+            ],
+            "default": [
+                {
+                    "$type": "Microsoft.SetProperty",
+                    "property": "$Length",
+                    "value": "turn.recognized.entities[turn.schema.properties['Length'].$mappings[0]]"
+                }
+            ]
+        }
+    ]
+}

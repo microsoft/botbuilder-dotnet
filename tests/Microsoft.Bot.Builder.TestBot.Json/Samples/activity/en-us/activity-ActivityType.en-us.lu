@@ -1,0 +1,17 @@
+
+$ActivityType:Task=
+ -task
+
+$ActivityType:PhoneCall=
+ -phone
+ -call
+ -phone call
+
+
+# None
+- task
+
+- phone
+- call
+- phone call
+

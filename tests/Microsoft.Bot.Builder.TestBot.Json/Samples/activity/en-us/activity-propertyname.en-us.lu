@@ -1,0 +1,41 @@
+
+$PROPERTYNAME:Subject=
+- subject
+
+
+$PROPERTYNAME:ActivityType=
+- activity
+- type
+- activity type
+
+
+$PROPERTYNAME:StartDate=
+- start
+- date
+- start date
+
+
+$PROPERTYNAME:Confirmation=
+- confirmation
+
+
+$PROPERTYNAME:CancelConfirmation=
+- cancel
+- confirmation
+- cancel confirmation
+
+
+$PROPERTYNAME:CompleteConfirmation=
+- complete
+- confirmation
+- complete confirmation
+
+
+$PROPERTYNAME:PropertyToChange=
+- property
+- to
+- change
+- property to
+- to change
+- property to change
+

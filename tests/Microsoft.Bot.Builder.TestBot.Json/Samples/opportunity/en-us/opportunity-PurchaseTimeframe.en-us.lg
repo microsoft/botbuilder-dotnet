@@ -1,0 +1,7 @@
+# AskPurchaseTimeframe
+- [askString('PurchaseTimeframe', PurchaseTimeframeName())]
+
+# PurchaseTimeframeName
+- purchase timeframe 
+[opportunity-common.en-us.lg](./opportunity-common.en-us.lg)
+ 

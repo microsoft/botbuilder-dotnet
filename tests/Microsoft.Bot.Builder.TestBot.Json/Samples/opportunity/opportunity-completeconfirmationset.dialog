@@ -1,0 +1,30 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$type": "Microsoft.OnSetProperty",
+    "property": "CompleteConfirmation",
+    "actions": [
+        {
+            "$type": "Microsoft.SetProperty",
+            "property": "$CompleteConfirmation",
+            "value": "@Confirmation"
+        },
+        {
+            "$type": "Microsoft.IfCondition",
+            "condition":"$CompleteConfirmation == 'no'",
+            "actions": [
+                {
+                    "$type": "Microsoft.EndDialog"
+                }
+            ],
+            "elseActions":[
+                {
+                    "$type": "Microsoft.Ask",
+                    "activity": "Which slot do you want to change?",
+                    "expectedProperties": [
+                        "PropertyToChange"
+                    ]
+                }
+            ]
+        }
+    ]
+}

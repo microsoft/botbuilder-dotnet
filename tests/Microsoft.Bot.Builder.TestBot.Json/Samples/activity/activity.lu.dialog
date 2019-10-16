@@ -1,0 +1,7 @@
+{
+    "$type": "Microsoft.MultiLanguageRecognizer",
+    "recognizers": {
+        "en-us": "activity.en-us.lu",
+        "": "activity.en-us.lu"
+    }
+}

@@ -1,0 +1,30 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$type": "Microsoft.OnAsk",
+    "condition": "and(!$Topic, contains(dialog.requiredProperties, 'Topic'))",
+    "actions": [
+        {
+            "$type": "Microsoft.IfCondition",
+            "condition": "contains(turn.schema.properties['Topic'].$mappings, 'utterance')",
+            "actions": [
+                {
+                    "$type": "Microsoft.Ask",
+                    "activity": "[AskTopic]",
+                    "expectedProperties": [
+                        "utterance",
+                        "Topic"
+                    ]
+                }
+            ],
+            "elseActions": [
+                {
+                    "$type": "Microsoft.Ask",
+                    "activity": "[AskTopic]",
+                    "expectedProperties": [
+                        "Topic"
+                    ]
+                }
+            ]
+        }
+    ]
+}

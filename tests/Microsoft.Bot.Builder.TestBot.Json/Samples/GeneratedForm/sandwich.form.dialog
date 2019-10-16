@@ -109,11 +109,8 @@
         },
         "PropertyToChange": {
             "type": "string",
-            "enum": [
-                "Meat",
-                "Bread",
-                "Cheese",
-                "Toppings"
+            "$mappings": [
+                "PROPERTYNAME"
             ],
             "$templates": []
         }

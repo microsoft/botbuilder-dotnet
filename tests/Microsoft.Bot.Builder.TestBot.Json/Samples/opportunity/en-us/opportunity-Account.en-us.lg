@@ -1,0 +1,7 @@
+# AskAccount
+- [askString('Account', AccountName())]
+
+# AccountName
+- account 
+[opportunity-common.en-us.lg](./opportunity-common.en-us.lg)
+ 
