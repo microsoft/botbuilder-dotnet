@@ -460,30 +460,30 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public void GetAppIdTests()
+        public void GetAppIdFromClaimsTests()
         {
             var v1Claims = new List<Claim>();
             var v2Claims = new List<Claim>();
             var appId = Guid.NewGuid().ToString();
 
             // Empty list
-            Assert.Null(JwtTokenValidation.GetAppId(v1Claims));
+            Assert.Null(JwtTokenValidation.GetAppIdFromClaims(v1Claims));
 
             // AppId there but no version (assumes v1)
             v1Claims.Add(new Claim(AuthenticationConstants.AppIdClaim, appId));
-            Assert.Equal(appId, JwtTokenValidation.GetAppId(v1Claims));
+            Assert.Equal(appId, JwtTokenValidation.GetAppIdFromClaims(v1Claims));
 
             // AppId there with v1 version
             v1Claims.Add(new Claim(AuthenticationConstants.VersionClaim, "1.0"));
-            Assert.Equal(appId, JwtTokenValidation.GetAppId(v1Claims));
+            Assert.Equal(appId, JwtTokenValidation.GetAppIdFromClaims(v1Claims));
 
             // v2 version but no azp
             v2Claims.Add(new Claim(AuthenticationConstants.VersionClaim, "2.0"));
-            Assert.Null(JwtTokenValidation.GetAppId(v2Claims));
+            Assert.Null(JwtTokenValidation.GetAppIdFromClaims(v2Claims));
 
             // v2 version with azp
             v2Claims.Add(new Claim(AuthenticationConstants.AuthorizedParty, appId));
-            Assert.Equal(appId, JwtTokenValidation.GetAppId(v2Claims));
+            Assert.Equal(appId, JwtTokenValidation.GetAppIdFromClaims(v2Claims));
         }
 
         private async Task JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(string appId, string pwd, string channelService)
