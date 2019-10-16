@@ -8,18 +8,34 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
     /// <summary>
     /// A <see cref="BotAdapter"/> that can connect to Twilio's SMS service.
     /// </summary>
-    public class TwilioAdapter : BotAdapter
+    public class TwilioAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
-        private readonly TwilioAdapterOptions _options;
-
         private readonly TwilioClientWrapper _twilioClient;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TwilioAdapter"/> class using configuration settings.
+        /// </summary>
+        /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
+        /// <remarks>
+        /// The configuration keys are:
+        /// AccessToken: An access token for the bot.
+        /// PublicAddress: The root URL of the bot application.
+        /// Secret: The secret used to validate incoming webhooks.
+        /// WebhookName: A name for the webhook subscription.
+        /// </remarks>
+        public TwilioAdapter(IConfiguration configuration)
+            : this(new TwilioClientWrapper(new TwilioAdapterOptions(configuration["TwilioNumber"], configuration["AccountSid"], configuration["AuthToken"], new Uri(configuration["ValidationUrl"]))))
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TwilioAdapter"/> class.
@@ -27,32 +43,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="options">The options to use to authenticate the bot with the Twilio service.</param>
         /// <param name="twilioClient">The Twilio client to connect to.</param>
         /// <exception cref="ArgumentNullException"><paramref name="options"/> is <c>null</c>.</exception>
-        public TwilioAdapter(TwilioAdapterOptions options, TwilioClientWrapper twilioClient)
+        public TwilioAdapter(TwilioClientWrapper twilioClient)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            if (string.IsNullOrWhiteSpace(options.TwilioNumber))
-            {
-                throw new ArgumentException("TwilioNumber is a required part of the configuration.", nameof(options));
-            }
-
-            if (string.IsNullOrWhiteSpace(options.AccountSid))
-            {
-                throw new ArgumentException("AccountSid is a required part of the configuration.", nameof(options));
-            }
-
-            if (string.IsNullOrWhiteSpace(options.AuthToken))
-            {
-                throw new ArgumentException("AuthToken is a required part of the configuration.", nameof(options));
-            }
-
             _twilioClient = twilioClient ?? throw new ArgumentNullException(nameof(twilioClient));
-            _options = options;
-
-            _twilioClient.LogIn(_options.AccountSid, _options.AuthToken);
         }
 
         /// <summary>
@@ -74,7 +67,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             {
                 if (activity.Type == ActivityTypes.Message)
                 {
-                    var messageOptions = TwilioHelper.ActivityToTwilio(activity, _options.TwilioNumber);
+                    var messageOptions = TwilioHelper.ActivityToTwilio(activity, _twilioClient.Options.TwilioNumber);
 
                     var res = await _twilioClient.SendMessage(messageOptions).ConfigureAwait(false);
 
@@ -122,7 +115,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 throw new ArgumentNullException(nameof(bot));
             }
 
-            var activity = await TwilioHelper.RequestToActivity(httpRequest, _options.ValidationUrl, _options.AuthToken).ConfigureAwait(false);
+            var activity = await TwilioHelper.RequestToActivity(httpRequest, _twilioClient.Options.ValidationUrl,  _twilioClient.Options.AuthToken).ConfigureAwait(false);
 
             // create a conversation reference
             using (var context = new TurnContext(this, activity))

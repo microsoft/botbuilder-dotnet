@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
@@ -13,14 +14,32 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
     public class TwilioClientWrapper
     {
         /// <summary>
-        /// Initializes the Twilio client with a user name and password.
+        /// Initializes a new instance of the <see cref="TwilioClientWrapper"/> class.
         /// </summary>
-        /// <param name="username">The user name for the Twilio API.</param>
-        /// <param name="password">The password for the Twilio API.</param>
-        public virtual void LogIn(string username, string password)
+        /// <param name="options">An object containing API credentials, a webhook verification token and other options.</param>
+        public TwilioClientWrapper(TwilioAdapterOptions options)
         {
-            TwilioClient.Init(username, password);
+            Options = options ?? throw new ArgumentNullException(nameof(options));
+
+            if (string.IsNullOrWhiteSpace(options.TwilioNumber))
+            {
+                throw new ArgumentException("TwilioNumber is a required part of the configuration.", nameof(options));
+            }
+
+            if (string.IsNullOrWhiteSpace(options.AccountSid))
+            {
+                throw new ArgumentException("AccountSid is a required part of the configuration.", nameof(options));
+            }
+
+            if (string.IsNullOrWhiteSpace(options.AuthToken))
+            {
+                throw new ArgumentException("AuthToken is a required part of the configuration.", nameof(options));
+            }
+
+            TwilioClient.Init(Options.AccountSid, Options.AuthToken);
         }
+
+        public TwilioAdapterOptions Options { get; private set; }
 
         /// <summary>
         /// Sends a Twilio SMS message.
