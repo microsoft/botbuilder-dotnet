@@ -366,18 +366,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             while (action != null)
             {
                 // Continue current step
+                // DEBUG: To debug step execution set a breakpoint on line below and add a watch 
+                //        statement for sequenceContext.Actions.
                 var result = await action.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
 
                 // Start step if not continued
                 if (result.Status == DialogTurnStatus.Empty && GetUniqueInstanceId(sequenceContext) == instanceId)
                 {
-                    var nextAction = action.Actions.First();
-
-                    // Compute options object for the step
-                    object effectiveOptions = ComputeEffectiveOptions(options, nextAction.Options);
-
                     // Call begin dialog on our next step, passing the effective options we computed
-                    result = await action.BeginDialogAsync(nextAction.DialogId, effectiveOptions, cancellationToken).ConfigureAwait(false);
+                    var nextAction = action.Actions.First();
+                    result = await action.BeginDialogAsync(nextAction.DialogId, nextAction.Options, cancellationToken).ConfigureAwait(false);
                 }
 
                 // Is the step waiting for input or were we cancelled?
@@ -538,25 +536,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             return false;
-        }
-
-        private object ComputeEffectiveOptions(object adaptiveOptions, object stepOptions)
-        {
-            var effectiveOptions = adaptiveOptions;
-
-            if (effectiveOptions == null)
-            {
-                // If no options were passed in from the adaptive dialog, just use the step's option
-                effectiveOptions = stepOptions;
-            }
-            else if (stepOptions != null)
-            {
-                // If we were passed in options and also have non-null options for the next step,
-                // overlay the step options on top of the adaptive options 
-                ObjectPath.Assign<object>(effectiveOptions, stepOptions);
-            }
-
-            return effectiveOptions;
         }
 
         private void EnsureDependenciesInstalled()

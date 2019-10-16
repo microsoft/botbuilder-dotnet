@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
@@ -2006,7 +2007,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                .StartTestAsync();
         }
 
-        private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
+        private TestFlow CreateFlow(DialogContainer ruleDialog)
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
 
@@ -2037,6 +2038,60 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         private class Person
         {
             public string UserName { get; set; }
+        }
+
+        private class ForeachItemsDialog : ComponentDialog
+        {
+            internal ForeachItemsDialog()
+            {
+                this.AddDialog(new AdaptiveDialog()
+                {
+                    Id = "doItems",
+                    Triggers = new List<OnCondition>()
+                    {
+                        new OnBeginDialog()
+                        {
+                            Actions = new List<Dialog>()
+                            {
+                                new Foreach()
+                                {
+                                     ItemsProperty = "$options.Items",
+                                     Actions = new List<Dialog>()
+                                     {
+                                         new SendActivity()
+                                         {
+                                             Activity = new ActivityTemplate("{$foreach.value}")
+                                         }
+                                     }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            protected override async Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default)
+            {
+                List<string> items = new List<string>();
+                for (var i = 0; i < 1000; i++)
+                {
+                    items.Add(i.ToString());
+                }
+                return await innerDc.BeginDialogAsync("doItems", new { Items = items }, cancellationToken);
+            }
+        }
+
+        [TestMethod]
+        public async Task TestForeachWithLargeItems()
+        {
+            var testFlow = CreateFlow(new ForeachItemsDialog())
+                .SendConversationUpdate();
+            for (int i = 0; i < 1000; i++)
+            {
+                testFlow = testFlow.AssertReply(i.ToString());
+            }
+
+            await testFlow.StartTestAsync();
         }
     }
 }
