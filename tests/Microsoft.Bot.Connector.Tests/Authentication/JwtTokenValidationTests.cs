@@ -459,6 +459,33 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 async () => await EnterpriseChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
         }
 
+        [Fact]
+        public void GetAppIdTests()
+        {
+            var v1Claims = new List<Claim>();
+            var v2Claims = new List<Claim>();
+            var appId = Guid.NewGuid().ToString();
+
+            // Empty list
+            Assert.Null(JwtTokenValidation.GetAppId(v1Claims));
+
+            // AppId there but no version (assumes v1)
+            v1Claims.Add(new Claim(AuthenticationConstants.AppIdClaim, appId));
+            Assert.Equal(appId, JwtTokenValidation.GetAppId(v1Claims));
+
+            // AppId there with v1 version
+            v1Claims.Add(new Claim(AuthenticationConstants.VersionClaim, "1.0"));
+            Assert.Equal(appId, JwtTokenValidation.GetAppId(v1Claims));
+
+            // v2 version but no azp
+            v2Claims.Add(new Claim(AuthenticationConstants.VersionClaim, "2.0"));
+            Assert.Null(JwtTokenValidation.GetAppId(v2Claims));
+
+            // v2 version with azp
+            v2Claims.Add(new Claim(AuthenticationConstants.AuthorizedParty, appId));
+            Assert.Equal(appId, JwtTokenValidation.GetAppId(v2Claims));
+        }
+
         private async Task JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(string appId, string pwd, string channelService)
         {
             string header = $"Bearer {await new MicrosoftAppCredentials(appId, pwd).GetTokenAsync()}";
@@ -472,27 +499,6 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             var result = await JwtTokenValidation.ValidateAuthHeader(header, credentials, channel, string.Empty, "https://webchat.botframework.com/", client);
 
             Assert.True(result.IsAuthenticated);
-        }
-
-        private async Task JwtTokenValidation_ValidateAuthHeader_WithChannelService_Throws(string appId, string pwd, string channelService)
-        {
-            var header = $"Bearer {await new MicrosoftAppCredentials(appId, pwd).GetTokenAsync()}";
-            await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(header, appId, pwd, channelService);
-        }
-
-        private async Task JwtTokenValidation_ValidateAuthHeader_WithChannelService_Throws(string header, string appId, string pwd, string channelService)
-        {
-            var credentials = new SimpleCredentialProvider(appId, pwd);
-            var channel = new SimpleChannelProvider(channelService);
-
-            await Assert.ThrowsAsync<UnauthorizedAccessException>(
-                async () => await JwtTokenValidation.ValidateAuthHeader(
-                    header,
-                    credentials,
-                    channel,
-                    string.Empty,
-                    "https://webchat.botframework.com/",
-                    client));
         }
 
         private class SimpleClaimsIdentity : ClaimsIdentity
