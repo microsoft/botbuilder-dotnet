@@ -122,7 +122,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
-            // Webex adapter does not support updateActivity.
             return Task.FromException<ResourceResponse>(new NotSupportedException("Webex adapter does not support updateActivity."));
         }
 
@@ -171,9 +170,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <summary>
         /// Accept an incoming webhook <see cref="HttpRequest"/> and convert it into a <see cref="TurnContext"/> which can be processed by the bot's logic.
         /// </summary>
-        /// <param name="request">A <see cref="HttpRequest"/> object.</param>
-        /// <param name="response">A <see cref="HttpResponse"/> object.</param>
-        /// <param name="bot">A bot with logic function in the form.</param>
+        /// <param name="request">The incoming <see cref="HttpRequest"/>.</param>
+        /// <param name="response">When this method completes, the <see cref="HttpResponse"/> to send.</param>
+        /// <param name="bot">The bot that will handle the incoming activity.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken)

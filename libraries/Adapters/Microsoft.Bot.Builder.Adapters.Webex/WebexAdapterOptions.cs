@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
 {
@@ -29,7 +28,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <summary>
         /// Gets or sets an access token for the bot.
         /// </summary>
-        /// <value>An access token for the bot. Get one from https://developer.webex.com/.</value>
+        /// <value>An access token for the bot. Get one from 'https://developer.webex.com/'.</value>
         public string AccessToken { get; set; }
 
         /// <summary>

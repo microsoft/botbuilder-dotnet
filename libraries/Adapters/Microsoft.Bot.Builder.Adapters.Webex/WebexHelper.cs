@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
     internal static class WebexHelper
     {
         /// <summary>
-        /// Creates a <see cref="Activity"/> using the body of a request.
+        /// Creates an <see cref="Activity"/> using the body of a request.
         /// </summary>
         /// <param name="payload">The payload obtained from the body of the request.</param>
         /// <param name="identity">The identity of the bot.</param>
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         }
 
         /// <summary>
-        /// Gets a decrypted message by its Id.
+        /// Gets a decrypted <see cref="Message"/> by its Id.
         /// </summary>
         /// <param name="payload">The payload obtained from the body of the request.</param>
         /// <param name="decrypterFunc">The function used to decrypt the message.</param>
@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         }
 
         /// <summary>
-        /// Converts a decrypted related to an attachment action into an <see cref="Activity"/>.
+        /// Converts a decrypted <see cref="Message"/> related to an attachment action into an <see cref="Activity"/>.
         /// </summary>
         /// <param name="decryptedMessage">The decrypted message obtained from the body of the request.</param>
         /// <param name="identity">The identity of the bot.</param>
@@ -208,7 +208,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         }
 
         /// <summary>
-        /// Adds the message's files to a attachments list.
+        /// Adds the message's files to an attachments list.
         /// </summary>
         /// <param name="message">The message with the files to process.</param>
         /// <returns>A list of attachments containing the message's files.</returns>

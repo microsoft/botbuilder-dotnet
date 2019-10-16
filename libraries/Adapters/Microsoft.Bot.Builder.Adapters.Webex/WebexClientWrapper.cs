@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
 using System.Security.Cryptography;
@@ -24,9 +23,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         private const string WebhookUrl = "https://api.ciscospark.com/v1/webhooks";
         private const string MessageUrl = "https://api.ciscospark.com/v1/messages";
         private const string ActionsUrl = "https://api.ciscospark.com/v1/attachment/actions";
+        private const string SparkSignature = "x-spark-signature";
 
         private readonly TeamsAPIClient _api;
-        public readonly WebexAdapterOptions Options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebexClientWrapper"/> class.
@@ -49,6 +48,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             _api = TeamsAPI.CreateVersion1Client(Options.AccessToken);
         }
+
+        public WebexAdapterOptions Options { get; }
 
         /// <summary>
         /// Lists all webhook subscriptions currently associated with this application.
@@ -167,9 +168,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>The result of the comparison between the signature in the request and hashed json.</returns>
         public virtual bool ValidateSignature(HttpRequest request, string json)
         {
-            var signature = request.Headers.ContainsKey("x-spark-signature")
-                ? request.Headers["x-spark-signature"].ToString().ToUpperInvariant()
-                : throw new Exception("HttpRequest is missing \"x-spark-signature\"");
+            var signature = request.Headers.ContainsKey(SparkSignature)
+                ? request.Headers[SparkSignature].ToString().ToUpperInvariant()
+                : throw new Exception($"HttpRequest is missing \"{SparkSignature}\"");
 
 #pragma warning disable CA5350 // Webex API uses SHA1 as cryptographic algorithm.
             using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(Options.Secret)))
@@ -219,7 +220,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         public virtual async Task<string> CreateMessageWithAttachmentsAsync(string toPersonOrEmail, string text, IList<Attachment> attachments, CancellationToken cancellationToken)
         {
             Message result;
-            var url = MessageUrl;
 
             var attachmentsContent = new List<object>();
 
@@ -235,7 +235,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 Attachments = attachmentsContent.Count > 0 ? attachmentsContent : null,
             };
 
-            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
+            var http = (HttpWebRequest)WebRequest.Create(new Uri(MessageUrl));
             http.PreAuthenticate = true;
             http.Headers.Add("Authorization", "Bearer " + Options.AccessToken);
             http.Accept = "application/json";
@@ -264,9 +264,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         }
 
         /// <summary>
-        /// Shows details for a attachment action, by ID.
+        /// Shows details for an attachment action, by ID.
         /// </summary>
-        /// <param name="actionId">A unique identifier for the attachment action.</param>
+        /// <param name="actionId">An unique identifier for the attachment action.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The attachment action details.</returns>
         public virtual async Task<Message> GetAttachmentActionAsync(string actionId, CancellationToken cancellationToken)
@@ -384,8 +384,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>The created <see cref="Webhook"/>.</returns>
         public virtual async Task<Webhook> CreateAdaptiveCardsWebhookAsync(string name, Uri targetUri, EventType type, string secret, string token, CancellationToken cancellationToken)
         {
-            var url = WebhookUrl;
-
             var data = new NameValueCollection
             {
                 ["name"] = name,
@@ -399,7 +397,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 client.Headers[HttpRequestHeader.Authorization] = "Bearer " + token;
 
-                var response = await client.UploadValuesTaskAsync(new Uri(url), "POST", data).ConfigureAwait(false);
+                var response = await client.UploadValuesTaskAsync(new Uri(WebhookUrl), "POST", data).ConfigureAwait(false);
 
                 var result = JsonConvert.DeserializeObject<Webhook>(Encoding.ASCII.GetString(response));
 
@@ -419,9 +417,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>The created <see cref="Webhook"/>.</returns>
         public virtual async Task<Webhook> UpdateAdaptiveCardsWebhookAsync(string webhookId, string name, Uri targetUri, string secret, string token, CancellationToken cancellationToken)
         {
-            Webhook result;
-
             var url = $"{WebhookUrl}/{webhookId}";
+
             var data = new NameValueCollection
             {
                 ["name"] = name,
@@ -437,7 +434,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 var response = await client.UploadValuesTaskAsync(new Uri(url), "PUT", data).ConfigureAwait(false);
 
-                result = JsonConvert.DeserializeObject<Webhook>(Encoding.ASCII.GetString(response));
+                var result = JsonConvert.DeserializeObject<Webhook>(Encoding.ASCII.GetString(response));
 
                 return result;
             }
