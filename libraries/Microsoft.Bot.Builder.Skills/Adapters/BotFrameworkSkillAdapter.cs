@@ -210,7 +210,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
                     activity.Conversation.Id,
                     activity.ServiceUrl,
                 })));
-                activity.ServiceUrl = SkillsCallbackEndpoint.ToString();
+                activity.ServiceUrl = SkillsCallbackEndpoint;
                 activity.Recipient.Properties["skillId"] = skill.Id;
                 var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json");
 
@@ -259,7 +259,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
                 if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
                 {
                     // The skill connector has the target skill in the OAuthScope.
-                    scope = SkillValidation.GetAppId(claimsIdentity.Claims);
+                    scope = JwtTokenValidation.GetAppId(claimsIdentity.Claims);
                 }
 
                 appCredentials = await GetAppCredentialsAsync(botId, scope, cancellationToken).ConfigureAwait(false);

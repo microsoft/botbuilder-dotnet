@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -108,7 +109,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// identity for the request.</remarks>
         public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, string channelId, AuthenticationConfiguration authConfig, string serviceUrl = null, HttpClient httpClient = null)
         {
-            if (string.IsNullOrEmpty(authHeader))
+            if (String.IsNullOrEmpty(authHeader))
             {
                 throw new ArgumentNullException(nameof(authHeader));
             }
@@ -122,7 +123,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             if (SkillValidation.IsSkillToken(authHeader))
             {
-                return await SkillValidation.AuthenticateSkillToken(authHeader, credentials, channelProvider, httpClient, channelId, authConfig, serviceUrl);
+                return await SkillValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, httpClient, channelId, authConfig);
             }
 
             if (EmulatorValidation.IsTokenFromEmulator(authHeader))
@@ -147,6 +148,42 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             return await EnterpriseChannelValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, serviceUrl, httpClient, channelId, authConfig).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Helper method to get the AppId from a token claims list.
+        /// </summary>
+        /// <remarks>
+        /// In v1 tokens the AppId is in the the <see cref="AuthenticationConstants.AppIdClaim"/> claim.
+        /// In v2 tokens the AppId is in the azp <see cref="AuthenticationConstants.AuthorizedParty"/> claim.
+        /// If the <see cref="AuthenticationConstants.VersionClaim"/> is not present, this method will attempt to
+        /// obtain the attribute from the <see cref="AuthenticationConstants.AppIdClaim"/> or if present.
+        /// </remarks>
+        /// <param name="claims">A list of <see cref="Claim"/> instances.</param>
+        /// <returns>The value of the appId claim if found (null if it can't find a suitable claim)</returns>
+        public static string GetAppId(IEnumerable<Claim> claims)
+        {
+            var claimsList = claims.ToList();
+            string appId = null;
+
+            // Depending on Version, the is either in the
+            // appid claim (Version 1) or the Authorized Party claim (Version 2).
+            var tokenVersion = claimsList.FirstOrDefault(claim => claim.Type == AuthenticationConstants.VersionClaim)?.Value;
+            if (string.IsNullOrWhiteSpace(tokenVersion) || tokenVersion == "1.0")
+            {
+                // either no Version or a version of "1.0" means we should look for
+                // the claim in the "appid" claim.
+                var appIdClaim = claimsList.FirstOrDefault(c => c.Type == AuthenticationConstants.AppIdClaim);
+                appId = appIdClaim?.Value;
+            }
+            else if (tokenVersion == "2.0")
+            {
+                // "2.0" puts the AppId in the "azp" claim.
+                var appZClaim = claimsList.FirstOrDefault(c => c.Type == AuthenticationConstants.AuthorizedParty);
+                appId = appZClaim?.Value;
+            }
+
+            return appId;
         }
     }
 }

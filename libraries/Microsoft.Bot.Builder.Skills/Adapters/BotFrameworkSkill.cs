@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Skills.BotFramework
     public class BotFrameworkSkill
     {
         /// <summary>
-        /// Gets or sets name of the skill.
+        /// Gets or sets Id of the skill.
         /// </summary>
         /// <value>
         /// Name of the skill.

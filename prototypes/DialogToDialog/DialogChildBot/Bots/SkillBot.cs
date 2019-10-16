@@ -24,6 +24,8 @@ namespace DialogChildBot.Bots
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
+            // TODO: replace this with DialogManager
+            // TODO: Ensure we add status on return
             // Run the Dialog with the new message Activity.
             var result = await Dialog.InvokeAsync(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
 
