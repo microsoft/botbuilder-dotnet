@@ -22,6 +22,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Rest;
 using Microsoft.Rest.TransientFaultHandling;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -48,10 +49,10 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IMiddleware"/>
     public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IUserTokenProvider, IStreamingActivityProcessor
     {
-#pragma warning disable SA1401 // Fields should be private
+        internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
+        internal const string BotIdentityKey = "BotIdentity";
 
-        protected const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
-        protected const string BotIdentityKey = "BotIdentity";
+#pragma warning disable SA1401 // Fields should be private
 
         protected readonly ICredentialProvider _credentialProvider;
         protected readonly IChannelProvider _channelProvider;
@@ -67,7 +68,8 @@ namespace Microsoft.Bot.Builder
 
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
-        private readonly ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
+        private readonly ConcurrentDictionary<string, AppCredentials> _appCredentialMap = new ConcurrentDictionary<string, AppCredentials>();
+        private readonly AppCredentials _appCredentials;
         private readonly AuthenticationConfiguration _authConfiguration;
 
         // There is a significant boost in throughput if we reuse a connectorClient
@@ -128,6 +130,53 @@ namespace Microsoft.Bot.Builder
             ILogger logger = null)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
+            _channelProvider = channelProvider;
+            _httpClient = customHttpClient ?? _defaultHttpClient;
+            _connectorClientRetryPolicy = connectorClientRetryPolicy;
+            _logger = logger ?? NullLogger.Instance;
+            _authConfiguration = authConfig ?? throw new ArgumentNullException(nameof(authConfig));
+
+            if (middleware != null)
+            {
+                Use(middleware);
+            }
+
+            // Relocate the tenantId field used by MS Teams to a new location (from channelData to conversation)
+            // This will only occur on activities from teams that include tenant info in channelData but NOT in conversation,
+            // thus should be future friendly.  However, once the transition is complete. we can remove this.
+            Use(new TenantIdWorkaroundForTeamsMiddleware());
+
+            // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
+            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
+        /// using a credential provider.
+        /// </summary>
+        /// <param name="credentials">The credentials to be used for token acquisition.</param>
+        /// <param name="authConfig">The authentication configuration.</param>
+        /// <param name="channelProvider">The channel provider.</param>
+        /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
+        /// <param name="customHttpClient">The HTTP client.</param>
+        /// <param name="middleware">The middleware to initially add to the adapter.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        /// <exception cref="ArgumentNullException">throw ArgumentNullException</exception>
+        /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
+        /// components in the constructor. Use the <see cref="Use(IMiddleware)"/> method to
+        /// add additional middleware to the adapter after construction.
+        /// </remarks>
+        public BotFrameworkAdapter(
+            AppCredentials credentials,
+            AuthenticationConfiguration authConfig,
+            IChannelProvider channelProvider = null,
+            RetryPolicy connectorClientRetryPolicy = null,
+            HttpClient customHttpClient = null,
+            IMiddleware middleware = null,
+            ILogger logger = null)
+        {
+            _appCredentials = credentials ?? throw new ArgumentNullException(nameof(credentials));
+            _credentialProvider = new SimpleCredentialProvider(credentials.MicrosoftAppId, string.Empty);
             _channelProvider = channelProvider;
             _httpClient = customHttpClient ?? _defaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
@@ -278,6 +327,7 @@ namespace Microsoft.Bot.Builder
             using (var context = new TurnContext(this, activity))
             {
                 context.TurnState.Add<IIdentity>(BotIdentityKey, identity);
+                context.TurnState.Add<BotCallbackHandler>(callback);
 
                 var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, identity, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
@@ -371,6 +421,11 @@ namespace Microsoft.Bot.Builder
                     // The ServiceUrl for streaming channels begins with the string "urn" and contains
                     // information unique to streaming connections. Now that we know that this is a streaming
                     // activity, process it in the streaming pipeline.
+
+                    // Check if we have token responses from OAuth cards.
+                    TokenResolver.CheckForOAuthCards(this, _logger, turnContext, activity, cancellationToken);
+
+                    // Process streaming activity.
                     response = await SendStreamingActivityAsync(activity).ConfigureAwait(false);
                 }
                 else if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
@@ -804,7 +859,8 @@ namespace Microsoft.Bot.Builder
             eventActivity.ChannelId = channelId;
             eventActivity.ServiceUrl = serviceUrl;
             eventActivity.Id = result.ActivityId ?? Guid.NewGuid().ToString("n");
-            eventActivity.Conversation = new ConversationAccount(id: result.Id);
+            eventActivity.Conversation = new ConversationAccount(id: result.Id, tenantId: conversationParameters.TenantId);
+            eventActivity.ChannelData = conversationParameters.ChannelData;
             eventActivity.Recipient = conversationParameters.Bot;
 
             using (TurnContext context = new TurnContext(this, (Activity)eventActivity))
@@ -1066,7 +1122,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="serviceUrl">The service URL.</param>
         /// <param name="appCredentials">The application credentials for the bot.</param>
         /// <returns>Connector client instance.</returns>
-        private IConnectorClient CreateConnectorClient(string serviceUrl, MicrosoftAppCredentials appCredentials = null)
+        private IConnectorClient CreateConnectorClient(string serviceUrl, AppCredentials appCredentials = null)
         {
             string clientKey = $"{serviceUrl}{appCredentials?.MicrosoftAppId ?? string.Empty}";
 
@@ -1101,7 +1157,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="appId">The application identifier (AAD Id for the bot).</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>App credentials.</returns>
-        private async Task<MicrosoftAppCredentials> GetAppCredentialsAsync(string appId, CancellationToken cancellationToken)
+        private async Task<AppCredentials> GetAppCredentialsAsync(string appId, CancellationToken cancellationToken)
         {
             if (appId == null)
             {
@@ -1111,6 +1167,13 @@ namespace Microsoft.Bot.Builder
             if (_appCredentialMap.TryGetValue(appId, out var appCredentials))
             {
                 return appCredentials;
+            }
+
+            // If app credentials were provided, use them as they are the preferred choice moving forward
+            if (_appCredentials != null)
+            {
+                _appCredentialMap[appId] = _appCredentials;
+                return _appCredentials;
             }
 
             // NOTE: we can't do async operations inside of a AddOrUpdate, so we split access pattern

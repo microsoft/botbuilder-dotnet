@@ -60,7 +60,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs.TestData
                     { "cancel", "Cancelling" },
                 },
                 true,
-                new DialogTurnResult(DialogTurnStatus.Complete));
+                new DialogTurnResult(DialogTurnStatus.Cancelled));
 
             yield return BuildTestCaseObject(
                 "Full flow with failed call to FlightBookingService",

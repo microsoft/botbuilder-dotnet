@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Builder.Streaming
 {
-    internal class VersionInfo
+    public class VersionInfo
     {
         public string UserAgent { get; set; }
     }

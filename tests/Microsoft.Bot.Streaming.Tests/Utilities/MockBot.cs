@@ -30,7 +30,6 @@ namespace Microsoft.Bot.Streaming.Tests.Utilities
 
             _processActivityAsync = processActivityAsync;
             _adapter = adapter ?? new BotFrameworkHttpAdapter();
-            _adapter.UseNamedPipeAsync(pipeName, this);
         }
 
         public List<Schema.Activity> ReceivedActivities { get; private set; } = new List<Schema.Activity>();

@@ -4,12 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Channel;
-using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Bot.Builder.ApplicationInsights;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
 {

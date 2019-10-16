@@ -275,16 +275,70 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     }
                 })
                 .Send("hello")
-                .AssertReply(HeroCardValidator(new HeroCard
-                {
-                    Text = "favorite color?",
-                    Buttons = new List<CardAction>
+                .AssertReply(HeroCardValidator(
+                    new HeroCard
                     {
-                        new CardAction { Type = "imBack", Value = "red", Title = "red" },
-                        new CardAction { Type = "imBack", Value = "green", Title = "green" },
-                        new CardAction { Type = "imBack", Value = "blue", Title = "blue" },
+                        Text = "favorite color?",
+                        Buttons = new List<CardAction>
+                        {
+                            new CardAction { Type = "imBack", Value = "red", Title = "red" },
+                            new CardAction { Type = "imBack", Value = "green", Title = "green" },
+                            new CardAction { Type = "imBack", Value = "blue", Title = "blue" },
+                        },
                     },
-                }))
+                    0))
+                .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task ShouldSendPromptUsingAppendedHeroCard()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English)
+            {
+                Style = ListStyle.HeroCard,
+            };
+            dialogs.Add(listPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+                {
+                    var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                    var results = await dc.ContinueDialogAsync(cancellationToken);
+                    if (results.Status == DialogTurnStatus.Empty)
+                    {
+                        // Create mock attachment for testing.
+                        var attachment = new Attachment { Content = "some content", ContentType = "text/plain" };
+
+                        await dc.PromptAsync(
+                            "ChoicePrompt",
+                            new PromptOptions
+                            {
+                                Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?", Attachments = new List<Attachment> { attachment } },
+                                Choices = _colorChoices,
+                            },
+                            cancellationToken);
+                    }
+                })
+                .Send("hello")
+                .AssertReply(HeroCardValidator(
+                    new HeroCard
+                    {
+                        Text = "favorite color?",
+                        Buttons = new List<CardAction>
+                        {
+                            new CardAction { Type = "imBack", Value = "red", Title = "red" },
+                            new CardAction { Type = "imBack", Value = "green", Title = "green" },
+                            new CardAction { Type = "imBack", Value = "blue", Title = "blue" },
+                        },
+                    },
+                    1))
                 .StartTestAsync();
         }
 
@@ -623,14 +677,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
         }
 
-        private Action<IActivity> HeroCardValidator(HeroCard expectedHeroCard)
+        private Action<IActivity> HeroCardValidator(HeroCard expectedHeroCard, int index)
         {
             return activity =>
             {
                 Assert.IsInstanceOfType(activity, typeof(IMessageActivity));
                 var msg = (IMessageActivity)activity;
 
-                var attachedHeroCard = (HeroCard)msg.Attachments.First().Content;
+                var attachedHeroCard = (HeroCard)msg.Attachments[index].Content;
 
                 Assert.AreEqual(expectedHeroCard.Title, attachedHeroCard.Title);
                 Assert.AreEqual(expectedHeroCard.Buttons.Count, attachedHeroCard.Buttons.Count);

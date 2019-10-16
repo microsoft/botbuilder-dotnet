@@ -57,6 +57,20 @@ namespace Microsoft.Bot.Connector
         /// <param name="handlers">Optional, an array of <see cref="DelegatingHandler"/> objects to
         /// add to the HTTP client pipeline.</param>
         public ConnectorClient(Uri baseUri, MicrosoftAppCredentials credentials, HttpClient customHttpClient, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
+            : this(baseUri, credentials as ServiceClientCredentials, customHttpClient, addJwtTokenRefresher, handlers)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConnectorClient"/> class.
+        /// </summary>
+        /// <param name="baseUri">Base URI for the Bot Connector service.</param>
+        /// <param name="credentials">Credentials for the Bot Connector service.</param>
+        /// <param name="addJwtTokenRefresher">Deprecated, do not use.</param>
+        /// <param name="customHttpClient">The HTTP client to use for this connector client.</param>
+        /// <param name="handlers">Optional, an array of <see cref="DelegatingHandler"/> objects to
+        /// add to the HTTP client pipeline.</param>
+        public ConnectorClient(Uri baseUri, ServiceClientCredentials credentials, HttpClient customHttpClient, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
             : this(baseUri, handlers)
         {
             this.Credentials = credentials;
@@ -133,33 +147,36 @@ namespace Microsoft.Bot.Connector
         /// <param name="httpClient">The HTTP client to configure.</param>
         public static void AddDefaultRequestHeaders(HttpClient httpClient)
         {
-            // The Schema version is 3.1, put into the Microsoft-BotFramework header
-            var botFwkProductInfo = new ProductInfoHeaderValue("Microsoft-BotFramework", "3.1");
-            if (!httpClient.DefaultRequestHeaders.UserAgent.Contains(botFwkProductInfo))
+            lock (httpClient)
             {
-                httpClient.DefaultRequestHeaders.UserAgent.Add(botFwkProductInfo);
-            }
-
-            // The Client SDK Version
-            //  https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
-            var botBuilderProductInfo = new ProductInfoHeaderValue("BotBuilder", GetClientVersion());
-            if (!httpClient.DefaultRequestHeaders.UserAgent.Contains(botBuilderProductInfo))
-            {
-                httpClient.DefaultRequestHeaders.UserAgent.Add(botBuilderProductInfo);
-            }
-
-            // Additional Info.
-            // https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
-            var userAgent = $"({GetASPNetVersion()}; {GetOsVersion()}; {GetArchitecture()})";
-            if (ProductInfoHeaderValue.TryParse(userAgent, out var additionalProductInfo))
-            {
-                if (!httpClient.DefaultRequestHeaders.UserAgent.Contains(additionalProductInfo))
+                // The Schema version is 3.1, put into the Microsoft-BotFramework header
+                var botFwkProductInfo = new ProductInfoHeaderValue("Microsoft-BotFramework", "3.1");
+                if (!httpClient.DefaultRequestHeaders.UserAgent.Contains(botFwkProductInfo))
                 {
-                    httpClient.DefaultRequestHeaders.UserAgent.Add(additionalProductInfo);
+                    httpClient.DefaultRequestHeaders.UserAgent.Add(botFwkProductInfo);
                 }
-            }
 
-            httpClient.DefaultRequestHeaders.ExpectContinue = false;
+                // The Client SDK Version
+                //  https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
+                var botBuilderProductInfo = new ProductInfoHeaderValue("BotBuilder", GetClientVersion());
+                if (!httpClient.DefaultRequestHeaders.UserAgent.Contains(botBuilderProductInfo))
+                {
+                    httpClient.DefaultRequestHeaders.UserAgent.Add(botBuilderProductInfo);
+                }
+
+                // Additional Info.
+                // https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
+                var userAgent = $"({GetASPNetVersion()}; {GetOsVersion()}; {GetArchitecture()})";
+                if (ProductInfoHeaderValue.TryParse(userAgent, out var additionalProductInfo))
+                {
+                    if (!httpClient.DefaultRequestHeaders.UserAgent.Contains(additionalProductInfo))
+                    {
+                        httpClient.DefaultRequestHeaders.UserAgent.Add(additionalProductInfo);
+                    }
+                }
+
+                httpClient.DefaultRequestHeaders.ExpectContinue = false;
+            }
         }
 
         /// <summary>

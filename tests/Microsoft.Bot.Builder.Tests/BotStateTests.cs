@@ -17,6 +17,8 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("State Management")]
     public class BotStateTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException), "Cannot have empty/null property name")]
         public void State_EmptyName()
@@ -353,7 +355,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task State_DoNOTRememberContextState()
         {
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
 
             await new TestFlow(adapter, (context, cancellationToken) =>
             {
@@ -370,7 +372,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var userState = new UserState(new MemoryStorage());
             var testProperty = userState.CreateProperty<TestPocoState>("test");
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(userState));
 
             await new TestFlow(
@@ -400,7 +402,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var userState = new UserState(new MemoryStorage());
             var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco");
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(userState));
             await new TestFlow(
                 adapter,
@@ -430,7 +432,7 @@ namespace Microsoft.Bot.Builder.Tests
             var userState = new UserState(new MemoryStorage());
             var testProperty = userState.CreateProperty<TestState>("test");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(userState));
 
             await new TestFlow(
@@ -460,7 +462,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var userState = new UserState(new MemoryStorage());
             var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco");
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(userState));
 
             await new TestFlow(
@@ -490,7 +492,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var privateConversationState = new PrivateConversationState(new MemoryStorage());
             var testPocoProperty = privateConversationState.CreateProperty<TestPocoState>("testPoco");
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(privateConversationState));
 
             await new TestFlow(
@@ -523,7 +525,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var testProperty = customState.CreateProperty<TestPocoState>("test");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(customState));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
@@ -550,7 +552,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var convoState = new ConversationState(new MemoryStorage());
             var testProperty = convoState.CreateProperty<TypedObject>("typed");
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             await new TestFlow(
@@ -578,7 +580,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task State_UseBotStateDirectly()
         {
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
 
             await new TestFlow(
                 adapter,

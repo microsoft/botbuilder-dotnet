@@ -2,17 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
-using System.IO;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.AI.QnA.Tests
 {

@@ -1,0 +1,39 @@
+﻿﻿> Welcome Phrase template
+> LG runtime will pick a text value from the one-of collection list at random.
+# wPhrase
+- Hi \r\n\t\[\]\{\}\\
+
+# otherEscape
+- Hi \y \
+
+# escapeInExpression
+- Hi {replace('hello\\', '\\', '\\\\')}
+
+# escapeInExpression2
+- Hi {replace('hello\"', '\"', "'")}
+
+# escapeInExpression3
+- Hi {replace("hello'", "'", '\"')}
+
+# escapeInExpression4
+- Hi {replace("hello\n", "\n", '\"')}
+
+# escapeInExpression5
+- Hi {replace('hello\"', '\"', '\n')}
+
+# escapeInExpression6
+- Hi {replace("hello'", "'", '\n')}
+
+# showTodo(todos)
+- IF: {count(todos) > 0}
+    - ```
+    Your most recent @{count(todos)} tasks are
+    @{join(foreach(todos, x, showSingleTodo(x)), '\n')}
+    ```
+- ELSE:
+    - ```
+    You don't have any "@{replace(replace('t\\odo\"', '\"', "'"), '\\', '\\\\')}".
+    ```
+
+# showSingleTodo(x)
+- * {x}

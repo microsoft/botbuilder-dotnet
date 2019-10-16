@@ -35,7 +35,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Controllers
             var mockBot = new Mock<IBot>();
 
             // Create and initialize controller
-            var sut = new BotController(mockAdapter.Object, mockBot.Object)
+            var sut = new BotController(mockAdapter.Object, (s) => mockBot.Object)
             {
                 ControllerContext = new ControllerContext(actionContext),
             };
