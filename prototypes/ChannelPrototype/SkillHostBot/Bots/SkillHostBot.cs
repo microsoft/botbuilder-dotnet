@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Builder.Skills.Preview;
 using Microsoft.Bot.Schema;
 
 namespace SkillHost.Bots

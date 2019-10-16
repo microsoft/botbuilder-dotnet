@@ -9,13 +9,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.BotFramework;
-using Microsoft.Bot.Builder.Skills;
-using Microsoft.Bot.Builder.Skills.Adapters;
+using Microsoft.Bot.Builder.Skills.Preview.Adapters;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core
+namespace Microsoft.Bot.Builder.Skills.Preview.Integration
 {
     public class BotFrameworkHttpSkillsServer
     {

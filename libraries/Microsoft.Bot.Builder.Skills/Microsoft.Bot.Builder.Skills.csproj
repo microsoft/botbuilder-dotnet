@@ -18,6 +18,8 @@
     <PackageId>Microsoft.Bot.Builder.Skills</PackageId>
     <Description>Library for building skills into bots using Microsoft Bot Framework</Description>
     <Summary>Library for building skills into bots using Microsoft Bot Framework</Summary>
+    <AssemblyName>Microsoft.Bot.Builder.Skills</AssemblyName>
+    <RootNamespace>Microsoft.Bot.Builder.Skills.Preview</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

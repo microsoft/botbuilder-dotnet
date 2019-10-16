@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core
+namespace Microsoft.Bot.Builder.Skills.Preview
 {
     internal static class HttpHelper
     {

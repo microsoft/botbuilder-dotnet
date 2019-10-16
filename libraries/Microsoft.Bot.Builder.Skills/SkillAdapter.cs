@@ -10,7 +10,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Microsoft.Bot.Builder.Skills
+namespace Microsoft.Bot.Builder.Skills.Preview
 {
     /// <summary>
     /// A skill adapter implements API to forward activity to a skill and routes ChannelAPI 

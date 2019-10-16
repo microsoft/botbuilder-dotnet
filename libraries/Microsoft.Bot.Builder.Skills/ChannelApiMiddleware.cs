@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Skills
+namespace Microsoft.Bot.Builder.Skills.Preview
 {
     /// <summary>
     /// Handles InvokeActivity for ChannelAPI methods calls coming from the skill adapter.

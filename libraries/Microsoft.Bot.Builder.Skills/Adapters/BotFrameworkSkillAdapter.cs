@@ -12,7 +12,6 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Skills.BotFramework;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -22,7 +21,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Rest.TransientFaultHandling;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Skills.Adapters
+namespace Microsoft.Bot.Builder.Skills.Preview.Adapters
 {
     /// <summary>
     /// A skill adapter that can connect a bot to a another bot as a skill.

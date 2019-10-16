@@ -5,10 +5,9 @@
 
 using System;
 using System.Text;
-using System.Web;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Skills
+namespace Microsoft.Bot.Builder.Skills.Preview
 {
     /// <summary>
     /// Manages encoding ConversationId and ServiceUrl into packaged string for skill's conversation Id.
