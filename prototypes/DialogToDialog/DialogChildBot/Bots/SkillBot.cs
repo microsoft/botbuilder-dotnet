@@ -25,10 +25,20 @@ namespace DialogChildBot.Bots
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
             // TODO: replace this with DialogManager
-            // TODO: Ensure we add status on return
-            // Run the Dialog with the new message Activity.
-            var result = await Dialog.InvokeAsync(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
 
+            var dialogSet = new DialogSet(ConversationState.CreateProperty<DialogState>("DialogState")) { TelemetryClient = Dialog.TelemetryClient };
+            dialogSet.Add(Dialog);
+
+            var dialogContext = await dialogSet.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
+
+            // Run the Dialog with the new message Activity and capture the results so we can send end of conversation if needed.
+            var result = await dialogContext.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+            if (result.Status == DialogTurnStatus.Empty)
+            {
+                result = await dialogContext.BeginDialogAsync(Dialog.Id, null, cancellationToken).ConfigureAwait(false);
+            }
+
+            // Send end of conversation if it is complete
             if (result.Status == DialogTurnStatus.Complete)
             {
                 await turnContext.SendActivityAsync(MessageFactory.Text("Skill dialog completed sending EndOfConversation"), cancellationToken);

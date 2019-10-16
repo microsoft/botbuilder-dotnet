@@ -35,30 +35,5 @@ namespace Microsoft.Bot.Builder.Dialogs
                 await dialogContext.BeginDialogAsync(dialog.Id, null, cancellationToken).ConfigureAwait(false);
             }
         }
-
-        /// <summary>
-        /// Creates a dialog stack and calls a dialog, pushing it onto the stack.
-        /// </summary>
-        /// <param name="dialog">The dialog to start.</param>
-        /// <param name="turnContext">The context for the current turn of the conversation.</param>
-        /// <param name="accessor">The <see cref="IStatePropertyAccessor{DialogState}"/> accessor
-        /// with which to manage the state of the dialog stack.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A <see cref="DialogTurnResult"/> representing the turn result and status.</returns>
-        public static async Task<DialogTurnResult> InvokeAsync(this Dialog dialog, ITurnContext turnContext, IStatePropertyAccessor<DialogState> accessor, CancellationToken cancellationToken)
-        {
-            var dialogSet = new DialogSet(accessor) { TelemetryClient = dialog.TelemetryClient };
-            dialogSet.Add(dialog);
-
-            var dialogContext = await dialogSet.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
-            var results = await dialogContext.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
-            if (results.Status == DialogTurnStatus.Empty)
-            {
-                results = await dialogContext.BeginDialogAsync(dialog.Id, null, cancellationToken).ConfigureAwait(false);
-            }
-
-            return results;
-        }
     }
 }
