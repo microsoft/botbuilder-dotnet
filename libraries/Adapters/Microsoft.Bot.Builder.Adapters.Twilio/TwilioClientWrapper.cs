@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -23,17 +23,17 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
 
             if (string.IsNullOrWhiteSpace(options.TwilioNumber))
             {
-                throw new ArgumentException("TwilioNumber is a required part of the configuration.", nameof(options));
+                throw new ArgumentException(nameof(options.TwilioNumber));
             }
 
             if (string.IsNullOrWhiteSpace(options.AccountSid))
             {
-                throw new ArgumentException("AccountSid is a required part of the configuration.", nameof(options));
+                throw new ArgumentException(nameof(options.AccountSid));
             }
 
             if (string.IsNullOrWhiteSpace(options.AuthToken))
             {
-                throw new ArgumentException("AuthToken is a required part of the configuration.", nameof(options));
+                throw new ArgumentException(nameof(options.AuthToken));
             }
 
             TwilioClient.Init(Options.AccountSid, Options.AuthToken);
