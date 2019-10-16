@@ -922,35 +922,6 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Creates a new StreamingRequestHandler to listen to the specififed Named Pipe
-        /// and pass requests to this adapter.
-        /// </summary>
-        /// <param name="pipeName">The name of the Named Pipe to connect to.</param>
-        /// <param name="bot">The bot to use when processing activities received over the Named Pipe.</param>
-        /// <returns>A task that completes only once the StreamingRequestHandler has stopped listening
-        /// for incoming requests on the Named Pipe.</returns>
-        public async Task UseNamedPipeAsync(string pipeName, IBot bot)
-        {
-            if (string.IsNullOrEmpty(pipeName))
-            {
-                throw new ArgumentNullException(nameof(pipeName));
-            }
-
-            _connectedBot = bot ?? throw new ArgumentNullException(nameof(bot));
-            _claimsIdentity = _claimsIdentity ?? new ClaimsIdentity();
-
-            if (_requestHandlers == null)
-            {
-                _requestHandlers = new List<StreamingRequestHandler>();
-            }
-
-            var requestHandler = new StreamingRequestHandler(bot, this, pipeName, _logger);
-            _requestHandlers.Add(requestHandler);
-
-            await requestHandler.ListenAsync().ConfigureAwait(false);
-        }
-
-        /// <summary>
         /// Creates an OAuth client for the bot.
         /// </summary>
         /// <param name="turnContext">The context object for the current turn.</param>

@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             if (httpRequest.Method == HttpMethods.Get)
             {
-                await UseWebSocketAsync(bot, httpRequest, httpResponse).ConfigureAwait(false);
+                await ConnectWebSocketAsync(bot, httpRequest, httpResponse).ConfigureAwait(false);
             }
             else
             {
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="httpRequest">The connection request.</param>
         /// <param name="httpResponse">The response sent on error or connection termination.</param>
         /// <returns>Returns on task completion.</returns>
-        private async Task UseWebSocketAsync(IBot bot, HttpRequest httpRequest, HttpResponse httpResponse)
+        private async Task ConnectWebSocketAsync(IBot bot, HttpRequest httpRequest, HttpResponse httpResponse)
         {
             if (httpRequest == null)
             {
