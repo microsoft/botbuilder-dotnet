@@ -8,3 +8,13 @@
 # template2
 [HeroCard
 ]
+
+# errorExpression1
+[Activity
+  {NOTemplate()}
+]
+
+# errorExpression2
+[Activity
+  Text = {NOTemplate()}
+]
