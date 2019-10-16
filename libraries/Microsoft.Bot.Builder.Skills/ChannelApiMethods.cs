@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Builder.Skills.Preview
 {
-    public static class ChannelApiMethods
+    internal static class ChannelApiMethods
     {
         /// <summary>
         /// ReplyToActivity(conversationId, activity).
