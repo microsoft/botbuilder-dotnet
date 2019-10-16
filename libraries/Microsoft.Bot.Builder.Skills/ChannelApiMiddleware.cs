@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -9,7 +10,7 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.Skills
 {
     /// <summary>
-    /// Handles InvokeActivity for ChannelAPI methods calls coming from SkillHostController.
+    /// Handles InvokeActivity for ChannelAPI methods calls coming from the skill adapter.
     /// </summary>
     internal class ChannelApiMiddleware : IMiddleware
     {
@@ -25,7 +26,7 @@ namespace Microsoft.Bot.Builder.Skills
             // register the skill adapter so people can get it to do .ForwardActivityAsync()
             turnContext.TurnState.Add(_skillAdapter);
 
-            if (turnContext.Activity.Type == ActivityTypes.Invoke && turnContext.Activity.Name == "ChannelAPI")
+            if (turnContext.Activity.Type == ActivityTypes.Invoke && turnContext.Activity.Name == SkillAdapter.InvokeActivityName)
             {
                 // process Invoke Activity 
                 var invokeActivity = turnContext.Activity.AsInvokeActivity();
@@ -52,7 +53,7 @@ namespace Microsoft.Bot.Builder.Skills
                         if (activityPayload.Type == ActivityTypes.EndOfConversation)
                         {
                             await ProcessEndOfConversationAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
-                            invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N"));
+                            invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
                             return;
                         }
 
@@ -69,7 +70,7 @@ namespace Microsoft.Bot.Builder.Skills
                         if (activityPayload.Type == ActivityTypes.EndOfConversation)
                         {
                             await ProcessEndOfConversationAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
-                            invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N"));
+                            invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
                             return;
                         }
 

@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
     /// </summary>
     /// <remarks>The skill adapter encapsulates authentication processes  routing
     /// activities from a bot to another bot utilize as a skill. 
-    /// <para>Use <see cref="Use(IMiddleware)"/> to add <see cref="IMiddleware"/> objects
+    /// <para>Use Use(<see cref="IMiddleware"/>) to add <see cref="IMiddleware"/> objects
     /// to your adapter’s middleware collection. The adapter processes and directs
     /// incoming activities in through the bot middleware pipeline to your bot’s logic
     /// and then back out again. As each activity flows in and out of the bot, each piece
@@ -259,7 +259,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
                 if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
                 {
                     // The skill connector has the target skill in the OAuthScope.
-                    scope = JwtTokenValidation.GetAppId(claimsIdentity.Claims);
+                    scope = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
                 }
 
                 appCredentials = await GetAppCredentialsAsync(botId, scope, cancellationToken).ConfigureAwait(false);

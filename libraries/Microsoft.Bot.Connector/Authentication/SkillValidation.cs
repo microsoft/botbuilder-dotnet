@@ -46,29 +46,15 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>True, if the token was issued for a skill to bot communication. Otherwise, false.</returns>
         public static bool IsSkillToken(string authHeader)
         {
-            if (string.IsNullOrWhiteSpace(authHeader))
+            if (!JwtTokenValidation.IsValidToken(authHeader))
             {
-                // No token. Can't be an emulator token.
                 return false;
             }
 
-            var parts = authHeader.Split(' ');
-            if (parts.Length != 2)
-            {
-                // Skill tokens MUST have exactly 2 parts. If we don't have 2 parts, it's not a skill token
-                return false;
-            }
-
-            // We now have an array that should be:
+            // We know is a valid token, split it and work with it:
             // [0] = "Bearer"
             // [1] = "[Big Long String]"
-            var authScheme = parts[0];
-            var bearerToken = parts[1];
-            if (!authScheme.Equals("Bearer", StringComparison.InvariantCultureIgnoreCase))
-            {
-                // The scheme MUST be "Bearer"
-                return false;
-            }
+            var bearerToken = authHeader.Split(' ')[1];
 
             // Parse the Big Long String into an actual token.
             var token = new JwtSecurityToken(bearerToken);
@@ -106,7 +92,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 return false;
             }
 
-            var appId = JwtTokenValidation.GetAppId(claimsList);
+            var appId = JwtTokenValidation.GetAppIdFromClaims(claimsList);
             if (string.IsNullOrWhiteSpace(appId))
             {
                 return false;
@@ -147,7 +133,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 openIdMetadataUrl,
                 AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfig.RequiredEndorsements);
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfig.RequiredEndorsements).ConfigureAwait(false);
 
             await ValidateIdentity(identity, credentials).ConfigureAwait(false);
 
@@ -183,13 +169,13 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException($"'{AuthenticationConstants.AudienceClaim}' claim is required on skill Tokens.");
             }
 
-            if (!await credentials.IsValidAppIdAsync(audienceClaim))
+            if (!await credentials.IsValidAppIdAsync(audienceClaim).ConfigureAwait(false))
             {
                 // The AppId is not valid. Not Authorized.
                 throw new UnauthorizedAccessException($"Invalid audience.");
             }
             
-            var appId = JwtTokenValidation.GetAppId(identity.Claims);
+            var appId = JwtTokenValidation.GetAppIdFromClaims(identity.Claims);
             if (string.IsNullOrWhiteSpace(appId))
             {
                 // Invalid appId

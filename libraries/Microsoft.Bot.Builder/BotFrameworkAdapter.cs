@@ -976,7 +976,7 @@ namespace Microsoft.Bot.Builder
                 if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
                 {
                     // The skill connector has the target skill in the OAuthScope.
-                    scope = JwtTokenValidation.GetAppId(claimsIdentity.Claims);
+                    scope = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
                 }
 
                 appCredentials = await GetAppCredentialsAsync(botId, scope, cancellationToken).ConfigureAwait(false);

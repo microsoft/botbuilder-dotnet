@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// identity for the request.</remarks>
         public static async Task<ClaimsIdentity> AuthenticateRequest(IActivity activity, string authHeader, ICredentialProvider credentials, IChannelProvider provider, HttpClient httpClient = null)
         {
-            return await AuthenticateRequest(activity, authHeader, credentials, provider, new AuthenticationConfiguration(), httpClient);
+            return await AuthenticateRequest(activity, authHeader, credentials, provider, new AuthenticationConfiguration(), httpClient).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException();
             }
 
-            var claimsIdentity = await ValidateAuthHeader(authHeader, credentials, provider, activity.ChannelId, authConfig, activity.ServiceUrl, httpClient ?? _httpClient);
+            var claimsIdentity = await ValidateAuthHeader(authHeader, credentials, provider, activity.ChannelId, authConfig, activity.ServiceUrl, httpClient ?? _httpClient).ConfigureAwait(false);
 
             AppCredentials.TrustServiceUrl(activity.ServiceUrl);
 
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// identity for the request.</remarks>
         public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, string channelId, AuthenticationConfiguration authConfig, string serviceUrl = null, HttpClient httpClient = null)
         {
-            if (String.IsNullOrEmpty(authHeader))
+            if (string.IsNullOrEmpty(authHeader))
             {
                 throw new ArgumentNullException(nameof(authHeader));
             }
@@ -123,12 +123,12 @@ namespace Microsoft.Bot.Connector.Authentication
 
             if (SkillValidation.IsSkillToken(authHeader))
             {
-                return await SkillValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, httpClient, channelId, authConfig);
+                return await SkillValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, httpClient, channelId, authConfig).ConfigureAwait(false);
             }
 
             if (EmulatorValidation.IsTokenFromEmulator(authHeader))
             {
-                return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, channelProvider, httpClient, channelId, authConfig);
+                return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, channelProvider, httpClient, channelId, authConfig).ConfigureAwait(false);
             }
 
             if (channelProvider == null || channelProvider.IsPublicAzure())
@@ -136,10 +136,10 @@ namespace Microsoft.Bot.Connector.Authentication
                 // No empty or null check. Empty can point to issues. Null checks only.
                 if (serviceUrl != null)
                 {
-                    return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient, channelId, authConfig);
+                    return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient, channelId, authConfig).ConfigureAwait(false);
                 }
 
-                return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, httpClient, channelId, authConfig);
+                return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, httpClient, channelId, authConfig).ConfigureAwait(false);
             }
 
             if (channelProvider.IsGovernment())
@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </remarks>
         /// <param name="claims">A list of <see cref="Claim"/> instances.</param>
         /// <returns>The value of the appId claim if found (null if it can't find a suitable claim)</returns>
-        public static string GetAppId(IEnumerable<Claim> claims)
+        public static string GetAppIdFromClaims(IEnumerable<Claim> claims)
         {
             var claimsList = claims.ToList();
             string appId = null;
@@ -184,6 +184,39 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             return appId;
+        }
+
+        /// <summary>
+        /// Internal helper to check if the token has the shape we expect "Bearer [big long string]"
+        /// </summary>
+        /// <param name="authHeader">A string containing the token header.</param>
+        /// <returns>True if the token is valid, false if not.</returns>
+        internal static bool IsValidToken(string authHeader)
+        {
+            if (string.IsNullOrWhiteSpace(authHeader))
+            {
+                // No token, not valid.
+                return false;
+            }
+
+            var parts = authHeader.Split(' ');
+            if (parts.Length != 2)
+            {
+                // Tokens MUST have exactly 2 parts. If we don't have 2 parts, it's not a valid token
+                return false;
+            }
+
+            // We now have an array that should be:
+            // [0] = "Bearer"
+            // [1] = "[Big Long String]"
+            var authScheme = parts[0];
+            if (!authScheme.Equals("Bearer", StringComparison.InvariantCultureIgnoreCase))
+            {
+                // The scheme MUST be "Bearer"
+                return false;
+            }
+
+            return true;
         }
     }
 }
