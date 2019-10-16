@@ -14,6 +14,7 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Streaming.Transport.NamedPipes;
 using Microsoft.Bot.Streaming.Transport.WebSockets;
+using Microsoft.Bot.Streaming.UnitTests.Mocks;
 using Xunit;
 
 namespace Microsoft.Bot.Streaming.UnitTests
@@ -24,7 +25,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         public async Task WebSocketServer_Connects()
         {
             var sock = new FauxSock();
-            var writer = new WebSocketServer(sock, new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), sock));
+            var writer = new WebSocketServer(sock, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), sock));
 
             writer.StartAsync();
             Assert.True(writer.IsConnected);
@@ -34,7 +35,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         public async Task WebSocketServer_BackAndForth()
         {
             var sock = new FauxSock();
-            var writer = new WebSocketServer(sock, new StreamingRequestHandler(null, new BotFrameworkHttpAdapter(), sock));
+            var writer = new WebSocketServer(sock, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), sock));
 
             writer.StartAsync();
         }
