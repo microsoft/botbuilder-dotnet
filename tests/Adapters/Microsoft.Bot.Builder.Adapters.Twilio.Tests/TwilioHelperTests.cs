@@ -18,8 +18,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 {
     public class TwilioHelperTests
     {
-        private const string AuthTokenString = "authToken";
+        private const string _authTokenString = "authToken";
         private readonly Uri _validationUrlString = new Uri("http://contoso.com");
+        private readonly HMACSHA1 _hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_authTokenString));
 
         [Fact]
         public void ActivityToTwilioShouldReturnMessageOptionsWithMediaUrl()
@@ -81,9 +82,8 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async Task QueryStringToDictionaryShouldReturnEmptyDictionaryWithEmptyQuery()
         {
-            var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(AuthTokenString));
             var builder = new StringBuilder(_validationUrlString.ToString());
-            var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
+            var hashArray = _hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
             var hash = Convert.ToBase64String(hashArray);
             var httpRequest = new Mock<HttpRequest>();
             
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns(hash);
             httpRequest.Object.Body = Stream.Null;
 
-            var activity = await TwilioHelper.RequestToActivity(httpRequest.Object, _validationUrlString, AuthTokenString);
+            var activity = await TwilioHelper.RequestToActivity(httpRequest.Object, _validationUrlString, _authTokenString);
 
             Assert.Null(activity.Id);
             Assert.Null(activity.Conversation.Id);
@@ -103,7 +103,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async Task QueryStringToDictionaryShouldReturnDictionaryWithValidQuery()
         {
-            var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(AuthTokenString));
             var builder = new StringBuilder(_validationUrlString.ToString());
             var bodyString = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\NoMediaPayload.txt"));
             var byteArray = Encoding.ASCII.GetBytes(bodyString);
@@ -128,7 +127,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
                 builder.Append(key).Append(values[key] ?? string.Empty);
             }
 
-            var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
+            var hashArray = _hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
             var hash = Convert.ToBase64String(hashArray);
 
             var httpRequest = new Mock<HttpRequest>();
@@ -137,7 +136,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             httpRequest.Object.Body = stream;
 
-            var activity = await TwilioHelper.RequestToActivity(httpRequest.Object, _validationUrlString, AuthTokenString);
+            var activity = await TwilioHelper.RequestToActivity(httpRequest.Object, _validationUrlString, _authTokenString);
 
             Assert.NotNull(activity.Id);
             Assert.NotNull(activity.Conversation.Id);
@@ -149,7 +148,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async Task RequestToActivityShouldReturnNullActivityAttachmentsWithNumMediaEqualToZero()
         {
-            var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(AuthTokenString));
             var builder = new StringBuilder(_validationUrlString.ToString());
             var bodyString = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\NoMediaPayload.txt"));
             var byteArray = Encoding.ASCII.GetBytes(bodyString);
@@ -174,7 +172,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
                 builder.Append(key).Append(values[key] ?? string.Empty);
             }
 
-            var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
+            var hashArray = _hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
             var hash = Convert.ToBase64String(hashArray);
 
             var httpRequest = new Mock<HttpRequest>();
@@ -183,7 +181,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             httpRequest.Object.Body = stream;
 
-            var activity = await TwilioHelper.RequestToActivity(httpRequest.Object, _validationUrlString, AuthTokenString);
+            var activity = await TwilioHelper.RequestToActivity(httpRequest.Object, _validationUrlString, _authTokenString);
 
             Assert.Null(activity.Attachments);
         }
@@ -191,7 +189,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async Task RequestToActivityShouldReturnActivityAttachmentsWithNumMediaGreaterThanZero()
         {
-            var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(AuthTokenString));
             var builder = new StringBuilder(_validationUrlString.ToString());
             var bodyString = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\MediaPayload.txt"));
             var byteArray = Encoding.ASCII.GetBytes(bodyString);
@@ -216,7 +213,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
                 builder.Append(key).Append(values[key] ?? string.Empty);
             }
 
-            var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
+            var hashArray = _hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
             var hash = Convert.ToBase64String(hashArray);
 
             var httpRequest = new Mock<HttpRequest>();
@@ -225,7 +222,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             httpRequest.Object.Body = stream;
 
-            var activity = await TwilioHelper.RequestToActivity(httpRequest.Object, _validationUrlString, AuthTokenString);
+            var activity = await TwilioHelper.RequestToActivity(httpRequest.Object, _validationUrlString, _authTokenString);
 
             Assert.NotNull(activity.Attachments);
         }
@@ -233,7 +230,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async Task RequestToActivityShouldNotThrowKeyNotFoundExceptionWithNumMediaGreaterThanAttachments()
         {
-            var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(AuthTokenString));
             var builder = new StringBuilder(_validationUrlString.ToString());
             var bodyString = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\files\MediaPayload.txt"));
 
@@ -262,7 +258,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
                 builder.Append(key).Append(values[key] ?? string.Empty);
             }
 
-            var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
+            var hashArray = _hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
             var hash = Convert.ToBase64String(hashArray);
 
             var httpRequest = new Mock<HttpRequest>();
@@ -271,7 +267,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             httpRequest.Object.Body = stream;
 
-            var activity = await TwilioHelper.RequestToActivity(httpRequest.Object, _validationUrlString, AuthTokenString);
+            var activity = await TwilioHelper.RequestToActivity(httpRequest.Object, _validationUrlString, _authTokenString);
 
             Assert.NotNull(activity.Attachments);
         }
@@ -279,7 +275,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async void RequestToActivityShouldReturnNullWithNullHttpRequest()
         {
-            Assert.Null(await TwilioHelper.RequestToActivity(null, _validationUrlString, AuthTokenString));
+            Assert.Null(await TwilioHelper.RequestToActivity(null, _validationUrlString, _authTokenString));
         }
 
         [Fact]
