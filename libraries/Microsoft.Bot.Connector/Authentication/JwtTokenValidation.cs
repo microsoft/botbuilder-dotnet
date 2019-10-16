@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new ArgumentNullException(nameof(authConfig));
             }
 
-            if (String.IsNullOrWhiteSpace(authHeader))
+            if (string.IsNullOrWhiteSpace(authHeader))
             {
                 var isAuthDisabled = await credentials.IsAuthenticationDisabledAsync().ConfigureAwait(false);
                 if (isAuthDisabled)
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// identity for the request.</remarks>
         public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, string channelId, AuthenticationConfiguration authConfig, string serviceUrl = null, HttpClient httpClient = null)
         {
-            if (String.IsNullOrEmpty(authHeader))
+            if (string.IsNullOrEmpty(authHeader))
             {
                 throw new ArgumentNullException(nameof(authHeader));
             }
