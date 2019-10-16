@@ -28,8 +28,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         private static ResourceExplorer resourceExplorer;
 
         private readonly string samplesDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Samples\");
-        private readonly string requestUrl = "https://dummy-hostname.azurewebsites.net/qnamaker/knowledgebases/dummy-id/generateanswer";
-        private readonly string trainRequestUrl = "https://dummy-hostname.azurewebsites.net/qnamaker/knowledgebases/dummy-id/train";
 
         public TestContext TestContext { get; set; }
 
