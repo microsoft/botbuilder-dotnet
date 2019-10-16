@@ -27,6 +27,9 @@ namespace SkillHost.Controllers
         [HttpPost]
         public async Task PostAsync()
         {
+            // Entering parent
+            var authToken = Request.Headers["Authorization"].ToString();
+
             // Delegate the processing of the HTTP POST to the adapter.
             // The adapter will invoke the bot.
             await _adapter.ProcessAsync(Request, Response, _bot);

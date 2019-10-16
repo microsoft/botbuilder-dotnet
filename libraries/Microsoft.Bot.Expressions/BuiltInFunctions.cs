@@ -2296,6 +2296,59 @@ namespace Microsoft.Bot.Expressions
             return (result, error);
         }
 
+        private static EvaluateExpressionDelegate SortBy(bool isDescending)
+           => (expression, state) =>
+           {
+               object result = null;
+               string error;
+               object arr;
+               (arr, error) = expression.Children[0].TryEvaluate(state);
+
+               if (error == null)
+               {
+                   if (TryParseList(arr, out var list))
+                   {
+                       if (expression.Children.Length == 1)
+                       {
+                           if (isDescending)
+                           {
+                               result = list.OfType<object>().OrderByDescending(item => item).ToList();
+                           }
+                           else
+                           {
+                               result = list.OfType<object>().OrderBy(item => item).ToList();
+                           }
+                       }
+                       else
+                       {
+                           var jarray = JArray.FromObject(list.OfType<object>().ToList());
+                           var propertyNameExpression = expression.Children[1];
+                           object propertyName;
+                           (propertyName, error) = propertyNameExpression.TryEvaluate(state);
+                           var propertyNameString = string.Empty;
+                           if (error == null)
+                           {
+                               propertyNameString = propertyName == null ? string.Empty : propertyName.ToString();
+                               if (isDescending)
+                               {
+                                   result = jarray.OrderByDescending(obj => obj[propertyNameString]).ToList();
+                               }
+                               else
+                               {
+                                   result = jarray.OrderBy(obj => obj[propertyNameString]).ToList();
+                               }
+                           }
+                       }
+                   }
+                   else
+                   {
+                       error = $"{expression.Children[0]} is not array";
+                   }
+               }
+
+               return (result, error);
+           };
+
         private static bool IsSameDay(DateTime date1, DateTime date2) => date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day;
 
         private static Dictionary<string, ExpressionEvaluator> BuildFunctionLookup()
@@ -2457,6 +2510,16 @@ namespace Microsoft.Bot.Expressions
                     BuiltInFunctions.SubArray,
                     ReturnType.Object,
                     (expression) => BuiltInFunctions.ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Object, ReturnType.Number)),
+                new ExpressionEvaluator(
+                    ExpressionType.SortBy,
+                    SortBy(false),
+                    ReturnType.Object,
+                    (expression) => BuiltInFunctions.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
+                new ExpressionEvaluator(
+                    ExpressionType.SortByDescending,
+                    SortBy(true),
+                    ReturnType.Object,
+                    (expression) => BuiltInFunctions.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
 
                 // Booleans
                 Comparison(ExpressionType.LessThan, args => args[0] < args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),

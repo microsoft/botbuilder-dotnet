@@ -38,7 +38,7 @@ namespace DialogRootBot.Bots
             // Run the Dialog the activity Activity.
             if (turnContext.Activity.Type != ActivityTypes.ConversationUpdate)
             {
-                await _mainDialog.InvokeAsync(turnContext, _conversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
+                await _mainDialog.RunAsync(turnContext, _conversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
             }
             else
             {
@@ -60,7 +60,17 @@ namespace DialogRootBot.Bots
                     var welcomeCard = CreateAdaptiveCardAttachment();
                     var response = MessageFactory.Attachment(welcomeCard);
                     await turnContext.SendActivityAsync(response, cancellationToken);
-                    await _mainDialog.InvokeAsync(turnContext, _conversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
+                    var dialogSet = new DialogSet(_conversationState.CreateProperty<DialogState>("DialogState")) { TelemetryClient = _mainDialog.TelemetryClient };
+                    dialogSet.Add(_mainDialog);
+
+                    var dialogContext = await dialogSet.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
+                    var results = await dialogContext.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+                    if (results.Status == DialogTurnStatus.Empty)
+                    {
+                        results = await dialogContext.BeginDialogAsync(_mainDialog.Id, null, cancellationToken).ConfigureAwait(false);
+                    }
+
+                    DialogTurnResult temp = results;
                 }
             }
         }

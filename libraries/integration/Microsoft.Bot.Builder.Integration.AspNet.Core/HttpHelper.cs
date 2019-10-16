@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
@@ -27,7 +25,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() },
         });
 
-        public static async Task<T> ReadRequestAsync<T>(HttpRequest request, CancellationToken cancellationToken)
+        public static T ReadRequest<T>(HttpRequest request)
         {
             try
             {
@@ -47,7 +45,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
         }
 
-        public static async Task WriteResponseAsync(HttpResponse response, InvokeResponse invokeResponse)
+        public static void WriteResponse(HttpResponse response, InvokeResponse invokeResponse)
         {
             if (response == null)
             {

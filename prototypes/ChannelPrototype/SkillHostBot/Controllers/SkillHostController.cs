@@ -28,6 +28,9 @@ namespace SkillHost.Controllers
         [HttpDelete]
         public async Task ProcessAsync()
         {
+            // Entering parent from skill
+            var authToken = Request.Headers["Authorization"].ToString();
+
             // Delegate the processing of the HTTP POST to the adapter.
             // The adapter will invoke the bot.
             await _skillServer.ProcessAsync(Request, Response, _bot);

@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// TO SKILL FROM BOT and TO BOT FROM SKILL: Token validation parameters when connecting a bot to a skill.
         /// </summary>
-        public static readonly TokenValidationParameters ToBotFromChannelTokenValidationParameters =
+        private static readonly TokenValidationParameters _tokenValidationParameters =
             new TokenValidationParameters()
             {
                 ValidateIssuer = true,
@@ -33,38 +33,28 @@ namespace Microsoft.Bot.Connector.Authentication
                     "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/", // Auth for US Gov, 1.0 token
                     "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0", // Auth for US Gov, 2.0 token
                 },
-                ValidateAudience = false,   // Audience validation takes place manually in code.
+                ValidateAudience = false, // Audience validation takes place manually in code.
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
                 RequireSignedTokens = true,
             };
 
+        /// <summary>
+        /// Determines if a given Auth header is from from a skill to bot or bot to skill request.
+        /// </summary>
+        /// <param name="authHeader">Bearer Token, in the "Bearer [Long String]" Format.</param>
+        /// <returns>True, if the token was issued for a skill to bot communication. Otherwise, false.</returns>
         public static bool IsSkillToken(string authHeader)
         {
-            if (string.IsNullOrWhiteSpace(authHeader))
+            if (!JwtTokenValidation.IsValidToken(authHeader))
             {
-                // No token. Can't be an emulator token.
                 return false;
             }
 
-            var parts = authHeader.Split(' ');
-            if (parts.Length != 2)
-            {
-                // Skill tokens MUST have exactly 2 parts. If we don't have 2 parts, it's not an emulator token
-                return false;
-            }
-
-            var authScheme = parts[0];
-            var bearerToken = parts[1];
-
-            // We now have an array that should be:
+            // We know is a valid token, split it and work with it:
             // [0] = "Bearer"
             // [1] = "[Big Long String]"
-            if (authScheme != "Bearer")
-            {
-                // The scheme from the emulator MUST be "Bearer"
-                return false;
-            }
+            var bearerToken = authHeader.Split(' ')[1];
 
             // Parse the Big Long String into an actual token.
             var token = new JwtSecurityToken(bearerToken);
@@ -73,7 +63,7 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <summary>
-        /// Checks if the given list of claims is a skill claim.
+        /// Checks if the given list of claims represents a skill.
         /// </summary>
         /// <remarks>
         /// A skill claim should contain:
@@ -87,45 +77,71 @@ namespace Microsoft.Bot.Connector.Authentication
         public static bool IsSkillClaim(IEnumerable<Claim> claims)
         {
             var claimsList = claims.ToList();
+
             var version = claimsList.FirstOrDefault(claim => claim.Type == AuthenticationConstants.VersionClaim);
             if (string.IsNullOrWhiteSpace(version?.Value))
             {
+                // Must have a version claim.
                 return false;
             }
 
-            var appId = GetAppId(claimsList);
             var audience = claimsList.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
-            
-            if (AuthenticationConstants.ToBotFromChannelTokenIssuer.Equals(audience, StringComparison.InvariantCulture))
+            if (string.IsNullOrWhiteSpace(audience) || AuthenticationConstants.ToBotFromChannelTokenIssuer.Equals(audience, StringComparison.InvariantCulture))
             {
                 // The audience is https://api.botframework.com and not an appId.
                 return false;
             }
 
+            var appId = JwtTokenValidation.GetAppIdFromClaims(claimsList);
+            if (string.IsNullOrWhiteSpace(appId))
+            {
+                return false;
+            }
+
             // Skill claims must contain and app ID and the AppID must be different than the audience.
-            return !string.IsNullOrWhiteSpace(appId) && !string.IsNullOrWhiteSpace(audience) && appId != audience;
+            return appId != audience;
         }
 
-        public static async Task<ClaimsIdentity> AuthenticateSkillToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfig, string serviceUrl)
+        /// <summary>
+        /// Validates that the incoming Auth Header is a token sent from a bot to a skill or from a skill to a bot.
+        /// </summary>
+        /// <param name="authHeader">The raw HTTP header in the format: "Bearer [longString]".</param>
+        /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>
+        /// <param name="channelProvider">The channelService value that distinguishes public Azure from US Government Azure.</param>
+        /// <param name="httpClient">
+        /// Authentication of tokens requires calling out to validate Endorsements and related documents. The
+        /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to
+        /// setup and teardown, so a shared HttpClient is recommended.
+        /// </param>
+        /// <param name="channelId">The ID of the channel to validate.</param>
+        /// <param name="authConfig">The authentication configuration.</param>
+        /// <returns>A <see cref="ClaimsIdentity"/> instance if the validation is successful.</returns>
+        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfig)
         {
-            // TODO: check if from skill. if yes do skill thing can reuse AuthenticateChannelToken except for the channel validation
-            // Check the AppId and ensure that only works against my whitelist authConfig can have info on how to get the whitelist AuthenticationConfiguration
-            // Do not call it whiteList
-
             if (authConfig == null)
             {
                 throw new ArgumentNullException(nameof(authConfig));
             }
 
-            var openIdMetadataUrl = channelProvider != null && channelProvider.IsGovernment() ? GovernmentAuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl : AuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl;
+            var openIdMetadataUrl = channelProvider != null && channelProvider.IsGovernment() ?
+                GovernmentAuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl : 
+                AuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl;
 
             var tokenExtractor = new JwtTokenExtractor(
                 httpClient,
-                ToBotFromChannelTokenValidationParameters,
+                _tokenValidationParameters,
                 openIdMetadataUrl,
                 AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfig.RequiredEndorsements);
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfig.RequiredEndorsements).ConfigureAwait(false);
+
+            await ValidateIdentity(identity, credentials).ConfigureAwait(false);
+
+            return identity;
+        }
+
+        internal static async Task ValidateIdentity(ClaimsIdentity identity, ICredentialProvider credentials)
+        {
             if (identity == null)
             {
                 // No valid identity. Not Authorized.
@@ -138,57 +154,38 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException("Token Not Authenticated");
             }
 
-            // Now check that the AppID in the claimset matches
-            // what we're looking for. Note that in a multi-tenant bot, this value
-            // comes from developer code that may be reaching out to a service, hence the
-            // Async validation.
             var versionClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.VersionClaim);
             if (versionClaim == null)
             {
+                // No version claim
                 throw new UnauthorizedAccessException($"'{AuthenticationConstants.VersionClaim}' claim is required on skill Tokens.");
             }
 
-            var appId = GetAppId(identity.Claims);
+            // Look for the "aud" claim, but only if issued from the Bot Framework
+            var audienceClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.AudienceClaim)?.Value;
+            if (string.IsNullOrWhiteSpace(audienceClaim))
+            {
+                // Claim is not present or doesn't have a value. Not Authorized.
+                throw new UnauthorizedAccessException($"'{AuthenticationConstants.AudienceClaim}' claim is required on skill Tokens.");
+            }
+
+            if (!await credentials.IsValidAppIdAsync(audienceClaim).ConfigureAwait(false))
+            {
+                // The AppId is not valid. Not Authorized.
+                throw new UnauthorizedAccessException($"Invalid audience.");
+            }
+            
+            var appId = JwtTokenValidation.GetAppIdFromClaims(identity.Claims);
+            if (string.IsNullOrWhiteSpace(appId))
+            {
+                // Invalid appId
+                throw new UnauthorizedAccessException($"Invalid appId.");
+            }
 
             // TODO: check the appId against the registered skill client IDs.
-
-            return identity;
-        }
-
-        /// <summary>
-        /// Gets the AppId from the token claims.
-        /// </summary>
-        /// <remarks>
-        /// In v1 tokens the AppId is in the the <see cref="AuthenticationConstants.AppIdClaim"/> claim.
-        /// In v2 tokens the AppId is in the azp <see cref="AuthenticationConstants.AuthorizedParty"/> claim.
-        /// If the <see cref="AuthenticationConstants.VersionClaim"/> is present, this method will attempt to
-        /// obtain the attribute from the <see cref="AuthenticationConstants.AppIdClaim"/> if present.
-        /// </remarks>
-        /// <param name="claims">A list of claims.</param>
-        /// <returns>The value of the appId claim if found (null if it can't find a suitable claim)</returns>
-        public static string GetAppId(IEnumerable<Claim> claims)
-        {
-            var claimsList = claims.ToList();
-            var tokenVersion = claimsList.FirstOrDefault(claim => claim.Type == AuthenticationConstants.VersionClaim)?.Value;
-            string appId = null;
-
-            // Depending on Version, the is either in the
-            // appid claim (Version 1) or the Authorized Party claim (Version 2).
-            if (string.IsNullOrWhiteSpace(tokenVersion) || tokenVersion == "1.0")
-            {
-                // either no Version or a version of "1.0" means we should look for
-                // the claim in the "appid" claim.
-                var appIdClaim = claimsList.FirstOrDefault(c => c.Type == AuthenticationConstants.AppIdClaim);
-                appId = appIdClaim?.Value;
-            }
-            else if (tokenVersion == "2.0")
-            {
-                // "2.0" puts the AppId in the "azp" claim.
-                var appZClaim = claimsList.FirstOrDefault(c => c.Type == AuthenticationConstants.AuthorizedParty);
-                appId = appZClaim?.Value;
-            }
-
-            return appId;
+            // Check the AppId and ensure that only works against my whitelist authConfig can have info on how to get the
+            // whitelist AuthenticationConfiguration
+            // We may need to add a ClaimsIdentityValidator delegate or class that allows the dev to inject a custom validator.
         }
     }
 }

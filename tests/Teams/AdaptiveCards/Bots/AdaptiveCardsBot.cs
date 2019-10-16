@@ -85,7 +85,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             }
         }
 
-        protected override async Task<TaskModuleTaskInfo> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
+        protected override async Task<TaskModuleResponse> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
             var reply = MessageFactory.Text("OnTeamsTaskModuleFetchAsync TaskModuleRequest: " + JsonConvert.SerializeObject(taskModuleRequest));
             await turnContext.SendActivityAsync(reply, cancellationToken);
@@ -94,19 +94,32 @@ namespace Microsoft.BotBuilderSamples.Bots
             adaptiveCard.Body.Add(new AdaptiveTextBlock("This is an Adaptive Card within a Task Module"));
             adaptiveCard.Actions.Add(new AdaptiveSubmitAction { Type = "Action.Submit", Title = "Action.Submit", Data = new JObject { { "submitLocation", "taskModule" } } });
 
-            return new TaskModuleTaskInfo()
+            return new TaskModuleResponse
             {
-                Card = adaptiveCard.ToAttachment(),
-                Height = 200,
-                Width = 400,
-                Title = "Task Module Example",
+                Task = new TaskModuleContinueResponse
+                {
+                    Value = new TaskModuleTaskInfo()
+                    {
+                        Card = adaptiveCard.ToAttachment(),
+                        Height = 200,
+                        Width = 400,
+                        Title = "Task Module Example",
+                    },
+                },
             };
         }
 
-        protected override async Task<TaskModuleResponseBase> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
+        protected override async Task<TaskModuleResponse> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
             await turnContext.SendActivityAsync(MessageFactory.Text($"OnTeamsTaskModuleSubmitAsync value: { JsonConvert.SerializeObject(taskModuleRequest) }"), cancellationToken);
-            return new TaskModuleMessageResponse { Value = "Thanks!" };
+
+            return new TaskModuleResponse
+            {
+                Task = new TaskModuleMessageResponse()
+                {
+                    Value = "Thanks!",
+                },
+            };
         }
 
         protected override async Task<InvokeResponse> OnTeamsCardActionInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)

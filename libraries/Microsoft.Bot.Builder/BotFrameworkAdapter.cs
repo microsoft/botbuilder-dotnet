@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder
     public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IUserTokenProvider
     {
         internal const string BotIdentityKey = "BotIdentity";
-        private const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
+        internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
 
         private static readonly HttpClient _defaultHttpClient = new HttpClient();
         private readonly ICredentialProvider _credentialProvider;
@@ -188,22 +188,6 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Gets a list of the skills that the bot can use.
-        /// </summary>
-        /// <value>
-        /// A list of the skills that the bot can use.
-        /// </value>
-        public List<SkillOptions> Skills { get; } = new List<SkillOptions>();
-
-        /// <summary>
-        /// Gets or sets the /v3/conversations endpoint that will handle responses from the skill..
-        /// </summary>
-        /// <value>
-        /// The callback URL that will be used by the skills to communicate back to the bot.
-        /// </value>
-        public Uri SkillsCallbackUri { get; set; }
-
-        /// <summary>
         /// Sends a proactive message from the bot to a conversation.
         /// </summary>
         /// <param name="botAppId">The application ID of the bot. This is the appId returned by Portal registration, and is
@@ -324,7 +308,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task<InvokeResponse> ProcessActivityAsync(ClaimsIdentity identity, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
+        public override async Task<InvokeResponse> ProcessActivityAsync(ClaimsIdentity identity, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             BotAssert.ActivityNotNull(activity);
 
@@ -459,78 +443,6 @@ namespace Microsoft.Bot.Builder
             }
 
             return responses;
-        }
-
-        /// <summary>
-        /// Forward an activity to a skill(bot).
-        /// </summary>
-        /// <remarks>NOTE: Forwarding an activity to a skill will flush UserState and ConversationState changes so that skill has accurate state.</remarks>
-        /// <param name="turnContext">turnContext.</param>
-        /// <param name="skillId">skillId of the skill to forward the activity to.</param>
-        /// <param name="activity">activity to forward.</param>
-        /// <param name="cancellationToken">cancellation Token.</param>
-        /// <returns>Async task with optional invokeResponse.</returns>
-        public override async Task<InvokeResponse> ForwardActivityAsync(ITurnContext turnContext, string skillId, Activity activity, CancellationToken cancellationToken)
-        {
-            _logger.LogInformation($"Received request to forward activity to skill id {skillId}.");
-
-            // Get the skill information for the skillId
-            var skill = Skills.FirstOrDefault(s => s.Id == skillId);
-            if (skill == null)
-            {
-                throw new ArgumentException($"Skill:{skillId} isn't a registered skill");
-            }
-
-            // Pull the current claims identity from TurnState (it is stored there on the way in).
-            var identity = (ClaimsIdentity)turnContext.TurnState.Get<IIdentity>(BotIdentityKey);
-            if (identity.AuthenticationType.Equals("anonymous", StringComparison.InvariantCultureIgnoreCase))
-            {
-                // TODO: validate that we won't support anonymous with skills (sort of like OAuth). Gabo
-                throw new NotSupportedException("Anonymous calls are not supported for skills, please ensure your bot is configured with a MicrosoftAppId and Password).");
-            }
-
-            // Get current Bot ID from the identity audience claim
-            var botAppId = identity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
-            if (string.IsNullOrWhiteSpace(botAppId))
-            {
-                throw new InvalidOperationException("Unable to get the audience from the current request identity");
-            }
-
-            var appCredentials = await GetAppCredentialsAsync(botAppId, skill.AppId, cancellationToken).ConfigureAwait(false);
-            if (appCredentials == null)
-            {
-                throw new InvalidOperationException("Unable to get appcredentials to connect to the skill");
-            }
-
-            // Get token for the skill call
-            var token = await appCredentials.GetTokenAsync().ConfigureAwait(false);
-
-            // POST to skill 
-            using (var client = new HttpClient())
-            {
-                // TODO use SkillConversation class here instead of hard coded encoding...
-                // Encode original bot service URL and ConversationId in the new conversation ID so we can unpack it later.
-                // var skillConversation = new SkillConversation() { ServiceUrl = activity.ServiceUrl, ConversationId = activity.Conversation.Id };
-                // activity.Conversation.Id = skillConversation.GetSkillConversationId()
-                activity.Conversation.Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new string[]
-                {
-                    activity.Conversation.Id,
-                    activity.ServiceUrl,
-                })));
-                activity.ServiceUrl = SkillsCallbackUri.ToString();
-                activity.Recipient.Properties["skillId"] = skill.Id;
-                var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json");
-
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await client.PostAsync($"{skill.SkillEndpoint}", jsonContent, cancellationToken).ConfigureAwait(false);
-                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                if (content.Length > 0)
-                {
-                    return JsonConvert.DeserializeObject<InvokeResponse>(content);
-                }
-            }
-
-            return null;
         }
 
         /// <summary>
@@ -1064,7 +976,7 @@ namespace Microsoft.Bot.Builder
                 if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
                 {
                     // The skill connector has the target skill in the OAuthScope.
-                    scope = SkillValidation.GetAppId(claimsIdentity.Claims);
+                    scope = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
                 }
 
                 appCredentials = await GetAppCredentialsAsync(botId, scope, cancellationToken).ConfigureAwait(false);

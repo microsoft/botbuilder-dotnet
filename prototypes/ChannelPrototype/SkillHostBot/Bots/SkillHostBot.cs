@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 
 namespace SkillHost.Bots
@@ -30,7 +31,7 @@ namespace SkillHost.Bots
                 await _conversationState.SaveChangesAsync(turnContext, force: true, cancellationToken: cancellationToken);
 
                 // route activity to the skill
-                await turnContext.Adapter.ForwardActivityAsync(turnContext, activeSkillId, (Activity)turnContext.Activity, cancellationToken);
+                await turnContext.TurnState.Get<SkillAdapter>().ForwardActivityAsync(turnContext, activeSkillId, (Activity)turnContext.Activity, cancellationToken);
             }
             else
             {
@@ -45,7 +46,7 @@ namespace SkillHost.Bots
                     await _conversationState.SaveChangesAsync(turnContext, force: true, cancellationToken: cancellationToken);
 
                     // route the activity to the skill
-                    await turnContext.Adapter.ForwardActivityAsync(turnContext, "EchoSkill", (Activity)turnContext.Activity, cancellationToken);
+                    await turnContext.TurnState.Get<SkillAdapter>().ForwardActivityAsync(turnContext, "EchoSkill", (Activity)turnContext.Activity, cancellationToken);
                 }
                 else
                 {

@@ -25,26 +25,38 @@ namespace Microsoft.BotBuilderSamples.Bots
             await turnContext.SendActivityAsync(reply);
         }
 
-        protected override async Task<TaskModuleTaskInfo> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
+        protected override async Task<TaskModuleResponse> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
             var reply = MessageFactory.Text("OnTeamsTaskModuleFetchAsync TaskModuleRequest: " + JsonConvert.SerializeObject(taskModuleRequest));
             await turnContext.SendActivityAsync(reply);
 
-            return new TaskModuleTaskInfo()
+            return new TaskModuleResponse
             {
-                Card = this.GetTaskModuleAdaptiveCard(),
-                Height = 200,
-                Width = 400,
-                Title = "Adaptive Card: Inputs",
+                Task = new TaskModuleContinueResponse
+                {
+                    Value = new TaskModuleTaskInfo()
+                    {
+                        Card = this.GetTaskModuleAdaptiveCard(),
+                        Height = 200,
+                        Width = 400,
+                        Title = "Adaptive Card: Inputs",
+                    },
+                },
             };
         }
 
-        protected override async Task<TaskModuleResponseBase> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
+        protected override async Task<TaskModuleResponse> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
             var reply = MessageFactory.Text("OnTeamsTaskModuleFetchAsync Value: " + JsonConvert.SerializeObject(taskModuleRequest));
             await turnContext.SendActivityAsync(reply);
 
-            return new TaskModuleMessageResponse() { Value = "Thanks!" };
+            return new TaskModuleResponse
+            {
+                Task = new TaskModuleMessageResponse()
+                {
+                    Value = "Thanks!",
+                },
+            };
         }
 
         private Attachment GetTaskModuleHeroCard()
