@@ -19,7 +19,6 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
@@ -326,7 +325,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
             var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
 
-            await BuildQnAMakerTestFlow(QnAMakerActiveLearningHttpClient())
+            await BuildQnAMakerTestFlow()
             .Send("Q11")
                 .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
             .Send("Q1")
@@ -342,7 +341,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
             var noAnswerActivity = "Answers not found in kb.";
 
-            await BuildQnAMakerTestFlow(QnAMakerActiveLearningHttpClient())
+            await BuildQnAMakerTestFlow()
             .Send("Q11")
                 .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
             .Send("Q12")
@@ -357,7 +356,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
             var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
 
-            await BuildQnAMakerTestFlow(QnAMakerActiveLearningHttpClient())
+            await BuildQnAMakerTestFlow()
             .Send("Q11")
                 .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
             .Send("None of the above.")
@@ -365,41 +364,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .StartTestAsync();
         }
 
-        private HttpClient QnAMakerActiveLearningHttpClient()
-        {
-            // Mock Http client
-            var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, requestUrl).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
-                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
-            mockHttp.When(HttpMethod.Post, trainRequestUrl)
-                .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
-            mockHttp.When(HttpMethod.Post, requestUrl).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
-               .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
-
-            return new HttpClient(mockHttp);
-        }
-
-        private TestFlow BuildQnAMakerTestFlow(HttpClient httpClient)
+        private TestFlow BuildQnAMakerTestFlow()
         {
             var adapter = InitializeAdapter();
             var resource = resourceExplorer.GetResource("QnAMakerBot.main.dialog");
             var dialog = DeclarativeTypeLoader.Load<AdaptiveDialog>(resource, resourceExplorer, DebugSupport.SourceMap);
             var qnaMakerDialog = (QnAMakerDialog)dialog.Triggers[0].Actions[0];
 
-            // Creating QnAMaker client.
-            var endpoint = new QnAMakerEndpoint
-            {
-                EndpointKey = "dummy-key",
-                Host = "https://dummy-hostname.azurewebsites.net/qnamaker",
-                KnowledgeBaseId = "dummy-id"
-            };
-
-            var qnamakerOptions = new QnAMakerOptions
-            {
-                ScoreThreshold = qnaMakerDialog.Threshold
-            };
-
-            qnaMakerDialog.QnaMakerClient = new QnAMaker(endpoint, qnamakerOptions, httpClient);
+            qnaMakerDialog.QnaMakerClient = new MockQnAMakerClient();
 
             dialog.Triggers[0].Actions[0] = qnaMakerDialog;
 
