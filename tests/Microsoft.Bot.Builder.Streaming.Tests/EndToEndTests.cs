@@ -28,17 +28,19 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         {
             // Arrange
             object syncLock = new object();
-            string pipeName = "testPipe1";
             MockBot mockBot = null;
+            string pipeName = Guid.NewGuid().ToString();
             var client = new NamedPipeClient(pipeName);
-            var conversation = new Conversation(conversationId: "conversation1");
+            var conversation = new Conversation(conversationId: Guid.NewGuid().ToString());
             var processActivity = ProcessActivityWithAttachments(mockBot, conversation);
-            mockBot = new MockBot(processActivity, pipeName);
-            var requestWithOutActivity = GetStreamingRequestWithoutAttachments(conversation.ConversationId);
+            var adapter = new BotFrameworkHttpAdapter();
+            mockBot = new MockBot(processActivity);
+            var request = GetStreamingRequestWithoutAttachments(conversation.ConversationId);
 
             // Act
+            adapter.UseNamedPipeAsync(pipeName, mockBot);
             await client.ConnectAsync();
-            var response = await client.SendAsync(requestWithOutActivity);
+            var response = await client.SendAsync(request);
 
             // Assert
             Assert.Equal(200, response.StatusCode);
@@ -50,10 +52,10 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Arrange
             Exception result = null;
             object syncLock = new object();
-            string pipeName = "testPipes2";
+            string pipeName = Guid.NewGuid().ToString();
             MockBot mockBot = null;
             var client = new NamedPipeClient(pipeName);
-            var conversation = new Conversation(conversationId: "conversation1");
+            var conversation = new Conversation(conversationId: Guid.NewGuid().ToString());
             var processActivity = ProcessActivityWithAttachments(mockBot, conversation);
             BotFrameworkHttpAdapter adapter;
             mockBot = new MockBot(processActivity, pipeName);
@@ -80,11 +82,11 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Arrange
             Exception result = null;
             object syncLock = new object();
-            string pipeNameA = "testPipes3";
-            string pipeNameB = "testPipes4";
+            string pipeNameA = Guid.NewGuid().ToString();
+            string pipeNameB = Guid.NewGuid().ToString();
             MockBot mockBot = null;
             var client = new NamedPipeClient(pipeNameA);
-            var conversation = new Conversation(conversationId: "conversation1");
+            var conversation = new Conversation(conversationId: Guid.NewGuid().ToString());
             var processActivity = ProcessActivityWithAttachments(mockBot, conversation);
             BotFrameworkHttpAdapter adapter;
             mockBot = new MockBot(processActivity, pipeNameA);
@@ -112,11 +114,11 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Arrange
             ReceiveResponse result = null;
             object syncLock = new object();
-            string pipeNameA = "RightPipe";
-            string pipeNameB = "WrongPipe";
+            string pipeNameA = Guid.NewGuid().ToString();
+            string pipeNameB = Guid.NewGuid().ToString();
             MockBot mockBot = null;
             var client = new NamedPipeClient(pipeNameA);
-            var conversation = new Conversation(conversationId: "conversation1");
+            var conversation = new Conversation(conversationId: Guid.NewGuid().ToString());
             var processActivity = ProcessActivityWithAttachments(mockBot, conversation);
             BotFrameworkHttpAdapter adapter;
             mockBot = new MockBot(processActivity, pipeNameA);
@@ -130,7 +132,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
                 adapter.UseNamedPipeAsync(pipeNameB, mockBot);
 
                 client.ConnectAsync();
-                result = await client.SendAsync(GetStreamingRequestWithoutAttachments("123"));
+                result = await client.SendAsync(GetStreamingRequestWithoutAttachments(Guid.NewGuid().ToString()));
             }
             catch (Exception ex)
             {
@@ -147,13 +149,16 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Arrange
             object syncLock = new object();
             MockBot mockBot = null;
-            var client = new NamedPipeClient("testPipes");
-            var conversation = new Conversation(conversationId: "conversation1");
+            string pipeName = Guid.NewGuid().ToString();
+            var client = new NamedPipeClient(pipeName);
+            var conversation = new Conversation(conversationId: Guid.NewGuid().ToString());
             var processActivity = ProcessActivityWithAttachments(mockBot, conversation);
+            var adapter = new BotFrameworkHttpAdapter();
             mockBot = new MockBot(processActivity);
             var requestWithAttachments = GetStreamingRequestWithAttachment(conversation.ConversationId);
 
             // Act
+            adapter.UseNamedPipeAsync(pipeName, mockBot);
             await client.ConnectAsync();
             var response = await client.SendAsync(requestWithAttachments);
 

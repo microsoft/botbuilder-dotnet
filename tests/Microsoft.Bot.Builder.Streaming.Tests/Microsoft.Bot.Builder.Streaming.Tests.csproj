@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="BuildReports\**" />
+    <EmbeddedResource Remove="BuildReports\**" />
+    <None Remove="BuildReports\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="coverlet.msbuild" Version="2.7.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -29,10 +35,6 @@
     <ProjectReference Include="..\..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Streaming.Tests\Microsoft.Bot.Streaming.Tests.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="BuildReports\Coverage\" />
-    <Folder Include="BuildReports\UnitTests\" />
   </ItemGroup>
 
 </Project>
