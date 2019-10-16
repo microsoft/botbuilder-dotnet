@@ -152,13 +152,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Prototypes", "Prototypes", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BotToDialog", "BotToDialog", "{E56DB819-9E2D-4336-98EF-A370EFC4F13E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ChannelProtype", "ChannelProtype", "{14C4F5B9-8F11-4ADD-8527-9EE835A926DF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00. ChannelProtype", "00. ChannelProtype", "{14C4F5B9-8F11-4ADD-8527-9EE835A926DF}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DialogToDialog", "DialogToDialog", "{925C8BEF-A3E9-4AB3-8C83-D5E4DF7CE3AD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. DialogToDialog", "02. DialogToDialog", "{925C8BEF-A3E9-4AB3-8C83-D5E4DF7CE3AD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SendScenarios", "SendScenarios", "{9D1286E2-24E0-4181-A105-4BF9BAE4A740}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimpleBotToBot", "SimpleBotToBot", "{26F20A76-E168-40FA-8932-1DD3263373D5}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. SimpleBotToBot", "01. SimpleBotToBot", "{26F20A76-E168-40FA-8932-1DD3263373D5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EchoSkill", "prototypes\ChannelPrototype\EchoSkill\EchoSkill.csproj", "{2D3911C2-6215-4F07-AC0E-D799DE289DFD}"
 EndProject
@@ -174,7 +174,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleChildBot", "prototype
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Skills", "libraries\Microsoft.Bot.Builder.Skills\Microsoft.Bot.Builder.Skills.csproj", "{97AFA8D4-244D-4350-90AD-38491D17C716}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Skills.Tests", "tests\Microsoft.Bot.Builder.Skills.Tests\Microsoft.Bot.Builder.Skills.Tests.csproj", "{15117B24-16E1-4B23-AFA4-F7659980FFC9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Skills.Tests", "tests\Microsoft.Bot.Builder.Skills.Tests\Microsoft.Bot.Builder.Skills.Tests.csproj", "{15117B24-16E1-4B23-AFA4-F7659980FFC9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
