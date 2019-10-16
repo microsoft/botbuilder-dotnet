@@ -63,7 +63,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     {
                         itemsProperty = new ExpressionEngine().Parse(opt.List);
                     }
-
                     offset = opt.Offset;
                 }
 

@@ -159,6 +159,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
         }
 
+
         /// <summary>
         /// Get the value from memory using path expression (NOTE: This always returns clone of value)
         /// </summary>

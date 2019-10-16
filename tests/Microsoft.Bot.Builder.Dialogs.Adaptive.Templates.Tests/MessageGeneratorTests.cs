@@ -1,5 +1,4 @@
-﻿#pragma warning disable SA1204 // Static elements should appear before instance elements
-using System;
+﻿using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;

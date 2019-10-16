@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [TestCleanup]
-        public void TestCleanUp()
+        public async Task TestCleanUp()
         {
             _storage = null;
         }

@@ -1,6 +1,6 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿#pragma warning disable SA1401 // Fields should be private
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-#pragma warning disable SA1401 // Fields should be private
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
