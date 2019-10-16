@@ -149,6 +149,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests.csproj", "{EFAA1D3D-3102-4307-A5DD-EAB4DB9B0386}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Prototypes", "Prototypes", "{7818AFFD-A450-4F80-B1E7-278F4D467B5B}"
+	ProjectSection(SolutionItems) = preProject
+		prototypes\SkillManifest.json = prototypes\SkillManifest.json
+		prototypes\SkillManifestVA.json = prototypes\SkillManifestVA.json
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BotToDialog", "BotToDialog", "{E56DB819-9E2D-4336-98EF-A370EFC4F13E}"
 EndProject
