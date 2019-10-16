@@ -98,6 +98,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 // TODO: Eventually this should use the expression machinery
                 // This allows doing something like {$foo} where dialog.foo contains $blah to compute a path.
                 path = GetValue<string>(path.Substring(1, path.Length - 2));
+                if (path == null)
+                {
+                    remainingPath = string.Empty;
+                    return null;
+                }
             }
 
             var scope = path;
@@ -146,6 +151,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
 
             var memoryScope = this.ResolveMemoryScope(path, out var remainingPath);
+            if (memoryScope == null)
+            {
+                return false;
+            }
+
             var memory = memoryScope.GetMemory(this.dialogContext);
 
             // HACK to support .First() retrieval on turn.recognized.entities.foo, replace with Expressions once expression ship
@@ -225,6 +235,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
             var memoryScope = this.ResolveMemoryScope(path, out var remainingPath);
+            if (memoryScope == null)
+            {
+                throw new ArgumentException(GetBadScopeMessage(path));
+            }
+
             if (remainingPath == string.Empty)
             {
                 memoryScope.SetMemory(this.dialogContext, value);
@@ -245,9 +260,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
             var memoryScope = this.ResolveMemoryScope(path, out var remainingPath);
-            var memory = memoryScope.GetMemory(this.dialogContext);
-            memoryScope.RaiseChange(this.dialogContext, path, null);
-            ObjectPath.RemovePathValue(memory, remainingPath);
+            if (memoryScope != null)
+            {
+                var memory = memoryScope.GetMemory(this.dialogContext);
+                memoryScope.RaiseChange(this.dialogContext, path, null);
+                ObjectPath.RemovePathValue(memory, remainingPath);
+            }
         }
 
         /// <summary>
