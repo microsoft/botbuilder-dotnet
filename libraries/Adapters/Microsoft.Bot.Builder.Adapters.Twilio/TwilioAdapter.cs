@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -127,7 +128,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 httpResponse.ContentType = "text/plain";
                 var text = context.TurnState.Get<object>("httpBody") != null ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
 
-                await httpResponse.WriteAsync(text, cancellationToken).ConfigureAwait(false);
+                await TwilioHelper.WriteAsync(httpResponse, httpResponse.StatusCode, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
             }
         }
 

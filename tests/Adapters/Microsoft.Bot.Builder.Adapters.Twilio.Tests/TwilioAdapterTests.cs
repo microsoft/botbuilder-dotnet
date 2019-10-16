@@ -3,6 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -78,7 +81,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await twilioAdapter.ProcessAsync(httpRequest.Object, null, default(IBot), default(CancellationToken));
+                await twilioAdapter.ProcessAsync(httpRequest.Object, null, bot.Object, default(CancellationToken));
             });
         }
 
@@ -97,34 +100,120 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             });
         }
 
-        [Fact(Skip = "Can't mock extension methods")]
+        [Fact]
         public async void ProcessAsync_Should_Succeed_With_HttpBody()
         {
             var options = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
-
             var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(options).Object);
             var httpRequest = new Mock<HttpRequest>();
             var httpResponse = new Mock<HttpResponse>();
-            httpResponse
-                .Setup(e => e.WriteAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
+            var bot = new Mock<IBot>();
+            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\NoMediaPayload.txt"));
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
 
-            await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, null, default(CancellationToken));
+            var authTokenString = "Test";
+            var validationUrlString = new Uri("http://contoso.com");
+
+            var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(authTokenString));
+            var builder = new StringBuilder(validationUrlString.ToString());
+
+            var byteArray = Encoding.ASCII.GetBytes(payload);
+
+            var values = new Dictionary<string, string>();
+
+            var pairs = payload.Replace("+", "%20").Split('&');
+
+            foreach (var p in pairs)
+            {
+                var pair = p.Split('=');
+                var key = pair[0];
+                var value = Uri.UnescapeDataString(pair[1]);
+
+                values.Add(key, value);
+            }
+
+            var sortedKeys = new List<string>(values.Keys);
+            sortedKeys.Sort(StringComparer.Ordinal);
+
+            foreach (var key in sortedKeys)
+            {
+                builder.Append(key).Append(values[key] ?? string.Empty);
+            }
+
+            var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
+            var hash = Convert.ToBase64String(hashArray);
+
+            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns(hash);
+            httpRequest.SetupGet(req => req.Body).Returns(stream);
+            bot.SetupAllProperties();
+            httpResponse.Setup(_ => _.Body.WriteAsync(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .Callback((byte[] data, int offset, int length, CancellationToken token) =>
+                {
+                    if (length > 0)
+                    {
+                        var actual = Encoding.UTF8.GetString(data);
+                    }
+                });
+
+            await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default(CancellationToken));
         }
 
-        [Fact(Skip = "Can't mock extension methods")]
+        [Fact]
         public async void ProcessAsync_Should_Succeed_With_Null_HttpBody()
         {
             var options = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
-
             var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(options).Object);
             var httpRequest = new Mock<HttpRequest>();
             var httpResponse = new Mock<HttpResponse>();
-            httpResponse
-                .Setup(e => e.WriteAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
+            var bot = new Mock<IBot>();
+            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\NoMediaPayload.txt"));
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
 
-            await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, null, default(CancellationToken));
+            var authTokenString = "Test";
+            var validationUrlString = new Uri("http://contoso.com");
+
+            var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(authTokenString));
+            var builder = new StringBuilder(validationUrlString.ToString());
+
+            var byteArray = Encoding.ASCII.GetBytes(payload);
+
+            var values = new Dictionary<string, string>();
+
+            var pairs = payload.Replace("+", "%20").Split('&');
+
+            foreach (var p in pairs)
+            {
+                var pair = p.Split('=');
+                var key = pair[0];
+                var value = Uri.UnescapeDataString(pair[1]);
+
+                values.Add(key, value);
+            }
+
+            var sortedKeys = new List<string>(values.Keys);
+            sortedKeys.Sort(StringComparer.Ordinal);
+
+            foreach (var key in sortedKeys)
+            {
+                builder.Append(key).Append(values[key] ?? string.Empty);
+            }
+
+            var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
+            var hash = Convert.ToBase64String(hashArray);
+
+            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns(hash);
+            httpRequest.SetupGet(req => req.Body).Returns(stream);
+            bot.SetupAllProperties();
+            httpResponse.Setup(_ => _.Body.WriteAsync(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .Callback((byte[] data, int offset, int length, CancellationToken token) =>
+                {
+                    if (length > 0)
+                    {
+                        var actual = Encoding.UTF8.GetString(data);
+                    }
+                });
+
+            await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default(CancellationToken));
         }
 
         [Fact]
