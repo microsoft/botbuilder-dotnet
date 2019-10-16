@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 if (activity.Type != ActivityTypes.Message)
                 {
-                    throw new Exception("Unknown message type");
+                    throw new ArgumentException("Unknown message type of Activity.", nameof(activities));
                 }
 
                 // transform activity into the webex message format
