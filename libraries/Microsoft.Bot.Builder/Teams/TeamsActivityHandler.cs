@@ -140,7 +140,7 @@ namespace Microsoft.Bot.Builder.Teams
                     return CreateInvokeResponse();
 
                 default:
-                    throw new InvokeResponseException(HttpStatusCode.BadRequest);
+                    throw new InvokeResponseException(HttpStatusCode.BadRequest, $"{fileConsentCardResponse.Action} is not a supported Action.");
             }
         }
 
@@ -192,7 +192,7 @@ namespace Microsoft.Bot.Builder.Teams
                         return await OnTeamsMessagingExtensionBotMessagePreviewSendAsync(turnContext, action, cancellationToken).ConfigureAwait(false);
 
                     default:
-                        throw new InvokeResponseException(HttpStatusCode.BadRequest);
+                        throw new InvokeResponseException(HttpStatusCode.BadRequest, $"{action.BotMessagePreviewAction} is not a supported BotMessagePreviewAction.");
                 }
             }
             else
@@ -315,7 +315,7 @@ namespace Microsoft.Bot.Builder.Teams
             var obj = value as JObject;
             if (obj == null)
             {
-                throw new Exception($"expected type '{value.GetType().Name}'");
+                throw new InvokeResponseException(HttpStatusCode.BadRequest, $"expected type '{value.GetType().Name}'");
             }
 
             return obj.ToObject<T>();
@@ -323,16 +323,18 @@ namespace Microsoft.Bot.Builder.Teams
 
         private class InvokeResponseException : Exception
         {
-            public HttpStatusCode StatusCode { get; set; }
+            private HttpStatusCode _statusCode;
+            private object _body;
 
-            public InvokeResponseException(HttpStatusCode statusCode)
+            public InvokeResponseException(HttpStatusCode statusCode, object body = null)
             {
-                StatusCode = statusCode;
+                _statusCode = statusCode;
+                _body = body;
             }
             
             public InvokeResponse CreateInvokeResponse()
             {
-                return new InvokeResponse { Status = (int)StatusCode };
+                return new InvokeResponse { Status = (int)_statusCode, Body = _body };
             }
         }
     }
