@@ -209,7 +209,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             private async Task CallGetChannelsAsync(ITurnContext turnContext)
             {
-                var channels = (await TeamsInfo.GetChannelsAsync(turnContext)).ToArray();
+                var channels = (await TeamsInfo.GetTeamChannelsAsync(turnContext)).ToArray();
 
                 Assert.AreEqual("channel-id-1", channels[0].Id);
 
