@@ -1,0 +1,20 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Cancel all dialogs",
+    "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
+    "type": "object",
+    "properties": {
+        "eventName": {
+            "title": "Event name",
+            "description": "Name of the event to emit.",
+            "type": "string"
+        },
+        "eventValue": {
+            "type": "object",
+            "title": "Event value",
+            "description": "Value to emit with the event (optional).",
+            "additionalProperties": true
+        }
+    }
+}

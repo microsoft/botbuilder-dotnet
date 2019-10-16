@@ -1,9 +1,12 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.IO;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    internal interface IAssembler
+    public interface IAssembler
     {
         bool End { get; }
 

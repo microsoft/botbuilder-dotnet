@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
@@ -111,7 +110,7 @@ namespace Microsoft.Bot.Builder
         protected override async Task TraceStateAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             var session = await FindSessionAsync(turnContext, cancellationToken).ConfigureAwait(false);
-            if (session != null)
+            if (session != null && (_userState != null || _conversationState != null))
             {
                 var task1 = _userState?.LoadAsync(turnContext, false, cancellationToken) ?? Task.CompletedTask;
                 var task2 = _conversationState?.LoadAsync(turnContext, false, cancellationToken) ?? Task.CompletedTask;

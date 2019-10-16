@@ -25,3 +25,5 @@ If you are experiencing 404 errors when trying to install the MyGet packages che
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`https://botbuilder.myget.org/F/botbuilder-v4-dotnet-daily/api/v3/index.json`
 
+.
+

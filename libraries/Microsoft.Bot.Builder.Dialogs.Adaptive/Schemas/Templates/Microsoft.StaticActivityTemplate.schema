@@ -1,0 +1,17 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IActivityTemplate)",
+    "title": "Microsoft Static Activity Template",
+    "description": "This allows you to defina static Activity object",
+    "type": "object",
+    "properties": {
+        "activity": {
+            "type": "object",
+            "title": "Activity",
+            "Description": "A static Activity to used"
+        }
+    },
+    "required": [
+        "activity"
+    ]
+}

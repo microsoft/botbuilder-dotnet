@@ -1,0 +1,29 @@
+{
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "generator": "todo.lg",
+    "triggers": [
+        {
+            "$type": "Microsoft.OnBeginDialog",
+
+            "actions": [
+                {
+                    "$type": "Microsoft.IfCondition",
+                    "condition": "user.todos == null",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SendActivity",
+                            "activity": "You have no todos."
+                        }
+                    ],
+                    "elseActions": [
+                        {
+                            "$type": "Microsoft.SendActivity",
+                            "activity": "[ShowTodo]"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -5,6 +5,7 @@
     <IsPackable>false</IsPackable>
     <AssemblyName>Microsoft.Bot.Builder.TestBot.Tests</AssemblyName>
     <RootNamespace>Microsoft.BotBuilderSamples.Tests</RootNamespace>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

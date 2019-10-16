@@ -3,10 +3,6 @@
 
 namespace Microsoft.Bot.Configuration
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-
     public class ServiceTypes
     {
         public const string AppInsights = "appInsights";
