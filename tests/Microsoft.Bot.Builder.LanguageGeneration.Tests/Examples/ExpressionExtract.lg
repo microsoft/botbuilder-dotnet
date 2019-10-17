@@ -2,6 +2,7 @@
 - don't mix {'{}'} and {concat('{',"}")}
 
 # templateWithQuotationMarks
+> please use '"',"\"" is not support. The same, please use "'", '\'' is not support
 - don't mix {'{"}'} and {concat('"',"'")}
 
 # templateWithUnpairedBrackets1
