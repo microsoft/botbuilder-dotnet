@@ -1,0 +1,60 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$type": "Microsoft.OnSetProperty",
+    "property": "HomePhone",
+    "actions": [
+        {
+            "$type": "Microsoft.SwitchCondition",
+            "condition": "turn.schema.properties['HomePhone'].$mappings[0]",
+            "cases": [
+                {
+                    "value": "utterance",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SetProperty",
+                            "property": "$HomePhone",
+                            "value": "@utterance"
+                        }
+                    ]
+                },
+                {
+                    "value": "datetime",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SetProperty",
+                            "property": "$HomePhone",
+                            "value": "join(@datetime.timex,', ')"
+                        }
+                    ]
+                },
+                {
+                    "value": "datetimeV2",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SetProperty",
+                            "property": "$HomePhone",
+                            "value": "join(@datetime.timex,', ')"
+                        }
+                    ]
+                },
+                {
+                    "value": "email",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SetProperty",
+                            "property": "$HomePhone",
+                            "value": "@email"
+                        }
+                    ]
+                }
+            ],
+            "default": [
+                {
+                    "$type": "Microsoft.SetProperty",
+                    "property": "$HomePhone",
+                    "value": "turn.recognized.entities[turn.schema.properties['HomePhone'].$mappings[0]]"
+                }
+            ]
+        }
+    ]
+}

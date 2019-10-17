@@ -7,6 +7,9 @@
 
 >>> Ask prompts <<<
 
+# welcome
+- Welcome!
+
 > TODO: We should look at the schema and if a few items list them or do cards or..
 # askEnum(property, name)
 - Which value do you want for {name}?
@@ -22,7 +25,12 @@
 
 >>> Help messages <<<
 # helpProperty(property, name)
+- IF: {turn.schema.properties[property].enum}
 - Possible values for {name} include: \[{join(turn.schema.properties[property].enum, ',')}\]
+- ELSEIF: {property=='utterance'}
+- 
+- ELSE:
+- There is no help message for {name}
 
 # contextHelp
 - {join(foreach(dialog.expectedProperties, prop, helpProperty(prop, prop)), '\n')}

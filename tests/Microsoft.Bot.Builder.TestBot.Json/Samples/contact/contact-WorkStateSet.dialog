@@ -1,0 +1,60 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$type": "Microsoft.OnSetProperty",
+    "property": "WorkState",
+    "actions": [
+        {
+            "$type": "Microsoft.SwitchCondition",
+            "condition": "turn.schema.properties['WorkState'].$mappings[0]",
+            "cases": [
+                {
+                    "value": "utterance",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SetProperty",
+                            "property": "$WorkState",
+                            "value": "@utterance"
+                        }
+                    ]
+                },
+                {
+                    "value": "datetime",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SetProperty",
+                            "property": "$WorkState",
+                            "value": "join(@datetime.timex,', ')"
+                        }
+                    ]
+                },
+                {
+                    "value": "datetimeV2",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SetProperty",
+                            "property": "$WorkState",
+                            "value": "join(@datetime.timex,', ')"
+                        }
+                    ]
+                },
+                {
+                    "value": "email",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SetProperty",
+                            "property": "$WorkState",
+                            "value": "@email"
+                        }
+                    ]
+                }
+            ],
+            "default": [
+                {
+                    "$type": "Microsoft.SetProperty",
+                    "property": "$WorkState",
+                    "value": "turn.recognized.entities[turn.schema.properties['WorkState'].$mappings[0]]"
+                }
+            ]
+        }
+    ]
+}

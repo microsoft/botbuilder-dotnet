@@ -22,7 +22,10 @@
 
 >>> Help messages <<<
 # helpProperty(property, name)
+- IF: {turn.schema.properties[property].enum}
 - Possible values for {name} include: \[{join(turn.schema.properties[property].enum, ',')}\]
+- ELSE:
+- There is no help message for {name}
 
 # contextHelp
 - {join(foreach(dialog.expectedProperties, prop, helpProperty(prop, prop)), '\n')}

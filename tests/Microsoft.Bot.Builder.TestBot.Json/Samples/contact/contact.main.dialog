@@ -1,0 +1,8 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$type": "Microsoft.FormDialog",
+    "recognizer": "contact.lu",
+    "generator": "contact.lg",
+    "schema": "contact.form",
+    "triggers": [ "contact-HomeStreetAsk", "contact-HomeStreetHelp", "contact-HomeStreetSet", "contact-HomeCityAsk", "contact-HomeCityHelp", "contact-HomeCitySet", "contact-HomeStateAsk", "contact-HomeStateHelp", "contact-HomeStateSet", "contact-HomeZipAsk", "contact-HomeZipHelp", "contact-HomeZipSet", "contact-HomePhoneAsk", "contact-HomePhoneHelp", "contact-HomePhoneSet", "contact-WorkStreetAsk", "contact-WorkStreetHelp", "contact-WorkStreetSet", "contact-WorkCityAsk", "contact-WorkCityHelp", "contact-WorkCitySet", "contact-WorkStateAsk", "contact-WorkStateHelp", "contact-WorkStateSet", "contact-WorkZipAsk", "contact-WorkZipHelp", "contact-WorkZipSet", "contact-WorkPhoneAsk", "contact-WorkPhoneHelp", "contact-WorkPhoneSet", "contact-begindialog", "contact-cancelconfirmation", "contact-cancelconfirmationset", "contact-chooseproperty", "contact-complete", "contact-completeconfirmationset", "contact-help", "contact-propertytochangeset" ]
+}

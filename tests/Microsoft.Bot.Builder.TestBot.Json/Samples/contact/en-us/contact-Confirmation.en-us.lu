@@ -1,0 +1,15 @@
+
+$Confirmation:yes=
+ -yes
+
+$Confirmation:no=
+ -no
+
+
+# None
+- yes
+
+- no
+
+
+

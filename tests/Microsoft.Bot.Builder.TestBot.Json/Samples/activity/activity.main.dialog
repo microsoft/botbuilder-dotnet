@@ -4,5 +4,5 @@
     "recognizer": "activity.lu",
     "generator": "activity.lg",
     "schema": "activity.form",
-    "triggers": [ "activity-SubjectAsk", "activity-SubjectSet", "activity-ActivityTypeAsk", "activity-ActivityTypeClarify", "activity-ActivityTypeClear", "activity-ActivityTypeHelp", "activity-ActivityTypeSet", "activity-StartDateAsk", "activity-StartDateSet", "activity-begindialog", "activity-cancelconfirmation", "activity-cancelconfirmationset", "activity-chooseproperty", "activity-complete", "activity-completeconfirmationset", "activity-help", "activity-propertytochangeset" ]
+    "triggers": [ "activity-SubjectAsk", "activity-SubjectHelp", "activity-SubjectSet", "activity-ActivityTypeClarify", "activity-ActivityTypeAsk", "activity-ActivityTypeClear", "activity-ActivityTypeHelp", "activity-ActivityTypeSet", "activity-StartDateAsk", "activity-StartDateHelp", "activity-StartDateSet", "activity-begindialog", "activity-cancelconfirmation", "activity-cancelconfirmationset", "activity-chooseproperty", "activity-complete", "activity-completeconfirmationset", "activity-help", "activity-propertytochangeset" ]
 }
