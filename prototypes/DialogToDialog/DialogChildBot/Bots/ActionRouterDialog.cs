@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DialogChildBot.Dialogs;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace DialogChildBot.Bots
@@ -32,21 +33,18 @@ namespace DialogChildBot.Bots
             //      If yes, resolve against LUIS
             var turnContext = innerDc.Context;
             var activity = turnContext.Activity;
-            if (activity.SemanticAction != null)
+            if (activity.Type == ActivityTypes.Event)
             {
                 // Resolve what to execute based on the semantic action ID.
-                await turnContext.SendActivityAsync(MessageFactory.Text($"Echo: {activity.Text}"), cancellationToken);
-                switch (activity.SemanticAction.Id)
+                await turnContext.SendActivityAsync(MessageFactory.Text($"Got Event: {activity.Name}"), cancellationToken);
+                switch (activity.Name)
                 {
                     case "BookFlight":
-                        await turnContext.SendActivityAsync(MessageFactory.Text($"Got Semantic Action: {activity.SemanticAction.Id}"), cancellationToken);
-
                         var bookingDetails = new BookingDetails();
-                        if (activity.SemanticAction.Entities != null && activity.SemanticAction.Entities.ContainsKey("bookingInfo"))
+                        if (activity.Value != null)
                         {
-                            var entity = activity.SemanticAction.Entities["bookingInfo"];
-                            bookingDetails = entity.GetAs<BookingDetails>();
-                            await turnContext.SendActivityAsync(MessageFactory.Text($"Got Entity: {entity.Type} {JsonConvert.SerializeObject(bookingDetails)}"), cancellationToken);
+                            bookingDetails = JsonConvert.DeserializeObject<BookingDetails>(JsonConvert.SerializeObject(activity.Value));
+                            await turnContext.SendActivityAsync(MessageFactory.Text($"Got Value parameter: {JsonConvert.SerializeObject(bookingDetails)}"), cancellationToken);
                         }
 
                         // Start the booking dialog
@@ -55,18 +53,22 @@ namespace DialogChildBot.Bots
 
                     case "GetWeather":
                         // This is not done yet, should a a couple of debug messages and end right away.
-                        await turnContext.SendActivityAsync(MessageFactory.Text($"Got Semantic Action: {activity.SemanticAction.Id}"), cancellationToken);
                         await turnContext.SendActivityAsync(MessageFactory.Text("TODO: This will handle GetWeather flow"), cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Complete);
 
                     default:
-                        await turnContext.SendActivityAsync(MessageFactory.Text($"Unknown Semantic Action: {activity.SemanticAction.Id}"), cancellationToken);
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Unknown event name"), cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Complete);
                 }
             }
 
-            // TODO: here we would need to resolve against LUIS
-            await turnContext.SendActivityAsync(MessageFactory.Text($"TODO: an action wasn't passed into the call so we probably need to run this through our own LUIS model to see if we can figure out what to do with the user's utterance..."), cancellationToken);
+            // Here we would need to resolve against LUIS or determine what else to do.
+            await turnContext.SendActivityAsync(MessageFactory.Text($"Didn't get an event. We got an activity of type \"{activity.Type}\" and value is \"{JsonConvert.SerializeObject(activity.Value)}\"."), cancellationToken);
+            if (activity.Type == ActivityTypes.Message)
+            {
+                await turnContext.SendActivityAsync(MessageFactory.Text($"We need to run this through our own LUIS model. The activity text was \"{activity.Text}\"."), cancellationToken);
+            }
+
             return new DialogTurnResult(DialogTurnStatus.Complete);
         }
     }

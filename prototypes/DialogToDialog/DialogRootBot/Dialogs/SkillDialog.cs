@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
@@ -23,13 +22,26 @@ namespace DialogRootBot.Dialogs
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-            var remoteDialogArgs = (SkillDialogArgs)options;
-            await dc.Context.SendActivityAsync($"SkillDialog: InBeginDialog Action: {remoteDialogArgs.TargetAction}", cancellationToken: cancellationToken);
-            var turnContext = dc.Context;
-            AddActionToActivity(turnContext.Activity, remoteDialogArgs.TargetAction, remoteDialogArgs.Entities);
+            var remoteDialogArgs = options as SkillDialogArgs;
+            var fwdActivity = dc.Context.Activity;
+            if (remoteDialogArgs != null)
+            {
+                await dc.Context.SendActivityAsync($"SkillDialog: InBeginDialog using an event: {remoteDialogArgs.EventName}", cancellationToken: cancellationToken);
 
-            // Send message with semantic action to the remote skill.
-            return await SendToSkill(dc, turnContext.Activity, cancellationToken);
+                var eventActivity = Activity.CreateEventActivity();
+                eventActivity.Name = remoteDialogArgs.EventName;
+                eventActivity.Value = remoteDialogArgs.Value;
+                eventActivity.ApplyConversationReference(dc.Context.Activity.GetConversationReference());
+
+                fwdActivity = (Activity)eventActivity;
+            }
+            else
+            {
+                await dc.Context.SendActivityAsync($"SkillDialog: InBeginDialog using pass through (activity is: {dc.Context.Activity.Type}.", cancellationToken: cancellationToken);
+            }
+
+            // Send message with to the remote skill.
+            return await SendToSkill(dc, fwdActivity, cancellationToken);
         }
 
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
@@ -50,22 +62,6 @@ namespace DialogRootBot.Dialogs
         {
             await turnContext.SendActivityAsync("SkillDialog: In EndDialog", cancellationToken: cancellationToken);
             await base.EndDialogAsync(turnContext, instance, reason, cancellationToken);
-        }
-
-        private static void AddActionToActivity(Activity activity, string action, Dictionary<string, object> entities)
-        {
-            // Set the action and the entities on the activity before sending it to the remote skill.
-            activity.SemanticAction = new SemanticAction(action);
-            var entitiesList = new Dictionary<string, Entity>();
-            
-            foreach (var entity in entities)
-            {
-                var value = new Entity();
-                value.SetAs(entity.Value);
-                entitiesList.Add(entity.Key, value);
-            }
-
-            activity.SemanticAction.Entities = entitiesList;
         }
 
         private async Task<DialogTurnResult> SendToSkill(DialogContext dc, Activity activity, CancellationToken cancellationToken)

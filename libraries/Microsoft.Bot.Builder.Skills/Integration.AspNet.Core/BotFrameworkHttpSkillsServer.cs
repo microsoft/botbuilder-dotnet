@@ -214,7 +214,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             HttpHelper.WriteResponse(httpResponse, statusCode, result);
         }
 
-        private RouteResult GetRoute(HttpRequest httpRequest)
+        private static RouteResult GetRoute(HttpRequest httpRequest)
         {
             var path = $"/{httpRequest.Method}:{httpRequest.Path}";
             foreach (var route in _routes)
