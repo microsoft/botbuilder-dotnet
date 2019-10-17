@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
     public class WebexAdapterTests
     {
         private static readonly Uri _testPublicAddress = new Uri("http://contoso.com");
-        private readonly Person _identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\Person.json")));
+        private readonly Person _identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/Person.json")));
         private readonly WebexAdapterOptions _testOptions = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
         [Fact]
@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         public async void ProcessAsyncWithEvenTypeCreatedShouldSucceed()
         {
             var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\Message.json")));
-            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\Payload.json"));
+            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/Payload.json"));
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
             var call = false;
 
@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             var webexAdapter = new WebexAdapter(webexApi.Object);
 
-            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\Payload2.json"));
+            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/Payload2.json"));
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
             var call = false;
 
@@ -136,8 +136,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void ProcessAsyncWithAttachmentActionsShouldSucceed()
         {
-            var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\MessageWithInputs.json")));
-            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\PayloadAttachmentActions.json"));
+            var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/MessageWithInputs.json")));
+            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/PayloadAttachmentActions.json"));
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
             var call = false;
 
@@ -212,7 +212,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             var webexAdapter = new WebexAdapter(webexApi.Object);
 
-            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\Payload2.json"));
+            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/Payload2.json"));
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
 
             var httpRequest = new Mock<HttpRequest>();
