@@ -1,110 +1,88 @@
-﻿#pragma warning disable SA1402 // File may only contain a single type
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System;
 using System.Text;
-using Microsoft.Bot.Builder.Skills;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Skills.Tests
 {
-    [TestClass]
     public class SkillConversationTests
     {
-        public TestContext TestContext { get; set; }
-
-        [TestMethod]
+        [Fact]
         public void TestSkillConversationEncoding()
         {
-            SkillConversation sc = new SkillConversation()
+            var sc = new SkillConversation()
             {
                 ConversationId = Guid.NewGuid().ToString("N"),
                 ServiceUrl = "http://test.com/xyz?id=1&id=2"
             };
             var skillConversationId = sc.GetSkillConversationId();
 
-            SkillConversation sc2 = new SkillConversation(skillConversationId);
-            Assert.AreEqual(sc.ConversationId, sc2.ConversationId);
-            Assert.AreEqual(sc.ServiceUrl, sc2.ServiceUrl);
+            var sc2 = new SkillConversation(skillConversationId);
+            Assert.Equal(sc.ConversationId, sc2.ConversationId);
+            Assert.Equal(sc.ServiceUrl, sc2.ServiceUrl);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSkillConversationTestNullId()
         {
-            try
+            Assert.Throws<ArgumentNullException>(() =>
             {
-                SkillConversation sc = new SkillConversation()
+                var sc = new SkillConversation()
                 {
                     ConversationId = null,
                     ServiceUrl = "http://test.com/xyz?id=1&id=2"
                 };
                 var cid = sc.GetSkillConversationId();
-                Assert.Fail("Should have thrown on null");
-            }
-            catch (Exception)
-            {
-            }
+            });
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSkillConversationNullUrl()
         {
-            try
+            Assert.Throws<ArgumentNullException>(() =>
             {
-                SkillConversation sc = new SkillConversation()
+                var sc = new SkillConversation()
                 {
                     ConversationId = Guid.NewGuid().ToString("N"),
                     ServiceUrl = null
                 };
                 var cid = sc.GetSkillConversationId();
-                Assert.Fail("Should have thrown on null");
-            }
-            catch (Exception)
-            {
-            }
+            });
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSkillConversationNullCtor()
         {
-            try
+            Assert.Throws<ArgumentNullException>(() =>
             {
-                SkillConversation sc = new SkillConversation(null);
+                var sc = new SkillConversation(null);
                 var cid = sc.GetSkillConversationId();
-                Assert.Fail("Should have thrown on null");
-            }
-            catch (Exception)
-            {
-            }
+            });
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSkillConversationEmptyCtor()
         {
-            try
+            Assert.Throws<NullReferenceException>(() =>
             {
-                SkillConversation sc = new SkillConversation(String.Empty);
+                var sc = new SkillConversation(String.Empty);
                 var cid = sc.GetSkillConversationId();
-                Assert.Fail("Should have thrown on empty");
-            }
-            catch (Exception)
-            {
-            }
+            });
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSkillConversationBogusPayload()
         {
-            try
+            Assert.Throws<IndexOutOfRangeException>(() =>
             {
                 var test = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new object[0])));
 
-                SkillConversation sc = new SkillConversation(test);
+                var sc = new SkillConversation(test);
                 var cid = sc.GetSkillConversationId();
-                Assert.Fail("Should have thrown on bogusity");
-            }
-            catch (Exception)
-            {
-            }
+            });
         }
     }
 }
