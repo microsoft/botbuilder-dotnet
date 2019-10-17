@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public void ActivityToTwilioShouldReturnMessageOptionsWithMediaUrl()
         {
-            var activity = JsonConvert.DeserializeObject<Activity>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\Activities.json")));
+            var activity = JsonConvert.DeserializeObject<Activity>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/Activities.json")));
             activity.Attachments = new List<Attachment> { new Attachment(contentUrl: "http://example.com") };
             var messageOption = TwilioHelper.ActivityToTwilio(activity, TwilioNumber);
 
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public void ActivityToTwilioShouldReturnEmptyMediaUrlWithNullMediaUrls()
         {
-            var activity = JsonConvert.DeserializeObject<Activity>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\Activities.json")));
+            var activity = JsonConvert.DeserializeObject<Activity>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/Activities.json")));
             activity.Attachments = null;
             var messageOption = TwilioHelper.ActivityToTwilio(activity, TwilioNumber);
 
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public void QueryStringToDictionaryShouldReturnDictionaryWithValidQuery()
         {
-            var bodyString = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\NoMediaPayload.txt"));
+            var bodyString = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/NoMediaPayload.txt"));
             
             var dictionary = TwilioHelper.QueryStringToDictionary(bodyString);
 
@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public void PayloadToActivityShouldReturnNullActivityAttachmentsWithNumMediaEqualToZero()
         {
-            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\DictionaryPayload.json"));
+            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/DictionaryPayload.json"));
             var dictionaryPayload = JsonConvert.DeserializeObject<Dictionary<string, string>>(payload);
 
             var activity = TwilioHelper.PayloadToActivity(dictionaryPayload);
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public void PayloadToActivityShouldReturnActivityAttachmentsWithNumMediaGreaterThanZero()
         {
-            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\DictionaryMediaPayload.json"));
+            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/DictionaryMediaPayload.json"));
             var dictionaryPayload = JsonConvert.DeserializeObject<Dictionary<string, string>>(payload);
 
             var activity = TwilioHelper.PayloadToActivity(dictionaryPayload);
@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public void PayloadToActivityShouldNotThrowKeyNotFoundExceptionWithNumMediaGreaterThanAttachments()
         {
-            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\DictionaryMediaPayload.json"));
+            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/DictionaryMediaPayload.json"));
             var dictionaryPayload = JsonConvert.DeserializeObject<Dictionary<string, string>>(payload);
             dictionaryPayload["NumMedia"] = "2";
 

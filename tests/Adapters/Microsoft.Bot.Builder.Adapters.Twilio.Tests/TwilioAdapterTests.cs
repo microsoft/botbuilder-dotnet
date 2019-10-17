@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async void ProcessAsyncShouldSucceedWithHttpBody()
         {
-            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\NoMediaPayload.txt"));
+            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/NoMediaPayload.txt"));
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
             var twilioApi = new Mock<TwilioClientWrapper>(_testOptions);
             var twilioAdapter = new TwilioAdapter(twilioApi.Object);
@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async void ProcessAsyncShouldSucceedWithNullHttpBody()
         {
-            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\NoMediaPayload.txt"));
+            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/NoMediaPayload.txt"));
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
             var twilioApi = new Mock<TwilioClientWrapper>(_testOptions);
             var twilioAdapter = new TwilioAdapter(twilioApi.Object);
