@@ -35,17 +35,17 @@ namespace Microsoft.Bot.Builder.Skills
         }
 
         /// <summary>
-        /// Gets or sets the botAdapter to use to process ChannelAPI call from the skill
+        /// Gets the botAdapter to use to process ChannelAPI call from the skill
         /// </summary>
-        public BotAdapter ChannelAdapter { get; set; }
+        public BotAdapter ChannelAdapter { get; }
 
         /// <summary>
-        /// Gets or sets the callback to invoke bot logic
+        /// Gets the callback to invoke bot logic
         /// </summary>
-        public IBot Bot { get; set; }
+        public IBot Bot { get; }
 
         /// <summary>
-        /// Forward an activity to a skill.
+        /// Forwards an activity to a skill.
         /// </summary>
         /// <param name="turnContext">turnContext.</param>
         /// <param name="skillId">skillId of the skill to forward the activity to.</param>

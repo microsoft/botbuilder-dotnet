@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         /// Gets or sets Id of the skill.
         /// </summary>
         /// <value>
-        /// Name of the skill.
+        /// Id of the skill.
         /// </value>
         public string Id { get; set; }
 

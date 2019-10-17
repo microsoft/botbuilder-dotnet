@@ -45,36 +45,6 @@ namespace Microsoft.Bot.Builder.Skills
             }
         }
 
-        public static void WriteResponse(HttpResponse response, InvokeResponse invokeResponse)
-        {
-            if (response == null)
-            {
-                throw new ArgumentNullException(nameof(response));
-            }
-
-            if (invokeResponse == null)
-            {
-                response.StatusCode = (int)HttpStatusCode.OK;
-            }
-            else
-            {
-                response.StatusCode = invokeResponse.Status;
-
-                if (invokeResponse.Body != null)
-                {
-                    response.ContentType = "application/json";
-
-                    using (var writer = new StreamWriter(response.Body))
-                    {
-                        using (var jsonWriter = new JsonTextWriter(writer))
-                        {
-                            BotMessageSerializer.Serialize(jsonWriter, invokeResponse.Body);
-                        }
-                    }
-                }
-            }
-        }
-
         public static void WriteResponse(HttpResponse response, int statusCode, object body = null)
         {
             if (response == null)

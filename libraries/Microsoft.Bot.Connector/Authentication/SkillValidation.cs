@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>True, if the token was issued for a skill to bot communication. Otherwise, false.</returns>
         public static bool IsSkillToken(string authHeader)
         {
-            if (!JwtTokenValidation.IsValidToken(authHeader))
+            if (!JwtTokenValidation.IsValidTokenFormat(authHeader))
             {
                 return false;
             }
@@ -71,6 +71,12 @@ namespace Microsoft.Bot.Connector.Authentication
         ///     An <see cref="AuthenticationConstants.AudienceClaim"/> claim.
         ///     An <see cref="AuthenticationConstants.AppIdClaim"/> claim (v1) or an a <see cref="AuthenticationConstants.AuthorizedParty"/> claim (v2).
         /// And the appId claim should be different than the audience claim.
+        /// When a channel (webchat, teams, etc.) invokes a bot, the <see cref="AuthenticationConstants.AudienceClaim"/>
+        /// is set to <see cref="AuthenticationConstants.ToBotFromChannelTokenIssuer"/> but when a bot calls another bot,
+        /// the audience claim is set to the appId of the bot being invoked.
+        /// The protocol supports v1 and v2 tokens:
+        /// For v1 tokens, the  <see cref="AuthenticationConstants.AppIdClaim"/> is present and set to the app Id of the calling bot.
+        /// For v2 tokens, the  <see cref="AuthenticationConstants.AuthorizedParty"/> is present and set to the app Id of the calling bot.
         /// </remarks>
         /// <param name="claims">A list of claims.</param>
         /// <returns>True if the list of claims is a skill claim, false if is not.</returns>

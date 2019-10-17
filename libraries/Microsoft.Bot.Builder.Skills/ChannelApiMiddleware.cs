@@ -52,35 +52,35 @@ namespace Microsoft.Bot.Builder.Skills
                 {
                     // Send activity(activity)
                     case ChannelApiMethods.SendToConversation:
+                    {
+                        var activityPayload = (Activity)invokeArgs.Args[0];
+                        if (activityPayload.Type == ActivityTypes.EndOfConversation)
                         {
-                            var activityPayload = (Activity)invokeArgs.Args[0];
-                            if (activityPayload.Type == ActivityTypes.EndOfConversation)
-                            {
-                                await ProcessEndOfConversationAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
-                                invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
-                                return;
-                            }
-
-                            invokeArgs.Result = await turnContext.SendActivityAsync(activityPayload, cancellationToken).ConfigureAwait(false);
+                            await ProcessEndOfConversationAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
+                            invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
                             return;
                         }
+
+                        invokeArgs.Result = await turnContext.SendActivityAsync(activityPayload, cancellationToken).ConfigureAwait(false);
+                        return;
+                    }
 
                     // Send activity(replyToId, activity)
                     case ChannelApiMethods.ReplyToActivity:
+                    {
+                        var activityPayload = (Activity)invokeArgs.Args[1];
+                        activityPayload.ReplyToId = (string)invokeArgs.Args[0];
+
+                        if (activityPayload.Type == ActivityTypes.EndOfConversation)
                         {
-                            var activityPayload = (Activity)invokeArgs.Args[1];
-                            activityPayload.ReplyToId = (string)invokeArgs.Args[0];
-
-                            if (activityPayload.Type == ActivityTypes.EndOfConversation)
-                            {
-                                await ProcessEndOfConversationAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
-                                invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
-                                return;
-                            }
-
-                            invokeArgs.Result = await turnContext.SendActivityAsync(activityPayload, cancellationToken).ConfigureAwait(false);
+                            await ProcessEndOfConversationAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
+                            invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
                             return;
                         }
+
+                        invokeArgs.Result = await turnContext.SendActivityAsync(activityPayload, cancellationToken).ConfigureAwait(false);
+                        return;
+                    }
 
                     // UpdateActivity(activity)
                     case ChannelApiMethods.UpdateActivity:
@@ -107,12 +107,11 @@ namespace Microsoft.Bot.Builder.Skills
 
                     // GetConversationPageMembers((int)pageSize, continuationToken)
                     case ChannelApiMethods.GetConversationPagedMembers:
-                        if (adapter != null)
-                        {
-                            invokeArgs.Result = await adapter.GetConversationPagedMembersAsync(turnContext, (int)invokeArgs.Args[0], (string)invokeArgs.Args[1], cancellationToken).ConfigureAwait(false);
-                        }
-
-                        break;
+                        throw new NotImplementedException($"{ChannelApiMethods.SendConversationHistory} is not supported");
+                        //if (adapter != null)
+                        //{
+                        //    invokeArgs.Result = await adapter.GetConversationsAsync((int)invokeArgs.Args[0], (string)invokeArgs.Args[1], cancellationToken).ConfigureAwait(false);
+                        //}
 
                     // DeleteConversationMember(memberId)
                     case ChannelApiMethods.DeleteConversationMember:
@@ -134,16 +133,17 @@ namespace Microsoft.Bot.Builder.Skills
 
                     case ChannelApiMethods.UploadAttachment:
                         throw new NotImplementedException($"{ChannelApiMethods.UploadAttachment} is not supported");
-
                 }
             }
-            catch (Exception err)
+#pragma warning disable CA1031 // Do not catch general exception types (excluding, we use the general exception to store it in the inokeArgs).
+            catch (Exception ex)
             {
-                invokeArgs.Exception = err;
+                invokeArgs.Exception = ex;
             }
+#pragma warning restore CA1031 // Do not catch general exception types
         }
 
-        private async Task ProcessEndOfConversationAsync(ITurnContext turnContext, NextDelegate next, Activity activityPayload, CancellationToken cancellationToken)
+        private static async Task ProcessEndOfConversationAsync(ITurnContext turnContext, NextDelegate next, Activity activityPayload, CancellationToken cancellationToken)
         {
             // transform the turnContext.Activity to be the EndOfConversation and pass up to the bot, we would set the Activity, but it only has a get;
             var endOfConversation = activityPayload.AsEndOfConversationActivity();

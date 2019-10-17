@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
@@ -566,29 +565,36 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// GetConversationPagedMembers.
+        /// Lists the Conversations in which this bot has participated for a given channel server. The
+        /// channel server returns results in pages and each page will include a `continuationToken`
+        /// that can be used to fetch the next page of results from the server.
         /// </summary>
-        /// <param name="turnContext">turnContext.</param>
-        /// <param name="pageSize">Suggested page size.</param>
-        /// <param name="continuationToken">Continuation Token.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>channelAcounts for conversation members.</returns>
-        public virtual async Task<PagedMembersResult> GetConversationPagedMembersAsync(ITurnContext turnContext, int pageSize = -1, string continuationToken = null, CancellationToken cancellationToken = default)
+        /// <param name="serviceUrl">The URL of the channel server to query.  This can be retrieved
+        /// from `context.activity.serviceUrl`. </param>
+        /// <param name="credentials">The credentials needed for the Bot to connect to the services.</param>
+        /// <param name="continuationToken">The continuation token from the previous page of results.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task completes successfully, the result contains a page of the members of the current conversation.
+        /// This overload may be called from outside the context of a conversation, as only the
+        /// bot's service URL and credentials are required.
+        /// </remarks>
+        public async Task<ConversationsResult> GetConversationsAsync(string serviceUrl, MicrosoftAppCredentials credentials, string continuationToken, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.Conversation == null)
+            if (string.IsNullOrWhiteSpace(serviceUrl))
             {
-                throw new ArgumentNullException("BotFrameworkAdapter.GetConversationPagedMembers(): missing conversation");
+                throw new ArgumentNullException(nameof(serviceUrl));
             }
 
-            if (string.IsNullOrWhiteSpace(turnContext.Activity.Conversation.Id))
+            if (credentials == null)
             {
-                throw new ArgumentNullException("BotFrameworkAdapter.GetConversationPagedMembers(): missing conversation.id");
+                throw new ArgumentNullException(nameof(credentials));
             }
 
-            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-            var conversationId = turnContext.Activity.Conversation.Id;
-
-            return await connectorClient.Conversations.GetConversationPagedMembersAsync(conversationId, pageSize, continuationToken, cancellationToken).ConfigureAwait(false);
+            var connectorClient = CreateConnectorClient(serviceUrl, credentials);
+            var results = await connectorClient.Conversations.GetConversationsAsync(continuationToken, cancellationToken).ConfigureAwait(false);
+            return results;
         }
 
         /// <summary>

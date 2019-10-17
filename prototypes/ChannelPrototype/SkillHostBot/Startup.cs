@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Builder.Skills.Adapters;
-using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,21 +19,6 @@ namespace SkillHost
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
-        {
-            var builder = new ConfigurationBuilder()
-                 .SetBasePath(env.ContentRootPath)
-                 .AddJsonFile("appsettings.json",
-                              optional: false,
-                              reloadOnChange: true)
-                 .AddUserSecrets<Startup>()
-                 .AddEnvironmentVariables();
-
-            Configuration = builder.Build();
-        }
-
-        public IConfiguration Configuration { get; set; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -43,12 +28,12 @@ namespace SkillHost
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
 
             // Create the Bot Framework Adapter with error handling enabled.
-            var botAdapter = new AdapterWithErrorHandler(Configuration, null);
+            var botAdapter = new AdapterWithErrorHandler(services.BuildServiceProvider().GetService<IConfiguration>(), null);
             services.AddSingleton<BotAdapter>(botAdapter);
             services.AddSingleton<BotFrameworkHttpAdapter>(botAdapter);
             services.AddSingleton<BotFrameworkSkillHostAdapter>();
 
-            services.AddSingleton((s) => (SkillHostAdapter)s.GetService<BotFrameworkSkillHostAdapter>());
+            services.AddSingleton(sp => (SkillHostAdapter)sp.GetService<BotFrameworkSkillHostAdapter>());
 
             services.AddSingleton<BotFrameworkHttpSkillsServer>();
 
@@ -85,4 +70,3 @@ namespace SkillHost
         }
     }
 }
-

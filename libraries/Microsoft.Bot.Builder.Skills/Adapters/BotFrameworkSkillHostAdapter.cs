@@ -44,20 +44,21 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         internal const string BotIdentityKey = "BotIdentity";
 
         private static readonly HttpClient _defaultHttpClient = new HttpClient();
-        private readonly ICredentialProvider _credentialProvider;
-        private readonly AppCredentials _appCredentials;
-        private readonly IChannelProvider _channelProvider;
-        private readonly HttpClient _httpClient;
-        private readonly RetryPolicy _connectorClientRetryPolicy;
-        private readonly ILogger _logger;
 
         // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)
         // AppCredentials are cached using appId + skillId (this last parameter is only used if the app credentials are used to call a skill)
         private readonly ConcurrentDictionary<string, AppCredentials> _appCredentialMap = new ConcurrentDictionary<string, AppCredentials>();
+        private readonly AppCredentials _appCredentials;
+        private readonly AuthenticationConfiguration _authConfiguration;
+        private readonly IChannelProvider _channelProvider;
+        private readonly RetryPolicy _connectorClientRetryPolicy;
 
         // There is a significant boost in throughput if we reuse a connectorClient
         // _connectorClients is a cache using [serviceUrl + appId].
         private readonly ConcurrentDictionary<string, ConnectorClient> _connectorClients = new ConcurrentDictionary<string, ConnectorClient>();
+        private readonly ICredentialProvider _credentialProvider;
+        private readonly HttpClient _httpClient;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkSkillHostAdapter"/> class,
@@ -71,16 +72,46 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         /// <param name="customHttpClient">The HTTP client.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         /// <param name="configuration">configuration</param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="credentialProvider"/> is <c>null</c>.</exception>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
-        /// components in the constructor. Use the <see cref="Use(IMiddleware)"/> method to
+        /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
         public BotFrameworkSkillHostAdapter(
             BotAdapter adapter,
             IBot bot,
             ICredentialProvider credentialProvider,
+            IChannelProvider channelProvider = null,
+            RetryPolicy connectorClientRetryPolicy = null,
+            HttpClient customHttpClient = null,
+            ILogger logger = null,
+            IConfiguration configuration = null)
+            : this(adapter, bot, credentialProvider, new AuthenticationConfiguration(), channelProvider, connectorClientRetryPolicy, customHttpClient, logger, configuration)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkSkillHostAdapter"/> class,
+        /// using a credential provider.
+        /// </summary>
+        /// <param name="adapter">adapter that this skillAdapter is bound to</param>
+        /// <param name="bot">bot callback </param>
+        /// <param name="credentialProvider">The credential provider.</param>
+        /// <param name="authConfig">The authentication configuration.</param>
+        /// <param name="channelProvider">The channel provider.</param>
+        /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
+        /// <param name="customHttpClient">The HTTP client.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        /// <param name="configuration">configuration</param>
+        /// <exception cref="ArgumentNullException">throw ArgumentNullException</exception>
+        /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
+        /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
+        /// add additional middleware to the adapter after construction.
+        /// </remarks>
+        public BotFrameworkSkillHostAdapter(
+            BotAdapter adapter,
+            IBot bot,
+            ICredentialProvider credentialProvider,
+            AuthenticationConfiguration authConfig,
             IChannelProvider channelProvider = null,
             RetryPolicy connectorClientRetryPolicy = null,
             HttpClient customHttpClient = null,
@@ -93,6 +124,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
             _httpClient = customHttpClient ?? _defaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
             _logger = logger ?? NullLogger.Instance;
+            _authConfiguration = authConfig ?? throw new ArgumentNullException(nameof(authConfig));
 
             LoadFromConfiguration(configuration);
 
@@ -115,13 +147,14 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         /// <param name="configuration">configuration</param>
         /// <exception cref="ArgumentNullException">throw ArgumentNullException</exception>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
-        /// components in the constructor. Use the <see cref="Use(IMiddleware)"/> method to
+        /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
         public BotFrameworkSkillHostAdapter(
             BotAdapter adapter,
             IBot bot,
             AppCredentials credentials,
+            AuthenticationConfiguration authConfig,
             IChannelProvider channelProvider = null,
             RetryPolicy connectorClientRetryPolicy = null,
             HttpClient customHttpClient = null,
@@ -130,11 +163,11 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
             : base(adapter, bot, logger)
         {
             _appCredentials = credentials ?? throw new ArgumentNullException(nameof(credentials));
-            _credentialProvider = new SimpleCredentialProvider(credentials.MicrosoftAppId, string.Empty);
             _channelProvider = channelProvider;
             _httpClient = customHttpClient ?? _defaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
             _logger = logger ?? NullLogger.Instance;
+            _authConfiguration = authConfig ?? throw new ArgumentNullException(nameof(authConfig));
 
             LoadFromConfiguration(configuration);
 
@@ -142,7 +175,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
             ConnectorClient.AddDefaultRequestHeaders(_httpClient);
         }
 
-        public List<BotFrameworkSkill> Skills { get; private set; } = new List<BotFrameworkSkill>();
+        public List<BotFrameworkSkill> Skills { get; } = new List<BotFrameworkSkill>();
 
         /// <summary>
         /// Gets or sets the /v3/conversations endpoint that will handle responses from the skill..
@@ -153,7 +186,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         public string SkillHostEndpoint { get; set; }
 
         /// <summary>
-        /// Forward an activity to a skill(bot).
+        /// Forwards an activity to a skill (bot).
         /// </summary>
         /// <remarks>NOTE: Forwarding an activity to a skill will flush UserState and ConversationState changes so that skill has accurate state.</remarks>
         /// <param name="turnContext">turnContext.</param>
@@ -203,12 +236,12 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
                 // Encode original bot service URL and ConversationId in the new conversation ID so we can unpack it later.
                 // var skillConversation = new SkillConversation() { ServiceUrl = activity.ServiceUrl, ConversationId = activity.Conversation.Id };
                 // activity.Conversation.Id = skillConversation.GetSkillConversationId()
-                activity.Conversation.Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new string[]
+                activity.Conversation.Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new[]
                 {
                     activity.Conversation.Id,
                     activity.ServiceUrl,
                 })));
-                activity.ServiceUrl = this.SkillHostEndpoint;
+                activity.ServiceUrl = SkillHostEndpoint;
                 activity.Recipient.Properties["skillId"] = skill.Id;
                 var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json");
 
@@ -285,9 +318,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
                 }
                 else
                 {
-                    var emptyCredentials = (_channelProvider != null && _channelProvider.IsGovernment()) ?
-                        MicrosoftGovernmentAppCredentials.Empty :
-                        MicrosoftAppCredentials.Empty;
+                    var emptyCredentials = _channelProvider != null && _channelProvider.IsGovernment() ? MicrosoftGovernmentAppCredentials.Empty : MicrosoftAppCredentials.Empty;
                     connectorClient = new ConnectorClient(new Uri(serviceUrl), emptyCredentials, customHttpClient: _httpClient);
                 }
 
@@ -331,9 +362,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
 
             // NOTE: we can't do async operations inside of a AddOrUpdate, so we split access pattern
             var appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
-            appCredentials = _channelProvider != null && _channelProvider.IsGovernment() ?
-                new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient, this._logger) :
-                new MicrosoftAppCredentials(appId, appPassword, _httpClient, this._logger, oAuthScope);
+            appCredentials = _channelProvider != null && _channelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient, _logger) : new MicrosoftAppCredentials(appId, appPassword, _httpClient, _logger, oAuthScope);
 
             // Cache the credentials for later use
             _appCredentialMap[cacheKey] = appCredentials;
@@ -343,16 +372,13 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         private void LoadFromConfiguration(IConfiguration configuration)
         {
             var section = configuration?.GetSection($"BotFrameworkSkills");
-            if (section != null)
+            var skills = section?.Get<BotFrameworkSkill[]>();
+            if (skills != null)
             {
-                var skills = section?.Get<BotFrameworkSkill[]>();
-                if (skills != null)
-                {
-                    this.Skills.AddRange(skills);
-                }
+                Skills.AddRange(skills);
             }
 
-            this.SkillHostEndpoint = configuration?.GetValue<string>(nameof(SkillHostEndpoint));
+            SkillHostEndpoint = configuration?.GetValue<string>(nameof(SkillHostEndpoint));
         }
     }
 }
