@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,17 +20,15 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         private readonly TwilioAdapterOptions _testOptions = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
 
         [Fact]
-        public void ConstructorWithTwilioAPIWrapperSucceeds()
+        public void ConstructorWithTwilioApiWrapperSucceeds()
         {
             Assert.NotNull(new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object));
         }
 
         [Fact]
-        public void ConstructorShouldFailWithNullTwilioAPIWrapper()
+        public void ConstructorShouldFailWithNullTwilioApiWrapper()
         {
-            TwilioClientWrapper twilioClientWrapper = null;
-
-            Assert.Throws<ArgumentNullException>(() => { new TwilioAdapter(twilioClientWrapper); });
+            Assert.Throws<ArgumentNullException>(() => { new TwilioAdapter((TwilioClientWrapper)null); });
         }
 
         [Fact]
@@ -55,39 +52,19 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async void ProcessAsyncShouldSucceedWithHttpBody()
         {
-            var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
+            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\NoMediaPayload.txt"));
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
+            var twilioApi = new Mock<TwilioClientWrapper>(_testOptions);
+            var twilioAdapter = new TwilioAdapter(twilioApi.Object);
             var httpRequest = new Mock<HttpRequest>();
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
-            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\NoMediaPayload.txt"));
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
-            var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_testOptions.AuthToken));
-            var builder = new StringBuilder(_testOptions.ValidationUrl.ToString());
-            var values = new Dictionary<string, string>();
-            var pairs = payload.Replace("+", "%20").Split('&');
-
-            foreach (var p in pairs)
-            {
-                var pair = p.Split('=');
-                var key = pair[0];
-                var value = Uri.UnescapeDataString(pair[1]);
-
-                values.Add(key, value);
-            }
-
-            var sortedKeys = new List<string>(values.Keys);
-            sortedKeys.Sort(StringComparer.Ordinal);
-
-            foreach (var key in sortedKeys)
-            {
-                builder.Append(key).Append(values[key] ?? string.Empty);
-            }
-
-            var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
-            var hash = Convert.ToBase64String(hashArray);
-
-            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns(hash);
+            
             httpRequest.SetupGet(req => req.Body).Returns(stream);
+
+            twilioApi.SetupAllProperties();
+            twilioApi.Setup(x => x.ValidateSignature(It.IsAny<HttpRequest>(), It.IsAny<Dictionary<string, string>>())).Returns(true);
+
             bot.SetupAllProperties();
             httpResponse.Setup(res => res.Body.WriteAsync(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .Callback((byte[] data, int offset, int length, CancellationToken token) =>
@@ -98,45 +75,27 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
                     }
                 });
 
-            await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default(CancellationToken));
+            await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default);
+
+            bot.Verify(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
         public async void ProcessAsyncShouldSucceedWithNullHttpBody()
         {
-            var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
+            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\NoMediaPayload.txt"));
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
+            var twilioApi = new Mock<TwilioClientWrapper>(_testOptions);
+            var twilioAdapter = new TwilioAdapter(twilioApi.Object);
             var httpRequest = new Mock<HttpRequest>();
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
-            var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\NoMediaPayload.txt"));
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
-            var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_testOptions.AuthToken));
-            var builder = new StringBuilder(_testOptions.ValidationUrl.ToString());
-            var values = new Dictionary<string, string>();
-            var pairs = payload.Replace("+", "%20").Split('&');
 
-            foreach (var p in pairs)
-            {
-                var pair = p.Split('=');
-                var key = pair[0];
-                var value = Uri.UnescapeDataString(pair[1]);
-
-                values.Add(key, value);
-            }
-
-            var sortedKeys = new List<string>(values.Keys);
-            sortedKeys.Sort(StringComparer.Ordinal);
-
-            foreach (var key in sortedKeys)
-            {
-                builder.Append(key).Append(values[key] ?? string.Empty);
-            }
-
-            var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
-            var hash = Convert.ToBase64String(hashArray);
-
-            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns(hash);
             httpRequest.SetupGet(req => req.Body).Returns(stream);
+
+            twilioApi.SetupAllProperties();
+            twilioApi.Setup(x => x.ValidateSignature(It.IsAny<HttpRequest>(), It.IsAny<Dictionary<string, string>>())).Returns(true);
+
             bot.SetupAllProperties();
             httpResponse.Setup(res => res.Body.WriteAsync(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .Callback((byte[] data, int offset, int length, CancellationToken token) =>
@@ -147,7 +106,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
                     }
                 });
 
-            await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default(CancellationToken));
+            await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default);
+
+            bot.Verify(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -159,7 +120,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await twilioAdapter.ProcessAsync(null, httpResponse.Object, bot.Object, default(CancellationToken));
+                await twilioAdapter.ProcessAsync(null, httpResponse.Object, bot.Object, default);
             });
         }
 
@@ -172,7 +133,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await twilioAdapter.ProcessAsync(httpRequest.Object, null, bot.Object, default(CancellationToken));
+                await twilioAdapter.ProcessAsync(httpRequest.Object, null, bot.Object, default);
             });
         }
 
@@ -185,7 +146,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, null, default(CancellationToken));
+                await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, null, default);
             });
         }
 
@@ -194,9 +155,15 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         {
             var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
             var activity = new Activity();
-            var turnContext = new TurnContext(twilioAdapter, activity);
 
-            await Assert.ThrowsAsync<NotSupportedException>(async () => { await twilioAdapter.UpdateActivityAsync(turnContext, activity, default); });
+            using (var turnContext = new TurnContext(twilioAdapter, activity))
+            {
+
+                await Assert.ThrowsAsync<NotSupportedException>(async () =>
+                {
+                    await twilioAdapter.UpdateActivityAsync(turnContext, activity, default);
+                });
+            }
         }
 
         [Fact]
@@ -204,16 +171,21 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         {
             var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
             var activity = new Activity();
-            var turnContext = new TurnContext(twilioAdapter, activity);
             var conversationReference = new ConversationReference();
 
-            await Assert.ThrowsAsync<NotSupportedException>(async () => { await twilioAdapter.DeleteActivityAsync(turnContext, conversationReference, default); });
+            using (var turnContext = new TurnContext(twilioAdapter, activity))
+            {
+                await Assert.ThrowsAsync<NotSupportedException>(async () =>
+                {
+                    await twilioAdapter.DeleteActivityAsync(turnContext, conversationReference, default);
+                });
+            }
         }
 
         [Fact]
         public async void ContinueConversationAsyncShouldSucceed()
         {
-            bool callbackInvoked = false;
+            var callbackInvoked = false;
             var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
             var conversationReference = new ConversationReference();
 
@@ -224,6 +196,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             }
 
             await twilioAdapter.ContinueConversationAsync(conversationReference, BotsLogic, default);
+            
             Assert.True(callbackInvoked);
         }
 
@@ -252,24 +225,19 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async void SendActivitiesAsyncShouldSucceed()
         {
-            // Setup mocked Activity and get the message option
             var activity = new Mock<Activity>().SetupAllProperties();
             activity.Object.Type = "message";
             activity.Object.Attachments = new List<Attachment> { new Attachment(contentUrl: "http://example.com") };
             activity.Object.Conversation = new ConversationAccount(id: "MockId");
             activity.Object.Text = "Hello, Bot!";
-            var messageOption = TwilioHelper.ActivityToTwilio(activity.Object, "123456789");
 
-            // Setup mocked Twilio API client
             const string resourceIdentifier = "Mocked Resource Identifier";
             var twilioApi = new Mock<TwilioClientWrapper>(_testOptions);
             twilioApi.Setup(x => x.SendMessage(It.IsAny<CreateMessageOptions>())).Returns(Task.FromResult(resourceIdentifier));
 
-            // Create a new Twilio Adapter with the mocked classes and get the responses
             var twilioAdapter = new TwilioAdapter(twilioApi.Object);
             var resourceResponses = await twilioAdapter.SendActivitiesAsync(null, new Activity[] { activity.Object }, default).ConfigureAwait(false);
 
-            // Assert the result
             Assert.True(resourceResponses[0].Id == resourceIdentifier);
         }
     }
