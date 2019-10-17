@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
         /// <remarks>
         /// The configuration keys are:
-        /// TwilioNumber: The phone number associanted with the Twilio account.
+        /// TwilioNumber: The phone number associated with the Twilio account.
         /// AccountSid: The string identifier of the account. See https://www.twilio.com/docs/glossary/what-is-a-sid
         /// AuthToken: The authentication token for the account.
         /// </remarks>
@@ -120,7 +120,10 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 bodyDictionary = TwilioHelper.QueryStringToDictionary(await bodyStream.ReadToEndAsync().ConfigureAwait(false));
             }
 
-            TwilioHelper.ValidateRequest(httpRequest, bodyDictionary, _twilioClient.Options.ValidationUrl, _twilioClient.Options.AuthToken);
+            if (!_twilioClient.ValidateSignature(httpRequest, bodyDictionary))
+            {
+                throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
+            }
 
             var activity = TwilioHelper.PayloadToActivity(bodyDictionary);
 

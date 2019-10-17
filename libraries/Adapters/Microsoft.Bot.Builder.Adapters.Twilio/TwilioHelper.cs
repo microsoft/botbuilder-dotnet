@@ -3,9 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -15,9 +13,6 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Twilio.Rest.Api.V2010.Account;
-using Twilio.Security;
-
-using AuthenticationException = System.Security.Authentication.AuthenticationException;
 
 #if SIGNASSEMBLY
 [assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Adapters.Twilio.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b5fc90e7027f67871e773a8fde8938c81dd402ba65b9201d60593e96c492651e889cc13f1415ebb53fac1131ae0bd333c5ee6021672d9718ea31a8aebd0da0072f25d87dba6fc90ffd598ed4da35e44c398c454307e8e33b8426143daec9f596836f97c8f74750e5975c64e2189f45def46b2a2b1247adc3652bf5c308055da9")]
@@ -100,13 +95,8 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <summary>
         /// Creates a Bot Framework <see cref="Activity"/> from an HTTP request that contains a Twilio message.
         /// </summary>
-        /// <param name="httpRequest">The HTTP request.</param>
-        /// <param name="validationUrl">Optional validation URL to override the automatically
-        /// generated URL signature used to validate incoming requests.</param>
-        /// <param name="authToken">The authentication token for the Twilio app.</param>
+        /// <param name="body">The HTTP request.</param>
         /// <returns>The activity object.</returns>
-        /// <seealso cref="TwilioAdapter.ProcessAsync(HttpRequest, HttpResponse, IBot, System.Threading.CancellationToken)"/>
-        /// <seealso cref="TwilioAdapterOptions.ValidationUrl"/>
         public static Activity PayloadToActivity(Dictionary<string, string> body)
         {
             if (body == null)
@@ -138,35 +128,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 Type = ActivityTypes.Message,
                 Attachments = int.TryParse(twilioMessage.NumMedia, out var numMediaResult) && numMediaResult > 0 ? GetMessageAttachments(numMediaResult, body) : null,
             };
-        }
-
-        /// <summary>
-        /// Validates an HTTP request as coming from Twilio.
-        /// </summary>
-        /// <param name="httpRequest">The request to validate.</param>
-        /// <param name="body">The request payload, as key-value pairs.</param>
-        /// <param name="validationUrl">Optional validation URL to override the automatically
-        /// generated URL signature used to validate incoming requests.</param>
-        /// <param name="authToken">The authentication token for the Twilio app.</param>
-        /// <exception cref="AuthenticationException">Validation failed.</exception>
-        public static void ValidateRequest(HttpRequest httpRequest, Dictionary<string, string> body, Uri validationUrl, string authToken)
-        {
-            var twilioSignature = httpRequest.Headers["x-twilio-signature"];
-            var urlString = validationUrl?.ToString();
-            if (string.IsNullOrWhiteSpace(urlString))
-            {
-                urlString = httpRequest.Headers["x-forwarded-proto"][0];
-                if (string.IsNullOrWhiteSpace(urlString))
-                {
-                    urlString = httpRequest.Protocol + "://" + httpRequest.Host + httpRequest.Path;
-                }
-            }
-
-            var requestValidator = new RequestValidator(authToken);
-            if (!requestValidator.Validate(urlString, body, twilioSignature))
-            {
-                throw new AuthenticationException("Request does not match provided signature");
-            }
         }
 
         /// <summary>

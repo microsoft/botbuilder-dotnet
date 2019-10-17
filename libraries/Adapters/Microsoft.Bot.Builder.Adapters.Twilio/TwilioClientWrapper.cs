@@ -2,9 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
+using Twilio.Security;
 
 namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
@@ -13,6 +16,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
     /// </summary>
     public class TwilioClientWrapper
     {
+        private const string TwilioSignature = "x-twilio-signature";
+        private const string TwilioHeader = "x-forwarded-proto";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TwilioClientWrapper"/> class.
         /// </summary>
@@ -50,6 +56,34 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         {
             var messageResource = await MessageResource.CreateAsync((CreateMessageOptions)messageOptions).ConfigureAwait(false);
             return messageResource.Sid;
+        }
+
+        /// <summary>
+        /// Validates an HTTP request as coming from Twilio.
+        /// </summary>
+        /// <param name="httpRequest">The request to validate.</param>
+        /// <param name="body">The request payload, as key-value pairs.</param>
+        /// <returns>The result of the comparison between the signature in the request and hashed body.</returns>
+        public virtual bool ValidateSignature(HttpRequest httpRequest, Dictionary<string, string> body)
+        {
+            var urlString = Options.ValidationUrl?.ToString();
+            
+            var twilioSignature = httpRequest.Headers.ContainsKey(TwilioSignature)
+                ? httpRequest.Headers[TwilioSignature].ToString().ToUpperInvariant()
+                : throw new Exception($"HttpRequest is missing \"{TwilioSignature}\"");
+
+            if (string.IsNullOrWhiteSpace(urlString))
+            {
+                urlString = httpRequest.Headers[TwilioHeader][0];
+                if (string.IsNullOrWhiteSpace(urlString))
+                {
+                    urlString = $"{httpRequest.Protocol}://{httpRequest.Host + httpRequest.Path}";
+                }
+            }
+
+            var requestValidator = new RequestValidator(Options.AuthToken);
+
+            return requestValidator.Validate(urlString, body, twilioSignature);
         }
     }
 }
