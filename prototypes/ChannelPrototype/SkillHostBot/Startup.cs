@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
-using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Builder.Skills.Adapters;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
@@ -30,7 +29,7 @@ namespace SkillHost
             // Create the Bot Framework Adapter with error handling enabled.
             var botAdapter = new AdapterWithErrorHandler(services.BuildServiceProvider().GetService<IConfiguration>(), null);
             services.AddSingleton<BotAdapter>(botAdapter);
-            
+
             // Create skills server and skills host adapter.
             services.AddSingleton<BotFrameworkSkillHostAdapter>();
             services.AddSingleton<BotFrameworkHttpSkillsServer>();
@@ -45,7 +44,8 @@ namespace SkillHost
             services.AddTransient<IBot, SkillHostBot>();
 
             // force this to be resolved
-            var skillAdapter = services.BuildServiceProvider().GetService<BotFrameworkSkillHostAdapter>();
+			
+            // TODO: you can manually add skills that are not in config by adding your own elements to skillAdapter.Skills 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
