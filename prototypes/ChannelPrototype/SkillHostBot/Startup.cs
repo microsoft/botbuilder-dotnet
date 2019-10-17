@@ -44,7 +44,7 @@ namespace SkillHost
             services.AddTransient<IBot, SkillHostBot>();
 
             // force this to be resolved
-			
+            var skillAdapter = services.BuildServiceProvider().GetService<BotFrameworkSkillHostAdapter>();
             // TODO: you can manually add skills that are not in config by adding your own elements to skillAdapter.Skills 
         }
 
