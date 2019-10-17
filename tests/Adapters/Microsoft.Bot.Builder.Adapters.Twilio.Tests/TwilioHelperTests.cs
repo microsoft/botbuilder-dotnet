@@ -4,8 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Xunit;
@@ -14,16 +12,12 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 {
     public class TwilioHelperTests
     {
-        private const string AuthTokenString = "authToken";
         private const string TwilioNumber = "+12345678";
-        private readonly Uri _validationUrlString = new Uri("http://contoso.com");
-        private readonly HMACSHA1 _hmac = new HMACSHA1(Encoding.UTF8.GetBytes(AuthTokenString));
-        private readonly TwilioAdapterOptions _testOptions = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
 
         [Fact]
         public void ActivityToTwilioShouldReturnMessageOptionsWithMediaUrl()
         {
-            var activity = JsonConvert.DeserializeObject<Activity>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\files\Activities.json")));
+            var activity = JsonConvert.DeserializeObject<Activity>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\Activities.json")));
             activity.Attachments = new List<Attachment> { new Attachment(contentUrl: "http://example.com") };
             var messageOption = TwilioHelper.ActivityToTwilio(activity, TwilioNumber);
 
@@ -53,7 +47,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public void ActivityToTwilioShouldReturnEmptyMediaUrlWithNullMediaUrls()
         {
-            var activity = JsonConvert.DeserializeObject<Activity>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\files\Activities.json")));
+            var activity = JsonConvert.DeserializeObject<Activity>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\Activities.json")));
             activity.Attachments = null;
             var messageOption = TwilioHelper.ActivityToTwilio(activity, TwilioNumber);
 

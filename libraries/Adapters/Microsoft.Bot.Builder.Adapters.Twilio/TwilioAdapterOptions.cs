@@ -1,4 +1,4 @@
-﻿// Copyright(c) Microsoft Corporation.All rights reserved.
+﻿// Copyright(c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -6,7 +6,7 @@ using System;
 namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
     /// <summary>
-    /// Defines values that a <see cref="TwilioAdapter"/> can use to connect to Twilio's SMS service.
+    /// Defines values that a <see cref="TwilioClientWrapper"/> can use to connect to Twilio's SMS service.
     /// </summary>
     public class TwilioAdapterOptions
     {
@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="twilioNumber">The twilio phone number.</param>
         /// <param name="accountSid">The account id.</param>
         /// <param name="authToken">The authentication token.</param>
-        /// <param name="validationUrl">validation URL for incoming requests.</param>
+        /// <param name="validationUrl">The validation URL for incoming requests.</param>
         public TwilioAdapterOptions(string twilioNumber, string accountSid, string authToken, Uri validationUrl = null)
         {
             TwilioNumber = twilioNumber;

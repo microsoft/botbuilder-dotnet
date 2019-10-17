@@ -32,6 +32,25 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         }
 
         [Fact]
+        public async void SendActivitiesAsyncShouldSucceed()
+        {
+            var activity = new Mock<Activity>().SetupAllProperties();
+            activity.Object.Type = "message";
+            activity.Object.Attachments = new List<Attachment> { new Attachment(contentUrl: "http://example.com") };
+            activity.Object.Conversation = new ConversationAccount(id: "MockId");
+            activity.Object.Text = "Hello, Bot!";
+
+            const string resourceIdentifier = "Mocked Resource Identifier";
+            var twilioApi = new Mock<TwilioClientWrapper>(_testOptions);
+            twilioApi.Setup(x => x.SendMessage(It.IsAny<CreateMessageOptions>())).Returns(Task.FromResult(resourceIdentifier));
+
+            var twilioAdapter = new TwilioAdapter(twilioApi.Object);
+            var resourceResponses = await twilioAdapter.SendActivitiesAsync(null, new Activity[] { activity.Object }, default).ConfigureAwait(false);
+
+            Assert.True(resourceResponses[0].Id == resourceIdentifier);
+        }
+
+        [Fact]
         public async void SendActivitiesAsyncShouldFailWithActivityTypeNotMessage()
         {
             var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
@@ -158,7 +177,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             using (var turnContext = new TurnContext(twilioAdapter, activity))
             {
-
                 await Assert.ThrowsAsync<NotSupportedException>(async () =>
                 {
                     await twilioAdapter.UpdateActivityAsync(turnContext, activity, default);
@@ -220,25 +238,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             var conversationReference = new ConversationReference();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => { await twilioAdapter.ContinueConversationAsync(conversationReference, null, default); });
-        }
-
-        [Fact]
-        public async void SendActivitiesAsyncShouldSucceed()
-        {
-            var activity = new Mock<Activity>().SetupAllProperties();
-            activity.Object.Type = "message";
-            activity.Object.Attachments = new List<Attachment> { new Attachment(contentUrl: "http://example.com") };
-            activity.Object.Conversation = new ConversationAccount(id: "MockId");
-            activity.Object.Text = "Hello, Bot!";
-
-            const string resourceIdentifier = "Mocked Resource Identifier";
-            var twilioApi = new Mock<TwilioClientWrapper>(_testOptions);
-            twilioApi.Setup(x => x.SendMessage(It.IsAny<CreateMessageOptions>())).Returns(Task.FromResult(resourceIdentifier));
-
-            var twilioAdapter = new TwilioAdapter(twilioApi.Object);
-            var resourceResponses = await twilioAdapter.SendActivitiesAsync(null, new Activity[] { activity.Object }, default).ConfigureAwait(false);
-
-            Assert.True(resourceResponses[0].Id == resourceIdentifier);
         }
     }
 }

@@ -153,7 +153,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
         public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
-            // Twilio adapter does not support updateActivity.
             return Task.FromException<ResourceResponse>(new NotSupportedException("Twilio SMS does not support updating activities."));
         }
 
@@ -170,7 +169,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
         public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
-            // Twilio adapter does not support deleteActivity.
             return Task.FromException<ResourceResponse>(new NotSupportedException("Twilio SMS does not support deleting activities."));
         }
 

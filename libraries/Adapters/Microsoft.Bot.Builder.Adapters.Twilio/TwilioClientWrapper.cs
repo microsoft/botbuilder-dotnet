@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             TwilioClient.Init(Options.AccountSid, Options.AuthToken);
         }
 
-        public TwilioAdapterOptions Options { get; private set; }
+        public TwilioAdapterOptions Options { get; }
 
         /// <summary>
         /// Sends a Twilio SMS message.
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <returns>The SID of the Twilio message sent.</returns>
         public virtual async Task<string> SendMessage(CreateMessageOptions messageOptions)
         {
-            var messageResource = await MessageResource.CreateAsync((CreateMessageOptions)messageOptions).ConfigureAwait(false);
+            var messageResource = await MessageResource.CreateAsync(messageOptions).ConfigureAwait(false);
             return messageResource.Sid;
         }
 
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// </summary>
         /// <param name="httpRequest">The request to validate.</param>
         /// <param name="body">The request payload, as key-value pairs.</param>
-        /// <returns>The result of the comparison between the signature in the request and hashed body.</returns>
+        /// <returns>The result of the comparison between the signature in the request and the hashed body.</returns>
         public virtual bool ValidateSignature(HttpRequest httpRequest, Dictionary<string, string> body)
         {
             var urlString = Options.ValidationUrl?.ToString();
