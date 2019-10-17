@@ -191,7 +191,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="authHeader">A string containing the token header.</param>
         /// <returns>True if the token is valid, false if not.</returns>
-        internal static bool IsValidToken(string authHeader)
+        internal static bool IsValidTokenFormat(string authHeader)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {
