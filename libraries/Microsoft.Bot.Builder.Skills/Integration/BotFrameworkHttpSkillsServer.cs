@@ -9,12 +9,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.BotFramework;
-using Microsoft.Bot.Builder.Skills.Preview.Adapters;
+using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Builder.Skills.Adapters;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Bot.Builder.Skills.Preview.Integration
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 {
     public class BotFrameworkHttpSkillsServer
     {
@@ -82,11 +83,11 @@ namespace Microsoft.Bot.Builder.Skills.Preview.Integration
             },
         };
 
-        private readonly BotFrameworkSkillAdapter _skillAdapter;
+        private readonly BotFrameworkSkillHostAdapter _skillAdapter;
         private readonly ConfigurationChannelProvider _channelProvider;
         private readonly ConfigurationCredentialProvider _credentialsProvider;
 
-        public BotFrameworkHttpSkillsServer(BotFrameworkSkillAdapter skillAdapter, IConfiguration configuration)
+        public BotFrameworkHttpSkillsServer(BotFrameworkSkillHostAdapter skillAdapter, IConfiguration configuration)
         {
             // adapter to use for calling back to channel
             _skillAdapter = skillAdapter;

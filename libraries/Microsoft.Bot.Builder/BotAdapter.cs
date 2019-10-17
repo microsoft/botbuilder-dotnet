@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -109,108 +108,6 @@ namespace Microsoft.Bot.Builder
         /// reference identifies the activity to delete.</remarks>
         /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
         public abstract Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// CreateConversation.
-        /// </summary>
-        /// <param name="turnContext">turnContext.</param>
-        /// <param name="parameters">Parameters to create the conversation from.</param>
-        /// <returns>create conversationResourceResponse.</returns>
-        public virtual Task<ConversationResourceResponse> CreateConversationAsync(ITurnContext turnContext, ConversationParameters parameters)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// SendConversationHistory.
-        /// </summary>
-        /// <param name="turnContext">turnContext.</param>
-        /// <param name="history">Historic activities.</param>
-        /// <returns>resourceResponse.</returns>
-        public virtual Task<ResourceResponse> SendConversationHistoryAsync(ITurnContext turnContext, Transcript history)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Lists the members of the current conversation.
-        /// </summary>
-        /// <param name="turnContext">The context object for the turn.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>List of Members of the current conversation.</returns>
-        public virtual Task<IList<ChannelAccount>> GetConversationMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// GetConversationPagedMembers.
-        /// </summary>
-        /// <param name="turnContext">turnContext.</param>
-        /// <param name="pageSize">Suggested page size.</param>
-        /// <param name="continuationToken">Continuation Token.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>channelAcounts for conversation members.</returns>
-        public virtual Task<PagedMembersResult> GetConversationPagedMembersAsync(ITurnContext turnContext, int pageSize = -1, string continuationToken = null, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Lists the Conversations in which this bot has participated for a given channel server. The
-        /// channel server returns results in pages and each page will include a `continuationToken`
-        /// that can be used to fetch the next page of results from the server.
-        /// </summary>
-        /// <param name="turnContext">The context object for the turn.</param>
-        /// <param name="continuationToken">The continuation token from the previous page of results.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If the task completes successfully, the result contains a page of the members of the current conversation.
-        /// This overload may be called from outside the context of a conversation, as only the
-        /// bot's service URL and credentials are required.
-        /// </remarks>
-        public virtual Task<ConversationsResult> GetConversationsAsync(ITurnContext turnContext, string continuationToken, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Removes a member from the current conversation.
-        /// </summary>
-        /// <param name="turnContext">The context object for the turn.</param>
-        /// <param name="memberId">The ID of the member to remove from the conversation.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        public virtual Task DeleteConversationMemberAsync(ITurnContext turnContext, string memberId, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Lists the members of a given activity.
-        /// </summary>
-        /// <param name="turnContext">The context object for the turn.</param>
-        /// <param name="activityId">(Optional) Activity ID to enumerate. If not specified the current activities ID will be used.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>List of Members of the activity.</returns>
-        public virtual Task<IList<ChannelAccount>> GetActivityMembersAsync(ITurnContext turnContext, string activityId, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Attempts to retrieve the token for a user that's in a login flow.
-        /// </summary>
-        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
-        /// <param name="attachmentUpload">attachmentUpload data</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Resource Response.</returns>
-        public virtual Task<ResourceResponse> UploadAttachmentAsync(ITurnContext turnContext, AttachmentData attachmentUpload, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            throw new NotImplementedException();
-        }
 
         /// <summary>
         /// Sends a proactive message to a conversation.

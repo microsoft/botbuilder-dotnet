@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.Skills.Preview.Integration;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DialogRootBot

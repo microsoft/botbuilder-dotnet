@@ -1,7 +1,7 @@
 ﻿#pragma warning disable SA1402 // File may only contain a single type
 using System;
 using System.Text;
-using Microsoft.Bot.Builder.Skills.Preview;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 

@@ -21,7 +21,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Rest.TransientFaultHandling;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Skills.Preview.Adapters
+namespace Microsoft.Bot.Builder.Skills.Adapters
 {
     /// <summary>
     /// A skill adapter that can connect a bot to a another bot as a skill.
@@ -39,10 +39,9 @@ namespace Microsoft.Bot.Builder.Skills.Preview.Adapters
     /// <seealso cref="IActivity"/>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>
-    public class BotFrameworkSkillAdapter : SkillAdapter
+    public class BotFrameworkSkillHostAdapter : SkillHostAdapter
     {
         internal const string BotIdentityKey = "BotIdentity";
-        private const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
 
         private static readonly HttpClient _defaultHttpClient = new HttpClient();
         private readonly ICredentialProvider _credentialProvider;
@@ -61,7 +60,7 @@ namespace Microsoft.Bot.Builder.Skills.Preview.Adapters
         private readonly ConcurrentDictionary<string, ConnectorClient> _connectorClients = new ConcurrentDictionary<string, ConnectorClient>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BotFrameworkSkillAdapter"/> class,
+        /// Initializes a new instance of the <see cref="BotFrameworkSkillHostAdapter"/> class,
         /// using a credential provider.
         /// </summary>
         /// <param name="adapter">adapter that this skillAdapter is bound to</param>
@@ -78,7 +77,7 @@ namespace Microsoft.Bot.Builder.Skills.Preview.Adapters
         /// components in the constructor. Use the <see cref="Use(IMiddleware)"/> method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
-        public BotFrameworkSkillAdapter(
+        public BotFrameworkSkillHostAdapter(
             BotAdapter adapter,
             IBot bot,
             ICredentialProvider credentialProvider,
@@ -102,7 +101,7 @@ namespace Microsoft.Bot.Builder.Skills.Preview.Adapters
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BotFrameworkSkillAdapter"/> class,
+        /// Initializes a new instance of the <see cref="BotFrameworkSkillHostAdapter"/> class,
         /// using a credential provider.
         /// </summary>
         /// <param name="adapter">adapter that this skillAdapter is bound to</param>
@@ -119,7 +118,7 @@ namespace Microsoft.Bot.Builder.Skills.Preview.Adapters
         /// components in the constructor. Use the <see cref="Use(IMiddleware)"/> method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
-        public BotFrameworkSkillAdapter(
+        public BotFrameworkSkillHostAdapter(
             BotAdapter adapter,
             IBot bot,
             AppCredentials credentials,
@@ -151,7 +150,7 @@ namespace Microsoft.Bot.Builder.Skills.Preview.Adapters
         /// <value>
         /// The callback URL that will be used by the skills to communicate back to the bot.
         /// </value>
-        public string SkillsCallbackEndpoint { get; set; }
+        public string SkillHostEndpoint { get; set; }
 
         /// <summary>
         /// Forward an activity to a skill(bot).
@@ -209,7 +208,7 @@ namespace Microsoft.Bot.Builder.Skills.Preview.Adapters
                     activity.Conversation.Id,
                     activity.ServiceUrl,
                 })));
-                activity.ServiceUrl = SkillsCallbackEndpoint;
+                activity.ServiceUrl = this.SkillHostEndpoint;
                 activity.Recipient.Properties["skillId"] = skill.Id;
                 var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json");
 
@@ -353,7 +352,7 @@ namespace Microsoft.Bot.Builder.Skills.Preview.Adapters
                 }
             }
 
-            this.SkillsCallbackEndpoint = configuration?.GetValue<string>("SkillsCallbackEndpoint");
+            this.SkillHostEndpoint = configuration?.GetValue<string>(nameof(SkillHostEndpoint));
         }
     }
 }

@@ -10,8 +10,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Skills.Preview;
-using Microsoft.Bot.Builder.Skills.Preview.Adapters;
+using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Builder.Skills.Adapters;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
         {
             var botAdapter = CreateAdapter();
 
-            var skillAdapter = new BotFrameworkSkillAdapter(botAdapter, new CallbackBot(), new MicrosoftAppCredentials(string.Empty, string.Empty), configuration: new ConfigurationBuilder().Build());
+            var skillAdapter = new BotFrameworkSkillHostAdapter(botAdapter, new CallbackBot(), new MicrosoftAppCredentials(string.Empty, string.Empty), configuration: new ConfigurationBuilder().Build());
 
             Assert.AreEqual(1, botAdapter.MiddlewareSet.Where(s => s is ChannelApiMiddleware).Count(), "Should have injected ChannelApiMiddleware into adapter");
         }
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
 
             var middleware = new AssertInvokeMiddleware(botAdapter, skillId, activityId);
             botAdapter.Use(middleware);
-            var skillAdapter = new BotFrameworkSkillAdapter(botAdapter, new CallbackBot(), new MicrosoftAppCredentials(string.Empty, string.Empty), configuration: new ConfigurationBuilder().Build());
+            var skillAdapter = new BotFrameworkSkillHostAdapter(botAdapter, new CallbackBot(), new MicrosoftAppCredentials(string.Empty, string.Empty), configuration: new ConfigurationBuilder().Build());
 
             var sc = new SkillConversation()
             {
@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
                 Assert.AreEqual(adapter.Conversation.Bot.Id, turnContext.Activity.Recipient.Id);
 
                 var invoke = turnContext.Activity.AsInvokeActivity();
-                Assert.AreEqual(SkillAdapter.InvokeActivityName, invoke.Name);
+                Assert.AreEqual(SkillHostAdapter.InvokeActivityName, invoke.Name);
                 var apiArgs = invoke.Value as ChannelApiArgs;
                 Assert.IsNotNull(apiArgs);
 

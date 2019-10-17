@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.Skills.Preview;
-using Microsoft.Bot.Builder.Skills.Preview.Adapters;
-using Microsoft.Bot.Builder.Skills.Preview.Integration;
+using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Builder.Skills.Adapters;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,9 +19,17 @@ namespace SkillHost
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IHostingEnvironment env)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+                 .SetBasePath(env.ContentRootPath)
+                 .AddJsonFile("appsettings.json",
+                              optional: false,
+                              reloadOnChange: true)
+                 .AddUserSecrets<Startup>()
+                 .AddEnvironmentVariables();
+
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; set; }
@@ -38,9 +46,9 @@ namespace SkillHost
             var botAdapter = new AdapterWithErrorHandler(Configuration, null);
             services.AddSingleton<BotAdapter>(botAdapter);
             services.AddSingleton<BotFrameworkHttpAdapter>(botAdapter);
-            services.AddSingleton<BotFrameworkSkillAdapter>();
+            services.AddSingleton<BotFrameworkSkillHostAdapter>();
 
-            services.AddSingleton((s) => (SkillAdapter)s.GetService<BotFrameworkSkillAdapter>());
+            services.AddSingleton((s) => (SkillHostAdapter)s.GetService<BotFrameworkSkillHostAdapter>());
 
             services.AddSingleton<BotFrameworkHttpSkillsServer>();
 
@@ -54,7 +62,7 @@ namespace SkillHost
             services.AddTransient<IBot, SkillHostBot>();
 
             // force this to be resolved
-            var skillAdapter = services.BuildServiceProvider().GetService<BotFrameworkSkillAdapter>();
+            var skillAdapter = services.BuildServiceProvider().GetService<BotFrameworkSkillHostAdapter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

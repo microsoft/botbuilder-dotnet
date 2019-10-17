@@ -7,16 +7,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Skills.Preview
+namespace Microsoft.Bot.Builder.Skills
 {
     /// <summary>
     /// Handles InvokeActivity for ChannelAPI methods calls coming from the skill adapter.
     /// </summary>
     internal class ChannelApiMiddleware : IMiddleware
     {
-        private readonly SkillAdapter _skillAdapter;
+        private readonly SkillHostAdapter _skillAdapter;
 
-        internal ChannelApiMiddleware(SkillAdapter skillAdapter)
+        internal ChannelApiMiddleware(SkillHostAdapter skillAdapter)
         {
             _skillAdapter = skillAdapter;
         }
@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Skills.Preview
             // register the skill adapter so people can get it to do .ForwardActivityAsync()
             turnContext.TurnState.Add(_skillAdapter);
 
-            if (turnContext.Activity.Type == ActivityTypes.Invoke && turnContext.Activity.Name == SkillAdapter.InvokeActivityName)
+            if (turnContext.Activity.Type == ActivityTypes.Invoke && turnContext.Activity.Name == SkillHostAdapter.InvokeActivityName)
             {
                 // process Invoke Activity 
                 var invokeActivity = turnContext.Activity.AsInvokeActivity();
@@ -44,79 +44,102 @@ namespace Microsoft.Bot.Builder.Skills.Preview
 
         private async Task CallChannelApiAsync(ITurnContext turnContext, NextDelegate next, ChannelApiArgs invokeArgs, CancellationToken cancellationToken)
         {
-            switch (invokeArgs.Method)
+            try
             {
-                // Send activity(activity)
-                case ChannelApiMethods.SendToConversation:
-                    {
-                        var activityPayload = (Activity)invokeArgs.Args[0];
-                        if (activityPayload.Type == ActivityTypes.EndOfConversation)
+                var adapter = turnContext.Adapter as BotFrameworkAdapter;
+
+                switch (invokeArgs.Method)
+                {
+                    // Send activity(activity)
+                    case ChannelApiMethods.SendToConversation:
                         {
-                            await ProcessEndOfConversationAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
-                            invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+                            var activityPayload = (Activity)invokeArgs.Args[0];
+                            if (activityPayload.Type == ActivityTypes.EndOfConversation)
+                            {
+                                await ProcessEndOfConversationAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
+                                invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+                                return;
+                            }
+
+                            invokeArgs.Result = await turnContext.SendActivityAsync(activityPayload, cancellationToken).ConfigureAwait(false);
                             return;
                         }
 
-                        invokeArgs.Result = await turnContext.SendActivityAsync(activityPayload, cancellationToken).ConfigureAwait(false);
-                        return;
-                    }
-
-                // Send activity(replyToId, activity)
-                case ChannelApiMethods.ReplyToActivity:
-                    {
-                        var activityPayload = (Activity)invokeArgs.Args[1];
-                        activityPayload.ReplyToId = (string)invokeArgs.Args[0];
-
-                        if (activityPayload.Type == ActivityTypes.EndOfConversation)
+                    // Send activity(replyToId, activity)
+                    case ChannelApiMethods.ReplyToActivity:
                         {
-                            await ProcessEndOfConversationAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
-                            invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+                            var activityPayload = (Activity)invokeArgs.Args[1];
+                            activityPayload.ReplyToId = (string)invokeArgs.Args[0];
+
+                            if (activityPayload.Type == ActivityTypes.EndOfConversation)
+                            {
+                                await ProcessEndOfConversationAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
+                                invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+                                return;
+                            }
+
+                            invokeArgs.Result = await turnContext.SendActivityAsync(activityPayload, cancellationToken).ConfigureAwait(false);
                             return;
                         }
 
-                        invokeArgs.Result = await turnContext.SendActivityAsync(activityPayload, cancellationToken).ConfigureAwait(false);
+                    // UpdateActivity(activity)
+                    case ChannelApiMethods.UpdateActivity:
+                        invokeArgs.Result = await turnContext.UpdateActivityAsync((Activity)invokeArgs.Args[0], cancellationToken).ConfigureAwait(false);
                         return;
-                    }
 
-                // UpdateActivity(activity)
-                case ChannelApiMethods.UpdateActivity:
-                    invokeArgs.Result = await turnContext.UpdateActivityAsync((Activity)invokeArgs.Args[0], cancellationToken).ConfigureAwait(false);
-                    return;
+                    // DeleteActivity(activityId)
+                    case ChannelApiMethods.DeleteActivity:
+                        await turnContext.DeleteActivityAsync((string)invokeArgs.Args[0], cancellationToken).ConfigureAwait(false);
+                        break;
 
-                // DeleteActivity(activityId)
-                case ChannelApiMethods.DeleteActivity:
-                    await turnContext.DeleteActivityAsync((string)invokeArgs.Args[0], cancellationToken).ConfigureAwait(false);
-                    break;
+                    // SendConversationHistory(history)
+                    case ChannelApiMethods.SendConversationHistory:
+                        throw new NotImplementedException($"{ChannelApiMethods.SendConversationHistory} is not supported");
 
-                // SendConversationHistory(history)
-                case ChannelApiMethods.SendConversationHistory:
-                    invokeArgs.Result = await turnContext.Adapter.SendConversationHistoryAsync(turnContext, (Transcript)invokeArgs.Args[0]).ConfigureAwait(false);
-                    break;
+                    // GetConversationMembers()
+                    case ChannelApiMethods.GetConversationMembers:
+                        if (adapter != null)
+                        {
+                            invokeArgs.Result = await adapter.GetConversationMembersAsync(turnContext, cancellationToken).ConfigureAwait(false);
+                        }
 
-                // GetConversationMembers()
-                case ChannelApiMethods.GetConversationMembers:
-                    invokeArgs.Result = await turnContext.Adapter.GetConversationMembersAsync(turnContext, cancellationToken).ConfigureAwait(false);
-                    break;
+                        break;
 
-                // GetConversationPageMembers((int)pageSize, continuationToken)
-                case ChannelApiMethods.GetConversationPagedMembers:
-                    invokeArgs.Result = await turnContext.Adapter.GetConversationPagedMembersAsync(turnContext, (int)invokeArgs.Args[0], (string)invokeArgs.Args[1], cancellationToken).ConfigureAwait(false);
-                    break;
+                    // GetConversationPageMembers((int)pageSize, continuationToken)
+                    case ChannelApiMethods.GetConversationPagedMembers:
+                        if (adapter != null)
+                        {
+                            invokeArgs.Result = await adapter.GetConversationPagedMembersAsync(turnContext, (int)invokeArgs.Args[0], (string)invokeArgs.Args[1], cancellationToken).ConfigureAwait(false);
+                        }
 
-                // DeleteConversationMember(memberId)
-                case ChannelApiMethods.DeleteConversationMember:
-                    await turnContext.Adapter.DeleteConversationMemberAsync(turnContext, (string)invokeArgs.Args[0], cancellationToken).ConfigureAwait(false);
-                    break;
+                        break;
 
-                // GetActivityMembers(activityId)
-                case ChannelApiMethods.GetActivityMembers:
-                    invokeArgs.Result = await turnContext.Adapter.GetActivityMembersAsync(turnContext, (string)invokeArgs.Args[0], cancellationToken).ConfigureAwait(false);
-                    break;
+                    // DeleteConversationMember(memberId)
+                    case ChannelApiMethods.DeleteConversationMember:
+                        if (adapter != null)
+                        {
+                            await adapter.DeleteConversationMemberAsync(turnContext, (string)invokeArgs.Args[0], cancellationToken).ConfigureAwait(false);
+                        }
 
-                // UploadAttachment(attachmentData)
-                case ChannelApiMethods.UploadAttachment:
-                    invokeArgs.Result = await turnContext.Adapter.UploadAttachmentAsync(turnContext, (AttachmentData)invokeArgs.Args[0], cancellationToken).ConfigureAwait(false);
-                    break;
+                        break;
+
+                    // GetActivityMembers(activityId)
+                    case ChannelApiMethods.GetActivityMembers:
+                        if (adapter != null)
+                        {
+                            invokeArgs.Result = await adapter.GetActivityMembersAsync(turnContext, (string)invokeArgs.Args[0], cancellationToken).ConfigureAwait(false);
+                        }
+
+                        break;
+
+                    case ChannelApiMethods.UploadAttachment:
+                        throw new NotImplementedException($"{ChannelApiMethods.UploadAttachment} is not supported");
+
+                }
+            }
+            catch (Exception err)
+            {
+                invokeArgs.Exception = err;
             }
         }
 

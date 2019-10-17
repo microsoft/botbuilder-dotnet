@@ -488,7 +488,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public override async Task DeleteConversationMemberAsync(ITurnContext turnContext, string memberId, CancellationToken cancellationToken)
+        public virtual async Task DeleteConversationMemberAsync(ITurnContext turnContext, string memberId, CancellationToken cancellationToken)
         {
             if (turnContext.Activity.Conversation == null)
             {
@@ -514,7 +514,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="activityId">(Optional) Activity ID to enumerate. If not specified the current activities ID will be used.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of Members of the activity.</returns>
-        public override async Task<IList<ChannelAccount>> GetActivityMembersAsync(ITurnContext turnContext, string activityId, CancellationToken cancellationToken)
+        public virtual async Task<IList<ChannelAccount>> GetActivityMembersAsync(ITurnContext turnContext, string activityId, CancellationToken cancellationToken)
         {
             // If no activity was passed in, use the current activity.
             if (activityId == null)
@@ -546,7 +546,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of Members of the current conversation.</returns>
-        public override async Task<IList<ChannelAccount>> GetConversationMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        public virtual async Task<IList<ChannelAccount>> GetConversationMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             if (turnContext.Activity.Conversation == null)
             {
@@ -573,7 +573,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="continuationToken">Continuation Token.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>channelAcounts for conversation members.</returns>
-        public override async Task<PagedMembersResult> GetConversationPagedMembersAsync(ITurnContext turnContext, int pageSize = -1, string continuationToken = null, CancellationToken cancellationToken = default)
+        public virtual async Task<PagedMembersResult> GetConversationPagedMembersAsync(ITurnContext turnContext, int pageSize = -1, string continuationToken = null, CancellationToken cancellationToken = default)
         {
             if (turnContext.Activity.Conversation == null)
             {
@@ -606,26 +606,11 @@ namespace Microsoft.Bot.Builder
         /// service URL and credentials that are part of the current activity processing pipeline
         /// will be used.
         /// </remarks>
-        public override async Task<ConversationsResult> GetConversationsAsync(ITurnContext turnContext, string continuationToken, CancellationToken cancellationToken)
+        public virtual async Task<ConversationsResult> GetConversationsAsync(ITurnContext turnContext, string continuationToken, CancellationToken cancellationToken)
         {
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
             var results = await connectorClient.Conversations.GetConversationsAsync(continuationToken, cancellationToken).ConfigureAwait(false);
             return results;
-        }
-
-        /// <summary>
-        /// Attempts to retrieve the token for a user that's in a login flow.
-        /// </summary>
-        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
-        /// <param name="attachmentUpload">attachmentUpload data</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Resource Response.</returns>
-        public override async Task<ResourceResponse> UploadAttachmentAsync(ITurnContext turnContext, AttachmentData attachmentUpload, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-            var conversationId = turnContext.Activity.Conversation.Id;
-            var result = await connectorClient.Conversations.UploadAttachmentAsync(conversationId, attachmentUpload, cancellationToken).ConfigureAwait(false);
-            return result;
         }
 
         /// <summary>

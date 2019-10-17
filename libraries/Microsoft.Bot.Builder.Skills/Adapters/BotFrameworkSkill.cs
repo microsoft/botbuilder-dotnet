@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Bot.Builder.Skills.Preview.Adapters
+namespace Microsoft.Bot.Builder.Skills.Adapters
 {
     /// <summary>
     /// Registration for a BotFrameworkHttpProtocol based Skill endpoint.

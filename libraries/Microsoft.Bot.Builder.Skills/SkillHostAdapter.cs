@@ -10,18 +10,18 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Microsoft.Bot.Builder.Skills.Preview
+namespace Microsoft.Bot.Builder.Skills
 {
     /// <summary>
-    /// A skill adapter implements API to forward activity to a skill and routes ChannelAPI 
-    /// calls from the Skill up through the bot/adapter.
+    /// A skill host adapter implements API to forward activity to a skill and 
+    /// implements routing ChannelAPI calls from the Skill up through the bot/adapter.
     /// </summary>
-    public abstract class SkillAdapter
+    public abstract class SkillHostAdapter
     {
         public const string InvokeActivityName = "SkillEvents.ChannelApiInvoke";
         private readonly ILogger _logger;
 
-        protected SkillAdapter(BotAdapter adapter, IBot bot, ILogger logger = null)
+        protected SkillHostAdapter(BotAdapter adapter, IBot bot, ILogger logger = null)
         {
             ChannelAdapter = adapter;
             Bot = bot;
@@ -395,17 +395,21 @@ namespace Microsoft.Bot.Builder.Skills.Preview
             };
             channelApiInvokeActivity.Value = channelApiArgs;
 
-            //// We call our adapter using the BotAppId claim, so turnContext has the bot claims
-            //var claimsIdentity = new ClaimsIdentity(new List<Claim>
-            //{
-            //    // Adding claims for both Emulator and Channel.
-            //    new Claim(AuthenticationConstants.AudienceClaim, this.BotAppId),
-            //    new Claim(AuthenticationConstants.AppIdClaim, this.BotAppId),
-            //    new Claim(AuthenticationConstants.ServiceUrlClaim, skillConversation.ServiceUrl),
-            //});
+            // We call our adapter using the BotAppId claim, so turnContext has the bot claims
+            // var claimsIdentity = new ClaimsIdentity(new List<Claim>
+            // {
+            //     new Claim(AuthenticationConstants.AudienceClaim, this.BotAppId),
+            //     new Claim(AuthenticationConstants.AppIdClaim, this.BotAppId),
+            //     new Claim(AuthenticationConstants.ServiceUrlClaim, skillConversation.ServiceUrl),
+            // });
 
             // send up to the bot to process it...
             await ChannelAdapter.ProcessActivityAsync(claimsIdentity, (Activity)channelApiInvokeActivity, Bot.OnTurnAsync, CancellationToken.None).ConfigureAwait(false);
+
+            if (channelApiArgs.Exception != null)
+            {
+                throw channelApiArgs.Exception;
+            }
 
             // Return the result that was captured in the middleware handler. 
             return (T)channelApiArgs.Result;

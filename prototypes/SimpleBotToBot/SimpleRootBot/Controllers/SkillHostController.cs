@@ -6,7 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Skills.Preview.Integration;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 
 namespace SimpleRootBot.Controllers
 {
