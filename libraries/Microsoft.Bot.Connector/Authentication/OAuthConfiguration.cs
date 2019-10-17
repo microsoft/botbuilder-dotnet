@@ -1,4 +1,7 @@
-﻿namespace Microsoft.Bot.Connector.Authentication
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
     /// Configuration for OAuth client credential authentication.
