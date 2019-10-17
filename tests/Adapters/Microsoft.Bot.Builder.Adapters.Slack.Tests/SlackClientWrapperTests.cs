@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         {
             var slackApi = new SlackClientWrapper(_testOptions);
 
-            var body = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageBody.json");
+            var body = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/MessageBody.json");
 
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.Setup(req => req.Headers.ContainsKey(It.IsAny<string>())).Returns(true);

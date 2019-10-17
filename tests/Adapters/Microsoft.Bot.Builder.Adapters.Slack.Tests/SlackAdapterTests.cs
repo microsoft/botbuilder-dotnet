@@ -459,7 +459,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             var slackAdapter = new SlackAdapter(slackApi.Object);
 
-            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\URLVerificationBody.json");
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/URLVerificationBody.json");
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
 
             var deserializedPayload = JsonConvert.DeserializeObject<SlackRequestBody>(payload);
@@ -494,7 +494,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             var slackAdapter = new SlackAdapter(slackApi.Object);
 
-            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageBody.json");
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/MessageBody.json");
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
 
             var httpRequest = new Mock<HttpRequest>();
@@ -529,7 +529,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             var slackAdapter = new SlackAdapter(slackApi.Object);
 
-            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageBody.json");
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/MessageBody.json");
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
 
             var httpRequest = new Mock<HttpRequest>();
@@ -553,7 +553,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             var slackAdapter = new SlackAdapter(slackApi.Object);
 
-            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\UnknownEvent.json");
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/UnknownEvent.json");
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
 
             var httpRequest = new Mock<HttpRequest>();
@@ -575,7 +575,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             var slackAdapter = new SlackAdapter(slackApi.Object);
 
-            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageBody.json");
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/MessageBody.json");
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
 
             var httpRequest = new Mock<HttpRequest>();
@@ -618,7 +618,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             var slackAdapter = new SlackAdapter(slackApi.Object);
 
-            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\SlashCommandBody.txt");
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/SlashCommandBody.txt");
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
 
             var httpRequest = new Mock<HttpRequest>();
@@ -661,7 +661,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             var slackAdapter = new SlackAdapter(slackApi.Object);
 
-            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\InteractiveMessageBody.txt");
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/InteractiveMessageBody.txt");
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
 
             var httpRequest = new Mock<HttpRequest>();

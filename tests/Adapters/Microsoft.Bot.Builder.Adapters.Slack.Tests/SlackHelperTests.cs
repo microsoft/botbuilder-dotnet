@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         {
             var slackApi = new Mock<SlackClientWrapper>(_testOptions);
 
-            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageBody.json");
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/MessageBody.json");
             var slackBody = JsonConvert.DeserializeObject<SlackRequestBody>(payload);
 
             var activity = await SlackHelper.EventToActivityAsync(slackBody.Event, slackApi.Object, new CancellationToken()).ConfigureAwait(false);
@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         {
             var slackApi = new Mock<SlackClientWrapper>(_testOptions);
 
-            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageBody.json");
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/MessageBody.json");
             var slackBody = JsonConvert.DeserializeObject<SlackRequestBody>(payload);
             slackBody.Event.Channel = null;
 
@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         {
             var slackApi = new Mock<SlackClientWrapper>(_testOptions);
 
-            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageBody.json");
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/MessageBody.json");
             var slackBody = JsonConvert.DeserializeObject<SlackRequestBody>(payload);
             slackBody.Event.Channel = null;
             slackBody.Event.Item = "testItem";
@@ -190,7 +190,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         {
             var slackApi = new Mock<SlackClientWrapper>(_testOptions);
 
-            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\SlashCommandBody.txt");
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/SlashCommandBody.txt");
             var commandBody = SlackHelper.QueryStringToDictionary(payload);
             var slackBody = JsonConvert.DeserializeObject<SlackRequestBody>(JsonConvert.SerializeObject(commandBody));
 
@@ -218,7 +218,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         [Fact]
         public void QueryStringToDictionaryShouldReturnDictionary()
         {
-            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\SlashCommandBody.txt");
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/SlashCommandBody.txt");
 
             var dictionary = SlackHelper.QueryStringToDictionary(payload);
 
