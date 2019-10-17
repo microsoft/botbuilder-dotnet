@@ -1,0 +1,83 @@
+{
+  "@context": "https://botframework.com/schemas",
+  "@type": "skill",
+  // TODO: find out the right format
+  "@version": "1.0",
+  // Most likely the bot ID from the portal
+  "id": "TodoSkill",
+  "name": "",
+  "description": "",
+  "publisherName": "",
+  "privacyUrl": "",
+  "copyright": "",
+  "license": "",
+  "iconUrl": "./icons.png",
+  "tags": [
+    "productivity",
+    "sample",
+    "travel"
+  ],
+  "endpoints": [
+    {
+      "type": "RemoteSkill:BotFramework:V3",
+      "msaAppId": "e7401b5c-c097-4f0c-9d8d-0e94ad9acdab",
+      "endpoint": "https://example.com/api/messages"
+    }
+  ],
+  // Tasks the bot can handle
+  "events": {
+    // Name of the event
+    "createTodo": {
+      // Value are the input arguments to the skill
+      "value": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" }
+        }
+      },
+      "returnValue": { "$ref": "#/definitions/todo" }
+    },
+    "bookFlight": {
+      "value": {
+        "type": "object",
+        "required": [
+          "origin"
+        ],
+        "properties": {
+          "origin": {
+            "type": "string",
+            "description": "this is the origin city for hte flight"
+          },
+          "destination": {
+            "type": "string",
+            "description": "this is the origin city for hte flight"
+          },
+          "date": {
+            "type": "string",
+            "description": "this is the origin city for hte flight"
+          }
+        }
+      }
+    },
+    "getWeather": {
+    }
+  },
+  "message": {
+    "entities": {
+    }
+  },
+  "definitions": {
+    "todo": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "created": { "type": "string" }
+      },
+      "required": ["title", "created"]
+    }
+  },
+  "files": [
+    "./todoSkill.en.lu",
+    "./todoSkill.es.lu"
+  ]
+}
