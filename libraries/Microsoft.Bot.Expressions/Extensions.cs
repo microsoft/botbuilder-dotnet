@@ -46,6 +46,71 @@ namespace Microsoft.Bot.Expressions
             || value is ulong;
 
         /// <summary>
+        /// Get all the expression start/end indexs from the original string
+        /// </summary>
+        /// <param name="expressionString">original string.</param>
+        /// <param name="atPrefix">if the expression should start with @.(in multi line mode).</param>
+        /// <returns>The expression ranges.</returns>
+        public static List<(int start, int end)> GetExpressionRanges(this string expressionString, bool atPrefix = false)
+        {
+            var expressions = new List<(int start, int end)>();
+            var start = 0;
+            var inExpression = false;
+            var inDoubleQuotationMarks = false;
+            var inSingleQuotationMarks = false;
+
+            for (var i = 0; i < expressionString.Length; i++)
+            {
+                if (expressionString[i] == '{')
+                {
+                    // in multiline mode, @ is a required prefix character
+                    if (inSingleQuotationMarks 
+                        || inDoubleQuotationMarks
+                        || (atPrefix && (i == 0 || (i > 0 && expressionString[i - 1] != '@'))))
+                    {
+                        continue;
+                    }
+
+                    start = i;
+                    inExpression = true;
+
+                    if (start > 0 && expressionString[start - 1] == '@')
+                    {
+                        start--;
+                    }
+                }
+                else if (expressionString[i] == '}')
+                {
+                    if (inSingleQuotationMarks 
+                        || inDoubleQuotationMarks
+                        || !inExpression)
+                    {
+                        continue;
+                    }
+
+                    expressions.Add((start, i));
+                    inExpression = false;
+                }
+                else if (inExpression 
+                    && expressionString[i] == '\''
+                    && !inDoubleQuotationMarks
+                    && (i == 0 || expressionString[i - 1] != '\\'))
+                {
+                    inSingleQuotationMarks = !inSingleQuotationMarks;
+                }
+                else if (inExpression 
+                    && expressionString[i] == '"'
+                    && !inSingleQuotationMarks
+                    && (i == 0 || expressionString[i - 1] != '\\'))
+                {
+                    inDoubleQuotationMarks = !inDoubleQuotationMarks;
+                }
+            }
+
+            return expressions;
+        }
+
+        /// <summary>
         /// Do a deep equality between expressions.
         /// </summary>
         /// <param name="expr">Base expression.</param>

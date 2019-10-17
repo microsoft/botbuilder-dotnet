@@ -1,0 +1,11 @@
+﻿# templateWithBrackets
+- don't mix {'{}'} and {concat('{',"}")}
+
+# templateWithQuotationMarks
+- don't mix {'{"}'} and {concat('"',"'")}
+
+# templateWithUnpairedBrackets1
+- {prefix {length('hello')} sufix
+
+# templateWithUnpairedBrackets2
+- prefix {length('hello')} sufix}

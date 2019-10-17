@@ -854,5 +854,25 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(evaled, "Your input is not one, two or three");
         }
+
+        [TestMethod]
+        public void TestExpressionextract()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("ExpressionExtract.lg"));
+
+            var evaled = engine.EvaluateTemplate("templateWithBrackets");
+
+            Assert.AreEqual(evaled, "don't mix {} and {}");
+
+            evaled = engine.EvaluateTemplate("templateWithQuotationMarks");
+
+            Assert.AreEqual(evaled, "don't mix {\"} and \"'");
+
+            evaled = engine.EvaluateTemplate("templateWithUnpairedBrackets1");
+            Assert.AreEqual(evaled, "{prefix 5 sufix");
+
+            evaled = engine.EvaluateTemplate("templateWithUnpairedBrackets2");
+            Assert.AreEqual(evaled, "prefix 5 sufix}");
+        }
     }
 }

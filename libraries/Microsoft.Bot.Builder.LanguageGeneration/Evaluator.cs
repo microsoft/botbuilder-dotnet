@@ -14,7 +14,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class Evaluator : LGFileParserBaseVisitor<object>
     {
-        private readonly Regex expressionRecognizeRegex = new Regex(@"@?(?<!\\)\{.+?(?<!\\)\}", RegexOptions.Compiled);
         private readonly Regex escapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
@@ -359,13 +358,33 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             // remove ``` ```
             exp = exp.Substring(3, exp.Length - 6);
-            return EvalTextContainsExpression(exp);
+            return EvalTextContainsExpression(exp, true);
         }
 
-        private string EvalTextContainsExpression(string exp)
+        private string EvalTextContainsExpression(string exp, bool multiLine = false)
         {
-            var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
-            return expressionRecognizeRegex.Replace(exp, evalutor);
+            var expressionRanges = exp.GetExpressionRanges(multiLine);
+            return ReplaceRange(exp, expressionRanges);
+        }
+
+        private string ReplaceRange(string exp, List<(int start, int end)> expressions)
+        {
+            if (exp == null || expressions == null)
+            {
+                return exp;
+            }
+
+            var expSB = new StringBuilder(exp);
+            expressions.Reverse();
+
+            foreach (var (start, end) in expressions)
+            {
+                expSB.Remove(start, end - start + 1);
+                var expressionString = exp.Substring(start, end - start + 1);
+                expSB.Insert(start, EvalExpression(expressionString).ToString());
+            }
+
+            return expSB.ToString();
         }
 
         private JToken EvalText(string exp)
@@ -394,8 +413,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             exp = exp.Trim();
-            var expressions = expressionRecognizeRegex.Matches(exp);
-            return expressions.Count == 1 && expressions[0].Value == exp;
+            var expressions = exp.GetExpressionRanges();
+            return expressions.Count() == 1 && exp == exp.Substring(expressions[0].start, expressions[0].end - expressions[0].start + 1);
         }
 
         private (object value, string error) EvalByExpressionEngine(string exp, object scope)

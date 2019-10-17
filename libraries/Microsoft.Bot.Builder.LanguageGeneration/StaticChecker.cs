@@ -108,7 +108,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             private string currentSource = string.Empty;
             private ExpressionEngine baseExpressionEngine;
-            private readonly Regex expressionRecognizeRegex = new Regex(@"@?(?<!\\)\{.+?(?<!\\)\}", RegexOptions.Compiled);
             private readonly Regex escapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
 
             private IExpressionParser _expressionParser;
@@ -523,13 +522,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 var result = new List<Diagnostic>();
 
-                var reg = isMultiLineText ? @"@\{[^{}]+\}" : @"@?\{[^{}]+\}";
-
-                var mc = Regex.Matches(exp, reg);
-
-                foreach (Match match in mc)
+                var expressionRanges = exp.GetExpressionRanges(isMultiLineText);
+                foreach (var (start, end) in expressionRanges)
                 {
-                    result.AddRange(CheckExpression(match.Value, context));
+                    var expression = exp.Substring(start, end - start + 1);
+                    result.AddRange(CheckExpression(expression, context));
                 }
 
                 return result;
@@ -592,8 +589,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
 
                 exp = exp.Trim();
-                var expressions = expressionRecognizeRegex.Matches(exp);
-                return expressions.Count == 1 && expressions[0].Value == exp;
+                var expressions = exp.GetExpressionRanges();
+                return expressions.Count() == 1 && exp == exp.Substring(expressions[0].start, expressions[0].end - expressions[0].start + 1);
             }
         }
     }
