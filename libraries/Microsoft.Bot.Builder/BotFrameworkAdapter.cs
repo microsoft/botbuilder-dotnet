@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder
 
         protected IBot _connectedBot;
         protected ClaimsIdentity _claimsIdentity;
-        protected IList<StreamingRequestHandler> _requestHandlers;
+        protected IList<StreamingRequestHandler> _requestHandlers = new List<StreamingRequestHandler>();
 
 #pragma warning restore SA1401 // Fields should be private
 
@@ -416,27 +416,36 @@ namespace Microsoft.Bot.Builder
                 {
                     // if it is a Trace activity we only send to the channel if it's the emulator.
                 }
-                else if (activity.IsFromStreamingConnection())
-                {
-                    // The ServiceUrl for streaming channels begins with the string "urn" and contains
-                    // information unique to streaming connections. Now that we know that this is a streaming
-                    // activity, process it in the streaming pipeline.
-
-                    // Check if we have token responses from OAuth cards.
-                    TokenResolver.CheckForOAuthCards(this, _logger, turnContext, activity, cancellationToken);
-
-                    // Process streaming activity.
-                    response = await SendStreamingActivityAsync(activity).ConfigureAwait(false);
-                }
-                else if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
-                {
-                    var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-                    response = await connectorClient.Conversations.ReplyToActivityAsync(activity, cancellationToken).ConfigureAwait(false);
-                }
                 else
                 {
-                    var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-                    response = await connectorClient.Conversations.SendToConversationAsync(activity, cancellationToken).ConfigureAwait(false);
+                    if (activity.IsFromStreamingConnection())
+                    {
+                        // The ServiceUrl for streaming channels begins with the string "urn" and contains
+                        // information unique to streaming connections. Now that we know that this is a streaming
+                        // activity, process it in the streaming pipeline.
+
+                        // Check if we have token responses from OAuth cards.
+                        TokenResolver.CheckForOAuthCards(this, _logger, turnContext, activity, cancellationToken);
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
+                    {
+                        var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+                        response = await connectorClient.Conversations.ReplyToActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        if (activity.IsFromStreamingConnection())
+                        {
+                            // Process streaming activity.
+                            response = await SendStreamingActivityAsync(activity).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+                            response = await connectorClient.Conversations.SendToConversationAsync(activity, cancellationToken).ConfigureAwait(false);
+                        }
+                    }
                 }
 
                 // If No response is set, then default to a "simple" response. This can't really be done
@@ -1042,29 +1051,29 @@ namespace Microsoft.Bot.Builder
             }
             else
             {
-                if (_connectedBot == null)
+                if (_connectedBot != null)
                 {
-                    throw new InvalidOperationException("No handler can process the incoming message, since no connected bot is registered. Call UseNamedPipe or UseWebSocket to connect a bot to a streaming transport.");
+                    // This is a proactive message that will need a new streaming connection opened.
+                    // The ServiceUrl of a streaming connection follows the pattern "urn:[ChannelName]:[Protocol]:[Host]".
+                    var connection = new ClientWebSocket();
+                    var uri = activity.ServiceUrl.Split(':');
+                    var protocol = uri[uri.Length - 2];
+                    var host = uri[uri.Length - 1];
+                    await connection.ConnectAsync(new Uri(protocol + host + "/api/messages"), cancellationToken).ConfigureAwait(false);
+
+                    var handler = new StreamingRequestHandler(_connectedBot, this, connection, _logger);
+
+                    if (_requestHandlers == null)
+                    {
+                        _requestHandlers = new List<StreamingRequestHandler>();
+                    }
+
+                    _requestHandlers.Add(handler);
+
+                    return await handler.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                 }
 
-                // This is a proactive message that will need a new streaming connection opened.
-                // The ServiceUrl of a streaming connection follows the pattern "urn:[ChannelName]:[Protocol]:[Host]".
-                var connection = new ClientWebSocket();
-                var uri = activity.ServiceUrl.Split(':');
-                var protocol = uri[uri.Length - 2];
-                var host = uri[uri.Length - 1];
-                await connection.ConnectAsync(new Uri(protocol + host + "/api/messages"), cancellationToken).ConfigureAwait(false);
-
-                var handler = new StreamingRequestHandler(_connectedBot, this, connection, _logger);
-
-                if (_requestHandlers == null)
-                {
-                    _requestHandlers = new List<StreamingRequestHandler>();
-                }
-
-                _requestHandlers.Add(handler);
-
-                return await handler.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                return null;
             }
         }
 
