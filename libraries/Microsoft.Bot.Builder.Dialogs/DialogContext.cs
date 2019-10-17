@@ -319,12 +319,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <seealso cref="EndDialogAsync(object, CancellationToken)"/>
         public async Task<DialogTurnResult> CancelAllDialogsAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await this.CancelAllDialogsAsync(eventName: null, eventValue: null, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await this.CancelAllDialogsAsync(false, eventName: null, eventValue: null, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Deletes any existing dialog stack thus cancelling all dialogs on the stack.
         /// </summary>
+        /// <param name="cancelParents">If true the cancelation will bubble up through any parent dialogs as well.</param>
         /// <param name="eventName">The event.</param>
         /// <param name="eventValue">The event value.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
@@ -340,7 +341,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// `ResumeDialogAsync`, then the parent will end, too, and the result is passed to the next
         /// parent context.</remarks>
         /// <seealso cref="EndDialogAsync(object, CancellationToken)"/>
-        public async Task<DialogTurnResult> CancelAllDialogsAsync(string eventName, object eventValue = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<DialogTurnResult> CancelAllDialogsAsync(bool cancelParents, string eventName = null, object eventValue = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (eventValue is CancellationToken)
             {
@@ -375,7 +376,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                     else
                     {
-                        dialogContext = dialogContext.Parent;
+                        dialogContext = cancelParents ? dialogContext.Parent : null;
                     }
 
                     notify = true;
