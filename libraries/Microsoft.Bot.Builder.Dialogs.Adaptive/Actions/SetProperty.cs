@@ -16,6 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class SetProperty : Dialog
     {
         private Expression value;
+        private Expression property;
 
         [JsonConstructor]
         public SetProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -28,7 +29,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Gets or sets property path to put the value in.
         /// </summary>
         [JsonProperty("property")]
-        public string Property { get; set; }
+        public string Property
+        {
+            get { return property?.ToString(); }
+            set { this.property = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         /// <summary>
         /// Gets or sets the expression to get the value to put into property path.

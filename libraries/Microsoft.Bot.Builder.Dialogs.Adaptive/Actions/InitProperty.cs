@@ -5,6 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -15,6 +16,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class InitProperty : Dialog
     {
+        private Expression property;
+
         [JsonConstructor]
         public InitProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
@@ -25,7 +28,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets property path to initialize.
         /// </summary>
-        public string Property { get; set; }
+        public string Property
+        {
+            get { return property?.ToString(); }
+            set { this.property = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         /// <summary>
         ///  Gets or sets type, either Array or Object.

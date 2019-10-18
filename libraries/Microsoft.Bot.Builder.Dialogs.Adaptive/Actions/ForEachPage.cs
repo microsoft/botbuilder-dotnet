@@ -22,6 +22,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private const string FOREACH_PAGE = "dialog.foreach.page";
 #pragma warning restore SA1310 // Field names should not contain underscore
 
+        private Expression itemsProperty;
+
         [JsonConstructor]
         public ForeachPage([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
@@ -31,7 +33,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         // Expression used to compute the list that should be enumerated.
         [JsonProperty("itemsProperty")]
-        public string ItemsProperty { get; set; }
+        public string ItemsProperty
+        {
+            get { return itemsProperty?.ToString(); }
+            set { this.itemsProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         [JsonProperty("pageSize")]
         public int PageSize { get; set; } = 10;

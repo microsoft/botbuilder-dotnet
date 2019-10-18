@@ -19,6 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         private const string INDEX = "dialog.foreach.index";
         private const string VALUE = "dialog.foreach.value";
+        private Expression itemsProperty;
 
         [JsonConstructor]
         public Foreach([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
@@ -31,7 +32,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Gets or sets property path expression to the collection of items.
         /// </summary>
         [JsonProperty("itemsProperty")]
-        public string ItemsProperty { get; set; }
+        public string ItemsProperty
+        {
+            get { return itemsProperty?.ToString(); }
+            set { this.itemsProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         /// <summary>
         /// Gets or sets the actions to be run for each of items.
