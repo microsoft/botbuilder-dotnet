@@ -63,10 +63,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         public Uri SlackRedirectUri { get; set; }
 
         /// <summary>
-        /// Gets or sets an array of scope names that are being requested during the oauth process. Must match the scopes defined at api.slack.com.
+        /// Gets an array of scope names that are being requested during the oauth process. Must match the scopes defined at api.slack.com.
         /// </summary>
         /// <returns>The scopes array.</returns>
-        public List<string> SlackScopes { get; set; } = new List<string>();
+        /// <value>An array of scope names that are being requested during the oauth process.</value>
+        public List<string> SlackScopes { get; } = new List<string>();
 
         /// <summary>
         /// A method that receives a Slack team id and returns the bot token associated with that team. Required for multi-team apps.
