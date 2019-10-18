@@ -521,7 +521,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         [Fact]
         public async Task ProcessAsyncShouldFailOnVerificationTokenMismatch()
         {
-            _testOptions.VerificationToken = "testToken";
+            _testOptions.SlackVerificationToken = "testToken";
 
             var slackApi = new Mock<SlackClientWrapper>(_testOptions);
             slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));

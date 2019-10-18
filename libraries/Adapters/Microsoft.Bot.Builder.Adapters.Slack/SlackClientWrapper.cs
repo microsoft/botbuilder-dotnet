@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         {
             Options = options ?? throw new ArgumentNullException(nameof(options));
 
-            if (string.IsNullOrWhiteSpace(options.VerificationToken) && string.IsNullOrWhiteSpace(options.ClientSigningSecret))
+            if (string.IsNullOrWhiteSpace(options.SlackVerificationToken) && string.IsNullOrWhiteSpace(options.SlackClientSigningSecret))
             {
                 const string warning = "****************************************************************************************" +
                                        "* WARNING: Your bot is operating without recommended security mechanisms in place.     *" +
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 throw new Exception(warning + Environment.NewLine + "Required: include a verificationToken or clientSigningSecret to verify incoming Events API webhooks");
             }
 
-            _api = new SlackTaskClient(options.BotToken);
+            _api = new SlackTaskClient(options.SlackBotToken);
             LoginWithSlackAsync(default).Wait();
         }
 
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <value>
         /// An object containing API credentials, a webhook verification token and other options.
         /// </value>
-        public SlackAdapterOptions Options { get; private set; }
+        public SlackAdapterOptions Options { get; }
 
         /// <summary>
         /// Gets the user identity.
@@ -89,12 +89,12 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="postParameters">The parameters to the POST request.</param>
         /// <typeparam name="TResult">The generic type for the return. Must be of type Response.</typeparam>
         /// <returns>A <see cref="Task"/> of type T representing the asynchronous operation.</returns>
-        public virtual async Task<TResult> APIRequestWithTokenAsync<TResult>(CancellationToken cancellationToken, params Tuple<string, string>[] postParameters)
+        public virtual async Task<TResult> ApiRequestWithTokenAsync<TResult>(CancellationToken cancellationToken, params Tuple<string, string>[] postParameters)
              where TResult : Response
         {
-            return (postParameters != null) ?
-                await _api.APIRequestWithTokenAsync<TResult>().ConfigureAwait(false) :
-                await _api.APIRequestWithTokenAsync<TResult>(postParameters).ConfigureAwait(false);
+            return postParameters != null
+                ? await _api.APIRequestWithTokenAsync<TResult>(postParameters).ConfigureAwait(false)
+                : await _api.APIRequestWithTokenAsync<TResult>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -683,7 +683,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             var baseString = string.Join(":", signature);
 
-            using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(Options.ClientSigningSecret)))
+            using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(Options.SlackClientSigningSecret)))
             {
                 var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(baseString));
 
@@ -710,7 +710,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             var data = new NameValueCollection
             {
-                ["token"] = Options.BotToken,
+                ["token"] = Options.SlackBotToken,
                 ["channel"] = message.Channel,
                 ["text"] = message.Text,
                 ["thread_ts"] = message.ThreadTs,
@@ -744,16 +744,16 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <returns>A Task representing the asynchronous operation.</returns>
         public async Task LoginWithSlackAsync(CancellationToken cancellationToken)
         {
-            if (Options.BotToken != null)
+            if (Options.SlackBotToken != null)
             {
                 Identity = await TestAuthAsync(cancellationToken).ConfigureAwait(false);
             }
-            else if (string.IsNullOrWhiteSpace(Options.ClientId) ||
-                     string.IsNullOrWhiteSpace(Options.ClientSecret) ||
-                     Options.RedirectUri == null ||
-                     Options.GetScopes().Length > 0)
+            else if (string.IsNullOrWhiteSpace(Options.SlackClientId) ||
+                     string.IsNullOrWhiteSpace(Options.SlackClientSecret) ||
+                     Options.SlackRedirectUri == null ||
+                     Options.SlackScopes.Count == 0)
             {
-                throw new Exception("Missing Slack API credentials! Provide clientId, clientSecret, scopes and redirectUri as part of the SlackAdapter options.");
+                throw new Exception("Missing Slack API credentials! Provide SlackClientId, SlackClientSecret, scopes and SlackRedirectUri as part of the SlackAdapter options.");
             }
         }
     }

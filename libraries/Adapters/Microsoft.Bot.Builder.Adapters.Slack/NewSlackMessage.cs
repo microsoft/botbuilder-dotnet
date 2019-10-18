@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <summary>
         /// Gets or sets a value indicating whether a message is sent by the user or not.
         /// </summary>
-        /// <value>The asuser indicator of the message.</value>
+        /// <value>The as-user indicator of the message.</value>
         public bool AsUser { get; set; }
 
         /// <summary>

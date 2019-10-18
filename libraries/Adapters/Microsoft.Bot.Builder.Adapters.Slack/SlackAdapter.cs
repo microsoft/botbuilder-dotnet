@@ -25,20 +25,20 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
         /// <remarks>
         /// The configuration keys are:
-        /// VerificationToken: A token for validating the origin of incoming webhooks.
-        /// BotToken: A token for a bot to work on a single workspace.
-        /// ClientSigningSecret: The token used to validate that incoming webhooks are originated from Slack.
+        /// SlackVerificationToken: A token for validating the origin of incoming webhooks.
+        /// SlackBotToken: A token for a bot to work on a single workspace.
+        /// SlackClientSigningSecret: The token used to validate that incoming webhooks are originated from Slack.
         /// </remarks>
         public SlackAdapter(IConfiguration configuration)
-            : this(new SlackClientWrapper(new SlackAdapterOptions(configuration["VerificationToken"], configuration["BotToken"], configuration["ClientSigningSecret"])))
+            : this(new SlackClientWrapper(new SlackAdapterOptions(configuration["SlackVerificationToken"], configuration["SlackBotToken"], configuration["SlackClientSigningSecret"])))
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SlackAdapter"/> class.
-        /// Create a Slack adapter.
+        /// Creates a Slack adapter.
         /// </summary>
-        /// <param name="slackClient">An initialized instance of the SlackClientWrapper class.</param>
+        /// <param name="slackClient">An initialized instance of the SlackClientWrapper class to connect to.</param>
         public SlackAdapter(SlackClientWrapper slackClient)
         {
             _slackClient = slackClient ?? throw new ArgumentNullException(nameof(slackClient));
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="turnContext">A TurnContext representing the current incoming message and environment.</param>
         /// <param name="activities">An array of outgoing activities to be sent back to the messaging API.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A resource response.</returns>
+        /// <returns>An array of <see cref="ResourceResponse"/> objects containing the IDs that Slack assigned to the sent messages.</returns>
         public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
             if (turnContext == null)
@@ -67,25 +67,27 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             foreach (var activity in activities)
             {
-                if (activity.Type == ActivityTypes.Message)
+                if (activity.Type != ActivityTypes.Message)
                 {
-                    var message = SlackHelper.ActivityToSlack(activity);
+                    throw new ArgumentException("Unsupported Activity Type. Only Activities of type ‘Message’ are supported.", nameof(activities));
+                }
 
-                    var slackResponse = await _slackClient.PostMessageAsync(message, cancellationToken).ConfigureAwait(false);
+                var message = SlackHelper.ActivityToSlack(activity);
 
-                    if (slackResponse != null && slackResponse.Ok)
+                var slackResponse = await _slackClient.PostMessageAsync(message, cancellationToken).ConfigureAwait(false);
+
+                if (slackResponse != null && slackResponse.Ok)
+                {
+                    var resourceResponse = new ActivityResourceResponse()
                     {
-                        var resourceResponse = new ActivityResourceResponse()
+                        Id = slackResponse.Ts,
+                        ActivityId = slackResponse.Ts,
+                        Conversation = new ConversationAccount()
                         {
-                            Id = slackResponse.Ts,
-                            ActivityId = slackResponse.Ts,
-                            Conversation = new ConversationAccount()
-                            {
-                                Id = slackResponse.Channel,
-                            },
-                        };
-                        responses.Add(resourceResponse);
-                    }
+                            Id = slackResponse.Channel,
+                        },
+                    };
+                    responses.Add(resourceResponse);
                 }
             }
 
@@ -122,7 +124,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             }
 
             var message = SlackHelper.ActivityToSlack(activity);
-            var results = await _slackClient.UpdateAsync(activity.Timestamp.ToString(), activity.ChannelId, message.Text, cancellationToken: cancellationToken).ConfigureAwait(false);
+            
+            var results = await _slackClient.UpdateAsync(message.Ts, message.Channel, message.Text, cancellationToken: cancellationToken).ConfigureAwait(false);
+            
             if (!results.ok)
             {
                 throw new Exception($"Error updating activity on Slack:{results}");
@@ -196,9 +200,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <summary>
         /// Accept an incoming webhook request and convert it into a TurnContext which can be processed by the bot's logic.
         /// </summary>
-        /// <param name="request">A request object from Restify or Express.</param>
-        /// <param name="response">A response object from Restify or Express.</param>
-        /// <param name="bot">A bot with logic function in the form `async(context) => { ... }`.</param>
+        /// <param name="request">The incoming HTTP request.</param>
+        /// <param name="response">When this method completes, the HTTP response to send.</param>
+        /// <param name="bot">The bot that will handle the incoming activity.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken)
@@ -245,7 +249,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 throw new Exception(text);
             }
 
-            if (!string.IsNullOrWhiteSpace(_slackClient.Options.VerificationToken) && slackBody.Token != _slackClient.Options.VerificationToken)
+            if (!string.IsNullOrWhiteSpace(_slackClient.Options.SlackVerificationToken) && slackBody.Token != _slackClient.Options.SlackVerificationToken)
             {
                 var text = $"Rejected due to mismatched verificationToken:{slackBody}";
 
@@ -254,7 +258,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 throw new Exception(text);
             }
 
-            var activity = new Activity();
+            Activity activity;
 
             if (slackBody.Payload != null)
             {
@@ -283,7 +287,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
                 var code = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), System.Globalization.CultureInfo.InvariantCulture);
                 var statusCode = (HttpStatusCode)code;
-                var text = (context.TurnState.Get<object>("httpBody") != null) ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
+                var text = context.TurnState.Get<object>("httpBody") != null ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
 
                 await SlackHelper.WriteAsync(response, statusCode, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
             }
