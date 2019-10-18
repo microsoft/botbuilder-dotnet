@@ -12,16 +12,16 @@ PM> Install-Package Microsoft.Bot.Builder.Adapters.Webex
 ### Set the Webex Credentials
 When your bot sends a request to Webex API, it must include information that Webex can use to verify its identity.
 
-To authenticate the requests, you'll need to configure the Adapter with the Public Address, the Access Token, a secret and an optional WebhookName.
+To authenticate the requests, you'll need to configure the Adapter with the Public Address, the Access Token, a Secret and an optional Webhook Name.
 
 You could create in the project an `appsettings.json` file to set the Webex credentials as follows:
 
 ```json
 {
-  "PublicAddress": "",
-  "AccessToken": "",
-  "Secret": "",
-  "WebhookName": ""
+  "WebexPublicAddress": "",
+  "WebexAccessToken": "",
+  "WebexSecret": "",
+  "WebexWebhookName": ""
 }
 ```
 
