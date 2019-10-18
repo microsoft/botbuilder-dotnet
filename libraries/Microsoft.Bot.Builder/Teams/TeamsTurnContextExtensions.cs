@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Teams
                 throw new ArgumentNullException(nameof(message));
             }
 
-            // TODO: do we need to add the tenantId into the TeamsChannelData
+            // TODO: do we need to add the tenantId into the TeamsChannelData ando/or on the ConversationParameters
             var conversationParameters = new ConversationParameters
             {
                 IsGroup = true,
@@ -42,6 +42,36 @@ namespace Microsoft.Bot.Builder.Teams
             conversationReference.Conversation.Id = conversationResourceResponse.Id;
 
             return (conversationReference, conversationResourceResponse.ActivityId);
+        }
+
+        public static async Task TeamsCreateOneToOneConversationAsync(this ITurnContext turnContext, ChannelAccount account, Activity message, CancellationToken cancellationToken = default)
+        {
+            var connector = turnContext.TurnState.Get<IConnectorClient>();
+
+            var parameters = new ConversationParameters
+            {
+                IsGroup = false,
+                Bot = turnContext.Activity.Recipient,
+                Members = new ChannelAccount[] { account },
+                ChannelData = new TeamsChannelData
+                {
+                    Tenant = new TenantInfo
+                    {
+                        Id = turnContext.Activity.Conversation.TenantId,
+                    }
+                },
+            };
+
+            var converationReference = await connector.Conversations.CreateConversationAsync(parameters).ConfigureAwait(false);
+
+
+            message.From = turnContext.Activity.Recipient;
+            message.Conversation = new ConversationAccount
+            {
+                Id = converationReference.Id.ToString(),
+            };
+
+            await connector.Conversations.SendToConversationAsync(message, cancellationToken).ConfigureAwait(false);
         }
 
         public static Task<(ConversationReference conversationReference, string activityId)> TeamsSendToGeneralChannelAsync(this ITurnContext turnContext, IActivity activity, CancellationToken cancellationToken = default)
