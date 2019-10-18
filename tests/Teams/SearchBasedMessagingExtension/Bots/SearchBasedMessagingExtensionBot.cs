@@ -38,7 +38,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             var searchQuery = query.Parameters[0].Value as string;
             var messagingExtensionResponse = new MessagingExtensionResponse();
 
-            messagingExtensionResponse.MessagingExtension = CreateMessagingExtensionResult(new List<MessagingExtensionAttachment>
+            messagingExtensionResponse.ComposeExtension = CreateMessagingExtensionResult(new List<MessagingExtensionAttachment>
             {
                 CreateSearchResultAttachment(searchQuery),
                 CreateDummySearchResultAttachment(),
@@ -69,7 +69,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             };
 
             var messagingExtensionResponse = new MessagingExtensionResponse();
-            messagingExtensionResponse.MessagingExtension = CreateMessagingExtensionResult(new List<MessagingExtensionAttachment> { attachment });
+            messagingExtensionResponse.ComposeExtension = CreateMessagingExtensionResult(new List<MessagingExtensionAttachment> { attachment });
             return messagingExtensionResponse;
         }
 

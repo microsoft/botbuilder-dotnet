@@ -768,17 +768,20 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled = engine.EvaluateTemplate("AskForAge.prompt");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"how old are you?\"}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"how old are you?\"}"), evaled as JObject)
+                || JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"what's your age?\"}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("AskForAge.prompt2");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"suggestedactions\":[\"10\",\"20\",\"30\"]}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"suggestedactions\":[\"10\",\"20\",\"30\"]}"), evaled as JObject)
+                || JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"suggestedactions\":[\"10\",\"20\",\"30\"]}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("AskForAge.prompt3");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject)
+                || JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("T1");
 

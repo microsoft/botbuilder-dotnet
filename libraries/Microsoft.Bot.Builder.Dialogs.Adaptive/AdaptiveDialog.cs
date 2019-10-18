@@ -376,23 +376,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // from the stack and we want to detect this so we can stop processing actions.
             var instanceId = this.GetUniqueInstanceId(sequenceContext);
 
+            // Execute queued actions
             var action = this.CreateChildContext(sequenceContext) as SequenceContext;
-
-            if (action != null)
+            while (action != null)
             {
                 // Continue current step
+                // DEBUG: To debug step execution set a breakpoint on line below and add a watch 
+                //        statement for sequenceContext.Actions.
                 var result = await action.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
 
                 // Start step if not continued
                 if (result.Status == DialogTurnStatus.Empty && GetUniqueInstanceId(sequenceContext) == instanceId)
                 {
-                    var nextAction = action.Actions.First();
-
-                    // Compute options object for the step
-                    object effectiveOptions = ComputeEffectiveOptions(options, nextAction.Options);
-
                     // Call begin dialog on our next step, passing the effective options we computed
-                    result = await action.BeginDialogAsync(nextAction.DialogId, effectiveOptions, cancellationToken).ConfigureAwait(false);
+                    var nextAction = action.Actions.First();
+                    result = await action.BeginDialogAsync(nextAction.DialogId, nextAction.Options, cancellationToken).ConfigureAwait(false);
                 }
 
                 // Is the step waiting for input or were we cancelled?
@@ -404,21 +402,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // End current step
                 await this.EndCurrentActionAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
 
-                // Execute next step
-                // We call continueDialog() on the root dialog to ensure any changes queued up
-                // by the previous actions are applied.
+                // Check for changes to any of our parents
+                var parentChanges = false;
                 DialogContext root = sequenceContext;
-                while (root.Parent != null)
+                DialogContext parent = sequenceContext.Parent;
+                while (parent != null)
                 {
-                    root = root.Parent;
+                    var sc = parent as SequenceContext;
+                    if (sc != null && sc.Changes != null && sc.Changes.Count > 0)
+                    {
+                        parentChanges = true;
+                    }
+                    root = parent;
+                    parent = root.Parent;
                 }
 
-                return await root.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+                // Execute next step
+                if (parentChanges)
+                {
+                    // Recursively call ContinueDialogAsync() to apply parent changes and continue
+                    // execution.
+                    return await root.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    // Apply any local changes and fetch next action
+                    await sequenceContext.ApplyChangesAsync(cancellationToken).ConfigureAwait(false);
+                    action = this.CreateChildContext(sequenceContext) as SequenceContext;
+                }
             }
-            else
-            {
-                return await this.OnEndOfActionsAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
-            }
+
+            return await this.OnEndOfActionsAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
         }
 
         protected Task<bool> EndCurrentActionAsync(SequenceContext sequenceContext, CancellationToken cancellationToken = default(CancellationToken))
@@ -537,25 +551,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             return false;
-        }
-
-        private object ComputeEffectiveOptions(object adaptiveOptions, object stepOptions)
-        {
-            var effectiveOptions = adaptiveOptions;
-
-            if (effectiveOptions == null)
-            {
-                // If no options were passed in from the adaptive dialog, just use the step's option
-                effectiveOptions = stepOptions;
-            }
-            else if (stepOptions != null)
-            {
-                // If we were passed in options and also have non-null options for the next step,
-                // overlay the step options on top of the adaptive options 
-                ObjectPath.Assign<object>(effectiveOptions, stepOptions);
-            }
-
-            return effectiveOptions;
         }
 
         private void EnsureDependenciesInstalled()

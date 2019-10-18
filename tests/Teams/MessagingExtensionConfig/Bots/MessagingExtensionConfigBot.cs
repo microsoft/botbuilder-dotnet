@@ -29,10 +29,10 @@ namespace Microsoft.BotBuilderSamples.Bots
         {
             var messageExtensionResponse = new MessagingExtensionResponse
             {
-                MessagingExtension = new MessagingExtensionResult
+                ComposeExtension = new MessagingExtensionResult
                 {
                     Type = "config",
-                    OpenUrlActions = new MessagingExtensionOpenUrlAction
+                    SuggestedActions = new MessagingExtensionSuggestedAction
                     {
                         Actions = new List<CardAction>
                         {

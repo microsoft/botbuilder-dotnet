@@ -12,6 +12,13 @@ namespace Microsoft.BotBuilderSamples
         public AdapterWithErrorHandler(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger)
             : base(configuration, logger)
         {
+            var allowedTeamsTenantId = configuration.GetValue<string>("AllowedTeamsTenantId");
+            if (!string.IsNullOrEmpty(allowedTeamsTenantId))
+            {
+                var teamsTenantFilterMiddleware = new TeamsTenantFilteringMiddleware(allowedTeamsTenantId);
+                Use(teamsTenantFilterMiddleware);
+            }
+
             OnTurnError = async (turnContext, exception) =>
             {
                 // Log any leaked exception from the application.

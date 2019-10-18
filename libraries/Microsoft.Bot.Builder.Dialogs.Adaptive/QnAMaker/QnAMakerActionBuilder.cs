@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         private float maximumScoreForLowScoreVariation = 0.95F;
 
-        private readonly QnAMaker _services;
+        private readonly IQnAMakerClient _qnaMakerClient;
 
         /// <summary>
         /// Gets QnA Maker Dialog.
@@ -53,15 +53,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Initializes a new instance of the <see cref="QnAMakerActionBuilder"/> class.
         /// Dialog helper to generate dialogs.
         /// </summary>
-        /// <param name="services">Bot Services.</param>
-        internal QnAMakerActionBuilder(QnAMaker services)
+        /// <param name="qnaMakerClient">QnA Maker client.</param>
+        internal QnAMakerActionBuilder(IQnAMakerClient qnaMakerClient)
         {
             _qnaMakerDialog = new WaterfallDialog(QnAMakerDialogName)
                 .AddStep(CallGenerateAnswerAsync)
                 .AddStep(CallTrain)
                 .AddStep(CheckForMultiTurnPrompt)
                 .AddStep(DisplayQnAResult);
-            _services = services ?? throw new ArgumentNullException(nameof(services));
+            _qnaMakerClient = qnaMakerClient ?? throw new ArgumentNullException(nameof(qnaMakerClient));
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             // Calling QnAMaker to get response.
-            var response = await _services.GetAnswersRawAsync(stepContext.Context, qnaMakerOptions).ConfigureAwait(false);
+            var response = await _qnaMakerClient.GetAnswersRawAsync(stepContext.Context, qnaMakerOptions).ConfigureAwait(false);
 
             // Resetting previous query.
             dialogOptions[PreviousQnAId] = -1;
@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             if (isActiveLearningEnabled && response.Answers.Any() && response.Answers.First().Score <= maximumScoreForLowScoreVariation)
             {
                 // Get filtered list of the response that support low score variation criteria.
-                response.Answers = _services.GetLowScoreVariation(response.Answers);
+                response.Answers = _qnaMakerClient.GetLowScoreVariation(response.Answers);
 
                 if (response.Answers.Count() > 1)
                 {
@@ -220,7 +220,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     var feedbackRecords = new FeedbackRecords { Records = records };
 
                     // Call Active Learning Train API
-                    await _services.CallTrainAsync(feedbackRecords).ConfigureAwait(false);
+                    await _qnaMakerClient.CallTrainAsync(feedbackRecords).ConfigureAwait(false);
 
                     return await stepContext.NextAsync(new List<QueryResult>() { qnaResult }, cancellationToken).ConfigureAwait(false);
                 }
