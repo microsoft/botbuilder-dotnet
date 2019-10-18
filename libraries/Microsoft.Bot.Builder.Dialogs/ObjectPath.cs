@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,6 +12,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public static class ObjectPath
     {
+        private static Regex matchBrackets = new Regex("\\[(.*?)\\]", RegexOptions.Compiled);
+
         private static JsonSerializerSettings cloneSettings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
 
         private static JsonSerializerSettings expressionCaseSettings = new JsonSerializerSettings
@@ -64,6 +67,32 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return true;
             }
 
+            var brackets = matchBrackets.Matches(pathExpression);
+            foreach (Match bracket in brackets)
+            {
+                string bracketPath = bracket.Value.Trim('[', ']');
+
+                // if it's not a number, then evaluate the path
+                if (!int.TryParse(bracketPath, out int index))
+                {
+                    if (TryGetPathValue<string>(obj, bracketPath, out string bracketValue))
+                    {
+                        if (int.TryParse(bracketValue, out index))
+                        {
+                            pathExpression = pathExpression.Replace(bracket.Value, $"[{index}]");
+                        }
+                        else
+                        {
+                            pathExpression = pathExpression.Replace(bracket.Value, $".{bracketValue}");
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+
             string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
             dynamic current = obj;
             for (var i = 0; i < segments.Length; i++)
@@ -79,10 +108,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             return true;
         }
 
-        public static void SetPathValue(object o, string pathExpression, object value, bool json = true)
+        public static void SetPathValue(object obj, string pathExpression, object value, bool json = true)
         {
             string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
-            dynamic current = o;
+            dynamic current = obj;
 
             for (var i = 0; i < segments.Length - 1; i++)
             {
@@ -93,10 +122,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             SetObjectProperty(current, segments.Last(), value);
         }
 
-        public static void RemovePathValue(object o, string pathExpression)
+        public static void RemovePathValue(object obj, string pathExpression)
         {
             string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
-            dynamic next = o;
+            dynamic next = obj;
             for (var i = 0; i < segments.Length - 1; i++)
             {
                 next = ResolveSegment(next, segments[i], addMissing: true);
