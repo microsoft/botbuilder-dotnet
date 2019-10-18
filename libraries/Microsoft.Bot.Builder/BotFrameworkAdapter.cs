@@ -418,27 +418,23 @@ namespace Microsoft.Bot.Builder
                 }
                 else
                 {
+                    // Check if we have token responses from OAuth cards.
+                    TokenResolver.CheckForOAuthCards(this, _logger, turnContext, activity, cancellationToken);
+
                     if (activity.IsFromStreamingConnection())
                     {
                         // The ServiceUrl for streaming channels begins with the string "urn" and contains
                         // information unique to streaming connections. Now that we know that this is a streaming
                         // activity, process it in the streaming pipeline.
-
-                        // Check if we have token responses from OAuth cards.
-                        TokenResolver.CheckForOAuthCards(this, _logger, turnContext, activity, cancellationToken);
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
-                    {
-                        var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-                        response = await connectorClient.Conversations.ReplyToActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                        // Process streaming activity.
+                        response = await SendStreamingActivityAsync(activity).ConfigureAwait(false);
                     }
                     else
                     {
-                        if (activity.IsFromStreamingConnection())
+                        if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
                         {
-                            // Process streaming activity.
-                            response = await SendStreamingActivityAsync(activity).ConfigureAwait(false);
+                            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+                            response = await connectorClient.Conversations.ReplyToActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                         }
                         else
                         {
