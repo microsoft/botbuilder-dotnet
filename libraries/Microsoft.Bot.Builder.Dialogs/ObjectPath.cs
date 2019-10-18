@@ -472,36 +472,28 @@ namespace Microsoft.Bot.Builder.Dialogs
         private static IEnumerable<string> MatchBrackets(string path)
         {
             StringBuilder sb = new StringBuilder();
-            int inside = 0;
+            int nest = 0;
             for (int i = 0; i < path.Length; i++)
             {
                 char ch = path[i];
-                if (inside == 0)
+                if (ch == '[')
                 {
-                    if (ch == '[')
-                    {
-                        inside++;
-                        sb.Append(ch);
-                    }
+                    nest++;
                 }
-                else
+                else if (ch == ']')
                 {
-                    if (ch == '[')
-                    {
-                        inside++;
-                    }
-                    else if (ch == ']')
-                    {
-                        inside--;
-                    }
+                    nest--;
+                }
 
+                if (nest > 0)
+                {
                     sb.Append(ch);
-
-                    if (inside == 0)
-                    {
-                        yield return sb.ToString();
-                        sb.Clear();
-                    }
+                }
+                else if (sb.Length > 0)
+                {
+                    sb.Append(ch);
+                    yield return sb.ToString();
+                    sb.Clear();
                 }
             }
 
