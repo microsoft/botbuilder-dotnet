@@ -153,6 +153,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Slack.TestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\Microsoft.Bot.Builder.Adapters.Slack.TestBot.csproj", "{170EA6A3-26A6-4A1A-A6F9-44BE5208FA06}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Slack.Tests", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.Tests\Microsoft.Bot.Builder.Adapters.Slack.Tests.csproj", "{195FC24B-C4DA-4055-918D-5ABF50FD805B}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Skills", "libraries\Microsoft.Bot.Builder.Skills\Microsoft.Bot.Builder.Skills.csproj", "{01ADC4CC-029D-4720-9860-32D7E223F8D8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Skills.Tests", "tests\Microsoft.Bot.Builder.Skills.Tests\Microsoft.Bot.Builder.Skills.Tests.csproj", "{96167FDC-8D49-4767-AE58-22933C246C67}"
@@ -748,6 +749,8 @@ Global
 		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -756,6 +759,8 @@ Global
 		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{96167FDC-8D49-4767-AE58-22933C246C67}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{96167FDC-8D49-4767-AE58-22933C246C67}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{96167FDC-8D49-4767-AE58-22933C246C67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{96167FDC-8D49-4767-AE58-22933C246C67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96167FDC-8D49-4767-AE58-22933C246C67}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
