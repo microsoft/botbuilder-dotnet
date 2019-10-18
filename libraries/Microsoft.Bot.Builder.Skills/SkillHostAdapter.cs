@@ -400,14 +400,6 @@ namespace Microsoft.Bot.Builder.Skills
             };
             channelApiInvokeActivity.Value = channelApiArgs;
 
-            // We call our adapter using the BotAppId claim, so turnContext has the bot claims
-            // var claimsIdentity = new ClaimsIdentity(new List<Claim>
-            // {
-            //     new Claim(AuthenticationConstants.AudienceClaim, this.BotAppId),
-            //     new Claim(AuthenticationConstants.AppIdClaim, this.BotAppId),
-            //     new Claim(AuthenticationConstants.ServiceUrlClaim, skillConversation.ServiceUrl),
-            // });
-
             // send up to the bot to process it...
             await ChannelAdapter.ProcessActivityAsync(claimsIdentity, (Activity)channelApiInvokeActivity, Bot.OnTurnAsync, CancellationToken.None).ConfigureAwait(false);
 

@@ -223,7 +223,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
             var appCredentials = await GetAppCredentialsAsync(botAppId, skill.AppId, cancellationToken).ConfigureAwait(false);
             if (appCredentials == null)
             {
-                throw new InvalidOperationException("Unable to get appcredentials to connect to the skill");
+                throw new InvalidOperationException("Unable to get appCredentials to connect to the skill");
             }
 
             // Get token for the skill call
@@ -243,14 +243,15 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
                 })));
                 activity.ServiceUrl = SkillHostEndpoint;
                 activity.Recipient.Properties["skillId"] = skill.Id;
-                var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json");
-
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await client.PostAsync($"{skill.SkillEndpoint}", jsonContent, cancellationToken).ConfigureAwait(false);
-                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                if (content.Length > 0)
+                using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
                 {
-                    return JsonConvert.DeserializeObject<InvokeResponse>(content);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var response = await client.PostAsync($"{skill.SkillEndpoint}", jsonContent, cancellationToken).ConfigureAwait(false);
+                    var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    if (content.Length > 0)
+                    {
+                        return JsonConvert.DeserializeObject<InvokeResponse>(content);
+                    }
                 }
             }
 

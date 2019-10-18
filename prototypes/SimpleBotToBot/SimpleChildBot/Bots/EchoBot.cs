@@ -30,23 +30,8 @@ namespace SimpleChildBot.Bots
             }
             else
             {
-                await turnContext.SendActivityAsync(MessageFactory.Text($"Echo1: {turnContext.Activity.Text}"), cancellationToken);
-                
-                // Artificial delay to test that we can send multiple messages and they show on the client as they arrive.
-                Thread.Sleep(1000);
-                await turnContext.SendActivityAsync(MessageFactory.Text($"Echo2: {turnContext.Activity.Text}"), cancellationToken);
+                await turnContext.SendActivityAsync(MessageFactory.Text($"Echo : {turnContext.Activity.Text}"), cancellationToken);
                 await turnContext.SendActivityAsync(MessageFactory.Text($"Say \"end\" or \"stop\" and I'll end the conversation and back to the parent.'"), cancellationToken);
-            }
-        }
-
-        protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
-        {
-            foreach (var member in membersAdded)
-            {
-                if (member.Id != turnContext.Activity.Recipient.Id)
-                {
-                    await turnContext.SendActivityAsync(MessageFactory.Text("Hello and welcome to SimpleSkillBot!"), cancellationToken);
-                }
             }
         }
     }

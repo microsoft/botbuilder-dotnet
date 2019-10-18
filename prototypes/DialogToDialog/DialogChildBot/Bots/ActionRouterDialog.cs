@@ -4,6 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using DialogChildBot.Dialogs;
+using DialogChildBot.Extensions;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -35,6 +36,9 @@ namespace DialogChildBot.Bots
             var activity = turnContext.Activity;
             if (activity.Type == ActivityTypes.Event)
             {
+                // A skill can send trace activities y needed :)
+                await turnContext.SendTraceActivityAsync($"{GetType().Name}", value: $"Got Event: {activity.Name}", cancellationToken: cancellationToken);
+
                 // Resolve what to execute based on the semantic action ID.
                 await turnContext.SendActivityAsync(MessageFactory.Text($"Got Event: {activity.Name}"), cancellationToken);
                 switch (activity.Name)

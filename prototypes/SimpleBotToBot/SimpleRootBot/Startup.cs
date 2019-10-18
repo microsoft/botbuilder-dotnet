@@ -29,7 +29,7 @@ namespace SimpleRootBot
             // Create the Bot Framework Adapter with error handling enabled.
             var botAdapter = new AdapterWithErrorHandler(services.BuildServiceProvider().GetService<IConfiguration>(), null);
             services.AddSingleton<BotAdapter>(botAdapter);
-            
+
             // Create skills server and skills host adapter.
             services.AddSingleton<BotFrameworkSkillHostAdapter>();
             services.AddSingleton<BotFrameworkHttpSkillsServer>();
@@ -44,6 +44,7 @@ namespace SimpleRootBot
             services.AddTransient<IBot, RootBot>();
             
             // force this to be resolved
+            // TODO: you can manually add skills that are not in config by adding your own elements to skillAdapter.Skills 
             var skillAdapter = services.BuildServiceProvider().GetService<BotFrameworkSkillHostAdapter>();
         }
 

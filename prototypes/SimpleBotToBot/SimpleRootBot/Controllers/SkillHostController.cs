@@ -30,6 +30,9 @@ namespace SimpleRootBot.Controllers
         [HttpDelete]
         public async Task ProcessAsync()
         {
+            // Entering parent from skill
+            var authToken = Request.Headers["Authorization"].ToString();
+
             //DebugTokenClaims();
 
             // Delegate the processing of the HTTP POST to the adapter.
