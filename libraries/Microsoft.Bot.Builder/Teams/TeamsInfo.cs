@@ -69,9 +69,8 @@ namespace Microsoft.Bot.Builder.Teams
         private static ITeamsConnectorClient GetTeamsConnectorClient(ITurnContext turnContext)
         {
             var connectorClient = GetConnectorClient(turnContext);
-            if (connectorClient is ConnectorClient)
+            if (connectorClient is ConnectorClient connectorClientImpl)
             {
-                var connectorClientImpl = (ConnectorClient)connectorClient;
                 return new TeamsConnectorClient(connectorClientImpl.BaseUri, connectorClientImpl.Credentials, connectorClientImpl.HttpClient);
             }
             else

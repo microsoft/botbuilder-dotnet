@@ -6,6 +6,7 @@
     <Rule Id="UseAsyncSuffix" Action="Error" />
     <Rule Id="UseConfigureAwait" Action="Error" />
   </Rules>
+  
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
     <Rule Id="IDE0003" Action="None" />
   </Rules>
@@ -186,6 +187,7 @@
     <Rule Id="SA1649" Action="Error" />
     <Rule Id="SA1651" Action="Error" />
   </Rules>
+
   <Rules AnalyzerId="Microsoft.CodeQuality.Analyzers" RuleNamespace="Microsoft.CodeQuality.Analyzers">
 	<Rule Id="CA1062" Action="None" /> <!-- ValidateArgumentsOfPublicMethods -->	
   </Rules>
