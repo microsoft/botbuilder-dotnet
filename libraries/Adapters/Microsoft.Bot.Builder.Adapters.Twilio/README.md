@@ -1,4 +1,4 @@
-﻿# Microsoft Bot Framework Twilio Adapter for .NET
+﻿# Microsoft Bot Framework TwilioAdapter for .NET
 
 This package contains an adapter that communicates directly with the Twilio API, and translates messages to and from a standard format used by your bot.
 
@@ -11,16 +11,16 @@ PM> Install-Package Microsoft.Bot.Builder.Adapters.Twilio
 
 ### Set the Twilio Credentials
 
-To authenticate the requests, you'll need to configure the Adapter with the Twilio Number, the AccountSid, an AuthToken and a ValidationUrl.
+To authenticate the requests, you'll need to configure the Adapter with the Twilio Number, the Account Sid, an Auth Token and a Validation Url.
 
 You could create in the project an `appsettings.json` file to set the Twilio credentials as follows:
 
 ```json
 {
     "TwilioNumber": "",
-    "AccountSid": "",
-    "AuthToken": "",
-    "ValidationUrl": ""
+    "TwilioAccountSid": "",
+    "TwilioAuthToken": "",
+    "TwilioValidationUrl": ""
 }
 ```
 
