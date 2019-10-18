@@ -18,9 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class ForeachPage : Dialog, IDialogDependencies
     {
-#pragma warning disable SA1310 // Field names should not contain underscore
-        private const string FOREACH_PAGE = "dialog.foreach.page";
-#pragma warning restore SA1310 // Field names should not contain underscore
+        private const string ForEachPage = "dialog.foreach.page";
 
         private Expression itemsProperty;
 
@@ -84,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                     if (page.Count() > 0)
                     {
-                        dc.State.SetValue(FOREACH_PAGE, page);
+                        dc.State.SetValue(ForEachPage, page);
                         var changes = new ActionChangeList()
                         {
                             ChangeType = ActionChangeType.InsertActions,

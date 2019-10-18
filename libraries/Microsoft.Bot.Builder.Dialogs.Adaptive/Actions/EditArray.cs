@@ -101,6 +101,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets property path expression to the collection of items.
         /// </summary>
+        /// <value>
+        /// Property path expression to the collection of items.
+        /// </value>
         [JsonProperty("itemsProperty")]
         public string ItemsProperty
         {
@@ -111,6 +114,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets the path expression to store the result of the action.
         /// </summary>
+        /// <value>
+        /// The path expression to store the result of the action.
+        /// </value>
         [JsonProperty("resultProperty")]
         public string ResultProperty
         {
@@ -121,6 +127,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets the expression of the value to put onto the array.
         /// </summary>
+        /// <value>
+        /// The expression of the value to put onto the array.
+        /// </value>
         [JsonProperty("value")]
         public string Value
         {

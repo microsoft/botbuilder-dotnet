@@ -40,6 +40,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <example>
         /// user.age will remove "age" from "user".
         /// </example>
+        /// <value>
+        /// Property path to remove.
+        /// </value>
         public string Property
         {
             get { return property?.ToString(); }

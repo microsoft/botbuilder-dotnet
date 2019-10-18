@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Actions triggered when condition is true
+    /// Actions triggered when condition is true.
     /// </summary>
     [DebuggerDisplay("{GetIdentity()}")]
     public class OnCondition : IItemIdentity, IDialogDependencies
@@ -34,10 +34,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         }
 
         /// <summary>
-        /// Gets or sets the condition which needs to be met for the actions to be executed (OPTIONAL)
+        /// Gets or sets the condition which needs to be met for the actions to be executed (OPTIONAL).
         /// </summary>
         /// <value>
-        /// The condition which needs to be met for the actions to be executed 
+        /// The condition which needs to be met for the actions to be executed.
         /// </value>
         [JsonProperty("condition")]
         public string Condition { get; set; }

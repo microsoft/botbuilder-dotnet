@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Gets or sets list of choices to present to user.
         /// </summary>
         /// <value>
-        /// Value Expression or List of choices (string or Choice objects) to present to user 
+        /// Value Expression or List of choices (string or Choice objects) to present to user.
         /// </value>
         public ChoiceSet Choices { get; set; }
 

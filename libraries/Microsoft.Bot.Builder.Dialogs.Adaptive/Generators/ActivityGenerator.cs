@@ -14,11 +14,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
     /// <summary>
     /// The ActivityGenerator implements IActivityGenerator by using ILanguageGenerator
-    /// to generate text and then uses simple markdown semantics like chatdown to create Activity
+    /// to generate text and then uses simple markdown semantics like chatdown to create Activity.
     /// </summary>
     public class ActivityGenerator : IActivityGenerator
     {
-        private static readonly Dictionary<string, string> genericCardTypeMapping = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> GenericCardTypeMapping = new Dictionary<string, string>
         {
             { nameof(HeroCard), HeroCard.ContentType },
             { nameof(ThumbnailCard), ThumbnailCard.ContentType },
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         }
 
         /// <summary>
-        /// Generate the activity From LG output
+        /// Generate the activity From LG output.
         /// </summary>
         /// <param name="lgResult">LG output.</param>
         /// <returns>activity.</returns>
@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             Activity activity;
             var type = GetStructureType(lgJObj);
 
-            if (genericCardTypeMapping.ContainsKey(type) && GetAttachment(lgJObj, out var attachment))
+            if (GenericCardTypeMapping.ContainsKey(type) && GetAttachment(lgJObj, out var attachment))
             {
                 activity = MessageFactory.Attachment(attachment) as Activity;
             }
@@ -362,9 +362,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             var type = GetStructureType(lgJObj);
 
-            if (genericCardTypeMapping.ContainsKey(type))
+            if (GenericCardTypeMapping.ContainsKey(type))
             {
-                attachment = GetCardAtttachment(genericCardTypeMapping[type], lgJObj);
+                attachment = GetCardAtttachment(GenericCardTypeMapping[type], lgJObj);
             }
             else if (type == nameof(AdaptiveCard))
             {

@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// obtain the attribute from the <see cref="AuthenticationConstants.AppIdClaim"/> or if present.
         /// </remarks>
         /// <param name="claims">A list of <see cref="Claim"/> instances.</param>
-        /// <returns>The value of the appId claim if found (null if it can't find a suitable claim)</returns>
+        /// <returns>The value of the appId claim if found (null if it can't find a suitable claim).</returns>
         public static string GetAppIdFromClaims(IEnumerable<Claim> claims)
         {
             var claimsList = claims.ToList();
@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <summary>
-        /// Internal helper to check if the token has the shape we expect "Bearer [big long string]"
+        /// Internal helper to check if the token has the shape we expect "Bearer [big long string]".
         /// </summary>
         /// <param name="authHeader">A string containing the token header.</param>
         /// <returns>True if the token is valid, false if not.</returns>

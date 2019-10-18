@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
         /// <summary>
-        /// A simple ISourceMap of objects -> SourceRange
+        /// A simple ISourceMap of objects -> SourceRange.
         /// </summary>
         public class SourceMap : Dictionary<object, SourceRange>, ISourceMap
         {
