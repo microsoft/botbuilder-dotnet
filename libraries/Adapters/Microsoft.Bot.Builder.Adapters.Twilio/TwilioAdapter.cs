@@ -30,11 +30,12 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <remarks>
         /// The configuration keys are:
         /// TwilioNumber: The phone number associated with the Twilio account.
-        /// AccountSid: The string identifier of the account. See https://www.twilio.com/docs/glossary/what-is-a-sid
-        /// AuthToken: The authentication token for the account.
+        /// TwilioAccountSid: The string identifier of the account. See https://www.twilio.com/docs/glossary/what-is-a-sid
+        /// TwilioAuthToken: The authentication token for the account.
+        /// TwilioValidationUrl: The validation URL for incoming requests.
         /// </remarks>
         public TwilioAdapter(IConfiguration configuration)
-            : this(new TwilioClientWrapper(new TwilioAdapterOptions(configuration["TwilioNumber"], configuration["AccountSid"], configuration["AuthToken"], new Uri(configuration["ValidationUrl"]))))
+            : this(new TwilioClientWrapper(new TwilioAdapterOptions(configuration["TwilioNumber"], configuration["TwilioAccountSid"], configuration["TwilioAuthToken"], new Uri(configuration["TwilioValidationUrl"]))))
         {
         }
 
@@ -64,23 +65,21 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             var responses = new List<ResourceResponse>();
             foreach (var activity in activities)
             {
-                if (activity.Type == ActivityTypes.Message)
+                if (activity.Type != ActivityTypes.Message)
                 {
-                    var messageOptions = TwilioHelper.ActivityToTwilio(activity, _twilioClient.Options.TwilioNumber);
-
-                    var res = await _twilioClient.SendMessage(messageOptions).ConfigureAwait(false);
-
-                    var response = new ResourceResponse()
-                    {
-                        Id = res,
-                    };
-
-                    responses.Add(response);
+                    throw new ArgumentException("Unsupported Activity Type. Only Activities of type ‘Message’ are supported.", nameof(activities));
                 }
-                else
+
+                var messageOptions = TwilioHelper.ActivityToTwilio(activity, _twilioClient.Options.TwilioNumber);
+
+                var res = await _twilioClient.SendMessage(messageOptions).ConfigureAwait(false);
+
+                var response = new ResourceResponse()
                 {
-                    throw new ArgumentException("Unknown message type of Activity.", nameof(activities));
-                }
+                    Id = res,
+                };
+
+                responses.Add(response);
             }
 
             return responses.ToArray();

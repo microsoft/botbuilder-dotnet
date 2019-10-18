@@ -14,15 +14,15 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// Initializes a new instance of the <see cref="TwilioAdapterOptions"/> class.
         /// </summary>
         /// <param name="twilioNumber">The twilio phone number.</param>
-        /// <param name="accountSid">The account id.</param>
-        /// <param name="authToken">The authentication token.</param>
-        /// <param name="validationUrl">The validation URL for incoming requests.</param>
-        public TwilioAdapterOptions(string twilioNumber, string accountSid, string authToken, Uri validationUrl = null)
+        /// <param name="twilioAccountSid">The account id.</param>
+        /// <param name="twilioAuthToken">The authentication token.</param>
+        /// <param name="twilioValidationUrl">The validation URL for incoming requests.</param>
+        public TwilioAdapterOptions(string twilioNumber, string twilioAccountSid, string twilioAuthToken, Uri twilioValidationUrl = null)
         {
             TwilioNumber = twilioNumber;
-            AccountSid = accountSid;
-            AuthToken = authToken;
-            ValidationUrl = validationUrl;
+            TwilioAccountSid = twilioAccountSid;
+            TwilioAuthToken = twilioAuthToken;
+            TwilioValidationUrl = twilioValidationUrl;
         }
 
         /// <summary>
@@ -37,13 +37,13 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// Gets or sets the account SID from the Twilio account.
         /// </summary>
         /// <value>The account SID.</value>
-        public string AccountSid { get; set; }
+        public string TwilioAccountSid { get; set; }
 
         /// <summary>
         /// Gets or sets the API auth token associated with the Twilio account.
         /// </summary>
         /// <value>The authentication token.</value>
-        public string AuthToken { get; set; }
+        public string TwilioAuthToken { get; set; }
 
         /// <summary>
         /// Gets or sets an optional validation URL.
@@ -51,6 +51,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <value>Optional validation URL to override the automatically generated URL signature used
         /// to validate incoming requests. See the Twilio security documentation on
         /// [validating requests](https://www.twilio.com/docs/usage/security#validating-requests).</value>
-        public Uri ValidationUrl { get; set; }
+        public Uri TwilioValidationUrl { get; set; }
     }
 }

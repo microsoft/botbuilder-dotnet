@@ -32,17 +32,17 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 throw new ArgumentException(nameof(options.TwilioNumber));
             }
 
-            if (string.IsNullOrWhiteSpace(options.AccountSid))
+            if (string.IsNullOrWhiteSpace(options.TwilioAccountSid))
             {
-                throw new ArgumentException(nameof(options.AccountSid));
+                throw new ArgumentException(nameof(options.TwilioAccountSid));
             }
 
-            if (string.IsNullOrWhiteSpace(options.AuthToken))
+            if (string.IsNullOrWhiteSpace(options.TwilioAuthToken))
             {
-                throw new ArgumentException(nameof(options.AuthToken));
+                throw new ArgumentException(nameof(options.TwilioAuthToken));
             }
 
-            TwilioClient.Init(Options.AccountSid, Options.AuthToken);
+            TwilioClient.Init(Options.TwilioAccountSid, Options.TwilioAuthToken);
         }
 
         public TwilioAdapterOptions Options { get; }
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <returns>The result of the comparison between the signature in the request and the hashed body.</returns>
         public virtual bool ValidateSignature(HttpRequest httpRequest, Dictionary<string, string> body)
         {
-            var urlString = Options.ValidationUrl?.ToString();
+            var urlString = Options.TwilioValidationUrl?.ToString();
             
             var twilioSignature = httpRequest.Headers.ContainsKey(TwilioSignature)
                 ? httpRequest.Headers[TwilioSignature].ToString().ToUpperInvariant()
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 }
             }
 
-            var requestValidator = new RequestValidator(Options.AuthToken);
+            var requestValidator = new RequestValidator(Options.TwilioAuthToken);
 
             return requestValidator.Validate(urlString, body, twilioSignature);
         }

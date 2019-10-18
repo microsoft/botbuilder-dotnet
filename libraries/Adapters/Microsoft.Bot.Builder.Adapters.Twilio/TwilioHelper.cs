@@ -95,16 +95,16 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <summary>
         /// Creates a Bot Framework <see cref="Activity"/> from an HTTP request that contains a Twilio message.
         /// </summary>
-        /// <param name="body">The HTTP request.</param>
+        /// <param name="payload">The HTTP request.</param>
         /// <returns>The activity object.</returns>
-        public static Activity PayloadToActivity(Dictionary<string, string> body)
+        public static Activity PayloadToActivity(Dictionary<string, string> payload)
         {
-            if (body == null)
+            if (payload == null)
             {
                 return null;
             }
             
-            var twilioMessage = JsonConvert.DeserializeObject<TwilioMessage>(JsonConvert.SerializeObject(body));
+            var twilioMessage = JsonConvert.DeserializeObject<TwilioMessage>(JsonConvert.SerializeObject(payload));
 
             return new Activity()
             {
@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 Text = twilioMessage.Body,
                 ChannelData = twilioMessage,
                 Type = ActivityTypes.Message,
-                Attachments = int.TryParse(twilioMessage.NumMedia, out var numMediaResult) && numMediaResult > 0 ? GetMessageAttachments(numMediaResult, body) : null,
+                Attachments = int.TryParse(twilioMessage.NumMedia, out var numMediaResult) && numMediaResult > 0 ? GetMessageAttachments(numMediaResult, payload) : null,
             };
         }
 
