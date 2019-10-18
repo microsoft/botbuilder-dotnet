@@ -65,15 +65,17 @@ namespace DialogRootBot.Dialogs
             // Forward to remote as is.
             if (stepContext.Context.Activity.Text.StartsWith("r:", StringComparison.CurrentCultureIgnoreCase))
             {
-                return await stepContext.BeginDialogAsync(nameof(SkillDialog), null, cancellationToken);
+                var dialogArgs = new SkillDialogArgs { SkillId = "SkillBot" };
+                return await stepContext.BeginDialogAsync(nameof(SkillDialog), dialogArgs, cancellationToken);
             }
 
             // Forward to remote with some artificial parameters in value
             if (stepContext.Context.Activity.Text.StartsWith("rv:", StringComparison.CurrentCultureIgnoreCase))
             {
+                var dialogArgs = new SkillDialogArgs { SkillId = "SkillBot" };
                 // Forward to remote but inject some parameters in value so they can be seen on the other end.
                 stepContext.Context.Activity.Value = new BookingDetails() {Destination = "New York"};
-                return await stepContext.BeginDialogAsync(nameof(SkillDialog), null, cancellationToken);
+                return await stepContext.BeginDialogAsync(nameof(SkillDialog), dialogArgs, cancellationToken);
             }
 
             // Call LUIS and gather any potential booking details. (Note the TurnContext has the response to the prompt.)
@@ -95,6 +97,7 @@ namespace DialogRootBot.Dialogs
 
                     var bookFlightArgs = new SkillDialogArgs
                     {
+                        SkillId = "SkillBot",
                         EventName = "BookFlight",
                         Value = bookingDetails
                     };
@@ -103,7 +106,7 @@ namespace DialogRootBot.Dialogs
                     return await stepContext.BeginDialogAsync(nameof(SkillDialog), bookFlightArgs, cancellationToken);
 
                 case FlightBooking.Intent.GetWeather:
-                    var getWeatherArgs = new SkillDialogArgs { EventName = "GetWeather" };
+                    var getWeatherArgs = new SkillDialogArgs { SkillId = "SkillBot", EventName = "GetWeather" };
 
                     // Run the SkillDialog
                     return await stepContext.BeginDialogAsync(nameof(SkillDialog), getWeatherArgs, cancellationToken);

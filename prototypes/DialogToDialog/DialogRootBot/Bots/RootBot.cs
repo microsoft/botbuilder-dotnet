@@ -22,7 +22,7 @@ namespace DialogRootBot.Bots
     public class RootBot<T> : ActivityHandler
         where T : Dialog
     {
-        private readonly BotState _conversationState;
+        private readonly ConversationState _conversationState;
         private readonly ILogger _logger;
         private readonly Dialog _mainDialog;
 
@@ -35,6 +35,7 @@ namespace DialogRootBot.Bots
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
+            turnContext.TurnState.Set<ConversationState>(_conversationState);
             // Run the Dialog the activity Activity.
             if (turnContext.Activity.Type != ActivityTypes.ConversationUpdate)
             {

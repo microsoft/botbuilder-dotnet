@@ -1,0 +1,44 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "SkillDialog",
+    "description": "This dialog gives you the ability to invoke a remote skill as a dialog.",
+    "type": "object",
+    "additionalProperties": false,
+    "required":[
+        "skillId"
+    ],
+    "properties": {
+        "skillId": {
+            "$role": "skill",
+            "type":"string",
+            "title": "Skill Id",
+            "description": "Id of the skill to invoke.",
+            "examples": [
+                "BookAFlight"
+            ]
+        },
+        "eventName": {
+            "type": "string",
+            "title": "Event Name",
+            "description": "Provide the name of the event you want to invoke.  If you don't pass an event name, then the current activity will be passed to the skill for it to process",
+        },
+        "value": {
+            "type": "object",
+            "title": "Value",
+            "description": "One or more values which are passed to the skill when the conversation is started.",
+            "additionalProperties": {
+                "type": "string",
+                "title": "Options"
+            }
+        },
+        "resultProperty": {
+            "$role": "expression",
+            "title": "Property",
+            "description": "Property to store any value returned by the skill that is called.",
+            "examples": [
+                "dialog.userName"
+            ]
+        }
+   }
+}

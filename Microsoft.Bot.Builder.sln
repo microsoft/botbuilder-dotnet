@@ -153,6 +153,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Skills.Tests", "tests\Microsoft.Bot.Builder.Skills.Tests\Microsoft.Bot.Builder.Skills.Tests.csproj", "{96167FDC-8D49-4767-AE58-22933C246C67}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Prototypes", "Prototypes", "{63B8A203-D0FB-401D-B273-0763B3D85B0A}"
+	ProjectSection(SolutionItems) = preProject
+		prototypes\SkillManifest.json = prototypes\SkillManifest.json
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00. ChannelPrototype", "00. ChannelPrototype", "{5D9080DF-7B93-4CB7-9D42-A6DF88690EB8}"
 EndProject

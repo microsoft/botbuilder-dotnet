@@ -39,7 +39,7 @@ namespace DialogChildBot.Bots
             }
 
             // Send end of conversation if it is complete
-            if (result.Status == DialogTurnStatus.Complete)
+            if (result.Status == DialogTurnStatus.Complete || result.Status == DialogTurnStatus.Cancelled) 
             {
                 await turnContext.SendActivityAsync(MessageFactory.Text("Skill dialog completed sending EndOfConversation"), cancellationToken);
 

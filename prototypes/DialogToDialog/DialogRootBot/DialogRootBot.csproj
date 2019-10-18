@@ -10,6 +10,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="**/*.dialog" />
+    <Content Include="**/*.lg" />
+    <Content Include="**/*.lu" />
+    <Content Include="**/*.schema" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="Cards\welcomeCard.json" />
   </ItemGroup>
 
