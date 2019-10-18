@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected readonly DialogSet _dialogs = new DialogSet();
 #pragma warning restore SA1401 // Fields should be private
 
-        public DialogContainer(string dialogId = null)
+        protected DialogContainer(string dialogId = null)
             : base(dialogId)
         {
         }

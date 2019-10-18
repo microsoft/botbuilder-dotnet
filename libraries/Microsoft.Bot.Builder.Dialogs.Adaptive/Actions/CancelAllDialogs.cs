@@ -25,11 +25,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets event name. 
         /// </summary>
+        /// <value>
+        /// Event name. 
+        /// </value>
         public string EventName { get; set; }
 
         /// <summary>
-        /// Gets or sets value expression for EventValue
+        /// Gets or sets value expression for EventValue.
         /// </summary>
+        /// <value>
+        /// Value expression for EventValue.
+        /// </value>
         public string EventValue { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))

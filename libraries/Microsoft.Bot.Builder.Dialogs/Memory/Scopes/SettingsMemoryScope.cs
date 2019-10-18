@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 {
     /// <summary>
-    /// SettingsMemoryscope maps "settings" -> IConfiguration
+    /// SettingsMemoryscope maps "settings" -> IConfiguration.
     /// </summary>
     public class SettingsMemoryScope : MemoryScope
     {

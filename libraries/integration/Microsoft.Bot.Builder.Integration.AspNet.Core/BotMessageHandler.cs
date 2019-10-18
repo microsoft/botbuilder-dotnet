@@ -29,6 +29,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                     request.Body.Position = 0;
                 }
 
+                memoryStream.Position = 0;
+
                 // Get the request body and deserialize to the Activity object.
                 // NOTE: We explicitly leave the stream open here so others can still access it (in case buffering was enabled); ASP.NET runtime will always dispose of it anyway
                 using (var bodyReader = new JsonTextReader(new StreamReader(memoryStream, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true)))

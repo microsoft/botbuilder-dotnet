@@ -52,6 +52,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets Cases.
         /// </summary>
+        /// <value>
+        /// Cases.
+        /// </value>
         public List<Case> Cases { get; set; } = new List<Case>();
 
         public virtual IEnumerable<Dialog> GetDependencies()

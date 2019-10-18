@@ -738,7 +738,7 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "string",
+                    "$role": "expression",
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
@@ -1046,7 +1046,7 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "string",
+                    "$role": "expression",
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
@@ -1398,7 +1398,7 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "string",
+                    "$role": "expression",
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
@@ -1787,7 +1787,7 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "string",
+                    "$role": "expression",
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
@@ -4033,7 +4033,7 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "string",
+                    "$role": "expression",
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
@@ -6722,7 +6722,7 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "string",
+                    "$role": "expression",
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",

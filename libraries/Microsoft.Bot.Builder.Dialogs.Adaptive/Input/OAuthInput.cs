@@ -51,6 +51,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <summary>
         /// Gets or sets the memory property to use for token result.
         /// </summary>
+        /// <value>
+        /// The memory property to use for token result.
+        /// </value>
         public string TokenProperty { get; set; }
 
         /// <summary>

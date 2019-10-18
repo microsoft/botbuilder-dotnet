@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>True, if the token was issued by the Emulator. Otherwise, false.</returns>
         public static bool IsTokenFromEmulator(string authHeader)
         {
-            if (!JwtTokenValidation.IsValidToken(authHeader))
+            if (!JwtTokenValidation.IsValidTokenFormat(authHeader))
             {
                 return false;
             }
