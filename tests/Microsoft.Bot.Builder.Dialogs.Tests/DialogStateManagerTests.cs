@@ -334,7 +334,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             public int MaxValue { get; set; } = 20;
 
-            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
             {
                 dc.State.SetValue($"dialog.options", options);
                 dc.State.SetValue($"$bbb", "bbb");
@@ -355,7 +355,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             public int MaxValue { get; set; } = 10;
 
-            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
             {
                 dc.State.SetValue("dialog.xyz", "dialog");
                 await dc.Context.SendActivityAsync(dc.State.GetValue<string>("dialog.xyz"));
@@ -372,7 +372,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 return _dialogs.GetDialogs();
             }
 
-            public async override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
             {
                 dc.State.SetValue("$xyz", result);
                 await dc.Context.SendActivityAsync(dc.State.GetValue<string>("$xyz"));
@@ -421,7 +421,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
             }
 
-            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default)
             {
                 outerDc.State.SetValue("$name", "d2");
                 var name = outerDc.State.GetValue<string>("$name");
@@ -437,7 +437,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
             }
 
-            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
             {
                 dc.State.SetValue("$name", "d1");
                 var name = dc.State.GetValue<string>("$name");
@@ -457,7 +457,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 AddDialog(new NestedContainerDialog2());
             }
 
-            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
             {
                 dc.State.SetValue("$name", "testDialog");
                 var name = dc.State.GetValue<string>("$name");
@@ -472,7 +472,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 return _dialogs.GetDialogs();
             }
 
-            public async override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
             {
                 if ((string)result == "d2")
                 {

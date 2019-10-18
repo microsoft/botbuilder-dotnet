@@ -233,7 +233,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>The <see cref="ComponentDialog"/> after the operation is complete.</returns>
         /// <remarks>The added dialog's <see cref="Dialog.TelemetryClient"/> is set to the
         /// <see cref="TelemetryClient"/> of the component dialog.</remarks>
-        public virtual ComponentDialog AddDialog(Dialog dialog)
+        public ComponentDialog AddDialog(Dialog dialog)
         {
             this._dialogs.Add(dialog);
 
