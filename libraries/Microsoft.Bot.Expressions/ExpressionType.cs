@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Expressions
     /// <summary>
     /// Built-in expression types.
     /// </summary>
-    public class ExpressionType
+    public static class ExpressionType
     {
         // Math
         public const string Add = "+";
@@ -90,8 +90,8 @@ namespace Microsoft.Bot.Expressions
         public const string GetTimeOfDay = "getTimeOfDay";
         public const string GetFutureTime = "getFutureTime";
         public const string GetPastTime = "getPastTime";
-        public const string ConvertFromUTC = "convertFromUTC";
-        public const string ConvertToUTC = "convertToUTC";
+        public const string ConvertFromUtc = "convertFromUTC";
+        public const string ConvertToUtc = "convertToUTC";
         public const string AddToTime = "addToTime";
         public const string StartOfDay = "startOfDay";
         public const string StartOfHour = "startOfHour";

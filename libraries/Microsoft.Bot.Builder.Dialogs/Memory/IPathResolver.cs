@@ -6,10 +6,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
     public interface IPathResolver
     {
         /// <summary>
-        /// Transform the path
+        /// Transform the path.
         /// </summary>
         /// <param name="path">path to inspect.</param>
-        /// <returns>transformed path</returns>
+        /// <returns>transformed path.</returns>
         string TransformPath(string path);
     }
 }

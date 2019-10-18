@@ -56,12 +56,12 @@ namespace Microsoft.Bot.Builder.Skills
         public const string UploadAttachment = "UploadAttachment";
 
         /// <summary>
-        /// CreateConversation([FromBody] ConversationParameters parameters)
+        /// CreateConversation([FromBody] ConversationParameters parameters).
         /// </summary>
         public const string CreateConversation = "CreateConversation";
 
         /// <summary>
-        /// GetConversations(string continuationToken = null)
+        /// GetConversations(string continuationToken = null).
         /// </summary>
         public const string GetConversations = "GetConversations";
     }

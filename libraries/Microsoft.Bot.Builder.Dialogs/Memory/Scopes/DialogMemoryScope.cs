@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 {
     /// <summary>
-    /// DialogMemoryScope maps "dialog" -> dc.Parent?.ActiveDialog.State ?? ActiveDialog.State
+    /// DialogMemoryScope maps "dialog" -> dc.Parent?.ActiveDialog.State ?? ActiveDialog.State.
     /// </summary>
     public class DialogMemoryScope : MemoryScope
     {
@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            // if active dialog is a container dialog then "dialog" binds to it
+            // if active dialog is a container dialog then "dialog" binds to it.
             if (dc.ActiveDialog != null)
             {
                 var dialog = dc.FindDialog(dc.ActiveDialog.Id);

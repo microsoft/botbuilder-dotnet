@@ -23,9 +23,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogContext"/> class from Turn context.
         /// </summary>
-        /// <param name="dialogs">dialogset </param>
-        /// <param name="turnContext">turn context</param>
-        /// <param name="state">dialogState</param>
+        /// <param name="dialogs">dialogset.</param>
+        /// <param name="turnContext">turn context.</param>
+        /// <param name="state">dialogState.</param>
         public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state)
         {
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
@@ -54,6 +54,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Gets the set of dialogs which are active for the current dialog container.
         /// </summary>
+        /// <value>
+        /// The set of dialogs which are active for the current dialog container.
+        /// </value>
         public DialogSet Dialogs { get; private set; }
 
         /// <summary>
@@ -75,16 +78,25 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Gets current active scoped state with (user|conversation|dialog|settings scopes).
         /// </summary>
+        /// <value>
+        /// Current active scoped state with (user|conversation|dialog|settings scopes).
+        /// </value>
         public DialogStateManager State { get; private set; }
 
         /// <summary>
         /// Gets or sets the parent <see cref="DialogContext"/>, if any. Used when searching for the ID of a dialog to start.
         /// </summary>
+        /// <value>
+        /// The parent <see cref="DialogContext"/>, if any. Used when searching for the ID of a dialog to start.
+        /// </value>
         public DialogContext Parent { get; set; }
 
         /// <summary>
         /// Gets dialog context for child if there is an active child.
         /// </summary>
+        /// <value>
+        /// Dialog context for child if there is an active child.
+        /// </value>
         public DialogContext Child
         {
             get

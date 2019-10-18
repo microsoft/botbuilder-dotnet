@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Actions triggered when an RepromptDialog event is emitted
+    /// Actions triggered when an RepromptDialog event is emitted.
     /// </summary>
     public class OnRepromptDialog : OnDialogEvent
     {

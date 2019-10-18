@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// MemoryScope represents a named memory scope stored in TurnState["MemoryScopes"]
     /// It is responsible for using the DialogContext to bind to the object for it. 
     /// The default MemoryScope is stored in TurnState[MEMORYSCOPESKEY][Name]
-    /// Example: User memory scope is tracked in dc.Context.TurnState.MemoryScopes.User
+    /// Example: User memory scope is tracked in dc.Context.TurnState.MemoryScopes.User.
     /// </summary>
     public class MemoryScope
     {
@@ -24,20 +24,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         }
 
         /// <summary>
-        /// Gets or sets name of the scope
+        /// Gets or sets name of the scope.
         /// </summary>
+        /// <value>
+        /// Name of the scope.
+        /// </value>
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this memory scope mutable.
         /// </summary>
+        /// <value>
+        /// A value indicating whether this memory scope mutable.
+        /// </value>
         public bool IsReadOnly { get; protected set; }
 
         /// <summary>
-        /// Get the backing memory for this scope
+        /// Get the backing memory for this scope.
         /// </summary>
-        /// <param name="dc">dc</param>
-        /// <returns>memory for the scope</returns>
+        /// <param name="dc">dc.</param>
+        /// <returns>memory for the scope.</returns>
         public virtual object GetMemory(DialogContext dc)
         {
             if (dc == null)
@@ -56,10 +62,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         }
 
         /// <summary>
-        /// Changes the backing object for the memory scope
+        /// Changes the backing object for the memory scope.
         /// </summary>
-        /// <param name="dc">dc</param>
-        /// <param name="memory">memory</param>
+        /// <param name="dc">dc.</param>
+        /// <param name="memory">memory.</param>
         public virtual void SetMemory(DialogContext dc, object memory)
         {
             if (this.IsReadOnly)
@@ -82,10 +88,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         }
 
         /// <summary>
-        /// Get Turn Scopes memory
+        /// Get Turn Scopes memory.
         /// </summary>
-        /// <param name="context">turn context</param>
-        /// <returns>scopes object</returns>
+        /// <param name="context">turn context.</param>
+        /// <returns>scopes object.</returns>
         internal static Dictionary<string, object> GetScopesMemory(ITurnContext context)
         {
             Dictionary<string, object> namedScopes;

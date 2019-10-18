@@ -14,21 +14,33 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Gets or sets get or set for Active learning card title.
         /// </summary>
+        /// <value>
+        /// Get or set for Active learning card title.
+        /// </value>
         public string ActiveLearningCardTitle { get; set; }
 
         /// <summary>
         /// Gets or sets get or set for Card no match text.
         /// </summary>
+        /// <value>
+        /// Get or set for Card no match text.
+        /// </value>
         public string CardNoMatchText { get; set; }
 
         /// <summary>
         /// Gets or sets get or set for No answer.
         /// </summary>
+        /// <value>
+        /// Get or set for No answer.
+        /// </value>
         public ITemplate<Activity> NoAnswer { get; set; }
 
         /// <summary>
         /// Gets or sets get or set for Card no match response.
         /// </summary>
+        /// <value>
+        /// Get or set for Card no match response.
+        /// </value>
         public ITemplate<Activity> CardNoMatchResponse { get; set; }
     }
 }

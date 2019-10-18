@@ -24,18 +24,27 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         /// <summary>
         /// Gets or sets memory path to bind to arg1 (ex: conversation.width).
         /// </summary>
+        /// <value>
+        /// Memory path to bind to arg1 (ex: conversation.width).
+        /// </value>
         [JsonProperty("arg1")]
         public string Arg1 { get; set; }
 
         /// <summary>
         /// Gets or sets memory path to bind to arg2 (ex: conversation.height).
         /// </summary>
+        /// <value>
+        /// Memory path to bind to arg2 (ex: conversation.height).
+        /// </value>
         [JsonProperty("arg2")]
         public string Arg2 { get; set; }
 
         /// <summary>
         /// Gets or sets caller's memory path to store the result of this step in (ex: conversation.area).
         /// </summary>
+        /// <value>
+        /// Caller's memory path to store the result of this step in (ex: conversation.area).
+        /// </value>
         [JsonProperty("resultProperty")]
         public string ResultProperty { get; set; }
 

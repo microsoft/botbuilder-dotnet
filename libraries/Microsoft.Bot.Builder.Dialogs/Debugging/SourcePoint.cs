@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     /// <summary>
-    /// SourcePoint represents the line and character index into the source code or declarative object backing an object in memory
+    /// SourcePoint represents the line and character index into the source code or declarative object backing an object in memory.
     /// </summary>
     public class SourcePoint
     {
@@ -23,8 +23,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         /// <summary>
         /// Initializes a new instance of the <see cref="SourcePoint"/> class.
         /// </summary>
-        /// <param name="lineIndex">line index</param>
-        /// <param name="charIndex">char index</param>
+        /// <param name="lineIndex">line index.</param>
+        /// <param name="charIndex">char index.</param>
         public SourcePoint(int lineIndex, int charIndex)
         {
             this.LineIndex = lineIndex;
@@ -32,34 +32,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         }
 
         /// <summary>
-        /// Gets or sets line number into the source file
+        /// Gets or sets line number into the source file.
         /// </summary>
+        /// <value>
+        /// Line number into the source file.
+        /// </value>
         public int LineIndex { get; set; }
 
         /// <summary>
-        /// Gets or sets char index on the line from lineindex
+        /// Gets or sets char index on the line from lineindex.
         /// </summary>
+        /// <value>
+        /// Char index on the line from lineindex.
+        /// </value>
         public int CharIndex { get; set; }
 
         /// <summary>
         /// Get point from JsonReader.
         /// </summary>
-        /// <param name="reader">json reader</param>
-        /// <returns>Point for start of current json reader</returns>
+        /// <param name="reader">json reader.</param>
+        /// <returns>Point for start of current json reader.</returns>
         public static SourcePoint From(JsonReader reader)
             => (reader is IJsonLineInfo info)
             ? new SourcePoint() { LineIndex = info.LineNumber, CharIndex = info.LinePosition }
             : new SourcePoint();
 
         /// <summary>
-        /// Read object as T and return the start/end points for the object that was read
+        /// Read object as T and return the start/end points for the object that was read.
         /// </summary>
-        /// <typeparam name="T">type of object to deserialize</typeparam>
-        /// <param name="reader">reader to read from</param>
-        /// <param name="read">function to process during reading</param>
-        /// <param name="start">result start point for object</param>
-        /// <param name="end">result end point for object</param>
-        /// <returns>deserialized object as type(T)</returns>
+        /// <typeparam name="T">type of object to deserialize.</typeparam>
+        /// <param name="reader">reader to read from.</param>
+        /// <param name="read">function to process during reading.</param>
+        /// <param name="start">result start point for object.</param>
+        /// <param name="end">result end point for object.</param>
+        /// <returns>deserialized object as type(T).</returns>
         public static T ReadObjectWithSourcePoints<T>(JsonReader reader, Func<JsonReader, T> read, out SourcePoint start, out SourcePoint end)
         {
             start = SourcePoint.From(reader);

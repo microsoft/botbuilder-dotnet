@@ -2897,7 +2897,7 @@ namespace Microsoft.Bot.Expressions
                     ReturnType.String,
                     (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Number, ReturnType.String)),
                 new ExpressionEvaluator(
-                    ExpressionType.ConvertFromUTC,
+                    ExpressionType.ConvertFromUtc,
                     (expr, state) =>
                     {
                         object value = null;
@@ -2922,7 +2922,7 @@ namespace Microsoft.Bot.Expressions
                     ReturnType.String,
                     expr => ValidateArityAndAnyType(expr, 2, 3, ReturnType.String)),
                 new ExpressionEvaluator(
-                    ExpressionType.ConvertToUTC,
+                    ExpressionType.ConvertToUtc,
                     (expr, state) =>
                     {
                         object value = null;

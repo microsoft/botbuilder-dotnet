@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             Assert.False(SkillValidation.IsSkillClaim(claims));
 
             // No AppId claim
-            claims.RemoveAt(claims.Count -1);
+            claims.RemoveAt(claims.Count - 1);
             claims.Add(new Claim(AuthenticationConstants.AudienceClaim, audience));
             Assert.False(SkillValidation.IsSkillClaim(claims));
 
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             Assert.False(SkillValidation.IsSkillClaim(claims));
 
             // All checks pass, should be good now
-            claims.RemoveAt(claims.Count -1);
+            claims.RemoveAt(claims.Count - 1);
             claims.Add(new Claim(AuthenticationConstants.AppIdClaim, appId));
             Assert.True(SkillValidation.IsSkillClaim(claims));
         }
