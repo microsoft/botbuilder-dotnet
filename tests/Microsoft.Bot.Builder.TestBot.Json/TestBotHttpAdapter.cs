@@ -28,11 +28,14 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         {
             this.UseStorage(storage);
             this.UseState(userState, conversationState);
-            this.UseResourceExplorer(resourceExplorer, new TypeRegistration[]
+
+            var registrations = new TypeRegistration[]
             {
                 new TypeRegistration<MultiplyDialog>("Testbot.Multiply"),
                 new TypeRegistration<JavascriptAction>("Testbot.JavascriptAction")
-            });
+            };
+
+            this.UseResourceExplorer(resourceExplorer, registrations);
             this.UseAdaptiveDialogs();
             this.UseLanguageGeneration(resourceExplorer);
             this.UseDebugger(configuration.GetValue<int>("debugport", 4712), events: new Events<AdaptiveEvents>());

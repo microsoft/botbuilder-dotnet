@@ -30,8 +30,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets a value expression for the result to be returned to the caller
+        /// Gets or sets a value expression for the result to be returned to the caller.
         /// </summary>
+        /// <value>
+        /// A value expression for the result to be returned to the caller.
+        /// </value>
         [JsonProperty("value")]
         public string Value
         {

@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     /// <summary>
-    /// Range represents a file, starting point and end point of text 
+    /// Range represents a file, starting point and end point of text .
     /// </summary>
     public class SourceRange
     {
@@ -23,11 +23,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         /// <summary>
         /// Initializes a new instance of the <see cref="SourceRange"/> class.
         /// </summary>
-        /// <param name="path">path</param>
-        /// <param name="startLine">start line index</param>
-        /// <param name="startChar">start char index</param>
-        /// <param name="endLine">end line index</param>
-        /// <param name="endChar">end line char</param>
+        /// <param name="path">path.</param>
+        /// <param name="startLine">start line index.</param>
+        /// <param name="startChar">start char index.</param>
+        /// <param name="endLine">end line index.</param>
+        /// <param name="endChar">end line char.</param>
         public SourceRange(string path, int startLine, int startChar, int endLine, int endChar)
         {
             this.Path = path;
@@ -36,18 +36,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         }
 
         /// <summary>
-        /// Gets or sets path to source file
+        /// Gets or sets path to source file.
         /// </summary>
+        /// <value>
+        /// Path to source file.
+        /// </value>
         public string Path { get; set; }
 
         /// <summary>
-        /// Gets or sets start point in the source file
+        /// Gets or sets start point in the source file.
         /// </summary>
+        /// <value>
+        /// Start point in the source file.
+        /// </value>
         public SourcePoint StartPoint { get; set; }
 
         /// <summary>
-        /// Gets or sets end point in the source file
+        /// Gets or sets end point in the source file.
         /// </summary>
+        /// <value>
+        /// End point in the source file.
+        /// </value>
         public SourcePoint EndPoint { get; set; }
 
         public override string ToString() => $"{System.IO.Path.GetFileName(Path)}:{StartPoint}->{EndPoint}";

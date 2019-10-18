@@ -13,12 +13,12 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
-    /// QnAMaker action builder class
+    /// QnAMaker action builder class.
     /// </summary>
     internal class QnAMakerActionBuilder
     {
         /// <summary>
-        /// QnA Maker action builder
+        /// QnA Maker action builder.
         /// </summary>
         internal const string QnAMakerDialogName = "qnamaker-dialog";
 
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Build dialog by adding QnAMaker dialog to dialog context.
         /// </summary>
-        /// <param name="dc">DialogContext</param>
+        /// <param name="dc">DialogContext.</param>
         /// <returns>Updated dialog context.</returns>
         internal DialogContext BuildDialog(DialogContext dc)
         {

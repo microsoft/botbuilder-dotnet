@@ -33,7 +33,8 @@ namespace Microsoft.Bot.Connector.Authentication
                     currentRetryCount++;
                     await Task.Delay(retry.RetryAfter.WithJitter()).ConfigureAwait(false);
                 }
-            } while (retry.ShouldRetry);
+            }
+            while (retry.ShouldRetry);
 
             throw new AggregateException("Failed to acquire token for client credentials.", exceptions);
         }

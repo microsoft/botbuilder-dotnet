@@ -6,7 +6,7 @@ using Antlr4.Runtime.Tree;
 
 namespace Microsoft.Bot.Expressions
 {
-    public class CommonRegex
+    public static class CommonRegex
     {
         private static readonly LRUCache<string, Regex> RegexCache = new LRUCache<string, Regex>(15);
 

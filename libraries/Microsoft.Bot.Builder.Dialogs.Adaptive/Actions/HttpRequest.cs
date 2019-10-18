@@ -122,6 +122,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// [statusCode|reasonPhrase|content|headers]
         /// If the content is json it will be an deserialized object, otherwise it will be a string.
         /// </remarks>
+        /// <value>
+        /// The property expression to store the HTTP response in. 
+        /// </value>
         public string ResultProperty { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
