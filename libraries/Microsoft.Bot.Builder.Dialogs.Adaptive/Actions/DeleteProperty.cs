@@ -37,6 +37,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <example>
         /// user.age will remove "age" from "user".
         /// </example>
+        /// <value>
+        /// Property path to remove.
+        /// </value>
         public string Property { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))

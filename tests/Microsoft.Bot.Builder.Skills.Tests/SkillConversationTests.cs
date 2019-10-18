@@ -1,7 +1,9 @@
-﻿#pragma warning disable SA1402 // File may only contain a single type
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+#pragma warning disable SA1402 // File may only contain a single type
 using System;
 using System.Text;
-using Microsoft.Bot.Builder.Skills;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -15,14 +17,14 @@ namespace Microsoft.Bot.Builder.Skills.Tests
         [TestMethod]
         public void TestSkillConversationEncoding()
         {
-            SkillConversation sc = new SkillConversation()
+            var sc = new SkillConversation
             {
                 ConversationId = Guid.NewGuid().ToString("N"),
                 ServiceUrl = "http://test.com/xyz?id=1&id=2"
             };
             var skillConversationId = sc.GetSkillConversationId();
 
-            SkillConversation sc2 = new SkillConversation(skillConversationId);
+            var sc2 = new SkillConversation(skillConversationId);
             Assert.AreEqual(sc.ConversationId, sc2.ConversationId);
             Assert.AreEqual(sc.ServiceUrl, sc2.ServiceUrl);
         }
@@ -32,7 +34,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
         {
             try
             {
-                SkillConversation sc = new SkillConversation()
+                var sc = new SkillConversation
                 {
                     ConversationId = null,
                     ServiceUrl = "http://test.com/xyz?id=1&id=2"
@@ -50,7 +52,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
         {
             try
             {
-                SkillConversation sc = new SkillConversation()
+                var sc = new SkillConversation
                 {
                     ConversationId = Guid.NewGuid().ToString("N"),
                     ServiceUrl = null
@@ -68,7 +70,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
         {
             try
             {
-                SkillConversation sc = new SkillConversation(null);
+                var sc = new SkillConversation(null);
                 var cid = sc.GetSkillConversationId();
                 Assert.Fail("Should have thrown on null");
             }
@@ -82,7 +84,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
         {
             try
             {
-                SkillConversation sc = new SkillConversation(String.Empty);
+                var sc = new SkillConversation(string.Empty);
                 var cid = sc.GetSkillConversationId();
                 Assert.Fail("Should have thrown on empty");
             }
@@ -98,7 +100,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
             {
                 var test = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new object[0])));
 
-                SkillConversation sc = new SkillConversation(test);
+                var sc = new SkillConversation(test);
                 var cid = sc.GetSkillConversationId();
                 Assert.Fail("Should have thrown on bogusity");
             }

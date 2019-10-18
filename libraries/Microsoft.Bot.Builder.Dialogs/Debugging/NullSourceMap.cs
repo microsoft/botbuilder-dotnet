@@ -4,7 +4,7 @@
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     /// <summary>
-    /// NullSourceMap is used to disable tracking of source code Ranges
+    /// NullSourceMap is used to disable tracking of source code Ranges.
     /// </summary>
     public class NullSourceMap : ISourceMap
     {

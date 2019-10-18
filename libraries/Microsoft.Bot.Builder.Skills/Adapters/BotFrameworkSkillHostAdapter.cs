@@ -64,14 +64,14 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         /// Initializes a new instance of the <see cref="BotFrameworkSkillHostAdapter"/> class,
         /// using a credential provider.
         /// </summary>
-        /// <param name="adapter">adapter that this skillAdapter is bound to</param>
-        /// <param name="bot">bot callback to use in the turn context</param>
+        /// <param name="adapter">adapter that this skillAdapter is bound to.</param>
+        /// <param name="bot">bot callback to use in the turn context.</param>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="channelProvider">The channel provider.</param>
         /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
         /// <param name="customHttpClient">The HTTP client.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        /// <param name="configuration">configuration</param>
+        /// <param name="configuration">configuration.</param>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
         /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
         /// add additional middleware to the adapter after construction.
@@ -93,16 +93,16 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         /// Initializes a new instance of the <see cref="BotFrameworkSkillHostAdapter"/> class,
         /// using a credential provider.
         /// </summary>
-        /// <param name="adapter">adapter that this skillAdapter is bound to</param>
-        /// <param name="bot">bot callback </param>
+        /// <param name="adapter">adapter that this skillAdapter is bound to.</param>
+        /// <param name="bot">bot callback. </param>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="authConfig">The authentication configuration.</param>
         /// <param name="channelProvider">The channel provider.</param>
         /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
         /// <param name="customHttpClient">The HTTP client.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        /// <param name="configuration">configuration</param>
-        /// <exception cref="ArgumentNullException">throw ArgumentNullException</exception>
+        /// <param name="configuration">configuration.</param>
+        /// <exception cref="ArgumentNullException">throw ArgumentNullException.</exception>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
         /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
         /// add additional middleware to the adapter after construction.
@@ -136,16 +136,16 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         /// Initializes a new instance of the <see cref="BotFrameworkSkillHostAdapter"/> class,
         /// using a credential provider.
         /// </summary>
-        /// <param name="adapter">adapter that this skillAdapter is bound to</param>
-        /// <param name="bot">bot callback </param>
+        /// <param name="adapter">adapter that this skillAdapter is bound to.</param>
+        /// <param name="bot">bot callback.</param>
         /// <param name="credentials">The credentials to be used for token acquisition.</param>
         /// <param name="authConfig">The authentication configuration.</param>
         /// <param name="channelProvider">The channel provider.</param>
         /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
         /// <param name="customHttpClient">The HTTP client.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        /// <param name="configuration">configuration</param>
-        /// <exception cref="ArgumentNullException">throw ArgumentNullException</exception>
+        /// <param name="configuration">configuration.</param>
+        /// <exception cref="ArgumentNullException">throw ArgumentNullException.</exception>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
         /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
         /// add additional middleware to the adapter after construction.

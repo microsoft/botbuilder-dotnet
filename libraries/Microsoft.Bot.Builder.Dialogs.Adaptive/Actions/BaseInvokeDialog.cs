@@ -38,6 +38,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets the dialog to call.
         /// </summary>
+        /// <value>
+        /// The dialog to call.
+        /// </value>
         public Dialog Dialog { get; set; }
 
         public virtual IEnumerable<Dialog> GetDependencies()

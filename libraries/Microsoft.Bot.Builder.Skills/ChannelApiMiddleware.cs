@@ -42,6 +42,22 @@ namespace Microsoft.Bot.Builder.Skills
             }
         }
 
+        private static async Task ProcessEndOfConversationAsync(ITurnContext turnContext, NextDelegate next, Activity activityPayload, CancellationToken cancellationToken)
+        {
+            // transform the turnContext.Activity to be the EndOfConversation and pass up to the bot, we would set the Activity, but it only has a get;
+            var endOfConversation = activityPayload.AsEndOfConversationActivity();
+            turnContext.Activity.Type = endOfConversation.Type;
+            turnContext.Activity.Text = endOfConversation.Text;
+            turnContext.Activity.Code = endOfConversation.Code;
+            turnContext.Activity.Entities = endOfConversation.Entities;
+            turnContext.Activity.LocalTimestamp = endOfConversation.LocalTimestamp;
+            turnContext.Activity.Timestamp = endOfConversation.Timestamp;
+            turnContext.Activity.Value = activityPayload.Value;
+            turnContext.Activity.ChannelData = endOfConversation.ChannelData;
+            turnContext.Activity.Properties = ((Activity)endOfConversation).Properties;
+            await next(cancellationToken).ConfigureAwait(false);
+        }
+
         private async Task CallChannelApiAsync(ITurnContext turnContext, NextDelegate next, ChannelApiArgs invokeArgs, CancellationToken cancellationToken)
         {
             try
@@ -108,10 +124,11 @@ namespace Microsoft.Bot.Builder.Skills
                     // GetConversationPageMembers((int)pageSize, continuationToken)
                     case ChannelApiMethods.GetConversationPagedMembers:
                         throw new NotImplementedException($"{ChannelApiMethods.SendConversationHistory} is not supported");
-                        //if (adapter != null)
-                        //{
-                        //    invokeArgs.Result = await adapter.GetConversationsAsync((int)invokeArgs.Args[0], (string)invokeArgs.Args[1], cancellationToken).ConfigureAwait(false);
-                        //}
+
+                    //if (adapter != null)
+                    //{
+                    //    invokeArgs.Result = await adapter.GetConversationsAsync((int)invokeArgs.Args[0], (string)invokeArgs.Args[1], cancellationToken).ConfigureAwait(false);
+                    //}
 
                     // DeleteConversationMember(memberId)
                     case ChannelApiMethods.DeleteConversationMember:
@@ -141,22 +158,6 @@ namespace Microsoft.Bot.Builder.Skills
                 invokeArgs.Exception = ex;
             }
 #pragma warning restore CA1031 // Do not catch general exception types
-        }
-
-        private static async Task ProcessEndOfConversationAsync(ITurnContext turnContext, NextDelegate next, Activity activityPayload, CancellationToken cancellationToken)
-        {
-            // transform the turnContext.Activity to be the EndOfConversation and pass up to the bot, we would set the Activity, but it only has a get;
-            var endOfConversation = activityPayload.AsEndOfConversationActivity();
-            turnContext.Activity.Type = endOfConversation.Type;
-            turnContext.Activity.Text = endOfConversation.Text;
-            turnContext.Activity.Code = endOfConversation.Code;
-            turnContext.Activity.Entities = endOfConversation.Entities;
-            turnContext.Activity.LocalTimestamp = endOfConversation.LocalTimestamp;
-            turnContext.Activity.Timestamp = endOfConversation.Timestamp;
-            turnContext.Activity.Value = activityPayload.Value;
-            turnContext.Activity.ChannelData = endOfConversation.ChannelData;
-            turnContext.Activity.Properties = ((Activity)endOfConversation).Properties;
-            await next(cancellationToken).ConfigureAwait(false);
         }
     }
 }

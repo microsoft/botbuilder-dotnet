@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         {
             public List<string> Requests { get; } = new List<string>();
 
-            protected async override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
                 var requestContent = request.Content != null ? await request.Content.ReadAsStringAsync() : "(null)";
 

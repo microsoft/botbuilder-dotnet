@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Actions triggered when an error event has been emitted
+    /// Actions triggered when an error event has been emitted.
     /// </summary>
     public class OnError : OnDialogEvent
     {

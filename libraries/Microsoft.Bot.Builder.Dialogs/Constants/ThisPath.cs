@@ -3,7 +3,7 @@
     public class ThisPath
     {
         /// <summary>
-        /// The options that were passed to the active dialog via options argument of BeginDialog
+        /// The options that were passed to the active dialog via options argument of BeginDialog.
         /// </summary>
         public const string OPTIONS = "this.options";
     }

@@ -26,6 +26,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <summary>
         /// Gets or sets a value indicating whether the input should always prompt the user regardless of there being a value or not.
         /// </summary>
+        /// <value>
+        /// A value indicating whether the input should always prompt the user regardless of there being a value or not.
+        /// </value>
         [JsonProperty("alwaysPrompt")]
         public bool AlwaysPrompt { get; set; } = false;
 
@@ -35,6 +38,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <example>
         /// "true".
         /// </example>
+        /// <value>
+        /// Intteruption policy. 
+        /// </value>
         [JsonProperty("allowInterruptions")]
         public string AllowInterruptions
         {
@@ -43,8 +49,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         /// <summary>
-        /// Gets or sets the value expression which the input will be bound to
+        /// Gets or sets the value expression which the input will be bound to.
         /// </summary>
+        /// <value>
+        /// The value expression which the input will be bound to.
+        /// </value>
         [JsonProperty("property")]
         public string Property { get; set; }
 
@@ -55,48 +64,72 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// An example of how to use this would be to use an entity expression such as @age to fill the value for this dialog
         /// that is configured to go into $age dialog property.
         /// </remarks>
+        /// <value>
+        /// A value expression which can be used to intialize the input prompt.
+        /// </value>
         [JsonProperty("value")]
         public string Value { get; set; }
 
         /// <summary>
         /// Gets or sets the activity to send to the user.
         /// </summary>
+        /// <value>
+        /// The activity to send to the user.
+        /// </value>
         [JsonProperty("prompt")]
         public ITemplate<Activity> Prompt { get; set; }
 
         /// <summary>
         /// Gets or sets the activity template for retrying prompt.
         /// </summary>
+        /// <value>
+        /// The activity template for retrying prompt.
+        /// </value>
         [JsonProperty("unrecognizedPrompt")]
         public ITemplate<Activity> UnrecognizedPrompt { get; set; }
 
         /// <summary>
         /// Gets or sets the activity template to send to the user whenever the value provided is invalid.
         /// </summary>
+        /// <value>
+        /// The activity template to send to the user whenever the value provided is invalid.
+        /// </value>
         [JsonProperty("invalidPrompt")]
         public ITemplate<Activity> InvalidPrompt { get; set; }
 
         /// <summary>
         /// Gets or sets the activity template to send when MaxTurnCount has been reached and the default value is used.
         /// </summary>
+        /// <value>
+        /// The activity template to send when MaxTurnCount has been reached and the default value is used.
+        /// </value>
         [JsonProperty("defaultValueResponse")]
         public ITemplate<Activity> DefaultValueResponse { get; set; }
 
         /// <summary>
         /// Gets or sets the expressions to run to validate the input.
         /// </summary>
+        /// <value>
+        /// The expressions to run to validate the input.
+        /// </value>
         [JsonProperty("validations")]
         public List<string> Validations { get; set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets maximum number of times to ask the user for this value before the dilog gives up.
         /// </summary>
+        /// <value>
+        /// Maximum number of times to ask the user for this value before the dilog gives up.
+        /// </value>
         [JsonProperty("maxTurnCount")]
         public int? MaxTurnCount { get; set; }
 
         /// <summary>
         /// Gets or sets the default value for the input dialog when MaxTurnCount is exceeded.
         /// </summary>
+        /// <value>
+        /// The default value for the input dialog when MaxTurnCount is exceeded.
+        /// </value>
         [JsonProperty("defaultValue")]
         public string DefaultValue { get; set; }
 

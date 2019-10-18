@@ -17,7 +17,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     public interface IQnAMakerClient
     {
-
         /// <summary>
         /// Generates an answer from the knowledge base.
         /// </summary>

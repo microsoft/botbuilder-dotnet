@@ -1,8 +1,9 @@
-﻿#pragma warning disable SA1305 // Field names should not use Hungarian notation
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Bot.Expressions;
 
 namespace Microsoft.Bot.Expressions.TriggerTrees
 {
@@ -11,15 +12,9 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
     /// </summary>
     public class Trigger
     {
-#pragma warning disable SA1401 // Fields should be private
-        /// <summary>
-        /// Original trigger expression.
-        /// </summary>
-        public Expression OriginalExpression;
-#pragma warning restore SA1401 // Fields should be private
+        private readonly IEnumerable<Quantifier> _quantifiers;
 
         private readonly TriggerTree _tree;
-        private readonly IEnumerable<Quantifier> _quantifiers;
         private List<Clause> _clauses;
 
         /// <summary>
@@ -51,6 +46,14 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
                 _clauses = new List<Clause>();
             }
         }
+
+        /// <summary>
+        /// Gets the original trigger expression.
+        /// </summary>
+        /// <value>
+        /// Original trigger expression.
+        /// </value>
+        public Expression OriginalExpression { get; }
 
         /// <summary>
         /// Gets action to take when trigger is true.
@@ -133,7 +136,7 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
                         builder.Append("|| ");
                     }
 
-                    builder.Append(clause.ToString());
+                    builder.Append(clause);
                 }
             }
             else
@@ -170,7 +173,8 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
                         soFar = RelationshipType.Incomparable;
                         break;
                     }
-                    else if (clauseSoFar == RelationshipType.Equal)
+
+                    if (clauseSoFar == RelationshipType.Equal)
                     {
                         if (soFar == RelationshipType.Incomparable)
                         {
@@ -195,77 +199,73 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
             switch (expression.Type)
             {
                 case ExpressionType.And:
+                    // Need to combine every combination of clauses
+                    var soFar = new List<Clause>();
+                    var first = true;
+                    foreach (var child in expression.Children)
                     {
-                        // Need to combine every combination of clauses
-                        var soFar = new List<Clause>();
-                        var first = true;
-                        foreach (var child in expression.Children)
+                        var clauses = GenerateClauses(child);
+                        if (clauses.Count() == 0)
                         {
-                            var clauses = GenerateClauses(child);
-                            if (clauses.Count() == 0)
-                            {
-                                // Encountered false
-                                soFar.Clear();
-                                break;
-                            }
-
-                            if (first)
-                            {
-                                soFar.AddRange(clauses);
-                                first = false;
-                            }
-                            else
-                            {
-                                var newClauses = new List<Clause>();
-                                foreach (var old in soFar)
-                                {
-                                    foreach (var clause in clauses)
-                                    {
-                                        var children = new List<Expression>();
-                                        children.AddRange(old.Children);
-                                        children.AddRange(clause.Children);
-                                        newClauses.Add(new Clause(children));
-                                    }
-                                }
-
-                                soFar = newClauses;
-                            }
+                            // Encountered false
+                            soFar.Clear();
+                            break;
                         }
 
-                        foreach (var clause in soFar)
+                        if (first)
                         {
-                            yield return clause;
+                            soFar.AddRange(clauses);
+                            first = false;
+                        }
+                        else
+                        {
+                            var newClauses = new List<Clause>();
+                            foreach (var old in soFar)
+                            {
+                                foreach (var clause in clauses)
+                                {
+                                    var children = new List<Expression>();
+                                    children.AddRange(old.Children);
+                                    children.AddRange(clause.Children);
+                                    newClauses.Add(new Clause(children));
+                                }
+                            }
+
+                            soFar = newClauses;
                         }
                     }
 
-                    break;
-                case ExpressionType.Or:
+                    foreach (var clause in soFar)
                     {
-                        foreach (var child in expression.Children)
+                        yield return clause;
+                    }
+
+                    break;
+
+                case ExpressionType.Or:
+                    foreach (var child in expression.Children)
+                    {
+                        foreach (var clause in GenerateClauses(child))
                         {
-                            foreach (var clause in GenerateClauses(child))
-                            {
-                                yield return clause;
-                            }
+                            yield return clause;
                         }
                     }
 
                     break;
                 case TriggerTree.Optional:
+                    yield return new Clause();
+                    foreach (var clause in GenerateClauses(expression.Children[0]))
                     {
-                        yield return new Clause();
-                        foreach (var clause in GenerateClauses(expression.Children[0]))
-                        {
-                            yield return clause;
-                        }
+                        yield return clause;
                     }
 
                     break;
+
                 default:
                     // True becomes empty expression and false drops clause
                     if (expression is Constant cnst && cnst.Value is bool val)
                     {
-                        if (val == true)
+                        if (val)
                         {
                             yield return new Clause();
                         }
@@ -337,7 +337,8 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
                                     clause.Subsumed = true;
                                     break;
                                 }
-                                else if (reln == RelationshipType.Generalizes)
+
+                                if (reln == RelationshipType.Generalizes)
                                 {
                                     other.Subsumed = true;
                                 }
