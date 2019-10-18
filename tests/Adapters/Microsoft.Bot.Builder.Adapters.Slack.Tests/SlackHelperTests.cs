@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         [Fact]
         public void ActivityToSlackShouldReturnMessageWithThreadTs()
         {
-            const string serializeConversation = "{\"id\":\"testId\",\"thread_ts\":\"0001-01-01T00:00:00+00:00\"}";
+            var serializeConversation = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/SlackActivity.json");
 
             var activity = new Activity
             {
