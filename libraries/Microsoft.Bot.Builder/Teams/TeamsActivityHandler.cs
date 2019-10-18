@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Teams
                     var invokeResponse = await OnInvokeActivityAsync(new DelegatingTurnContext<IInvokeActivity>(turnContext), cancellationToken).ConfigureAwait(false);
                     
                     // If OnInvokeActivityAsync has already sent an InvokeResponse, do not send another one.
-                    if (invokeResponse != null && null == turnContext.TurnState.Get<Activity>(BotFrameworkAdapter.InvokeResponseKey))
+                    if (invokeResponse != null && turnContext.TurnState.Get<Activity>(BotFrameworkAdapter.InvokeResponseKey) == null)
                     {
                         await turnContext.SendActivityAsync(new Activity { Value = invokeResponse, Type = ActivityTypesEx.InvokeResponse }, cancellationToken).ConfigureAwait(false);
                     }
