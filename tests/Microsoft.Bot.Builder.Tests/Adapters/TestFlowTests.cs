@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -48,6 +49,21 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
                     throw;
                 }
             }
+        }
+
+        [TestMethod]
+        public async Task ValidateDelay()
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            await new TestFlow(new TestAdapter())
+            .Send("hello")
+            .Delay(TimeSpan.FromSeconds(1))
+            .Send("some text")
+            .StartTestAsync();
+            sw.Stop();
+
+            Assert.IsTrue(sw.Elapsed.TotalSeconds > 1, "Delay broken?");
         }
     }
 }
