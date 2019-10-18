@@ -53,13 +53,17 @@ namespace Microsoft.Bot.Builder.Teams
                 IsGroup = false,
                 Bot = turnContext.Activity.Recipient,
                 Members = new ChannelAccount[] { account },
-                ChannelData = new TeamsChannelData
-                {
-                    Tenant = new TenantInfo
+
+                // This works
+                TenantId = turnContext.Activity.Conversation.TenantId/*,
+                    This also works
+                    ChannelData = new TeamsChannelData
                     {
-                        Id = turnContext.Activity.Conversation.TenantId,
-                    }
-                },
+                        Tenant = new TenantInfo
+                        {
+                            Id = turnContext.Activity.Conversation.TenantId,
+                        }
+                    },*/
             };
 
             var converationReference = await connector.Conversations.CreateConversationAsync(parameters).ConfigureAwait(false);
