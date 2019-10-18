@@ -5,13 +5,13 @@
     "description": "This dialog gives you the ability to invoke a remote skill as a dialog.",
     "type": "object",
     "additionalProperties": false,
-    "required":[
+    "required": [
         "skillId"
     ],
     "properties": {
         "skillId": {
             "$role": "skill",
-            "type":"string",
+            "type": "string",
             "title": "Skill Id",
             "description": "Id of the skill to invoke.",
             "examples": [
@@ -40,5 +40,5 @@
                 "dialog.userName"
             ]
         }
-   }
+    }
 }

@@ -31,7 +31,7 @@ namespace SimpleChildBot.Controllers
         {
             // Entering skill
             var authToken = Request.Headers["Authorization"].ToString();
-					
+
             // DebugTokenClaims();
 
             // Delegate the processing of the HTTP POST to the adapter.
@@ -39,7 +39,7 @@ namespace SimpleChildBot.Controllers
             await _adapter.ProcessAsync(Request, Response, _bot);
         }
 
-                /// <summary>
+        /// <summary>
         /// Helper to debug claims returned by skill.
         /// </summary>
         private void DebugTokenClaims()

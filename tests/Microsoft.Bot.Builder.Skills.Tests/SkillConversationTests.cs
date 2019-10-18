@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
         {
             Assert.Throws<NullReferenceException>(() =>
             {
-                var sc = new SkillConversation(String.Empty);
+                var sc = new SkillConversation(string.Empty);
                 var cid = sc.GetSkillConversationId();
             });
         }

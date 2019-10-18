@@ -36,6 +36,7 @@ namespace DialogRootBot.Bots
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             turnContext.TurnState.Set<ConversationState>(_conversationState);
+            
             // Run the Dialog the activity Activity.
             if (turnContext.Activity.Type != ActivityTypes.ConversationUpdate)
             {

@@ -27,12 +27,7 @@ namespace DialogRootBot.Dialogs
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(bookingDialog);
-            AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
-            {
-                IntroStepAsync,
-                ActStepAsync,
-                FinalStepAsync
-            }));
+            AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[] { IntroStepAsync, ActStepAsync, FinalStepAsync }));
 
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
@@ -73,8 +68,9 @@ namespace DialogRootBot.Dialogs
             if (stepContext.Context.Activity.Text.StartsWith("rv:", StringComparison.CurrentCultureIgnoreCase))
             {
                 var dialogArgs = new SkillDialogArgs { SkillId = "SkillBot" };
+
                 // Forward to remote but inject some parameters in value so they can be seen on the other end.
-                stepContext.Context.Activity.Value = new BookingDetails() {Destination = "New York"};
+                stepContext.Context.Activity.Value = new BookingDetails { Destination = "New York" };
                 return await stepContext.BeginDialogAsync(nameof(SkillDialog), dialogArgs, cancellationToken);
             }
 
@@ -87,12 +83,12 @@ namespace DialogRootBot.Dialogs
                     await ShowWarningForUnsupportedCities(stepContext.Context, luisResult, cancellationToken);
 
                     // Initialize BookingDetails with any entities we may have found in the response.
-                    var bookingDetails = new BookingDetails()
+                    var bookingDetails = new BookingDetails
                     {
                         // Get destination and origin from the composite entities arrays.
                         Destination = luisResult.ToEntities.Airport,
                         Origin = luisResult.FromEntities.Airport,
-                        TravelDate = luisResult.TravelDate,
+                        TravelDate = luisResult.TravelDate
                     };
 
                     var bookFlightArgs = new SkillDialogArgs
@@ -106,7 +102,11 @@ namespace DialogRootBot.Dialogs
                     return await stepContext.BeginDialogAsync(nameof(SkillDialog), bookFlightArgs, cancellationToken);
 
                 case FlightBooking.Intent.GetWeather:
-                    var getWeatherArgs = new SkillDialogArgs { SkillId = "SkillBot", EventName = "GetWeather" };
+                    var getWeatherArgs = new SkillDialogArgs
+                    {
+                        SkillId = "SkillBot",
+                        EventName = "GetWeather"
+                    };
 
                     // Run the SkillDialog
                     return await stepContext.BeginDialogAsync(nameof(SkillDialog), getWeatherArgs, cancellationToken);

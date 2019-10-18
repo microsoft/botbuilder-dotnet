@@ -42,6 +42,7 @@ namespace SimpleRootBot
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, RootBot>();
+            
             // force this to be resolved
             var skillAdapter = services.BuildServiceProvider().GetService<BotFrameworkSkillHostAdapter>();
         }
