@@ -32,10 +32,7 @@ namespace Microsoft.Bot.Builder.Tests
             var originalActivity = CreateBasicActivity();
 
             var eventActivity = await ProcessOAuthCardTest(adapter, mockConnector, originalActivity);
-
-            // 1 activity sent from bot to user
-            Assert.AreEqual(1, ((MemoryConversations)mockConnector.Conversations).SentActivities.Count);
-
+            
             // bot received the event activity
             Assert.IsNotNull(eventActivity);
             Assert.AreEqual(originalActivity.Conversation.Id, eventActivity.Conversation.Id);
@@ -65,12 +62,8 @@ namespace Microsoft.Bot.Builder.Tests
                 return null;
             });
             var originalActivity = CreateBasicActivity();
-
             var eventActivity = await ProcessOAuthCardTest(adapter, mockConnector, originalActivity);
-
-            // 1 activity sent from bot to user
-            Assert.AreEqual(1, ((MemoryConversations)mockConnector.Conversations).SentActivities.Count);
-
+            
             // bot received the event activity
             Assert.IsNotNull(eventActivity);
             Assert.AreEqual(originalActivity.Conversation.Id, eventActivity.Conversation.Id);

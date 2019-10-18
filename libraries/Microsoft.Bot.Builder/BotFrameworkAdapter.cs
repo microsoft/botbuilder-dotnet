@@ -418,11 +418,11 @@ namespace Microsoft.Bot.Builder
                 }
                 else
                 {
-                    // Check if we have token responses from OAuth cards.
-                    TokenResolver.CheckForOAuthCards(this, _logger, turnContext, activity, cancellationToken);
-
                     if (activity.IsFromStreamingConnection())
                     {
+                        // Check if we have token responses from OAuth cards.
+                        TokenResolver.CheckForOAuthCards(this, _logger, turnContext, activity, cancellationToken);
+
                         // The ServiceUrl for streaming channels begins with the string "urn" and contains
                         // information unique to streaming connections. Now that we know that this is a streaming
                         // activity, process it in the streaming pipeline.
