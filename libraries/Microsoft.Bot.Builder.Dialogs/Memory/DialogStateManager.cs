@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public DialogStateManager(DialogContext dc)
         {
-            this.dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
+            dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
         }
 
         /// <summary>
@@ -35,13 +35,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <value>
         /// The path resolvers used to evaluate memory paths.
         /// </value>
-        public static List<IPathResolver> PathResolvers { get; private set; } = new List<IPathResolver>()
+        public static List<IPathResolver> PathResolvers { get; } = new List<IPathResolver>
         {
             new DollarPathResolver(),
             new HashPathResolver(),
             new AtAtPathResolver(),
             new AtPathResolver(),
-            new PercentPathResolver(),
+            new PercentPathResolver()
         };
 
         /// <summary>
@@ -53,26 +53,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <value>
         /// The supported memory scopes for the dialog state manager.  
         /// </value>
-        public static List<MemoryScope> MemoryScopes { get; private set; } = new List<MemoryScope>()
+        public static List<MemoryScope> MemoryScopes { get; } = new List<MemoryScope>
         {
-             new MemoryScope(ScopePath.USER),
-             new MemoryScope(ScopePath.CONVERSATION),
-             new MemoryScope(ScopePath.TURN),
-             new SettingsMemoryScope(),
-             new DialogMemoryScope(),
-             new ClassMemoryScope(),
-             new ThisMemoryScope()
+            new MemoryScope(ScopePath.USER),
+            new MemoryScope(ScopePath.CONVERSATION),
+            new MemoryScope(ScopePath.TURN),
+            new SettingsMemoryScope(),
+            new DialogMemoryScope(),
+            new ClassMemoryScope(),
+            new ThisMemoryScope()
         };
 
         public ICollection<string> Keys => MemoryScopes.Select(ms => ms.Name).ToList();
 
-        public ICollection<object> Values => MemoryScopes.Select(ms => ms.GetMemory(this.dialogContext)).ToList();
+        public ICollection<object> Values => MemoryScopes.Select(ms => ms.GetMemory(dialogContext)).ToList();
 
         public int Count => MemoryScopes.Count;
 
         public bool IsReadOnly => true;
 
-        public object this[string key] { get => this.GetValue<object>(key, () => null); set => this.SetValue(key, value); }
+        public object this[string key] { get => GetValue<object>(key, () => null); set => SetValue(key, value); }
 
         /// <summary>
         /// Get MemoryScope by name.
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             if (dot > 0)
             {
                 scope = path.Substring(0, dot);
-                var memoryScope = DialogStateManager.GetMemoryScope(scope);
+                var memoryScope = GetMemoryScope(scope);
                 if (memoryScope != null)
                 {
                     remainingPath = path.Substring(dot + 1);
@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
 
             remainingPath = string.Empty;
-            return DialogStateManager.GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(path));
+            return GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(path));
         }
 
         /// <summary>
@@ -147,22 +147,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>True if found, false if not.</returns>
         public bool TryGetValue<T>(string path, out T value)
         {
-            value = default(T);
-            path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
+            value = default;
+            path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
 
-            var memoryScope = this.ResolveMemoryScope(path, out var remainingPath);
-            var memory = memoryScope.GetMemory(this.dialogContext);
+            var memoryScope = ResolveMemoryScope(path, out var remainingPath);
+            var memory = memoryScope.GetMemory(dialogContext);
 
             // HACK to support .First() retrieval on turn.recognized.entities.foo, replace with Expressions once expression ship
-            int iFirst = remainingPath.ToLower().LastIndexOf(".first()");
+            var iFirst = remainingPath.ToLower().LastIndexOf(".first()");
             if (iFirst >= 0)
             {
                 return TryGetFirstNestedValue(ref value, ref remainingPath, memory, iFirst);
             }
-            else
-            {
-                return ObjectPath.TryGetPathValue<T>(memory, remainingPath, out value);
-            }
+
+            return ObjectPath.TryGetPathValue(memory, remainingPath, out value);
         }
 
         /// <summary>
@@ -175,12 +173,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>Result or null if the path is not valid.</returns>
         public T GetValue<T>(string pathExpression, Func<T> defaultValue = null)
         {
-            if (this.TryGetValue<T>(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)), out T value))
+            if (TryGetValue<T>(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)), out var value))
             {
                 return value;
             }
 
-            return defaultValue != null ? defaultValue() : default(T);
+            return defaultValue != null ? defaultValue() : default;
         }
 
         /// <summary>
@@ -191,7 +189,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>Value or null if path is not valid.</returns>
         public int GetIntValue(string pathExpression, int defaultValue = 0)
         {
-            if (this.TryGetValue<int>(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)), out int value))
+            if (TryGetValue<int>(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)), out var value))
             {
                 return value;
             }
@@ -207,7 +205,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>Bool or null if path is not valid.</returns>
         public bool GetBoolValue(string pathExpression, bool defaultValue = false)
         {
-            if (this.TryGetValue<bool>(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)), out bool value))
+            if (TryGetValue<bool>(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)), out var value))
             {
                 return value;
             }
@@ -227,15 +225,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 throw new Exception($"{path} = You can't pass an unresolved Task to SetValue");
             }
 
-            path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            var memoryScope = this.ResolveMemoryScope(path, out var remainingPath);
+            path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
+            var memoryScope = ResolveMemoryScope(path, out var remainingPath);
             if (remainingPath == string.Empty)
             {
-                memoryScope.SetMemory(this.dialogContext, value);
+                memoryScope.SetMemory(dialogContext, value);
             }
             else
             {
-                var memory = memoryScope.GetMemory(this.dialogContext);
+                var memory = memoryScope.GetMemory(dialogContext);
                 ObjectPath.SetPathValue(memory, remainingPath, value);
             }
         }
@@ -246,9 +244,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <param name="path">Path to remove the leaf property.</param>
         public void RemoveValue(string path)
         {
-            path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            var memoryScope = this.ResolveMemoryScope(path, out var remainingPath);
-            var memory = memoryScope.GetMemory(this.dialogContext);
+            path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
+            var memoryScope = ResolveMemoryScope(path, out var remainingPath);
+            var memory = memoryScope.GetMemory(dialogContext);
             ObjectPath.RemovePathValue(memory, remainingPath);
         }
 
@@ -260,9 +258,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             var result = new JObject();
 
-            foreach (var scope in DialogStateManager.MemoryScopes.Where(ms => ms.IsReadOnly == false))
+            foreach (var scope in MemoryScopes.Where(ms => ms.IsReadOnly == false))
             {
-                var memory = scope.GetMemory(this.dialogContext);
+                var memory = scope.GetMemory(dialogContext);
                 if (memory != null)
                 {
                     result[scope.Name] = JToken.FromObject(memory);
@@ -274,28 +272,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public void Add(string key, object value)
         {
-            this.SetValue(key, value);
+            SetValue(key, value);
         }
 
         public bool ContainsKey(string key)
         {
-            return DialogStateManager.MemoryScopes.Any(ms => ms.Name.ToLower() == key.ToLower());
+            return MemoryScopes.Any(ms => ms.Name.ToLower() == key.ToLower());
         }
 
         public bool Remove(string key)
         {
-            this.RemoveValue(key);
+            RemoveValue(key);
             return true;
         }
 
         public bool TryGetValue(string key, out object value)
         {
-            return this.TryGetValue<object>(key, out value);
+            return TryGetValue<object>(key, out value);
         }
 
         public void Add(KeyValuePair<string, object> item)
         {
-            this.SetValue(item.Key, item.Value);
+            SetValue(item.Key, item.Value);
         }
 
         public void Clear()
@@ -312,7 +310,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             foreach (var ms in MemoryScopes)
             {
-                array[arrayIndex++] = new KeyValuePair<string, object>(ms.Name, ms.GetMemory(this.dialogContext));
+                array[arrayIndex++] = new KeyValuePair<string, object>(ms.Name, ms.GetMemory(dialogContext));
             }
         }
 
@@ -325,7 +323,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             foreach (var ms in MemoryScopes)
             {
-                yield return new KeyValuePair<string, object>(ms.Name, ms.GetMemory(this.dialogContext));
+                yield return new KeyValuePair<string, object>(ms.Name, ms.GetMemory(dialogContext));
             }
         }
 
@@ -333,14 +331,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             foreach (var ms in MemoryScopes)
             {
-                yield return new KeyValuePair<string, object>(ms.Name, ms.GetMemory(this.dialogContext));
+                yield return new KeyValuePair<string, object>(ms.Name, ms.GetMemory(dialogContext));
             }
+        }
+
+        private static string GetBadScopeMessage(string path)
+        {
+            return $"'{path}' does not match memory scopes:{string.Join(",", MemoryScopes.Select(ms => ms.Name))}";
         }
 
         private bool TryGetFirstNestedValue<T>(ref T value, ref string remainingPath, object memory, int iFirst)
         {
             remainingPath = remainingPath.Substring(0, iFirst);
-            if (ObjectPath.TryGetPathValue<JArray>(memory, $"{remainingPath}", out JArray array))
+            if (ObjectPath.TryGetPathValue<JArray>(memory, $"{remainingPath}", out var array))
             {
                 if (array != null && array.Count > 0)
                 {
@@ -356,22 +359,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
                         return false;
                     }
-                    else
-                    {
-                        value = ObjectPath.MapValueTo<T>(array[0]);
-                        return true;
-                    }
+
+                    value = ObjectPath.MapValueTo<T>(array[0]);
+                    return true;
                 }
             }
 
             return false;
-        }
-
-#pragma warning disable SA1204 // Static elements should appear before instance elements
-        private static string GetBadScopeMessage(string path)
-#pragma warning restore SA1204 // Static elements should appear before instance elements
-        {
-            return $"'{path}' does not match memory scopes:{string.Join(",", DialogStateManager.MemoryScopes.Select(ms => ms.Name))}";
         }
     }
 }

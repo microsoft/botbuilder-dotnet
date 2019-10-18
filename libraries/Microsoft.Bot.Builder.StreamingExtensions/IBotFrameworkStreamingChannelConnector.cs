@@ -162,4 +162,5 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
         Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken = default(CancellationToken));
     }
+#pragma warning restore IDE0034
 }

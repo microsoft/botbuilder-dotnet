@@ -23,9 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// </summary>
     public class AdaptiveDialog : DialogContainer
     {
-#pragma warning disable SA1310 // Field should not contain underscore.
-        private const string ADAPTIVE_KEY = "adaptiveDialogState";
-#pragma warning restore SA1310 // Field should not contain underscore.
+        private const string AdaptiveKey = "adaptiveDialogState";
 
         private readonly string changeKey = Guid.NewGuid().ToString();
 
@@ -126,8 +124,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             EnsureDependenciesInstalled();
 
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
-            activeDialogState[ADAPTIVE_KEY] = new AdaptiveDialogState();
-            var state = activeDialogState[ADAPTIVE_KEY] as AdaptiveDialogState;
+            activeDialogState[AdaptiveKey] = new AdaptiveDialogState();
+            var state = activeDialogState[AdaptiveKey] as AdaptiveDialogState;
 
             // Persist options to dialog state
             dc.State.SetValue(ThisPath.OPTIONS, options);
@@ -174,7 +172,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default)
         {
             // Forward to current sequence step
-            var state = (instance.State as Dictionary<string, object>)[ADAPTIVE_KEY] as AdaptiveDialogState;
+            var state = (instance.State as Dictionary<string, object>)[AdaptiveKey] as AdaptiveDialogState;
 
             if (state.Actions.Any())
             {
@@ -188,12 +186,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public override DialogContext CreateChildContext(DialogContext dc)
         {
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
-            var state = activeDialogState[ADAPTIVE_KEY] as AdaptiveDialogState;
+            var state = activeDialogState[AdaptiveKey] as AdaptiveDialogState;
 
             if (state == null)
             {
                 state = new AdaptiveDialogState();
-                activeDialogState[ADAPTIVE_KEY] = state;
+                activeDialogState[AdaptiveKey] = state;
             }
 
             if (state.Actions != null && state.Actions.Any())
@@ -603,12 +601,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private SequenceContext ToSequenceContext(DialogContext dc)
         {
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
-            var state = activeDialogState[ADAPTIVE_KEY] as AdaptiveDialogState;
+            var state = activeDialogState[AdaptiveKey] as AdaptiveDialogState;
 
             if (state == null)
             {
                 state = new AdaptiveDialogState();
-                activeDialogState[ADAPTIVE_KEY] = state;
+                activeDialogState[AdaptiveKey] = state;
             }
 
             if (state.Actions == null)
