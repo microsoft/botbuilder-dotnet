@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
@@ -12,8 +13,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public static class ObjectPath
     {
-        private static Regex matchBrackets = new Regex("\\[(.*?)\\]", RegexOptions.Compiled);
-
         private static JsonSerializerSettings cloneSettings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
 
         private static JsonSerializerSettings expressionCaseSettings = new JsonSerializerSettings
@@ -67,23 +66,25 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return true;
             }
 
-            var brackets = matchBrackets.Matches(pathExpression);
-            foreach (Match bracket in brackets)
+            foreach (string bracket in MatchBrackets(pathExpression))
             {
-                string bracketPath = bracket.Value.Trim('[', ']');
+                string bracketPath = bracket.Substring(1, bracket.Length - 2);
 
-                // if it's not a number, then evaluate the path
+                // if it's not a number, 
                 if (!int.TryParse(bracketPath, out int index))
                 {
+                    // then evaluate the path (NOTE: this is where nested [] will get resolved recursively)
                     if (TryGetPathValue<string>(obj, bracketPath, out string bracketValue))
                     {
                         if (int.TryParse(bracketValue, out index))
                         {
-                            pathExpression = pathExpression.Replace(bracket.Value, $"[{index}]");
+                            // if it's an intent we keep array syntax [#]
+                            pathExpression = pathExpression.Replace(bracket, $"[{index}]");
                         }
                         else
                         {
-                            pathExpression = pathExpression.Replace(bracket.Value, $".{bracketValue}");
+                            // otherwise we replace with found property, meaning user[name] => user.tom
+                            pathExpression = pathExpression.Replace(bracket, $".{bracketValue}");
                         }
                     }
                     else
@@ -93,6 +94,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
             }
 
+            // at this point we have clean dotted path with numerical array indexers: user[user.name][user.age] ==> user.tom[52]
             string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
             dynamic current = obj;
             for (var i = 0; i < segments.Length; i++)
@@ -459,6 +461,51 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return next;
+        }
+
+        /// <summary>
+        /// Given a path this will enumerate paired brackets
+        /// x[y[z]].blah[p] => "[y[z]]","[p]".
+        /// </summary>
+        /// <param name="path">path.</param>
+        /// <returns>collection of bracketed content.</returns>
+        private static IEnumerable<string> MatchBrackets(string path)
+        {
+            StringBuilder sb = new StringBuilder();
+            int inside = 0;
+            for (int i = 0; i < path.Length; i++)
+            {
+                char ch = path[i];
+                if (inside == 0)
+                {
+                    if (ch == '[')
+                    {
+                        inside++;
+                        sb.Append(ch);
+                    }
+                }
+                else
+                {
+                    if (ch == '[')
+                    {
+                        inside++;
+                    }
+                    else if (ch == ']')
+                    {
+                        inside--;
+                    }
+
+                    sb.Append(ch);
+
+                    if (inside == 0)
+                    {
+                        yield return sb.ToString();
+                        sb.Clear();
+                    }
+                }
+            }
+
+            yield break;
         }
     }
 }

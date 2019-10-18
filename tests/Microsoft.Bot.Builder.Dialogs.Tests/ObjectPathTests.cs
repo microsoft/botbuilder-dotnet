@@ -377,7 +377,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     objIndex = "options",
                     options = new Options()
                     {
-                        Age = 15,
+                        Age = 1,
                         FirstName = "joe",
                         LastName = "blow",
                         Bool = false,
@@ -409,11 +409,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.IsTrue(ObjectPath.TryGetPathValue<int>(test, "bar.numbers[bar.numIndex]", out int number2));
                 Assert.AreEqual(3, number2);
 
+                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(test, "bar.numbers[bar[bar.objIndex].Age]", out int number3));
+                Assert.AreEqual(2, number3);
+
                 Assert.IsTrue(ObjectPath.TryGetPathValue<string>(test, "bar.options[bar.strIndex]", out string name));
                 Assert.AreEqual("joe", name);
 
                 Assert.IsTrue(ObjectPath.TryGetPathValue<int>(test, "bar[bar.objIndex].Age", out int age));
-                Assert.AreEqual(15, age);
+                Assert.AreEqual(1, age);
             }
 
             // now try with JObject
