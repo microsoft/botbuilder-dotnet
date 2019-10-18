@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -64,6 +66,35 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return true;
             }
 
+            foreach (string bracket in MatchBrackets(pathExpression))
+            {
+                string bracketPath = bracket.Substring(1, bracket.Length - 2);
+
+                // if it's not a number, 
+                if (!int.TryParse(bracketPath, out int index))
+                {
+                    // then evaluate the path (NOTE: this is where nested [] will get resolved recursively)
+                    if (TryGetPathValue<string>(obj, bracketPath, out string bracketValue))
+                    {
+                        if (int.TryParse(bracketValue, out index))
+                        {
+                            // if it's an intent we keep array syntax [#]
+                            pathExpression = pathExpression.Replace(bracket, $"[{index}]");
+                        }
+                        else
+                        {
+                            // otherwise we replace with found property, meaning user[name] => user.tom
+                            pathExpression = pathExpression.Replace(bracket, $".{bracketValue}");
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            // at this point we have clean dotted path with numerical array indexers: user[user.name][user.age] ==> user.tom[52]
             string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
             dynamic current = obj;
             for (var i = 0; i < segments.Length; i++)
@@ -79,10 +110,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             return true;
         }
 
-        public static void SetPathValue(object o, string pathExpression, object value, bool json = true)
+        public static void SetPathValue(object obj, string pathExpression, object value, bool json = true)
         {
             string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
-            dynamic current = o;
+            dynamic current = obj;
 
             for (var i = 0; i < segments.Length - 1; i++)
             {
@@ -93,10 +124,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             SetObjectProperty(current, segments.Last(), value);
         }
 
-        public static void RemovePathValue(object o, string pathExpression)
+        public static void RemovePathValue(object obj, string pathExpression)
         {
             string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
-            dynamic next = o;
+            dynamic next = obj;
             for (var i = 0; i < segments.Length - 1; i++)
             {
                 next = ResolveSegment(next, segments[i], addMissing: true);
@@ -430,6 +461,43 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return next;
+        }
+
+        /// <summary>
+        /// Given a path this will enumerate paired brackets
+        /// x[y[z]].blah[p] => "[y[z]]","[p]".
+        /// </summary>
+        /// <param name="path">path.</param>
+        /// <returns>collection of bracketed content.</returns>
+        private static IEnumerable<string> MatchBrackets(string path)
+        {
+            StringBuilder sb = new StringBuilder();
+            int nest = 0;
+            for (int i = 0; i < path.Length; i++)
+            {
+                char ch = path[i];
+                if (ch == '[')
+                {
+                    nest++;
+                }
+                else if (ch == ']')
+                {
+                    nest--;
+                }
+
+                if (nest > 0)
+                {
+                    sb.Append(ch);
+                }
+                else if (sb.Length > 0)
+                {
+                    sb.Append(ch);
+                    yield return sb.ToString();
+                    sb.Clear();
+                }
+            }
+
+            yield break;
         }
     }
 }
