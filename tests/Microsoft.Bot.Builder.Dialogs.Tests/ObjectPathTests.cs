@@ -1,6 +1,7 @@
 ﻿#pragma warning disable SA1402
 
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -406,11 +407,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.IsTrue(ObjectPath.TryGetPathValue<int>(test, "bar.numbers[1]", out int number));
                 Assert.AreEqual(2, number);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(test, "bar.numbers[bar.numIndex]", out int number2));
-                Assert.AreEqual(3, number2);
+                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(test, "bar['options'].Age", out number));
+                Assert.AreEqual(1, number);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(test, "bar.numbers[bar[bar.objIndex].Age]", out int number3));
-                Assert.AreEqual(2, number3);
+                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(test, "bar[\"options\"].Age", out number));
+                Assert.AreEqual(1, number);
+
+                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(test, "bar.numbers[bar.numIndex]", out number));
+                Assert.AreEqual(3, number);
+
+                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(test, "bar.numbers[bar[bar.objIndex].Age]", out number));
+                Assert.AreEqual(2, number);
 
                 Assert.IsTrue(ObjectPath.TryGetPathValue<string>(test, "bar.options[bar.strIndex]", out string name));
                 Assert.AreEqual("joe", name);
@@ -435,11 +442,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.AreEqual((int)jtest.bar.options.Age, barOptions.Age);
                 Assert.AreEqual((string)jtest.bar.options.FirstName, barOptions.FirstName);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int[]>(test, "bar.numbers", out int[] numbers));
+                Assert.IsTrue(ObjectPath.TryGetPathValue<int[]>(jtest, "bar.numbers", out int[] numbers));
                 Assert.AreEqual(5, numbers.Length);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(test, "bar.numbers[1]", out int number));
+                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(jtest, "bar.numbers[1]", out int number));
                 Assert.AreEqual(2, number);
+
+                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(jtest, "bar['options'].Age", out number));
+                Assert.AreEqual(1, number);
+
+                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(jtest, "bar[\"options\"].Age", out number));
+                Assert.AreEqual(1, number);
+
+                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(jtest, "bar.numbers[bar.numIndex]", out int number2));
+                Assert.AreEqual(3, number2);
+
+                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(jtest, "bar.numbers[bar[bar.objIndex].Age]", out int number3));
+                Assert.AreEqual(2, number3);
+
+                Assert.IsTrue(ObjectPath.TryGetPathValue<string>(jtest, "bar.options[bar.strIndex]", out string name));
+                Assert.AreEqual("joe", name);
+
+                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(jtest, "bar[bar.objIndex].Age", out int age));
+                Assert.AreEqual(1, age);
+
+                jtest.bar["x.y.z"] = "test";
+
+                Assert.IsTrue(ObjectPath.TryGetPathValue<string>(jtest, "bar['x.y.z']", out string split));
+                Assert.AreEqual("test", split);
+
+                Assert.IsTrue(ObjectPath.TryGetPathValue<string>(jtest, "bar[\"x.y.z\"]", out split));
+                Assert.AreEqual("test", split);
             }
         }
 
