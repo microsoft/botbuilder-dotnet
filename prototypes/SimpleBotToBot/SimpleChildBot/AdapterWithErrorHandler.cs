@@ -20,7 +20,6 @@ namespace SimpleChildBot
         {
             OnTurnError = async (turnContext, exception) =>
             {
-
                 // Log any leaked exception from the application.
                 logger.LogError($"Exception caught : {exception.Message}");
 
