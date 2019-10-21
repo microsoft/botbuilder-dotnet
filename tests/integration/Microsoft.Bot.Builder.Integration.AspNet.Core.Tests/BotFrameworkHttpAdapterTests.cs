@@ -1,10 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.WebSockets;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -75,6 +77,34 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 var json = JObject.Parse(s);
                 Assert.Equal("im.feeling.really.attacked.right.now", json["quite.honestly"]);
             }
+        }
+
+        [Fact]
+        public async Task WebSocketRequest()
+        {
+            // Arrange
+            var headerDictionaryMock = new Mock<IHeaderDictionary>();
+            headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
+
+            var httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream());
+            httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
+
+            httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Get);
+
+            httpRequestMock.Setup(r => r.HttpContext.WebSockets.IsWebSocketRequest).Returns(true);
+            httpRequestMock.Setup(r => r.HttpContext.WebSockets.AcceptWebSocketAsync()).Returns(async () => await Task.FromResult(new FauxSock()));
+            var httpResponseMock = new Mock<HttpResponse>();
+
+            var botMock = new Mock<IBot>();
+            botMock.Setup(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+
+            // Act
+            var adapter = new BotFrameworkHttpAdapter();
+            await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, botMock.Object);
+
+            // Assert, we should have made the call to accept the web socket
+            httpRequestMock.Verify(m => m.HttpContext.WebSockets.AcceptWebSocketAsync(), Times.Once());
         }
 
         [Fact]
