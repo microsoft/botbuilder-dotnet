@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             var adapter = new BotFrameworkHttpAdapter();
             await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, botMock.Object);
 
-            // Assert
+            // Assert, we should have made the call to accept the web socket
             httpRequestMock.Verify(m => m.HttpContext.WebSockets.AcceptWebSocketAsync(), Times.Once());
         }
 
