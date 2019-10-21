@@ -55,7 +55,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 // load configuration into settings dictionary
                 foreach (var child in configuration.AsEnumerable())
                 {
-                    System.Diagnostics.Trace.TraceInformation(child.Key);
                     string[] keys = child.Key.Split(':');
 
                     // initialize all parts of path up to the key/value we are attempting to set
