@@ -45,12 +45,25 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Initializes a new instance of the <see cref="TestFlow"/> class from an existing flow.
         /// </summary>
-        /// <param name="testTask">The exchange to add to the exchanges in the existing flow.</param>
+        /// <param name="task">The exchange to add to the exchanges in the existing flow.</param>
         /// <param name="flow">The flow to build up from. This provides the test adapter to use,
         /// the bot turn processing locig to test, and a set of exchanges to model and test.</param>
-        public TestFlow(Task testTask, TestFlow flow)
+        public TestFlow(Task task, TestFlow flow)
         {
-            _testTask = testTask ?? Task.CompletedTask;
+            _testTask = task ?? Task.CompletedTask;
+            _callback = flow._callback;
+            _adapter = flow._adapter;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestFlow"/> class from an existing flow.
+        /// </summary>
+        /// <param name="getTask">The exchange to add to the exchanges in the existing flow.</param>
+        /// <param name="flow">The flow to build up from. This provides the test adapter to use,
+        /// the bot turn processing locig to test, and a set of exchanges to model and test.</param>
+        public TestFlow(Func<Task> getTask, TestFlow flow)
+        {
+            _testTask = getTask != null ? getTask() : Task.CompletedTask;
             _callback = flow._callback;
             _adapter = flow._adapter;
         }
@@ -88,30 +101,19 @@ namespace Microsoft.Bot.Builder.Adapters
             }
 
             return new TestFlow(
-                _testTask.ContinueWith((task) =>
+                async () =>
                 {
-                    // NOTE: we need to .Wait() on the original Task to properly observe any exceptions that might have occurred
-                    // and to have them propagate correctly up through the chain to whomever is waiting on the parent task
-                    // The following StackOverflow answer provides some more details on why you want to do this:
-                    // https://stackoverflow.com/questions/11904821/proper-way-to-use-continuewith-for-tasks/11906865#11906865
-                    //
-                    // From the Docs:
-                    //  https://docs.microsoft.com/dotnet/standard/parallel-programming/exception-handling-task-parallel-library
-                    //  Exceptions are propagated when you use one of the static or instance Task.Wait or Wait
-                    //  methods, and you handle them by enclosing the call in a try/catch statement. If a task is the
-                    //  parent of attached child tasks, or if you are waiting on multiple tasks, multiple exceptions
-                    //  could be thrown.
-                    task.Wait();
+                    await this._testTask.ConfigureAwait(false);
 
-                    return _adapter.SendTextToBotAsync(userSays, _callback, default(CancellationToken));
-                }).Unwrap(),
+                    await _adapter.SendTextToBotAsync(userSays, _callback, default(CancellationToken)).ConfigureAwait(false);
+                },
                 this);
         }
 
         public TestFlow SendConversationUpdate()
         {
             return new TestFlow(
-                _testTask.ContinueWith((task) =>
+                async () =>
                 {
                     // NOTE: we need to .Wait() on the original Task to properly observe any exceptions that might have occurred
                     // and to have them propagate correctly up through the chain to whomever is waiting on the parent task
@@ -124,12 +126,12 @@ namespace Microsoft.Bot.Builder.Adapters
                     //  methods, and you handle them by enclosing the call in a try/catch statement. If a task is the
                     //  parent of attached child tasks, or if you are waiting on multiple tasks, multiple exceptions
                     //  could be thrown.
-                    task.Wait();
+                    await this._testTask.ConfigureAwait(false);
 
                     var cu = Activity.CreateConversationUpdateActivity();
                     cu.MembersAdded.Add(this._adapter.Conversation.User);
-                    return _adapter.ProcessActivityAsync((Activity)cu, _callback, default(CancellationToken));
-                }).Unwrap(),
+                    await _adapter.ProcessActivityAsync((Activity)cu, _callback, default(CancellationToken)).ConfigureAwait(false);
+                },
                 this);
         }
 
@@ -147,13 +149,13 @@ namespace Microsoft.Bot.Builder.Adapters
             }
 
             return new TestFlow(
-                _testTask.ContinueWith((task) =>
+                async () =>
                 {
                     // NOTE: See details code in above method.
-                    task.Wait();
+                    await this._testTask.ConfigureAwait(false);
 
-                    return _adapter.ProcessActivityAsync((Activity)userActivity, _callback, default(CancellationToken));
-                }).Unwrap(),
+                    await _adapter.ProcessActivityAsync((Activity)userActivity, _callback, default(CancellationToken)).ConfigureAwait(false);
+                },
                 this);
         }
 
@@ -166,13 +168,32 @@ namespace Microsoft.Bot.Builder.Adapters
         public TestFlow Delay(uint ms)
         {
             return new TestFlow(
-                _testTask.ContinueWith((task) =>
+                async () =>
                 {
                     // NOTE: See details code in above method.
-                    task.Wait();
+                    await this._testTask.ConfigureAwait(false);
 
-                    return Task.Delay((int)ms);
-                }),
+                    await Task.Delay((int)ms).ConfigureAwait(false);
+                },
+                this);
+        }
+
+        /// <summary>
+        /// Adds a delay in the conversation.
+        /// </summary>
+        /// <param name="timespan">The delay length in TimeSpan.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends a delay to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
+        public TestFlow Delay(TimeSpan timespan)
+        {
+            return new TestFlow(
+                async () =>
+                {
+                    // NOTE: See details code in above method.
+                    await this._testTask.ConfigureAwait(false);
+
+                    await Task.Delay(timespan).ConfigureAwait(false);
+                },
                 this);
         }
 
@@ -296,10 +317,10 @@ namespace Microsoft.Bot.Builder.Adapters
         public TestFlow AssertReply(Action<IActivity> validateActivity, [CallerMemberName] string description = null, uint timeout = 3000)
         {
             return new TestFlow(
-                _testTask.ContinueWith((task) =>
+                async () =>
                 {
                     // NOTE: See details code in above method.
-                    task.Wait();
+                    await this._testTask.ConfigureAwait(false);
 
                     if (System.Diagnostics.Debugger.IsAttached)
                     {
@@ -323,8 +344,10 @@ namespace Microsoft.Bot.Builder.Adapters
                             validateActivity(replyActivity);
                             return;
                         }
+
+                        await Task.Delay(100).ConfigureAwait(false);
                     }
-                }),
+                },
                 this);
         }
 
@@ -482,7 +505,7 @@ namespace Microsoft.Bot.Builder.Adapters
                             return;
                         }
                     }
-                    
+
                     throw new Exception(description ?? $"Text \"{text}\" does not match one of candidates: {string.Join("\n", candidates)}");
                 },
                 description,

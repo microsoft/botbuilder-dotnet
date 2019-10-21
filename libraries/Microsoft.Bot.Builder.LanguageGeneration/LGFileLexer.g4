@@ -41,7 +41,7 @@ fragment W: 'w' | 'W';
 fragment STRING_LITERAL : ('\'' (~['\r\n])* '\'') | ('"' (~["\r\n])* '"');
 
 COMMENTS
-  : ('>'|'$') ~('\r'|'\n')+ -> skip
+  : ('>'|'$') ~('\r'|'\n')+ NEWLINE? -> skip
   ;
 
 WS
