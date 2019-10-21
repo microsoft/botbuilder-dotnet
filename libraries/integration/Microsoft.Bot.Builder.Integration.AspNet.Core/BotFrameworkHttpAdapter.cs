@@ -20,18 +20,18 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// <summary>
     /// A Bot Builder Adapter implementation used to handled bot Framework HTTP requests.
     /// </summary>
-    public class BotFrameworkHttpAdapter : BotFrameworkAdapter, IBotFrameworkHttpAdapter
+    public class BotFrameworkHttpAdapter : BotFrameworkHttpAdapterBase, IBotFrameworkHttpAdapter
     {
         private const string AuthHeaderName = "authorization";
         private const string ChannelIdHeaderName = "channelid";
 
         public BotFrameworkHttpAdapter(ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILogger<BotFrameworkHttpAdapter> logger = null)
-            : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, logger: logger)
+            : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, logger)
         {
         }
 
         public BotFrameworkHttpAdapter(ICredentialProvider credentialProvider, IChannelProvider channelProvider, HttpClient httpClient, ILogger<BotFrameworkHttpAdapter> logger)
-            : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, customHttpClient: httpClient, logger: logger)
+            : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, httpClient, logger)
         {
         }
 
