@@ -7,15 +7,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration;
+using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Rest;
@@ -45,16 +48,22 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IMiddleware"/>
     public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IUserTokenProvider
     {
-        internal const string BotIdentityKey = "BotIdentity";
         internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
+        internal const string BotIdentityKey = "BotIdentity";
+
+#pragma warning disable SA1401 // Fields should be private
+
+        protected readonly ICredentialProvider _credentialProvider;
+        protected readonly IChannelProvider _channelProvider;
+        protected readonly ILogger _logger;
+
+#pragma warning restore SA1401 // Fields should be private
 
         private static readonly HttpClient _defaultHttpClient = new HttpClient();
-        private readonly ICredentialProvider _credentialProvider;
-        private readonly AppCredentials _appCredentials;
-        private readonly IChannelProvider _channelProvider;
+
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
-        private readonly ILogger _logger;
+        private readonly AppCredentials _appCredentials;
         private readonly AuthenticationConfiguration _authConfiguration;
 
         // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)
@@ -405,22 +414,22 @@ namespace Microsoft.Bot.Builder
                 }
                 else
                 {
-                    if (activity.IsFromStreamingConnection())
+                    if (CanProcessOutgoingActivity(activity))
                     {
-                        // Streaming connection post-processing
-                        TokenResolver.CheckForOAuthCards(this, _logger, turnContext, activity, cancellationToken);
-                    }
-
-                    // If there is a replyToId, then reply to the conversation, otherwise send it as a new message.
-                    if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
-                    {
-                        var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-                        response = await connectorClient.Conversations.ReplyToActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                        response = await ProcessOutgoingActivityAsync(turnContext, activity, cancellationToken).ConfigureAwait(false);
                     }
                     else
                     {
-                        var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-                        response = await connectorClient.Conversations.SendToConversationAsync(activity, cancellationToken).ConfigureAwait(false);
+                        if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
+                        {
+                            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+                            response = await connectorClient.Conversations.ReplyToActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+                            response = await connectorClient.Conversations.SendToConversationAsync(activity, cancellationToken).ConfigureAwait(false);
+                        }
                     }
                 }
 
@@ -932,6 +941,33 @@ namespace Microsoft.Bot.Builder
             }
 
             return new OAuthClient(new Uri(OAuthClientConfig.OAuthEndpoint), connectorClient.Credentials);
+        }
+
+        /// <summary>
+        /// Opportunity for subclasses to opt in to process an outgoing activity.
+        /// </summary>
+        /// <remarks>
+        /// Subclasses can override ProcessOutgoingAcivityAsync. If CanProcessOutgoingActivity returns true, 
+        /// ProcessOutgoingAcivityAsync will be responsible for sending the outgoing activity.
+        /// </remarks>
+        /// <param name="activity">The outgoing activity.</param>
+        /// <returns>Whether should call ProcessoutgoingActivityAsync to send the outgoing activity.</returns>
+        protected virtual bool CanProcessOutgoingActivity(Activity activity)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// Custom logic to send an outgoing activity. Subclasses can override this method along with CanProcessOutgoingActivity
+        /// to have custom logic to process the outgoing activity.
+        /// </summary>
+        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="activity">The activity to be processed.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The result of processing the activity.</returns>
+        protected virtual Task<ResourceResponse> ProcessOutgoingActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

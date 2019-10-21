@@ -176,9 +176,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
 
                 switch (apiArgs.Method)
                 {
-                    /// <summary>
-                    /// ReplyToActivity(conversationId, activityId, activity).
-                    /// </summary>
+                    // ReplyToActivity(conversationId, activityId, activity).
                     case ChannelApiMethods.ReplyToActivity:
                         Assert.AreEqual(2, apiArgs.Args.Length);
                         Assert.IsInstanceOfType(apiArgs.Args[0], typeof(string));
@@ -186,18 +184,14 @@ namespace Microsoft.Bot.Builder.Skills.Tests
                         apiArgs.Result = new ResourceResponse(id: NewResourceId);
                         break;
 
-                    /// <summary>
-                    /// SendToConversation(activity).
-                    /// </summary>
+                    // SendToConversation(activity).
                     case ChannelApiMethods.SendToConversation:
                         Assert.AreEqual(1, apiArgs.Args.Length);
                         Assert.IsInstanceOfType(apiArgs.Args[0], typeof(Activity));
                         apiArgs.Result = new ResourceResponse(id: NewResourceId);
                         break;
 
-                    /// <summary>
-                    /// UpdateActivity(activity).
-                    /// </summary>
+                    // UpdateActivity(activity).
                     case ChannelApiMethods.UpdateActivity:
                         Assert.AreEqual(2, apiArgs.Args.Length);
                         Assert.IsInstanceOfType(apiArgs.Args[0], typeof(string));
@@ -206,35 +200,27 @@ namespace Microsoft.Bot.Builder.Skills.Tests
                         apiArgs.Result = new ResourceResponse(id: NewResourceId);
                         break;
 
-                    /// <summary>
-                    /// DeleteActivity(conversationId, activityId).
-                    /// </summary>
+                    // DeleteActivity(conversationId, activityId).
                     case ChannelApiMethods.DeleteActivity:
                         Assert.AreEqual(1, apiArgs.Args.Length);
                         Assert.IsInstanceOfType(apiArgs.Args[0], typeof(string));
                         Assert.AreEqual(this.expectedActivityId, apiArgs.Args[0]);
                         break;
 
-                    /// <summary>
-                    /// SendConversationHistory(conversationId, history).
-                    /// </summary>
+                    // SendConversationHistory(conversationId, history).
                     case ChannelApiMethods.SendConversationHistory:
                         Assert.AreEqual(1, apiArgs.Args.Length);
                         Assert.IsInstanceOfType(apiArgs.Args[0], typeof(Transcript));
                         apiArgs.Result = new ResourceResponse(id: NewResourceId);
                         break;
 
-                    /// <summary>
-                    /// GetConversationMembers(conversationId).
-                    /// </summary>
+                    // GetConversationMembers(conversationId).
                     case ChannelApiMethods.GetConversationMembers:
                         Assert.AreEqual(0, apiArgs.Args.Length);
                         apiArgs.Result = new List<ChannelAccount>();
                         break;
 
-                    /// <summary>
-                    /// GetConversationPageMembers(conversationId, (int)pageSize, continuationToken).
-                    /// </summary>
+                    // GetConversationPageMembers(conversationId, (int)pageSize, continuationToken).
                     case ChannelApiMethods.GetConversationPagedMembers:
                         Assert.AreEqual(2, apiArgs.Args.Length);
 
@@ -255,44 +241,34 @@ namespace Microsoft.Bot.Builder.Skills.Tests
                         };
                         break;
 
-                    /// <summary>
-                    /// DeleteConversationMember(conversationId, memberId).
-                    /// </summary>
+                    // DeleteConversationMember(conversationId, memberId).
                     case ChannelApiMethods.DeleteConversationMember:
                         Assert.AreEqual(1, apiArgs.Args.Length);
                         Assert.IsInstanceOfType(apiArgs.Args[0], typeof(string));
                         break;
 
-                    /// <summary>
-                    /// GetActivityMembers(conversationId, activityId).
-                    /// </summary>
+                    // GetActivityMembers(conversationId, activityId).
                     case ChannelApiMethods.GetActivityMembers:
                         Assert.AreEqual(1, apiArgs.Args.Length);
                         Assert.IsInstanceOfType(apiArgs.Args[0], typeof(string));
                         apiArgs.Result = new List<ChannelAccount>();
                         break;
 
-                    /// <summary>
-                    /// UploadAttachment(conversationId, attachmentData).
-                    /// </summary>
+                    // UploadAttachment(conversationId, attachmentData).
                     case ChannelApiMethods.UploadAttachment:
                         Assert.AreEqual(1, apiArgs.Args.Length);
                         Assert.IsInstanceOfType(apiArgs.Args[0], typeof(AttachmentData));
                         apiArgs.Result = new ResourceResponse(id: NewResourceId);
                         break;
 
-                    /// <summary>
-                    /// CreateConversation([FromBody] ConversationParameters parameters)
-                    /// </summary>
+                    // CreateConversation([FromBody] ConversationParameters parameters)
                     case ChannelApiMethods.CreateConversation:
                         Assert.AreEqual(1, apiArgs.Args.Length);
                         Assert.IsInstanceOfType(apiArgs.Args[0], typeof(ConversationParameters));
                         apiArgs.Result = new ConversationResourceResponse(id: NewResourceId);
                         break;
 
-                    /// <summary>
-                    /// GetConversations(string continuationToken = null)
-                    /// </summary>
+                    // GetConversations(string continuationToken = null)
                     case ChannelApiMethods.GetConversations:
                         Assert.IsTrue(apiArgs.Args.Length == 0 || apiArgs.Args.Length == 1);
                         if (apiArgs.Args.Length == 1)

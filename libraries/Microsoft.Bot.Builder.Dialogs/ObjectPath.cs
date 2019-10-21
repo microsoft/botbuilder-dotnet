@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,6 +14,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public static class ObjectPath
     {
+        private const string SingleQuote = "\'";
+        private const string DoubleQuote = "\"";
         private static JsonSerializerSettings cloneSettings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
 
         private static JsonSerializerSettings expressionCaseSettings = new JsonSerializerSettings
@@ -64,7 +69,38 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return true;
             }
 
-            string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
+            foreach (string bracket in MatchBrackets(pathExpression))
+            {
+                string bracketPath = bracket.Substring(1, bracket.Length - 2);
+
+                // if it's not a number, or quoted string
+                if (!int.TryParse(bracketPath, out int index) &&
+                    !(bracketPath.StartsWith(SingleQuote) && bracketPath.EndsWith(SingleQuote)) &&
+                    !(bracketPath.StartsWith(DoubleQuote) && bracketPath.EndsWith(DoubleQuote)))
+                {
+                    // then evaluate the path (NOTE: this is where nested [] will get resolved recursively)
+                    if (TryGetPathValue<string>(obj, bracketPath, out string bracketValue))
+                    {
+                        if (int.TryParse(bracketValue, out index))
+                        {
+                            // if it's an intent we keep array syntax [#]
+                            pathExpression = pathExpression.Replace(bracket, $"[{index}]");
+                        }
+                        else
+                        {
+                            // otherwise we replace with found property, meaning user[name] => user['tom']
+                            pathExpression = pathExpression.Replace(bracket, $"['{bracketValue}']");
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            // at this point we have clean dotted path with numerical array indexers: user[user.name][user.age] ==> user['tom'][52]
+            string[] segments = SplitNonQuotedPath(pathExpression).Select(s => s.ToLower()).ToArray();
             dynamic current = obj;
             for (var i = 0; i < segments.Length; i++)
             {
@@ -79,10 +115,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             return true;
         }
 
-        public static void SetPathValue(object o, string pathExpression, object value, bool json = true)
+        public static void SetPathValue(object obj, string pathExpression, object value, bool json = true)
         {
             string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
-            dynamic current = o;
+            dynamic current = obj;
 
             for (var i = 0; i < segments.Length - 1; i++)
             {
@@ -93,10 +129,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             SetObjectProperty(current, segments.Last(), value);
         }
 
-        public static void RemovePathValue(object o, string pathExpression)
+        public static void RemovePathValue(object obj, string pathExpression)
         {
             string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
-            dynamic next = o;
+            dynamic next = obj;
             for (var i = 0; i < segments.Length - 1; i++)
             {
                 next = ResolveSegment(next, segments[i], addMissing: true);
@@ -378,43 +414,51 @@ namespace Microsoft.Bot.Builder.Dialogs
             int iIndexerStart = segment.IndexOf('[');
             if (iIndexerStart > 0)
             {
-                var index = int.Parse(segment.Substring(iIndexerStart + 1).TrimEnd(']'));
+                var indexArg = segment.Substring(iIndexerStart + 1).TrimEnd(']');
                 segment = segment.Substring(0, iIndexerStart);
 
                 next = GetObjectProperty(node, segment);
-                if (next == null)
+                if (int.TryParse(indexArg, out int index))
                 {
-                    // then no array
-                    if (addMissing)
+                    if (next == null)
                     {
-                        var missing = new JArray();
-                        SetObjectProperty(node, segment, missing);
-                        next = GetObjectProperty(node, segment);
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-
-                if (((ICollection)next).Count <= index)
-                {
-                    // then array is too small
-                    if (addMissing)
-                    {
-                        // expand nodes
-                        for (int i = ((ICollection)next).Count; i <= index; i++)
+                        // then no array
+                        if (addMissing)
                         {
-                            ((JArray)next)[i] = null;
+                            var missing = new JArray();
+                            SetObjectProperty(node, segment, missing);
+                            next = GetObjectProperty(node, segment);
+                        }
+                        else
+                        {
+                            return null;
                         }
                     }
-                    else
-                    {
-                        return null;
-                    }
-                }
 
-                next = next[index];
+                    if (((ICollection)next).Count <= index)
+                    {
+                        // then array is too small
+                        if (addMissing)
+                        {
+                            // expand nodes
+                            for (int i = ((ICollection)next).Count; i <= index; i++)
+                            {
+                                ((JArray)next)[i] = null;
+                            }
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+
+                    next = next[index];
+                }
+                else
+                {
+                    // x.y.z['val'] will have next == z so next.GetObjectProperty(val)
+                    next = GetObjectProperty(next, indexArg?.Trim('\'', '\"'));
+                }
             }
             else
             {
@@ -430,6 +474,79 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return next;
+        }
+
+        /// <summary>
+        /// Given a path this will enumerate paired brackets
+        /// x[y[z]].blah[p] => "[y[z]]","[p]".
+        /// </summary>
+        /// <param name="path">path.</param>
+        /// <returns>collection of bracketed content.</returns>
+        private static IEnumerable<string> MatchBrackets(string path)
+        {
+            StringBuilder sb = new StringBuilder();
+            int nest = 0;
+            foreach (char ch in path)
+            {
+                if (ch == '[')
+                {
+                    nest++;
+                }
+                else if (ch == ']')
+                {
+                    nest--;
+                }
+
+                if (nest > 0)
+                {
+                    sb.Append(ch);
+                }
+                else if (sb.Length > 0)
+                {
+                    sb.Append(ch);
+                    yield return sb.ToString();
+                    sb.Clear();
+                }
+            }
+
+            yield break;
+        }
+
+        private static IEnumerable<string> SplitNonQuotedPath(string path)
+        {
+            StringBuilder sb = new StringBuilder();
+            bool inQuote = false;
+            foreach (char ch in path)
+            {
+                if (!inQuote)
+                {
+                    if (ch == '\'' || ch == '\"')
+                    {
+                        inQuote = true;
+                        sb.Append(ch);
+                    }
+                    else if (ch == '.')
+                    {
+                        yield return sb.ToString();
+                        sb.Clear();
+                    }
+                    else
+                    {
+                        sb.Append(ch);
+                    }
+                }
+                else if (inQuote)
+                {
+                    if (ch == '\'' || ch == '\"')
+                    {
+                        inQuote = false;
+                    }
+
+                    sb.Append(ch);
+                }
+            }
+
+            yield return sb.ToString();
         }
     }
 }

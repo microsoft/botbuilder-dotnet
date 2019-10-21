@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             }
             catch (Exception ex)
             {
-                Assert.IsTrue(ex.InnerException.Message == uniqueExceptionId, "Incorrect Exception Text");
+                Assert.IsTrue(ex.Message == uniqueExceptionId, "Incorrect Exception Text");
             }
         }
 
