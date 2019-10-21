@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Expressions
             || value is ulong;
 
         /// <summary>
-        /// Get all the expression start/end indexs from the original string
+        /// Get all the expression start/end indexs from the original string.
         /// </summary>
         /// <param name="expressionString">original string.</param>
         /// <param name="atPrefix">if the expression should start with @.(in multi line mode).</param>
