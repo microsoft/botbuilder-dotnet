@@ -11,11 +11,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <summary>
         /// Initializes a new instance of the <see cref="FacebookAdapterOptions"/> class.
         /// </summary>
+        /// <param name="verifyToken">The token used to validate that incoming webhooks are originated from Facebook.</param>
+        /// <param name="appSecret">The app secret.</param>
+        /// <param name="accessToken">The Facebook access token.</param>
         /// <param name="apiHost">A token for validating the origin of incoming webhooks.</param>
         /// <param name="apiVersion">A token for a bot to work on a single workspace.</param>
-        /// <param name="verifyToken">The token used to validate that incoming webhooks are originated from Slack.</param>
-        /// <param name="appSecret">The app secret.</param>
-        /// <param name="accessToken">The access token.</param>
         public FacebookAdapterOptions(string verifyToken, string appSecret, string accessToken, string apiHost = "graph.facebook.com", string apiVersion = "v3.2")
         {
             VerifyToken = verifyToken;

@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         }
 
         /// <summary>
-        /// Call one of the Facebook APIs.
+        /// Send a REST message to Facebook.
         /// </summary>
         /// <param name="path">Path to the API endpoint, for example `/me/messages`.</param>
         /// <param name="payload">An object to be sent as parameters to the API call..</param>
@@ -54,7 +54,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 method = HttpMethod.Post;
             }
 
-            // send the request
             using (var request = new HttpRequestMessage())
             {
                 request.RequestUri = new Uri($"https://{_options.ApiHost}/{_options.ApiVersion + path}?access_token={_options.AccessToken}&appsecret_proof={proof.ToLowerInvariant()}");

@@ -34,15 +34,15 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// AccessToken: An access token for the bot.
         /// </remarks>
         public FacebookAdapter(IConfiguration configuration)
-            : this(new FacebookClientWrapper(new FacebookAdapterOptions(configuration["VerifyToken"], configuration["AppSecret"], configuration["AccessToken"])))
+            : this(new FacebookClientWrapper(new FacebookAdapterOptions(configuration["FacebookVerifyToken"], configuration["FacebookAppSecret"], configuration["FacebookAccessToken"])))
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FacebookAdapter"/> class.
-        /// Creates a Webex adapter.
+        /// Creates a Facebook adapter.
         /// </summary>
-        /// <param name="facebookClient">A Webex API interface.</param>
+        /// <param name="facebookClient">A Facebook API interface.</param>
         public FacebookAdapter(FacebookClientWrapper facebookClient)
         {
             _facebookClient = facebookClient ?? throw new ArgumentNullException(nameof(facebookClient));
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             {
                 if (activity.Type != ActivityTypes.Message)
                 {
-                    throw new Exception("Unknown message type");
+                    throw new Exception("Only Activities of type Message are supported for sending.");
                 }
 
                 var message = FacebookHelper.ActivityToFacebook(activity);
@@ -96,7 +96,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <returns>A resource response with the Id of the updated activity.</returns>
         public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
-            // Facebook adapter does not support updateActivity.
             return Task.FromException<ResourceResponse>(new NotImplementedException("Facebook adapter does not support updateActivity."));
         }
 
@@ -109,7 +108,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
-            // Facebook adapter does not support deleteActivity.
             return Task.FromException(new NotImplementedException("Facebook adapter does not support deleteActivity."));
         }
 
@@ -169,20 +167,13 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
 
             FacebookResponseEvent facebookEvent = null;
-            try
-            {
-                facebookEvent = JsonConvert.DeserializeObject<FacebookResponseEvent>(stringifyBody);
-            }
-            catch (Exception exp)
-            {
-                throw new Exception(exp.Message);
-            }
+
+            facebookEvent = JsonConvert.DeserializeObject<FacebookResponseEvent>(stringifyBody);
 
             foreach (var entry in facebookEvent.Entry)
             {
                 var payload = new List<FacebookMessage>();
 
-                // handle normal incoming stuff
                 payload = entry.Changes ?? entry.Messaging;
 
                 foreach (var message in payload)
@@ -195,14 +186,14 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                     }
                 }
 
-                // handle standby messages (this bot is not the active receiver)
+                // Handle standby messages (this bot is not the active receiver)
                 if (entry.Standby != null)
                 {
                     payload = entry.Standby;
 
                     foreach (var message in payload)
                     {
-                        // indicate that this message was received in standby mode rather than normal mode.
+                        // Indicate that this message was received in standby mode rather than normal mode.
                         message.Standby = true;
                         var activity = FacebookHelper.ProcessSingleMessage(message);
 

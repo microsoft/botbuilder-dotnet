@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <value>The quick replies array.</value>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "it needs to be set in ActivityToFacebook method")]
         [JsonProperty(PropertyName = "quick_replies")]
-        public List<object> QuickReplies { get; set; } = new List<object>();
+        public List<FacebookQuickReply> QuickReplies { get; set; } = new List<FacebookQuickReply>();
 
         [JsonProperty(PropertyName = "is_echo")]
         public bool IsEcho { get; set; }

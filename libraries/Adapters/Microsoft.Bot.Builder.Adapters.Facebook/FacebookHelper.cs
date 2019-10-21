@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents;
 using Microsoft.Bot.Schema;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
@@ -40,7 +39,13 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 // make sure the quick reply has a type
                 if (activity.GetChannelData<FacebookMessage>().Message.QuickReplies != null)
                 {
-                    facebookMessage.Message.QuickReplies = activity.GetChannelData<FacebookMessage>().Message.QuickReplies; // TODO: Add the content_type depending of what shape quick_replies has
+                    foreach (var reply in facebookMessage.Message.QuickReplies)
+                    {
+                        if (string.IsNullOrEmpty(reply.ContentType))
+                        {
+                            reply.ContentType = "text";
+                        }
+                    }
                 }
             }
 
@@ -51,13 +56,12 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                     throw new Exception("Facebook message can only contain one attachment");
                 }
 
-                var payload = JsonConvert.DeserializeObject<MessagePayload>(JsonConvert.SerializeObject(
-                    activity.Attachments[0].Content,
-                    Formatting.None,
-                    new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore,
-                    }));
+                var payload = activity.Attachments[0].Content as MessagePayload;
+
+                if (payload == null)
+                {
+                    throw new InvalidCastException();
+                }
 
                 var attach = new FacebookAttachment
                 {
@@ -83,9 +87,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 return null;
             }
 
-            if (message.Sender == null && message.Optin?.UserRef != null)
+            if (message.Sender == null && message.OptIn?.UserRef != null)
             {
-                message.Sender = new FacebookBotUser { Id = message.Optin?.UserRef };
+                message.Sender = new FacebookBotUser { Id = message.OptIn?.UserRef };
             }
 
             var activity = new Activity()
@@ -121,7 +125,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                     activity.Type = ActivityTypes.Event;
                 }
 
-                // copy fields like attachments, sticker, quick_reply, nlp, etc.
+                // copy all fields (like attachments, sticker, quick_reply, nlp, etc.)
                 activity.ChannelData = message.Message;
                 if (message.Message.Attachments != null && message.Message.Attachments.Count > 0)
                 {

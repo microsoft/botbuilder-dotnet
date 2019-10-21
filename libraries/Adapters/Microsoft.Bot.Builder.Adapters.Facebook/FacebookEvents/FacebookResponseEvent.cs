@@ -2,12 +2,14 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
 {
     public class FacebookResponseEvent
     {
-        public string Object { get; set; }
+        [JsonProperty(PropertyName = "object")]
+        public string ResponseObject { get; set; }
 
         public List<FacebookEntry> Entry { get; set; }
     }

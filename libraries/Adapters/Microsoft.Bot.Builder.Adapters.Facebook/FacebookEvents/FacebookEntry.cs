@@ -7,18 +7,34 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
 {
     public class FacebookEntry
     {
+        /// <summary>
+        /// Gets or sets the Id.
+        /// </summary>
+        /// <value>The page ID of the page.</value>
         public string Id { get; set; }
 
+        /// <summary>
+        /// Gets or sets the time of the update.
+        /// </summary>
+        /// <value>Time of update (epoch time in milliseconds).</value>
         public long Time { get; set; }
 
         /// <summary>
         /// Gets or sets the messaging list.
         /// </summary>
-        /// <value>List containing one messaging object. Note that even though this is an aggregate, it will only contain one messaging object.</value>
+        /// <value>List containing one messaging object. Note that even though this is an enumerable, it will only contain one object.</value>
         public List<FacebookMessage> Messaging { get; set; }
 
-        public List<FacebookMessage> Changes { get; set; } // TODO: check the type of this list when we have data
+        /// <summary>
+        /// Gets or sets the changes list.
+        /// </summary>
+        /// <value>List containing the list of changes.</value>
+        public List<FacebookMessage> Changes { get; set; }
 
-        public List<FacebookMessage> Standby { get; set; } // TODO: check the type of this list when we have data
+        /// <summary>
+        /// Gets or sets the standby messages list.
+        /// </summary>
+        /// <value>List containing the messages sent while in standby mode.</value>
+        public List<FacebookMessage> Standby { get; set; }
     }
 }
