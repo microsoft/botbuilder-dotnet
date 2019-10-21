@@ -1,22 +1,22 @@
 
 $Bread:multiGrainWheat=
- -multi
- -grain
- -wheat
- -multi grain
- -grain wheat
- -multi grain wheat
+-multi
+-grain
+-wheat
+-multi grain
+-grain wheat
+-multi grain wheat
 
 $Bread:rye=
- -rye
+-rye
 
 $Bread:white=
- -white
+-white
 
 $Bread:wholeWheat=
- -whole
- -wheat
- -whole wheat
+-whole
+-wheat
+-whole wheat
 
 
 # None

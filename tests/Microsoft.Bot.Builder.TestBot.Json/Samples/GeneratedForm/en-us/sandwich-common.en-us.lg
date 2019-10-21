@@ -62,7 +62,7 @@
 - {name} is changed from {toLower(oldentity)} to {toLower(entity)}.
 
 # chooseProperties
-- Did you mean {join(foreach(turn.dialogevent.value, choice, chooseProperty(choice)), " or ")}
+- Did you mean {join(foreach(turn.dialogevent.value, choice, chooseProperty(choice)), " or ")}?
 
 # chooseProperty(property)
 - "{property.entity.text}" as {property.property}
