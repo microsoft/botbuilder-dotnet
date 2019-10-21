@@ -78,14 +78,13 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         /// </remarks>
         public BotFrameworkSkillHostAdapter(
             BotAdapter adapter,
-            IBot bot,
             ICredentialProvider credentialProvider,
             IChannelProvider channelProvider = null,
             RetryPolicy connectorClientRetryPolicy = null,
             HttpClient customHttpClient = null,
             ILogger logger = null,
             IConfiguration configuration = null)
-            : this(adapter, bot, credentialProvider, new AuthenticationConfiguration(), channelProvider, connectorClientRetryPolicy, customHttpClient, logger, configuration)
+            : this(adapter, credentialProvider, new AuthenticationConfiguration(), channelProvider, connectorClientRetryPolicy, customHttpClient, logger, configuration)
         {
         }
 
@@ -109,7 +108,6 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         /// </remarks>
         public BotFrameworkSkillHostAdapter(
             BotAdapter adapter,
-            IBot bot,
             ICredentialProvider credentialProvider,
             AuthenticationConfiguration authConfig,
             IChannelProvider channelProvider = null,
@@ -117,7 +115,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
             HttpClient customHttpClient = null,
             ILogger logger = null,
             IConfiguration configuration = null)
-            : base(adapter, bot, logger)
+            : base(adapter, logger)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             _channelProvider = channelProvider;
@@ -137,7 +135,6 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         /// using a credential provider.
         /// </summary>
         /// <param name="adapter">adapter that this skillAdapter is bound to.</param>
-        /// <param name="bot">bot callback.</param>
         /// <param name="credentials">The credentials to be used for token acquisition.</param>
         /// <param name="authConfig">The authentication configuration.</param>
         /// <param name="channelProvider">The channel provider.</param>
@@ -152,7 +149,6 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         /// </remarks>
         public BotFrameworkSkillHostAdapter(
             BotAdapter adapter,
-            IBot bot,
             AppCredentials credentials,
             AuthenticationConfiguration authConfig,
             IChannelProvider channelProvider = null,
@@ -160,7 +156,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
             HttpClient customHttpClient = null,
             ILogger logger = null,
             IConfiguration configuration = null)
-            : base(adapter, bot, logger)
+            : base(adapter, logger)
         {
             _appCredentials = credentials ?? throw new ArgumentNullException(nameof(credentials));
             _channelProvider = channelProvider;
@@ -223,7 +219,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
             var appCredentials = await GetAppCredentialsAsync(botAppId, skill.AppId, cancellationToken).ConfigureAwait(false);
             if (appCredentials == null)
             {
-                throw new InvalidOperationException("Unable to get appcredentials to connect to the skill");
+                throw new InvalidOperationException("Unable to get appCredentials to connect to the skill");
             }
 
             // Get token for the skill call
@@ -239,18 +235,19 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
                 activity.Conversation.Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new[]
                 {
                     activity.Conversation.Id,
-                    activity.ServiceUrl,
+                    activity.ServiceUrl
                 })));
                 activity.ServiceUrl = SkillHostEndpoint;
                 activity.Recipient.Properties["skillId"] = skill.Id;
-                var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json");
-
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await client.PostAsync($"{skill.SkillEndpoint}", jsonContent, cancellationToken).ConfigureAwait(false);
-                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                if (content.Length > 0)
+                using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
                 {
-                    return JsonConvert.DeserializeObject<InvokeResponse>(content);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var response = await client.PostAsync($"{skill.SkillEndpoint}", jsonContent, cancellationToken).ConfigureAwait(false);
+                    var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    if (content.Length > 0)
+                    {
+                        return JsonConvert.DeserializeObject<InvokeResponse>(content);
+                    }
                 }
             }
 
@@ -309,7 +306,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         {
             var clientKey = $"{serviceUrl}{appCredentials?.MicrosoftAppId ?? string.Empty}";
 
-            return _connectorClients.GetOrAdd(clientKey, (key) =>
+            return _connectorClients.GetOrAdd(clientKey, key =>
             {
                 ConnectorClient connectorClient;
                 if (appCredentials != null)
@@ -371,7 +368,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
 
         private void LoadFromConfiguration(IConfiguration configuration)
         {
-            var section = configuration?.GetSection($"BotFrameworkSkills");
+            var section = configuration?.GetSection("BotFrameworkSkills");
             var skills = section?.Get<BotFrameworkSkill[]>();
             if (skills != null)
             {
