@@ -19,9 +19,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         private readonly string _serializedPerson = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/FakePersonId.json"));
 
         [Fact]
-        public void PayloadToActivityShouldReturnNullWithNullPayload()
+        public void PayloadToActivityShouldThrowArgumentNullException()
         {
-            Assert.Null(WebexHelper.PayloadToActivity(null, _identity));
+            Assert.Throws<ArgumentNullException>(() => { WebexHelper.PayloadToActivity(null, _identity); });
         }
 
         [Fact]
@@ -120,14 +120,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public void HandleMessageAttachmentsShouldFailWithMoreThanOneAttachment()
+        public void HandleMessageAttachmentsShouldSucceedWithMoreThanOneAttachment()
         {
             var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/MessageAttachments.json")));
 
-            Assert.Throws<Exception>(() =>
-            {
-                var attachmentList = WebexHelper.HandleMessageAttachments(message);
-            });
+            var attachmentList = WebexHelper.HandleMessageAttachments(message);
+
+            Assert.Equal(message.FileUris[0].AbsoluteUri, attachmentList[0].ContentUrl);
         }
 
         [Fact]

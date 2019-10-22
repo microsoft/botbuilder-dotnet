@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         {
             if (payload == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(payload));
             }
 
             var activity = new Activity
@@ -216,20 +216,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         {
             var attachmentsList = new List<Attachment>();
 
-            for (var i = 0; i < message.FileCount; i++)
+            var attachment = new Attachment
             {
-                var attachment = new Attachment
-                {
-                    ContentUrl = message.FileUris[i].AbsoluteUri,
-                };
+                // Currently Webex API takes only one attachment
+                ContentUrl = message.FileUris[0].AbsoluteUri,
+            };
 
-                attachmentsList.Add(attachment);
-            }
-
-            if (attachmentsList.Count > 1)
-            {
-                throw new Exception("Currently Webex API takes only one attachment");
-            }
+            attachmentsList.Add(attachment);
 
             return attachmentsList;
         }
