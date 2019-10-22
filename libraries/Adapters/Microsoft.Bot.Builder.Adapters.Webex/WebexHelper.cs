@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
     internal static class WebexHelper
     {
         /// <summary>
-        /// Creates a <see cref="Activity"/> using the body of a request.
+        /// Creates an <see cref="Activity"/> using the body of a request.
         /// </summary>
         /// <param name="payload">The payload obtained from the body of the request.</param>
         /// <param name="identity">The identity of the bot.</param>
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         {
             if (payload == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(payload));
             }
 
             var activity = new Activity
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         }
 
         /// <summary>
-        /// Gets a decrypted message by its Id.
+        /// Gets a decrypted <see cref="Message"/> by its Id.
         /// </summary>
         /// <param name="payload">The payload obtained from the body of the request.</param>
         /// <param name="decrypterFunc">The function used to decrypt the message.</param>
@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         }
 
         /// <summary>
-        /// Converts a decrypted related to an attachment action into an <see cref="Activity"/>.
+        /// Converts a decrypted <see cref="Message"/> related to an attachment action into an <see cref="Activity"/>.
         /// </summary>
         /// <param name="decryptedMessage">The decrypted message obtained from the body of the request.</param>
         /// <param name="identity">The identity of the bot.</param>
@@ -208,7 +208,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         }
 
         /// <summary>
-        /// Adds the message's files to a attachments list.
+        /// Adds the message's files to an attachments list.
         /// </summary>
         /// <param name="message">The message with the files to process.</param>
         /// <returns>A list of attachments containing the message's files.</returns>
@@ -216,20 +216,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         {
             var attachmentsList = new List<Attachment>();
 
-            for (var i = 0; i < message.FileCount; i++)
+            var attachment = new Attachment
             {
-                var attachment = new Attachment
-                {
-                    ContentUrl = message.FileUris[i].AbsoluteUri,
-                };
+                // Currently Webex API takes only one attachment
+                ContentUrl = message.FileUris[0].AbsoluteUri,
+            };
 
-                attachmentsList.Add(attachment);
-            }
-
-            if (attachmentsList.Count > 1)
-            {
-                throw new Exception("Currently Webex API takes only one attachment");
-            }
+            attachmentsList.Add(attachment);
 
             return attachmentsList;
         }
