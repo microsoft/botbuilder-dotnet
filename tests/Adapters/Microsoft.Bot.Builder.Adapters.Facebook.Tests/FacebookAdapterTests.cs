@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         [Fact]
         public async void ProcessAsyncShouldSucceedWithCorrectData()
         {
-            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Payload.json");
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/Payload.json");
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
             var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));

@@ -44,6 +44,7 @@
                 <Source>.*\\FacebookRecipient.cs</Source>
                 <Source>.*\\FacebookResponseEvent.cs</Source>
                 <Source>.*\\FacebookResponseOk.cs</Source>
+                <Source>.*\\FacebookQuickReply.cs</Source>
                 <Source>.*\\MessagePayload.cs</Source>
                 <Source>.*\\Message.cs</Source>
               </Exclude>
