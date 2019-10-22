@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// Prompt Object.
     /// </summary>
-    public class Prompt
+    public class QnaMakerPrompt
     {
         private const int DefaultDisplayOrder = 0;
 
