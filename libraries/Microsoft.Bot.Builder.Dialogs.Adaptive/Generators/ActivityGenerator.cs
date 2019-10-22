@@ -47,15 +47,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             else
             {
+                JObject lgStructuredResult;
                 try
                 {
-                    var lgStructuredResult = JObject.FromObject(lgResult);
-                    return BuildActivityFromLGStructuredResult(lgStructuredResult);
+                    lgStructuredResult = JObject.FromObject(lgResult);
                 }
                 catch
                 {
                     return BuildActivityFromText(lgResult?.ToString()?.Trim());
                 }
+
+                return BuildActivityFromLGStructuredResult(lgStructuredResult);
             }
         }
 
@@ -80,15 +82,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 Trace.TraceWarning($"There is no ILanguageGenerator registered in the ITurnContext so no data binding was performed for template: {template}");
             }
 
+            JObject lgStructuredResult;
             try
             {
-                var lgStructuredResult = JObject.Parse(lgStringResult);
-                return BuildActivityFromLGStructuredResult(lgStructuredResult);
+                lgStructuredResult = JObject.Parse(lgStringResult);
             }
             catch
             {
                 return BuildActivityFromText(lgStringResult?.ToString()?.Trim());
             }
+
+            return BuildActivityFromLGStructuredResult(lgStructuredResult);
         }
 
         /// <summary>

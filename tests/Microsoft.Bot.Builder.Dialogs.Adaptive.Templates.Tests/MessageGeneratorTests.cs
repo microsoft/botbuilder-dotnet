@@ -45,6 +45,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(Exception))]
+        public async Task TestNotSupportStructuredType()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var mg = new ActivityGenerator();
+            var result = await mg.Generate(context, "[notSupport]", null) as Activity;
+        }
+
+        [TestMethod]
         public async Task ActivityGeneratorTest()
         {
             var context = await GetTurnContext("NormalStructuredLG.lg");
