@@ -58,16 +58,17 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         }
 
         [Fact]
-        public void ActivityToTwilioShouldReturnNullWithNullActivity()
+        public void ActivityToTwilioShouldShouldThrowArgumentNullExceptionWithNullActivity()
         {
-            Assert.Null(TwilioHelper.ActivityToTwilio(null, TwilioNumber));
+            Assert.Throws<ArgumentNullException>(() => { TwilioHelper.ActivityToTwilio(null, TwilioNumber); });
         }
 
         [Fact]
-        public void ActivityToTwilioShouldReturnNullWithEmptyOrInvalidNumber()
+        public void ActivityToTwilioShouldThrowArgumentNullExceptionWithEmptyOrInvalidNumber()
         {
-            Assert.Null(TwilioHelper.ActivityToTwilio(default, "not_a_number"));
-            Assert.Null(TwilioHelper.ActivityToTwilio(default, string.Empty));
+
+            Assert.Throws<ArgumentNullException>(() => { TwilioHelper.ActivityToTwilio(default,"not_a_number"); });
+            Assert.Throws<ArgumentNullException>(() => { TwilioHelper.ActivityToTwilio(default, string.Empty); });
         }
 
         [Fact]
@@ -126,9 +127,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         }
 
         [Fact]
-        public void PayloadToActivityShouldReturnNullWithNullBody()
+        public void PayloadToActivityShouldThrowArgumentNullExceptionWithNullBody()
         {
-            Assert.Null(TwilioHelper.PayloadToActivity(null));
+            Assert.Throws<ArgumentNullException>(() => { TwilioHelper.PayloadToActivity(null); });
         }
     }
 }

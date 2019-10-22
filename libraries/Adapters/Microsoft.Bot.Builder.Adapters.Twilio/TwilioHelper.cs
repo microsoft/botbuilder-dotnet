@@ -36,9 +36,14 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <seealso cref="TwilioAdapter.SendActivitiesAsync(ITurnContext, Activity[], System.Threading.CancellationToken)"/>
         public static CreateMessageOptions ActivityToTwilio(Activity activity, string twilioNumber)
         {
-            if (activity == null || string.IsNullOrWhiteSpace(twilioNumber))
+            if (activity == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(activity));
+            }
+
+            if (string.IsNullOrWhiteSpace(twilioNumber))
+            {
+                throw new ArgumentNullException(nameof(twilioNumber));
             }
 
             var mediaUrls = new List<Uri>();
@@ -101,7 +106,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         {
             if (payload == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(payload));
             }
             
             var twilioMessage = JsonConvert.DeserializeObject<TwilioMessage>(JsonConvert.SerializeObject(payload));
