@@ -99,3 +99,9 @@
 [SubStruct
     Text = {text}
 ]
+
+
+# templateWithSquareBrackets(manufacturer)
+[Struct
+    Text = {manufacturer['Name']}
+]
