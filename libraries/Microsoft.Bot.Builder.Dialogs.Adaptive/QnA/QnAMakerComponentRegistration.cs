@@ -4,7 +4,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
 {
     public class QnAMakerComponentRegistration : ComponentRegistration
     {

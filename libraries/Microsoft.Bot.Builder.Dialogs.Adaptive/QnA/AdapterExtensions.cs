@@ -1,6 +1,6 @@
 ﻿using Microsoft.Bot.Builder.Dialogs.Declarative;
 
-namespace Microsoft.Bot.Builder.AI.QnA
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
 {
     public static class AdapterExtensions
     {

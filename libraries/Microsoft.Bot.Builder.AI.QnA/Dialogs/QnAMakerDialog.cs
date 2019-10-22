@@ -8,13 +8,10 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA
+namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 {
     /// <summary>
     /// QnAMaker dialog which uses QnAMaker to get an answer.
@@ -22,9 +19,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
     public class QnAMakerDialog : Dialog
     {
         private readonly HttpClient httpClient;
-        private Expression knowledgebaseId;
-        private Expression endpointkey;
-        private Expression hostname;
+        private string knowledgebaseId;
+        private string endpointkey;
+        private string hostname;
 
         public QnAMakerDialog(
             string knowledgeBaseId,
@@ -51,8 +48,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
             this.CardNoMatchText = cardNoMatchText;
             this.StrictFilters = strictFilters;
             this.httpClient = httpClient;
-            this.NoAnswer = new StaticActivityTemplate(noAnswer);
-            this.CardNoMatchResponse = new StaticActivityTemplate(cardNoMatchResponse);
+            this.NoAnswer = noAnswer;
+            this.CardNoMatchResponse = cardNoMatchResponse;
             this.QnaMakerClient = qnaMakerClient;
         }
 
@@ -66,29 +63,29 @@ namespace Microsoft.Bot.Builder.AI.QnA
         [JsonProperty("knowledgeBaseId")]
         public string KnowledgeBaseId
         {
-            get { return knowledgebaseId?.ToString(); }
-            set { knowledgebaseId = value != null ? new ExpressionEngine().Parse(value) : null; }
+            get { return knowledgebaseId; }
+            set { knowledgebaseId = value; }
         }
 
         [JsonProperty("hostname")]
         public string HostName
         {
-            get { return hostname?.ToString(); }
-            set { hostname = value != null ? new ExpressionEngine().Parse(value) : null; }
+            get { return hostname; }
+            set { hostname = value; }
         }
 
         [JsonProperty("endpointKey")]
         public string EndpointKey
         {
-            get { return endpointkey?.ToString(); }
-            set { endpointkey = value != null ? new ExpressionEngine().Parse(value) : null; }
+            get { return endpointkey; }
+            set { endpointkey = value; }
         }
 
         [JsonProperty("threshold")]
         public float Threshold { get; set; }
 
         [JsonProperty("noAnswer")]
-        public ITemplate<Activity> NoAnswer { get; set; }
+        public Activity NoAnswer { get; set; }
 
         [JsonProperty("activeLearningCardTitle")]
         public string ActiveLearningCardTitle { get; set; }
@@ -97,7 +94,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string CardNoMatchText { get; set; }
 
         [JsonProperty("cardNoMatchResponse")]
-        public ITemplate<Activity> CardNoMatchResponse { get; set; }
+        public Activity CardNoMatchResponse { get; set; }
 
         [JsonProperty("strictFilters")]
         public Metadata[] StrictFilters { get; set; }
@@ -114,9 +111,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             var endpoint = new QnAMakerEndpoint
             {
-                EndpointKey = endpointkey.TryEvaluate(dc.State).error == null ? endpointkey.TryEvaluate(dc.State).value.ToString() : this.EndpointKey,
-                Host = hostname.TryEvaluate(dc.State).error == null ? hostname.TryEvaluate(dc.State).value.ToString() : this.HostName,
-                KnowledgeBaseId = knowledgebaseId.TryEvaluate(dc.State).error == null ? knowledgebaseId.TryEvaluate(dc.State).value.ToString() : this.KnowledgeBaseId
+                EndpointKey = this.EndpointKey,
+                Host = this.HostName,
+                KnowledgeBaseId = this.KnowledgeBaseId,
             };
 
             var qnamakerOptions = new QnAMakerOptions
@@ -135,20 +132,20 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 return EndOfTurn;
             }
 
-            return await ExecuteAdaptiveQnAMakerDialog(dc, this.QnaMakerClient, qnamakerOptions, cancellationToken).ConfigureAwait(false);
+            return await ExecuteQnAMakerDialogAsync(dc, this.QnaMakerClient, qnamakerOptions, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<DialogTurnResult> ExecuteAdaptiveQnAMakerDialog(DialogContext dc, IQnAMakerClient qnaMaker, QnAMakerOptions qnamakerOptions, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<DialogTurnResult> ExecuteQnAMakerDialogAsync(DialogContext dc, IQnAMakerClient qnaMaker, QnAMakerOptions qnamakerOptions, CancellationToken cancellationToken = default(CancellationToken))
         {
             var dialog = new QnAMakerActionBuilder(qnaMaker).BuildDialog(dc);
 
             // Set values for active dialog.
             var qnaDialogResponseOptions = new QnADialogResponseOptions
             {
-                NoAnswer = NoAnswer ?? new StaticActivityTemplate(null),
+                NoAnswer = NoAnswer,
                 ActiveLearningCardTitle = ActiveLearningCardTitle ?? QnAMakerActionBuilder.DefaultCardTitle,
                 CardNoMatchText = CardNoMatchText ?? QnAMakerActionBuilder.DefaultCardNoMatchText,
-                CardNoMatchResponse = CardNoMatchResponse ?? new StaticActivityTemplate(null)
+                CardNoMatchResponse = CardNoMatchResponse,
             };
 
             var dialogOptions = new Dictionary<string, object>

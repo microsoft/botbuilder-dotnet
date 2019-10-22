@@ -15,26 +15,26 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// QnAMaker action builder class.
     /// </summary>
-    internal class QnAMakerActionBuilder
+    public class QnAMakerActionBuilder
     {
         /// <summary>
         /// QnA Maker action builder.
         /// </summary>
-        internal const string QnAMakerDialogName = "qnamaker-dialog";
+        public const string QnAMakerDialogName = "qnamaker-dialog";
 
         // Dialog Options parameters
-        internal const float DefaultThreshold = 0.3F;
-        internal const int DefaultTopN = 3;
-        internal const string DefaultNoAnswer = "No QnAMaker answers found.";
+        public const float DefaultThreshold = 0.3F;
+        public const int DefaultTopN = 3;
+        public const string DefaultNoAnswer = "No QnAMaker answers found.";
 
         // Card parameters
-        internal const string DefaultCardTitle = "Did you mean:";
-        internal const string DefaultCardNoMatchText = "None of the above.";
-        internal const string DefaultCardNoMatchResponse = "Thanks for the feedback.";
+        public const string DefaultCardTitle = "Did you mean:";
+        public const string DefaultCardNoMatchText = "None of the above.";
+        public const string DefaultCardNoMatchResponse = "Thanks for the feedback.";
 
         // Define value names for values tracked inside the dialogs.
-        internal const string QnAOptions = "qnaOptions";
-        internal const string QnADialogResponseOptions = "qnaDialogResponseOptions";
+        public const string QnAOptions = "qnaOptions";
+        public const string QnADialogResponseOptions = "qnaDialogResponseOptions";
         private const string CurrentQuery = "currentQuery";
         private const string QnAData = "qnaData";
         private const string QnAContextData = "qnaContextData";
@@ -54,13 +54,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Dialog helper to generate dialogs.
         /// </summary>
         /// <param name="qnaMakerClient">QnA Maker client.</param>
-        internal QnAMakerActionBuilder(IQnAMakerClient qnaMakerClient)
+        public QnAMakerActionBuilder(IQnAMakerClient qnaMakerClient)
         {
             _qnaMakerDialog = new WaterfallDialog(QnAMakerDialogName)
                 .AddStep(CallGenerateAnswerAsync)
-                .AddStep(CallTrain)
-                .AddStep(CheckForMultiTurnPrompt)
-                .AddStep(DisplayQnAResult);
+                .AddStep(CallTrainAsync)
+                .AddStep(CheckForMultiTurnPromptAsync)
+                .AddStep(DisplayQnAResultAsync);
             _qnaMakerClient = qnaMakerClient ?? throw new ArgumentNullException(nameof(qnaMakerClient));
         }
 
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </summary>
         /// <param name="dc">DialogContext.</param>
         /// <returns>Updated dialog context.</returns>
-        internal DialogContext BuildDialog(DialogContext dc)
+        public DialogContext BuildDialog(DialogContext dc)
         {
             if (dc == null)
             {
@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             return await stepContext.NextAsync(result, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<DialogTurnResult> CallTrain(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> CallTrainAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var trainResponses = stepContext.Values[QnAData] as List<QueryResult>;
             var currentQuery = stepContext.Values[CurrentQuery] as string;
@@ -226,7 +226,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 }
                 else if (reply.Equals(qnaDialogResponseOptions.CardNoMatchText, StringComparison.OrdinalIgnoreCase))
                 {
-                    var activity = await qnaDialogResponseOptions.CardNoMatchResponse.BindToData(stepContext.Context, stepContext.State).ConfigureAwait(false);
+                    var activity = qnaDialogResponseOptions.CardNoMatchResponse;
                     if (activity == null)
                     {
                         await stepContext.Context.SendActivityAsync(DefaultCardNoMatchResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -247,7 +247,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             return await stepContext.NextAsync(stepContext.Result, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<DialogTurnResult> CheckForMultiTurnPrompt(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> CheckForMultiTurnPromptAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if (stepContext.Result is List<QueryResult> response && response.Count > 0)
             {
@@ -290,7 +290,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             return await stepContext.NextAsync(stepContext.Result, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<DialogTurnResult> DisplayQnAResult(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> DisplayQnAResultAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var dialogOptions = GetDialogOptionsValue(stepContext);
             var qnaDialogResponseOptions = dialogOptions[QnADialogResponseOptions] as QnADialogResponseOptions;
@@ -298,7 +298,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (reply.Equals(qnaDialogResponseOptions.CardNoMatchText, StringComparison.OrdinalIgnoreCase))
             {
-                var activity = await qnaDialogResponseOptions.CardNoMatchResponse.BindToData(stepContext.Context, stepContext.State).ConfigureAwait(false);
+                var activity = qnaDialogResponseOptions.CardNoMatchResponse;
                 if (activity == null)
                 {
                     await stepContext.Context.SendActivityAsync(DefaultCardNoMatchResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -325,7 +325,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
             else
             {
-                var activity = await qnaDialogResponseOptions.NoAnswer.BindToData(stepContext.Context, stepContext.State).ConfigureAwait(false);
+                var activity = qnaDialogResponseOptions.NoAnswer;
                 if (activity == null)
                 {
                     await stepContext.Context.SendActivityAsync(DefaultNoAnswer, cancellationToken: cancellationToken).ConfigureAwait(false);
