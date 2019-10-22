@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         [Fact]
         public void ActivityToFacebookShouldReturnMessageWithAttachment()
         {
-            var activityJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Activities.json");
+            var activityJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/Activities.json");
             var activity = JsonConvert.DeserializeObject<Activity>(activityJson);
 
             var messageOption = FacebookHelper.ActivityToFacebook(activity);
@@ -35,40 +35,21 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public void ActivityToFacebookShouldThrowErrorWithTwoOrMoreAttachments()
+        public void ActivityToFacebookShouldThrowNullArgumentExceptionWithActivityNull()
         {
-            var activity = new Activity()
-            {
-                Conversation = new ConversationAccount()
-                {
-                    Id = "testId",
-                },
-                Attachments = new List<Attachment> { new Attachment(contentUrl: ExampleUrl), new Attachment(contentUrl: ExampleUrl) },
-            };
-
-            Assert.Throws<Exception>(() => { FacebookHelper.ActivityToFacebook(activity); });
+            Assert.Throws<ArgumentNullException>(() => { FacebookHelper.ActivityToFacebook(null); });
         }
 
         [Fact]
-        public void ActivityToFacebookShouldReturnNullWithActivityNull()
+        public void ProcessSingleMessageShouldThrowNullArgumentExceptionWithMessageNull()
         {
-            var messageOptions = FacebookHelper.ActivityToFacebook(null);
-
-            Assert.Null(messageOptions);
-        }
-
-        [Fact]
-        public void ProcessSingleMessageShouldReturnNullWithMessageNull()
-        {
-            var nullActivity = FacebookHelper.ProcessSingleMessage(null);
-
-            Assert.Null(nullActivity);
+            Assert.Throws<ArgumentNullException>(() => { FacebookHelper.ProcessSingleMessage(null); });
         }
 
         [Fact]
         public void ProcessSingleMessageShouldReturnAnActivityWithMessageWithData()
         {
-            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\FacebookMessages.json");
+            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/FacebookMessages.json");
             var facebookMessage = JsonConvert.DeserializeObject<List<FacebookMessage>>(facebookMessageJson)[0];
             var activity = FacebookHelper.ProcessSingleMessage(facebookMessage);
 
@@ -78,7 +59,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         [Fact]
         public void ProcessSingleMessageShouldReturnConversationIdWithoutDataOnSender()
         {
-            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\FacebookMessages.json");
+            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/FacebookMessages.json");
             var facebookMessage = JsonConvert.DeserializeObject<List<FacebookMessage>>(facebookMessageJson)[1];
             var activity = FacebookHelper.ProcessSingleMessage(facebookMessage);
 
@@ -89,7 +70,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         [Fact]
         public void ProcessSingleMessageShouldReturnActivityWithMessage()
         {
-            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\FacebookMessages.json");
+            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/FacebookMessages.json");
             var facebookMessage = JsonConvert.DeserializeObject<List<FacebookMessage>>(facebookMessageJson)[2];
             var activity = FacebookHelper.ProcessSingleMessage(facebookMessage);
 
@@ -102,7 +83,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         [Fact]
         public void ProcessSingleMessageShouldReturnActivityWithAttachments()
         {
-            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\FacebookMessages.json");
+            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/FacebookMessages.json");
             var facebookMessage = JsonConvert.DeserializeObject<List<FacebookMessage>>(facebookMessageJson)[3];
             var activity = FacebookHelper.ProcessSingleMessage(facebookMessage);
 
@@ -113,7 +94,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         [Fact]
         public void ProcessSingleMessageShouldReturnActivityWithPostBack()
         {
-            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\FacebookMessages.json");
+            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/FacebookMessages.json");
             var facebookMessage = JsonConvert.DeserializeObject<List<FacebookMessage>>(facebookMessageJson)[4];
             var activity = FacebookHelper.ProcessSingleMessage(facebookMessage);
 

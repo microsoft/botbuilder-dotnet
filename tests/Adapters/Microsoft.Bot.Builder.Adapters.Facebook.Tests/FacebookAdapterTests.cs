@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         [Fact]
         public async void ProcessAsyncShouldSucceedWithStandbyMessages()
         {
-            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\PayloadWithStandby.json");
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/PayloadWithStandby.json");
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
             var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
@@ -139,32 +139,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void ProcessAsyncShouldThrowExceptionWithInvalidBody()
-        {
-            var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
-            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes("wrong-formatted-json"));
-            var httpRequest = new Mock<HttpRequest>();
-            var httpResponse = new Mock<HttpResponse>();
-            var bot = new Mock<IBot>();
-
-            facebookClientWrapper.Setup(api => api.VerifySignature(It.IsAny<HttpRequest>(), It.IsAny<string>())).Returns(true);
-
-            httpRequest.SetupGet(req => req.Query[It.IsAny<string>()]).Returns("test");
-            httpRequest.SetupGet(req => req.Body).Returns(stream);
-
-            await Assert.ThrowsAsync<Exception>(async () =>
-            {
-                await facebookAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default(CancellationToken));
-            });
-        }
-
-        [Fact]
         public async Task ProcessAsyncShouldThrowExceptionWithUnverifiedSignature()
         {
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
             var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
-            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Payload.json");
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/Payload.json");
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
             var httpRequest = new Mock<HttpRequest>();
             var httpResponse = new Mock<HttpResponse>();

@@ -11,7 +11,6 @@
     "name": "mockedName",
     "aadObjectId": null,
     "role": null
-
   },
   "conversation": {
     "isGroup": null,
@@ -21,14 +20,12 @@
     "aadObjectId": null,
     "role": null,
     "tenantId": null
-
   },
   "recipient": {
     "id": "123123123",
     "name": "mockedName",
     "aadObjectId": null,
     "role": null
-
   },
   "textFormat": null,
   "attachmentLayout": null,
@@ -51,7 +48,6 @@
       "content": null,
       "name": null,
       "thumbnailUrl": null
-
     }
   ],
   "entities": [],
@@ -71,5 +67,4 @@
   "textHighlights": null,
   "semanticAction": null,
   "callerId": null
-
 }

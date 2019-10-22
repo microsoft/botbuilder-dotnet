@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
@@ -24,7 +25,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         {
             if (activity == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(activity));
             }
 
             var facebookMessage = new FacebookMessage(activity.Conversation.Id, new Message(), "RESPONSE");
@@ -51,18 +52,14 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             if (activity.Attachments != null && activity.Attachments.Count > 0)
             {
-                if (activity.Attachments.Count > 1)
-                {
-                    throw new Exception("Facebook message can only contain one attachment");
-                }
-
-                var payload = activity.Attachments[0].Content as MessagePayload;
-
-                if (payload == null)
-                {
-                    throw new InvalidCastException();
-                }
-
+                var payload = JsonConvert.DeserializeObject<MessagePayload>(JsonConvert.SerializeObject(
+                    activity.Attachments[0].Content,
+                    Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                    }));
+                
                 var attach = new FacebookAttachment
                 {
                     Type = activity.Attachments[0].ContentType,
@@ -84,7 +81,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         {
             if (message == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(message));
             }
 
             if (message.Sender == null && message.OptIn?.UserRef != null)

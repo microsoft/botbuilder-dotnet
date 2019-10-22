@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
             const string requestHash = "SHA1=70C0E1B415F16D986EB839144FC85A941A5899C7";
             var facebookWrapper = new FacebookClientWrapper(_testOptions);
             var request = new Mock<HttpRequest>();
-            var stringifyBody = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\RequestResponse.json");
+            var stringifyBody = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/RequestResponse.json");
 
             request.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns(requestHash);
 
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         [Fact]
         public async void SendMessageAsyncShouldReturnAnEmptyStringWithWrongPath()
         {
-            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\FacebookMessages.json");
+            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/FacebookMessages.json");
             var facebookMessage = JsonConvert.DeserializeObject<List<FacebookMessage>>(facebookMessageJson)[5];
             var facebookWrapper = new FacebookClientWrapper(_testOptions);
             var response = await facebookWrapper.SendMessageAsync("wrongPath", facebookMessage, null, default(CancellationToken));
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         [Fact]
         public async void SendMessageAsyncShouldThrowAnExceptionWithNullPath()
         {
-            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\FacebookMessages.json");
+            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/FacebookMessages.json");
             var facebookMessage = JsonConvert.DeserializeObject<List<FacebookMessage>>(facebookMessageJson)[5];
             var facebookWrapper = new FacebookClientWrapper(_testOptions);
 
