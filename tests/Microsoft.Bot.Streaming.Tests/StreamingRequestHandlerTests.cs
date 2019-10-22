@@ -134,6 +134,22 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         }
 
         [Fact]
+        public async void DoesNotThrowExceptionIfReceiveRequestIsNull()
+        {
+            // Arrange
+            var appId = Guid.NewGuid().ToString();
+            var appPassword = "password123";
+            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), new MicrosoftAppCredentials(appId, appPassword), Guid.NewGuid().ToString());
+            ReceiveRequest testRequest = null;
+
+            // Act
+            var response = await handler.ProcessRequestAsync(testRequest);
+
+            // Assert
+            Assert.Equal(400, response.StatusCode);
+        }
+
+        [Fact]
         public async void RequestHandlerRemembersConversations()
         {
             // Arrange
