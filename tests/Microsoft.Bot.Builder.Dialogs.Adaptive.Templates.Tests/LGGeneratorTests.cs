@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var languageGeneratorManager = new LanguageGeneratorManager(resourceExplorer);
             var generator = languageGeneratorManager.LanguageGenerators["import.lg"];
 
-            var result = await generator.Generate(GetTurnContext(locale: "foo"), "[test3]", null);
+            var result = await generator.Generate(GetTurnContext(string.Empty), "[test3]", null);
             Assert.AreEqual("default3", result);
 
             result = await generator.Generate(GetTurnContext(locale: "en-us"), "[test3]", null);
@@ -81,6 +81,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             result = await generator.Generate(GetTurnContext(locale: "foo"), "[test3]", null);
             Assert.AreEqual("default3", result);
+
+            result = await generator.Generate(GetTurnContext(locale: "zh-cn"), "[test3]", null);
+            Assert.AreEqual("default3-cn", result);
         }
 
         [TestMethod]
