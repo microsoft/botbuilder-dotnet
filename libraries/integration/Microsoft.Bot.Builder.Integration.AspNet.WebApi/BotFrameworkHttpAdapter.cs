@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Logging;
@@ -125,7 +126,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             {
                 HttpContext.Current.AcceptWebSocketRequest(async context =>
                 {
-                    var requestHandler = new StreamingRequestHandler(bot, this, _credentialProvider as MicrosoftAppCredentials, context.WebSocket, _logger);
+                    var appId = (_credentialProvider as ConfigurationCredentialProvider)?.AppId;
+                    var appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
+                    var requestHandler = new StreamingRequestHandler(bot, this, new MicrosoftAppCredentials(appId, appPassword), context.WebSocket, _logger);
 
                     if (_requestHandlers == null)
                     {
