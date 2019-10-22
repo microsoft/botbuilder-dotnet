@@ -56,7 +56,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             using (var request = new HttpRequestMessage())
             {
+#pragma warning disable CA1308 // the appsecret_proof should be sent in lowerCase.
                 request.RequestUri = new Uri($"https://{_options.FacebookApiHost}/{_options.FacebookApiVersion + path}?access_token={_options.FacebookAccessToken}&appsecret_proof={proof.ToLowerInvariant()}");
+#pragma warning restore CA1308 // the appsecret_proof should be sent in lowerCase.
                 request.Method = method;
                 var json = JsonConvert.SerializeObject(
                     payload,
