@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// GetResource by id.
         /// </summary>
         /// <param name="id">Resource ID.</param>
-        /// <param name="resource">the found resource </param>
+        /// <param name="resource">the found resource.</param>
         /// <returns>true if resource was found.</returns>
         public bool TryGetResource(string id, out IResource resource)
         {

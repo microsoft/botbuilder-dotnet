@@ -21,7 +21,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     public class QnAMakerDialog : Dialog
     {
-        private QnAMaker qnamaker;
         private readonly HttpClient httpClient;
         private Expression knowledgebaseId;
         private Expression endpointkey;
@@ -38,6 +37,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             Activity cardNoMatchResponse = null,
             Metadata[] strictFilters = null,
             HttpClient httpClient = null,
+            IQnAMakerClient qnaMakerClient = null,
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0)
             : base()
@@ -53,6 +53,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             this.httpClient = httpClient;
             this.NoAnswer = new StaticActivityTemplate(noAnswer);
             this.CardNoMatchResponse = new StaticActivityTemplate(cardNoMatchResponse);
+            this.QnaMakerClient = qnaMakerClient;
         }
 
         [JsonConstructor]
@@ -101,6 +102,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         [JsonProperty("strictFilters")]
         public Metadata[] StrictFilters { get; set; }
 
+        [JsonIgnore]
+        public IQnAMakerClient QnaMakerClient { get; set; }
+
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
@@ -111,8 +115,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var endpoint = new QnAMakerEndpoint
             {
                 EndpointKey = endpointkey.TryEvaluate(dc.State).error == null ? endpointkey.TryEvaluate(dc.State).value.ToString() : this.EndpointKey,
-                Host = endpointkey.TryEvaluate(dc.State).error == null ? hostname.TryEvaluate(dc.State).value.ToString() : this.HostName,
-                KnowledgeBaseId = endpointkey.TryEvaluate(dc.State).error == null ? knowledgebaseId.TryEvaluate(dc.State).value.ToString() : this.KnowledgeBaseId
+                Host = hostname.TryEvaluate(dc.State).error == null ? hostname.TryEvaluate(dc.State).value.ToString() : this.HostName,
+                KnowledgeBaseId = knowledgebaseId.TryEvaluate(dc.State).error == null ? knowledgebaseId.TryEvaluate(dc.State).value.ToString() : this.KnowledgeBaseId
             };
 
             var qnamakerOptions = new QnAMakerOptions
@@ -121,9 +125,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 StrictFilters = this.StrictFilters
             };
 
-            if (qnamaker == null)
+            if (this.QnaMakerClient == null)
             {
-                qnamaker = new QnAMaker(endpoint, qnamakerOptions, httpClient);
+                this.QnaMakerClient = new QnAMaker(endpoint, qnamakerOptions, httpClient);
             }
 
             if (dc.Context?.Activity?.Type != ActivityTypes.Message)
@@ -131,20 +135,20 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 return EndOfTurn;
             }
 
-            return await ExecuteAdaptiveQnAMakerDialog(dc, qnamaker, qnamakerOptions, cancellationToken).ConfigureAwait(false);
+            return await ExecuteAdaptiveQnAMakerDialog(dc, this.QnaMakerClient, qnamakerOptions, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<DialogTurnResult> ExecuteAdaptiveQnAMakerDialog(DialogContext dc, QnAMaker qnaMaker, QnAMakerOptions qnamakerOptions, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<DialogTurnResult> ExecuteAdaptiveQnAMakerDialog(DialogContext dc, IQnAMakerClient qnaMaker, QnAMakerOptions qnamakerOptions, CancellationToken cancellationToken = default(CancellationToken))
         {
             var dialog = new QnAMakerActionBuilder(qnaMaker).BuildDialog(dc);
 
             // Set values for active dialog.
             var qnaDialogResponseOptions = new QnADialogResponseOptions
             {
-                NoAnswer = NoAnswer,
-                ActiveLearningCardTitle = ActiveLearningCardTitle,
-                CardNoMatchText = CardNoMatchText,
-                CardNoMatchResponse = CardNoMatchResponse
+                NoAnswer = NoAnswer ?? new StaticActivityTemplate(null),
+                ActiveLearningCardTitle = ActiveLearningCardTitle ?? QnAMakerActionBuilder.DefaultCardTitle,
+                CardNoMatchText = CardNoMatchText ?? QnAMakerActionBuilder.DefaultCardNoMatchText,
+                CardNoMatchResponse = CardNoMatchResponse ?? new StaticActivityTemplate(null)
             };
 
             var dialogOptions = new Dictionary<string, object>

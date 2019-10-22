@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
     [TestClass]
     public class QnAMakerTests
     {
-        private const string _knowlegeBaseId = "dummy-id";
+        private const string _knowledgeBaseId = "dummy-id";
         private const string _endpointKey = "dummy-key";
         private const string _hostname = "https://dummy-hostname.azurewebsites.net/qnamaker";
 
@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },
@@ -338,7 +338,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },
@@ -371,7 +371,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },
@@ -397,7 +397,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },
@@ -428,7 +428,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
@@ -465,7 +465,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var service = new QnAMakerService
             {
-                KbId = _knowlegeBaseId,
+                KbId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Hostname = _hostname,
             };
@@ -499,7 +499,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 interceptHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
@@ -540,7 +540,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },
@@ -569,7 +569,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },
@@ -592,7 +592,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         {
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -614,7 +614,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         {
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -641,7 +641,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
@@ -676,7 +676,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
@@ -705,7 +705,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
@@ -732,7 +732,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = new QnAMaker(
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },
@@ -767,7 +767,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qnaNullEndpoint = new QnAMaker(
                 new QnAMakerEndpoint()
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = string.Empty,
                     Host = _hostname,
                 });
@@ -782,7 +782,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qnaNullEndpoint = new QnAMaker(
                 new QnAMakerEndpoint()
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = string.Empty,
                 });
@@ -803,7 +803,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 interceptHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },
@@ -834,7 +834,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var v2LegacyEndpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = $"{_hostname}/v2.0"
             };
@@ -859,7 +859,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var v3LegacyEndpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = $"{_hostname}/v3.0"
             };
@@ -887,7 +887,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 interceptHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
@@ -923,7 +923,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 interceptHttp,
                 new QnAMakerEndpoint()
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
@@ -959,7 +959,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint()
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
@@ -987,7 +987,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 interceptHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },
@@ -1088,7 +1088,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -1124,7 +1124,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -1174,7 +1174,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -1222,7 +1222,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -1272,7 +1272,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -1326,7 +1326,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -1389,7 +1389,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -1448,7 +1448,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -1547,7 +1547,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 return this.ContinueDialogAsync(outerDc, cancellationToken);
             }
 
-            public async override Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
             {
                 if (dc.Context.Activity.Text == "moo")
                 {
@@ -1565,7 +1565,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 return _dialogs.GetDialogs();
             }
 
-            public async override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
             {
                 if ((bool)result == false)
                 {
@@ -1629,13 +1629,13 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             return rootDialog;
         }
 
-        private string GetV2LegacyRequestUrl() => $"{_hostname}/v2.0/knowledgebases/{_knowlegeBaseId}/generateanswer";
+        private string GetV2LegacyRequestUrl() => $"{_hostname}/v2.0/knowledgebases/{_knowledgeBaseId}/generateanswer";
 
-        private string GetV3LegacyRequestUrl() => $"{_hostname}/v3.0/knowledgebases/{_knowlegeBaseId}/generateanswer";
+        private string GetV3LegacyRequestUrl() => $"{_hostname}/v3.0/knowledgebases/{_knowledgeBaseId}/generateanswer";
 
-        private string GetRequestUrl() => $"{_hostname}/knowledgebases/{_knowlegeBaseId}/generateanswer";
+        private string GetRequestUrl() => $"{_hostname}/knowledgebases/{_knowledgeBaseId}/generateanswer";
 
-        private string GetTrainRequestUrl() => $"{_hostname}/knowledgebases/{_knowlegeBaseId}/train";
+        private string GetTrainRequestUrl() => $"{_hostname}/knowledgebases/{_knowledgeBaseId}/train";
 
         private Stream GetResponse(string fileName)
         {
@@ -1665,7 +1665,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },

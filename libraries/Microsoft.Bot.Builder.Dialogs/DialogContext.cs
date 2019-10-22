@@ -23,9 +23,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogContext"/> class from Turn context.
         /// </summary>
-        /// <param name="dialogs">dialogset </param>
-        /// <param name="turnContext">turn context</param>
-        /// <param name="state">dialogState</param>
+        /// <param name="dialogs">dialogset.</param>
+        /// <param name="turnContext">turn context.</param>
+        /// <param name="state">dialogState.</param>
         public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state)
         {
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
@@ -54,6 +54,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Gets the set of dialogs which are active for the current dialog container.
         /// </summary>
+        /// <value>
+        /// The set of dialogs which are active for the current dialog container.
+        /// </value>
         public DialogSet Dialogs { get; private set; }
 
         /// <summary>
@@ -75,16 +78,25 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Gets current active scoped state with (user|conversation|dialog|settings scopes).
         /// </summary>
+        /// <value>
+        /// Current active scoped state with (user|conversation|dialog|settings scopes).
+        /// </value>
         public DialogStateManager State { get; private set; }
 
         /// <summary>
         /// Gets or sets the parent <see cref="DialogContext"/>, if any. Used when searching for the ID of a dialog to start.
         /// </summary>
+        /// <value>
+        /// The parent <see cref="DialogContext"/>, if any. Used when searching for the ID of a dialog to start.
+        /// </value>
         public DialogContext Parent { get; set; }
 
         /// <summary>
         /// Gets dialog context for child if there is an active child.
         /// </summary>
+        /// <value>
+        /// Dialog context for child if there is an active child.
+        /// </value>
         public DialogContext Child
         {
             get
@@ -319,12 +331,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <seealso cref="EndDialogAsync(object, CancellationToken)"/>
         public async Task<DialogTurnResult> CancelAllDialogsAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await this.CancelAllDialogsAsync(eventName: null, eventValue: null, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await this.CancelAllDialogsAsync(false, eventName: null, eventValue: null, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Deletes any existing dialog stack thus cancelling all dialogs on the stack.
         /// </summary>
+        /// <param name="cancelParents">If true the cancelation will bubble up through any parent dialogs as well.</param>
         /// <param name="eventName">The event.</param>
         /// <param name="eventValue">The event value.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
@@ -340,7 +353,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// `ResumeDialogAsync`, then the parent will end, too, and the result is passed to the next
         /// parent context.</remarks>
         /// <seealso cref="EndDialogAsync(object, CancellationToken)"/>
-        public async Task<DialogTurnResult> CancelAllDialogsAsync(string eventName, object eventValue = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<DialogTurnResult> CancelAllDialogsAsync(bool cancelParents, string eventName = null, object eventValue = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (eventValue is CancellationToken)
             {
@@ -375,7 +388,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                     else
                     {
-                        dialogContext = dialogContext.Parent;
+                        dialogContext = cancelParents ? dialogContext.Parent : null;
                     }
 
                     notify = true;

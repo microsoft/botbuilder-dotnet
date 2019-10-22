@@ -45,9 +45,28 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception($"Loop detected: {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
+            var templateTarget = new EvaluationTarget(templateName, scope);
+            var currentEvaluateId = templateTarget.GetId();
+
+            EvaluationTarget previousEvaluateTarget = null;
+            if (evaluationTargetStack.Count != 0)
+            {
+                previousEvaluateTarget = evaluationTargetStack.Peek();
+
+                if (previousEvaluateTarget.EvaluatedChildren.ContainsKey(currentEvaluateId))
+                {
+                    return previousEvaluateTarget.EvaluatedChildren[currentEvaluateId];
+                }
+            }
+
             // Using a stack to track the evalution trace
-            evaluationTargetStack.Push(new EvaluationTarget(templateName, scope));
+            evaluationTargetStack.Push(templateTarget);
             var result = Visit(TemplateMap[templateName].ParseTree);
+            if (previousEvaluateTarget != null)
+            {
+                previousEvaluateTarget.EvaluatedChildren.Add(currentEvaluateId, result);
+            }
+
             evaluationTargetStack.Pop();
 
             return result;
@@ -74,6 +93,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             foreach (var body in bodys)
             {
                 var line = body.GetText().Trim();
+
+                if (string.IsNullOrWhiteSpace(line))
+                {
+                    continue;
+                }
+
                 var start = line.IndexOf('=');
                 if (start > 0)
                 {

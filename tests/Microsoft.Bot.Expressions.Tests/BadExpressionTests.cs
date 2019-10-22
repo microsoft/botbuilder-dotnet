@@ -20,7 +20,6 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("a+b*"),
             Test("fun(a, b, c"),
             Test("func(A,b,b,)"),
-            // Test("a.#title"),
             Test("\"hello'"),
             Test("'hello'.length()"), // not supported currently
             Test("user.lists.{dialog.listName}")
@@ -108,7 +107,6 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("lessOrEquals(one)"), // function need two parameters
             Test("equals(one)"), // equals must accept two parameters
             Test("exists(1, 2)"), // function need one parameter
-            // Test("if(!exists(one), one, hello)"), // the second and third parameters of if must the same type
             Test("not(false, one)"), // function need one parameter
             #endregion
 
@@ -319,6 +317,9 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("subArray(items,1,4)"), // the second parameter shoule  less than the length of the collection
             Test("subArray(createArray('H','e','l','l','o'),items[5],5)"), // the second parameter expression is invalid
             Test("subArray(createArray('H','e','l','l','o'),2,items[5])"), // the second parameter expression is invalid
+            Test("sortBy(hello, 'x')"), // first param should be list
+            Test("sortBy(createArray('H','e','l','l','o'), 1)"), // second param should be string
+            Test("sortBy(createArray('H','e','l','l','o'), 'x', hi)"), // second param should be string
             #endregion
 
             #region Object manipulation and construction functions test

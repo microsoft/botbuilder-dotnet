@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -32,10 +33,7 @@ namespace Microsoft.Bot.Builder.Tests
             var originalActivity = CreateBasicActivity();
 
             var eventActivity = await ProcessOAuthCardTest(adapter, mockConnector, originalActivity);
-
-            // 1 activity sent from bot to user
-            Assert.AreEqual(1, ((MemoryConversations)mockConnector.Conversations).SentActivities.Count);
-
+            
             // bot received the event activity
             Assert.IsNotNull(eventActivity);
             Assert.AreEqual(originalActivity.Conversation.Id, eventActivity.Conversation.Id);
@@ -65,12 +63,8 @@ namespace Microsoft.Bot.Builder.Tests
                 return null;
             });
             var originalActivity = CreateBasicActivity();
-
             var eventActivity = await ProcessOAuthCardTest(adapter, mockConnector, originalActivity);
-
-            // 1 activity sent from bot to user
-            Assert.AreEqual(1, ((MemoryConversations)mockConnector.Conversations).SentActivities.Count);
-
+            
             // bot received the event activity
             Assert.IsNotNull(eventActivity);
             Assert.AreEqual(originalActivity.Conversation.Id, eventActivity.Conversation.Id);
@@ -335,12 +329,12 @@ namespace Microsoft.Bot.Builder.Tests
             return properties;
         }
 
-        private class MockAdapter : BotFrameworkAdapter
+        private class MockAdapter : BotFrameworkHttpAdapterBase
         {
             private Func<TokenResponse> _getUserTokenAction;
 
             public MockAdapter(ICredentialProvider credentialProvider, Func<TokenResponse> getUserTokenAction, MockLogger logger = null)
-                : base(credentialProvider, null, null, null, null, logger)
+                : base(credentialProvider, null, logger)
             {
                 _getUserTokenAction = getUserTokenAction;
                 Logger = logger;
@@ -354,7 +348,7 @@ namespace Microsoft.Bot.Builder.Tests
             }
         }
 
-        private class MockLogger : ILogger
+        private class MockLogger : ILogger<BotFrameworkHttpAdapterBase>
         {
             public List<string> LogData { get; set; } = new List<string>();
 

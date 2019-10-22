@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
@@ -105,6 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             // Dialogs
             yield return new TypeRegistration<AdaptiveDialog>("Microsoft.AdaptiveDialog");
+            yield return new TypeRegistration<QnAMakerDialog>("Microsoft.QnAMakerDialog");
         }
 
         public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)

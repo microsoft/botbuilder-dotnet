@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using static Microsoft.Bot.Builder.Dialogs.DialogContext;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
@@ -355,7 +356,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private async Task SendAsync(Protocol.Message message, CancellationToken cancellationToken)
         {
-            var token = JToken.FromObject(message, new JsonSerializer() { NullValueHandling = NullValueHandling.Include });
+            var token = JToken.FromObject(message, new JsonSerializer()
+            {
+                NullValueHandling = NullValueHandling.Include,
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
             await SendAsync(token, cancellationToken).ConfigureAwait(false);
         }
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Bot.Expressions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -101,6 +102,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         IEnumerator IEnumerable.GetEnumerator()
         {
             throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            var result = string.Empty;
+            if (LocalScope != null)
+            {
+                result += JsonConvert.SerializeObject(LocalScope);
+            }
+
+            if (GlobalScope != null)
+            {
+                result += JsonConvert.SerializeObject(GlobalScope);
+            }
+
+            return result;
         }
     }
 }

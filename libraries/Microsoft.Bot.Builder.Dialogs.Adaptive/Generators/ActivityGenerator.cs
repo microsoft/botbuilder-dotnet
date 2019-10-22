@@ -14,11 +14,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
     /// <summary>
     /// The ActivityGenerator implements IActivityGenerator by using ILanguageGenerator
-    /// to generate text and then uses simple markdown semantics like chatdown to create Activity
+    /// to generate text and then uses simple markdown semantics like chatdown to create Activity.
     /// </summary>
     public class ActivityGenerator : IActivityGenerator
     {
-        private readonly Dictionary<string, string> genericCardTypeMapping = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> GenericCardTypeMapping = new Dictionary<string, string>
         {
             { nameof(HeroCard), HeroCard.ContentType },
             { nameof(ThumbnailCard), ThumbnailCard.ContentType },
@@ -26,12 +26,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             { nameof(VideoCard), VideoCard.ContentType },
             { nameof(AnimationCard), AnimationCard.ContentType },
             { nameof(SigninCard), SigninCard.ContentType },
-            { nameof(OAuthCard), OAuthCard.ContentType },
-            { nameof(ReceiptCard), ReceiptCard.ContentType }
+            { nameof(OAuthCard), OAuthCard.ContentType }
         };
 
         public ActivityGenerator()
         {
+        }
+
+        /// <summary>
+        /// Generate the activity From LG output.
+        /// </summary>
+        /// <param name="lgResult">LG output.</param>
+        /// <returns>activity.</returns>
+        public static Activity GenerateFromLG(object lgResult)
+        {
+            if (lgResult is string)
+            {
+                return BuildActivityFromText(lgResult?.ToString()?.Trim());
+            }
+            else
+            {
+                try
+                {
+                    var lgStructuredResult = JObject.FromObject(lgResult);
+                    return BuildActivityFromLGStructuredResult(lgStructuredResult);
+                }
+                catch
+                {
+                    return BuildActivityFromText(lgResult?.ToString()?.Trim());
+                }
+            }
         }
 
         /// <summary>
@@ -72,7 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// This method will create a MessageActivity from text.
         /// <param name="text">lg text output.</param>
         /// <returns>activity with text.</returns>
-        private Activity BuildActivityFromText(string text)
+        private static Activity BuildActivityFromText(string text)
         {
             return MessageFactory.Text(text, text);
         }
@@ -83,18 +107,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// This method will create an MessageActivity from JToken
         /// <param name="lgJObj">lg output.</param>
         /// <returns>Activity for it.</returns>
-        private Activity BuildActivityFromLGStructuredResult(JObject lgJObj)
+        private static Activity BuildActivityFromLGStructuredResult(JObject lgJObj)
         {
             Activity activity;
+            var type = GetStructureType(lgJObj);
 
-            if (GetAttachment(lgJObj, out var attachment))
+            if (GenericCardTypeMapping.ContainsKey(type) && GetAttachment(lgJObj, out var attachment))
             {
                 activity = MessageFactory.Attachment(attachment) as Activity;
             }
             else
             {
-                var type = GetStructureType(lgJObj);
-
                 if (type == nameof(Activity))
                 {
                     activity = BuildActivityFromObject(lgJObj);
@@ -108,7 +131,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return activity;
         }
 
-        private Activity BuildActivityFromObject(JObject lgJObj)
+        private static Activity BuildActivityFromObject(JObject lgJObj)
         {
             Activity activity;
 
@@ -125,7 +148,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return activity;
         }
 
-        private IEventActivity BuildEventActivity(JObject lgJObj)
+        private static IEventActivity BuildEventActivity(JObject lgJObj)
         {
             var activity = Activity.CreateEventActivity();
             foreach (var item in lgJObj)
@@ -155,7 +178,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return activity;
         }
 
-        private IMessageActivity BuildMessageActivity(JObject lgJObj)
+        private static IMessageActivity BuildMessageActivity(JObject lgJObj)
         {
             var activity = Activity.CreateMessageActivity();
             foreach (var item in lgJObj)
@@ -184,10 +207,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                         activity.Attachments = GetAttachments(value);
                         break;
 
-                    case "value":
-                        activity.Value = value;
-                        break;
-
                     case "suggestedactions":
                         activity.SuggestedActions = GetSuggestions(value);
                         break;
@@ -205,7 +224,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return activity;
         }
 
-        private SuggestedActions GetSuggestions(JToken value)
+        private static SuggestedActions GetSuggestions(JToken value)
         {
             var suggestionActions = new SuggestedActions()
             {
@@ -230,7 +249,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return suggestionActions;
         }
 
-        private List<CardAction> GetButtons(JToken value)
+        private static List<CardAction> GetButtons(JToken value)
         {
             var buttons = new List<CardAction>();
             var actions = NormalizedToList(value);
@@ -251,7 +270,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return buttons;
         }
 
-        private bool GetCardAction(JObject cardActionJObj, out CardAction cardAction)
+        private static bool GetCardAction(JObject cardActionJObj, out CardAction cardAction)
         {
             var type = GetStructureType(cardActionJObj);
             cardAction = new CardAction();
@@ -303,7 +322,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return isCardAction;
         }
 
-        private string GetStructureType(JObject jObj)
+        private static string GetStructureType(JObject jObj)
         {
             if (jObj == null)
             {
@@ -320,7 +339,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return type ?? string.Empty;
         }
 
-        private List<Attachment> GetAttachments(JToken value)
+        private static List<Attachment> GetAttachments(JToken value)
         {
             var attachments = new List<Attachment>();
             var attachmentsJsonList = NormalizedToList(value);
@@ -336,16 +355,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return attachments;
         }
 
-        private bool GetAttachment(JObject lgJObj, out Attachment attachment)
+        private static bool GetAttachment(JObject lgJObj, out Attachment attachment)
         {
             attachment = new Attachment();
             var isAttachment = true;
 
             var type = GetStructureType(lgJObj);
 
-            if (genericCardTypeMapping.ContainsKey(type))
+            if (GenericCardTypeMapping.ContainsKey(type))
             {
-                attachment = GetCardAtttachment(genericCardTypeMapping[type], lgJObj);
+                attachment = GetCardAtttachment(GenericCardTypeMapping[type], lgJObj);
             }
             else if (type == nameof(AdaptiveCard))
             {
@@ -359,14 +378,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return isAttachment;
         }
 
-        private Attachment GetCardAtttachment(string type, JObject lgJObj)
+        private static Attachment GetCardAtttachment(string type, JObject lgJObj)
         {
             var attachment = new Attachment(type, content: new JObject());
             BuildGenericCard(attachment.Content, type, lgJObj);
             return attachment;
         }
 
-        private void BuildGenericCard(dynamic card, string type, JObject lgJObj)
+        private static void BuildGenericCard(dynamic card, string type, JObject lgJObj)
         {
             foreach (var item in lgJObj)
             {
@@ -380,7 +399,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                     case "text":
                     case "aspect":
                     case "value":
-                    case "connectionName":
+                    case "connectionname":
                         card[property] = value;
                         break;
 
@@ -427,9 +446,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                         break;
 
                     case "autostart":
-                    case "sharable":
+                    case "shareable":
                     case "autoloop":
-                        card[property] = value.ToString().ToLower() == "true";
+                        if (value.ToString().ToLower() == "true")
+                        {
+                            card[property] = true;
+                        }
+                        else if (value.ToString().ToLower() == "false")
+                        {
+                            card[property] = false;
+                        }
+
                         break;
                     case "":
                         break;
@@ -440,7 +467,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
         }
 
-        private List<JToken> NormalizedToList(JToken item)
+        private static List<JToken> NormalizedToList(JToken item)
         {
             return item == null ? 
                 new List<JToken>() :

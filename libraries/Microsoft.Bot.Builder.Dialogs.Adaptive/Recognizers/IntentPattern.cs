@@ -23,11 +23,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <summary>
         /// Gets or sets the intent.
         /// </summary>
+        /// <value>
+        /// The intent.
+        /// </value>
         public string Intent { get; set; }
 
         /// <summary>
-        /// Gets or sets the regex pattern to match
+        /// Gets or sets the regex pattern to match.
         /// </summary>
+        /// <value>
+        /// The regex pattern to match.
+        /// </value>
         public string Pattern
         {
             get

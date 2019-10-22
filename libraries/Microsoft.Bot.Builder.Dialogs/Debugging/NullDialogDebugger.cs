@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     /// <summary>
-    /// Default Dialog Debugger which simply ignores step calls for the IDialogDebuggerinterface
+    /// Default Dialog Debugger which simply ignores step calls for the IDialogDebuggerinterface.
     /// </summary>
     public class NullDialogDebugger : IDialogDebugger
     {

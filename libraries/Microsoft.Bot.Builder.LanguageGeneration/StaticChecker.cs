@@ -109,6 +109,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             private string currentSource = string.Empty;
             private ExpressionEngine baseExpressionEngine;
             private readonly Regex expressionRecognizeRegex = new Regex(@"@?(?<!\\)\{.+?(?<!\\)\}", RegexOptions.Compiled);
+            private readonly Regex escapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
 
             private IExpressionParser _expressionParser;
 
@@ -254,10 +255,38 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     foreach (var body in bodys)
                     {
                         var line = body.GetText().Trim();
-                        var start = line.IndexOf('=');
-                        if (start < 0 && !IsPureExpression(line))
+                        if (!string.IsNullOrWhiteSpace(line))
                         {
-                            result.Add(BuildLGDiagnostic($"Structured content does not support", context: context.structuredBodyContentLine()));
+                            var start = line.IndexOf('=');
+                            if (start < 0 && !IsPureExpression(line))
+                            {
+                                result.Add(BuildLGDiagnostic($"Structured content does not support", context: context.structuredBodyContentLine()));
+                            }
+                            else 
+                            {
+                                if (start > 0)
+                                {
+                                    var property = line.Substring(0, start).Trim().ToLower();
+                                    var originValue = line.Substring(start + 1).Trim();
+                                    var valueArray = escapeSeperatorRegex.Split(originValue);
+
+                                    if (valueArray.Length == 1)
+                                    {
+                                        result.AddRange(CheckText(originValue, context.structuredBodyContentLine()));
+                                    }
+                                    else
+                                    {
+                                        foreach (var item in valueArray)
+                                        {
+                                            result.AddRange(CheckText(item.Trim(), context.structuredBodyContentLine()));
+                                        }
+                                    }
+                                }
+                                else if (IsPureExpression(line))
+                                {
+                                    result.AddRange(CheckExpression(line, context.structuredBodyContentLine()));
+                                }
+                            }
                         }
                     }
                 }
@@ -442,7 +471,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                             result.AddRange(CheckMultiLineText(node.GetText(), context));
                             break;
                         case LGFileLexer.TEXT:
-                            result.AddRange(CheckText(node.GetText(), context));
+                            result.AddRange(CheckErrorMultiLineText(node.GetText(), context));
                             break;
                         default:
                             break;
@@ -485,11 +514,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             private List<Diagnostic> CheckMultiLineText(string exp, ParserRuleContext context)
             {
-                var result = new List<Diagnostic>();
-
                 // remove ``` ```
                 exp = exp.Substring(3, exp.Length - 6);
-                var reg = @"@\{[^{}]+\}";
+                return CheckText(exp, context, true);
+            }
+
+            private List<Diagnostic> CheckText(string exp, ParserRuleContext context, bool isMultiLineText = false)
+            {
+                var result = new List<Diagnostic>();
+
+                var reg = isMultiLineText ? @"@\{[^{}]+\}" : @"@?\{[^{}]+\}";
+
                 var mc = Regex.Matches(exp, reg);
 
                 foreach (Match match in mc)
@@ -500,7 +535,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return result;
             }
 
-            private List<Diagnostic> CheckText(string exp, ParserRuleContext context)
+            private List<Diagnostic> CheckErrorMultiLineText(string exp, ParserRuleContext context)
             {
                 var result = new List<Diagnostic>();
 
