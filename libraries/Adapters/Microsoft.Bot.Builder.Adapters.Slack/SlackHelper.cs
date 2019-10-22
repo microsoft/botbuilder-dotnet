@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         {
             if (activity == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(activity));
             }
 
             var message = new NewSlackMessage();
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         {
             if (slackPayload == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(slackPayload));
             }
 
             var activity = new Activity()
@@ -191,7 +191,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         {
             if (slackEvent == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(slackEvent));
             }
 
             var activity = new Activity()
@@ -256,7 +256,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         {
             if (slackBody == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(slackBody));
             }
 
             var activity = new Activity()

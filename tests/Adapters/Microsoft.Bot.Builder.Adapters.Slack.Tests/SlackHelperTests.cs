@@ -23,9 +23,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         private readonly SlackAdapterOptions _testOptions = new SlackAdapterOptions("VerificationToken", "ClientSigningSecret", "BotToken");
 
         [Fact]
-        public void ActivityToSlackShouldReturnNullWithNullActivity()
+        public void ActivityToSlackShouldThrowArgumentNullExceptionWithNullActivity()
         {
-            Assert.Null(SlackHelper.ActivityToSlack(null));
+            Assert.Throws<ArgumentNullException>(() => SlackHelper.ActivityToSlack(null));
         }
 
         [Fact]
@@ -123,13 +123,14 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         }
 
         [Fact]
-        public async Task EventToActivityAsyncShouldReturnNull()
+        public async Task EventToActivityAsyncShouldThrowArgumentNullException()
         {
             var slackApi = new Mock<SlackClientWrapper>(_testOptions);
 
-            var activity = await SlackHelper.EventToActivityAsync(null, slackApi.Object, new CancellationToken()).ConfigureAwait(false);
-
-            Assert.Null(activity);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await SlackHelper.EventToActivityAsync(null, slackApi.Object, new CancellationToken()).ConfigureAwait(false);
+            });
         }
 
         [Fact]
@@ -176,13 +177,14 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         }
 
         [Fact]
-        public async Task CommandToActivityAsyncShouldReturnNull()
+        public async Task CommandToActivityAsyncShouldThrowArgumentNullException()
         {
             var slackApi = new Mock<SlackClientWrapper>(_testOptions);
 
-            var activity = await SlackHelper.CommandToActivityAsync(null, slackApi.Object, new CancellationToken()).ConfigureAwait(false);
-
-            Assert.Null(activity);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await SlackHelper.CommandToActivityAsync(null, slackApi.Object, new CancellationToken()).ConfigureAwait(false);
+            });
         }
 
         [Fact]
@@ -200,11 +202,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         }
 
         [Fact]
-        public void PayloadToActivityShouldReturnNull()
+        public void PayloadToActivityShouldThrowArgumentNullException()
         {
-            var activity = SlackHelper.PayloadToActivity(null);
-
-            Assert.Null(activity);
+            Assert.Throws<ArgumentNullException>(() => SlackHelper.PayloadToActivity(null));
         }
 
         [Fact]
