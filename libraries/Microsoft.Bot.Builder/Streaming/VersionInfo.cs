@@ -6,5 +6,7 @@ namespace Microsoft.Bot.Builder.Streaming
     public class VersionInfo
     {
         public string UserAgent { get; set; }
+
+        public string BotToken { get; set; }
     }
 }

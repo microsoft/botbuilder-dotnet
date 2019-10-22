@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             {
                 HttpContext.Current.AcceptWebSocketRequest(async context =>
                 {
-                    var requestHandler = new StreamingRequestHandler(bot, this, context.WebSocket, _logger);
+                    var requestHandler = new StreamingRequestHandler(bot, this, _credentialProvider as MicrosoftAppCredentials, context.WebSocket, _logger);
 
                     if (_requestHandlers == null)
                     {

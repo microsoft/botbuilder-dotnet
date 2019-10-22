@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Streaming
                     var host = uri[uri.Length - 1];
                     await connection.ConnectAsync(new Uri(protocol + host + "/api/messages"), cancellationToken).ConfigureAwait(false);
 
-                    var handler = new StreamingRequestHandler(_connectedBot, this, connection, _logger);
+                    var handler = new StreamingRequestHandler(_connectedBot, this, _credentialProvider as MicrosoftAppCredentials, connection, _logger);
 
                     if (_requestHandlers == null)
                     {

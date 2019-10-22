@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             try
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-                var requestHandler = new StreamingRequestHandler(bot, this, socket, _logger);
+                var requestHandler = new StreamingRequestHandler(bot, this, _credentialProvider as MicrosoftAppCredentials, socket, _logger);
 
                 if (_requestHandlers == null)
                 {

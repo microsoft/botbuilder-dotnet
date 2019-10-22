@@ -15,6 +15,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming;
 using Microsoft.Bot.Streaming.Transport;
@@ -28,13 +29,13 @@ namespace Microsoft.Bot.Builder.Streaming
 {
     public class StreamingRequestHandler : RequestHandler
     {
-        private const string _reconnectPath = "api/reconnect";
-
+        private const string ReconnectPath = "api/reconnect";
         private readonly IBot _bot;
         private readonly ILogger _logger;
         private readonly IStreamingActivityProcessor _activityProcessor;
         private readonly string _userAgent;
         private readonly IDictionary<string, DateTime> _conversations;
+        private readonly MicrosoftAppCredentials _appCredentials;
 
         private IStreamingTransportServer _server;
         private bool _serverIsConnected;
@@ -45,22 +46,23 @@ namespace Microsoft.Bot.Builder.Streaming
         /// </summary>
         /// <param name="bot">The bot for which we handle requests.</param>
         /// <param name="activityProcessor">The procesor for incoming requests.</param>
+        /// <param name="appCredentials">The bot credentials to use when generating a token to send to the channel for calls requiring authentication.</param>
         /// <param name="socket">The base socket to use when connecting to the channel.</param>
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
-        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, WebSocket socket, ILogger logger = null)
-        {
+        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, MicrosoftAppCredentials appCredentials, WebSocket socket, ILogger logger = null)
+        {            
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
-
-            _logger = logger ?? NullLogger.Instance;
-
+            _appCredentials = appCredentials ?? throw new ArgumentNullException(nameof(appCredentials));
+            
             if (socket == null)
             {
                 throw new ArgumentNullException(nameof(socket));
             }
 
+            _logger = logger ?? NullLogger.Instance;
             _conversations = new ConcurrentDictionary<string, DateTime>();
-            _userAgent = GetUserAgent();
+            _userAgent = GetUserAgent();            
             _server = new WebSocketServer(socket, this);
             _serverIsConnected = true;
             _server.Disconnected += Server_Disconnected;
@@ -72,13 +74,14 @@ namespace Microsoft.Bot.Builder.Streaming
         /// </summary>
         /// <param name="bot">The bot for which we handle requests.</param>
         /// <param name="activityProcessor">The processor for incoming requests.</param>
+        /// <param name="appCredentials">The bot credentials to use when generating a token to send to the channel for calls requiring authentication.</param>
         /// <param name="pipeName">The name of the Named Pipe to use when connecting to the channel.</param>
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
-        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, string pipeName, ILogger logger = null)
+        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, MicrosoftAppCredentials appCredentials, string pipeName, ILogger logger = null)
         {
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
-
+            _appCredentials = appCredentials ?? throw new ArgumentNullException(nameof(appCredentials));
             _logger = logger ?? NullLogger.Instance;
 
             if (string.IsNullOrWhiteSpace(pipeName))
@@ -130,7 +133,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// the conversation was added to this <see cref="StreamingRequestHandler"/>.</returns>
         public DateTime ConversationAddedTime(string conversationId)
         {
-            if (!_conversations.TryGetValue(conversationId, out DateTime addedTime))
+            if (!_conversations.TryGetValue(conversationId, out var addedTime))
             {
                 addedTime = DateTime.MinValue;
             }
@@ -155,7 +158,7 @@ namespace Microsoft.Bot.Builder.Streaming
             // We accept all POSTs regardless of path, but anything else requires special treatment.
             if (!string.Equals(request.Verb, StreamingRequest.POST, StringComparison.InvariantCultureIgnoreCase))
             {
-                return HandleCustomPaths(request);
+                return await HandleCustomPathsAsync(request).ConfigureAwait(false);
             }
 
             // Convert the StreamingRequest into an activity the adapter can understand.
@@ -371,7 +374,6 @@ namespace Microsoft.Bot.Builder.Streaming
 
         private async Task ReconnectAsync(IDictionary<string, string> requestHeaders = null)
         {
-            // TODO: Need to get authentication headers from the httpClient on the adapter.
             var clientWebSocket = new ClientWebSocket();
             if (requestHeaders != null)
             {
@@ -381,11 +383,24 @@ namespace Microsoft.Bot.Builder.Streaming
                 }
             }
 
+            // Set the authentication header if it wasn't passed in.
+            if (requestHeaders != null && !requestHeaders.ContainsKey("authentication") && !requestHeaders.ContainsKey("Authentication"))
+            {
+                try
+                {
+                    clientWebSocket.Options.SetRequestHeader("authentication", await _appCredentials.GetTokenAsync().ConfigureAwait(false));
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.Message);
+                }                
+            }            
+
             // The ServiceUrl of a streaming connection follows the pattern "urn:[ChannelName]:[Protocol]:[Host]".
             var uri = ServiceUrl.Split(':');
             var protocol = uri[uri.Length - 2];
             var host = uri[uri.Length - 1];
-            await clientWebSocket.ConnectAsync(new Uri(protocol + host + _reconnectPath), CancellationToken.None).ConfigureAwait(false);
+            await clientWebSocket.ConnectAsync(new Uri(protocol + host + ReconnectPath), CancellationToken.None).ConfigureAwait(false);
             _server = new WebSocketServer(clientWebSocket, this);
         }
 
@@ -395,7 +410,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// </summary>
         /// <param name="request">A ReceiveRequest from the connected channel.</param>
         /// <returns>A response if the given request matches against a defined path.</returns>
-        private StreamingResponse HandleCustomPaths(ReceiveRequest request)
+        private async Task<StreamingResponse> HandleCustomPathsAsync(ReceiveRequest request)
         {
             var response = new StreamingResponse();
 
@@ -411,7 +426,24 @@ namespace Microsoft.Bot.Builder.Streaming
                          string.Equals(request.Path, "/api/version", StringComparison.InvariantCultureIgnoreCase))
             {
                 response.StatusCode = (int)HttpStatusCode.OK;
-                response.SetBody(new VersionInfo() { UserAgent = _userAgent });
+                var token = string.Empty;
+                try
+                {
+                    token = await _appCredentials.GetTokenAsync().ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    /**
+                     * In reality a missing BotToken will cause the channel to close the connection,
+                     * but we still send the response and allow the channel to make that decision
+                     * instead of proactively disconnecting. This allows the channel to know why
+                     * the connection has been closed and make the choice not to make endless reconnection
+                     * attempts that will end up right back here.
+                     */
+                    _logger.LogError(e.Message);
+                }
+
+                response.SetBody(new VersionInfo() { UserAgent = _userAgent, BotToken = token });
 
                 return response;
             }

@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Streaming;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Streaming.Transport.NamedPipes;
 using Microsoft.Bot.Streaming.Transport.WebSockets;
 using Microsoft.Bot.Streaming.UnitTests.Mocks;
@@ -24,20 +25,13 @@ namespace Microsoft.Bot.Streaming.UnitTests
         [Fact]
         public async Task WebSocketServer_Connects()
         {
+            var appId = Guid.NewGuid().ToString();
+            var appPassword = "password123";
             var sock = new FauxSock();
-            var writer = new WebSocketServer(sock, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), sock));
+            var writer = new WebSocketServer(sock, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), new MicrosoftAppCredentials(appId, appPassword), sock));
 
             writer.StartAsync();
             Assert.True(writer.IsConnected);
-        }
-
-        [Fact]
-        public async Task WebSocketServer_BackAndForth()
-        {
-            var sock = new FauxSock();
-            var writer = new WebSocketServer(sock, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), sock));
-
-            writer.StartAsync();
         }
 
         [Fact]
