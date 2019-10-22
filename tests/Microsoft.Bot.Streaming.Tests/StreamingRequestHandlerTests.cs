@@ -286,7 +286,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             var response = await handler.ProcessRequestAsync(testRequest);
 
             // Assert
-            Assert.Contains(expectation, response.Streams[0].Content.ReadAsStringAsync().Result);
+            Assert.Matches(expectation, response.Streams[0].Content.ReadAsStringAsync().Result);
         }
 
         private class MessageBot : IBot

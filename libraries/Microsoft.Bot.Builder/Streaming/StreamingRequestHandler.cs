@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Streaming
 {
     public class StreamingRequestHandler : RequestHandler
     {
-        private const string Authentication = "authorization";
+        private const string AuthorizationHeader = "authorization";
         private const string ReconnectPath = "api/reconnect";
         private const string WebSocket = "websocket";
         private readonly IBot _bot;
@@ -403,11 +403,11 @@ namespace Microsoft.Bot.Builder.Streaming
             }
 
             // Set the authentication header if it wasn't passed in.
-            if (!requestHeaders.Any(x => x.Key.ToLowerInvariant() == Authentication.ToLowerInvariant()))
+            if (!requestHeaders.Any(x => x.Key.ToLowerInvariant() == AuthorizationHeader.ToLowerInvariant()))
             {
                 try
                 {
-                    clientWebSocket.Options.SetRequestHeader(Authentication, await _appCredentials.GetTokenAsync().ConfigureAwait(false));
+                    clientWebSocket.Options.SetRequestHeader(AuthorizationHeader, await _appCredentials.GetTokenAsync().ConfigureAwait(false));
                 }
                 catch (Exception e)
                 {
