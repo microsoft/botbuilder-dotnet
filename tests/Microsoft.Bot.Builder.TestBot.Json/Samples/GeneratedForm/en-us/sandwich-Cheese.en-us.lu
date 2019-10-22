@@ -1,29 +1,29 @@
 
 $Cheese:american=
- -american
+-american
 
 $Cheese:cheddar=
- -cheddar
+-cheddar
 
 $Cheese:feta=
- -feta
+-feta
 
 $Cheese:gouda=
- -gouda
+-gouda
 
 $Cheese:pepper jack=
- -pepper
- -jack
- -pepper jack
+-pepper
+-jack
+-pepper jack
 
 $Cheese:provolone=
- -provolone
+-provolone
 
 $Cheese:swiss=
- -swiss
+-swiss
 
 $Cheese:none=
- -none
+-none
 
 
 # None

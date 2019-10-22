@@ -1,15 +1,15 @@
 
 $PropertyToChange:Meat=
- -meat
+-meat
 
 $PropertyToChange:Bread=
- -bread
+-bread
 
 $PropertyToChange:Cheese=
- -cheese
+-cheese
 
 $PropertyToChange:Toppings=
- -toppings
+-toppings
 
 
 # None

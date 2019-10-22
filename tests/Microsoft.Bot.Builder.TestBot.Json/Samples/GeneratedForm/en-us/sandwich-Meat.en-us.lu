@@ -1,31 +1,31 @@
 
 $Meat:bacon=
- -bacon
+-bacon
 
 $Meat:chicken=
- -chicken
+-chicken
 
 $Meat:ham=
- -ham
+-ham
 
 $Meat:pulled pork=
- -pulled
- -pork
- -pulled pork
+-pulled
+-pork
+-pulled pork
 
 $Meat:roast beef=
- -roast
- -beef
- -roast beef
+-roast
+-beef
+-roast beef
 
 $Meat:salami=
- -salami
+-salami
 
 $Meat:turkey=
- -turkey
+-turkey
 
 $Meat:none=
- -none
+-none
 
 
 # None
