@@ -6,7 +6,6 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
@@ -44,17 +43,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </value>
         public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 
-        public static ImportResolverDelegate ResourceResolver(ResourceExplorer resourceExplorer) =>
-            (string source, string id) =>
-            {
-                var resourceName = Path.GetFileName(PathUtils.NormalizePath(id));
-                var res = resourceExplorer.GetResource(resourceName);
-
-                var content = res?.ReadTextAsync().GetAwaiter().GetResult();
-
-                return (content, resourceName);
-            };
-
         private void ResourceExplorer_Changed(IResource[] resources)
         {
             // reload changed LG files
@@ -66,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(IResource resource)
         {
-            return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, ResourceResolver(resourceExplorer));
+            return new TemplateEngineLanguageGenerator(resourceExplorer, resource);
         }
     }
 }
