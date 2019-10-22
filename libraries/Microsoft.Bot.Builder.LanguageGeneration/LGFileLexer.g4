@@ -41,7 +41,7 @@ fragment W: 'w' | 'W';
 fragment STRING_LITERAL : ('\'' (~['\r\n])* '\'') | ('"' (~["\r\n])* '"');
 
 COMMENTS
-  : ('>'|'$') ~('\r'|'\n')+ -> skip
+  : ('>'|'$') ~('\r'|'\n')+ NEWLINE? -> skip
   ;
 
 WS
@@ -134,7 +134,7 @@ IF
   ;
 
 ELSEIF
-  : E L S E I F WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+  : E L S E WHITESPACE* I F WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
   ;
 
 ELSE
@@ -192,5 +192,5 @@ STRUCTURED_TEMPLATE_BODY_END
   ;
 
 STRUCTURED_CONTENT
-  : ~[\r\n]+
+  : ~[\r\n[\]]+
   ;

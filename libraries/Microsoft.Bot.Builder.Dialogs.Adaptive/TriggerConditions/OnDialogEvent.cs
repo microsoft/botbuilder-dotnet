@@ -22,8 +22,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         }
 
         /// <summary>
-        /// Gets or sets the event to fire on
+        /// Gets or sets the event to fire on.
         /// </summary>
+        /// <value>
+        /// The event to fire on.
+        /// </value>
         public string Event { get; set; }
 
         public override string GetIdentity()

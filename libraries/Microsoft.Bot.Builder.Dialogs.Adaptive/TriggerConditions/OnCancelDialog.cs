@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Actions triggered when an dialog was canceled 
+    /// Actions triggered when an dialog was canceled.
     /// </summary>
     public class OnCancelDialog : OnDialogEvent
     {

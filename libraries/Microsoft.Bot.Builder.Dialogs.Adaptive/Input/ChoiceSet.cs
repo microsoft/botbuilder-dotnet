@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     /// <summary>
-    /// Defines Choices Property as either collection of Choices, array of strings or string which is an expression to one of thoses
+    /// Defines Choices Property as either collection of Choices, array of strings or string which is an expression to one of thoses.
     /// </summary>
     public class ChoiceSet : ExpressionProperty<List<Choice>>
     {

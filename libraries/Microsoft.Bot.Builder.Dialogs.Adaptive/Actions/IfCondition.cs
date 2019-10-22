@@ -32,6 +32,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <example>
         /// "user.age > 18".
         /// </example>
+        /// <value>
+        /// The memory expression. 
+        /// </value>
         [JsonProperty("condition")]
         public string Condition
         {

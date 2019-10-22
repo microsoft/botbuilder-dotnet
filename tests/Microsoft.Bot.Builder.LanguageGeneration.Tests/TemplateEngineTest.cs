@@ -768,17 +768,20 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled = engine.EvaluateTemplate("AskForAge.prompt");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"how old are you?\"}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"how old are you?\"}"), evaled as JObject)
+                || JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"what's your age?\"}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("AskForAge.prompt2");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"suggestedactions\":[\"10\",\"20\",\"30\"]}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"suggestedactions\":[\"10\",\"20\",\"30\"]}"), evaled as JObject)
+                || JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"suggestedactions\":[\"10\",\"20\",\"30\"]}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("AskForAge.prompt3");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject)
+                || JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("T1");
 
@@ -807,6 +810,49 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.IsTrue(
                 JToken.DeepEquals(JObject.Parse("{\"$type\":\"MyStruct\",\"text\":\"hi\"}"), evaled as JObject));
+
+            evaled = engine.EvaluateTemplate("MultiStructuredRef");
+
+            Assert.IsTrue(
+                JToken.DeepEquals(JObject.Parse("{\"$type\":\"MyStruct\",\"list\":[{\"$type\":\"SubStruct\",\"text\":\"hello\"},{\"$type\":\"SubStruct\",\"text\":\"world\"}]}"), evaled as JObject));
+        }
+
+        [TestMethod]
+        public void TestEvaluateOnce()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("EvaluateOnce.lg"));
+
+            var evaled = engine.EvaluateTemplate("templateWithSameParams", new { param = "ms" });
+            Assert.IsNotNull(evaled);
+
+            var resultList = evaled.ToString().Split(" ");
+            Assert.IsTrue(resultList.Length == 2);
+            Assert.IsTrue(resultList[0] == resultList[1]);
+
+            // may be has different values
+            evaled = engine.EvaluateTemplate("templateWithDifferentParams", new { param1 = "ms", param2 = "newms" });
+        }
+
+        [TestMethod]
+        public void TestConditionExpression()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("ConditionExpression.lg"));
+
+            var evaled = engine.EvaluateTemplate("conditionTemplate", new { num = 1 });
+
+            Assert.AreEqual(evaled, "Your input is one");
+
+            evaled = engine.EvaluateTemplate("conditionTemplate", new { num = 2 });
+
+            Assert.AreEqual(evaled, "Your input is two");
+
+            evaled = engine.EvaluateTemplate("conditionTemplate", new { num = 3 });
+
+            Assert.AreEqual(evaled, "Your input is three");
+
+            evaled = engine.EvaluateTemplate("conditionTemplate", new { num = 4 });
+
+            Assert.AreEqual(evaled, "Your input is not one, two or three");
         }
     }
 }

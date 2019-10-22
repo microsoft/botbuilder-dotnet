@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// Provides access to a QnA Maker knowledge base.
     /// </summary>
-    public class QnAMaker : ITelemetryQnAMaker
+    public class QnAMaker : IQnAMakerClient, ITelemetryQnAMaker
     {
         public static readonly string QnAMakerName = nameof(QnAMaker);
         public static readonly string QnAMakerTraceType = "https://www.qnamaker.ai/schemas/trace";
