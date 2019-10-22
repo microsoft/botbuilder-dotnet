@@ -17,9 +17,9 @@ You could create in the project an `appsettings.json` file to set the Facebook c
 
 ```json
 {
-  "VerifyToken": "",
-  "AppSecret": "",
-  "AccessToken":  ""
+  "FacebookVerifyToken": "",
+  "FacebookAppSecret": "",
+  "FacebookAccessToken":  ""
 }
 ```
 

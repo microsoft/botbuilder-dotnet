@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 {
                     foreach (var reply in facebookMessage.Message.QuickReplies)
                     {
-                        if (string.IsNullOrEmpty(reply.ContentType))
+                        if (string.IsNullOrWhiteSpace(reply.ContentType))
                         {
                             reply.ContentType = "text";
                         }

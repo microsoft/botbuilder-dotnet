@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
@@ -37,6 +38,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
         /// </summary>
         /// <value>The optional URL of the image to display.</value>
         [JsonProperty(PropertyName = "image_url")]
-        public string ImageUrl { get; set; }
+        public Uri ImageUrl { get; set; }
     }
 }

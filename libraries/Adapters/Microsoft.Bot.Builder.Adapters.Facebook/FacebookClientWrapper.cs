@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             using (var request = new HttpRequestMessage())
             {
-                request.RequestUri = new Uri($"https://{_options.ApiHost}/{_options.ApiVersion + path}?access_token={_options.AccessToken}&appsecret_proof={proof.ToLowerInvariant()}");
+                request.RequestUri = new Uri($"https://{_options.FacebookApiHost}/{_options.FacebookApiVersion + path}?access_token={_options.FacebookAccessToken}&appsecret_proof={proof.ToLowerInvariant()}");
                 request.Method = method;
                 var json = JsonConvert.SerializeObject(
                     payload,
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             var expected = request.Headers["x-hub-signature"].ToString().ToUpperInvariant();
 
 #pragma warning disable CA5350 // Facebook uses SHA1 as cryptographic algorithm.
-            using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_options.AppSecret)))
+            using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_options.FacebookAppSecret)))
             {
                 hmac.Initialize();
                 var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(payload));
@@ -116,9 +116,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <returns>The app secret proof.</returns>
         public virtual string GetAppSecretProof()
         {
-            using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_options.AppSecret)))
+            using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_options.FacebookAppSecret)))
             {
-                var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(_options.AccessToken));
+                var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(_options.FacebookAccessToken));
                 return BitConverter.ToString(hash).Replace("-", string.Empty);
             }
         }
@@ -145,7 +145,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             var challenge = string.Empty;
             HttpStatusCode statusCode;
 
-            if (request.Query["hub.verify_token"].Equals(_options.VerifyToken))
+            if (request.Query["hub.verify_token"].Equals(_options.FacebookVerifyToken))
             {
                 challenge = request.Query["hub.challenge"];
                 statusCode = HttpStatusCode.OK;
