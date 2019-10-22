@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.Streaming
             // We accept all POSTs regardless of path, but anything else requires special treatment.
             if (!string.Equals(request.Verb, StreamingRequest.POST, StringComparison.InvariantCultureIgnoreCase))
             {
-                return await HandleCustomPathsAsync(request).ConfigureAwait(false);
+                return await HandleCustomPathsAsync(request, response).ConfigureAwait(false);
             }
 
             // Convert the StreamingRequest into an activity the adapter can understand.
@@ -410,10 +410,8 @@ namespace Microsoft.Bot.Builder.Streaming
         /// </summary>
         /// <param name="request">A ReceiveRequest from the connected channel.</param>
         /// <returns>A response if the given request matches against a defined path.</returns>
-        private async Task<StreamingResponse> HandleCustomPathsAsync(ReceiveRequest request)
+        private async Task<StreamingResponse> HandleCustomPathsAsync(ReceiveRequest request, StreamingResponse response)
         {
-            var response = new StreamingResponse();
-
             if (request == null || string.IsNullOrEmpty(request.Verb) || string.IsNullOrEmpty(request.Path))
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
