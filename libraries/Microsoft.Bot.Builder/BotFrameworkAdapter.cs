@@ -52,18 +52,15 @@ namespace Microsoft.Bot.Builder
         internal const string BotIdentityKey = "BotIdentity";
 
 #pragma warning disable SA1401 // Fields should be private
-
+        protected readonly AppCredentials _appCredentials;
         protected readonly ICredentialProvider _credentialProvider;
         protected readonly IChannelProvider _channelProvider;
-        protected readonly ILogger _logger;
-
+        protected readonly ILogger _logger;       
 #pragma warning restore SA1401 // Fields should be private
 
         private static readonly HttpClient _defaultHttpClient = new HttpClient();
-
         private readonly HttpClient _httpClient;
-        private readonly RetryPolicy _connectorClientRetryPolicy;
-        private readonly AppCredentials _appCredentials;
+        private readonly RetryPolicy _connectorClientRetryPolicy;        
         private readonly AuthenticationConfiguration _authConfiguration;
 
         // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)

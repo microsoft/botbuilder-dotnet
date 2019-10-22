@@ -126,9 +126,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             {
                 HttpContext.Current.AcceptWebSocketRequest(async context =>
                 {
-                    var appId = (_credentialProvider as ConfigurationCredentialProvider)?.AppId;
-                    var appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
-                    var requestHandler = new StreamingRequestHandler(bot, this, new MicrosoftAppCredentials(appId, appPassword), context.WebSocket, _logger);
+                    var requestHandler = new StreamingRequestHandler(bot, this, _appCredentials, context.WebSocket, _logger);
 
                     if (_requestHandlers == null)
                     {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
@@ -259,7 +260,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Arrange
             var appId = Guid.NewGuid().ToString();
             var appPassword = "password123";
-            var expectation = "{\"userAgent\":\"Microsoft-BotFramework/3.1 Streaming-Extensions/1.0 BotBuilder/4.6.0.0 (.NETCoreApp,Version=v1.0; Microsoft Windows 10.0.18362 ; X64)\",\"botToken\":\"\"}";
+            var expectation = new Regex("{ \"userAgent\":\"Microsoft-BotFramework\\/[0-9.]+\\sBotBuilder\\/[0-9.]+\\s+\\(.*\\)\",\"botToken\":\".*}");
 
             // Act
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), new MicrosoftAppCredentials(appId, appPassword), Guid.NewGuid().ToString());

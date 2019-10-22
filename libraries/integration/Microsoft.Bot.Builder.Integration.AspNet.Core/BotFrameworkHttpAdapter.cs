@@ -135,13 +135,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 return;
             }
-
+            
             try
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-                var appId = (_credentialProvider as ConfigurationCredentialProvider)?.AppId;
-                var appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
-                var requestHandler = new StreamingRequestHandler(bot, this, new MicrosoftAppCredentials(appId, appPassword), socket, _logger);
+                var requestHandler = new StreamingRequestHandler(bot, this, _appCredentials, socket, _logger);
 
                 if (_requestHandlers == null)
                 {
