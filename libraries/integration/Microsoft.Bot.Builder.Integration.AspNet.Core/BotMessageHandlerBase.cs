@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 {
                     response.StatusCode = invokeResponse.Status;
 
-                    if (response.Body != null)
+                    if (invokeResponse.Body != null)
                     {
                         response.ContentType = "application/json";
                         using (var memoryStream = new MemoryStream())

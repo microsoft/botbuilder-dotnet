@@ -24,14 +24,28 @@
                 <ModulePath>.*\Microsoft.Bot.Builder.TemplateManager.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Testing.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Webex.dll$</ModulePath>
-                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Facebook.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Twilio.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Slack.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Facebook.dll$</ModulePath
                 <!-- <ModulePath>Microsoft.Bot.Builder.Schema.dll$</ModulePath> -->
               </Include>
             </ModulePaths>
-			<Sources>
+            <Sources>
               <Exclude>
                 <Source>.*\\WebexMessageRequest.cs</Source>
                 <Source>.*\\WebexClientWrapper.cs</Source>
+                <Source>.*\\TwilioMessage.cs</Source>
+                <Source>.*\\TwilioAdapterOptions.cs</Source>
+                <Source>.*\\NewSlackMessage.cs</Source>
+                <Source>.*\\SlackResponse.cs</Source>
+                <Source>.*\\ActivityResourceResponse.cs</Source>
+                <Source>.*\\SlackAdapterOptions.cs</Source>
+                <Source>.*\\SlackClientWrapper.cs</Source>
+                <Source>.*\\SlackMessage.cs</Source>
+                <Source>.*\\SlackAction.cs</Source>
+                <Source>.*\\SlackEvent.cs</Source>
+                <Source>.*\\SlackPayload.cs</Source>
+                <Source>.*\\SlackRequestBody.cs</Source>
                 <Source>.*\\FacebookAdapterOptions.cs</Source>
                 <Source>.*\\FacebookMessage.cs</Source>
                 <Source>.*\\Button.cs</Source>

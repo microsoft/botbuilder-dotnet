@@ -18,6 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Files\FakePersonId.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Files\Message.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
