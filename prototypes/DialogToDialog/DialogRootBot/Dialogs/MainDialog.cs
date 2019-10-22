@@ -45,7 +45,7 @@ namespace DialogRootBot.Dialogs
 
             // Use the text provided in FinalStepAsync or the default if it is the first time.
             var messageText = stepContext.Options?.ToString() ?? "What can I help you with today?\nSay something like \"Book a flight from Paris to Berlin on March 22, 2020\"";
-            var promptMessage = MessageFactory.Text(messageText, messageText, InputHints.ExpectingInput);
+            var promptMessage = CreateTaskPromptMessageWithActions(messageText);
             return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = promptMessage }, cancellationToken);
         }
 
@@ -71,6 +71,17 @@ namespace DialogRootBot.Dialogs
 
                 // Forward to remote but inject some parameters in value so they can be seen on the other end.
                 stepContext.Context.Activity.Value = new BookingDetails { Destination = "New York" };
+                return await stepContext.BeginDialogAsync(nameof(SkillDialog), dialogArgs, cancellationToken);
+            }
+
+            // Forward to remote as is.
+            if (stepContext.Context.Activity.Text.Equals("oauthdemo", StringComparison.CurrentCultureIgnoreCase))
+            {
+                var dialogArgs = new SkillDialogArgs
+                {
+                    SkillId = "SkillBot",
+                    EventName = "OAuthDemo"
+                };
                 return await stepContext.BeginDialogAsync(nameof(SkillDialog), dialogArgs, cancellationToken);
             }
 
@@ -186,6 +197,49 @@ namespace DialogRootBot.Dialogs
             {
                 return null;
             }
+        }
+
+        private Activity CreateTaskPromptMessageWithActions(string messageText)
+        {
+            var activity = MessageFactory.Text(messageText, messageText, InputHints.ExpectingInput);
+
+            activity.SuggestedActions = new SuggestedActions
+            {
+                Actions = new List<CardAction>
+                {
+                    new CardAction
+                    {
+                        Title = "OAuthDemo",
+                        Type = ActionTypes.ImBack,
+                        Value = "OAuthDemo"
+                    },
+                    new CardAction
+                    {
+                        Title = "Hi",
+                        Type = ActionTypes.ImBack,
+                        Value = "Hi"
+                    },
+                    new CardAction
+                    {
+                        Title = "r:SomethingForTh",
+                        Type = ActionTypes.ImBack,
+                        Value = "r:SomethingForTh"
+                    },
+                    new CardAction
+                    {
+                        Title = "Book a flight",
+                        Type = ActionTypes.ImBack,
+                        Value = "Book a flight"
+                    },
+                    new CardAction
+                    {
+                        Title = "what is the weather like",
+                        Type = ActionTypes.ImBack,
+                        Value = "what is the weather like"
+                    }
+                }
+            };
+            return activity;
         }
     }
 }

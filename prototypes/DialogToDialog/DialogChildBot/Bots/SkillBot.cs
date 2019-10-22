@@ -25,7 +25,6 @@ namespace DialogChildBot.Bots
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
             // TODO: replace this with DialogManager
-
             var dialogSet = new DialogSet(ConversationState.CreateProperty<DialogState>("DialogState")) { TelemetryClient = Dialog.TelemetryClient };
             dialogSet.Add(Dialog);
 

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -33,10 +32,10 @@ namespace DialogRootBot.Bots
             _logger = logger;
         }
 
-        public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
-            turnContext.TurnState.Set<ConversationState>(_conversationState);
-            
+            turnContext.TurnState.Set(_conversationState);
+
             // Run the Dialog the activity Activity.
             if (turnContext.Activity.Type != ActivityTypes.ConversationUpdate)
             {
@@ -60,8 +59,8 @@ namespace DialogRootBot.Bots
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
                     var welcomeCard = CreateAdaptiveCardAttachment();
-                    var response = MessageFactory.Attachment(welcomeCard);
-                    await turnContext.SendActivityAsync(response, cancellationToken);
+                    var activity = MessageFactory.Attachment(welcomeCard);
+                    await turnContext.SendActivityAsync(activity, cancellationToken);
                     var dialogSet = new DialogSet(_conversationState.CreateProperty<DialogState>("DialogState")) { TelemetryClient = _mainDialog.TelemetryClient };
                     dialogSet.Add(_mainDialog);
 
@@ -87,7 +86,11 @@ namespace DialogRootBot.Bots
                 using (var reader = new StreamReader(stream))
                 {
                     var adaptiveCard = reader.ReadToEnd();
-                    return new Attachment() { ContentType = "application/vnd.microsoft.card.adaptive", Content = JsonConvert.DeserializeObject(adaptiveCard), };
+                    return new Attachment
+                    {
+                        ContentType = "application/vnd.microsoft.card.adaptive",
+                        Content = JsonConvert.DeserializeObject(adaptiveCard)
+                    };
                 }
             }
         }

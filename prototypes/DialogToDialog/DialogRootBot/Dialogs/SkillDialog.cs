@@ -23,8 +23,11 @@ namespace DialogRootBot.Dialogs
         }
 
         /// <summary>
-        /// Gets or sets SkillId to call
+        /// Gets or sets SkillId to call.
         /// </summary>
+        /// <value>
+        /// SkillId to call.
+        /// </value>
         [JsonProperty("method")]
         public string SkillId { get; set; }
 
@@ -36,14 +39,20 @@ namespace DialogRootBot.Dialogs
         public string EventName { get; set; }
 
         /// <summary>
-        /// Gets or sets the value to pass to the skill 
+        /// Gets or sets the value to pass to the skill.
         /// </summary>
+        /// <value>
+        /// The value to pass to the skill.
+        /// </value>
         [JsonProperty("value")]
         public object Value { get; set; }
 
         /// <summary>
-        /// Gets or sets the property path to store the result returned from the skill
+        /// Gets or sets the property path to store the result returned from the skill.
         /// </summary>
+        /// <value>
+        /// The property path to store the result returned from the skill.
+        /// </value>
         public string ResultProperty { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
@@ -62,16 +71,18 @@ namespace DialogRootBot.Dialogs
 
             if (!string.IsNullOrEmpty(eventName))
             {
-                await dc.Context.SendActivityAsync($"SkillDialog: InBeginDialog using an event: {EventName}", cancellationToken: cancellationToken);
+                await dc.Context.SendActivityAsync($"SkillDialog: InBeginDialog using an event: {eventName}", cancellationToken: cancellationToken);
                 var eventActivity = Activity.CreateEventActivity();
                 eventActivity.Name = eventName;
                 eventActivity.Value = boundValue;
                 eventActivity.ApplyConversationReference(dc.Context.Activity.GetConversationReference());
+                eventActivity.From = dc.Context.Activity.From;
+                eventActivity.Recipient = dc.Context.Activity.Recipient;
                 fwdActivity = (Activity)eventActivity;
             }
             else
             {
-                await dc.Context.SendActivityAsync($"SkillDialog: InBeginDialog using pass through (activity is: {dc.Context.Activity.Type}.", cancellationToken: cancellationToken);
+                await dc.Context.SendActivityAsync($"SkillDialog: InBeginDialog using pass through (activity is: {dc.Context.Activity.Type}).", cancellationToken: cancellationToken);
                 fwdActivity.Value = boundValue;
             }
 
@@ -99,7 +110,7 @@ namespace DialogRootBot.Dialogs
             return await SendToSkill(dc, dc.Context.Activity, cancellationToken);
         }
 
-        public override async Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
         {
             await turnContext.SendActivityAsync("SkillDialog: In EndDialog", cancellationToken: cancellationToken);
             await base.EndDialogAsync(turnContext, instance, reason, cancellationToken);

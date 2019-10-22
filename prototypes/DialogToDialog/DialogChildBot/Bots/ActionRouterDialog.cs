@@ -8,6 +8,7 @@ using DialogChildBot.Extensions;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace DialogChildBot.Bots
@@ -15,24 +16,21 @@ namespace DialogChildBot.Bots
     // TODO: cleanup this dialog
     public class ActionRouterDialog : ComponentDialog
     {
-        public ActionRouterDialog()
+        public ActionRouterDialog(IConfiguration configuration)
             : base("MyNameIsGroot")
         {
             AddDialog(new BookingDialog());
+            AddDialog(new OAuthDialog(configuration));
+
+            AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[] { ProcessActivityAsync }));
+
+            // The initial child Dialog to run.
+            InitialDialogId = nameof(WaterfallDialog);
         }
 
-        protected override async Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = new CancellationToken())
+        private async Task<DialogTurnResult> ProcessActivityAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            // Do I have an active dialog?
-            // IF Yes, continue with what I got
-            // If No
-            //   Did I get an action?
-            //   If yes
-            //      Run that action
-            //   If No
-            //      Did I get an utterance?
-            //      If yes, resolve against LUIS
-            var turnContext = innerDc.Context;
+            var turnContext = stepContext.Context;
             var activity = turnContext.Activity;
             if (activity.Type == ActivityTypes.Event)
             {
@@ -53,12 +51,17 @@ namespace DialogChildBot.Bots
 
                         // Start the booking dialog
                         var dialog = FindDialog(nameof(BookingDialog));
-                        return await innerDc.BeginDialogAsync(dialog.Id, bookingDetails, cancellationToken);
+                        return await stepContext.BeginDialogAsync(dialog.Id, bookingDetails, cancellationToken);
 
                     case "GetWeather":
                         // This is not done yet, should a a couple of debug messages and end right away.
                         await turnContext.SendActivityAsync(MessageFactory.Text("TODO: This will handle GetWeather flow"), cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Complete);
+
+                    case "OAuthDemo":
+                        // Start the OAuthDialog
+                        var oAuthDialog = FindDialog(nameof(OAuthDialog));
+                        return await stepContext.BeginDialogAsync(oAuthDialog.Id, null, cancellationToken);
 
                     default:
                         await turnContext.SendActivityAsync(MessageFactory.Text("Unknown event name"), cancellationToken);
