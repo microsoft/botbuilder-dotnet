@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             var urlString = Options.TwilioValidationUrl?.ToString();
             
             var twilioSignature = httpRequest.Headers.ContainsKey(TwilioSignature)
-                ? httpRequest.Headers[TwilioSignature].ToString().ToUpperInvariant()
+                ? httpRequest.Headers[TwilioSignature].ToString()
                 : throw new Exception($"HttpRequest is missing \"{TwilioSignature}\"");
 
             if (string.IsNullOrWhiteSpace(urlString))
