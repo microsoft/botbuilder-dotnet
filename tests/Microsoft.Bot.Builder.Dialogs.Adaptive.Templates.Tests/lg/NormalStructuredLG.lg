@@ -19,7 +19,7 @@
 ]
 
 # AudioCardTemplate(type)
-[AudioCard
+[Audiocard
         title=Cheese gromit!
         subtitle=@{type}
         text=This is some text describing the card, it's cool because it's cool
@@ -73,7 +73,7 @@
 ]
 
 # HerocardWithCardAction(title, text)
-[HeroCard
+[herocard
     Title = @{title}
     Text = @{text}
     Buttons = {cardActionTemplate(null, title, text)}
@@ -100,7 +100,7 @@
 ]
 
 # activityWithMultiAttachments(title, text)
-[Activity
+[activity
     Attachments = {HerocardWithCardAction(title, text)} | {ThumbnailCardTemplate('type')}
 ]
 
