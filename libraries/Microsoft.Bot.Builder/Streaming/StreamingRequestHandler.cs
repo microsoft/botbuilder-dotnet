@@ -156,7 +156,7 @@ namespace Microsoft.Bot.Builder.Streaming
             var response = new StreamingResponse();
 
             // We accept all POSTs regardless of path, but anything else requires special treatment.
-            if (!string.Equals(request.Verb, StreamingRequest.POST, StringComparison.InvariantCultureIgnoreCase))
+            if (!string.Equals(request?.Verb, StreamingRequest.POST, StringComparison.InvariantCultureIgnoreCase))
             {
                 return await HandleCustomPathsAsync(request, response).ConfigureAwait(false);
             }
