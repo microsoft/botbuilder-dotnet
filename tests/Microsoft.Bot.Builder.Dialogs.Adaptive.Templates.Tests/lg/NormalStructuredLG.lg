@@ -49,7 +49,13 @@
 # SigninCardTemplate(signinlabel, url)
 [SigninCard
         text=This is some text describing the card, it's cool because it's cool
-        buttons={cardActionTemplate('signin', signinlabel, url)}
+        buttons={signinButton(signinlabel, url)}
+]
+
+# signinButton(signinlabel, url)
+[CardAction
+    Title = {signinlabel}
+    Value = {url}
 ]
 
 # OAuthCardTemplate(signinlabel, url, connectionName)

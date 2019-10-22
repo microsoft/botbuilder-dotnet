@@ -240,7 +240,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                     var actionStr = jValue.ToObject<string>().Trim();
                     suggestionActions.Actions.Add(new CardAction(type: ActionTypes.MessageBack, title: actionStr, displayText: actionStr, text: actionStr));
                 }
-                else if (action is JObject actionJObj && GetCardAction(actionJObj, out var cardAction))
+                else if (action is JObject actionJObj && GetCardAction(string.Empty, actionJObj, out var cardAction))
                 {
                     suggestionActions.Actions.Add(cardAction);
                 }
@@ -249,7 +249,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return suggestionActions;
         }
 
-        private static List<CardAction> GetButtons(JToken value)
+        private static List<CardAction> GetButtons(string cardType, JToken value)
         {
             var buttons = new List<CardAction>();
             var actions = NormalizedToList(value);
@@ -259,9 +259,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 if (action is JValue jValue && jValue.Type == JTokenType.String)
                 {
                     var actionStr = jValue.ToObject<string>().Trim();
-                    buttons.Add(new CardAction(type: ActionTypes.ImBack, title: actionStr, value: actionStr));
+                    if (cardType == SigninCard.ContentType || cardType == OAuthCard.ContentType)
+                    {
+                        buttons.Add(new CardAction(type: ActionTypes.Signin, title: actionStr, value: actionStr));
+                    }
+                    else
+                    {
+                        buttons.Add(new CardAction(type: ActionTypes.ImBack, title: actionStr, value: actionStr));
+                    }
                 }
-                else if (action is JObject actionJObj && GetCardAction(actionJObj, out var cardAction))
+                else if (action is JObject actionJObj && GetCardAction(cardType, actionJObj, out var cardAction))
                 {
                     buttons.Add(cardAction);
                 }
@@ -270,10 +277,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return buttons;
         }
 
-        private static bool GetCardAction(JObject cardActionJObj, out CardAction cardAction)
+        private static bool GetCardAction(string cardType, JObject cardActionJObj, out CardAction cardAction)
         {
             var type = GetStructureType(cardActionJObj);
             cardAction = new CardAction();
+            if (cardType == SigninCard.ContentType || cardType == OAuthCard.ContentType)
+            {
+                cardAction.Type = ActionTypes.Signin;
+            }
+            else
+            {
+                cardAction.Type = ActionTypes.ImBack;
+            }
+
             var isCardAction = true;
             if (type == nameof(CardAction))
             {
@@ -442,7 +458,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                             card[property] = new JArray();
                         }
 
-                        GetButtons(value).ForEach(u => ((JArray)card[property]).Add(JObject.FromObject(u)));
+                        GetButtons(type, value).ForEach(u => ((JArray)card[property]).Add(JObject.FromObject(u)));
                         break;
 
                     case "autostart":
