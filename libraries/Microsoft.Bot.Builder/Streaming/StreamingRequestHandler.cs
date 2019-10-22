@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <param name="socket">The base socket to use when connecting to the channel.</param>
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
         public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, MicrosoftAppCredentials appCredentials, WebSocket socket, ILogger logger = null)
-        {            
+        {
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
             _appCredentials = appCredentials ?? throw new ArgumentNullException(nameof(appCredentials));
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Streaming
 
             _logger = logger ?? NullLogger.Instance;
             _conversations = new ConcurrentDictionary<string, DateTime>();
-            _userAgent = GetUserAgent();            
+            _userAgent = GetUserAgent();
             _server = new WebSocketServer(socket, this);
             _serverIsConnected = true;
             _server.Disconnected += Server_Disconnected;
