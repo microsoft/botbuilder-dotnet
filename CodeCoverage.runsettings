@@ -26,7 +26,7 @@
                 <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Webex.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Twilio.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Slack.dll$</ModulePath>
-                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Facebook.dll$</ModulePath
+                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Facebook.dll$</ModulePath>
                 <!-- <ModulePath>Microsoft.Bot.Builder.Schema.dll$</ModulePath> -->
               </Include>
             </ModulePaths>
