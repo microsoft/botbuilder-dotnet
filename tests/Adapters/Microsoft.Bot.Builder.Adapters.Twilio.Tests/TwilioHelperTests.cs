@@ -66,8 +66,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public void ActivityToTwilioShouldThrowArgumentNullExceptionWithEmptyOrInvalidNumber()
         {
-
-            Assert.Throws<ArgumentNullException>(() => { TwilioHelper.ActivityToTwilio(default,"not_a_number"); });
+            Assert.Throws<ArgumentNullException>(() => { TwilioHelper.ActivityToTwilio(default, "not_a_number"); });
             Assert.Throws<ArgumentNullException>(() => { TwilioHelper.ActivityToTwilio(default, string.Empty); });
         }
 
