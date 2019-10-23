@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Castle.Core.Configuration;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
@@ -72,7 +71,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task SettingsMemoryScopeTest()
         {
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("test", "yoyo") }).Build();
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("test", "yoyo") })
+                .AddJsonFile(@"test.settings.json")
+                .Build();
             var storage = new MemoryStorage();
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .UseStorage(storage)
@@ -88,6 +90,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .Send("settings.test")
                 .AssertReply("yoyo")
+            .Send("settings.string")
+                .AssertReply("test")
+            .Send("settings.int")
+                .AssertReply("3")
+            .Send("settings.array[0]")
+                .AssertReply("zero")
+            .Send("settings.array[1]")
+                .AssertReply("one")
+            .Send("settings.array[2]")
+                .AssertReply("two")
+            .Send("settings.array[3]")
+                .AssertReply("three")
+            .Send("settings.fakeArray.0")
+                .AssertReply("zero")
+            .Send("settings.fakeArray.1")
+                .AssertReply("one")
+            .Send("settings.fakeArray.2")
+                .AssertReply("two")
+            .Send("settings.fakeArray.3")
+                .AssertReply("three")
+            .Send("settings.fakeArray.zzz")
+                .AssertReply("cat")
             .StartTestAsync();
         }
 

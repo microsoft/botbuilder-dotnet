@@ -3,18 +3,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Twilio.Rest.Api.V2010.Account;
-using Twilio.Security;
-
-using AuthenticationException = System.Security.Authentication.AuthenticationException;
 
 #if SIGNASSEMBLY
 [assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Adapters.Twilio.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b5fc90e7027f67871e773a8fde8938c81dd402ba65b9201d60593e96c492651e889cc13f1415ebb53fac1131ae0bd333c5ee6021672d9718ea31a8aebd0da0072f25d87dba6fc90ffd598ed4da35e44c398c454307e8e33b8426143daec9f596836f97c8f74750e5975c64e2189f45def46b2a2b1247adc3652bf5c308055da9")]
@@ -38,9 +36,14 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <seealso cref="TwilioAdapter.SendActivitiesAsync(ITurnContext, Activity[], System.Threading.CancellationToken)"/>
         public static CreateMessageOptions ActivityToTwilio(Activity activity, string twilioNumber)
         {
-            if (activity == null || string.IsNullOrWhiteSpace(twilioNumber))
+            if (activity == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(activity));
+            }
+
+            if (string.IsNullOrWhiteSpace(twilioNumber))
+            {
+                throw new ArgumentNullException(nameof(twilioNumber));
             }
 
             var mediaUrls = new List<Uri>();
@@ -61,31 +64,52 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         }
 
         /// <summary>
+        /// Writes the HttpResponse.
+        /// </summary>
+        /// <param name="response">The httpResponse.</param>
+        /// <param name="code">The status code to be written.</param>
+        /// <param name="text">The text to be written.</param>
+        /// <param name="encoding">The encoding for the text.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task WriteAsync(HttpResponse response, int code, string text, Encoding encoding, CancellationToken cancellationToken)
+        {
+            if (response == null)
+            {
+                throw new ArgumentNullException(nameof(response));
+            }
+
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            if (encoding == null)
+            {
+                throw new ArgumentNullException(nameof(encoding));
+            }
+
+            response.ContentType = "text/plain";
+            response.StatusCode = code;
+
+            var data = encoding.GetBytes(text);
+
+            await response.Body.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Creates a Bot Framework <see cref="Activity"/> from an HTTP request that contains a Twilio message.
         /// </summary>
-        /// <param name="httpRequest">The HTTP request.</param>
-        /// <param name="validationUrl">Optional validation URL to override the automatically
-        /// generated URL signature used to validate incoming requests.</param>
-        /// <param name="authToken">The authentication token for the Twilio app.</param>
+        /// <param name="payload">The HTTP request.</param>
         /// <returns>The activity object.</returns>
-        /// <seealso cref="TwilioAdapter.ProcessAsync(HttpRequest, HttpResponse, IBot, System.Threading.CancellationToken)"/>
-        /// <seealso cref="TwilioAdapterOptions.ValidationUrl"/>
-        public static async Task<Activity> RequestToActivity(HttpRequest httpRequest, Uri validationUrl, string authToken)
+        public static Activity PayloadToActivity(Dictionary<string, string> payload)
         {
-            if (httpRequest == null)
+            if (payload == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(payload));
             }
-
-            Dictionary<string, string> body;
-            using (var bodyStream = new StreamReader(httpRequest.Body))
-            {
-                body = QueryStringToDictionary(await bodyStream.ReadToEndAsync().ConfigureAwait(false));
-            }
-
-            ValidateRequest(httpRequest, body, validationUrl, authToken);
-
-            var twilioMessage = JsonConvert.DeserializeObject<TwilioMessage>(JsonConvert.SerializeObject(body));
+            
+            var twilioMessage = JsonConvert.DeserializeObject<TwilioMessage>(JsonConvert.SerializeObject(payload));
 
             return new Activity()
             {
@@ -107,37 +131,8 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 Text = twilioMessage.Body,
                 ChannelData = twilioMessage,
                 Type = ActivityTypes.Message,
-                Attachments = int.TryParse(twilioMessage.NumMedia, out var numMediaResult) && numMediaResult > 0 ? GetMessageAttachments(numMediaResult, body) : null,
+                Attachments = int.TryParse(twilioMessage.NumMedia, out var numMediaResult) && numMediaResult > 0 ? GetMessageAttachments(numMediaResult, payload) : null,
             };
-        }
-
-        /// <summary>
-        /// Validates an HTTP request as coming from Twilio.
-        /// </summary>
-        /// <param name="httpRequest">The request to validate.</param>
-        /// <param name="body">The request payload, as key-value pairs.</param>
-        /// <param name="validationUrl">Optional validation URL to override the automatically
-        /// generated URL signature used to validate incoming requests.</param>
-        /// <param name="authToken">The authentication token for the Twilio app.</param>
-        /// <exception cref="AuthenticationException">Validation failed.</exception>
-        private static void ValidateRequest(HttpRequest httpRequest, Dictionary<string, string> body, Uri validationUrl, string authToken)
-        {
-            var twilioSignature = httpRequest.Headers["x-twilio-signature"];
-            var urlString = validationUrl?.ToString();
-            if (string.IsNullOrWhiteSpace(urlString))
-            {
-                urlString = httpRequest.Headers["x-forwarded-proto"][0];
-                if (string.IsNullOrWhiteSpace(urlString))
-                {
-                    urlString = httpRequest.Protocol + "://" + httpRequest.Host + httpRequest.Path;
-                }
-            }
-
-            var requestValidator = new RequestValidator(authToken);
-            if (!requestValidator.Validate(urlString, body, twilioSignature))
-            {
-                throw new AuthenticationException("Request does not match provided signature");
-            }
         }
 
         /// <summary>
@@ -146,7 +141,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="numMedia">The number of media items to pull from the message body.</param>
         /// <param name="message">A dictionary containing the Twilio message elements.</param>
         /// <returns>An Attachments array with the converted attachments.</returns>
-        private static List<Attachment> GetMessageAttachments(int numMedia, Dictionary<string, string> message)
+        public static List<Attachment> GetMessageAttachments(int numMedia, Dictionary<string, string> message)
         {
             var attachments = new List<Attachment>();
             for (var i = 0; i < numMedia; i++)
@@ -171,7 +166,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// </summary>
         /// <param name="query">The query string to convert.</param>
         /// <returns>A dictionary with the query values.</returns>
-        private static Dictionary<string, string> QueryStringToDictionary(string query)
+        public static Dictionary<string, string> QueryStringToDictionary(string query)
         {
             var values = new Dictionary<string, string>();
             if (string.IsNullOrWhiteSpace(query))

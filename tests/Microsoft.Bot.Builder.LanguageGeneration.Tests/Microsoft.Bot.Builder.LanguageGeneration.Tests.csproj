@@ -39,6 +39,7 @@
     <None Remove="Examples\StructuredTemplate.lg" />
     <None Remove="Examples\ConditionExpression.lg" />
     <None Remove="Examples\EvaluateOnce.lg" />
+    <None Remove="Examples\LoopScope.lg" />
     <None Remove="ExceptionExamples\ConditionFormatError.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplates.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplatesInImportFiles.lg" />
@@ -104,6 +105,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\ConditionExpression.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\LoopScope.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\EscapeCharacter.lg">

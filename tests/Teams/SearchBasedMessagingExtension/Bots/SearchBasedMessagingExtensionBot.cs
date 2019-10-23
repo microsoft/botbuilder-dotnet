@@ -12,9 +12,6 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
-    /*
-     * This one already exists in JS.
-     */
     public class SearchBasedMessagingExtensionBot : TeamsActivityHandler
     {
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)

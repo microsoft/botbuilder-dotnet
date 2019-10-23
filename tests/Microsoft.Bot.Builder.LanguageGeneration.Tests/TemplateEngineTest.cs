@@ -815,6 +815,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.IsTrue(
                 JToken.DeepEquals(JObject.Parse("{\"$type\":\"MyStruct\",\"list\":[{\"$type\":\"SubStruct\",\"text\":\"hello\"},{\"$type\":\"SubStruct\",\"text\":\"world\"}]}"), evaled as JObject));
+
+            evaled = engine.EvaluateTemplate("templateWithSquareBrackets", new { manufacturer = new { Name = "Acme Co" } });
+
+            Assert.IsTrue(
+                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Struct\",\"text\":\"Acme Co\"}"), evaled as JObject));
         }
 
         [TestMethod]
@@ -853,6 +858,30 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             evaled = engine.EvaluateTemplate("conditionTemplate", new { num = 4 });
 
             Assert.AreEqual(evaled, "Your input is not one, two or three");
+        }
+
+        [TestMethod]
+        public void TestLoopScope()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("LoopScope.lg"));
+
+            var loopClass1 = new LoopClass();
+            loopClass1.Name = "jack";
+
+            var loopClass2 = new LoopClass();
+            loopClass2.Name = "jones";
+
+            loopClass1.LoopObj = loopClass2;
+            loopClass2.LoopObj = loopClass1;
+
+            engine.EvaluateTemplate("template1", new { scope = loopClass1 });
+        }
+
+        public class LoopClass
+        {
+            public string Name { get; set; }
+
+            public object LoopObj { get; set; }
         }
     }
 }

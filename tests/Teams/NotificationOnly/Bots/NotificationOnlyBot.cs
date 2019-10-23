@@ -19,7 +19,7 @@ namespace Microsoft.BotBuilderSamples.Bots
          * the bot will send that person a 1:1 message saying what happened. Also, yes, this scenario isn't the most up to date with the updated
          * APIs for membersAdded/removed. Also you should NOT be able to @mention this bot.
          */
-        protected override async Task OnTeamsMembersAddedAsync(IList<ChannelAccount> membersAdded, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        protected override async Task OnTeamsMembersAddedAsync(IList<TeamsChannelAccount> membersAdded, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             foreach (var member in membersAdded)
             {
@@ -32,33 +32,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             }
         }
 
-        protected override async Task OnTeamsMembersRemovedAsync(IList<ChannelAccount> membersRemoved, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
-        {
-            foreach (var member in membersRemoved)
-            {
-                var replyActivity = MessageFactory.Text($"{member.Id} was removed to the team");
-                replyActivity.ApplyConversationReference(turnContext.Activity.GetConversationReference());
-
-                var channelId = turnContext.Activity.Conversation.Id.Split(";")[0];
-                replyActivity.Conversation.Id = channelId;
-                var resourceResponse = await turnContext.SendActivityAsync(replyActivity, cancellationToken);
-            }
-        }
-
-        protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
-        {
-            foreach (var member in membersAdded)
-            {
-                var replyActivity = MessageFactory.Text($"{member.Id} was added to the team");
-                replyActivity.ApplyConversationReference(turnContext.Activity.GetConversationReference());
-
-                var channelId = turnContext.Activity.Conversation.Id.Split(";")[0];
-                replyActivity.Conversation.Id = channelId;
-                var resourceResponse = await turnContext.SendActivityAsync(replyActivity, cancellationToken);
-            }
-        }
-
-        protected override async Task OnMembersRemovedAsync(IList<ChannelAccount> membersRemoved, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        protected override async Task OnTeamsMembersRemovedAsync(IList<TeamsChannelAccount> membersRemoved, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             foreach (var member in membersRemoved)
             {

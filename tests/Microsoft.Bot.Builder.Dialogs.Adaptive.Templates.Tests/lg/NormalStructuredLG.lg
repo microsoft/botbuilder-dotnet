@@ -19,7 +19,7 @@
 ]
 
 # AudioCardTemplate(type)
-[AudioCard
+[Audiocard
         title=Cheese gromit!
         subtitle=@{type}
         text=This is some text describing the card, it's cool because it's cool
@@ -49,7 +49,13 @@
 # SigninCardTemplate(signinlabel, url)
 [SigninCard
         text=This is some text describing the card, it's cool because it's cool
-        buttons={cardActionTemplate('signin', signinlabel, url)}
+        buttons={signinButton(signinlabel, url)}
+]
+
+# signinButton(signinlabel, url)
+[CardAction
+    Title = {signinlabel}
+    Value = {url}
 ]
 
 # OAuthCardTemplate(signinlabel, url, connectionName)
@@ -73,7 +79,7 @@
 ]
 
 # HerocardWithCardAction(title, text)
-[HeroCard
+[herocard
     Title = @{title}
     Text = @{text}
     Buttons = {cardActionTemplate(null, title, text)}
@@ -100,7 +106,7 @@
 ]
 
 # activityWithMultiAttachments(title, text)
-[Activity
+[activity
     Attachments = {HerocardWithCardAction(title, text)} | {ThumbnailCardTemplate('type')}
 ]
 
@@ -141,6 +147,11 @@
     Attachments = {HerocardWithCardAction(title, text)}
     SuggestedActions = firstItem | {cardActionTemplate(null, title, text)}
     AttachmentLayout = list
+]
+
+# notSupport
+[Acti
+    key = value
 ]
 
 # adaptivecardjson

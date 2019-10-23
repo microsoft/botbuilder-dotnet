@@ -4,55 +4,48 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
     /// <summary>
     /// A <see cref="BotAdapter"/> that can connect to Twilio's SMS service.
     /// </summary>
-    public class TwilioAdapter : BotAdapter
+    public class TwilioAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
-        private readonly TwilioAdapterOptions _options;
-
         private readonly TwilioClientWrapper _twilioClient;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TwilioAdapter"/> class using configuration settings.
+        /// </summary>
+        /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
+        /// <remarks>
+        /// The configuration keys are:
+        /// TwilioNumber: The phone number associated with the Twilio account.
+        /// TwilioAccountSid: The string identifier of the account. See https://www.twilio.com/docs/glossary/what-is-a-sid
+        /// TwilioAuthToken: The authentication token for the account.
+        /// TwilioValidationUrl: The validation URL for incoming requests.
+        /// </remarks>
+        public TwilioAdapter(IConfiguration configuration)
+            : this(new TwilioClientWrapper(new TwilioAdapterOptions(configuration["TwilioNumber"], configuration["TwilioAccountSid"], configuration["TwilioAuthToken"], new Uri(configuration["TwilioValidationUrl"]))))
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TwilioAdapter"/> class.
         /// </summary>
-        /// <param name="options">The options to use to authenticate the bot with the Twilio service.</param>
         /// <param name="twilioClient">The Twilio client to connect to.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="options"/> is <c>null</c>.</exception>
-        public TwilioAdapter(TwilioAdapterOptions options, TwilioClientWrapper twilioClient)
+        public TwilioAdapter(TwilioClientWrapper twilioClient)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            if (string.IsNullOrWhiteSpace(options.TwilioNumber))
-            {
-                throw new ArgumentException("TwilioNumber is a required part of the configuration.", nameof(options));
-            }
-
-            if (string.IsNullOrWhiteSpace(options.AccountSid))
-            {
-                throw new ArgumentException("AccountSid is a required part of the configuration.", nameof(options));
-            }
-
-            if (string.IsNullOrWhiteSpace(options.AuthToken))
-            {
-                throw new ArgumentException("AuthToken is a required part of the configuration.", nameof(options));
-            }
-
             _twilioClient = twilioClient ?? throw new ArgumentNullException(nameof(twilioClient));
-            _options = options;
-
-            _twilioClient.LogIn(_options.AccountSid, _options.AuthToken);
         }
 
         /// <summary>
@@ -72,23 +65,21 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             var responses = new List<ResourceResponse>();
             foreach (var activity in activities)
             {
-                if (activity.Type == ActivityTypes.Message)
+                if (activity.Type != ActivityTypes.Message)
                 {
-                    var messageOptions = TwilioHelper.ActivityToTwilio(activity, _options.TwilioNumber);
-
-                    var res = await _twilioClient.SendMessage(messageOptions).ConfigureAwait(false);
-
-                    var response = new ResourceResponse()
-                    {
-                        Id = res,
-                    };
-
-                    responses.Add(response);
+                    throw new ArgumentException("Unsupported Activity Type. Only Activities of type ‘Message’ are supported.", nameof(activities));
                 }
-                else
+
+                var messageOptions = TwilioHelper.ActivityToTwilio(activity, _twilioClient.Options.TwilioNumber);
+
+                var res = await _twilioClient.SendMessage(messageOptions).ConfigureAwait(false);
+
+                var response = new ResourceResponse()
                 {
-                    throw new ArgumentException("Unknown message type of Activity.", nameof(activities));
-                }
+                    Id = res,
+                };
+
+                responses.Add(response);
             }
 
             return responses.ToArray();
@@ -122,7 +113,18 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 throw new ArgumentNullException(nameof(bot));
             }
 
-            var activity = await TwilioHelper.RequestToActivity(httpRequest, _options.ValidationUrl, _options.AuthToken).ConfigureAwait(false);
+            Dictionary<string, string> bodyDictionary;
+            using (var bodyStream = new StreamReader(httpRequest.Body))
+            {
+                bodyDictionary = TwilioHelper.QueryStringToDictionary(await bodyStream.ReadToEndAsync().ConfigureAwait(false));
+            }
+
+            if (!_twilioClient.ValidateSignature(httpRequest, bodyDictionary))
+            {
+                throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
+            }
+
+            var activity = TwilioHelper.PayloadToActivity(bodyDictionary);
 
             // create a conversation reference
             using (var context = new TurnContext(this, activity))
@@ -130,11 +132,10 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 context.TurnState.Add("httpStatus", HttpStatusCode.OK.ToString("D"));
                 await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
-                httpResponse.StatusCode = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), CultureInfo.InvariantCulture);
-                httpResponse.ContentType = "text/plain";
+                var statusCode = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), CultureInfo.InvariantCulture);
                 var text = context.TurnState.Get<object>("httpBody") != null ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
 
-                await httpResponse.WriteAsync(text, cancellationToken).ConfigureAwait(false);
+                await TwilioHelper.WriteAsync(httpResponse, statusCode, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -151,7 +152,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
         public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
-            // Twilio adapter does not support updateActivity.
             return Task.FromException<ResourceResponse>(new NotSupportedException("Twilio SMS does not support updating activities."));
         }
 
@@ -168,7 +168,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
         public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
-            // Twilio adapter does not support deleteActivity.
             return Task.FromException<ResourceResponse>(new NotSupportedException("Twilio SMS does not support deleting activities."));
         }
 
