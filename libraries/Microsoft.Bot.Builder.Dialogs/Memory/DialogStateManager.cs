@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
@@ -151,16 +152,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
 
             var memoryScope = ResolveMemoryScope(path, out var remainingPath);
-            var memory = memoryScope.GetMemory(dialogContext);
-
-            // HACK to support .First() retrieval on turn.recognized.entities.foo, replace with Expressions once expression ship
-            var iFirst = remainingPath.ToLower().LastIndexOf(".first()");
-            if (iFirst >= 0)
+            if (memoryScope != null && string.IsNullOrEmpty(remainingPath))
             {
-                return TryGetFirstNestedValue(ref value, ref remainingPath, memory, iFirst);
+                var memory = memoryScope.GetMemory(this.dialogContext);
+                value = ObjectPath.MapValueTo<T>(memory);
+                return true;
             }
 
-            return ObjectPath.TryGetPathValue(memory, remainingPath, out value);
+            // HACK to support .First() retrieval on turn.recognized.entities.foo, replace with Expressions once expression ship
+            var iFirst = path.ToLower().LastIndexOf(".first()");
+            if (iFirst >= 0)
+            {
+                path = path.Substring(0, iFirst);
+                memoryScope = ResolveMemoryScope(path, out remainingPath);
+                var memory = memoryScope.GetMemory(dialogContext);
+                return TryGetFirstNestedValue(ref value, ref remainingPath, memory);
+            }
+
+            return ObjectPath.TryGetPathValue(this, path, out value);
         }
 
         /// <summary>
@@ -226,16 +235,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
 
             path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            var memoryScope = ResolveMemoryScope(path, out var remainingPath);
-            if (remainingPath == string.Empty)
-            {
-                memoryScope.SetMemory(dialogContext, value);
-            }
-            else
-            {
-                var memory = memoryScope.GetMemory(dialogContext);
-                ObjectPath.SetPathValue(memory, remainingPath, value);
-            }
+            ObjectPath.SetPathValue(this, path, value);
         }
 
         /// <summary>
@@ -245,9 +245,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public void RemoveValue(string path)
         {
             path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            var memoryScope = ResolveMemoryScope(path, out var remainingPath);
-            var memory = memoryScope.GetMemory(dialogContext);
-            ObjectPath.RemovePathValue(memory, remainingPath);
+            ObjectPath.RemovePathValue(this, path);
         }
 
         /// <summary>
@@ -272,7 +270,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public void Add(string key, object value)
         {
-            SetValue(key, value);
+            throw new NotSupportedException();
         }
 
         public bool ContainsKey(string key)
@@ -282,28 +280,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public bool Remove(string key)
         {
-            RemoveValue(key);
-            return true;
+            throw new NotSupportedException();
         }
 
         public bool TryGetValue(string key, out object value)
         {
+            value = default;
             return TryGetValue<object>(key, out value);
         }
 
         public void Add(KeyValuePair<string, object> item)
         {
-            SetValue(item.Key, item.Value);
+            throw new NotSupportedException();
         }
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public bool Contains(KeyValuePair<string, object> item)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
@@ -316,7 +314,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public bool Remove(KeyValuePair<string, object> item)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
@@ -340,9 +338,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             return $"'{path}' does not match memory scopes:{string.Join(",", MemoryScopes.Select(ms => ms.Name))}";
         }
 
-        private bool TryGetFirstNestedValue<T>(ref T value, ref string remainingPath, object memory, int iFirst)
+        private bool TryGetFirstNestedValue<T>(ref T value, ref string remainingPath, object memory)
         {
-            remainingPath = remainingPath.Substring(0, iFirst);
             if (ObjectPath.TryGetPathValue<JArray>(memory, $"{remainingPath}", out var array))
             {
                 if (array != null && array.Count > 0)
