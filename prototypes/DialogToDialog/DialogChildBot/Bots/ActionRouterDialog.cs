@@ -20,7 +20,7 @@ namespace DialogChildBot.Bots
             : base("MyNameIsGroot")
         {
             AddDialog(new BookingDialog());
-            AddDialog(new OAuthDialog(configuration));
+            AddDialog(new OAuthTestDialog(configuration));
 
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[] { ProcessActivityAsync }));
 
@@ -58,9 +58,9 @@ namespace DialogChildBot.Bots
                         await turnContext.SendActivityAsync(MessageFactory.Text("TODO: This will handle GetWeather flow"), cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Complete);
 
-                    case "OAuthDemo":
-                        // Start the OAuthDialog
-                        var oAuthDialog = FindDialog(nameof(OAuthDialog));
+                    case "OAuthTest":
+                        // Start the OAuthTestDialog
+                        var oAuthDialog = FindDialog(nameof(OAuthTestDialog));
                         return await stepContext.BeginDialogAsync(oAuthDialog.Id, null, cancellationToken);
 
                     default:

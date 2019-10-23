@@ -4,43 +4,96 @@
   "version": "1.0",
   "body": [
     {
-      "type": "Image",
-      "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU",
-      "size": "stretch"
+      "type": "TextBlock",
+      "spacing": "Medium",
+      "size": "Medium",
+      "weight": "Bolder",
+      "text": "Welcome to the Dialog Skill Prototype!",
+      "wrap": true,
+      "maxLines": 0,
+      "color": "Accent"
     },
     {
       "type": "TextBlock",
-      "spacing": "medium",
       "size": "default",
-      "weight": "bolder",
-      "text": "Welcome to Bot Framework!",
+      "text": "The suggested actions bellow are quick tests for different dialog to dialog skill interactions.",
       "wrap": true,
       "maxLines": 0
     },
     {
       "type": "TextBlock",
       "size": "default",
-      "isSubtle": "yes",
-      "text": "Now that you have successfully run your bot, follow the links in this Adaptive Card to expand your knowledge of Bot Framework.",
+      "text": "OAuthTest",
       "wrap": true,
-      "maxLines": 0
-    }
-  ],
-  "actions": [
-    {
-      "type": "Action.OpenUrl",
-      "title": "Get an overview",
-      "url": "https://docs.microsoft.com/en-us/azure/bot-service/?view=azure-bot-service-4.0"
+      "weight": "Bolder",
+      "color": "Accent"
     },
     {
-      "type": "Action.OpenUrl",
-      "title": "Ask a question",
-      "url": "https://stackoverflow.com/questions/tagged/botframework"
+      "type": "TextBlock",
+      "size": "default",
+      "text": "Say **oauthtest** to test the oauth card",
+      "wrap": true,
+      "spacing": "None"
     },
     {
-      "type": "Action.OpenUrl",
-      "title": "Learn how to deploy",
-      "url": "https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-howto-deploy-azure?view=azure-bot-service-4.0"
+      "type": "TextBlock",
+      "size": "default",
+      "text": "Message to the bot",
+      "wrap": true,
+      "weight": "Bolder",
+      "color": "Accent"
+    },
+    {
+      "type": "TextBlock",
+      "size": "default",
+      "text": "Say **r:some message**, the text after r: will be sent directly to the skill and the skill will have to do intent recogniztion on it",
+      "wrap": true,
+      "spacing": "None"
+    },
+    {
+      "type": "TextBlock",
+      "size": "default",
+      "text": "Message to the bot with values",
+      "wrap": true,
+      "weight": "Bolder",
+      "color": "Accent"
+    },
+    {
+      "type": "TextBlock",
+      "size": "default",
+      "text": "Say **rv:some message**, in addition to the message after rv: the root bot will send some complex object in the Value property of the activity",
+      "wrap": true,
+      "spacing": "None"
+    },
+    {
+      "type": "TextBlock",
+      "size": "default",
+      "text": "Book a flight (LUIS)",
+      "wrap": true,
+      "weight": "Bolder",
+      "color": "Accent"
+    },
+    {
+      "type": "TextBlock",
+      "size": "default",
+      "text": "Say **book a flight** or **book a flight to seattle** to start a flight booking dialog on the skill, the root bot will send an event to the skill with the name = 'BookFlight'",
+      "wrap": true,
+      "spacing": "None"
+    },
+    {
+      "type": "TextBlock",
+      "size": "default",
+      "text": "Get Weather (LUIS)",
+      "wrap": true,
+      "weight": "Bolder",
+      "color": "Accent"
+    },
+    {
+      "type": "TextBlock",
+      "size": "default",
+      "text": "Say **What's the weather like** the root bot will send an event to the skill with the name = 'GetWeather' that will trigger a single turn flow",
+      "wrap": true,
+      "spacing": "None"
     }
   ]
 }

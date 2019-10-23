@@ -32,9 +32,9 @@ namespace DialogRootBot.Dialogs
         public string SkillId { get; set; }
 
         /// <summary>
-        /// Gets or sets the event name you want to use to invoke the skill
+        /// Gets or sets the event name you want to use to invoke the skill.
         /// </summary>
-        /// <value>If this is null then default is to route the current activity to the skill. If this is set, then a EventActivity will be sent to the skill to initiate the conversation</value>
+        /// <value>If this is null then default is to route the current activity to the skill. If this is set, then a EventActivity will be sent to the skill to initiate the conversation.</value>
         [JsonProperty("eventName")]
         public string EventName { get; set; }
 

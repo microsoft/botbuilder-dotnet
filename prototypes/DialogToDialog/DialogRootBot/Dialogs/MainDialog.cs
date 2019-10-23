@@ -44,7 +44,7 @@ namespace DialogRootBot.Dialogs
             }
 
             // Use the text provided in FinalStepAsync or the default if it is the first time.
-            var messageText = stepContext.Options?.ToString() ?? "What can I help you with today?\nSay something like \"Book a flight from Paris to Berlin on March 22, 2020\"";
+            var messageText = stepContext.Options?.ToString() ?? "What can I help you with today?";
             var promptMessage = CreateTaskPromptMessageWithActions(messageText);
             return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = promptMessage }, cancellationToken);
         }
@@ -75,12 +75,12 @@ namespace DialogRootBot.Dialogs
             }
 
             // Forward to remote as is.
-            if (stepContext.Context.Activity.Text.Equals("oauthdemo", StringComparison.CurrentCultureIgnoreCase))
+            if (stepContext.Context.Activity.Text.Equals("OAuthTest", StringComparison.CurrentCultureIgnoreCase))
             {
                 var dialogArgs = new SkillDialogArgs
                 {
                     SkillId = "SkillBot",
-                    EventName = "OAuthDemo"
+                    EventName = "OAuthTest"
                 };
                 return await stepContext.BeginDialogAsync(nameof(SkillDialog), dialogArgs, cancellationToken);
             }
@@ -209,21 +209,27 @@ namespace DialogRootBot.Dialogs
                 {
                     new CardAction
                     {
-                        Title = "OAuthDemo",
-                        Type = ActionTypes.ImBack,
-                        Value = "OAuthDemo"
-                    },
-                    new CardAction
-                    {
                         Title = "Hi",
                         Type = ActionTypes.ImBack,
                         Value = "Hi"
                     },
                     new CardAction
                     {
-                        Title = "r:SomethingForTh",
+                        Title = "OAuthTest",
                         Type = ActionTypes.ImBack,
-                        Value = "r:SomethingForTh"
+                        Value = "OAuthTest"
+                    },
+                    new CardAction
+                    {
+                        Title = "r:some message",
+                        Type = ActionTypes.ImBack,
+                        Value = "r:some message"
+                    },
+                    new CardAction
+                    {
+                        Title = "rv:some message with value",
+                        Type = ActionTypes.ImBack,
+                        Value = "rv:some message with value"
                     },
                     new CardAction
                     {
