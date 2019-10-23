@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -45,8 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         private TestFlow CreateFlow(string locale)
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
+            TypeFactory.Configuration = this.Configuration;
             var dialog = new AdaptiveDialog();
             dialog.Triggers.AddRange(new List<OnCondition>()
             {
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseAdaptiveDialogs()
                 .UseLanguageGeneration(resourceExplorer)
                 .Use(new RegisterClassMiddleware<IConfiguration>(this.Configuration))
-                .Use(new AutoSaveStateMiddleware(convoState, userState))
+                .UseState(new UserState(new MemoryStorage()), new ConversationState(new MemoryStorage()))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             DialogManager dm = new DialogManager(dialog);
