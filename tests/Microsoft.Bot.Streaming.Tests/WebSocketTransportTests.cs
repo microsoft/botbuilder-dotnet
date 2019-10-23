@@ -12,7 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Streaming;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Streaming.Transport.NamedPipes;
 using Microsoft.Bot.Streaming.Transport.WebSockets;
 using Microsoft.Bot.Streaming.UnitTests.Mocks;
