@@ -179,7 +179,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
                         httpResponse.StatusCode = HttpStatusCode.Unauthorized;
                         return false;
                     }
-
+                    
+                    // Add ServiceURL to the cache of trusted sites in order to allow token refreshing.
+                    AppCredentials.TrustServiceUrl(claimsIdentity.FindFirst(AuthenticationConstants.ServiceUrlClaim).Value);
                     _claimsIdentity = claimsIdentity;
                 }
 
