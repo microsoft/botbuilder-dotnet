@@ -303,7 +303,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (json)
             {
-                if (value == null)
+                if (value is JToken || value is JObject || value is JArray)
+                {
+                    val = Clone((JToken)value);
+                }
+                else if (value == null)
                 {
                     val = null;
                 }
