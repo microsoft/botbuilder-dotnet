@@ -815,6 +815,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.IsTrue(
                 JToken.DeepEquals(JObject.Parse("{\"$type\":\"MyStruct\",\"list\":[{\"$type\":\"SubStruct\",\"text\":\"hello\"},{\"$type\":\"SubStruct\",\"text\":\"world\"}]}"), evaled as JObject));
+
+            evaled = engine.EvaluateTemplate("templateWithSquareBrackets", new { manufacturer = new { Name = "Acme Co" } });
+
+            Assert.IsTrue(
+                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Struct\",\"text\":\"Acme Co\"}"), evaled as JObject));
         }
 
         [TestMethod]

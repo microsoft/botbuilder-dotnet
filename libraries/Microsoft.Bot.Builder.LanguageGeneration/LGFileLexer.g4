@@ -179,6 +179,10 @@ TEXT
 
 mode STRUCTURED_TEMPLATE_BODY_MODE;
 
+WS_IN_STRUCTURED
+  : WHITESPACE+
+  ;
+
 STRUCTURED_COMMENTS
   : ('>'|'$') ~[\r\n]* '\r'?'\n' -> skip
   ;
@@ -188,9 +192,9 @@ STRUCTURED_NEWLINE
   ;
 
 STRUCTURED_TEMPLATE_BODY_END
-  : RIGHT_SQUARE_BRACKET -> popMode
+  : WS_IN_STRUCTURED? RIGHT_SQUARE_BRACKET -> popMode
   ;
 
 STRUCTURED_CONTENT
-  : ~[\r\n[\]]+
+  : ~[\r\n]+
   ;
