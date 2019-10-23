@@ -369,7 +369,7 @@ namespace Microsoft.Bot.Builder.Streaming
         private async Task ReconnectAsync(IDictionary<string, string> requestHeaders = null)
         {
             // The ServiceUrl of a streaming connection follows the pattern "urn:[ServiceName]:[Protocol]:[ChannelName]".
-            var streamingUrnPattern = new Regex("urn:(.+?:){2}.+");
+            var streamingUrnPattern = new Regex("urn:(.+?:){2}.+", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
             string[] urnSections;
             try
             {
