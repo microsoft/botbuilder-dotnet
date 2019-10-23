@@ -14,10 +14,10 @@ namespace Microsoft.Bot.Builder.Teams
             return channelData?.Channel?.Id;
         }
 
-        public static string TeamsGetTeamId(this IActivity activity)
+        public static TeamInfo TeamsGetTeamInfo(this IActivity activity)
         {
             var channelData = activity.GetChannelData<TeamsChannelData>();
-            return channelData?.Team?.Id;
+            return channelData?.Team;
         }
 
         public static void TeamsNotifyUser(this IActivity activity)

@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var activity = new Activity { ChannelData = new TeamsChannelData { Team = new TeamInfo { Id = "team123" } } };
 
             // Act
-            var teamId = activity.TeamsGetTeamId();
+            var teamId = activity.TeamsGetTeamInfo().Id;
 
             // Assert
             Assert.AreEqual("team123", teamId);
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             IMessageActivity activity = new Activity { ChannelData = new TeamsChannelData { Team = new TeamInfo { Id = "team123" } } };
 
             // Act
-            var teamId = activity.TeamsGetTeamId();
+            var teamId = activity.TeamsGetTeamInfo().Id;
 
             // Assert
             Assert.AreEqual("team123", teamId);
