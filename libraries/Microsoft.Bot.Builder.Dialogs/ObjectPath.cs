@@ -303,11 +303,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (json)
             {
-                if (value is JToken || value is JObject || value is JArray)
-                {
-                    val = (JToken)value;
-                }
-                else if (value == null)
+                if (value == null)
                 {
                     val = null;
                 }
