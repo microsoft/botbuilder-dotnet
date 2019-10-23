@@ -35,11 +35,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         {
         }
 
-        public BotFrameworkHttpAdapter(AppCredentials credentials, AuthenticationConfiguration authConfig, IChannelProvider channel = null, HttpClient httpClient = null, ILogger<BotFrameworkHttpAdapterBase> logger = null)
-            : base(credentials, authConfig, channel, httpClient, logger)
-        {
-        }
-
         protected BotFrameworkHttpAdapter(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger = null)
             : base(new ConfigurationCredentialProvider(configuration), new ConfigurationChannelProvider(configuration), logger: logger)
         {

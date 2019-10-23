@@ -34,11 +34,6 @@ namespace Microsoft.Bot.Builder.Streaming
         {
         }
 
-        public BotFrameworkHttpAdapterBase(AppCredentials credentials, AuthenticationConfiguration authConfig, IChannelProvider channel = null, HttpClient httpClient = null, ILogger<BotFrameworkHttpAdapterBase> logger = null)
-            : base(credentials, authConfig, channel, null, httpClient, null, logger)
-        {
-        }
-
         /// <summary>
         /// Primary adapter method for processing activities sent from streaming channel.
         /// Creates a turn context and runs the middleware pipeline for an incoming activity.

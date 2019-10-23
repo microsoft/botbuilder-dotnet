@@ -34,11 +34,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         {
         }
 
-        public BotFrameworkHttpAdapter(AppCredentials credentials, AuthenticationConfiguration authConfig, IChannelProvider channel = null, HttpClient httpClient = null, ILogger<BotFrameworkHttpAdapterBase> logger = null)
-            : base(credentials, authConfig, channel, httpClient, logger)
-        {
-        }
-
         public async Task ProcessAsync(HttpRequestMessage httpRequest, HttpResponseMessage httpResponse, IBot bot, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (httpRequest == null)
