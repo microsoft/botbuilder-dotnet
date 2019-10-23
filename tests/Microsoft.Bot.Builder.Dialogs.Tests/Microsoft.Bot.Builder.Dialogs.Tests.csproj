@@ -5,8 +5,17 @@
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="test.settings.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
     <PackageReference Include="Moq" Version="4.11.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
