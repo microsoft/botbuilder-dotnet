@@ -416,7 +416,8 @@ namespace Microsoft.Bot.Builder
                 {
                     if (CanProcessOutgoingActivity(activity))
                     {
-                        // If this is a streaming request we need to explicitly fetch a token to make sure it doesn't expire.
+                        // In cases where implementations of ProcessOutgoingActivityAsync do not fetch a bot token
+                        // we want to populate it here in order to make sure credentials are accessible and do not expire.
                         _ = GetAppCredentialsAsync((_credentialProvider as SimpleCredentialProvider).AppId).Result.GetTokenAsync();
                         response = await ProcessOutgoingActivityAsync(turnContext, activity, cancellationToken).ConfigureAwait(false);
                     }
