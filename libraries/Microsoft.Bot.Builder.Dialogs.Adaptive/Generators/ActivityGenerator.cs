@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
@@ -20,13 +21,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     {
         private static readonly Dictionary<string, string> GenericCardTypeMapping = new Dictionary<string, string>
         {
-            { nameof(HeroCard), HeroCard.ContentType },
-            { nameof(ThumbnailCard), ThumbnailCard.ContentType },
-            { nameof(AudioCard), AudioCard.ContentType },
-            { nameof(VideoCard), VideoCard.ContentType },
-            { nameof(AnimationCard), AnimationCard.ContentType },
-            { nameof(SigninCard), SigninCard.ContentType },
-            { nameof(OAuthCard), OAuthCard.ContentType }
+            { nameof(HeroCard).ToLower(), HeroCard.ContentType },
+            { nameof(ThumbnailCard).ToLower(), ThumbnailCard.ContentType },
+            { nameof(AudioCard).ToLower(), AudioCard.ContentType },
+            { nameof(VideoCard).ToLower(), VideoCard.ContentType },
+            { nameof(AnimationCard).ToLower(), AnimationCard.ContentType },
+            { nameof(SigninCard).ToLower(), SigninCard.ContentType },
+            { nameof(OAuthCard).ToLower(), OAuthCard.ContentType }
         };
 
         public ActivityGenerator()
@@ -46,15 +47,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             else
             {
+                JObject lgStructuredResult;
                 try
                 {
-                    var lgStructuredResult = JObject.FromObject(lgResult);
-                    return BuildActivityFromLGStructuredResult(lgStructuredResult);
+                    lgStructuredResult = JObject.FromObject(lgResult);
                 }
                 catch
                 {
                     return BuildActivityFromText(lgResult?.ToString()?.Trim());
                 }
+
+                return BuildActivityFromLGStructuredResult(lgStructuredResult);
             }
         }
 
@@ -79,15 +82,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 Trace.TraceWarning($"There is no ILanguageGenerator registered in the ITurnContext so no data binding was performed for template: {template}");
             }
 
+            JObject lgStructuredResult;
             try
             {
-                var lgStructuredResult = JObject.Parse(lgStringResult);
-                return BuildActivityFromLGStructuredResult(lgStructuredResult);
+                lgStructuredResult = JObject.Parse(lgStringResult);
             }
             catch
             {
                 return BuildActivityFromText(lgStringResult?.ToString()?.Trim());
             }
+
+            return BuildActivityFromLGStructuredResult(lgStructuredResult);
         }
 
         /// <summary>
@@ -118,13 +123,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             else
             {
-                if (type == nameof(Activity))
+                if (type == nameof(Activity).ToLower())
                 {
                     activity = BuildActivityFromObject(lgJObj);
                 }
                 else
                 {
-                    activity = BuildActivityFromText(lgJObj.ToString());
+                    throw new Exception($"type {type} is not support currently.");
                 }
             }
 
@@ -275,7 +280,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             var type = GetStructureType(cardActionJObj);
             cardAction = new CardAction();
             var isCardAction = true;
-            if (type == nameof(CardAction))
+            if (type == nameof(CardAction).ToLower())
             {
                 foreach (var item in cardActionJObj)
                 {
@@ -336,7 +341,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 type = jObj["type"]?.ToString()?.Trim();
             }
 
-            return type ?? string.Empty;
+            return type.ToLower() ?? string.Empty;
         }
 
         private static List<Attachment> GetAttachments(JToken value)
@@ -366,7 +371,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 attachment = GetCardAtttachment(GenericCardTypeMapping[type], lgJObj);
             }
-            else if (type == nameof(AdaptiveCard))
+            else if (type == nameof(AdaptiveCard).ToLower())
             {
                 attachment = new Attachment(AdaptiveCard.ContentType, content: lgJObj);
             }
