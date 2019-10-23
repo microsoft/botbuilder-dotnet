@@ -228,7 +228,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        [Ignore] // NOTE: This needs to be revisited
         public void TestComplexPathExpressions()
         {
             var dialogs = new DialogSet();
@@ -238,10 +237,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             // complex type paths
             state.SetValue("user.name", "joe");
             state.SetValue("conversation.stuff[user.name]", "test");
-            var value = state.GetValue<string>("conversation.stuff.joe");
-            Assert.AreEqual("test", value, "complex set should set");
-            value = state.GetValue<string>("conversation.stuff[user.name]");
-            Assert.AreEqual("test", value, "complex get should get");
+            state.SetValue("conversation.stuff['frank']", "test2");
+            state.SetValue("conversation.stuff[\"susan\"]", "test3");
+            state.SetValue("conversation.stuff['Jo.Bob']", "test4");
+            Assert.AreEqual("test", state.GetValue<string>("conversation.stuff.joe"), "complex set should set");
+            Assert.AreEqual("test", state.GetValue<string>("conversation.stuff[user.name]"), "complex get should get");
+            Assert.AreEqual("test2", state.GetValue<string>("conversation.stuff['frank']"), "complex get should get");
+            Assert.AreEqual("test3", state.GetValue<string>("conversation.stuff[\"susan\"]"), "complex get should get");
+            Assert.AreEqual("test4", state.GetValue<string>("conversation.stuff[\"Jo.Bob\"]"), "complex get should get");
         }
 
         [TestMethod]
