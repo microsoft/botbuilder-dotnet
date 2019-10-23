@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         private static readonly string FromUser = "DirectLineSpeechTestUser";
         private static string speechSubscription = null;
         private static string speechRegion = null;
-        private static string soundFilePath = null;
+        private static string soundFilePath = "file:\\";
         private static string soundFileMessage = null;
         private static string echoGuid = null;
         private static string input = $"Testing Azure Bot GUID: ";
