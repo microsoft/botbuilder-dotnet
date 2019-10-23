@@ -859,5 +859,29 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(evaled, "Your input is not one, two or three");
         }
+
+        [TestMethod]
+        public void TestLoopScope()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("LoopScope.lg"));
+
+            var loopClass1 = new LoopClass();
+            loopClass1.Name = "jack";
+
+            var loopClass2 = new LoopClass();
+            loopClass2.Name = "jones";
+
+            loopClass1.LoopObj = loopClass2;
+            loopClass2.LoopObj = loopClass1;
+
+            engine.EvaluateTemplate("template1", new { scope = loopClass1 });
+        }
+
+        public class LoopClass
+        {
+            public string Name { get; set; }
+
+            public object LoopObj { get; set; }
+        }
     }
 }

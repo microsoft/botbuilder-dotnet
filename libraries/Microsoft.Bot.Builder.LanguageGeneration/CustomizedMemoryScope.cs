@@ -106,18 +106,33 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override string ToString()
         {
-            var result = string.Empty;
-            if (LocalScope != null)
+            try
             {
-                result += JsonConvert.SerializeObject(LocalScope);
-            }
+                var result = string.Empty;
+                if (LocalScope != null)
+                {
+                    result += JsonConvert.SerializeObject(LocalScope, GetSerializerSettings());
+                }
 
-            if (GlobalScope != null)
+                if (GlobalScope != null)
+                {
+                    result += JsonConvert.SerializeObject(GlobalScope, GetSerializerSettings());
+                }
+
+                return result;
+            }
+            catch
             {
-                result += JsonConvert.SerializeObject(GlobalScope);
+                return GetHashCode().ToString();
             }
+        }
 
-            return result;
+        private JsonSerializerSettings GetSerializerSettings()
+        {
+            return new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
         }
     }
 }
