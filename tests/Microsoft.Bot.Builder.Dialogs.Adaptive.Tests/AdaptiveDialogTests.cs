@@ -23,17 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     [TestClass]
     public class AdaptiveDialogTests
     {
-        private static ResourceExplorer resourceExplorer;
-
         public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
-        {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
-
-            resourceExplorer = new ResourceExplorer();
-        }
 
         [TestMethod]
         public async Task AdaptiveDialog_TopLevelFallback()
@@ -895,7 +885,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Generator = new TemplateEngineLanguageGenerator(resourceExplorer),
+                Generator = new TemplateEngineLanguageGenerator(),
                 Triggers = new List<OnCondition>
                 {
                     new OnUnknownIntent
@@ -926,7 +916,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Generator = new TemplateEngineLanguageGenerator(resourceExplorer),
+                Generator = new TemplateEngineLanguageGenerator(),
                 Triggers = new List<OnCondition>
                 {
                     new OnUnknownIntent
@@ -1010,7 +1000,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Generator = new TemplateEngineLanguageGenerator(resourceExplorer),
+                Generator = new TemplateEngineLanguageGenerator(),
                 Triggers = new List<OnCondition>
                 {
                     new OnUnknownIntent
@@ -1072,7 +1062,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Generator = new TemplateEngineLanguageGenerator(resourceExplorer),
+                Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer
                 {
                     Intents = new List<IntentPattern>
@@ -1176,7 +1166,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Generator = new TemplateEngineLanguageGenerator(resourceExplorer),
+                Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer
                 {
                     Intents = new List<IntentPattern>
@@ -1234,7 +1224,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Generator = new TemplateEngineLanguageGenerator(resourceExplorer),
+                Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer
                 {
                     Intents = new List<IntentPattern>
@@ -1316,7 +1306,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Generator = new TemplateEngineLanguageGenerator(resourceExplorer),
+                Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer
                 {
                     Intents = new List<IntentPattern>
@@ -1386,7 +1376,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Generator = new TemplateEngineLanguageGenerator(resourceExplorer),
+                Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer { Intents = new List<IntentPattern> { new IntentPattern("Start", "(?i)start") } },
                 Triggers = new List<OnCondition>
                 {
@@ -1446,7 +1436,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Generator = new TemplateEngineLanguageGenerator(resourceExplorer),
+                Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer { Intents = new List<IntentPattern> { new IntentPattern("Start", "(?i)start") } },
                 Triggers = new List<OnCondition>
                 {
@@ -1500,7 +1490,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Generator = new TemplateEngineLanguageGenerator(resourceExplorer),
+                Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer { Intents = new List<IntentPattern> { new IntentPattern("Start", "(?i)start") } },
                 Triggers = new List<OnCondition>
                 {
@@ -1555,7 +1545,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Generator = new TemplateEngineLanguageGenerator(resourceExplorer),
+                Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer { Intents = new List<IntentPattern> { new IntentPattern("Start", "(?i)start") } },
                 Triggers = new List<OnCondition>
                 {
@@ -1615,7 +1605,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Generator = new TemplateEngineLanguageGenerator(resourceExplorer),
+                Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer { Intents = new List<IntentPattern> { new IntentPattern("Start", "(?i)start") } },
                 Triggers = new List<OnCondition>
                 {
@@ -1726,7 +1716,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Generator = new TemplateEngineLanguageGenerator(resourceExplorer),
+                Generator = new TemplateEngineLanguageGenerator(),
                 Triggers = new List<OnCondition>
                 {
                     new OnBeginDialog
@@ -1880,6 +1870,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         private TestFlow CreateFlow(DialogContainer ruleDialog)
         {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+
+            var explorer = new ResourceExplorer();
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
@@ -1888,9 +1881,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, convoState)
-                .Use(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer))
+                .Use(new RegisterClassMiddleware<ResourceExplorer>(explorer))
                 .UseAdaptiveDialogs()
-                .UseLanguageGeneration(resourceExplorer)
+                .UseLanguageGeneration(explorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var dm = new DialogManager(ruleDialog);

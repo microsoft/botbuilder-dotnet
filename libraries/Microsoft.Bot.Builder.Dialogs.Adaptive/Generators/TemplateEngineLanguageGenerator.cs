@@ -11,34 +11,73 @@ using Microsoft.Bot.Builder.LanguageGeneration;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
     /// <summary>
+    /// delegate that get <see cref="ImportResolverDelegate"/> from a local.
+    /// </summary>
+    /// <param name="local">locale.</param>
+    /// <returns>delegate that get ImportResolverDelegate.</returns>
+    public delegate ImportResolverDelegate MultiLanguageResolverDelegate(string local);
+
+    /// <summary>
     /// ILanguageGenerator implementation which uses TemplateEngine. 
     /// </summary>
     public class TemplateEngineLanguageGenerator : ILanguageGenerator
     {
         private const string DEFAULTLABEL = "Unknown";
         private TemplateEngine engine;
-        private readonly ResourceExplorer resourceExplorer;
-        private readonly IResource resource;
+
+        /// <summary>
+        ///  Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
+        /// </summary>
+        public TemplateEngineLanguageGenerator()
+        {
+            this.engine = new TemplateEngine();
+        }
+
+        /// <summary>
+        ///  Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
+        /// </summary>
+        /// <param name="engine">template engine.</param>
+        public TemplateEngineLanguageGenerator(TemplateEngine engine)
+        {
+            this.engine = engine;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
-        /// <param name="resourceExplorer">resourceExplorer.</param>
-        /// <param name="resource">resource.</param>
-        public TemplateEngineLanguageGenerator(ResourceExplorer resourceExplorer, IResource resource = null)
+        /// <param name="lgText">lg template text.</param>
+        /// <param name="id">optional label for the source of the templates (used for labeling source of template errors).</param>
+        /// <param name="multiLanguageResolver">template resource loader delegate (local) -> <see cref="ImportResolverDelegate"/>.</param>
+        public TemplateEngineLanguageGenerator(string lgText, string id = null, MultiLanguageResolverDelegate multiLanguageResolver = null)
         {
-            this.resourceExplorer = resourceExplorer;
-            this.resource = resource;
+            this.LGText = lgText ?? string.Empty;
+            this.Id = id ?? DEFAULTLABEL;
+            this.MultiLanguageResolver = multiLanguageResolver;
         }
 
         /// <summary>
-        /// Initializes a new instance of engine.
+        /// Gets or sets id of the source of this template (used for labeling errors).
         /// </summary>
-        /// <param name="engine">template engine.</param>
-        public void InitEngine(TemplateEngine engine)
-        {
-            this.engine = engine;
-        }
+        /// <value>
+        /// Id of the source of this template (used for labeling errors).
+        /// </value>
+        public string Id { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets text content of the LG file.
+        /// </summary>
+        /// <value>
+        /// Text content of the LG file.
+        /// </value>
+        public string LGText { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets get <see cref="ImportResolverDelegate"/> from local.
+        /// </summary>
+        /// <value>
+        /// get <see cref="ImportResolverDelegate"/> from local.
+        /// </value>
+        public MultiLanguageResolverDelegate MultiLanguageResolver { get; set; }
 
         /// <summary>
         /// Method to generate text from given template and data.
@@ -49,13 +88,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>generated text.</returns>
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
-            var id = DEFAULTLABEL;
-            if (resource != null)
+            if (MultiLanguageResolver != null)
             {
-                var content = await resource.ReadTextAsync();
-                id = resource.Id;
-
-                this.engine = new TemplateEngine().AddText(content, id, ResourceResolver(turnContext, resourceExplorer));
+                var local = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
+                this.engine = new TemplateEngine().AddText(LGText, Id, MultiLanguageResolver(local));
+            }
+            else if (!string.IsNullOrWhiteSpace(LGText) || !string.IsNullOrWhiteSpace(Id))
+            {
+                this.engine ??= new TemplateEngine().AddText(LGText, Id);
             }
             else
             {
@@ -68,45 +108,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             catch (Exception err)
             {
-                if (!string.IsNullOrEmpty(id))
+                if (!string.IsNullOrEmpty(this.Id))
                 {
-                    throw new Exception($"{id}:{err.Message}");
+                    throw new Exception($"{Id}:{err.Message}");
                 }
 
                 throw;
             }
         }
-
-        private ImportResolverDelegate ResourceResolver(ITurnContext turnContext, ResourceExplorer resourceExplorer) =>
-           (string source, string id) =>
-           {
-               var languagePolicy = new LanguagePolicy();
-               var targetLocale = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
-
-               var locales = new string[] { string.Empty };
-               if (!languagePolicy.TryGetValue(targetLocale, out locales))
-               {
-                   if (!languagePolicy.TryGetValue(string.Empty, out locales))
-                   {
-                       throw new Exception($"No supported language found for {targetLocale}");
-                   }
-               }
-
-               var resourceName = Path.GetFileName(PathUtils.NormalizePath(id));
-
-               foreach (var locale in locales)
-               {
-                   var resourceId = string.IsNullOrEmpty(locale) ? resourceName : resourceName.Replace(".lg", $".{locale}.lg");
-
-                   if (resourceExplorer.TryGetResource(resourceId, out var resource))
-                   {
-                       var content = resource.ReadTextAsync().GetAwaiter().GetResult();
-
-                       return (content, resourceName);
-                   }
-               }
-
-               return (string.Empty, resourceName);
-           };
     }
 }

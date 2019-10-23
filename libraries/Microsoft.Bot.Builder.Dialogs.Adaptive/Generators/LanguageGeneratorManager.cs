@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
@@ -43,6 +44,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </value>
         public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 
+        public static MultiLanguageResolverDelegate ResourceResolver(ResourceExplorer resourceExplorer) =>
+            (string targetLocale) =>
+               (string source, string id) =>
+               {
+                   var languagePolicy = new LanguagePolicy();
+
+                   var locales = new string[] { string.Empty };
+                   if (!languagePolicy.TryGetValue(targetLocale, out locales))
+                   {
+                       if (!languagePolicy.TryGetValue(string.Empty, out locales))
+                       {
+                           throw new Exception($"No supported language found for {targetLocale}");
+                       }
+                   }
+
+                   var resourceName = Path.GetFileName(PathUtils.NormalizePath(id));
+
+                   foreach (var locale in locales)
+                   {
+                       var resourceId = string.IsNullOrEmpty(locale) ? resourceName : resourceName.Replace(".lg", $".{locale}.lg");
+
+                       if (resourceExplorer.TryGetResource(resourceId, out var resource))
+                       {
+                           var content = resource.ReadTextAsync().GetAwaiter().GetResult();
+
+                           return (content, resourceName);
+                       }
+                   }
+
+                   return (string.Empty, resourceName);
+               };
+
         private void ResourceExplorer_Changed(IResource[] resources)
         {
             // reload changed LG files
@@ -54,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(IResource resource)
         {
-            return new TemplateEngineLanguageGenerator(resourceExplorer, resource);
+            return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, ResourceResolver(resourceExplorer));
         }
     }
 }

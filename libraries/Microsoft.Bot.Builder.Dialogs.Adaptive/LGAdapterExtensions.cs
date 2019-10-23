@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
             else
             {
-                botAdapter.UseLanguageGeneration(resourceExplorer, new TemplateEngineLanguageGenerator(resourceExplorer));
+                botAdapter.UseLanguageGeneration(resourceExplorer, new TemplateEngineLanguageGenerator(string.Empty, defaultLg, LanguageGeneratorManager.ResourceResolver(resourceExplorer)));
             }
 
             return botAdapter;
