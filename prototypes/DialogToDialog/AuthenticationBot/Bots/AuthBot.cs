@@ -11,12 +11,24 @@ using Microsoft.Extensions.Logging;
 
 namespace AuthenticationBot.Bots
 {
-    public class AuthBot<T> : DialogBot<T> 
+    public class AuthBot<T> : DialogBot<T>
         where T : Dialog
     {
         public AuthBot(ConversationState conversationState, UserState userState, T dialog, ILogger<DialogBot<T>> logger)
             : base(conversationState, userState, dialog, logger)
         {
+        }
+
+        public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
+        {
+            if (turnContext.Activity.Type == ActivityTypes.Invoke)
+            {
+                await Dialog.RunAsync(turnContext, ConversationState.CreateProperty<DialogState>(nameof(DialogState)), cancellationToken);
+            }
+            else
+            {
+                await base.OnTurnAsync(turnContext, cancellationToken);
+            }
         }
 
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)

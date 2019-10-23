@@ -37,7 +37,15 @@ namespace DialogRootBot.Controllers
 
             // Delegate the processing of the HTTP POST to the adapter.
             // The adapter will invoke the bot.
-            await _skillServer.ProcessAsync(Request, Response, _bot);
+            try
+            {
+                await _skillServer.ProcessAsync(Request, Response, _bot);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
         }
 
         /// <summary>
