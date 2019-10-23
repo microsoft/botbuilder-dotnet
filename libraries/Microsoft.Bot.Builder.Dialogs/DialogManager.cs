@@ -21,7 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     {
         private const string DIALOGS = "_dialogs";
         private const string LASTACCESS = "_lastAccess";
-        private const string ETAG = "eTag";
         private DialogSet dialogSet;
         private string rootDialogId;
 
@@ -69,206 +68,46 @@ namespace Microsoft.Bot.Builder.Dialogs
         public int? ExpireAfter { get; set; }
 
         /// <summary>
-        /// Gets or sets (optional) storage provider that will be used to read and write the bot's state.
-        /// </summary>
-        /// <value>
-        /// Storage provider.
-        /// </value>
-        public IStorage Storage { get; set; }
-
-        public static async Task<PersistedState> LoadStateAsync(IStorage storage, PersistedStateKeys keys)
-        {
-            var data = await storage.ReadAsync(keys.ToArray()).ConfigureAwait(false);
-
-            return new PersistedState(keys, data);
-        }
-
-        public static async Task SaveStateAsync(IStorage storage, PersistedStateKeys keys, PersistedState newState, PersistedState oldState = null, string eTag = null)
-        {
-            // Check for state changes
-            var save = false;
-            Dictionary<string, object> changes = new Dictionary<string, object>();
-            if (oldState != null)
-            {
-                if (JsonConvert.SerializeObject(newState.UserState) != JsonConvert.SerializeObject(oldState.UserState))
-                {
-                    if (eTag != null)
-                    {
-                        newState.UserState[ETAG] = eTag;
-                    }
-
-                    changes[keys.UserState] = newState.UserState;
-                    save = true;
-                }
-
-                if (JsonConvert.SerializeObject(newState.ConversationState) != JsonConvert.SerializeObject(oldState.ConversationState))
-                {
-                    if (eTag != null)
-                    {
-                        newState.ConversationState[ETAG] = eTag;
-                    }
-
-                    changes[keys.ConversationState] = newState.ConversationState;
-                    save = true;
-                }
-            }
-            else
-            {
-                if (eTag != null)
-                {
-                    newState.UserState[ETAG] = eTag;
-                    newState.ConversationState[ETAG] = eTag;
-                }
-
-                changes[keys.UserState] = newState.UserState;
-                changes[keys.ConversationState] = newState.ConversationState;
-                save = true;
-            }
-
-            // Save changes
-            if (save)
-            {
-                await storage.WriteAsync(changes).ConfigureAwait(false);
-            }
-        }
-
-        public static PersistedStateKeys GetKeys(ITurnContext context)
-        {
-            // Get channel, user and conversation ids
-            var activity = context.Activity;
-            var reference = context.Activity.GetConversationReference();
-            if (reference.User == null)
-            {
-                reference.User = new ChannelAccount();
-            }
-
-            if (activity.Type == ActivityTypes.ConversationUpdate)
-            {
-                var users = (activity.MembersAdded ?? activity.MembersRemoved ?? new List<ChannelAccount>()).Where((u) => u.Id != activity.Recipient.Id).ToList();
-                var found = string.IsNullOrEmpty(reference.User?.Id) ? users.Where((u) => u.Id == reference.User.Id).ToList() : new List<ChannelAccount>();
-
-                if (found.Any())
-                {
-                    reference.User.Id = users[0].Id;
-                }
-            }
-
-            // Return keys
-            return GetKeysForReference(reference);
-        }
-
-        public static PersistedStateKeys GetKeysForReference(ConversationReference reference, string @namespace = null)
-        {
-            // Get channel, user, and conversation ID's
-            string channelId = reference.ChannelId;
-            string userId = reference.User?.Id;
-            string conversationId = reference.Conversation?.Id;
-
-            // Verify ID's found
-            if (string.IsNullOrEmpty(userId))
-            {
-                throw new Exception("DialogManager: unable to load/save the bots state. The users ID couldn't be found.");
-            }
-
-            if (string.IsNullOrEmpty(conversationId))
-            {
-                throw new Exception("DialogManager: unable to load / save the bots state.The conversations ID couldn't be found.");
-            }
-
-            // Return storage keys
-            return new PersistedStateKeys()
-            {
-                UserState = $"{channelId}/users/{userId}",
-                ConversationState = $"{channelId}/conversations/{conversationId}/{@namespace}"
-            };
-        }
-
-        /// <summary>
-        /// Run a dialog purely by processing an activity and getting the result. 
-        /// </summary>
-        /// <remarks>
-        /// NOTE: does not support any activity semantic other then SendActivity.
-        /// </remarks>
-        /// <param name="activity">activity to process.</param>
-        /// <param name="state">state to use.</param>
-        /// <param name="cancellationToken">cancelation token.</param>
-        /// <returns>result of the running the logic against the activity.</returns>
-        public async Task<DialogManagerResult> RunAsync(Activity activity, PersistedState state = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            // Initialize context object
-            var adapter = new DialogManagerAdapter();
-            var context = new TurnContext(adapter, activity);
-            var result = await this.OnTurnAsync(context, state, cancellationToken).ConfigureAwait(false);
-            result.Activities = adapter.Activities.ToArray();
-            return result;
-        }
-
-        /// <summary>
         /// Runs dialog system in the context of an ITurnContext.
         /// </summary>
         /// <param name="context">turn context.</param>
-        /// <param name="state">stored state.</param>
         /// <param name="cancellationToken">cancelation token.</param>
         /// <returns>result of the running the logic against the activity.</returns>
-        public async Task<DialogManagerResult> OnTurnAsync(ITurnContext context, PersistedState state = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<DialogManagerResult> OnTurnAsync(ITurnContext context, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var saveState = false;
-            var keys = GetKeys(context);
-            var storage = context.TurnState.Get<IStorage>();
+            ConversationState conversationState = context.TurnState.Get<ConversationState>() ?? throw new ArgumentNullException($"{nameof(ConversationState)} is not found in the turn context. Have you called adapter.UseState() with a configured ConversationState object?");
+            UserState userState = context.TurnState.Get<UserState>() ?? throw new ArgumentNullException($"{nameof(UserState)} is not found in the turn context. Have you called adapter.UseState() with a configured UserState object?"); 
 
-            if (state == null)
-            {
-                if (storage == null)
-                {
-                    throw new Exception("DialogManager: unable to load the bots state.Bot.storage not assigned.");
-                }
+            // create property accessors
+            var lastAccessProperty = conversationState.CreateProperty<DateTime>(LASTACCESS);
+            var dialogsProperty = conversationState.CreateProperty<DialogState>(DIALOGS);
+            var userScope = userState.CreateProperty<object>($"{ScopePath.USER}{nameof(MemoryScope)}");
+            var conversationScope = conversationState.CreateProperty<object>($"{ScopePath.CONVERSATION}{nameof(MemoryScope)}");
 
-                state = await LoadStateAsync(storage, keys).ConfigureAwait(false);
-                saveState = true;
-            }
-
-            // Clone state to preserve original state
-            var newState = ObjectPath.Clone(state);
+            var lastAccess = await lastAccessProperty.GetAsync(context, () => DateTime.UtcNow, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             // Check for expired conversation
             var now = DateTime.UtcNow;
-
-            if (this.ExpireAfter.HasValue && newState.ConversationState.ContainsKey(LASTACCESS))
+            if (this.ExpireAfter.HasValue && (DateTime.UtcNow - lastAccess) >= TimeSpan.FromMilliseconds((double)this.ExpireAfter))
             {
-                var lastAccess = DateTime.Parse(newState.ConversationState[LASTACCESS] as string);
-                if ((DateTime.UtcNow - lastAccess) >= TimeSpan.FromMilliseconds((double)this.ExpireAfter))
-                {
-                    // Clear conversation state
-                    state.ConversationState = new Dictionary<string, object>();
-                    state.ConversationState[ETAG] = newState.ConversationState[ETAG];
-                }
+                // Clear conversation state
+                await conversationState.ClearStateAsync(context, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            newState.ConversationState[LASTACCESS] = DateTime.UtcNow.ToString("u");
+            lastAccess = DateTime.UtcNow;
+            await lastAccessProperty.SetAsync(context, lastAccess, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            // Ensure dialog stack populated
-            DialogState dialogState;
-            if (!newState.ConversationState.ContainsKey(DIALOGS))
-            {
-                dialogState = new DialogState();
-                newState.ConversationState[DIALOGS] = dialogState;
-            }
-            else
-            {
-                dialogState = (DialogState)newState.ConversationState[DIALOGS];
-            }
+            // get dialog stack 
+            DialogState dialogState = await dialogsProperty.GetAsync(context, () => new DialogState(), cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var namedScopes = MemoryScope.GetScopesMemory(context);
-            namedScopes[ScopePath.USER] = newState.UserState;
-            namedScopes[ScopePath.CONVERSATION] = newState.ConversationState;
+            namedScopes[ScopePath.USER] = await userScope.GetAsync(context, () => new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase), cancellationToken: cancellationToken).ConfigureAwait(false);
+            namedScopes[ScopePath.CONVERSATION] = await conversationScope.GetAsync(context, () => new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase), cancellationToken: cancellationToken).ConfigureAwait(false);
             namedScopes[ScopePath.TURN] = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
 
             // Create DialogContext
-            var dc = new DialogContext(
-                this.dialogSet,
-                context,
-                dialogState);
-
+            var dc = new DialogContext(this.dialogSet, context, dialogState);
+            
             DialogTurnResult turnResult = null;
             if (dc.ActiveDialog == null)
             {
@@ -291,16 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // send trace of memory
             await dc.Context.SendActivityAsync((Activity)Activity.CreateTraceActivity("BotState", "https://www.botframework.com/schemas/botState", dc.State.GetMemorySnapshot(), "Bot State")).ConfigureAwait(false);
 
-            // Save state if loaded from storage
-            if (saveState)
-            {
-                await DialogManager.SaveStateAsync(storage, keys: keys, newState: newState, oldState: state, eTag: "*").ConfigureAwait(false);
-                return new DialogManagerResult() { TurnResult = turnResult };
-            }
-            else
-            {
-                return new DialogManagerResult() { TurnResult = turnResult, NewState = newState };
-            }
+            return new DialogManagerResult() { TurnResult = turnResult };
         }
     }
 }

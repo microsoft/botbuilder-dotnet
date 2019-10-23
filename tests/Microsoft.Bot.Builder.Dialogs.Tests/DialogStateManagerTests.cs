@@ -12,6 +12,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Recognizers.Text.Matcher;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
@@ -183,21 +184,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogs = new DialogSet();
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
             DialogStateManager state = new DialogStateManager(dc);
-            
+
             var array = new JArray();
             array.Add("test1");
             array.Add("test2");
             array.Add("test3");
-            
+
             var array2 = new JArray();
             array2.Add("testx");
             array2.Add("testy");
-            array2.Add("testz"); 
-            
+            array2.Add("testz");
+
             var arrayarray = new JArray();
             arrayarray.Add(array2);
             arrayarray.Add(array);
-            
+
             state.SetValue("turn.recognized.entities.single", array);
             state.SetValue("turn.recognized.entities.double", arrayarray);
 
@@ -513,11 +514,109 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(null, state.GetValue<object>("turn.x.y.z"));
         }
 
+        internal class TestDialog : Dialog
+        {
+            public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            {
+                dc.Context.SendActivityAsync(dc.State.GetValue<string>("conversation.test", () => "unknown"));
+                dc.State.SetValue("conversation.test", "havedata");
+                return Task.FromResult(new DialogTurnResult(DialogTurnStatus.Waiting));
+            }
+
+            public override Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
+            {
+                switch (dc.Context.Activity.Text)
+                {
+                    case "throw":
+                        throw new Exception("throwing");
+                    case "end":
+                        return dc.EndDialogAsync();
+                }
+
+                dc.Context.SendActivityAsync(dc.State.GetValue<string>("conversation.test", () => "unknown"));
+                return Task.FromResult(new DialogTurnResult(DialogTurnStatus.Waiting));
+            }
+        }
+
+        [TestMethod]
+        public async Task TestConversationResetOnException()
+        {
+            var storage = new MemoryStorage();
+            var userState = new UserState(storage);
+            var conversationState = new ConversationState(storage);
+
+            var adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseState(userState, conversationState);
+            adapter.OnTurnError = async (context, exception) =>
+            {
+                await conversationState.DeleteAsync(context);
+                await context.SendActivityAsync(exception.Message);
+            };
+
+            var dm = new DialogManager(new TestDialog());
+
+            await new TestFlow((TestAdapter)adapter, (turnContext, cancellationToken) =>
+            {
+                return dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken);
+            })
+            .Send("yo")
+                .AssertReply("unknown")
+            .Send("yo")
+                .AssertReply("havedata")
+            .Send("throw")
+                .AssertReply("throwing")
+            .Send("yo")
+                .AssertReply("unknown")
+            .Send("yo")
+                .AssertReply("havedata")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task TestConversationResetOnExpiration()
+        {
+            var storage = new MemoryStorage();
+            var userState = new UserState(storage);
+            var conversationState = new ConversationState(storage);
+
+            var adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseState(userState, conversationState);
+            adapter.OnTurnError = async (context, exception) =>
+            {
+                await conversationState.DeleteAsync(context);
+                await context.SendActivityAsync(exception.Message);
+            };
+
+            var dm = new DialogManager(new TestDialog())
+            {
+                ExpireAfter = 1000
+            };
+
+            await new TestFlow((TestAdapter)adapter, (turnContext, cancellationToken) =>
+            {
+                return dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken);
+            })
+            .Send("yo")
+                .AssertReply("unknown")
+            .Send("yo")
+                .AssertReply("havedata")
+            .Delay(TimeSpan.FromSeconds(1.1))
+            .Send("yo")
+                .AssertReply("unknown", "Should have expired conversation and ended up with yo=>unknown")
+            .Send("yo")
+                .AssertReply("havedata")
+            .Send("yo")
+                .AssertReply("havedata")
+            .StartTestAsync();
+        }
+
         private TestFlow CreateFlow(Dialog dialog, ConversationState convoState = null, UserState userState = null, bool sendTrace = false)
         {
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
                 .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
-                .Use(new AutoSaveStateMiddleware(userState ?? new UserState(new MemoryStorage()), convoState ?? new ConversationState(new MemoryStorage())))
+                .UseState(new UserState(new MemoryStorage()), convoState ?? new ConversationState(new MemoryStorage()))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var dm = new DialogManager(dialog);
