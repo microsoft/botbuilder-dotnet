@@ -9,11 +9,9 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.WebSockets;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming;
 using Microsoft.Bot.Streaming.Transport;
@@ -27,8 +25,6 @@ namespace Microsoft.Bot.Builder.Streaming
 {
     public class StreamingRequestHandler : RequestHandler
     {
-        private const string ReconnectPath = "api/reconnect";
-        private const string WebSocketName = "websocket";
         private readonly IBot _bot;
         private readonly ILogger _logger;
         private readonly IStreamingActivityProcessor _activityProcessor;
@@ -273,7 +269,7 @@ namespace Microsoft.Bot.Builder.Streaming
             {
                 if (!_serverIsConnected)
                 {
-                    await ReconnectAsync().ConfigureAwait(false);
+                    throw new Exception("Error while attempting to send: Streaming transport is disconnected.");
                 }
 
                 var serverResponse = await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -303,7 +299,7 @@ namespace Microsoft.Bot.Builder.Streaming
             {
                 if (!_serverIsConnected)
                 {
-                    await ReconnectAsync().ConfigureAwait(false);
+                    throw new Exception("Error while attempting to send: Streaming transport is disconnected.");
                 }
 
                 var serverResponse = await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -364,42 +360,6 @@ namespace Microsoft.Bot.Builder.Streaming
         private void Server_Disconnected(object sender, DisconnectedEventArgs e)
         {
             _serverIsConnected = false;
-        }
-
-        private async Task ReconnectAsync(IDictionary<string, string> requestHeaders = null)
-        {
-            // The ServiceUrl of a streaming connection follows the pattern "urn:[ServiceName]:[Protocol]:[ChannelName]".
-            var streamingUrnPattern = new Regex("urn:(.+?:){2}.+", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
-            string[] urnSections;
-            try
-            {
-                urnSections = streamingUrnPattern.Split(ServiceUrl);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("ServiceUrl does not meet the format for a Streaming endpoint. " + ex.Message);
-            }
-
-            // The two protocols currently supported are WebSocket and NamedPipe. If a NamedPipe connection
-            // breaks it indicates a bigger problem and should not attempt to reconnect.
-            if (!string.Equals(urnSections[3].ToLowerInvariant(), WebSocketName))
-            {
-                throw new Exception("Reconnect is only supported for WebSocket connections.");
-            }
-            
-            var clientWebSocket = new ClientWebSocket();
-            if (requestHeaders != null)
-            {
-                foreach (var key in requestHeaders.Keys)
-                {
-                    clientWebSocket.Options.SetRequestHeader(key, requestHeaders[key]);
-                }
-            }
-
-            // TODO: Set the authentication header if it wasn't passed in.
-
-            await clientWebSocket.ConnectAsync(new Uri("wss://" + urnSections[3] + ReconnectPath), CancellationToken.None).ConfigureAwait(false);
-            _server = new WebSocketServer(clientWebSocket, this);
         }
 
         /// <summary>
