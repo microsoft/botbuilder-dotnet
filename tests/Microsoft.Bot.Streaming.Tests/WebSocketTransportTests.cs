@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
             var appId = Guid.NewGuid().ToString();
             var appPassword = "password123";
             var sock = new FauxSock();
-            var writer = new WebSocketServer(sock, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), new MicrosoftAppCredentials(appId, appPassword), sock));
+            var writer = new WebSocketServer(sock, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), sock));
 
             writer.StartAsync();
             Assert.True(writer.IsConnected);

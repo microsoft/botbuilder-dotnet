@@ -35,6 +35,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         {
         }
 
+        public BotFrameworkHttpAdapter(AppCredentials credentials, AuthenticationConfiguration authConfig, IChannelProvider channel = null, HttpClient httpClient = null, ILogger<BotFrameworkHttpAdapterBase> logger = null)
+            : base(credentials, authConfig, channel, httpClient, logger)
+        {
+        }
+
         protected BotFrameworkHttpAdapter(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger = null)
             : base(new ConfigurationCredentialProvider(configuration), new ConfigurationChannelProvider(configuration), logger: logger)
         {
@@ -124,7 +129,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             {
                 httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 await httpRequest.HttpContext.Response.WriteAsync("Upgrade to WebSocket is required.").ConfigureAwait(false);
-
+                
                 return;
             }
 
@@ -139,8 +144,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             try
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-                var requestHandler = new StreamingRequestHandler(bot, this, _appCredentials, socket, _logger);
-
+                var requestHandler = new StreamingRequestHandler(bot, this, socket, _logger);
                 if (_requestHandlers == null)
                 {
                     _requestHandlers = new List<StreamingRequestHandler>();
@@ -187,6 +191,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         return false;
                     }
 
+                    // Add ServiceURL to the cache of trusted sites in order to allow token refreshing.
+                    AppCredentials.TrustServiceUrl(claimsIdentity.FindFirst(AuthenticationConstants.ServiceUrlClaim).Value);
                     _claimsIdentity = claimsIdentity;
                 }
 

@@ -46,14 +46,12 @@ namespace Microsoft.Bot.Builder.Streaming
         /// </summary>
         /// <param name="bot">The bot for which we handle requests.</param>
         /// <param name="activityProcessor">The procesor for incoming requests.</param>
-        /// <param name="appCredentials">The bot credentials to use when generating a token to send to the channel for calls requiring authentication.</param>
         /// <param name="socket">The base socket to use when connecting to the channel.</param>
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
-        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, AppCredentials appCredentials, WebSocket socket, ILogger logger = null)
+        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, WebSocket socket, ILogger logger = null)
         {
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
-            _appCredentials = appCredentials ?? throw new ArgumentNullException(nameof(appCredentials));
             
             if (socket == null)
             {
@@ -77,11 +75,10 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <param name="appCredentials">The bot credentials to use when generating a token to send to the channel for calls requiring authentication.</param>
         /// <param name="pipeName">The name of the Named Pipe to use when connecting to the channel.</param>
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
-        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, AppCredentials appCredentials, string pipeName, ILogger logger = null)
+        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, string pipeName, ILogger logger = null)
         {
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
-            _appCredentials = appCredentials ?? throw new ArgumentNullException(nameof(appCredentials));
             _logger = logger ?? NullLogger.Instance;
 
             if (string.IsNullOrWhiteSpace(pipeName))
@@ -158,7 +155,7 @@ namespace Microsoft.Bot.Builder.Streaming
             // We accept all POSTs regardless of path, but anything else requires special treatment.
             if (!string.Equals(request?.Verb, StreamingRequest.POST, StringComparison.InvariantCultureIgnoreCase))
             {
-                return await HandleCustomPathsAsync(request, response).ConfigureAwait(false);
+                return HandleCustomPaths(request, response);
             }
 
             // Convert the StreamingRequest into an activity the adapter can understand.
@@ -374,7 +371,7 @@ namespace Microsoft.Bot.Builder.Streaming
 
         private async Task ReconnectAsync(IDictionary<string, string> requestHeaders = null)
         {
-            // The ServiceUrl of a streaming connection follows the pattern "urn:[ChannelName]:[Protocol]:[Host]".
+            // The ServiceUrl of a streaming connection follows the pattern "urn:[ServiceName]:[Protocol]:[ChannelName]".
             var streamingUrnPattern = new Regex("urn:(.+?:){2}.+");
             string[] urnSections;
             try
@@ -402,20 +399,7 @@ namespace Microsoft.Bot.Builder.Streaming
                 }
             }
 
-            // Set the authentication header if it wasn't passed in.
-            if (!requestHeaders.Any(x => x.Key.ToLowerInvariant() == AuthorizationHeader.ToLowerInvariant()))
-            {
-                try
-                {
-                    clientWebSocket.Options.SetRequestHeader(AuthorizationHeader, await _appCredentials.GetTokenAsync().ConfigureAwait(false));
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e.Message);
-
-                    throw e;
-                }                
-            }
+            // TODO: Set the authentication header if it wasn't passed in.
 
             await clientWebSocket.ConnectAsync(new Uri("wss://" + urnSections[3] + ReconnectPath), CancellationToken.None).ConfigureAwait(false);
             _server = new WebSocketServer(clientWebSocket, this);
@@ -427,7 +411,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// </summary>
         /// <param name="request">A ReceiveRequest from the connected channel.</param>
         /// <returns>A response if the given request matches against a defined path.</returns>
-        private async Task<StreamingResponse> HandleCustomPathsAsync(ReceiveRequest request, StreamingResponse response)
+        private StreamingResponse HandleCustomPaths(ReceiveRequest request, StreamingResponse response)
         {
             if (request == null || string.IsNullOrEmpty(request.Verb) || string.IsNullOrEmpty(request.Path))
             {
@@ -441,22 +425,7 @@ namespace Microsoft.Bot.Builder.Streaming
                          string.Equals(request.Path, "/api/version", StringComparison.InvariantCultureIgnoreCase))
             {
                 response.StatusCode = (int)HttpStatusCode.OK;
-                var token = string.Empty;
-                try
-                {
-                    token = await _appCredentials.GetTokenAsync().ConfigureAwait(false);
-                }
-                catch (Exception e)
-                {                    
-                    // In reality a missing BotToken will cause the channel to close the connection,
-                    // but we still send the response and allow the channel to make that decision
-                    // instead of proactively disconnecting.This allows the channel to know why
-                    // the connection has been closed and make the choice not to make endless reconnection
-                    // attempts that will end up right back here.
-                  _logger.LogError(e.Message);
-                }
-
-                response.SetBody(new VersionInfo() { UserAgent = _userAgent, BotToken = token });
+                response.SetBody(new VersionInfo() { UserAgent = _userAgent });
 
                 return response;
             }

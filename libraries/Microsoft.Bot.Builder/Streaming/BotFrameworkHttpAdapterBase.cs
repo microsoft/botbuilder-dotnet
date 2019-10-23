@@ -34,6 +34,11 @@ namespace Microsoft.Bot.Builder.Streaming
         {
         }
 
+        public BotFrameworkHttpAdapterBase(AppCredentials credentials, AuthenticationConfiguration authConfig, IChannelProvider channel = null, HttpClient httpClient = null, ILogger<BotFrameworkHttpAdapterBase> logger = null)
+            : base(credentials, authConfig, channel, null, httpClient, null, logger)
+        {
+        }
+
         /// <summary>
         /// Primary adapter method for processing activities sent from streaming channel.
         /// Creates a turn context and runs the middleware pipeline for an incoming activity.
@@ -57,7 +62,7 @@ namespace Microsoft.Bot.Builder.Streaming
         {
             BotAssert.ActivityNotNull(activity);
 
-            _logger.LogInformation($"Received an incoming straming activity. ActivityId: {activity.Id}");
+            _logger.LogInformation($"Received an incoming streaming activity. ActivityId: {activity.Id}");
 
             // If a conversation has moved from one connection to another for the same Channel or Skill and
             // hasn't been forgotten by the previous StreamingRequestHandler. The last requestHandler
@@ -129,7 +134,7 @@ namespace Microsoft.Bot.Builder.Streaming
                     var host = uri[uri.Length - 1];
                     await connection.ConnectAsync(new Uri(protocol + host + "/api/messages"), cancellationToken).ConfigureAwait(false);
 
-                    var handler = new StreamingRequestHandler(_connectedBot, this, _credentialProvider as MicrosoftAppCredentials, connection, _logger);
+                    var handler = new StreamingRequestHandler(_connectedBot, this, connection, _logger);
 
                     if (_requestHandlers == null)
                     {

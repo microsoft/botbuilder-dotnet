@@ -25,9 +25,9 @@ namespace Microsoft.Bot.Streaming.UnitTests
             var appPassword = "password123";
             var readStream = new NamedPipeServerStream(pipeName, PipeDirection.In, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
             var writeStream = new NamedPipeClientStream(".", pipeName, PipeDirection.Out, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
-            new StreamingRequestHandler(new Microsoft.Bot.Streaming.UnitTests.Mocks.MockBot(), new BotFrameworkHttpAdapter(), new MicrosoftAppCredentials(appId, appPassword), pipeName);
+            new StreamingRequestHandler(new Microsoft.Bot.Streaming.UnitTests.Mocks.MockBot(), new BotFrameworkHttpAdapter(), pipeName);
             var reader = new NamedPipeClient(pipeName);
-            var writer = new NamedPipeServer(pipeName, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), new MicrosoftAppCredentials(appId, appPassword), pipeName));
+            var writer = new NamedPipeServer(pipeName, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName));
 
             try
             {
