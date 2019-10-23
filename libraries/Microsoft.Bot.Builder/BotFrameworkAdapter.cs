@@ -418,7 +418,7 @@ namespace Microsoft.Bot.Builder
                     {
                         // In cases where implementations of ProcessOutgoingActivityAsync do not fetch a bot token
                         // we want to populate it here in order to make sure credentials are accessible and do not expire.
-                        _ = GetAppCredentialsAsync((_credentialProvider as SimpleCredentialProvider).AppId).Result.GetTokenAsync();
+                        _ = (await GetAppCredentialsAsync((_credentialProvider as SimpleCredentialProvider).AppId).ConfigureAwait(false)).GetTokenAsync();
                         response = await ProcessOutgoingActivityAsync(turnContext, activity, cancellationToken).ConfigureAwait(false);
                     }
                     else
