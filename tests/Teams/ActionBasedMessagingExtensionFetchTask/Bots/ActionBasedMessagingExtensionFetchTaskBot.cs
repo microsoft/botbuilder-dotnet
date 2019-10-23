@@ -159,7 +159,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             // THIS WILL WORK IF THE BOT IS INSTALLED. (GetMembers() will NOT throw if the bot is installed.)
             // (The application should fail gracefully.)
             var channelId = turnContext.Activity.TeamsGetChannelId();
-            await turnContext.TeamsCreateConversationAsync(channelId, message, cancellationToken);
+            //await turnContext.TeamsCreateConversationAsync(channelId, message, cancellationToken);
 
             return null;
         }
