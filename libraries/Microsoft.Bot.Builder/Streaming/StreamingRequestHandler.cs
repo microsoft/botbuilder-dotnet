@@ -27,15 +27,13 @@ namespace Microsoft.Bot.Builder.Streaming
 {
     public class StreamingRequestHandler : RequestHandler
     {
-        private const string AuthorizationHeader = "authorization";
         private const string ReconnectPath = "api/reconnect";
-        private const string WebSocket = "websocket";
+        private const string WebSocketName = "websocket";
         private readonly IBot _bot;
         private readonly ILogger _logger;
         private readonly IStreamingActivityProcessor _activityProcessor;
         private readonly string _userAgent;
         private readonly IDictionary<string, DateTime> _conversations;
-        private readonly AppCredentials _appCredentials;
 
         private IStreamingTransportServer _server;
         private bool _serverIsConnected;
@@ -72,7 +70,6 @@ namespace Microsoft.Bot.Builder.Streaming
         /// </summary>
         /// <param name="bot">The bot for which we handle requests.</param>
         /// <param name="activityProcessor">The processor for incoming requests.</param>
-        /// <param name="appCredentials">The bot credentials to use when generating a token to send to the channel for calls requiring authentication.</param>
         /// <param name="pipeName">The name of the Named Pipe to use when connecting to the channel.</param>
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
         public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, string pipeName, ILogger logger = null)
@@ -130,7 +127,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// the conversation was added to this <see cref="StreamingRequestHandler"/>.</returns>
         public DateTime ConversationAddedTime(string conversationId)
         {
-            if (!_conversations.TryGetValue(conversationId, out var addedTime))
+            if (!_conversations.TryGetValue(conversationId, out DateTime addedTime))
             {
                 addedTime = DateTime.MinValue;
             }
@@ -300,7 +297,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <param name="request">The request to send.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>A task that resolves to a <see cref="ReceiveResponse"/>.</returns>
-        public async Task<ReceiveResponse> SendStreamingRequestAsync(StreamingRequest request, CancellationToken cancellationToken)
+        public async Task<ReceiveResponse> SendStreamingRequestAsync(StreamingRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -384,8 +381,8 @@ namespace Microsoft.Bot.Builder.Streaming
             }
 
             // The two protocols currently supported are WebSocket and NamedPipe. If a NamedPipe connection
-            // breaks it cannot be reconnected.
-            if (!string.Equals(urnSections[3].ToLowerInvariant(), WebSocket))
+            // breaks it indicates a bigger problem and should not attempt to reconnect.
+            if (!string.Equals(urnSections[3].ToLowerInvariant(), WebSocketName))
             {
                 throw new Exception("Reconnect is only supported for WebSocket connections.");
             }

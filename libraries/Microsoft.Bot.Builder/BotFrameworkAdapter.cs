@@ -60,10 +60,10 @@ namespace Microsoft.Bot.Builder
 #pragma warning restore SA1401 // Fields should be private
 
         private static readonly HttpClient _defaultHttpClient = new HttpClient();
-        
+
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
-        private readonly AppCredentials _appCredentials;          
+        private readonly AppCredentials _appCredentials;
         private readonly AuthenticationConfiguration _authConfiguration;
 
         // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)

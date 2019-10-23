@@ -25,8 +25,6 @@ namespace Microsoft.Bot.Streaming.UnitTests
         [Fact]
         public async Task WebSocketServer_Connects()
         {
-            var appId = Guid.NewGuid().ToString();
-            var appPassword = "password123";
             var sock = new FauxSock();
             var writer = new WebSocketServer(sock, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), sock));
 

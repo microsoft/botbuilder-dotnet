@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             {
                 httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 await httpRequest.HttpContext.Response.WriteAsync("Upgrade to WebSocket is required.").ConfigureAwait(false);
-                
+ 
                 return;
             }
 
@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 return;
             }
-            
+
             try
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);

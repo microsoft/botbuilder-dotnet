@@ -26,8 +26,6 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public void CanBeConstructedWithANamedPipe()
         {
             // Arrange
-            var appId = Guid.NewGuid().ToString();
-            var appPassword = "password123";
 
             // Act
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
@@ -41,8 +39,6 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         {
             // Arrange
             Exception result = null;
-            var appId = Guid.NewGuid().ToString();
-            var appPassword = "password123";
 
             // Act
             try
@@ -63,8 +59,6 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         {
             // Arrange
             Exception result = null;
-            var appId = Guid.NewGuid().ToString();
-            var appPassword = "password123";
 
             // Act
             try
@@ -84,8 +78,6 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public void CanBeConstructedWithAWebSocket()
         {
             // Arrange 
-            var appId = Guid.NewGuid().ToString();
-            var appPassword = "password123";
 
             // Act
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), new FauxSock());
@@ -98,8 +90,6 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void RequestHandlerRespondsWith500OnError()
         {
             // Arrange
-            var appId = Guid.NewGuid().ToString();
-            var appPassword = "password123";
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
             var membersAdded = new List<ChannelAccount>();
@@ -137,8 +127,6 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void DoesNotThrowExceptionIfReceiveRequestIsNull()
         {
             // Arrange
-            var appId = Guid.NewGuid().ToString();
-            var appPassword = "password123";
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
             ReceiveRequest testRequest = null;
 
@@ -153,8 +141,6 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void RequestHandlerRemembersConversations()
         {
             // Arrange
-            var appId = Guid.NewGuid().ToString();
-            var appPassword = "password123";
             var adapter = new BotFrameworkHttpAdapter();
             var handler = new StreamingRequestHandler(new MockBot(), adapter, Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
@@ -193,8 +179,6 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void RequestHandlerForgetsConversations()
         {
             // Arrange
-            var appId = Guid.NewGuid().ToString();
-            var appPassword = "password123";
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
             var membersAdded = new List<ChannelAccount>();
@@ -233,8 +217,6 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void RequestHandlerAssignsAServiceUrl()
         {
             // Arrange
-            var appId = Guid.NewGuid().ToString();
-            var appPassword = "password123";
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
             var serviceUrl = "urn:FakeName:fakeProtocol://fakePath";
@@ -274,9 +256,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void ItGetsUserAgentInfo()
         {
             // Arrange
-            var appId = Guid.NewGuid().ToString();
-            var appPassword = "password123";
-            var expectation = new Regex("{ \"userAgent\":\"Microsoft-BotFramework\\/[0-9.]+\\sBotBuilder\\/[0-9.]+\\s+\\(.*\\)\",\"botToken\":\".*}");
+            var expectation = new Regex("{ \"userAgent\":\"Microsoft-BotFramework\\/[0-9.]+\\sBotBuilder\\/[0-9.]+\\s+\\(.*\\)\".*}");
 
             // Act
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
