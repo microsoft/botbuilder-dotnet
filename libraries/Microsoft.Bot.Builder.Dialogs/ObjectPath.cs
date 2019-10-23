@@ -684,7 +684,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Given an root object and property path, resolve any nested bracket values.  conversation[user.name][user.age] => conversation['joe'][32]
+        /// Given an root object and property path, resolve any nested bracket values.  conversation[user.name][user.age] => conversation['joe'][32].
         /// </summary>
         /// <param name="obj">root object.</param>
         /// <param name="propertyPath">property path to resolve.</param>
