@@ -256,7 +256,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void ItGetsUserAgentInfo()
         {
             // Arrange
-            var expectation = new Regex("{ \"userAgent\":\"Microsoft-BotFramework\\/[0-9.]+\\sBotBuilder\\/[0-9.]+\\s+\\(.*\\)\".*}");
+            var expectation = new Regex("{\"userAgent\":\"Microsoft-BotFramework\\/[0-9.]+\\s.*BotBuilder\\/[0-9.]+\\s+\\(.*\\)\".*}");
 
             // Act
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
