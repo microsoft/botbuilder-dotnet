@@ -25,6 +25,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     {
         public TestContext TestContext { get; set; }
 
+        public ExpressionEngine ExpressionEngine { get; set; } = new ExpressionEngine();
+
         [TestMethod]
         public async Task AdaptiveDialog_TopLevelFallback()
         {

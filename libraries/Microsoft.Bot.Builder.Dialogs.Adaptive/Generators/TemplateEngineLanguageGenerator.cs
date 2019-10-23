@@ -1,11 +1,8 @@
-
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
-using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
@@ -26,20 +23,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         private TemplateEngine engine;
 
         /// <summary>
-        ///  Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
+        /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
         public TemplateEngineLanguageGenerator()
         {
             this.engine = new TemplateEngine();
-        }
-
-        /// <summary>
-        ///  Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
-        /// </summary>
-        /// <param name="engine">template engine.</param>
-        public TemplateEngineLanguageGenerator(TemplateEngine engine)
-        {
-            this.engine = engine;
         }
 
         /// <summary>
@@ -53,6 +41,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             this.LGText = lgText ?? string.Empty;
             this.Id = id ?? DEFAULTLABEL;
             this.MultiLanguageResolver = multiLanguageResolver;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
+        /// </summary>
+        /// <param name="engine">template engine.</param>
+        public TemplateEngineLanguageGenerator(TemplateEngine engine)
+        {
+            this.engine = engine;
         }
 
         /// <summary>
