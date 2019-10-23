@@ -305,7 +305,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (value is JToken || value is JObject || value is JArray)
                 {
-                    val = (JToken)value;
+                    val = Clone((JToken)value);
                 }
                 else if (value == null)
                 {
