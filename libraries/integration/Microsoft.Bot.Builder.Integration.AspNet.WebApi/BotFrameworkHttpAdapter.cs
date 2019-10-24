@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Logging;
@@ -173,7 +174,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
                         httpResponse.StatusCode = HttpStatusCode.Unauthorized;
                         return false;
                     }
-
+                    
+                    // Add ServiceURL to the cache of trusted sites in order to allow token refreshing.
+                    AppCredentials.TrustServiceUrl(claimsIdentity.FindFirst(AuthenticationConstants.ServiceUrlClaim).Value);
                     ClaimsIdentity = claimsIdentity;
                 }
 

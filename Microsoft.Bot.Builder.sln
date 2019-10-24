@@ -736,12 +736,12 @@ Global
 		{96167FDC-8D49-4767-AE58-22933C246C67}.Release|Any CPU.Build.0 = Release|Any CPU
 		{96167FDC-8D49-4767-AE58-22933C246C67}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{96167FDC-8D49-4767-AE58-22933C246C67}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
-		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
+		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug-Windows|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
-		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug-Windows|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
+		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
 		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU

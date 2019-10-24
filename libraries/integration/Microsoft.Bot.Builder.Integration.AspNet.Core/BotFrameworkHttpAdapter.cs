@@ -139,6 +139,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             try
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
+                
                 var requestHandler = new StreamingRequestHandler(bot, this, socket, Logger);
 
                 if (RequestHandlers == null)
@@ -186,7 +187,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                         return false;
                     }
-
+                    
+                    // Add ServiceURL to the cache of trusted sites in order to allow token refreshing.
+                    AppCredentials.TrustServiceUrl(claimsIdentity.FindFirst(AuthenticationConstants.ServiceUrlClaim).Value);
                     ClaimsIdentity = claimsIdentity;
                 }
 

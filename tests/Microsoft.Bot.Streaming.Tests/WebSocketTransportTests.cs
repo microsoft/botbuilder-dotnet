@@ -32,15 +32,6 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
-        public async Task WebSocketServer_BackAndForth()
-        {
-            var sock = new FauxSock();
-            var writer = new WebSocketServer(sock, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), sock));
-
-            writer.StartAsync();
-        }
-
-        [Fact]
         public async Task WebSocketClient_ThrowsOnEmptyUrl()
         {
             Exception result = null;
