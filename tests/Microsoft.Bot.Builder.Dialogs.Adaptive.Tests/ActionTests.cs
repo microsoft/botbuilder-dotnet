@@ -1434,6 +1434,94 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task InputDialog_ActivityProcessed()
+        {
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                AutoEndDialog = true,
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new List<IntentPattern>()
+                    {
+                        new IntentPattern() { Intent = "x", Pattern = "x" },
+                        new IntentPattern() { Intent = "y", Pattern = "y" },
+                        new IntentPattern() { Intent = "z", Pattern = "z" },
+                    }
+                },
+                Triggers = new List<OnCondition>()
+                {
+                    new OnIntent()
+                    {
+                        Intent = "x",
+                        Actions = new List<Dialog>()
+                        {
+                            new TextInput()
+                            {
+                                Property = "$name",
+                                Prompt = new ActivityTemplate("What name?")
+                            },
+                            new SendActivity() { Activity = new ActivityTemplate("{$name}") },
+                            new SendActivity() { Activity = new ActivityTemplate("{turn.activityProcessed}") }
+                        }
+                    },
+                    new OnIntent()
+                    {
+                        Intent = "y",
+                        Actions = new List<Dialog>()
+                        {
+                            new NumberInput()
+                            {
+                                Property = "$age",
+                                Prompt = new ActivityTemplate("What age?")
+                            },
+                            new SendActivity() { Activity = new ActivityTemplate("{$age}") },
+                            new SendActivity() { Activity = new ActivityTemplate("{turn.activityProcessed}") }
+                        }
+                    },
+                    new OnIntent()
+                    {
+                        Intent = "z",
+                        Actions = new List<Dialog>()
+                        {
+                            new ConfirmInput()
+                            {
+                                Property = "$confirm",
+                                Prompt = new ActivityTemplate("What confirm?")
+                            },
+                            new SendActivity() { Activity = new ActivityTemplate("{$confirm}") },
+                            new SendActivity() { Activity = new ActivityTemplate("{turn.activityProcessed}") }
+                        }
+                    },
+                    new OnUnknownIntent()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity() { Activity = new ActivityTemplate("unknown") }
+                        }
+                    }
+                }
+            };
+
+            await CreateFlow(rootDialog)
+                .Send("x")
+                    .AssertReply("What name?")
+                .Send("joe")
+                    .AssertReply("joe")
+                    .AssertReply("True")
+                .Send("y")
+                    .AssertReply("What age?")
+                .Send("13")
+                    .AssertReply("13")
+                    .AssertReply("True")
+                .Send("z")
+                    .AssertReply("What confirm? (1) Yes or (2) No")
+                .Send("1")
+                    .AssertReply("True")
+                    .AssertReply("True")
+                .StartTestAsync();
+        }
+
         private static IActivity BuildMessageActivityWithLocale(string text, string locale)
         {
             return new Activity()
