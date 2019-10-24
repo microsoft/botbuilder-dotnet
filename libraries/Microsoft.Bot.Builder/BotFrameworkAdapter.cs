@@ -973,6 +973,11 @@ namespace Microsoft.Bot.Builder
             }
 
             var appId = botIdentity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
+            if (string.IsNullOrWhiteSpace(appId))
+            {
+                throw new InvalidOperationException("Unable to get the bot AppId from the audience claim.");
+            }
+
             var appCredentials = await GetAppCredentialsAsync(appId).ConfigureAwait(false);
 
             if (OAuthClientConfig.EmulateOAuthCards)
