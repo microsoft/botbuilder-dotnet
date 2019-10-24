@@ -1,5 +1,8 @@
-﻿#pragma warning disable SA1401 // Fields should be private
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #pragma warning disable SA1124 // Do not use regions
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,8 +16,6 @@ namespace Microsoft.Bot.Expressions.Tests
     [TestClass]
     public class ExpressionEngineTests
     {
-        public static HashSet<string> One = new HashSet<string> { "one" };
-        public static HashSet<string> OneTwo = new HashSet<string> { "one", "two" };
         private static readonly string NullStr = null;
 
         private readonly object scope = new Dictionary<string, object>
@@ -216,6 +217,10 @@ namespace Microsoft.Bot.Expressions.Tests
                 }
             }
         };
+
+        public static HashSet<string> One { get; set; } = new HashSet<string> { "one" };
+
+        public static HashSet<string> OneTwo { get; set; } = new HashSet<string> { "one", "two" };
 
         public static IEnumerable<object[]> Data => new[]
         {

@@ -5,11 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.WebSockets;
-using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming;
 using Microsoft.Bot.Streaming.Payloads;
@@ -24,6 +25,8 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         [Fact]
         public void CanBeConstructedWithANamedPipe()
         {
+            // Arrange
+
             // Act
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
 
@@ -74,6 +77,8 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         [Fact]
         public void CanBeConstructedWithAWebSocket()
         {
+            // Arrange 
+
             // Act
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), new FauxSock());
 
@@ -116,6 +121,20 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
 
             // Assert
             Assert.Equal(500, response.StatusCode);
+        }
+
+        [Fact]
+        public async void DoesNotThrowExceptionIfReceiveRequestIsNull()
+        {
+            // Arrange
+            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
+            ReceiveRequest testRequest = null;
+
+            // Act
+            var response = await handler.ProcessRequestAsync(testRequest);
+
+            // Assert
+            Assert.Equal(400, response.StatusCode);
         }
 
         [Fact]
@@ -237,6 +256,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void ItGetsUserAgentInfo()
         {
             // Arrange
+            var expectation = new Regex("{\"userAgent\":\"Microsoft-BotFramework\\/[0-9.]+\\s.*BotBuilder\\/[0-9.]+\\s+\\(.*\\)\".*}");
 
             // Act
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
@@ -262,7 +282,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             var response = await handler.ProcessRequestAsync(testRequest);
 
             // Assert
-            Assert.NotNull(response);
+            Assert.Matches(expectation, response.Streams[0].Content.ReadAsStringAsync().Result);
         }
 
         private class MessageBot : IBot

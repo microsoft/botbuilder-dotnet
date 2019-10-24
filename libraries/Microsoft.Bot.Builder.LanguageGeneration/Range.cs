@@ -1,4 +1,7 @@
-﻿namespace Microsoft.Bot.Builder.LanguageGeneration
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
     /// A range represents an ordered pair of two positions.

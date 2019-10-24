@@ -104,4 +104,4 @@
 # templateWithSquareBrackets(manufacturer)
 [Struct
     Text = {manufacturer['Name']}
-]
+]  

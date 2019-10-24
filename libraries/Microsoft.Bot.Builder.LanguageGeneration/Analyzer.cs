@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -80,6 +83,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return result;
+        }
+
+        public override AnalyzerResult VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
+        {
+            // TODO
+            return base.VisitStructuredTemplateBody(context);
         }
 
         public override AnalyzerResult VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)

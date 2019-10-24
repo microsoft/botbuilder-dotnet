@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,6 +32,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var totalLGResources = new List<LGResource>();
                 foreach (var filePath in filePaths)
                 {
+                    // do not use ??=, it will cause issue in the C# < 8.0
                     importResolver = importResolver ?? ImportResolver.FileResolver;
 
                     var fullPath = Path.GetFullPath(ImportResolver.NormalizePath(filePath));
@@ -107,7 +111,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             private Dictionary<string, LGTemplate> templateMap = new Dictionary<string, LGTemplate>();
 
             private string currentSource = string.Empty;
-            private ExpressionEngine baseExpressionEngine;
+            private readonly ExpressionEngine baseExpressionEngine;
             private readonly Regex expressionRecognizeRegex = new Regex(@"@?(?<!\\)\{.+?(?<!\\)\}", RegexOptions.Compiled);
             private readonly Regex escapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
 

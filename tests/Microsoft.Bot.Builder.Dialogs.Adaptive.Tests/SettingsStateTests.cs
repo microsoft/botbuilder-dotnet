@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#pragma warning disable SA1401 // Fields should be private
-
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -10,6 +8,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -18,8 +17,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     [TestClass]
     public class SettingsStateTests
     {
-        public IConfiguration Configuration;
-
         public SettingsStateTests()
         {
             var builder = new ConfigurationBuilder()
@@ -27,6 +24,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             this.Configuration = builder.Build();
         }
+
+        public IConfiguration Configuration { get; set; }
 
         public TestContext TestContext { get; set; }
 
@@ -45,8 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         private TestFlow CreateFlow(string locale)
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
+            TypeFactory.Configuration = this.Configuration;
             var dialog = new AdaptiveDialog();
             dialog.Triggers.AddRange(new List<OnCondition>()
             {
@@ -68,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseAdaptiveDialogs()
                 .UseLanguageGeneration(resourceExplorer)
                 .Use(new RegisterClassMiddleware<IConfiguration>(this.Configuration))
-                .Use(new AutoSaveStateMiddleware(convoState, userState))
+                .UseState(new UserState(new MemoryStorage()), new ConversationState(new MemoryStorage()))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             DialogManager dm = new DialogManager(dialog);

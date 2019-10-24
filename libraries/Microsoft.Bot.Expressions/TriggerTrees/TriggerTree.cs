@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#pragma warning disable SA1401 // Fields should be private
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -287,16 +286,18 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
 
         private class Debugger
         {
-            public Dictionary<string, IPredicateComparer> _comparers;
-            public List<IOptimizer> _optimizers;
-            public string TreeString;
-
             public Debugger(TriggerTree triggers)
             {
                 TreeString = triggers.TreeToString();
-                _optimizers = triggers.Optimizers;
-                _comparers = triggers.Comparers;
+                Optimizers = triggers.Optimizers;
+                Comparers = triggers.Comparers;
             }
+
+            public Dictionary<string, IPredicateComparer> Comparers { get; set; }
+
+            public List<IOptimizer> Optimizers { get; set; }
+
+            public string TreeString { get; set; }
         }
     }
 }
