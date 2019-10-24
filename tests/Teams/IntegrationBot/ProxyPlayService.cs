@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
-namespace LinkUnfurling
+namespace Microsoft.BotBuilderSamples
 {
     public class ProxyPlayService : IHostedService
     {
