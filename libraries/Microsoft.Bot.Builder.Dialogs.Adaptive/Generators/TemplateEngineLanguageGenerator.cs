@@ -92,11 +92,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             else if (!string.IsNullOrWhiteSpace(LGText) || !string.IsNullOrWhiteSpace(Id))
             {
-                this.engine ??= new TemplateEngine().AddText(LGText, Id);
+                // do not re write to ??=, because low version do not support (such as linux)
+                this.engine = this.engine ?? new TemplateEngine().AddText(LGText, Id);
             }
             else
             {
-                this.engine ??= new TemplateEngine();
+                this.engine = this.engine ?? new TemplateEngine();
             }
 
             try
