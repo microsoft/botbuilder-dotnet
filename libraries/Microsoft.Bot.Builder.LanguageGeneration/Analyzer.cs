@@ -85,6 +85,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
+        public override AnalyzerResult VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
+        {
+            // TODO
+            return base.VisitStructuredTemplateBody(context);
+        }
+
         public override AnalyzerResult VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
         {
             var result = new AnalyzerResult();
