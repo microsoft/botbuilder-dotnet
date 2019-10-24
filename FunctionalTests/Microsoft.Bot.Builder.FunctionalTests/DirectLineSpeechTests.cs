@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         [TestMethod]
         public async Task SendDirectLineSpeechVoiceMessage()
         {
-            // GetEnvironmentVars();
+            GetEnvironmentVars();
 
             // Make sure the sound clip exists
             Assert.IsTrue(File.Exists(SoundFilePath));
