@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net.Mime;
-using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -321,7 +319,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
             if (error != null)
             {
-                throw new Exception($"Error occurs when evaluating expression ${exp}: {error}");
+                throw new Exception($"Error occurs when evaluating expression {exp}: {error}");
             }
 
             if (result == null)
@@ -343,7 +341,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
-                    exp = exp + "()";
+                    exp += "()";
                 }
             }
 
