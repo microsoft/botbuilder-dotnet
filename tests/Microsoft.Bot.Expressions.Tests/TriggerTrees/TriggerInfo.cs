@@ -13,6 +13,6 @@ namespace Microsoft.Bot.Expressions.TriggerTrees.Tests
     {
         public Expression Trigger { get; set; }
 
-        public Dictionary<string, object> Bindings { get; set; } new Dictionary<string, object>();
+        public Dictionary<string, object> Bindings { get; set; } = new Dictionary<string, object>();
     }
 }

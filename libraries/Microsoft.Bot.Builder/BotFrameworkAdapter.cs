@@ -436,11 +436,11 @@ namespace Microsoft.Bot.Builder
                         // we want to populate it here in order to make sure credentials are accessible and do not expire.
                         try
                         {
-                            _ = (await GetAppCredentialsAsync((_credentialProvider as SimpleCredentialProvider).AppId).ConfigureAwait(false)).GetTokenAsync();
+                            _ = (await GetAppCredentialsAsync((CredentialProvider as SimpleCredentialProvider).AppId).ConfigureAwait(false)).GetTokenAsync();
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError("Failed to fetch token before processing outgoing activity. " + ex.Message);
+                            Logger.LogError("Failed to fetch token before processing outgoing activity. " + ex.Message);
                         }
                         
                         response = await ProcessOutgoingActivityAsync(turnContext, activity, cancellationToken).ConfigureAwait(false);
