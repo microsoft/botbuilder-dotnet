@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Builder
         /// Initializes a new instance of the <see cref="TurnContextStateCollection"/> class.
         /// </summary>
         public TurnContextStateCollection()
+            : base(StringComparer.InvariantCultureIgnoreCase)
         {
         }
 

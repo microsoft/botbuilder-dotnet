@@ -56,9 +56,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// </value>
         public static List<MemoryScope> MemoryScopes { get; } = new List<MemoryScope>
         {
-            new MemoryScope(ScopePath.USER),
-            new MemoryScope(ScopePath.CONVERSATION),
-            new MemoryScope(ScopePath.TURN),
+            new UserMemoryScope(),
+            new ConversationMemoryScope(),
+            new TurnMemoryScope(),
             new SettingsMemoryScope(),
             new DialogMemoryScope(),
             new ClassMemoryScope(),
@@ -256,7 +256,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             var result = new JObject();
 
-            foreach (var scope in MemoryScopes.Where(ms => ms.IsReadOnly == false))
+            foreach (var scope in MemoryScopes.Where(ms => ms.IncludeInSnapshot == true))
             {
                 var memory = scope.GetMemory(dialogContext);
                 if (memory != null)
