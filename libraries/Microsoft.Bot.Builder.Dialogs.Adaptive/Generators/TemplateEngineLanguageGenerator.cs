@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     {
         private const string DEFAULTLABEL = "Unknown";
 
-        // Delayed initialization
+        // lazy loading
         private TemplateEngine engine;
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             else
             {
-                // Do not rewrite to ??= (C# 8 feature). It will break in linux/mac
+                // Do not rewrite to ??= (C# 8.0 new feature). It will break in linux/mac
                 engine = engine ?? new TemplateEngine();
             }
 
