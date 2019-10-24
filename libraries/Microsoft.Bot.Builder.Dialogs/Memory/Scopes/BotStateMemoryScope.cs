@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         where T : BotState
     {
         public BotStateMemoryScope(string name)
-            : base(name, false)
+            : base(name)
         {
         }
 

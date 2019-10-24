@@ -16,8 +16,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         private Dictionary<string, object> emptySettings = new Dictionary<string, object>();
 
         public SettingsMemoryScope()
-            : base(ScopePath.SETTINGS, isReadOnly: true)
+            : base(ScopePath.SETTINGS)
         {
+            this.IncludeInSnapshot = false;
         }
 
         public override object GetMemory(DialogContext dc)

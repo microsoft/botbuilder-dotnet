@@ -12,9 +12,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// </summary>
     public abstract class MemoryScope
     {
-        public MemoryScope(string name, bool isReadOnly = false)
+        public MemoryScope(string name)
         {
-            this.IsReadOnly = isReadOnly;
+            this.IncludeInSnapshot = true;
             this.Name = name;
         }
 
@@ -27,12 +27,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this memory scope mutable.
+        /// Gets or sets a value indicating whether this memory should be included in snapshot.
         /// </summary>
         /// <value>
-        /// A value indicating whether this memory scope mutable.
+        /// True or false.
         /// </value>
-        public bool IsReadOnly { get; protected set; }
+        public bool IncludeInSnapshot { get; protected set; }
 
         /// <summary>
         /// Get the backing memory for this scope.

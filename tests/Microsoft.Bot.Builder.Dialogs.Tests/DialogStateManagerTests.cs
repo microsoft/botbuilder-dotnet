@@ -66,16 +66,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     {
                     }
 
-                    if (!memoryScope.IsReadOnly)
+                    try
                     {
-                        try
-                        {
-                            memoryScope.SetMemory(null, new object());
-                            Assert.Fail($"Should have thrown exception with null dc for SetMemory {memoryScope.Name}");
-                        }
-                        catch (ArgumentNullException)
-                        {
-                        }
+                        memoryScope.SetMemory(null, new object());
+                        Assert.Fail($"Should have thrown exception with null dc for SetMemory {memoryScope.Name}");
+                    }
+                    catch (Exception)
+                    {
                     }
                 }
             })
@@ -106,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 JObject snapshot = context.State.GetMemorySnapshot();
                 foreach (var memoryScope in DialogStateManager.MemoryScopes.Where(ms => ms.Name != "dialog" && ms.Name != "this"))
                 {
-                    if (memoryScope.IsReadOnly)
+                    if (memoryScope.IncludeInSnapshot)
                     {
                         Assert.IsNull(snapshot.Property(memoryScope.Name));
                     }

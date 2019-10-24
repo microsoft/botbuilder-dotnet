@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     public class TurnMemoryScope : MemoryScope
     {
         public TurnMemoryScope()
-            : base(ScopePath.TURN, true)
+            : base(ScopePath.TURN)
         {
         }
 
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// <param name="memory">memory.</param>
         public override void SetMemory(DialogContext dc, object memory)
         {
-            throw new NotSupportedException("You cannot set the memory for a readonly memory scope");
+            throw new NotSupportedException("You cannot change the root object a turn memory");
         }
     }
 }
