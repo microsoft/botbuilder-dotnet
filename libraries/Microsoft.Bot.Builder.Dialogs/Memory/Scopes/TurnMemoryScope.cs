@@ -29,7 +29,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            return dc.Context.TurnState;
+            if (!dc.Context.TurnState.TryGetValue(nameof(TurnMemoryScope), out object val))
+            {
+                val = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+                dc.Context.TurnState[nameof(TurnMemoryScope)] = val;
+            }
+
+            return val;
         }
 
         /// <summary>
@@ -39,7 +45,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// <param name="memory">memory.</param>
         public override void SetMemory(DialogContext dc, object memory)
         {
-            throw new NotSupportedException("You cannot change the root object a turn memory");
+            if (dc == null)
+            {
+                throw new ArgumentNullException(nameof(dc));
+            }
+
+            dc.Context.TurnState[nameof(TurnMemoryScope)] = memory;
         }
     }
 }

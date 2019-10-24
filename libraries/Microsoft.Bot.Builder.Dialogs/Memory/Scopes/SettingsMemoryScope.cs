@@ -28,13 +28,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            if (!dc.Context.TurnState.TryGetValue(this.Name, out object settings))
+            if (!dc.Context.TurnState.TryGetValue(nameof(SettingsMemoryScope), out object settings))
             {
                 var configuration = dc.Context.TurnState.Get<IConfiguration>();
                 if (configuration != null)
                 {
                     settings = LoadSettings(configuration);
-                    dc.Context.TurnState[this.Name] = settings;
+                    dc.Context.TurnState[nameof(SettingsMemoryScope)] = settings;
                 }
             }
 

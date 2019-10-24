@@ -101,15 +101,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await CreateDialogContext(async (context, ct) =>
             {
                 JObject snapshot = context.State.GetMemorySnapshot();
-                foreach (var memoryScope in DialogStateManager.MemoryScopes.Where(ms => ms.Name != "dialog" && ms.Name != "this"))
+                foreach (var memoryScope in DialogStateManager.MemoryScopes)
                 {
                     if (memoryScope.IncludeInSnapshot)
                     {
-                        Assert.IsNull(snapshot.Property(memoryScope.Name));
+                        Assert.IsNotNull(snapshot.Property(memoryScope.Name));
                     }
                     else
                     {
-                        Assert.IsNotNull(snapshot.Property(memoryScope.Name));
+                        Assert.IsNull(snapshot.Property(memoryScope.Name));
                     }
                 }
             })
