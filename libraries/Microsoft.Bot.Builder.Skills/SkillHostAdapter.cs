@@ -27,9 +27,9 @@ namespace Microsoft.Bot.Builder.Skills
             _logger = logger ?? NullLogger.Instance;
 
             // make sure there is a channel api middleware
-            if (!ChannelAdapter.MiddlewareSet.Any(mw => mw is ChannelApiMiddleware))
+            if (!adapter.MiddlewareSet.Any(mw => mw is ChannelApiMiddleware))
             {
-                ChannelAdapter.MiddlewareSet.Use(new ChannelApiMiddleware(this));
+                adapter.MiddlewareSet.Use(new ChannelApiMiddleware(this));
             }
         }
 

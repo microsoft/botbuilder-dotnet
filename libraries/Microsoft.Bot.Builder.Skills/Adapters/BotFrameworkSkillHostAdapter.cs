@@ -65,7 +65,6 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         /// using a credential provider.
         /// </summary>
         /// <param name="adapter">adapter that this skillAdapter is bound to.</param>
-        /// <param name="bot">bot callback to use in the turn context.</param>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="channelProvider">The channel provider.</param>
         /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
@@ -93,7 +92,6 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         /// using a credential provider.
         /// </summary>
         /// <param name="adapter">adapter that this skillAdapter is bound to.</param>
-        /// <param name="bot">bot callback. </param>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="authConfig">The authentication configuration.</param>
         /// <param name="channelProvider">The channel provider.</param>
@@ -205,7 +203,6 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
             var identity = (ClaimsIdentity)turnContext.TurnState.Get<IIdentity>(BotIdentityKey);
             if (identity.AuthenticationType.Equals("anonymous", StringComparison.InvariantCultureIgnoreCase))
             {
-                // TODO: validate that we won't support anonymous with skills (sort of like OAuth). Gabo
                 throw new NotSupportedException("Anonymous calls are not supported for skills, please ensure your bot is configured with a MicrosoftAppId and Password).");
             }
 
@@ -271,7 +268,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
 
             // For requests from channel App Id is in Audience claim of JWT token. For emulator it is in AppId claim. For
             // unauthenticated requests we have anonymous identity provided auth is disabled.
-            // For Activities coming from Emulator AppId claim contains the Bot's AAD AppId.
+            // For Activities coming from Emulator AppId claim contains the bot's AAD AppId.
             var botAppIdClaim = claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim);
             if (botAppIdClaim == null)
             {

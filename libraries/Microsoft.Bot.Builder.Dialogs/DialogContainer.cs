@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
         }
 
-        protected DialogSet Dialogs { get; set; } = new DialogSet();
+        public DialogSet Dialogs { get; set; } = new DialogSet();
 
         public abstract DialogContext CreateChildContext(DialogContext dc);
 

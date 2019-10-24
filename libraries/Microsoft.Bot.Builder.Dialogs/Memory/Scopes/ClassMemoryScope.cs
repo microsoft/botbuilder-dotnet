@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         public ClassMemoryScope()
             : base(ScopePath.CLASS)
         {
-            this.IsReadOnly = true;
+            this.IncludeInSnapshot = false;
         }
 
         public override object GetMemory(DialogContext dc)
