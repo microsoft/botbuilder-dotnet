@@ -24,12 +24,12 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
     public class DirectLineSpeechTests
     {
-        private static string speechBotSecret = null;
+        private static readonly string SoundFileMessage = "Tell me a joke";
         private static readonly string FromUser = "DirectLineSpeechTestUser";
+        private static readonly string SpeechRegion = "westus2";
+        private static readonly string SoundFilePath = $"..{Path.DirectorySeparatorChar}..{Path.DirectorySeparatorChar}..{Path.DirectorySeparatorChar}Assets{Path.DirectorySeparatorChar}TellMeAJoke.wav";
         private static string speechSubscription = null;
-        private static string speechRegion = null;
-        private static string soundFilePath = "file:\\";
-        private static string soundFileMessage = null;
+        private static string speechBotSecret = null;
         private static string echoGuid = null;
         private static string input = $"Testing Azure Bot GUID: ";
         private List<MessageRecord> messages = new List<MessageRecord>();
@@ -53,12 +53,12 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             input += echoGuid;
 
             // Create a Dialog Service Config for use with the Direct Line Speech Connector
-            var config = DialogServiceConfig.FromBotSecret(speechBotSecret, speechSubscription, speechRegion);
+            var config = DialogServiceConfig.FromBotSecret(speechBotSecret, speechSubscription, SpeechRegion);
             config.SpeechRecognitionLanguage = "en-us";
             config.SetProperty(PropertyId.Conversation_From_Id, FromUser);
 
             // Create a new Dialog Service Connector for the above configuration and register to receive events
-            var connector = new DialogServiceConnector(config, AudioConfig.FromWavFileInput(soundFilePath));
+            var connector = new DialogServiceConnector(config, AudioConfig.FromWavFileInput(SoundFilePath));
             connector.ActivityReceived += Connector_ActivityReceived;
 
             // Open a connection to Direct Line Speech channel. No await because the call will block until the connection closes.
@@ -95,15 +95,18 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         [TestMethod]
         public async Task SendDirectLineSpeechVoiceMessage()
         {
-            GetEnvironmentVars();
+            // GetEnvironmentVars();
+
+            // Make sure the sound clip exists
+            Assert.IsTrue(File.Exists(SoundFilePath));
 
             // Create a Dialog Service Config for use with the Direct Line Speech Connector
-            var config = DialogServiceConfig.FromBotSecret(speechBotSecret, speechSubscription, speechRegion);
+            var config = DialogServiceConfig.FromBotSecret(speechBotSecret, speechSubscription, SpeechRegion);
             config.SpeechRecognitionLanguage = "en-us";
             config.SetProperty(PropertyId.Conversation_From_Id, FromUser);
 
             // Create a new Dialog Service Connector for the above configuration and register to receive events
-            var connector = new DialogServiceConnector(config, AudioConfig.FromWavFileInput(soundFilePath));
+            var connector = new DialogServiceConnector(config, AudioConfig.FromWavFileInput(SoundFilePath));
             connector.ActivityReceived += Connector_ActivityReceived;
 
             // Open a connection to Direct Line Speech channel. No await because the call will block until the connection closes.
@@ -126,7 +129,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
             // Assert
             Assert.IsNotNull(botAnswer);
-            Assert.AreEqual(string.Format("You said '{0}'", soundFileMessage), botAnswer.Message);
+            Assert.AreEqual(string.Format("You said '{0}'", SoundFileMessage), botAnswer.Message);
         }
 
         /// <summary>
@@ -146,27 +149,6 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             if (string.IsNullOrWhiteSpace(speechSubscription))
             {
                 throw new Exception("Environment variable 'SPEECHSUBSCRIPTION' not found.");
-            }
-
-            // The region to test DLS in.
-            speechRegion = Environment.GetEnvironmentVariable("SPEECHREGION");
-            if (string.IsNullOrWhiteSpace(speechRegion))
-            {
-                throw new Exception("Environment variable 'SPEECHREGION' not found.");
-            }
-
-            // The path to an audio file to send to DLS.
-            soundFilePath = Environment.GetEnvironmentVariable("SPEECHSOURCE");
-            if (string.IsNullOrWhiteSpace(soundFilePath))
-            {
-                throw new Exception("Environment variable 'SPEECHSOURCE' not found.");
-            }
-
-            // Text transcript of the audio file.
-            soundFileMessage = Environment.GetEnvironmentVariable("SPEECHTEXT");
-            if (string.IsNullOrWhiteSpace(soundFileMessage))
-            {
-                throw new Exception("Environment variable 'SPEECHTEXT' not found.");
             }
         }
 

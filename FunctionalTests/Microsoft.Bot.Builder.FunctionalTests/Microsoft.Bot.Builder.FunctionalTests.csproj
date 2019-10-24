@@ -27,8 +27,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Assets\TellMeAJoke.wav">
+    <Compile Update="GetTokenRefreshTests.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Assets\TellMeAJoke.wav">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
