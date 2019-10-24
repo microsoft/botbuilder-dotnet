@@ -698,6 +698,19 @@ namespace Microsoft.Bot.Builder
             }
 
             var activity = turnContext.Activity;
+            var serviceUrl = activity.ServiceUrl;
+
+            // Clone the conversation information
+            var conversation = JsonConvert.DeserializeObject<ConversationAccount>(JsonConvert.SerializeObject(activity.Conversation));
+
+            if (turnContext.TurnState.Get<ClaimsIdentity>("BotIdentity") is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
+            {
+                // Skills need to unpack the conversation ID and create their own link.
+                // TODO: use the skill helper functions to handle unpacking conversation ID once we go GA with skills.
+                var parts = JsonConvert.DeserializeObject<string[]>(Encoding.UTF8.GetString(Convert.FromBase64String(turnContext.Activity.Conversation.Id)));
+                conversation.Id = parts[0];
+                serviceUrl = parts[1];
+            }
 
             var tokenExchangeState = new TokenExchangeState()
             {
@@ -707,8 +720,8 @@ namespace Microsoft.Bot.Builder
                     ActivityId = activity.Id,
                     Bot = activity.Recipient,       // Activity is from the user to the bot
                     ChannelId = activity.ChannelId,
-                    Conversation = activity.Conversation,
-                    ServiceUrl = activity.ServiceUrl,
+                    Conversation = conversation,
+                    ServiceUrl = serviceUrl,
                     User = activity.From,
                 },
                 MsAppId = (CredentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
@@ -953,21 +966,24 @@ namespace Microsoft.Bot.Builder
                 OAuthClientConfig.EmulateOAuthCards = true;
             }
 
-            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-            if (connectorClient == null)
+            var botIdentity = (ClaimsIdentity)turnContext.TurnState.Get<IIdentity>(BotIdentityKey);
+            if (botIdentity == null)
             {
-                throw new InvalidOperationException("An IConnectorClient is required in TurnState for this operation.");
+                throw new InvalidOperationException("An IIdentity is required in TurnState for this operation.");
             }
+
+            var appId = botIdentity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
+            var appCredentials = await GetAppCredentialsAsync(appId).ConfigureAwait(false);
 
             if (OAuthClientConfig.EmulateOAuthCards)
             {
                 // do not await task - we want this to run in the background
-                var oauthClient = new OAuthClient(new Uri(turnContext.Activity.ServiceUrl), connectorClient.Credentials);
+                var oauthClient = new OAuthClient(new Uri(turnContext.Activity.ServiceUrl), appCredentials);
                 var task = Task.Run(() => OAuthClientConfig.SendEmulateOAuthCardsAsync(oauthClient, OAuthClientConfig.EmulateOAuthCards));
                 return oauthClient;
             }
 
-            return new OAuthClient(new Uri(OAuthClientConfig.OAuthEndpoint), connectorClient.Credentials);
+            return new OAuthClient(new Uri(OAuthClientConfig.OAuthEndpoint), appCredentials);
         }
 
         /// <summary>
@@ -1125,7 +1141,7 @@ namespace Microsoft.Bot.Builder
         {
             public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
             {
-                if (Channels.Msteams.Equals(turnContext.Activity.ChannelId, StringComparison.InvariantCultureIgnoreCase) && turnContext.Activity.Conversation != null && string.IsNullOrEmpty(turnContext.Activity.Conversation.TenantId))
+                if (Channels.Msteams.Equals(turnContext.Activity.ChannelId, StringComparison.InvariantCultureIgnoreCase) && turnContext.Activity.Conversation != null && string.IsNullOrEmpty(turnContext.Activity.Conversation.TenantId) && turnContext.Activity.ChannelData != null)
                 {
                     var teamsChannelData = JObject.FromObject(turnContext.Activity.ChannelData);
                     if (teamsChannelData["tenant"]?["id"] != null)
