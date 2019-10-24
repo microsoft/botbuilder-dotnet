@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </value>
         public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 
-        public static MultiLanguageResolverDelegate ResourceResolver(ResourceExplorer resourceExplorer) =>
+        public static Func<string, ImportResolverDelegate> GetMultiLanguageResolverDelegate(ResourceExplorer resourceExplorer) =>
             (string targetLocale) =>
                (string source, string id) =>
                {
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(IResource resource)
         {
-            return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, ResourceResolver(resourceExplorer));
+            return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, GetMultiLanguageResolverDelegate(resourceExplorer));
         }
     }
 }

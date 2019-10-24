@@ -8,18 +8,13 @@ using Microsoft.Bot.Builder.LanguageGeneration;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
     /// <summary>
-    /// delegate that get <see cref="ImportResolverDelegate"/> from a local.
-    /// </summary>
-    /// <param name="local">locale.</param>
-    /// <returns>delegate that get ImportResolverDelegate.</returns>
-    public delegate ImportResolverDelegate MultiLanguageResolverDelegate(string local);
-
-    /// <summary>
     /// ILanguageGenerator implementation which uses TemplateEngine. 
     /// </summary>
     public class TemplateEngineLanguageGenerator : ILanguageGenerator
     {
         private const string DEFAULTLABEL = "Unknown";
+
+        // Delayed initialization
         private TemplateEngine engine;
 
         /// <summary>
@@ -36,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="lgText">lg template text.</param>
         /// <param name="id">optional label for the source of the templates (used for labeling source of template errors).</param>
         /// <param name="multiLanguageResolver">template resource loader delegate (local) -> <see cref="ImportResolverDelegate"/>.</param>
-        public TemplateEngineLanguageGenerator(string lgText, string id = null, MultiLanguageResolverDelegate multiLanguageResolver = null)
+        public TemplateEngineLanguageGenerator(string lgText, string id = null, Func<string, ImportResolverDelegate> multiLanguageResolver = null)
         {
             this.LGText = lgText ?? string.Empty;
             this.Id = id ?? DEFAULTLABEL;
@@ -74,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <value>
         /// get <see cref="ImportResolverDelegate"/> from local.
         /// </value>
-        public MultiLanguageResolverDelegate MultiLanguageResolver { get; set; }
+        public Func<string, ImportResolverDelegate> MultiLanguageResolver { get; set; }
 
         /// <summary>
         /// Method to generate text from given template and data.
@@ -85,20 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>generated text.</returns>
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
-            if (MultiLanguageResolver != null)
-            {
-                var local = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
-                this.engine = new TemplateEngine().AddText(LGText, Id, MultiLanguageResolver(local));
-            }
-            else if (!string.IsNullOrWhiteSpace(LGText) || !string.IsNullOrWhiteSpace(Id))
-            {
-                // do not re write to ??=, because low version do not support (such as linux)
-                this.engine = this.engine ?? new TemplateEngine().AddText(LGText, Id);
-            }
-            else
-            {
-                this.engine = this.engine ?? new TemplateEngine();
-            }
+            engine = InitTemplateEngine(turnContext);
 
             try
             {
@@ -113,6 +95,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                 throw;
             }
+        }
+
+        private TemplateEngine InitTemplateEngine(ITurnContext turnContext)
+        {
+            if (MultiLanguageResolver != null)
+            {
+                var local = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
+                engine = new TemplateEngine().AddText(LGText, Id, MultiLanguageResolver(local));
+            }
+            else if (!string.IsNullOrWhiteSpace(LGText) || !string.IsNullOrWhiteSpace(Id))
+            {
+                engine = new TemplateEngine().AddText(LGText, Id);
+            }
+            else
+            {
+                // Do not rewrite to ??= (C# 8 feature). It will break in linux/mac
+                engine = engine ?? new TemplateEngine();
+            }
+
+            return engine;
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
     {
         private static ResourceExplorer resourceExplorer;
 
-        private readonly MultiLanguageResolverDelegate resourceResolver = LanguageGeneratorManager.ResourceResolver(resourceExplorer);
+        private readonly Func<string, ImportResolverDelegate> resourceResolver = LanguageGeneratorManager.GetMultiLanguageResolverDelegate(resourceExplorer);
 
         public TestContext TestContext { get; set; }
 
