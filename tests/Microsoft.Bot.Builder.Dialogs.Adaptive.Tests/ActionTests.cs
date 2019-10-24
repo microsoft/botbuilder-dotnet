@@ -1437,88 +1437,108 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task InputDialog_ActivityProcessed()
         {
-            var rootDialog = new AdaptiveDialog("root")
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                AutoEndDialog = true,
                 Recognizer = new RegexRecognizer()
                 {
                     Intents = new List<IntentPattern>()
                     {
-                        new IntentPattern() { Intent = "x", Pattern = "x" },
-                        new IntentPattern() { Intent = "y", Pattern = "y" },
-                        new IntentPattern() { Intent = "z", Pattern = "z" },
+                        new IntentPattern()
+                        {
+                            Intent = "start",
+                            Pattern = "start"
+                        },
+                        new IntentPattern()
+                        {
+                            Intent = "cancel",
+                            Pattern = "cancel"
+                        },
+                        new IntentPattern() 
+                        {
+                            Intent = "set_name",
+                            Pattern = "set name"
+                        }
                     }
                 },
                 Triggers = new List<OnCondition>()
                 {
-                    new OnIntent()
+                    new OnIntent() 
                     {
-                        Intent = "x",
-                        Actions = new List<Dialog>()
+                        Intent = "set_name",
+                        Actions = new List<Dialog>() 
                         {
-                            new TextInput()
+                            new TextInput() 
                             {
-                                Property = "$name",
-                                Prompt = new ActivityTemplate("What name?")
+                                Prompt = new ActivityTemplate("\\[set name]::What is your name?"),
+                                Property = "$userName",
+                                AlwaysPrompt = true
                             },
-                            new SendActivity() { Activity = new ActivityTemplate("{$name}") },
-                            new SendActivity() { Activity = new ActivityTemplate("{turn.activityProcessed}") }
+                            new SendActivity() 
+                            {
+                                Activity = new ActivityTemplate("\\[set name]::I have {$userName} as your name")
+                            }
                         }
                     },
                     new OnIntent()
                     {
-                        Intent = "y",
+                        Intent = "start",
                         Actions = new List<Dialog>()
                         {
-                            new NumberInput()
+                            new TextInput() 
                             {
-                                Property = "$age",
-                                Prompt = new ActivityTemplate("What age?")
+                                Prompt = new ActivityTemplate("\\[start]::What is your name?"),
+                                Property = "$userName",
+                                AllowInterruptions = "false"
                             },
-                            new SendActivity() { Activity = new ActivityTemplate("{$age}") },
-                            new SendActivity() { Activity = new ActivityTemplate("{turn.activityProcessed}") }
+                            new SendActivity() 
+                            {
+                                Activity = new ActivityTemplate("\\[start]::I have {$userName} as your name")
+                            },
+                            new DateTimeInput() 
+                            {
+                                Prompt = new ActivityTemplate("Give me date 1"),
+                                UnrecognizedPrompt = new ActivityTemplate("Unrecognized, give me date 1"),
+                                Property = "$fromDate",
+                                AllowInterruptions = "true"
+                            },
+                            new SendActivity() 
+                            {
+                                Activity = new ActivityTemplate("\\[start]:: I have {$fromDate} as date 1")
+                            },
+                            new DateTimeInput() 
+                            {
+                                Prompt = new ActivityTemplate("Give me date 2"),
+                                Property = "$toDate",
+                                AllowInterruptions = "true"
+                            },
+                            new SendActivity() 
+                            {
+                                Activity = new ActivityTemplate("\\[start]:: I have {$toDate} as date 2")
+                            }
                         }
                     },
                     new OnIntent()
                     {
-                        Intent = "z",
+                        Intent = "cancel",
                         Actions = new List<Dialog>()
                         {
-                            new ConfirmInput()
-                            {
-                                Property = "$confirm",
-                                Prompt = new ActivityTemplate("What confirm?")
-                            },
-                            new SendActivity() { Activity = new ActivityTemplate("{$confirm}") },
-                            new SendActivity() { Activity = new ActivityTemplate("{turn.activityProcessed}") }
-                        }
-                    },
-                    new OnUnknownIntent()
-                    {
-                        Actions = new List<Dialog>()
-                        {
-                            new SendActivity() { Activity = new ActivityTemplate("unknown") }
+                            new SendActivity("{WelcomeUser()}")
                         }
                     }
                 }
             };
 
             await CreateFlow(rootDialog)
-                .Send("x")
-                    .AssertReply("What name?")
-                .Send("joe")
-                    .AssertReply("joe")
-                    .AssertReply("True")
-                .Send("y")
-                    .AssertReply("What age?")
-                .Send("13")
-                    .AssertReply("13")
-                    .AssertReply("True")
-                .Send("z")
-                    .AssertReply("What confirm? (1) Yes or (2) No")
-                .Send("1")
-                    .AssertReply("True")
-                    .AssertReply("True")
+                .Send("start")
+                    .AssertReply("[start]::What is your name?")
+                .Send("luhan")
+                    .AssertReply("[start]::I have luhan as your name")
+                    .AssertReply("Give me date 1")
+                .Send("set name")
+                    .AssertReply("[set name]::What is your name?")
+                .Send("qiong")
+                    .AssertReply("[set name]::I have qiong as your name")
+                    .AssertReply("Give me date 1")
                 .StartTestAsync();
         }
 
