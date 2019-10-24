@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 #pragma warning disable SA1402 // File may only contain a single type
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -21,31 +23,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     {
         public TestContext TestContext { get; set; }
 
-        [TestMethod]
-        public void SimpleMemoryScopesTest()
+        public TestFlow CreateDialogContext(Func<DialogContext, CancellationToken, Task> handler)
         {
-            var dc = new DialogContext(new DialogSet(), new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            var dsm = new DialogStateManager(dc);
-
-            foreach (var memoryScope in DialogStateManager.MemoryScopes.Where(ms => !(ms is ThisMemoryScope || ms is DialogMemoryScope || ms is ClassMemoryScope)))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            adapter
+                .UseStorage(new MemoryStorage())
+                .UseState(new UserState(new MemoryStorage()), new ConversationState(new MemoryStorage()));
+            DialogManager dm = new DialogManager(new LamdaDialog(handler));
+            return new TestFlow(adapter, (context, ct) =>
             {
-                var memory = memoryScope.GetMemory(dc);
-                Assert.IsNotNull(memory, "should get memory without any set");
-                ObjectPath.SetPathValue(memory, "test", 15);
-                memory = memoryScope.GetMemory(dc);
-                Assert.AreEqual(15, ObjectPath.GetPathValue<int>(memory, "test"), "Should roundtrip memory");
-                ObjectPath.SetPathValue(memory, "test", 25);
-                memory = memoryScope.GetMemory(dc);
-                Assert.AreEqual(25, ObjectPath.GetPathValue<int>(memory, "test"), "Should roundtrip memory2");
-                memory = memoryScope.GetMemory(dc);
-                ObjectPath.SetPathValue(memory, "source", "destination");
-                ObjectPath.SetPathValue(memory, "{source}", 24);
-                Assert.AreEqual(24, ObjectPath.GetPathValue<int>(memory, "{source}"), "Roundtrip computed path");
-                ObjectPath.RemovePathValue(memory, "{source}");
-                Assert.AreEqual(false, ObjectPath.TryGetPathValue<int>(memory, "{source}", out var _), "Removed computed path");
-                ObjectPath.RemovePathValue(memory, "source");
-                Assert.AreEqual(false, ObjectPath.TryGetPathValue<int>(memory, "{source}", out var _), "No computed path");
-            }
+                return dm.OnTurnAsync(context, ct);
+            }).SendConversationUpdate();
+        }
+
+        [TestMethod]
+        public async Task SimpleMemoryScopesTest()
+        {
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                foreach (var memoryScope in DialogStateManager.MemoryScopes.Where(ms => !(ms is ThisMemoryScope || ms is DialogMemoryScope || ms is ClassMemoryScope)))
+                {
+                    var memory = memoryScope.GetMemory(dc);
+                    Assert.IsNotNull(memory, "should get memory without any set");
+                    ObjectPath.SetPathValue(memory, "test", 15);
+                    memory = memoryScope.GetMemory(dc);
+                    Assert.AreEqual(15, ObjectPath.GetPathValue<int>(memory, "test"), "Should roundtrip memory");
+                    ObjectPath.SetPathValue(memory, "test", 25);
+                    memory = memoryScope.GetMemory(dc);
+                    Assert.AreEqual(25, ObjectPath.GetPathValue<int>(memory, "test"), "Should roundtrip memory2");
+                    memory = memoryScope.GetMemory(dc);
+                    ObjectPath.SetPathValue(memory, "source", "destination");
+                    ObjectPath.SetPathValue(memory, "{source}", 24);
+                    Assert.AreEqual(24, ObjectPath.GetPathValue<int>(memory, "{source}"), "Roundtrip computed path");
+                    ObjectPath.RemovePathValue(memory, "{source}");
+                    Assert.AreEqual(false, ObjectPath.TryGetPathValue<int>(memory, "{source}", out var _), "Removed computed path");
+                    ObjectPath.RemovePathValue(memory, "source");
+                    Assert.AreEqual(false, ObjectPath.TryGetPathValue<int>(memory, "{source}", out var _), "No computed path");
+                }
+            }).StartTestAsync();
         }
 
         [TestMethod]

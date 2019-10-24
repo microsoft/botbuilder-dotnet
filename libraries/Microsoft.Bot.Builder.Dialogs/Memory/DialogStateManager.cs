@@ -56,9 +56,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// </value>
         public static List<MemoryScope> MemoryScopes { get; } = new List<MemoryScope>
         {
-            new MemoryScope(ScopePath.USER),
-            new MemoryScope(ScopePath.CONVERSATION),
-            new MemoryScope(ScopePath.TURN),
+            new UserMemoryScope(),
+            new ConversationMemoryScope(),
+            new TurnMemoryScope(),
             new SettingsMemoryScope(),
             new DialogMemoryScope(),
             new ClassMemoryScope(),

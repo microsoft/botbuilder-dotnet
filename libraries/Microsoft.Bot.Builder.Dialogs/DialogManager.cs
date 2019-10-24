@@ -81,8 +81,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             // create property accessors
             var lastAccessProperty = conversationState.CreateProperty<DateTime>(LASTACCESS);
             var dialogsProperty = conversationState.CreateProperty<DialogState>(DIALOGS);
-            var userScope = userState.CreateProperty<object>($"{ScopePath.USER}{nameof(MemoryScope)}");
-            var conversationScope = conversationState.CreateProperty<object>($"{ScopePath.CONVERSATION}{nameof(MemoryScope)}");
+            var userScope = userState.CreateProperty<object>($"{ScopePath.USER}{nameof(TurnMemoryScope)}");
+            var conversationScope = conversationState.CreateProperty<object>($"{ScopePath.CONVERSATION}{nameof(TurnMemoryScope)}");
 
             var lastAccess = await lastAccessProperty.GetAsync(context, () => DateTime.UtcNow, cancellationToken: cancellationToken).ConfigureAwait(false);
 
@@ -99,11 +99,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // get dialog stack 
             DialogState dialogState = await dialogsProperty.GetAsync(context, () => new DialogState(), cancellationToken: cancellationToken).ConfigureAwait(false);
-
-            var namedScopes = MemoryScope.GetScopesMemory(context);
-            namedScopes[ScopePath.USER] = await userScope.GetAsync(context, () => new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase), cancellationToken: cancellationToken).ConfigureAwait(false);
-            namedScopes[ScopePath.CONVERSATION] = await conversationScope.GetAsync(context, () => new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase), cancellationToken: cancellationToken).ConfigureAwait(false);
-            namedScopes[ScopePath.TURN] = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
 
             // Create DialogContext
             var dc = new DialogContext(this.dialogSet, context, dialogState);

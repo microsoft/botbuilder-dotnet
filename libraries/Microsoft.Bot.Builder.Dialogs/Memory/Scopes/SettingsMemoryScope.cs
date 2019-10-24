@@ -27,18 +27,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            var namedScopes = GetScopesMemory(dc.Context);
-            if (!namedScopes.TryGetValue(ScopePath.SETTINGS, out object settings))
+            if (!dc.Context.TurnState.TryGetValue(this.Name, out object settings))
             {
                 var configuration = dc.Context.TurnState.Get<IConfiguration>();
                 if (configuration != null)
                 {
                     settings = LoadSettings(configuration);
-                    namedScopes[ScopePath.SETTINGS] = settings;
+                    dc.Context.TurnState[this.Name] = settings;
                 }
             }
 
             return settings ?? emptySettings;
+        }
+
+        public override void SetMemory(DialogContext dc, object memory)
+        {
+            throw new NotSupportedException("You cannot set the memory for a readonly memory scope");
         }
 
         /// <summary>

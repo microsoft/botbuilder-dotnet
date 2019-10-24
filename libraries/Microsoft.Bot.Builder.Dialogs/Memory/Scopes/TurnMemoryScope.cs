@@ -1,0 +1,66 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
+{
+    /// <summary>
+    /// TurnMemoryScope represents memory scoped to the current turn.
+    /// </summary>
+    public class TurnMemoryScope : MemoryScope
+    {
+        public TurnMemoryScope()
+            : base(ScopePath.TURN, false)
+        {
+        }
+
+        /// <summary>
+        /// Get the backing memory for this scope.
+        /// </summary>
+        /// <param name="dc">dc.</param>
+        /// <returns>memory for the scope.</returns>
+        public override object GetMemory(DialogContext dc)
+        {
+            if (dc == null)
+            {
+                throw new ArgumentNullException(nameof(dc));
+            }
+
+            if (!dc.Context.TurnState.TryGetValue(this.Name, out object memory))
+            {
+                memory = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+                dc.Context.TurnState[this.Name] = memory;
+            }
+
+            return memory;
+        }
+
+        /// <summary>
+        /// Changes the backing object for the memory scope.
+        /// </summary>
+        /// <param name="dc">dc.</param>
+        /// <param name="memory">memory.</param>
+        public override void SetMemory(DialogContext dc, object memory)
+        {
+            if (this.IsReadOnly)
+            {
+                throw new NotSupportedException("You cannot set the memory for a readonly memory scope");
+            }
+
+            if (dc == null)
+            {
+                throw new ArgumentNullException(nameof(dc));
+            }
+
+            if (memory == null)
+            {
+                throw new ArgumentNullException(nameof(memory));
+            }
+
+            dc.Context.TurnState[this.Name] = memory;
+        }
+    }
+}
