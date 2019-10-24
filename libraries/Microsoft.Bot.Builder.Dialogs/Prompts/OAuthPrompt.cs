@@ -360,11 +360,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                         var parts = JsonConvert.DeserializeObject<string[]>(Encoding.UTF8.GetString(Convert.FromBase64String(turnContext.Activity.Conversation.Id)));
                         var conversationId = parts[0];
 
-                        signInLink = $"{signInLink}&&&{conversationId}";
                         if (turnContext.Activity.ChannelId == Channels.Emulator)
                         {
                             // Emulator links need to be prefixed with oathlink.
-                            signInLink = $"oauthlink://{signInLink}";
+                            signInLink = $"oauthlink://{signInLink}&&&{conversationId}";
                         }
 
                         cardActionType = ActionTypes.OpenUrl;
