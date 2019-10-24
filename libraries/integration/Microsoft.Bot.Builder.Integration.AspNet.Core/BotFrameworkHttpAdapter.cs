@@ -140,7 +140,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
                 var requestHandler = new StreamingRequestHandler(bot, this, socket, _logger);
-
                 if (_requestHandlers == null)
                 {
                     _requestHandlers = new List<StreamingRequestHandler>();
@@ -187,6 +186,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         return false;
                     }
 
+                    // Add ServiceURL to the cache of trusted sites in order to allow token refreshing.
+                    AppCredentials.TrustServiceUrl(claimsIdentity.FindFirst(AuthenticationConstants.ServiceUrlClaim).Value);
                     _claimsIdentity = claimsIdentity;
                 }
 

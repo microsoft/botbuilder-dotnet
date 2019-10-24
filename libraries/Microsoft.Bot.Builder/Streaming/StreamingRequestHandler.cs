@@ -2,16 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.WebSockets;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
@@ -28,8 +25,6 @@ namespace Microsoft.Bot.Builder.Streaming
 {
     public class StreamingRequestHandler : RequestHandler
     {
-        private const string _reconnectPath = "api/reconnect";
-
         private readonly IBot _bot;
         private readonly ILogger _logger;
         private readonly IStreamingActivityProcessor _activityProcessor;
@@ -51,14 +46,13 @@ namespace Microsoft.Bot.Builder.Streaming
         {
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
-
-            _logger = logger ?? NullLogger.Instance;
-
+            
             if (socket == null)
             {
                 throw new ArgumentNullException(nameof(socket));
             }
 
+            _logger = logger ?? NullLogger.Instance;
             _conversations = new ConcurrentDictionary<string, DateTime>();
             _userAgent = GetUserAgent();
             _server = new WebSocketServer(socket, this);
@@ -78,7 +72,6 @@ namespace Microsoft.Bot.Builder.Streaming
         {
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
-
             _logger = logger ?? NullLogger.Instance;
 
             if (string.IsNullOrWhiteSpace(pipeName))
@@ -153,9 +146,9 @@ namespace Microsoft.Bot.Builder.Streaming
             var response = new StreamingResponse();
 
             // We accept all POSTs regardless of path, but anything else requires special treatment.
-            if (!string.Equals(request.Verb, StreamingRequest.POST, StringComparison.InvariantCultureIgnoreCase))
+            if (!string.Equals(request?.Verb, StreamingRequest.POST, StringComparison.InvariantCultureIgnoreCase))
             {
-                return HandleCustomPaths(request);
+                return HandleCustomPaths(request, response);
             }
 
             // Convert the StreamingRequest into an activity the adapter can understand.
@@ -276,7 +269,7 @@ namespace Microsoft.Bot.Builder.Streaming
             {
                 if (!_serverIsConnected)
                 {
-                    await ReconnectAsync().ConfigureAwait(false);
+                    throw new Exception("Error while attempting to send: Streaming transport is disconnected.");
                 }
 
                 var serverResponse = await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -300,13 +293,13 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <param name="request">The request to send.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>A task that resolves to a <see cref="ReceiveResponse"/>.</returns>
-        public async Task<ReceiveResponse> SendStreamingRequestAsync(StreamingRequest request, CancellationToken cancellationToken)
+        public async Task<ReceiveResponse> SendStreamingRequestAsync(StreamingRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
                 if (!_serverIsConnected)
                 {
-                    await ReconnectAsync().ConfigureAwait(false);
+                    throw new Exception("Error while attempting to send: Streaming transport is disconnected.");
                 }
 
                 var serverResponse = await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -369,36 +362,14 @@ namespace Microsoft.Bot.Builder.Streaming
             _serverIsConnected = false;
         }
 
-        private async Task ReconnectAsync(IDictionary<string, string> requestHeaders = null)
-        {
-            // TODO: Need to get authentication headers from the httpClient on the adapter.
-            var clientWebSocket = new ClientWebSocket();
-            if (requestHeaders != null)
-            {
-                foreach (var key in requestHeaders.Keys)
-                {
-                    clientWebSocket.Options.SetRequestHeader(key, requestHeaders[key]);
-                }
-            }
-
-            // The ServiceUrl of a streaming connection follows the pattern "urn:[ChannelName]:[Protocol]:[Host]".
-            var uri = ServiceUrl.Split(':');
-            var protocol = uri[uri.Length - 2];
-            var host = uri[uri.Length - 1];
-            await clientWebSocket.ConnectAsync(new Uri(protocol + host + _reconnectPath), CancellationToken.None).ConfigureAwait(false);
-            _server = new WebSocketServer(clientWebSocket, this);
-        }
-
         /// <summary>
         /// Checks the validity of the request and attempts to map it the correct custom endpoint,
         /// then generates and returns a response if appropriate.
         /// </summary>
         /// <param name="request">A ReceiveRequest from the connected channel.</param>
         /// <returns>A response if the given request matches against a defined path.</returns>
-        private StreamingResponse HandleCustomPaths(ReceiveRequest request)
+        private StreamingResponse HandleCustomPaths(ReceiveRequest request, StreamingResponse response)
         {
-            var response = new StreamingResponse();
-
             if (request == null || string.IsNullOrEmpty(request.Verb) || string.IsNullOrEmpty(request.Path))
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
