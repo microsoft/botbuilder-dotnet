@@ -41,20 +41,27 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task CreateConversastionOverloadProperlySetsTenantId()
+        public async Task TenantIdShouldNotFailIfNoChannelData()
+        {
+            var activity = await ProcessActivity(Channels.Directline, null, null);
+            Assert.IsNull(activity.Conversation.TenantId);
+        }
+
+        [TestMethod]
+        public async Task CreateConversationOverloadProperlySetsTenantId()
         {
             // Arrange
-            const string ActivityIdName = "ActivityId";
-            const string ActivityIdValue = "SendActivityId";
-            const string ConversationIdName = "Id";
-            const string ConversationIdValue = "NewConversationId";
-            const string TenantIdValue = "theTenantId";
-            const string EventActivityName = "CreateConversation";
+            const string activityIdName = "ActivityId";
+            const string activityIdValue = "SendActivityId";
+            const string conversationIdName = "Id";
+            const string conversationIdValue = "NewConversationId";
+            const string tenantIdValue = "theTenantId";
+            const string eventActivityName = "CreateConversation";
 
             Func<Task<HttpResponseMessage>> createResponseMessage = () =>
             {
                 var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
-                response.Content = new StringContent(new JObject { { ActivityIdName, ActivityIdValue }, { ConversationIdName, ConversationIdValue } }.ToString());
+                response.Content = new StringContent(new JObject { { activityIdName, activityIdValue }, { conversationIdName, conversationIdValue } }.ToString());
                 return Task.FromResult(response);
             };
 
@@ -75,10 +82,10 @@ namespace Microsoft.Bot.Builder.Tests
                 ChannelData = new JObject
                 {
                     ["tenant"] = new JObject
-                    { ["id"] = TenantIdValue },
+                    { ["id"] = tenantIdValue },
                 },
                 Conversation = new ConversationAccount
-                { TenantId = TenantIdValue },
+                { TenantId = tenantIdValue },
             };
 
             var parameters = new ConversationParameters()
@@ -103,14 +110,14 @@ namespace Microsoft.Bot.Builder.Tests
             await adapter.CreateConversationAsync(activity.ChannelId, activity.ServiceUrl, credentials, parameters, UpdateParameters, reference, new CancellationToken());
 
             // Assert - all values set correctly
-            Assert.AreEqual(TenantIdValue, JObject.FromObject(newActivity.ChannelData)["tenant"]["tenantId"]);
-            Assert.AreEqual(ActivityIdValue, newActivity.Id);
-            Assert.AreEqual(ConversationIdValue, newActivity.Conversation.Id);
-            Assert.AreEqual(TenantIdValue, newActivity.Conversation.TenantId);
-            Assert.AreEqual(EventActivityName, newActivity.Name);
+            Assert.AreEqual(tenantIdValue, JObject.FromObject(newActivity.ChannelData)["tenant"]["tenantId"]);
+            Assert.AreEqual(activityIdValue, newActivity.Id);
+            Assert.AreEqual(conversationIdValue, newActivity.Conversation.Id);
+            Assert.AreEqual(tenantIdValue, newActivity.Conversation.TenantId);
+            Assert.AreEqual(eventActivityName, newActivity.Name);
         }
 
-        private static async Task<IActivity> ProcessActivity(string channelId, string channelDataTenantId, string conversationTenantId)
+        private static async Task<IActivity> ProcessActivity(string channelId, object channelData, string conversationTenantId)
         {
             IActivity activity = null;
             var mockClaims = new Mock<ClaimsIdentity>();
@@ -123,13 +130,9 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     ChannelId = channelId,
                     ServiceUrl = "https://smba.trafficmanager.net/amer/",
-                    ChannelData = new JObject
-                    {
-                        ["tenant"] = new JObject
-                        { ["id"] = channelDataTenantId },
-                    },
+                    ChannelData = channelData,
                     Conversation = new ConversationAccount
-                    { TenantId = conversationTenantId },
+                        { TenantId = conversationTenantId },
                 },
                 (context, token) =>
                 {
@@ -138,6 +141,17 @@ namespace Microsoft.Bot.Builder.Tests
                 },
                 CancellationToken.None);
             return activity;
+        }
+
+        private static async Task<IActivity> ProcessActivity(string channelId, string channelDataTenantId, string conversationTenantId)
+        {
+            var channelData = new JObject
+            {
+                ["tenant"] = new JObject
+                    { ["id"] = channelDataTenantId },
+            };
+
+            return await ProcessActivity(channelId, channelData, conversationTenantId);
         }
     }
 }
