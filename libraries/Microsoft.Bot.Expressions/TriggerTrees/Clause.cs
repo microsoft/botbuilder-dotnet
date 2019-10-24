@@ -1,4 +1,7 @@
-﻿namespace Microsoft.Bot.Expressions.TriggerTrees
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace Microsoft.Bot.Expressions.TriggerTrees
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -7,10 +10,6 @@
 
     public class Clause : Expression
     {
-#pragma warning disable SA1401 // Fields should be private
-        internal bool Subsumed = false;
-#pragma warning restore SA1401 // Fields should be private
-
         private Dictionary<string, string> anyBindings = new Dictionary<string, string>();
 
         internal Clause()
@@ -38,6 +37,8 @@
         }
 
         public Dictionary<string, string> AnyBindings { get => anyBindings; set => anyBindings = value; }
+
+        internal bool Subsumed { get; set; } = false;
 
         public override string ToString()
         {

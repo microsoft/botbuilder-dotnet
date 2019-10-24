@@ -1,8 +1,11 @@
-﻿#pragma warning disable SA1402
+﻿#pragma warning disable SA1201 // Elements should appear in the correct order
+#pragma warning disable SA1515 // Single-line comment should be preceded by blank line
+#pragma warning disable SA1402
 using System;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
@@ -26,7 +29,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
     {
         private static ResourceExplorer resourceExplorer;
 
-        private readonly ImportResolverDelegate resourceResolver = LanguageGeneratorManager.ResourceResolver(resourceExplorer);
+        private readonly Func<string, ImportResolverDelegate> resourceResolver = LanguageGeneratorManager.MultiLanguageResolverDelegate(resourceExplorer);
 
         public TestContext TestContext { get; set; }
 
@@ -61,6 +64,28 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var generator = languageGeneratorManager.LanguageGenerators["import.lg"];
             var result = await generator.Generate(GetTurnContext(string.Empty), "[test2]", null);
             Assert.AreEqual("default2", result);
+        }
+
+        [TestMethod]
+        public async Task TestMultiLangImport()
+        {
+            var languageGeneratorManager = new LanguageGeneratorManager(resourceExplorer);
+            var generator = languageGeneratorManager.LanguageGenerators["import.lg"];
+
+            var result = await generator.Generate(GetTurnContext(string.Empty), "[test3]", null);
+            Assert.AreEqual("default3", result);
+
+            result = await generator.Generate(GetTurnContext(locale: "en-us"), "[test3]", null);
+            Assert.AreEqual("default3-en", result);
+
+            result = await generator.Generate(GetTurnContext(locale: "fr"), "[test3]", null);
+            Assert.AreEqual("default3-fr", result);
+
+            result = await generator.Generate(GetTurnContext(locale: "foo"), "[test3]", null);
+            Assert.AreEqual("default3", result);
+
+            result = await generator.Generate(GetTurnContext(locale: "zh-cn"), "[test3]", null);
+            Assert.AreEqual("default3-cn", result);
         }
 
         [TestMethod]
@@ -125,8 +150,33 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             .StartTestAsync();
         }
 
+        internal class AssertLGDialog : Dialog
+        {
+            public AssertLGDialog()
+            {
+            }
+
+            public string ResourceId { get; set; }
+
+            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            {
+                var generator = (ResourceMultiLanguageGenerator)dc.Context.TurnState.Get<ILanguageGenerator>();
+                Assert.AreEqual(ResourceId, generator.ResourceId);
+                await dc.Context.SendActivityAsync(generator.ResourceId);
+                return new DialogTurnResult(DialogTurnStatus.Waiting);
+            }
+
+            public async override Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
+            {
+                var generator = (ResourceMultiLanguageGenerator)dc.Context.TurnState.Get<ILanguageGenerator>();
+                Assert.AreEqual(ResourceId, generator.ResourceId);
+                await dc.Context.SendActivityAsync(generator.ResourceId);
+                return await dc.EndDialogAsync();
+            }
+        }
+
         [TestMethod]
-        public async Task TestDialogInjection()
+        public async Task TestLGScopedAccess()
         {
             var dialog = new AdaptiveDialog()
             {
@@ -137,19 +187,48 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     {
                         Actions = new List<Dialog>()
                         {
-                            new SendActivity("[test]")
+                            new AssertLGDialog() { ResourceId = "subDialog.lg" },
+                            new BeginDialog()
+                            {
+                                Dialog = new AdaptiveDialog()
+                                {
+                                    Generator = new ResourceMultiLanguageGenerator("test.lg"),
+                                    Triggers = new List<OnCondition>()
+                                    {
+                                        new OnBeginDialog()
+                                        {
+                                            Actions = new List<Dialog>()
+                                            {
+                                                new AssertLGDialog() { ResourceId = "test.lg" },
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            new AssertLGDialog() { ResourceId = "subDialog.lg" },
                         }
                     }
                 }
             };
-            DialogManager dm = new DialogManager(dialog);
 
+            DialogManager dm = new DialogManager(dialog);
             await CreateFlow("en-us", async (turnContext, cancellationToken) =>
             {
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             })
-            .Send("hello")
-                .AssertReply("overriden")
+            .Send("test")
+                // BeginDialog() outer dialog should be subDialog.lg
+                .AssertReply("subDialog.lg")
+            .Send("test")
+                // ContinueDialog() outer dialog should be subDialog.lg
+                .AssertReply("subDialog.lg")
+                // BeginDialog() on inner dialog should be test.lg
+                .AssertReply("test.lg")
+            .Send("test")
+                // ContinueDialog() on inner dialog should be test.lg
+                .AssertReply("test.lg")
+            // ResumeDialog() on outer dialog should be subDialog.lg
+            .AssertReply("subDialog.lg")
             .StartTestAsync();
         }
 

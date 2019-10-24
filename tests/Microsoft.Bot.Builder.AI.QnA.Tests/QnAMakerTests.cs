@@ -1562,7 +1562,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             public IEnumerable<Dialog> GetDependencies()
             {
-                return _dialogs.GetDialogs();
+                return Dialogs.GetDialogs();
             }
 
             public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)

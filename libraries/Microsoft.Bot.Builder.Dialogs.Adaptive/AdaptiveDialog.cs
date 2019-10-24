@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <value>
         /// The dialogs which make up the AdaptiveDialog.
         /// </value>
-        public DialogSet Dialogs => _dialogs;
+        public DialogSet Dialogs => base.Dialogs;
 
         public override IBotTelemetryClient TelemetryClient
         {
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             set
             {
                 var client = value ?? new NullBotTelemetryClient();
-                _dialogs.TelemetryClient = client;
+                base.Dialogs.TelemetryClient = client;
                 base.TelemetryClient = client;
             }
         }
@@ -122,6 +122,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             EnsureDependenciesInstalled();
+
+            SetLocalGenerator(dc.Context);
 
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
             activeDialogState[AdaptiveKey] = new AdaptiveDialogState();
@@ -148,12 +150,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             EnsureDependenciesInstalled();
 
+            SetLocalGenerator(dc.Context);
+
             // Continue step execution
             return await ContinueActionsAsync(dc, null, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
         {
+            SetLocalGenerator(dc.Context);
+
             if (result is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
@@ -169,6 +175,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return EndOfTurn;
         }
 
+        public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
+        {
+            RestoreParentGenerator(turnContext);
+            return base.EndDialogAsync(turnContext, instance, reason, cancellationToken);
+        }
+
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default)
         {
             // Forward to current sequence step
@@ -178,7 +190,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 // We need to mockup a DialogContext so that we can call RepromptDialog
                 // for the active step
-                var stepDc = new DialogContext(_dialogs, turnContext, state.Actions[0]);
+                var stepDc = new DialogContext(base.Dialogs, turnContext, state.Actions[0]);
                 await stepDc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
             }
         }
@@ -196,7 +208,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (state.Actions != null && state.Actions.Any())
             {
-                var ctx = new SequenceContext(_dialogs, dc, state.Actions.First(), state.Actions, changeKey, _dialogs);
+                var ctx = new SequenceContext(base.Dialogs, dc, state.Actions.First(), state.Actions, changeKey, base.Dialogs);
                 ctx.Parent = dc;
                 return ctx;
             }
@@ -385,11 +397,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var sequenceContext = ToSequenceContext(dc);
             await sequenceContext.ApplyChangesAsync(cancellationToken).ConfigureAwait(false);
 
-            if (Generator != null)
-            {
-                dc.Context.TurnState.Set(Generator);
-            }
-
             // Get a unique instance ID for the current stack entry.
             // We need to do this because things like cancellation can cause us to be removed
             // from the stack and we want to detect this so we can stop processing actions.
@@ -470,6 +477,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 if (ShouldEnd(sequenceContext))
                 {
+                    RestoreParentGenerator(sequenceContext.Context);
                     sequenceContext.State.TryGetValue<object>(DefaultResultProperty, out var result);
                     return await sequenceContext.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
                 }
@@ -614,9 +622,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 state.Actions = new List<ActionState>();
             }
 
-            var sequenceContext = new SequenceContext(dc.Dialogs, dc, new DialogState { DialogStack = dc.Stack }, state.Actions, changeKey, _dialogs);
+            var sequenceContext = new SequenceContext(dc.Dialogs, dc, new DialogState { DialogStack = dc.Stack }, state.Actions, changeKey, base.Dialogs);
             sequenceContext.Parent = dc.Parent;
             return sequenceContext;
+        }
+
+        private string GetGeneratorKey()
+        {
+            return $"{this.OnComputeId()}_PreviousLanguageGenerator";
+        }
+
+        private void SetLocalGenerator(ITurnContext context)
+        {
+            if (Generator != null)
+            {
+                var key = GetGeneratorKey();
+                var previousGenerator = context.TurnState.Get<ILanguageGenerator>(key);
+                if (previousGenerator == null)
+                {
+                    previousGenerator = context.TurnState.Get<ILanguageGenerator>();
+                    if (previousGenerator != null)
+                    {
+                        context.TurnState.Add(GetGeneratorKey(), previousGenerator);
+                    }
+                }
+
+                context.TurnState.Set<ILanguageGenerator>(Generator);
+            }
+        }
+
+        private void RestoreParentGenerator(ITurnContext context)
+        {
+            var key = GetGeneratorKey();
+            var previousGenerator = context.TurnState.Get<ILanguageGenerator>(key);
+            if (previousGenerator != null)
+            {
+                context.TurnState.Set(previousGenerator);
+                context.TurnState.Remove(key);
+            }
         }
     }
 }

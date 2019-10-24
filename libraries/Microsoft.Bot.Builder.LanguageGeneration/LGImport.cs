@@ -1,4 +1,7 @@
-﻿namespace Microsoft.Bot.Builder.LanguageGeneration
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
     /// Here is a data model that can easily understanded and used as the LG import definition in lg files.

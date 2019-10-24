@@ -159,8 +159,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             // Assert
 
             // Note this is a special case testing a little more than just the public interface.
-            var credentialProviderField = typeof(BotFrameworkAdapter).GetField("_credentialProvider", BindingFlags.NonPublic | BindingFlags.GetField | BindingFlags.Instance);
-            var channelProviderField = typeof(BotFrameworkAdapter).GetField("_channelProvider", BindingFlags.NonPublic | BindingFlags.GetField | BindingFlags.Instance);
+            var credentialProviderField = typeof(BotFrameworkAdapter).GetProperty("CredentialProvider", BindingFlags.NonPublic | BindingFlags.Instance);
+            var channelProviderField = typeof(BotFrameworkAdapter).GetProperty("ChannelProvider", BindingFlags.NonPublic | BindingFlags.Instance);
 
             var credentialProvider = (SimpleCredentialProvider)credentialProviderField.GetValue(adapter);
             var channelProvider = (SimpleChannelProvider)channelProviderField.GetValue(adapter);

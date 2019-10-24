@@ -1,4 +1,7 @@
-﻿namespace Microsoft.Bot.Builder.LanguageGeneration
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
     /// Represents a line and character position, such as

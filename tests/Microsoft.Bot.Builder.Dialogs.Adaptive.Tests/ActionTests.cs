@@ -1434,6 +1434,114 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task InputDialog_ActivityProcessed()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new List<IntentPattern>()
+                    {
+                        new IntentPattern()
+                        {
+                            Intent = "start",
+                            Pattern = "start"
+                        },
+                        new IntentPattern()
+                        {
+                            Intent = "cancel",
+                            Pattern = "cancel"
+                        },
+                        new IntentPattern() 
+                        {
+                            Intent = "set_name",
+                            Pattern = "set name"
+                        }
+                    }
+                },
+                Triggers = new List<OnCondition>()
+                {
+                    new OnIntent() 
+                    {
+                        Intent = "set_name",
+                        Actions = new List<Dialog>() 
+                        {
+                            new TextInput() 
+                            {
+                                Prompt = new ActivityTemplate("\\[set name]::What is your name?"),
+                                Property = "$userName",
+                                AlwaysPrompt = true
+                            },
+                            new SendActivity() 
+                            {
+                                Activity = new ActivityTemplate("\\[set name]::I have {$userName} as your name")
+                            }
+                        }
+                    },
+                    new OnIntent()
+                    {
+                        Intent = "start",
+                        Actions = new List<Dialog>()
+                        {
+                            new TextInput() 
+                            {
+                                Prompt = new ActivityTemplate("\\[start]::What is your name?"),
+                                Property = "$userName",
+                                AllowInterruptions = "false"
+                            },
+                            new SendActivity() 
+                            {
+                                Activity = new ActivityTemplate("\\[start]::I have {$userName} as your name")
+                            },
+                            new DateTimeInput() 
+                            {
+                                Prompt = new ActivityTemplate("Give me date 1"),
+                                UnrecognizedPrompt = new ActivityTemplate("Unrecognized, give me date 1"),
+                                Property = "$fromDate",
+                                AllowInterruptions = "true"
+                            },
+                            new SendActivity() 
+                            {
+                                Activity = new ActivityTemplate("\\[start]:: I have {$fromDate} as date 1")
+                            },
+                            new DateTimeInput() 
+                            {
+                                Prompt = new ActivityTemplate("Give me date 2"),
+                                Property = "$toDate",
+                                AllowInterruptions = "true"
+                            },
+                            new SendActivity() 
+                            {
+                                Activity = new ActivityTemplate("\\[start]:: I have {$toDate} as date 2")
+                            }
+                        }
+                    },
+                    new OnIntent()
+                    {
+                        Intent = "cancel",
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("{WelcomeUser()}")
+                        }
+                    }
+                }
+            };
+
+            await CreateFlow(rootDialog)
+                .Send("start")
+                    .AssertReply("[start]::What is your name?")
+                .Send("luhan")
+                    .AssertReply("[start]::I have luhan as your name")
+                    .AssertReply("Give me date 1")
+                .Send("set name")
+                    .AssertReply("[set name]::What is your name?")
+                .Send("qiong")
+                    .AssertReply("[set name]::I have qiong as your name")
+                    .AssertReply("Give me date 1")
+                .StartTestAsync();
+        }
+
         private static IActivity BuildMessageActivityWithLocale(string text, string locale)
         {
             return new Activity()

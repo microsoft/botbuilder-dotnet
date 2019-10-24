@@ -17,26 +17,26 @@ namespace Microsoft.Bot.Builder.Teams
     {
         public static async Task<TeamDetails> GetTeamDetailsAsync(ITurnContext turnContext, string teamId = null, CancellationToken cancellationToken = default)
         {
-            var t = teamId ?? GetTeamInfo(turnContext)?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
+            var t = teamId ?? turnContext.Activity.TeamsGetTeamInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
             return await GetTeamsConnectorClient(turnContext).Teams.FetchTeamDetailsAsync(t, cancellationToken).ConfigureAwait(false);
         }
 
         public static async Task<IList<ChannelInfo>> GetTeamChannelsAsync(ITurnContext turnContext, string teamId = null, CancellationToken cancellationToken = default)
         {
-            var t = teamId ?? GetTeamInfo(turnContext)?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
+            var t = teamId ?? turnContext.Activity.TeamsGetTeamInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
             var channelList = await GetTeamsConnectorClient(turnContext).Teams.FetchChannelListAsync(t, cancellationToken).ConfigureAwait(false);
             return channelList.Conversations;
         }
 
         public static Task<IEnumerable<TeamsChannelAccount>> GetTeamMembersAsync(ITurnContext turnContext, string teamId = null, CancellationToken cancellationToken = default)
         {
-            var t = teamId ?? GetTeamInfo(turnContext)?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
+            var t = teamId ?? turnContext.Activity.TeamsGetTeamInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
             return GetMembersAsync(GetConnectorClient(turnContext), t, cancellationToken);
         }
 
         public static Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
-            var teamInfo = GetTeamInfo(turnContext);
+            var teamInfo = turnContext.Activity.TeamsGetTeamInfo();
 
             if (teamInfo?.Id != null)
             {
@@ -59,11 +59,6 @@ namespace Microsoft.Bot.Builder.Teams
             var teamMembers = await connectorClient.Conversations.GetConversationMembersAsync(conversationId, cancellationToken).ConfigureAwait(false);
             var teamsChannelAccounts = teamMembers.Select(channelAccount => JObject.FromObject(channelAccount).ToObject<TeamsChannelAccount>());
             return teamsChannelAccounts;
-        }
-
-        private static TeamInfo GetTeamInfo(ITurnContext turnContext)
-        {
-            return turnContext.Activity.GetChannelData<TeamsChannelData>()?.Team;
         }
 
         private static IConnectorClient GetConnectorClient(ITurnContext turnContext)

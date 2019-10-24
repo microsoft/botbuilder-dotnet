@@ -165,7 +165,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             public IEnumerable<Dialog> GetDependencies()
             {
-                return this._dialogs.GetDialogs();
+                return this.Dialogs.GetDialogs();
             }
 
             public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext outerDc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)

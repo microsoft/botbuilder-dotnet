@@ -1,5 +1,8 @@
-﻿#pragma warning disable SA1601 // Partial elements should be documented
-#pragma warning disable SA1401 // Fields should be private
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+#pragma warning disable SA1601 // Partial elements should be documented
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +13,6 @@ namespace Microsoft.Bot.Expressions.TriggerTrees.Tests
 {
     public partial class Generator
     {
-        public Random Rand;
-
         private const double DoubleEpsilon = 0.000001;
 
         private static readonly string[] Comparisons = new string[]
@@ -29,6 +30,8 @@ namespace Microsoft.Bot.Expressions.TriggerTrees.Tests
         {
             Rand = new Random(seed);
         }
+
+        public Random Rand { get; set; }
 
         /* Predicates */
 
