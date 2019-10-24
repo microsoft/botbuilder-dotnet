@@ -6,7 +6,7 @@ using System.Linq;
 namespace DialogRootBot.CognitiveModels
 {
     /// <summary>
-    /// Extends the partial FlightBooking class with methods and properties that simplify accessing entities in the luis results
+    /// Extends the partial FlightBooking class with methods and properties that simplify accessing entities in the luis results.
     /// </summary>
     public partial class FlightBooking
     {
