@@ -142,8 +142,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var result = new JObject();
             var typeName = stb.structuredBodyNameLine().STRUCTURED_CONTENT().GetText();
             result["$type"] = typeName;
-            var finalResult = new List<JObject>();
-            finalResult.Add(result);
+            var expandedResult = new List<JObject>();
+            expandedResult.Add(result);
             var bodys = stb.structuredBodyContentLine().STRUCTURED_CONTENT();
             foreach (var body in bodys)
             {
@@ -165,7 +165,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     if (valueArray.Length == 1)
                     {
                         var id = Guid.NewGuid().ToString();
-                        finalResult.ForEach(x => x[property] = id);
+                        expandedResult.ForEach(x => x[property] = id);
                         idToStringDict.Add(id, originValue);
                     }
                     else
@@ -178,7 +178,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                             idToStringDict.Add(id, item.Trim());
                         }
 
-                        finalResult.ForEach(x => x[property] = valueList);
+                        expandedResult.ForEach(x => x[property] = valueList);
                     }
                 }
                 else if (IsPureExpression(line))
@@ -191,7 +191,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     // When the same property exists in both the calling template as well as callee, the content in caller will trump any content in the callee.
                     var propertyObjects = EvalExpression(line).Select(x => JObject.Parse(x)).ToList();
                     var tempResult = new List<JObject>();
-                    foreach (var res in finalResult)
+                    foreach (var res in expandedResult)
                     {
                         foreach (var propertyObject in propertyObjects)
                         {
@@ -213,11 +213,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         }
                     }
 
-                    finalResult = tempResult;
+                    expandedResult = tempResult;
                 }
             }
 
-            var exps = finalResult.Select(x => JsonConvert.SerializeObject(x)).ToList();
+            var exps = expandedResult.Select(x => JsonConvert.SerializeObject(x)).ToList();
             var templateRefValues = new Dictionary<string, List<string>>();
             foreach (var idToString in idToStringDict)
             {
@@ -231,11 +231,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
 
-            var expandedResult = new List<string>(exps);
+            var finalResult = new List<string>(exps);
             foreach (var templateRefValue in templateRefValues)
             {
                 var tempRes = new List<string>();
-                foreach (var res in expandedResult)
+                foreach (var res in finalResult)
                 {
                     foreach (var refValue in templateRefValue.Value)
                     {
@@ -243,10 +243,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     }
                 }
 
-                expandedResult = tempRes;
+                finalResult = tempRes;
             }
 
-            return expandedResult;
+            return finalResult;
         }
 
         public override List<string> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
