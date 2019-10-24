@@ -91,14 +91,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </value>
         public string DefaultResultProperty { get; set; } = "dialog.result";
 
-        /// <summary>
-        /// Gets the dialogs which make up the AdaptiveDialog.
-        /// </summary>
-        /// <value>
-        /// The dialogs which make up the AdaptiveDialog.
-        /// </value>
-        public DialogSet Dialogs => _dialogs;
-
         public override IBotTelemetryClient TelemetryClient
         {
             get
@@ -109,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             set
             {
                 var client = value ?? new NullBotTelemetryClient();
-                _dialogs.TelemetryClient = client;
+                this.Dialogs.TelemetryClient = client;
                 base.TelemetryClient = client;
             }
         }
@@ -190,7 +182,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 // We need to mockup a DialogContext so that we can call RepromptDialog
                 // for the active step
-                var stepDc = new DialogContext(_dialogs, turnContext, state.Actions[0]);
+                var stepDc = new DialogContext(this.Dialogs, turnContext, state.Actions[0]);
                 await stepDc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
             }
         }
@@ -208,7 +200,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (state.Actions != null && state.Actions.Any())
             {
-                var ctx = new SequenceContext(_dialogs, dc, state.Actions.First(), state.Actions, changeKey, _dialogs);
+                var ctx = new SequenceContext(this.Dialogs, dc, state.Actions.First(), state.Actions, changeKey, this.Dialogs);
                 ctx.Parent = dc;
                 return ctx;
             }
@@ -622,7 +614,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 state.Actions = new List<ActionState>();
             }
 
-            var sequenceContext = new SequenceContext(dc.Dialogs, dc, new DialogState { DialogStack = dc.Stack }, state.Actions, changeKey, _dialogs);
+            var sequenceContext = new SequenceContext(dc.Dialogs, dc, new DialogState { DialogStack = dc.Stack }, state.Actions, changeKey, this.Dialogs);
             sequenceContext.Parent = dc.Parent;
             return sequenceContext;
         }

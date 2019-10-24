@@ -18,14 +18,8 @@ namespace Microsoft.Bot.Builder.Streaming
 {
     public class BotFrameworkHttpAdapterBase : BotFrameworkAdapter, IStreamingActivityProcessor
     {
-#pragma warning disable SA1401 // Fields should be private
-        protected IBot _connectedBot;
-        protected ClaimsIdentity _claimsIdentity;
-        protected IList<StreamingRequestHandler> _requestHandlers = new List<StreamingRequestHandler>();
-#pragma warning restore SA1401 // Fields should be private
-
         public BotFrameworkHttpAdapterBase(ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILogger<BotFrameworkHttpAdapterBase> logger = null)
-    : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, null, null, null, logger)
+            : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, null, null, null, logger)
         {
         }
 
@@ -33,6 +27,30 @@ namespace Microsoft.Bot.Builder.Streaming
             : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, null, httpClient, null, logger)
         {
         }
+
+        /// <summary>
+        /// Gets or sets the bot connected to this adapter.
+        /// </summary>
+        /// <value>
+        /// The bot connected to this adapter.
+        /// </value>
+        protected IBot ConnectedBot { get; set; }
+
+        /// <summary>
+        /// Gets or sets the claims identity for this adapter.
+        /// </summary>
+        /// <value>
+        /// The claims identity for this adapter.
+        /// </value>
+        protected ClaimsIdentity ClaimsIdentity { get; set; }
+
+        /// <summary>
+        /// Gets or sets the request handlers for this adapter.
+        /// </summary>
+        /// <value>
+        /// The request handlers for this adapter.
+        /// </value>
+        protected IList<StreamingRequestHandler> RequestHandlers { get; set; } = new List<StreamingRequestHandler>();
 
         /// <summary>
         /// Primary adapter method for processing activities sent from streaming channel.
@@ -57,18 +75,18 @@ namespace Microsoft.Bot.Builder.Streaming
         {
             BotAssert.ActivityNotNull(activity);
 
-            _logger.LogInformation($"Received an incoming straming activity. ActivityId: {activity.Id}");
+            Logger.LogInformation($"Received an incoming straming activity. ActivityId: {activity.Id}");
 
             // If a conversation has moved from one connection to another for the same Channel or Skill and
             // hasn't been forgotten by the previous StreamingRequestHandler. The last requestHandler
             // the conversation has been associated with should always be the active connection.
-            var requestHandler = _requestHandlers.Where(x => x.ServiceUrl == activity.ServiceUrl).Where(y => y.HasConversation(activity.Conversation.Id)).LastOrDefault();
+            var requestHandler = RequestHandlers.Where(x => x.ServiceUrl == activity.ServiceUrl).Where(y => y.HasConversation(activity.Conversation.Id)).LastOrDefault();
             using (var context = new TurnContext(this, activity))
             {
                 // Pipes are unauthenticated. Pending to check that we are in pipes right now. Do not merge to master without that.
-                if (_claimsIdentity != null)
+                if (ClaimsIdentity != null)
                 {
-                    context.TurnState.Add<IIdentity>(BotIdentityKey, _claimsIdentity);
+                    context.TurnState.Add<IIdentity>(BotIdentityKey, ClaimsIdentity);
                 }
 
                 var connectorClient = CreateStreamingConnectorClient(activity, requestHandler);
@@ -96,7 +114,7 @@ namespace Microsoft.Bot.Builder.Streaming
         public async Task<ResourceResponse> SendStreamingActivityAsync(Activity activity, CancellationToken cancellationToken = default)
         {
             // Check to see if any of this adapter's StreamingRequestHandlers is associated with this conversation.
-            var possibleHandlers = _requestHandlers.Where(x => x.ServiceUrl == activity.ServiceUrl).Where(y => y.HasConversation(activity.Conversation.Id));
+            var possibleHandlers = RequestHandlers.Where(x => x.ServiceUrl == activity.ServiceUrl).Where(y => y.HasConversation(activity.Conversation.Id));
 
             if (possibleHandlers.Count() > 0)
             {
@@ -119,7 +137,7 @@ namespace Microsoft.Bot.Builder.Streaming
             }
             else
             {
-                if (_connectedBot != null)
+                if (ConnectedBot != null)
                 {
                     // This is a proactive message that will need a new streaming connection opened.
                     // The ServiceUrl of a streaming connection follows the pattern "urn:[ChannelName]:[Protocol]:[Host]".
@@ -129,14 +147,14 @@ namespace Microsoft.Bot.Builder.Streaming
                     var host = uri[uri.Length - 1];
                     await connection.ConnectAsync(new Uri(protocol + host + "/api/messages"), cancellationToken).ConfigureAwait(false);
 
-                    var handler = new StreamingRequestHandler(_connectedBot, this, connection, _logger);
+                    var handler = new StreamingRequestHandler(ConnectedBot, this, connection, Logger);
 
-                    if (_requestHandlers == null)
+                    if (RequestHandlers == null)
                     {
-                        _requestHandlers = new List<StreamingRequestHandler>();
+                        RequestHandlers = new List<StreamingRequestHandler>();
                     }
 
-                    _requestHandlers.Add(handler);
+                    RequestHandlers.Add(handler);
 
                     return await handler.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                 }
@@ -163,7 +181,7 @@ namespace Microsoft.Bot.Builder.Streaming
             }
 
             // Check if we have token responses from OAuth cards.
-            TokenResolver.CheckForOAuthCards(this, _logger, turnContext, activity, cancellationToken);
+            TokenResolver.CheckForOAuthCards(this, Logger, turnContext, activity, cancellationToken);
 
             // The ServiceUrl for streaming channels begins with the string "urn" and contains
             // information unique to streaming connections. Now that we know that this is a streaming
@@ -177,10 +195,10 @@ namespace Microsoft.Bot.Builder.Streaming
         /// </summary>
         private IConnectorClient CreateStreamingConnectorClient(Activity activity, StreamingRequestHandler requestHandler)
         {
-            var emptyCredentials = (_channelProvider != null && _channelProvider.IsGovernment()) ?
+            var emptyCredentials = (ChannelProvider != null && ChannelProvider.IsGovernment()) ?
                     MicrosoftGovernmentAppCredentials.Empty :
                     MicrosoftAppCredentials.Empty;
-            var streamingClient = new StreamingHttpClient(requestHandler, _logger);
+            var streamingClient = new StreamingHttpClient(requestHandler, Logger);
             var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), emptyCredentials, customHttpClient: streamingClient);
             return connectorClient;
         }

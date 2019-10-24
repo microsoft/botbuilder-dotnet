@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.LanguageGeneration;
 
@@ -10,6 +13,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     public class TemplateEngineLanguageGenerator : ILanguageGenerator
     {
         private const string DEFAULTLABEL = "Unknown";
+
+        // lazy loading
         private TemplateEngine engine;
 
         /// <summary>
@@ -24,12 +29,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
         /// <param name="lgText">lg template text.</param>
-        /// <param name="importResolver">template resource loader (id) => templateText.</param>
         /// <param name="id">optional label for the source of the templates (used for labeling source of template errors).</param>
-        public TemplateEngineLanguageGenerator(string lgText, string id = null, ImportResolverDelegate importResolver = null)
+        /// <param name="multiLanguageResolver">template resource loader delegate (local) -> <see cref="ImportResolverDelegate"/>.</param>
+        public TemplateEngineLanguageGenerator(string lgText, string id = null, Func<string, ImportResolverDelegate> multiLanguageResolver = null)
         {
+            this.LGText = lgText ?? string.Empty;
             this.Id = id ?? DEFAULTLABEL;
-            this.engine = new TemplateEngine().AddText(lgText ?? string.Empty, this.Id, importResolver: importResolver);
+            this.MultiLanguageResolver = multiLanguageResolver;
         }
 
         /// <summary>
@@ -50,6 +56,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         public string Id { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets text content of the LG file.
+        /// </summary>
+        /// <value>
+        /// Text content of the LG file.
+        /// </value>
+        public string LGText { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets get <see cref="ImportResolverDelegate"/> from local.
+        /// </summary>
+        /// <value>
+        /// get <see cref="ImportResolverDelegate"/> from local.
+        /// </value>
+        public Func<string, ImportResolverDelegate> MultiLanguageResolver { get; set; }
+
+        /// <summary>
         /// Method to generate text from given template and data.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation.</param>
@@ -58,6 +80,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>generated text.</returns>
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
+            engine = InitTemplateEngine(turnContext);
+
             try
             {
                 return await Task.FromResult(engine.Evaluate(template, data).ToString());
@@ -71,6 +95,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                 throw;
             }
+        }
+
+        private TemplateEngine InitTemplateEngine(ITurnContext turnContext)
+        {
+            if (MultiLanguageResolver != null)
+            {
+                var local = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
+                engine = new TemplateEngine().AddText(LGText, Id, MultiLanguageResolver(local));
+            }
+            else if (!string.IsNullOrWhiteSpace(LGText) || !string.IsNullOrWhiteSpace(Id))
+            {
+                engine = new TemplateEngine().AddText(LGText, Id);
+            }
+            else
+            {
+                // Do not rewrite to ??= (C# 8.0 new feature). It will break in linux/mac
+                engine = engine ?? new TemplateEngine();
+            }
+
+            return engine;
         }
     }
 }

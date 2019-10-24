@@ -728,6 +728,15 @@
                     ],
                     "type": "string"
                 },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
+                    "examples": [
+                        "@userName"
+                    ],
+                    "type": "string"
+                },
                 "alwaysPrompt": {
                     "type": "boolean",
                     "title": "Always prompt",
@@ -744,7 +753,8 @@
                     "default": "true",
                     "examples": [
                         "true"
-                    ]
+                    ],
+                    "type": "string"
                 },
                 "outputFormat": {
                     "type": "string",
@@ -1036,6 +1046,15 @@
                     ],
                     "type": "string"
                 },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
+                    "examples": [
+                        "@userName"
+                    ],
+                    "type": "string"
+                },
                 "alwaysPrompt": {
                     "type": "boolean",
                     "title": "Always prompt",
@@ -1052,7 +1071,8 @@
                     "default": "true",
                     "examples": [
                         "true"
-                    ]
+                    ],
+                    "type": "string"
                 },
                 "outputFormat": {
                     "type": "string",
@@ -1388,6 +1408,15 @@
                     ],
                     "type": "string"
                 },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
+                    "examples": [
+                        "@userName"
+                    ],
+                    "type": "string"
+                },
                 "alwaysPrompt": {
                     "type": "boolean",
                     "title": "Always prompt",
@@ -1404,7 +1433,8 @@
                     "default": "true",
                     "examples": [
                         "true"
-                    ]
+                    ],
+                    "type": "string"
                 },
                 "defaultLocale": {
                     "type": "string",
@@ -1777,6 +1807,15 @@
                     ],
                     "type": "string"
                 },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
+                    "examples": [
+                        "@userName"
+                    ],
+                    "type": "string"
+                },
                 "alwaysPrompt": {
                     "type": "boolean",
                     "title": "Always prompt",
@@ -1793,7 +1832,8 @@
                     "default": "true",
                     "examples": [
                         "true"
-                    ]
+                    ],
+                    "type": "string"
                 },
                 "defaultLocale": {
                     "type": "string",
@@ -4023,6 +4063,15 @@
                     ],
                     "type": "string"
                 },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
+                    "examples": [
+                        "@userName"
+                    ],
+                    "type": "string"
+                },
                 "alwaysPrompt": {
                     "type": "boolean",
                     "title": "Always prompt",
@@ -4039,7 +4088,8 @@
                     "default": "true",
                     "examples": [
                         "true"
-                    ]
+                    ],
+                    "type": "string"
                 },
                 "outputFormat": {
                     "type": "string",
@@ -6712,6 +6762,15 @@
                     ],
                     "type": "string"
                 },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
+                    "examples": [
+                        "@userName"
+                    ],
+                    "type": "string"
+                },
                 "alwaysPrompt": {
                     "type": "boolean",
                     "title": "Always prompt",
@@ -6728,7 +6787,8 @@
                     "default": "true",
                     "examples": [
                         "true"
-                    ]
+                    ],
+                    "type": "string"
                 },
                 "outputFormat": {
                     "type": "string",

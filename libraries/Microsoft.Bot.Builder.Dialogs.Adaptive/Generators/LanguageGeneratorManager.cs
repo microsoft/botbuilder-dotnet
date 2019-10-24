@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
@@ -41,16 +44,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </value>
         public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 
-        public static ImportResolverDelegate ResourceResolver(ResourceExplorer resourceExplorer) =>
-            (string source, string id) =>
-            {
-                var resourceName = Path.GetFileName(PathUtils.NormalizePath(id));
-                var res = resourceExplorer.GetResource(resourceName);
+        public static Func<string, ImportResolverDelegate> MultiLanguageResolverDelegate(ResourceExplorer resourceExplorer) =>
+            (string targetLocale) =>
+               (string source, string id) =>
+               {
+                   var languagePolicy = new LanguagePolicy();
 
-                var content = res?.ReadTextAsync().GetAwaiter().GetResult();
+                   var locales = new string[] { string.Empty };
+                   if (!languagePolicy.TryGetValue(targetLocale, out locales))
+                   {
+                       if (!languagePolicy.TryGetValue(string.Empty, out locales))
+                       {
+                           throw new Exception($"No supported language found for {targetLocale}");
+                       }
+                   }
 
-                return (content, resourceName);
-            };
+                   var resourceName = Path.GetFileName(PathUtils.NormalizePath(id));
+
+                   foreach (var locale in locales)
+                   {
+                       var resourceId = string.IsNullOrEmpty(locale) ? resourceName : resourceName.Replace(".lg", $".{locale}.lg");
+
+                       if (resourceExplorer.TryGetResource(resourceId, out var resource))
+                       {
+                           var content = resource.ReadTextAsync().GetAwaiter().GetResult();
+
+                           return (content, resourceName);
+                       }
+                   }
+
+                   return (string.Empty, resourceName);
+               };
 
         private void ResourceExplorer_Changed(IResource[] resources)
         {
@@ -63,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(IResource resource)
         {
-            return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, ResourceResolver(resourceExplorer));
+            return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, MultiLanguageResolverDelegate(resourceExplorer));
         }
     }
 }

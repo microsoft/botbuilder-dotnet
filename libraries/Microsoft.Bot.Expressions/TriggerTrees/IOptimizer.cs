@@ -1,4 +1,7 @@
-﻿using Microsoft.Bot.Expressions;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using Microsoft.Bot.Expressions;
 
 namespace Microsoft.Bot.Expressions.TriggerTrees
 {
