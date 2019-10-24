@@ -4,11 +4,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -60,8 +64,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
         private readonly Regex _magicCodeRegex = new Regex(@"(\d{6})");
 
-        private OAuthPromptSettings _settings;
-        private PromptValidator<TokenResponse> _validator;
+        private readonly OAuthPromptSettings _settings;
+        private readonly PromptValidator<TokenResponse> _validator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuthPrompt"/> class.
@@ -152,12 +156,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Return token
                 return await dc.EndDialogAsync(output, cancellationToken).ConfigureAwait(false);
             }
-            else
-            {
-                // Prompt user to login
-                await SendOAuthCardAsync(dc.Context, opt?.Prompt, cancellationToken).ConfigureAwait(false);
-                return Dialog.EndOfTurn;
-            }
+
+            // Prompt user to login
+            await SendOAuthCardAsync(dc.Context, opt?.Prompt, cancellationToken).ConfigureAwait(false);
+            return EndOfTurn;
         }
 
         /// <summary>
@@ -192,42 +194,38 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // if the token fetch request times out, complete the prompt with no result.
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-            else
+
+            var promptState = (IDictionary<string, object>)state[PersistedState];
+            var promptOptions = (PromptOptions)state[PersistedOptions];
+
+            // Increment attempt count
+            // Convert.ToInt32 For issue https://github.com/Microsoft/botbuilder-dotnet/issues/1859
+            promptState[Prompt<int>.AttemptCountKey] = Convert.ToInt32(promptState[Prompt<int>.AttemptCountKey]) + 1;
+
+            // Validate the return value
+            var isValid = false;
+            if (_validator != null)
             {
-                var promptState = (IDictionary<string, object>)state[PersistedState];
-                var promptOptions = (PromptOptions)state[PersistedOptions];
-
-                // Increment attempt count
-                // Convert.ToInt32 For issue https://github.com/Microsoft/botbuilder-dotnet/issues/1859
-                promptState[Prompt<int>.AttemptCountKey] = Convert.ToInt32(promptState[Prompt<int>.AttemptCountKey]) + 1;
-
-                // Validate the return value
-                var isValid = false;
-                if (_validator != null)
-                {
-                    var promptContext = new PromptValidatorContext<TokenResponse>(dc.Context, recognized, promptState, promptOptions);
-                    isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
-                }
-                else if (recognized.Succeeded)
-                {
-                    isValid = true;
-                }
-
-                // Return recognized value or re-prompt
-                if (isValid)
-                {
-                    return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
-                }
-                else
-                {
-                    if (!dc.Context.Responded && isMessage && promptOptions != null && promptOptions.RetryPrompt != null)
-                    {
-                        await dc.Context.SendActivityAsync(promptOptions.RetryPrompt, cancellationToken).ConfigureAwait(false);
-                    }
-
-                    return Dialog.EndOfTurn;
-                }
+                var promptContext = new PromptValidatorContext<TokenResponse>(dc.Context, recognized, promptState, promptOptions);
+                isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
             }
+            else if (recognized.Succeeded)
+            {
+                isValid = true;
+            }
+
+            // Return recognized value or re-prompt
+            if (isValid)
+            {
+                return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
+            }
+
+            if (!dc.Context.Responded && isMessage && promptOptions?.RetryPrompt != null)
+            {
+                await dc.Context.SendActivityAsync(promptOptions.RetryPrompt, cancellationToken).ConfigureAwait(false);
+            }
+
+            return EndOfTurn;
         }
 
         /// <summary>
@@ -265,6 +263,32 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Sign out user
             await adapter.SignOutUserAsync(turnContext, _settings.ConnectionName, turnContext.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
+        }
+
+        private static bool IsTokenResponseEvent(ITurnContext turnContext)
+        {
+            var activity = turnContext.Activity;
+            return activity.Type == ActivityTypes.Event && activity.Name == "tokens/response";
+        }
+
+        private static bool IsTeamsVerificationInvoke(ITurnContext turnContext)
+        {
+            var activity = turnContext.Activity;
+            return activity.Type == ActivityTypes.Invoke && activity.Name == "signin/verifyState";
+        }
+
+        private static bool ChannelSupportsOAuthCard(string channelId)
+        {
+            switch (channelId)
+            {
+                case Channels.Msteams:
+                case Channels.Cortana:
+                case Channels.Skype:
+                case Channels.Skypeforbusiness:
+                    return false;
+            }
+
+            return true;
         }
 
         private async Task SendOAuthCardAsync(ITurnContext turnContext, IMessageActivity prompt, CancellationToken cancellationToken = default(CancellationToken))
@@ -314,6 +338,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else if (!prompt.Attachments.Any(a => a.Content is OAuthCard))
             {
+                var cardActionType = ActionTypes.Signin;
                 string signInLink = null;
 
                 // Streaming channels support rendering OAuthCards, but require the OAuthCard signin link to be pre-filled in
@@ -321,6 +346,28 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (turnContext.Activity.IsFromStreamingConnection())
                 {
                     signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
+                }
+                else if (turnContext.TurnState.Get<ClaimsIdentity>("BotIdentity") is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
+                {
+                    // Generate sign in link for Skills (Emulator and WebChat don't' have the skill appId so we need to create the link for it
+                    signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
+
+                    // In the skills preview bits, we require magic code (we'll need to update WebChat and emulator to avoid this in the next release.
+                    if (turnContext.Activity.ChannelId == Channels.Emulator || turnContext.Activity.ChannelId == Channels.Webchat)
+                    {
+                        // TODO: use the skill helper functions to handle unpacking conversation ID once we go GA with skills.
+                        // Skills need to unpack the conversation ID and create their own link.
+                        var parts = JsonConvert.DeserializeObject<string[]>(Encoding.UTF8.GetString(Convert.FromBase64String(turnContext.Activity.Conversation.Id)));
+                        var conversationId = parts[0];
+
+                        if (turnContext.Activity.ChannelId == Channels.Emulator)
+                        {
+                            // Emulator links need to be prefixed with oathlink.
+                            signInLink = $"oauthlink://{signInLink}&&&{conversationId}";
+                        }
+
+                        cardActionType = ActionTypes.OpenUrl;
+                    }
                 }
 
                 prompt.Attachments.Add(new Attachment
@@ -336,11 +383,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                             {
                                 Title = _settings.Title,
                                 Text = _settings.Text,
-                                Type = ActionTypes.Signin,
-                                Value = signInLink,
-                            },
-                        },
-                    },
+                                Type = cardActionType,
+                                Value = signInLink
+                            }
+                        }
+                    }
                 });
             }
 
@@ -427,32 +474,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return result;
-        }
-
-        private bool IsTokenResponseEvent(ITurnContext turnContext)
-        {
-            var activity = turnContext.Activity;
-            return activity.Type == ActivityTypes.Event && activity.Name == "tokens/response";
-        }
-
-        private bool IsTeamsVerificationInvoke(ITurnContext turnContext)
-        {
-            var activity = turnContext.Activity;
-            return activity.Type == ActivityTypes.Invoke && activity.Name == "signin/verifyState";
-        }
-
-        private bool ChannelSupportsOAuthCard(string channelId)
-        {
-            switch (channelId)
-            {
-                case Channels.Msteams:
-                case Channels.Cortana:
-                case Channels.Skype:
-                case Channels.Skypeforbusiness:
-                    return false;
-            }
-
-            return true;
         }
     }
 }

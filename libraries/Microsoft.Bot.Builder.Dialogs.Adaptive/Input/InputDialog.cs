@@ -373,7 +373,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             // Fallback to using activity
-            if (input == null && turnCount > 0)
+            bool activityProcessed = dc.State.GetBoolValue(TurnPath.ACTIVITYPROCESSED);
+            if (!activityProcessed && input == null && turnCount > 0)
             {
                 if (this.GetType().Name == nameof(AttachmentInput))
                 {
@@ -401,7 +402,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                             return InputState.Invalid;
                         }
                     }
-
+                    
+                    dc.State.SetValue(TurnPath.ACTIVITYPROCESSED, true);
                     return InputState.Valid;
                 }
                 else
