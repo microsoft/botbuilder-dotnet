@@ -105,3 +105,21 @@
 [Struct
     Text = {manufacturer['Name']}
 ]  
+
+
+# ExpanderT1
+[MyStruct
+    Text = {ExpanderT2()}
+    {ExpanderT3()}
+]
+
+
+# ExpanderT2
+- Hi
+- Hello
+
+# ExpanderT3
+[MyStruct
+    Speak = {GetAge()}
+    Text = zoo
+]

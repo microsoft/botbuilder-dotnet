@@ -7,11 +7,15 @@ using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Microsoft.Bot.Expressions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class Expander : LGFileParserBaseVisitor<List<string>>
     {
+        private readonly Regex expressionRecognizeRegex = new Regex(@"@?(?<!\\)\{.+?(?<!\\)\}", RegexOptions.Compiled);
+        private readonly Regex escapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
         private readonly ExpressionEngine expanderExpressionEngine;
         private readonly ExpressionEngine evaluatorExpressionEngine;
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
@@ -129,6 +133,123 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return null;
+        }
+
+        public override List<string> VisitStructuredBody([NotNull] LGFileParser.StructuredBodyContext context)
+        {
+            var idToStringDict = new Dictionary<string, string>();
+            var stb = context.structuredTemplateBody();
+            var result = new JObject();
+            var typeName = stb.structuredBodyNameLine().STRUCTURED_CONTENT().GetText();
+            result["$type"] = typeName;
+            var finalResult = new List<JObject>();
+            finalResult.Add(result);
+            var bodys = stb.structuredBodyContentLine().STRUCTURED_CONTENT();
+            foreach (var body in bodys)
+            {
+                var line = body.GetText().Trim();
+
+                if (string.IsNullOrWhiteSpace(line))
+                {
+                    continue;
+                }
+
+                var start = line.IndexOf('=');
+                if (start > 0)
+                {
+                    // make it insensitive
+                    var property = line.Substring(0, start).Trim().ToLower();
+                    var originValue = line.Substring(start + 1).Trim();
+
+                    var valueArray = escapeSeperatorRegex.Split(originValue);
+                    if (valueArray.Length == 1)
+                    {
+                        // result[property] = EvalText(originValue);
+                        var id = Guid.NewGuid().ToString();
+                        finalResult.ForEach(x => x[property] = id);
+                        idToStringDict.Add(id, originValue);
+                    }
+                    else
+                    {
+                        var valueList = new JArray();
+                        foreach (var item in valueArray)
+                        {
+                            // valueList.Add(EvalText(item.Trim()));
+                            var id = Guid.NewGuid().ToString();
+                            valueList.Add(id);
+                            idToStringDict.Add(id, item.Trim());
+                        }
+
+                        finalResult.ForEach(x => x[property] = valueList);
+                    }
+                }
+                else if (IsPureExpression(line))
+                {
+                    // [MyStruct
+                    // Text = foo
+                    // {ST2()}
+                    // ]
+
+                    // When the same property exists in both the calling template as well as callee, the content in caller will trump any content in the callee.
+                    var propertyObjects = EvalExpression(line).Select(x => JObject.Parse(x)).ToList();
+
+                    var tempResult = new List<JObject>();
+                    foreach (var res in finalResult)
+                    {
+                        foreach (var propertyObject in propertyObjects)
+                        {
+                            var tempRes = JObject.FromObject(res);
+
+                            // Full reference to another structured template is limited to the structured template with same type 
+                            if (propertyObject["$type"] != null && propertyObject["$type"].ToString() == typeName)
+                            {
+                                foreach (var item in propertyObject)
+                                {
+                                    if (tempRes.Property(item.Key) == null)
+                                    {
+                                        tempRes[item.Key] = item.Value;
+                                    }
+                                }
+                            }
+
+                            tempResult.Add(tempRes);
+                        }
+                    }
+
+                    finalResult = tempResult;
+                }
+            }
+
+            var exps = finalResult.Select(x => JsonConvert.SerializeObject(x)).ToList();
+            var templateRefValues = new Dictionary<string, List<string>>();
+            foreach (var idToString in idToStringDict)
+            {
+                if ((idToString.Value.StartsWith("@") || idToString.Value.EndsWith("{")) && idToString.Value.EndsWith("}"))
+                {
+                    templateRefValues.Add(idToString.Key, this.EvalExpression(idToString.Value));
+                }
+                else
+                {
+                    templateRefValues.Add(idToString.Key, this.EvalText(idToString.Value));
+                }
+            }
+
+            var expandedResult = new List<string>(exps);
+            foreach (var templateRefValue in templateRefValues)
+            {
+                var tempRes = new List<string>();
+                foreach (var res in expandedResult)
+                {
+                    foreach (var refValue in templateRefValue.Value)
+                    {
+                        tempRes.Add(res.Replace(templateRefValue.Key, refValue));
+                    }
+                }
+
+                expandedResult = tempRes;
+            }
+
+            return expandedResult;
         }
 
         public override List<string> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
@@ -263,8 +384,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // remove ``` ```
             exp = exp.Substring(3, exp.Length - 6);
             var templateRefValues = new Dictionary<string, List<string>>();
-            var reg = @"@\{[^{}]+\}";
-            var matches = Regex.Matches(exp, reg);
+            var matches = expressionRecognizeRegex.Matches(exp);
             if (matches != null)
             {
                 foreach (Match match in matches)
@@ -398,6 +518,66 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return expanderExpression;
+        }
+
+        private List<string> EvalTextContainsExpression(string exp)
+        {
+            var templateRefValues = new Dictionary<string, List<string>>();
+            var matches = expressionRecognizeRegex.Matches(exp);
+            if (matches != null)
+            {
+                foreach (Match match in matches)
+                {
+                    templateRefValues.Add(match.Value, EvalExpression(match.Value));
+                }
+            }
+
+            var result = new List<string>() { exp };
+            foreach (var templateRefValue in templateRefValues)
+            {
+                var tempRes = new List<string>();
+                foreach (var res in result)
+                {
+                    foreach (var refValue in templateRefValue.Value)
+                    {
+                        tempRes.Add(res.Replace(templateRefValue.Key, refValue));
+                    }
+                }
+
+                result = tempRes;
+            }
+
+            return result;
+        }
+
+        private List<string> EvalText(string exp)
+        {
+            if (string.IsNullOrEmpty(exp))
+            {
+                return new List<string>() { exp };
+            }
+
+            if (IsPureExpression(exp))
+            {
+                // @{} or {} text, get object result
+                return EvalExpression(exp);
+            }
+            else
+            {
+                return EvalTextContainsExpression(exp).Select(x => Regex.Unescape(x)).ToList();
+            }
+        }
+
+        private bool IsPureExpression(string exp)
+        {
+            if (string.IsNullOrWhiteSpace(exp))
+            {
+                return false;
+            }
+
+            exp = exp.Trim();
+            var expressions = expressionRecognizeRegex.Matches(exp);
+            return expressions.Count == 1 && expressions[0].Value == exp;
         }
     }
 }
