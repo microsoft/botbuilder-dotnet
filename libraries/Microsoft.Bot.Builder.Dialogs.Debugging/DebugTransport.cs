@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -14,10 +17,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     public abstract class DebugTransport
     {
-#pragma warning disable SA1401 // Fields should be private
-        protected readonly ILogger logger;
-#pragma warning restore SA1401 // Fields should be private
-
         private const string Prefix = @"Content-Length: ";
         private static readonly Encoding Encoding = Encoding.ASCII;
 
@@ -29,8 +28,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         protected DebugTransport(ILogger logger)
         {
-            this.logger = logger ?? new DebugLogger("Dialog");
+            this.Logger = logger ?? new DebugLogger("Dialog");
         }
+
+        protected ILogger Logger { get; set; }
 
         protected async Task ListenAsync(IPEndPoint point, CancellationToken cancellationToken)
         {
@@ -76,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     }
                     catch (Exception error)
                     {
-                        this.logger.LogError(error, error.Message);
+                        this.Logger.LogError(error, error.Message);
                     }
                 }
             }
@@ -126,7 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                     var json = new string(buffer);
                     var token = JToken.Parse(json);
-                    logger.LogTrace($"READ: {token.ToString(Formatting.None)}");
+                    Logger.LogTrace($"READ: {token.ToString(Formatting.None)}");
                     return token;
                 }
             }
@@ -149,7 +150,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 using (await writable.WithWaitAsync(cancellationToken).ConfigureAwait(false))
                 {
                     var json = token.ToString(Formatting.None);
-                    logger.LogTrace($"SEND: {json}");
+                    Logger.LogTrace($"SEND: {json}");
                     var buffer = Encoding.GetBytes(json);
                     await writer.WriteAsync(Prefix + buffer.Length).ConfigureAwait(false);
                     await writer.WriteAsync("\r\n\r\n").ConfigureAwait(false);

@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Threading.Tasks;
 using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
@@ -11,10 +14,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
     /// <typeparam name="T">type of object the expression should evaluate to.</typeparam>
     public class ExpressionProperty<T> : IExpressionProperty
     {
-#pragma warning disable SA1401 // Fields should be private
-        protected Expression expression;
-#pragma warning restore SA1401 // Fields should be private
-
         public ExpressionProperty()
         {
         }
@@ -42,8 +41,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         /// </value>
         public string Expression
         {
-            get { return expression?.ToString(); }
-            set { expression = new ExpressionEngine().Parse(value); }
+            get { return InnerExpression?.ToString(); }
+            set { InnerExpression = new ExpressionEngine().Parse(value); }
         }
 
         /// <summary>
@@ -53,6 +52,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         /// Static value to use for the result (instead of data binding).
         /// </value>
         public T Value { get; set; }
+
+        protected Expression InnerExpression { get; set; }
 
         /// <summary>
         /// Set the value.
@@ -82,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                 return Value;
             }
 
-            var (result, error) = expression.TryEvaluate(data);
+            var (result, error) = InnerExpression.TryEvaluate(data);
             if (error != null)
             {
                 return default(T);

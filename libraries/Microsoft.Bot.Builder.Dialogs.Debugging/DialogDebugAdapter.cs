@@ -174,12 +174,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 }
                 else
                 {
-                    this.logger.LogError($"thread context not found");
+                    this.Logger.LogError($"thread context not found");
                 }
             }
             catch (Exception error)
             {
-                this.logger.LogError(error, error.Message);
+                this.Logger.LogError(error, error.Message);
             }
         }
 
@@ -239,7 +239,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 }
                 catch (Exception error)
                 {
-                    this.logger.LogError(error, error.Message);
+                    this.Logger.LogError(error, error.Message);
                     throw;
                 }
             }
