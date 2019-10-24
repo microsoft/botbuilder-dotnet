@@ -1,9 +1,9 @@
 {
-    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.3/MicrosoftTeams.schema.json",
     "manifestVersion": "1.5",
     "version": "1.0",
-    "id": "",
-    "packageName": "com.teams.sample.fetchtask.messagingextension",
+    "id": "00000000-0000-0000-0000-000000000000",
+    "packageName": "com.teams.sample.integrationbot",
     "developer": {
         "name": "Microsoft",
         "websiteUrl": "https://www.microsoft.com",
@@ -11,40 +11,116 @@
         "termsOfUseUrl": "https://www.teams.com/termsofuser"
     },
     "icons": {
-        "color": "color.png",
-        "outline": "outline.png"
+        "color": "icon-color.png",
+        "outline": "icon-outline.png"
     },
     "name": {
-        "short": "Fetch Task Ext",
-        "full": "Fetch Task Messaging Extension"
+        "short": "Integration Bot",
+        "full": "Integration Bot that exercises all of teams<=>bot integration."
     },
     "description": {
-        "short": "Demonstrates a Fetch Task Messaging Extension",
-        "full": "Demonstrates a Fetch Task Messaging Extension"
+        "short": "Integration Bot",
+        "full": "Integration Bot that exercises all of teams<=>bot integration."
     },
     "accentColor": "#FFFFFF",
     "bots": [
         {
-            "botId": "",
+            "botId": "00000000-0000-0000-0000-000000000000",
             "scopes": [
-                "personal",
+                "groupchat",
                 "team",
-                "groupchat"
+                "personal"
             ],
-            "supportsFiles": false,
+            "supportsFiles": true,
             "isNotificationOnly": false
         }
     ],
     "composeExtensions": [
         {
-            "botId": "",
-            "canUpdateConfiguration": false,
+            "botId": "00000000-0000-0000-0000-000000000000",
+            "canUpdateConfiguration": true,
             "commands": [
+                {
+                    "id": "createCard",
+                    "type": "action",
+                    "description": "Test command to run action to create a card from Compose Box or Command Bar",
+                    "title": "Create card - manifest params",
+                    "parameters": [
+                        {
+                            "name": "title",
+                            "title": "Title parameter",
+                            "description": "Text for title in Hero Card",
+                            "inputType": "text"
+                        },
+                      {
+                        "name": "subtitle",
+                        "title": "Subtitle parameter",
+                        "description": "Text for subtitle in Hero Card",
+                        "inputType": "text"
+                      },
+                        {
+                            "name": "text",
+                            "title": "Body text",
+                            "description": "Text for body in Hero Card",
+                            "inputType": "text"
+                        }
+                    ]
+                },
                 {
                     "id": "createWithPreview",
                     "type": "action",
-                    "title": "Create Survey Card",
-                    "description": "Example of creating a Survey Card",
+                    "title": "Create cards with preview",
+                    "description": "Test command to run action to create a card with preview before sending",
+                    "initialRun": false,
+                    "fetchTask": true,
+                    "context": [
+                        "commandBox",
+                        "compose",
+                        "message"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "param",
+                            "title": "param",
+                            "description": "param"
+                        }
+                    ]
+                },
+                {
+                    "id": "shareMessage",
+                    "type": "action",
+                    "context": [ "message" ],
+                    "description": "Test command to run action on message context (message sharing)",
+                    "title": "Share Message",
+                    "parameters": [
+                        {
+                            "name": "includeImage",
+                            "title": "Include Image",
+                            "description": "Include image in Hero Card",
+                            "inputType": "toggle"
+                        }
+                    ]
+                },
+                {
+                    "id": "searchQuery",
+                    "context": [ "compose", "commandBox" ],
+                    "description": "Test command to run query",
+                    "title": "Search",
+                    "type": "query",
+                    "parameters": [
+                        {
+                            "name": "searchQuery",
+                            "title": "Search Query",
+                            "description": "Your search query",
+                            "inputType": "text"
+                        }
+                    ]
+                },
+                {
+                    "id": "loginCommand",
+                    "type": "action",
+                    "title": "Log In",
+                    "description": "Bot Service Auth flow in a Messaging Extension",
                     "initialRun": false,
                     "fetchTask": true,
                     "context": [
@@ -59,6 +135,36 @@
                             "description": ""
                         }
                     ]
+                },
+                {
+                    "id": "testCommand",
+                    "type": "action",
+                    "title": "Test",
+                    "description": "Config extension test command",
+                    "initialRun": false,
+                    "fetchTask": false,
+                    "context": [
+                        "commandBox",
+                        "compose",
+                        "message"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "param",
+                            "title": "param",
+                            "description": ""
+                        }
+                    ]
+                }
+            ],
+            "messageHandlers": [
+                {
+                    "type": "link",
+                    "value": {
+                        "domains": [
+                            "*.com"
+                        ]
+                    }
                 }
             ]
         }
@@ -67,5 +173,7 @@
         "identity",
         "messageTeamMembers"
     ],
-    "validDomains": []
+    "validDomains": [
+        "*.azurewebsites.net"
+    ]
 }
