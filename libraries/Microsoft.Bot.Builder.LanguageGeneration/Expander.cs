@@ -164,7 +164,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var valueArray = escapeSeperatorRegex.Split(originValue);
                     if (valueArray.Length == 1)
                     {
-                        // result[property] = EvalText(originValue);
                         var id = Guid.NewGuid().ToString();
                         finalResult.ForEach(x => x[property] = id);
                         idToStringDict.Add(id, originValue);
@@ -174,7 +173,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         var valueList = new JArray();
                         foreach (var item in valueArray)
                         {
-                            // valueList.Add(EvalText(item.Trim()));
                             var id = Guid.NewGuid().ToString();
                             valueList.Add(id);
                             idToStringDict.Add(id, item.Trim());
@@ -192,7 +190,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                     // When the same property exists in both the calling template as well as callee, the content in caller will trump any content in the callee.
                     var propertyObjects = EvalExpression(line).Select(x => JObject.Parse(x)).ToList();
-
                     var tempResult = new List<JObject>();
                     foreach (var res in finalResult)
                     {
