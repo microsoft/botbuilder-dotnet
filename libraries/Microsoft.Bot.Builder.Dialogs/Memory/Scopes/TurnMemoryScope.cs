@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     public class TurnMemoryScope : MemoryScope
     {
         public TurnMemoryScope()
-            : base(ScopePath.TURN, false)
+            : base(ScopePath.TURN, true)
         {
         }
 
@@ -29,13 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            if (!dc.Context.TurnState.TryGetValue(this.Name, out object memory))
-            {
-                memory = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-                dc.Context.TurnState[this.Name] = memory;
-            }
-
-            return memory;
+            return dc.Context.TurnState;
         }
 
         /// <summary>
@@ -45,22 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// <param name="memory">memory.</param>
         public override void SetMemory(DialogContext dc, object memory)
         {
-            if (this.IsReadOnly)
-            {
-                throw new NotSupportedException("You cannot set the memory for a readonly memory scope");
-            }
-
-            if (dc == null)
-            {
-                throw new ArgumentNullException(nameof(dc));
-            }
-
-            if (memory == null)
-            {
-                throw new ArgumentNullException(nameof(memory));
-            }
-
-            dc.Context.TurnState[this.Name] = memory;
+            throw new NotSupportedException("You cannot set the memory for a readonly memory scope");
         }
     }
 }

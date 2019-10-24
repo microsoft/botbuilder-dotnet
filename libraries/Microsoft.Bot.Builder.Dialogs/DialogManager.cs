@@ -80,10 +80,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // create property accessors
             var lastAccessProperty = conversationState.CreateProperty<DateTime>(LASTACCESS);
-            var dialogsProperty = conversationState.CreateProperty<DialogState>(DIALOGS);
-            var userScope = userState.CreateProperty<object>($"{ScopePath.USER}{nameof(TurnMemoryScope)}");
-            var conversationScope = conversationState.CreateProperty<object>($"{ScopePath.CONVERSATION}{nameof(TurnMemoryScope)}");
-
             var lastAccess = await lastAccessProperty.GetAsync(context, () => DateTime.UtcNow, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             // Check for expired conversation
@@ -98,6 +94,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             await lastAccessProperty.SetAsync(context, lastAccess, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             // get dialog stack 
+            var dialogsProperty = conversationState.CreateProperty<DialogState>(DIALOGS);
             DialogState dialogState = await dialogsProperty.GetAsync(context, () => new DialogState(), cancellationToken: cancellationToken).ConfigureAwait(false);
 
             // Create DialogContext
