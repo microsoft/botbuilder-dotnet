@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
     {
         private static ResourceExplorer resourceExplorer;
 
-        private readonly ImportResolverDelegate resourceResolver = LanguageGeneratorManager.ResourceResolver(resourceExplorer);
+        private readonly Func<string, ImportResolverDelegate> resourceResolver = LanguageGeneratorManager.MultiLanguageResolverDelegate(resourceExplorer);
 
         public TestContext TestContext { get; set; }
 
@@ -64,6 +64,28 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var generator = languageGeneratorManager.LanguageGenerators["import.lg"];
             var result = await generator.Generate(GetTurnContext(string.Empty), "[test2]", null);
             Assert.AreEqual("default2", result);
+        }
+
+        [TestMethod]
+        public async Task TestMultiLangImport()
+        {
+            var languageGeneratorManager = new LanguageGeneratorManager(resourceExplorer);
+            var generator = languageGeneratorManager.LanguageGenerators["import.lg"];
+
+            var result = await generator.Generate(GetTurnContext(string.Empty), "[test3]", null);
+            Assert.AreEqual("default3", result);
+
+            result = await generator.Generate(GetTurnContext(locale: "en-us"), "[test3]", null);
+            Assert.AreEqual("default3-en", result);
+
+            result = await generator.Generate(GetTurnContext(locale: "fr"), "[test3]", null);
+            Assert.AreEqual("default3-fr", result);
+
+            result = await generator.Generate(GetTurnContext(locale: "foo"), "[test3]", null);
+            Assert.AreEqual("default3", result);
+
+            result = await generator.Generate(GetTurnContext(locale: "zh-cn"), "[test3]", null);
+            Assert.AreEqual("default3-cn", result);
         }
 
         [TestMethod]
