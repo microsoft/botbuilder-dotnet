@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#pragma warning disable SA1401 // Fields should be private
-
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -19,8 +17,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     [TestClass]
     public class SettingsStateTests
     {
-        public IConfiguration Configuration;
-
         public SettingsStateTests()
         {
             var builder = new ConfigurationBuilder()
@@ -28,6 +24,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             this.Configuration = builder.Build();
         }
+
+        public IConfiguration Configuration { get; set; }
 
         public TestContext TestContext { get; set; }
 

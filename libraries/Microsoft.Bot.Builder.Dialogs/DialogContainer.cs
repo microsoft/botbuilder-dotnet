@@ -6,21 +6,19 @@ using System.Collections.Generic;
 namespace Microsoft.Bot.Builder.Dialogs
 {
     public abstract class DialogContainer : Dialog
-    {
-#pragma warning disable SA1401 // Fields should be private
-        protected readonly DialogSet _dialogs = new DialogSet();
-#pragma warning restore SA1401 // Fields should be private
-
+    {       
         protected DialogContainer(string dialogId = null)
             : base(dialogId)
         {
         }
 
+        protected DialogSet Dialogs { get; set; } = new DialogSet();
+
         public abstract DialogContext CreateChildContext(DialogContext dc);
 
         public virtual Dialog FindDialog(string dialogId)
         {
-            return this._dialogs.Find(dialogId);
+            return this.Dialogs.Find(dialogId);
         }
     }
 }

@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 throw new ArgumentNullException(nameof(httpResponse));
             }
 
-            _connectedBot = bot ?? throw new ArgumentNullException(nameof(bot));
+            ConnectedBot = bot ?? throw new ArgumentNullException(nameof(bot));
 
             if (!httpRequest.HttpContext.WebSockets.IsWebSocketRequest)
             {
@@ -139,13 +139,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             try
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-                var requestHandler = new StreamingRequestHandler(bot, this, socket, _logger);
-                if (_requestHandlers == null)
+                
+                var requestHandler = new StreamingRequestHandler(bot, this, socket, Logger);
+
+                if (RequestHandlers == null)
                 {
-                    _requestHandlers = new List<StreamingRequestHandler>();
+                    RequestHandlers = new List<StreamingRequestHandler>();
                 }
 
-                _requestHandlers.Add(requestHandler);
+                RequestHandlers.Add(requestHandler);
 
                 await requestHandler.ListenAsync().ConfigureAwait(false);
             }
@@ -162,7 +164,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         {
             try
             {
-                if (!await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
+                if (!await CredentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
                 {
                     var authHeader = httpRequest.Headers.First(x => x.Key.ToLower() == AuthHeaderName).Value.FirstOrDefault();
                     var channelId = httpRequest.Headers.First(x => x.Key.ToLower() == ChannelIdHeaderName).Value.FirstOrDefault();
@@ -179,16 +181,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         return false;
                     }
 
-                    var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider, channelId).ConfigureAwait(false);
+                    var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, CredentialProvider, ChannelProvider, channelId).ConfigureAwait(false);
                     if (!claimsIdentity.IsAuthenticated)
                     {
                         httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                         return false;
                     }
-
+                    
                     // Add ServiceURL to the cache of trusted sites in order to allow token refreshing.
                     AppCredentials.TrustServiceUrl(claimsIdentity.FindFirst(AuthenticationConstants.ServiceUrlClaim).Value);
-                    _claimsIdentity = claimsIdentity;
+                    ClaimsIdentity = claimsIdentity;
                 }
 
                 return true;

@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -13,21 +16,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
     public class ImportResolver
     {
-#pragma warning disable SA1401 // Fields should be private
-        public static ImportResolverDelegate FileResolver = (filePath, id) =>
-#pragma warning restore SA1401 // Fields should be private
-        {
-            // import paths are in resource files which can be executed on multiple OS environments
-            // normalize to map / & \ in importPath -> OSPath
-            var importPath = NormalizePath(id);
-            if (!Path.IsPathRooted(importPath))
-            {
+        public static ImportResolverDelegate FileResolver { get; set; } = (filePath, id) =>
+          {
+              // import paths are in resource files which can be executed on multiple OS environments
+              // normalize to map / & \ in importPath -> OSPath
+              var importPath = NormalizePath(id);
+
+              if (!Path.IsPathRooted(importPath))
+              {
                 // get full path for importPath relative to path which is doing the import.
                 importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), id));
-            }
+              }
 
-            return (File.ReadAllText(importPath), importPath);
-        };
+              return (File.ReadAllText(importPath), importPath);
+          };
 
         /// <summary>
         /// Normalize authored path to os path.

@@ -1,4 +1,7 @@
-﻿// This will trace the whole process, but will generate a lot of output
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+// This will trace the whole process, but will generate a lot of output
 // #define TraceTree
 
 // This adds a counter to each comparison when building the tree so that you can find it in the trace.

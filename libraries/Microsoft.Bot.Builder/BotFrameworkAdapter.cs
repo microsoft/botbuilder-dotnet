@@ -51,14 +51,6 @@ namespace Microsoft.Bot.Builder
         internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
         internal const string BotIdentityKey = "BotIdentity";
 
-#pragma warning disable SA1401 // Fields should be private
-
-        protected readonly ICredentialProvider _credentialProvider;
-        protected readonly IChannelProvider _channelProvider;
-        protected readonly ILogger _logger;
-
-#pragma warning restore SA1401 // Fields should be private
-
         private static readonly HttpClient _defaultHttpClient = new HttpClient();
 
         private readonly HttpClient _httpClient;
@@ -127,11 +119,11 @@ namespace Microsoft.Bot.Builder
             IMiddleware middleware = null,
             ILogger logger = null)
         {
-            _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
-            _channelProvider = channelProvider;
+            CredentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
+            this.ChannelProvider = channelProvider;
             _httpClient = customHttpClient ?? _defaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
-            _logger = logger ?? NullLogger.Instance;
+            Logger = logger ?? NullLogger.Instance;
             _authConfiguration = authConfig ?? throw new ArgumentNullException(nameof(authConfig));
 
             if (middleware != null)
@@ -174,11 +166,11 @@ namespace Microsoft.Bot.Builder
             ILogger logger = null)
         {
             _appCredentials = credentials ?? throw new ArgumentNullException(nameof(credentials));
-            _credentialProvider = new SimpleCredentialProvider(credentials.MicrosoftAppId, string.Empty);
-            _channelProvider = channelProvider;
+            CredentialProvider = new SimpleCredentialProvider(credentials.MicrosoftAppId, string.Empty);
+            this.ChannelProvider = channelProvider;
             _httpClient = customHttpClient ?? _defaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
-            _logger = logger ?? NullLogger.Instance;
+            Logger = logger ?? NullLogger.Instance;
             _authConfiguration = authConfig ?? throw new ArgumentNullException(nameof(authConfig));
 
             if (middleware != null)
@@ -194,6 +186,30 @@ namespace Microsoft.Bot.Builder
             // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
             ConnectorClient.AddDefaultRequestHeaders(_httpClient);
         }
+
+        /// <summary>
+        /// Gets the credential provider for this adapter.
+        /// </summary>
+        /// <value>
+        /// The credential provider for this adapter.
+        /// </value>
+        protected ICredentialProvider CredentialProvider { get; private set; }
+
+        /// <summary>
+        /// Gets the channel provider for this adapter.
+        /// </summary>
+        /// <value>
+        /// The channel provider for this adapter.
+        /// </value>
+        protected IChannelProvider ChannelProvider { get; private set; }
+
+        /// <summary>
+        /// Gets the logger for this adapter.
+        /// </summary>
+        /// <value>
+        /// The logger for this adapter.
+        /// </value>
+        protected ILogger Logger { get; private set; }
 
         /// <summary>
         /// Sends a proactive message from the bot to a conversation.
@@ -241,7 +257,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _logger.LogInformation($"Sending proactive message.  botAppId: {botAppId}");
+            Logger.LogInformation($"Sending proactive message.  botAppId: {botAppId}");
 
             using (var context = new TurnContext(this, reference.GetContinuationActivity()))
             {
@@ -303,7 +319,7 @@ namespace Microsoft.Bot.Builder
         {
             BotAssert.ActivityNotNull(activity);
 
-            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _channelProvider, _authConfiguration, _httpClient).ConfigureAwait(false);
+            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, CredentialProvider, ChannelProvider, _authConfiguration, _httpClient).ConfigureAwait(false);
             return await ProcessActivityAsync(claimsIdentity, activity, callback, cancellationToken).ConfigureAwait(false);
         }
 
@@ -320,7 +336,7 @@ namespace Microsoft.Bot.Builder
         {
             BotAssert.ActivityNotNull(activity);
 
-            _logger.LogInformation($"Received an incoming activity.  ActivityId: {activity.Id}");
+            Logger.LogInformation($"Received an incoming activity.  ActivityId: {activity.Id}");
 
             using (var context = new TurnContext(this, activity))
             {
@@ -391,7 +407,7 @@ namespace Microsoft.Bot.Builder
                 var activity = activities[index];
                 var response = default(ResourceResponse);
 
-                _logger.LogInformation($"Sending activity.  ReplyToId: {activity.ReplyToId}");
+                Logger.LogInformation($"Sending activity.  ReplyToId: {activity.ReplyToId}");
 
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
@@ -420,11 +436,11 @@ namespace Microsoft.Bot.Builder
                         // we want to populate it here in order to make sure credentials are accessible and do not expire.
                         try
                         {
-                            _ = (await GetAppCredentialsAsync((_credentialProvider as SimpleCredentialProvider).AppId).ConfigureAwait(false)).GetTokenAsync();
+                            _ = (await GetAppCredentialsAsync((CredentialProvider as SimpleCredentialProvider).AppId).ConfigureAwait(false)).GetTokenAsync();
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError("Failed to fetch token before processing outgoing activity. " + ex.Message);
+                            Logger.LogError("Failed to fetch token before processing outgoing activity. " + ex.Message);
                         }
                         
                         response = await ProcessOutgoingActivityAsync(turnContext, activity, cancellationToken).ConfigureAwait(false);
@@ -695,7 +711,7 @@ namespace Microsoft.Bot.Builder
                     ServiceUrl = activity.ServiceUrl,
                     User = activity.From,
                 },
-                MsAppId = (_credentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
+                MsAppId = (CredentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
             };
 
             var serializedState = JsonConvert.SerializeObject(tokenExchangeState);
@@ -743,7 +759,7 @@ namespace Microsoft.Bot.Builder
                     ServiceUrl = null,
                     User = new ChannelAccount { Role = "user", Id = userId, },
                 },
-                MsAppId = (_credentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
+                MsAppId = (CredentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
             };
 
             var serializedState = JsonConvert.SerializeObject(tokenExchangeState);
@@ -932,7 +948,7 @@ namespace Microsoft.Bot.Builder
         {
             if (!OAuthClientConfig.EmulateOAuthCards &&
                 string.Equals(turnContext.Activity.ChannelId, "emulator", StringComparison.InvariantCultureIgnoreCase) &&
-                (await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false)))
+                (await CredentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false)))
             {
                 OAuthClientConfig.EmulateOAuthCards = true;
             }
@@ -1042,7 +1058,7 @@ namespace Microsoft.Bot.Builder
                 }
                 else
                 {
-                    var emptyCredentials = (_channelProvider != null && _channelProvider.IsGovernment()) ?
+                    var emptyCredentials = (ChannelProvider != null && ChannelProvider.IsGovernment()) ?
                         MicrosoftGovernmentAppCredentials.Empty :
                         MicrosoftAppCredentials.Empty;
                     connectorClient = new ConnectorClient(new Uri(serviceUrl), emptyCredentials, customHttpClient: _httpClient);
@@ -1087,10 +1103,10 @@ namespace Microsoft.Bot.Builder
             }
 
             // NOTE: we can't do async operations inside of a AddOrUpdate, so we split access pattern
-            var appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
-            appCredentials = _channelProvider != null && _channelProvider.IsGovernment() ?
-                new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient, _logger) :
-                new MicrosoftAppCredentials(appId, appPassword, _httpClient, _logger, oAuthScope);
+            var appPassword = await CredentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
+            appCredentials = ChannelProvider != null && ChannelProvider.IsGovernment() ?
+                new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient, Logger) :
+                new MicrosoftAppCredentials(appId, appPassword, _httpClient, Logger, oAuthScope);
             
             // Cache the credentials for later use
             _appCredentialMap[cacheKey] = appCredentials;
