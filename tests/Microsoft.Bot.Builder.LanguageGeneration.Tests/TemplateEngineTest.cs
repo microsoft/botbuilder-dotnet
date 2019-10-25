@@ -913,19 +913,29 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("ExpressionExtract.lg"));
 
-            var evaled = engine.EvaluateTemplate("templateWithBrackets");
+            var evaled1 = engine.EvaluateTemplate("templateWithBrackets");
+            var evaled2 = engine.EvaluateTemplate("templateWithBrackets2");
+            var espectedResult = "don't mix {} and {}";
+            Assert.AreEqual(evaled1, espectedResult);
+            Assert.AreEqual(evaled2, espectedResult);
 
-            Assert.AreEqual(evaled, "don't mix {} and {}");
+            evaled1 = engine.EvaluateTemplate("templateWithQuotationMarks");
+            evaled2 = engine.EvaluateTemplate("templateWithQuotationMarks2");
+            espectedResult = "don't mix {\"} and \"'";
+            Assert.AreEqual(evaled1, espectedResult);
+            Assert.AreEqual(evaled2, espectedResult);
 
-            evaled = engine.EvaluateTemplate("templateWithQuotationMarks");
+            evaled1 = engine.EvaluateTemplate("templateWithUnpairedBrackets1");
+            evaled2 = engine.EvaluateTemplate("templateWithUnpairedBrackets12");
+            espectedResult = "{prefix 5 sufix";
+            Assert.AreEqual(evaled1, espectedResult);
+            Assert.AreEqual(evaled2, espectedResult);
 
-            Assert.AreEqual(evaled, "don't mix {\"} and \"'");
-
-            evaled = engine.EvaluateTemplate("templateWithUnpairedBrackets1");
-            Assert.AreEqual(evaled, "{prefix 5 sufix");
-
-            evaled = engine.EvaluateTemplate("templateWithUnpairedBrackets2");
-            Assert.AreEqual(evaled, "prefix 5 sufix}");
+            evaled1 = engine.EvaluateTemplate("templateWithUnpairedBrackets2");
+            evaled2 = engine.EvaluateTemplate("templateWithUnpairedBrackets22");
+            espectedResult = "prefix 5 sufix}";
+            Assert.AreEqual(evaled1, espectedResult);
+            Assert.AreEqual(evaled2, espectedResult);
         }
 
         public class LoopClass

@@ -10,3 +10,36 @@
 
 # templateWithUnpairedBrackets2
 - prefix {length('hello')} sufix}
+
+# templateWithBrackets2
+- {structuredTemplateWithBrackets().key}
+
+# structuredTemplateWithBrackets
+[MyStruct
+    key = don't mix {'{}'} and {concat('{',"}")}
+]
+
+# templateWithQuotationMarks2
+- {structuredTemplateWithQuotationMarks().key}
+
+# structuredTemplateWithQuotationMarks
+[MyStruct
+    key = don't mix {'{"}'} and {concat('"',"'")}
+]
+
+# templateWithUnpairedBrackets12
+- {structuredTemplateWithUnpairedBrackets1().key}
+
+# structuredTemplateWithUnpairedBrackets1
+[MyStruct
+    key = {prefix {length('hello')} sufix
+]
+
+# templateWithUnpairedBrackets22
+- {structuredTemplateWithUnpairedBrackets2().key}
+
+
+# structuredTemplateWithUnpairedBrackets2
+[MyStruct
+    key = prefix {length('hello')} sufix}
+]
