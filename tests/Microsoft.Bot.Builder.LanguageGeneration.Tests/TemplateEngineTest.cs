@@ -877,6 +877,37 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             engine.EvaluateTemplate("template1", new { scope = loopClass1 });
         }
 
+        [TestMethod]
+        public void TestExpandTemplateWithStructuredLG()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("StructuredTemplate.lg"));
+
+            // without scope
+            var evaled = engine.ExpandTemplate("AskForAge.prompt");
+            Assert.AreEqual(4, evaled.Count);
+            var expectedResults = new List<string>()
+            {
+                "{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"how old are you?\"}",
+                "{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"what's your age?\"}",
+                "{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"how old are you?\"}",
+                "{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"what's your age?\"}"
+            };
+
+            expectedResults.ForEach(x => Assert.AreEqual(true, evaled.Contains(x)));
+
+            evaled = engine.ExpandTemplate("ExpanderT1");
+            Assert.AreEqual(4, evaled.Count);
+            expectedResults = new List<string>()
+            {
+                "{\"$type\":\"MyStruct\",\"text\":\"Hi\",\"speak\":\"how old are you?\"}",
+                "{\"$type\":\"MyStruct\",\"text\":\"Hi\",\"speak\":\"what's your age?\"}",
+                "{\"$type\":\"MyStruct\",\"text\":\"Hello\",\"speak\":\"how old are you?\"}",
+                "{\"$type\":\"MyStruct\",\"text\":\"Hello\",\"speak\":\"what's your age?\"}"
+            };
+
+            expectedResults.ForEach(x => Assert.AreEqual(true, evaled.Contains(x)));
+        }
+
         public class LoopClass
         {
             public string Name { get; set; }
