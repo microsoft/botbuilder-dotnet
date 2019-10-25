@@ -209,16 +209,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         result.AddRange(Visit(context.templateBody()));
                     }
-
-                    var parameters = context.templateNameLine().parameters();
-                    if (parameters != null)
-                    {
-                        if (parameters.CLOSE_PARENTHESIS() == null
-                               || parameters.OPEN_PARENTHESIS() == null)
-                        {
-                            result.Add(BuildLGDiagnostic($"parameters: {parameters.GetText()} format error", context: context.templateNameLine()));
-                        }
-                    }
                 }
 
                 return result;

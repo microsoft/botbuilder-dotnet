@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             object eventValue = null;
             if (this.EventValue != null)
             {
-                eventValue = new ExpressionEngine().Parse(this.EventValue).TryEvaluate(dc.State);
+                eventValue = new ExpressionEngine().Parse(this.EventValue).TryEvaluate(dc.GetState());
             }
 
             if (dc.Parent == null)
