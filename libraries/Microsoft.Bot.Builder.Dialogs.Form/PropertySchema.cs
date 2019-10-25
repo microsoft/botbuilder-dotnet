@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 if (path != string.Empty)
                 {
                     // TODO: Should probably be smarter about this--there may not be an entity.
-                    list.Add(path);
+                    list.Add(path + "Entity");
                 }
 
                 if (Type == "integer" || Type == "float")

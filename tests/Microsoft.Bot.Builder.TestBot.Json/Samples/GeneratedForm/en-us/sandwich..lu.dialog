@@ -1,6 +1,4 @@
-
 {
-    "$schema": "",
     "$type": "Microsoft.MultiLanguageRecognizer",
     "recognizers": {
         "en-us": "sandwich.en-us.lu",

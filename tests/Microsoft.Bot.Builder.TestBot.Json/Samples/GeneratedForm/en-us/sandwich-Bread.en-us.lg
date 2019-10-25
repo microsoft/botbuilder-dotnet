@@ -1,14 +1,11 @@
 # AskBread
-- [askEnum('Bread', BreadName())]
-
-# ClarifyBread
-- [clarifyEnum('Bread', BreadName())]
-
-# HelpBread
-- [helpProperty('Bread', BreadName())]
+- {askEnum('Bread')}
 
 # BreadName
-- bread 
+- bread
 
-[sandwich-common.en-us.lg](./sandwich-common.en-us.lg)
- 
+# Bread(val)
+- {BreadEntity(val)}
+
+[sandwich-BreadEntity.en-us.lg](sandwich-BreadEntity.en-us.lg)
+[sandwich-common.en-us.lg](sandwich-common.en-us.lg)

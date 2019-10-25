@@ -1,0 +1,13 @@
+
+{
+    "$schema": "",
+    "$type": "Microsoft.OnClarifyEntity",
+    "entity": "CheeseEntity",
+    "actions": [
+        {
+            "$type": "Microsoft.Ask",
+            "activity": "@{clarifyCheeseEntity()}",
+            "expectedProperties": ["Cheese"]
+        }
+    ]
+}

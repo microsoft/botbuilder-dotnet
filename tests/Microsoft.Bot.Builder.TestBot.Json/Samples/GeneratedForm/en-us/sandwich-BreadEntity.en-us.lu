@@ -1,0 +1,30 @@
+$BreadEntity:multiGrainWheat=
+- multi
+- grain
+- wheat
+- multi grain
+- grain wheat
+- multi grain wheat
+
+$BreadEntity:rye=
+- rye
+
+$BreadEntity:white=
+- white
+
+$BreadEntity:wholeWheat=
+- whole
+- wheat
+- whole wheat
+# None
+- multi
+- grain
+- wheat
+- multi grain
+- grain wheat
+- multi grain wheat
+- rye
+- white
+- whole
+- wheat
+- whole wheat

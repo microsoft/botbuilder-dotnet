@@ -202,7 +202,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             context.State.RemoveValue(LASTEVENT);
                             // NOTE: This assumes the existance of a property entity which contains the normalized
                             // names of the properties.
-                            if (entities.TryGetValue("PROPERTYNAME", out var infos) && infos.Count() == 1)
+                            if (entities.TryGetValue("PROPERTYName", out var infos) && infos.Count() == 1)
                             {
                                 var info = infos[0];
                                 var choices = queues.ChooseProperty[0];

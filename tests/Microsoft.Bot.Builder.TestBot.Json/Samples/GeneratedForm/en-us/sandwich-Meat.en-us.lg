@@ -1,14 +1,11 @@
 # AskMeat
-- [askEnum('Meat', MeatName())]
-
-# ClarifyMeat
-- [clarifyEnum('Meat', MeatName())]
-
-# HelpMeat
-- [helpProperty('Meat', MeatName())]
+- {askEnum('Meat')}
 
 # MeatName
-- meat 
+- meat
 
-[sandwich-common.en-us.lg](./sandwich-common.en-us.lg)
- 
+# Meat(val)
+- {MeatEntity(val)}
+
+[sandwich-MeatEntity.en-us.lg](sandwich-MeatEntity.en-us.lg)
+[sandwich-common.en-us.lg](sandwich-common.en-us.lg)

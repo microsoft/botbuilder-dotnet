@@ -1,11 +1,12 @@
+
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$schema": "",
     "$type": "Microsoft.OnAsk",
-    "condition": "!$Cheese",
+    "condition":"!$Cheese",
     "actions": [
         {
             "$type": "Microsoft.Ask",
-            "activity": "[AskCheese]",
+            "activity": "@{AskCheese()}",
             "expectedProperties": [
                 "Cheese"
             ]

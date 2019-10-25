@@ -1,34 +1,36 @@
+
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$schema": "",
     "$type": "Microsoft.OnSetProperty",
-    "property": "Meat",
+    "property": "Bread",
+    "entity": "BreadEntity",
     "actions": [
         {
             "$type": "Microsoft.IfCondition",
             "condition": "!turn.dialogevent.value.expected",
-            "actions": [
+            "actions":[               
                 {
                     "$type": "Microsoft.IfCondition",
-                    "condition": "!$Meat",
-                    "actions": [
+                    "condition": "!$Bread",
+                    "actions":[
                         {
                             "$type": "Microsoft.SendActivity",
-                            "activity": "[unexpectedPropertySet('Meat', @Meat, MeatName())]"
+                            "activity": "@{unexpectedPropertySet('Bread', @BreadEntity)}"
                         }
                     ],
-                    "elseActions": [
+                    "elseActions":[
                         {
                             "$type": "Microsoft.SendActivity",
-                            "activity": "[unexpectedPropertyChange('Meat', @Meat, MeatName(), $Meat)]"
+                            "activity": "@{unexpectedPropertyChange('Bread', @BreadEntity, $Bread)}"
                         }
                     ]
-                }
-            ]
+                }                
+            ]           
         },
         {
             "$type": "Microsoft.SetProperty",
-            "property": "$Meat",
-            "value": "@Meat"
+            "property": "$Bread",
+            "value": "@BreadEntity"
         }
     ]
 }

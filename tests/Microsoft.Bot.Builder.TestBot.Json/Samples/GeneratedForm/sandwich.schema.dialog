@@ -57,6 +57,35 @@
         },
         "Name": {
             "type": "string"
+        },
+        "CancelConfirmation": {
+            "type": "string",
+            "$mappings": [
+                "Confirmation"
+            ],
+            "$templates": [
+                "CancelConfirmation.dialog",
+                "CancelConfirmationSet.dialog"
+            ]
+        },
+        "CompleteConfirmation": {
+            "type": "string",
+            "$mappings": [
+                "Confirmation"
+            ],
+            "$templates": [
+                "CompleteConfirmation.dialog",
+                "CompleteConfirmationSet.dialog"
+            ]
+        },
+        "PropertyToChange": {
+            "type": "string",
+            "$mappings": [
+                "PROPERTYName"
+            ],
+            "$templates": [
+                "PropertyToChangeSet.dialog"
+            ]
         }
     },
     "required": [
@@ -66,5 +95,22 @@
     ],
     "$requires": [
         "standard.schema.dialog"
-    ]
+    ],
+    "$expectedOnly": [
+        "CancelConfirmation",
+        "CompleteConfirmation",
+        "PropertyToChange"
+    ],
+    "$templates": [
+        "help.lu",
+        "locale.lu",
+        "locale.lg",
+        "BeginDialog.dialog",
+        "ChooseProperty.dialog",
+        "Help.dialog",
+        "luconfig.json",
+        "lu.dialog",
+        "Main.dialog"
+    ],
+    "definition": {}
 }

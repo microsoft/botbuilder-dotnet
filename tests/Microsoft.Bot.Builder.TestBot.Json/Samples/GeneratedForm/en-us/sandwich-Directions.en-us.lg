@@ -1,7 +1,4 @@
 # AskDirections
-- [askString('Directions', DirectionsName())]
+- {askString('Directions')}
 
-# DirectionsName
-- directions 
-[sandwich-common.en-us.lg](./sandwich-common.en-us.lg)
- 
+[sandwich-common.en-us.lg](sandwich-common.en-us.lg)

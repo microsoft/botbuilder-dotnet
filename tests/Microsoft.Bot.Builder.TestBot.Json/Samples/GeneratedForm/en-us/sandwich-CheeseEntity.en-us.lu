@@ -1,0 +1,36 @@
+$CheeseEntity:american=
+- american
+
+$CheeseEntity:cheddar=
+- cheddar
+
+$CheeseEntity:feta=
+- feta
+
+$CheeseEntity:gouda=
+- gouda
+
+$CheeseEntity:pepper jack=
+- pepper
+- jack
+- pepper jack
+
+$CheeseEntity:provolone=
+- provolone
+
+$CheeseEntity:swiss=
+- swiss
+
+$CheeseEntity:none=
+- none
+# None
+- american
+- cheddar
+- feta
+- gouda
+- pepper
+- jack
+- pepper jack
+- provolone
+- swiss
+- none

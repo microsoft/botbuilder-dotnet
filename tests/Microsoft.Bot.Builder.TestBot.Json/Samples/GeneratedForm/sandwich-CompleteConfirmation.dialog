@@ -1,15 +1,16 @@
+
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$schema": "",
     "$type": "Microsoft.OnAsk",
     "condition": "empty(where(dialog.requiredProperties, property, !dialog[property]))",
     "actions": [
         {
             "$type": "Microsoft.SendActivity",
-            "activity": "[readForm]"
+            "activity": "@{readForm()}"
         },
         {
             "$type": "Microsoft.Ask",
-            "activity": "[changeSlot]",
+            "activity": "@{confirmChange()}",
             "expectedProperties": [
                 "CompleteConfirmation"
             ]

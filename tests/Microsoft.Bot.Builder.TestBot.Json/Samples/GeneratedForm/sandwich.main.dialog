@@ -1,10 +1,27 @@
+
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$schema": "",
     "$type": "Microsoft.FormDialog",
     "recognizer": "sandwich.lu",
     "generator": "sandwich.lg",
-    "schema": "sandwich.form",
-    "triggers": [ "sandwich-DirectionsAsk", "sandwich-DirectionsHelp", "sandwich-DirectionsSet", "sandwich-LengthAsk", "sandwich-LengthHelp", "sandwich-LengthSet", "sandwich-BreadAsk", "sandwich-BreadClarify", "sandwich-BreadClear", "sandwich-BreadHelp", "sandwich-BreadSet", "sandwich-CheeseAsk", "sandwich-CheeseClarify", "sandwich-CheeseClear", "sandwich-CheeseHelp", "sandwich-CheeseSet", "sandwich-MeatAsk", "sandwich-MeatClarify", "sandwich-MeatClear", "sandwich-MeatHelp", "sandwich-MeatSet", "sandwich-NameAsk", "sandwich-NameHelp", "sandwich-NameSet", "sandwich-begindialog", "sandwich-cancelconfirmation", "sandwich-cancelconfirmationset", "sandwich-chooseproperty", "sandwich-complete", "sandwich-completeconfirmationset", "sandwich-help", "sandwich-propertytochangeset",
-        "sandwich-MeatAndCheeseAsk" 
-    ]
+    "schema": "sandwich.schema",
+    "triggers": [ 
+        "sandwich-BreadAsk",
+"sandwich-BreadSetBreadEntity",
+"sandwich-BreadEntityClarify",
+"sandwich-CheeseAsk",
+"sandwich-CheeseSetCheeseEntity",
+"sandwich-CheeseEntityClarify",
+"sandwich-MeatAsk",
+"sandwich-MeatSetMeatEntity",
+"sandwich-MeatEntityClarify",
+"sandwich-CancelConfirmation",
+"sandwich-CancelConfirmationSet",
+"sandwich-CompleteConfirmation",
+"sandwich-CompleteConfirmationSet",
+"sandwich-PropertyToChangeSet",
+"sandwich-BeginDialog",
+"sandwich-ChooseProperty",
+"sandwich-Help" 
+        ]
 }

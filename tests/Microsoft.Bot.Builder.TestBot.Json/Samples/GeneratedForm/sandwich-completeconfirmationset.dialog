@@ -1,5 +1,6 @@
+
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$schema": "",
     "$type": "Microsoft.OnSetProperty",
     "property": "CompleteConfirmation",
     "actions": [
@@ -19,7 +20,7 @@
             "elseActions":[
                 {
                     "$type": "Microsoft.Ask",
-                    "activity": "Which slot do you want to change?",
+                    "activity": "@{chooseProperty()}",
                     "expectedProperties": [
                         "PropertyToChange"
                     ]

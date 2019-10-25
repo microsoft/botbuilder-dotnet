@@ -1,13 +1,11 @@
-
 $Confirmation:yes=
- -yes
+- sure
+- yeah
+- you bet
+- yes please
 
 $Confirmation:no=
- -no
-
-
-# None
-- yes
-
-- no
-
+- no way
+- no thank you
+- never
+- not now

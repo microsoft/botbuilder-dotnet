@@ -1,7 +1,4 @@
 # AskName
-- [askString('Name', NameName())]
+- {askString('Name')}
 
-# NameName
-- name 
-[sandwich-common.en-us.lg](./sandwich-common.en-us.lg)
- 
+[sandwich-common.en-us.lg](sandwich-common.en-us.lg)

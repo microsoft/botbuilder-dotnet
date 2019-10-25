@@ -1,14 +1,11 @@
 # AskCheese
-- [askEnum('Cheese', CheeseName())]
-
-# ClarifyCheese
-- [clarifyEnum('Cheese', CheeseName())]
-
-# HelpCheese
-- [helpProperty('Cheese', CheeseName())]
+- {askEnum('Cheese')}
 
 # CheeseName
-- cheese 
+- cheese
 
-[sandwich-common.en-us.lg](./sandwich-common.en-us.lg)
- 
+# Cheese(val)
+- {CheeseEntity(val)}
+
+[sandwich-CheeseEntity.en-us.lg](sandwich-CheeseEntity.en-us.lg)
+[sandwich-common.en-us.lg](sandwich-common.en-us.lg)

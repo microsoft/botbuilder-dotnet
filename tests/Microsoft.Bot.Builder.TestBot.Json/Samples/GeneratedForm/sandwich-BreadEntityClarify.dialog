@@ -1,0 +1,13 @@
+
+{
+    "$schema": "",
+    "$type": "Microsoft.OnClarifyEntity",
+    "entity": "BreadEntity",
+    "actions": [
+        {
+            "$type": "Microsoft.Ask",
+            "activity": "@{clarifyBreadEntity()}",
+            "expectedProperties": ["Bread"]
+        }
+    ]
+}
