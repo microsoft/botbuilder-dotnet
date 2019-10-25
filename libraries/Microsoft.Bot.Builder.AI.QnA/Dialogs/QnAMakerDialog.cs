@@ -12,7 +12,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA
+namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 {
     /// <summary>
     /// QnAMaker dialog which uses QnAMaker to get an answer.
@@ -29,7 +29,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private const string DefaultCardNoMatchText = "None of the above.";
         private const string DefaultCardNoMatchResponse = "Thanks for the feedback.";
 
-        private readonly HttpClient httpClient;
         private float maximumScoreForLowScoreVariation = 0.95F;
         private string knowledgeBaseId;
         private string hostName;
@@ -64,9 +63,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
             this.activeLearningCardTitle = activeLearningCardTitle;
             this.cardNoMatchText = cardNoMatchText;
             this.strictFilters = strictFilters;
-            this.httpClient = httpClient;
             this.noAnswer = noAnswer;
             this.cardNoMatchResponse = cardNoMatchResponse;
+            this.HttpClient = httpClient;
 
             // add waterfall steps
             this.AddStep(CallGenerateAnswerAsync);
@@ -88,6 +87,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
             this.AddStep(DisplayQnAResultAsync);
         }
 
+        public HttpClient HttpClient { get; set; }
+
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
@@ -102,8 +103,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             var dialogOptions = new QnAMakerDialogOptions()
             {
-                Options = GetQnAMakerOptions(dc),
-                ResponseOptions = GetQnAResponseOptions(dc)
+                Options = await GetQnAMakerOptionsAsync(dc).ConfigureAwait(false),
+                ResponseOptions = await GetQnAResponseOptionsAsync(dc).ConfigureAwait(false)
             };
 
             if (options != null)
@@ -116,35 +117,43 @@ namespace Microsoft.Bot.Builder.AI.QnA
             return await base.BeginDialogAsync(dc, dialogOptions, cancellationToken).ConfigureAwait(false);
         }
 
-        protected virtual QnAMaker GetQnAMakerClient(DialogContext dc)
+        protected async virtual Task<IQnAMakerClient> GetQnAMakerClientAsync(DialogContext dc)
         {
+            var qnaClient = dc.Context.TurnState.Get<IQnAMakerClient>();
+            if (qnaClient != null)
+            {
+                // return mock client
+                return qnaClient;
+            }
+
             var endpoint = new QnAMakerEndpoint
             {
                 EndpointKey = this.endpointKey,
                 Host = this.hostName,
                 KnowledgeBaseId = this.knowledgeBaseId
             };
-            return new QnAMaker(endpoint, GetQnAMakerOptions(dc), httpClient);
+            var options = await GetQnAMakerOptionsAsync(dc).ConfigureAwait(false);
+            return new QnAMaker(endpoint, options, HttpClient);
         }
 
-        protected virtual QnAMakerOptions GetQnAMakerOptions(DialogContext dc)
+        protected virtual Task<QnAMakerOptions> GetQnAMakerOptionsAsync(DialogContext dc)
         {
-            return new QnAMakerOptions
+            return Task.FromResult(new QnAMakerOptions
             {
                 ScoreThreshold = this.threshold,
                 StrictFilters = this.strictFilters
-            };
+            });
         }
 
-        protected virtual QnADialogResponseOptions GetQnAResponseOptions(DialogContext dc)
+        protected virtual Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
         {
-            return new QnADialogResponseOptions
+            return Task.FromResult(new QnADialogResponseOptions
             {
                 NoAnswer = noAnswer,
                 ActiveLearningCardTitle = activeLearningCardTitle ?? DefaultCardTitle,
                 CardNoMatchText = cardNoMatchText ?? DefaultCardNoMatchText,
                 CardNoMatchResponse = cardNoMatchResponse
-            };
+            });
         }
 
         private async Task<DialogTurnResult> CallGenerateAnswerAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -173,7 +182,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             // Calling QnAMaker to get response.
-            var qnaClient = GetQnAMakerClient(stepContext);
+            var qnaClient = await GetQnAMakerClientAsync(stepContext).ConfigureAwait(false);
             var response = await qnaClient.GetAnswersRawAsync(stepContext.Context, dialogOptions.Options).ConfigureAwait(false);
 
             // Resetting previous query.
@@ -251,7 +260,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     var feedbackRecords = new FeedbackRecords { Records = records };
 
                     // Call Active Learning Train API
-                    var qnaClient = GetQnAMakerClient(stepContext);
+                    var qnaClient = await GetQnAMakerClientAsync(stepContext).ConfigureAwait(false);
                     await qnaClient.CallTrainAsync(feedbackRecords).ConfigureAwait(false);
 
                     return await stepContext.NextAsync(new List<QueryResult>() { qnaResult }, cancellationToken).ConfigureAwait(false);

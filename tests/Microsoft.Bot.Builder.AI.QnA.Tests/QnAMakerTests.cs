@@ -10,10 +10,14 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.AI.QnA;
+using Microsoft.Bot.Builder.AI.QnA.Dialogs;
+using Microsoft.Bot.Builder.AI.QnA.Tests;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Configuration;
@@ -25,7 +29,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RichardSzalay.MockHttp;
 
-namespace Microsoft.Bot.Builder.AI.QnA.Tests
+namespace Microsoft.Bot.Builder.AI.Tests
 {
     [TestClass]
     public class QnAMakerTests
@@ -1594,8 +1598,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     {
                         Actions = new List<Dialog>()
                         {
-                            new QnAMakerDialog(knowledgeBaseId: knowlegeBaseId, hostName: host, endpointKey: endpointKey, httpClient: client)
+                            new QnAMakerDialog2()
                             {
+                                KnowledgeBaseId = knowlegeBaseId, 
+                                HostName = host, 
+                                EndpointKey = endpointKey, 
+                                HttpClient = client,
                                 NoAnswer = noAnswerActivity
                             }
                         }

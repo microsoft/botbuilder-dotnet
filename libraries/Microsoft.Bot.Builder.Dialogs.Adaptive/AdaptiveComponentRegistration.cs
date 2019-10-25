@@ -7,6 +7,7 @@ using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
@@ -109,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             // Dialogs
             yield return new TypeRegistration<AdaptiveDialog>("Microsoft.AdaptiveDialog");
-            yield return new TypeRegistration<QnAMakerDialog>("Microsoft.QnAMakerDialog");
+            yield return new TypeRegistration<QnAMakerDialog2>("Microsoft.QnAMakerDialog");
         }
 
         public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)
