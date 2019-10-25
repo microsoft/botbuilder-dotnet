@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards;
@@ -14,27 +16,29 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
-    /*
-     * After installing this bot you will need to click on the 3 dots to pull up the extension menu to select the bot. Once you do you do 
-     * see the extension pop a task module.
-     */
-
     public class IntegrationBot : TeamsActivityHandler
     {
+        private List<string> _activityIds;
+
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.Value != null)
+            if (turnContext.Activity.Text != null)
             {
-                // This was a message from the card.
-                var obj = (JObject)turnContext.Activity.Value;
-                var answer = obj["Answer"]?.ToString();
-                var choices = obj["Choices"]?.ToString();
-                await turnContext.SendActivityAsync(MessageFactory.Text($"Your answer '{answer}' and chose '{choices}'."), cancellationToken);
+                turnContext.Activity.RemoveRecipientMention();
+                string actualText = turnContext.Activity.Text;
+                if (!string.IsNullOrWhiteSpace(actualText))
+                {
+                    actualText = actualText.Trim();
+                    await HandleBotCommand(turnContext, actualText, cancellationToken);
+                }
             }
             else
             {
-                // This is a regular text message.
-                await turnContext.SendActivityAsync(MessageFactory.Text($"Hello from the ActionBasedMessagingExtensionFetchTaskBot."), cancellationToken);
+                await turnContext.SendActivityAsync(MessageFactory.Text("App sent a message with empty text"), cancellationToken);
+                if (turnContext.Activity.Value != null)
+                {
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"but with value {JsonConvert.SerializeObject(turnContext.Activity.Value)}"), cancellationToken);
+                }
             }
         }
 
@@ -182,6 +186,147 @@ namespace Microsoft.BotBuilderSamples.Bots
             // OnTeamsMessagingExtensionBotMessagePreviewSendAsync handler's return values) the submit values will come in here.
             var reply = MessageFactory.Text("OnTeamsMessagingExtensionCardButtonClickedAsync Value: " + JsonConvert.SerializeObject(turnContext.Activity.Value));
             await turnContext.SendActivityAsync(reply, cancellationToken);
+        }
+
+        private async Task HandleBotCommand(ITurnContext<IMessageActivity> turnContext, string actualText, CancellationToken cancellationToken)
+        {
+            switch (actualText.ToLowerInvariant())
+            {
+                case "delete":
+                    await HandleDeleteActivities(turnContext, cancellationToken);
+                    break;
+                case "1":
+                    await SendAdaptiveCard1(turnContext, cancellationToken);
+                    break;
+                case "2":
+                    await SendAdaptiveCard2(turnContext, cancellationToken);
+                    break;
+                case "3":
+                    await SendAdaptiveCard3(turnContext, cancellationToken);
+                    break;
+                case "hero":
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(Cards.GetHeroCard().ToAttachment()), cancellationToken);
+                    break;
+                case "thumbnail":
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(Cards.GetThumbnailCard().ToAttachment()), cancellationToken);
+                    break;
+                case "receipt":
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(Cards.GetReceiptCard().ToAttachment()), cancellationToken);
+                    break;
+                case "signin":
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(Cards.GetSigninCard().ToAttachment()), cancellationToken);
+                    break;
+                case "carousel":
+                    // NOTE: if cards are NOT the same height in a carousel, Teams will instead display as AttachmentLayoutTypes.List
+                    await turnContext.SendActivityAsync(
+                        MessageFactory.Carousel(new[] { Cards.GetHeroCard().ToAttachment(), Cards.GetHeroCard().ToAttachment(), Cards.GetHeroCard().ToAttachment() }),
+                        cancellationToken);
+                    break;
+                case "list":
+                    // NOTE: MessageFactory.Attachment with multiple attachments will default to AttachmentLayoutTypes.List
+                    await turnContext.SendActivityAsync(
+                        MessageFactory.Attachment(new[] { Cards.GetHeroCard().ToAttachment(), Cards.GetHeroCard().ToAttachment(), Cards.GetHeroCard().ToAttachment() }),
+                        cancellationToken);
+                    break;
+                case "o365":
+                    await SendO365CardAttachment(turnContext, cancellationToken);
+                    break;
+                case "file":
+                    await SendFileCard(turnContext, cancellationToken);
+                    break;
+                case "show members":
+                    await ShowMembers(turnContext, cancellationToken);
+                    break;
+                case "show channels":
+                    await ShowChannels(turnContext, cancellationToken);
+                    break;
+                case "show details":
+                    await ShowDetails(turnContext, cancellationToken);
+                    break;
+                case "task module":
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(GetTaskModuleHeroCard()), cancellationToken);
+                    break;
+                default:
+                    await SendMessageAndLogActivityId(turnContext, $"{turnContext.Activity.Text}", cancellationToken);
+                    foreach (var activityId in _activityIds)
+                    {
+                        var newActivity = MessageFactory.Text(turnContext.Activity.Text);
+                        newActivity.Id = activityId;
+                        await turnContext.UpdateActivityAsync(newActivity, cancellationToken);
+                    }
+                    break;
+            }
+        }
+
+        private async Task ShowDetails(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task ShowChannels(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task ShowMembers(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task SendFileCard(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task SendO365CardAttachment(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task SendAdaptiveCard3(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task SendAdaptiveCard2(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task SendAdaptiveCard1(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task HandleDeleteActivities(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            foreach (var activityId in _activityIds)
+            {
+                await turnContext.DeleteActivityAsync(activityId, cancellationToken);
+            }
+
+            _activityIds.Clear();
+        }
+
+        private Attachment GetTaskModuleHeroCard()
+        {
+            return new HeroCard()
+            {
+                Title = "Task Module Invocation from Hero Card",
+                Subtitle = "This is a hero card with a Task Module Action button.  Click the button to show an Adaptive Card within a Task Module.",
+                Buttons = new List<CardAction>()
+                    {
+                        new TaskModuleAction("Adaptive Card", new { data = "adaptivecard" }),
+                    },
+            }.ToAttachment();
+        }
+
+        private async Task SendMessageAndLogActivityId(ITurnContext turnContext, string text, CancellationToken cancellationToken)
+        {
+            // We need to record the Activity Id from the Activity just sent in order to understand what the reaction is a reaction too. 
+            var replyActivity = MessageFactory.Text(text);
+            var resourceResponse = await turnContext.SendActivityAsync(replyActivity, cancellationToken);
+            _activityIds.Add(resourceResponse.Id);
         }
     }
 }
