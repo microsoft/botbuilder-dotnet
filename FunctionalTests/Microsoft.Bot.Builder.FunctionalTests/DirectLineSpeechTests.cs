@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
             // Assert
             Assert.IsNotNull(botAnswer);
-            Assert.AreEqual(string.Format("Echo: {0}", SoundFileMessage), botAnswer.Message);
+            Assert.AreEqual(string.Format("Echo: {0}.", SoundFileMessage), botAnswer.Message);
         }
 
         /// <summary>
