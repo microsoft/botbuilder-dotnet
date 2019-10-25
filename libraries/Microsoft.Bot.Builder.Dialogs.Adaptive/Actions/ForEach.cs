@@ -74,15 +74,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
 
                 itemsProperty = new ExpressionEngine().Parse(this.ItemsProperty);
-                var (itemList, error) = itemsProperty.TryEvaluate(dc.State);
+                var (itemList, error) = itemsProperty.TryEvaluate(dc.GetState());
 
                 if (error == null)
                 {
                     var item = this.GetItem(itemList, offset);
                     if (item != null)
                     {
-                        dc.State.SetValue(VALUE, item);
-                        dc.State.SetValue(INDEX, offset);
+                        dc.GetState().SetValue(VALUE, item);
+                        dc.GetState().SetValue(INDEX, offset);
                         var changes = new ActionChangeList()
                         {
                             ChangeType = ActionChangeType.InsertActions,

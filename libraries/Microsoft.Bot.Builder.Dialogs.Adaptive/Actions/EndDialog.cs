@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (this.Value != null)
             {
-                var (result, error) = this.value.TryEvaluate(dc.State);
+                var (result, error) = this.value.TryEvaluate(dc.GetState());
                 return await EndParentDialogAsync(dc, result, cancellationToken).ConfigureAwait(false);
             }
 
