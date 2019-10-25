@@ -1,9 +1,7 @@
 > This file contains the generic templates to use for properties of particular types.
-> It is copied to the output because it has the locale in it.
-> They are called by property specific .lg files.
 
-> TODO: The turn parameters are because of a bug in the LG engine where parameterized templates do not have access to the
-> global scopes.  There is a DCR filed and when fized we should revert here and in the calls to this.
+# welcome
+- Welcome!
 
 # name(property)
 - {template(concat(property, 'Name'))}

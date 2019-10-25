@@ -3,5 +3,10 @@
     "$schema": "",
     "$type": "Microsoft.OnBeginDialog",
     "$comment": "TODO: This is a hack to work around the lack of a way to remit activity or not when invoked.",
-    "actions": []
+    "actions":  [
+        {
+            "$type": "Microsoft.SendActivity",
+            "activity": "@{welcome()}"           
+        }
+    ]
 }

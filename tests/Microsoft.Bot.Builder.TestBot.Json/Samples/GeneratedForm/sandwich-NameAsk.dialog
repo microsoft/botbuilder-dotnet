@@ -1,0 +1,30 @@
+
+{
+    "$schema": "",
+    "$type": "Microsoft.OnAsk",
+    "condition":"and(!$Name, contains(dialog.requiredProperties, 'Name'))",
+    "actions": [
+        {
+            "$type": "Microsoft.IfCondition",
+            "condition": "contains(turn.schema.properties['Name'].$mappings, 'utterance')",
+            "actions":[
+                {
+                    "$type": "Microsoft.Ask",
+                    "activity": "@{AskName()}",
+                    "expectedProperties": [
+                         "utterance","Name"
+            ]
+                }
+            ],
+            "elseActions":[
+                {
+                    "$type": "Microsoft.Ask",
+                    "activity": "@{AskName()}",
+                    "expectedProperties": [
+                        "Name"
+                    ]
+                }
+            ]
+        }
+    ]
+}

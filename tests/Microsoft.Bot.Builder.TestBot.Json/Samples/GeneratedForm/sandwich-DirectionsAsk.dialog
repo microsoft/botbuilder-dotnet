@@ -1,0 +1,30 @@
+
+{
+    "$schema": "",
+    "$type": "Microsoft.OnAsk",
+    "condition":"and(!$Directions, contains(dialog.requiredProperties, 'Directions'))",
+    "actions": [
+        {
+            "$type": "Microsoft.IfCondition",
+            "condition": "contains(turn.schema.properties['Directions'].$mappings, 'utterance')",
+            "actions":[
+                {
+                    "$type": "Microsoft.Ask",
+                    "activity": "@{AskDirections()}",
+                    "expectedProperties": [
+                         "utterance","Directions"
+            ]
+                }
+            ],
+            "elseActions":[
+                {
+                    "$type": "Microsoft.Ask",
+                    "activity": "@{AskDirections()}",
+                    "expectedProperties": [
+                        "Directions"
+                    ]
+                }
+            ]
+        }
+    ]
+}

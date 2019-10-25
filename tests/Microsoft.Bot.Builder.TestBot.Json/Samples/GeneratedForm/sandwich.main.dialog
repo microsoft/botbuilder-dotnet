@@ -6,7 +6,8 @@
     "generator": "sandwich.lg",
     "schema": "sandwich.schema",
     "triggers": [ 
-        "sandwich-BreadAsk",
+        "sandwich-DirectionsAsk",
+"sandwich-BreadAsk",
 "sandwich-BreadSetBreadEntity",
 "sandwich-BreadEntityClarify",
 "sandwich-CheeseAsk",
@@ -15,6 +16,7 @@
 "sandwich-MeatAsk",
 "sandwich-MeatSetMeatEntity",
 "sandwich-MeatEntityClarify",
+"sandwich-NameAsk",
 "sandwich-CancelConfirmation",
 "sandwich-CancelConfirmationSet",
 "sandwich-CompleteConfirmation",
