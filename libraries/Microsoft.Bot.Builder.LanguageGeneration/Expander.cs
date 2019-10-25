@@ -221,6 +221,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var templateRefValues = new Dictionary<string, List<string>>();
             foreach (var idToString in idToStringDict)
             {
+                // convert id text or expression to list of evaluated values
                 if ((idToString.Value.StartsWith("@") || idToString.Value.EndsWith("{")) && idToString.Value.EndsWith("}"))
                 {
                     templateRefValues.Add(idToString.Key, this.EvalExpression(idToString.Value));
