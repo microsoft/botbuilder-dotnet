@@ -112,8 +112,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             private string currentSource = string.Empty;
             private readonly ExpressionEngine baseExpressionEngine;
-            private readonly Regex expressionRecognizeRegex = new Regex(@"@?(?<!\\)\{.+?(?<!\\)\}", RegexOptions.Compiled);
-            private readonly Regex escapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
 
             private IExpressionParser _expressionParser;
 
@@ -252,7 +250,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         if (!string.IsNullOrWhiteSpace(line))
                         {
                             var start = line.IndexOf('=');
-                            if (start < 0 && !IsPureExpression(line))
+                            if (start < 0 && !Evaluator.IsPureExpression(line))
                             {
                                 result.Add(BuildLGDiagnostic($"Structured content does not support", context: context.structuredBodyContentLine()));
                             }
@@ -262,7 +260,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                                 {
                                     var property = line.Substring(0, start).Trim().ToLower();
                                     var originValue = line.Substring(start + 1).Trim();
-                                    var valueArray = escapeSeperatorRegex.Split(originValue);
+                                    var valueArray = Evaluator.EscapeSeperatorRegex.Split(originValue);
 
                                     if (valueArray.Length == 1)
                                     {
@@ -276,7 +274,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                                         }
                                     }
                                 }
-                                else if (IsPureExpression(line))
+                                else if (Evaluator.IsPureExpression(line))
                                 {
                                     result.AddRange(CheckExpression(line, context.structuredBodyContentLine()));
                                 }
@@ -510,16 +508,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 // remove ``` ```
                 exp = exp.Substring(3, exp.Length - 6);
-                return CheckText(exp, context, true);
+                return CheckText(exp, context);
             }
 
-            private List<Diagnostic> CheckText(string exp, ParserRuleContext context, bool isMultiLineText = false)
+            private List<Diagnostic> CheckText(string exp, ParserRuleContext context)
             {
                 var result = new List<Diagnostic>();
 
-                var reg = isMultiLineText ? @"@\{[^{}]+\}" : @"@?\{[^{}]+\}";
-
-                var mc = Regex.Matches(exp, reg);
+                var mc = Evaluator.ExpressionRecognizeRegex.Matches(exp);
 
                 foreach (Match match in mc)
                 {
@@ -576,18 +572,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var range = new Range(startPosition, stopPosition);
                 message = $"source: {currentSource}. error message: {message}";
                 return new Diagnostic(range, message, severity);
-            }
-
-            private bool IsPureExpression(string exp)
-            {
-                if (string.IsNullOrWhiteSpace(exp))
-                {
-                    return false;
-                }
-
-                exp = exp.Trim();
-                var expressions = expressionRecognizeRegex.Matches(exp);
-                return expressions.Count == 1 && expressions[0].Value == exp;
             }
         }
     }

@@ -229,7 +229,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // remove ``` ```
             exp = exp.Substring(3, exp.Length - 6);
 
-            var matches = Regex.Matches(exp, @"@\{[^{}]+\}");
+            var matches = Evaluator.ExpressionRecognizeRegex.Matches(exp);
             foreach (Match matchItem in matches)
             {
                 if (matchItem.Success)

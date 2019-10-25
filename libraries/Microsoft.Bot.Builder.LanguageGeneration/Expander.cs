@@ -17,8 +17,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class Expander : LGFileParserBaseVisitor<List<string>>
     {
-        private readonly Regex expressionRecognizeRegex = new Regex(@"@?(?<!\\)\{.+?(?<!\\)\}", RegexOptions.Compiled);
-        private readonly Regex escapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
         private readonly ExpressionEngine expanderExpressionEngine;
         private readonly ExpressionEngine evaluatorExpressionEngine;
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
@@ -164,7 +162,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var property = line.Substring(0, start).Trim().ToLower();
                     var originValue = line.Substring(start + 1).Trim();
 
-                    var valueArray = escapeSeperatorRegex.Split(originValue);
+                    var valueArray = Evaluator.EscapeSeperatorRegex.Split(originValue);
                     if (valueArray.Length == 1)
                     {
                         var id = Guid.NewGuid().ToString();
@@ -385,7 +383,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // remove ``` ```
             exp = exp.Substring(3, exp.Length - 6);
             var templateRefValues = new Dictionary<string, List<string>>();
-            var matches = expressionRecognizeRegex.Matches(exp);
+            var matches = Evaluator.ExpressionRecognizeRegex.Matches(exp);
             if (matches != null)
             {
                 foreach (Match match in matches)
@@ -524,7 +522,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private List<string> EvalTextContainsExpression(string exp)
         {
             var templateRefValues = new Dictionary<string, List<string>>();
-            var matches = expressionRecognizeRegex.Matches(exp);
+            var matches = Evaluator.ExpressionRecognizeRegex.Matches(exp);
             if (matches != null)
             {
                 foreach (Match match in matches)
@@ -577,7 +575,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             exp = exp.Trim();
-            var expressions = expressionRecognizeRegex.Matches(exp);
+            var expressions = Evaluator.ExpressionRecognizeRegex.Matches(exp);
             return expressions.Count == 1 && expressions[0].Value == exp;
         }
     }

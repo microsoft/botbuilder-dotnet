@@ -15,8 +15,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class Evaluator : LGFileParserBaseVisitor<object>
     {
-        private readonly Regex expressionRecognizeRegex = new Regex(@"@?(?<!\\)\{.+?(?<!\\)\}", RegexOptions.Compiled);
-        private readonly Regex escapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
+        public static readonly Regex ExpressionRecognizeRegex = new Regex(@"@?{(((\'([^'\r\n])*?\')|(\""([^""\r\n])*?\""))|[^\r\n{}'""])*?}", RegexOptions.Compiled);
+        public static readonly Regex EscapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
         public Evaluator(List<LGTemplate> templates, ExpressionEngine expressionEngine)
@@ -33,6 +33,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public ExpressionEngine ExpressionEngine { get; }
 
         public Dictionary<string, LGTemplate> TemplateMap { get; }
+
+        public static bool IsPureExpression(string exp)
+        {
+            if (string.IsNullOrWhiteSpace(exp))
+            {
+                return false;
+            }
+
+            exp = exp.Trim();
+            var expressions = ExpressionRecognizeRegex.Matches(exp);
+            return expressions.Count == 1 && expressions[0].Value == exp;
+        }
 
         public object EvaluateTemplate(string templateName, object scope)
         {
@@ -107,7 +119,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var property = line.Substring(0, start).Trim().ToLower();
                     var originValue = line.Substring(start + 1).Trim();
 
-                    var valueArray = escapeSeperatorRegex.Split(originValue);
+                    var valueArray = EscapeSeperatorRegex.Split(originValue);
                     if (valueArray.Length == 1)
                     {
                         result[property] = EvalText(originValue);
@@ -366,7 +378,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private string EvalTextContainsExpression(string exp)
         {
             var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
-            return expressionRecognizeRegex.Replace(exp, evalutor);
+            return ExpressionRecognizeRegex.Replace(exp, evalutor);
         }
 
         private JToken EvalText(string exp)
@@ -385,18 +397,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 return Regex.Unescape(EvalTextContainsExpression(exp));
             }
-        }
-
-        private bool IsPureExpression(string exp)
-        {
-            if (string.IsNullOrWhiteSpace(exp))
-            {
-                return false;
-            }
-
-            exp = exp.Trim();
-            var expressions = expressionRecognizeRegex.Matches(exp);
-            return expressions.Count == 1 && expressions[0].Value == exp;
         }
 
         private (object value, string error) EvalByExpressionEngine(string exp, object scope)
