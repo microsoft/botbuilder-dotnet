@@ -19,9 +19,12 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.FunctionalTests
 {
     [TestClass]
-#if !FUNCTIONALTESTS
-    [Ignore("These integration tests run only when FUNCTIONALTESTS is defined")]
-#endif
+
+    // When the active Ignore tag is removed un-comment this one so these tests remain gated behind the FUNCTIONALTESTS flag.
+    //#if !FUNCTIONALTESTS
+    //    [Ignore("These integration tests run only when FUNCTIONALTESTS is defined")]
+    //#endif
+    [Ignore("DirectLine Speech tests require updates to the REST API and CLI to be able to properly provision a bot.")]
 
     public class DirectLineSpeechTests
     {
@@ -46,16 +49,6 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         [TestMethod]
         public async Task SendDirectLineSpeechVoiceMessage()
         {
-            // Currently there is no supported way to enable WebSockets on non-Windows Azure App Services
-            // as WebSockets are required for bots using DirectLine Speech, this test can only be run
-            // against the Windows bot. 
-            // Currently functional tests are run on the same environment as the bot they are testing,
-            // here we check to see if the test is running on windows and abort if it is not.
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return;
-            }
-
             GetEnvironmentVars();
 
             // Make sure the sound clip exists
