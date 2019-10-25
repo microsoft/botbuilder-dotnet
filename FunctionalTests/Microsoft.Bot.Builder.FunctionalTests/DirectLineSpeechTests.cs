@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using AdaptiveCards;
 using Microsoft.Bot.Schema;
@@ -30,8 +31,6 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         private static readonly string SoundFilePath = $"..{Path.DirectorySeparatorChar}..{Path.DirectorySeparatorChar}..{Path.DirectorySeparatorChar}Assets{Path.DirectorySeparatorChar}TellMeAJoke.wav";
         private static string speechSubscription = null;
         private static string speechBotSecret = null;
-        private static string echoGuid = null;
-        private static string input = $"Testing Azure Bot GUID: ";
         private List<MessageRecord> messages = new List<MessageRecord>();
         private List<ActivityRecord> activities = new List<ActivityRecord>();
         private WaveOutEvent player = new WaveOutEvent();
@@ -45,56 +44,18 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         }
 
         [TestMethod]
-        public async Task SendDirectLineSpeechTextMessage()
-        {
-            GetEnvironmentVars();
-
-            echoGuid = Guid.NewGuid().ToString();
-            input += echoGuid;
-
-            // Create a Dialog Service Config for use with the Direct Line Speech Connector
-            var config = DialogServiceConfig.FromBotSecret(speechBotSecret, speechSubscription, SpeechRegion);
-            config.SpeechRecognitionLanguage = "en-us";
-            config.SetProperty(PropertyId.Conversation_From_Id, FromUser);
-
-            // Create a new Dialog Service Connector for the above configuration and register to receive events
-            var connector = new DialogServiceConnector(config, AudioConfig.FromWavFileInput(SoundFilePath));
-            connector.ActivityReceived += Connector_ActivityReceived;
-
-            // Open a connection to Direct Line Speech channel. No await because the call will block until the connection closes.
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            connector.ConnectAsync();
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-
-            // Create a message activity with the input text.
-            var userMessage = new Activity
-            {
-                From = new ChannelAccount(FromUser),
-                Text = input,
-                Type = ActivityTypes.Message,
-            };
-
-            // Send the message activity to the bot.
-            await connector.SendActivityAsync(JsonConvert.SerializeObject(userMessage));
-
-            // Give the bot time to respond.
-            System.Threading.Thread.Sleep(1000);
-
-            // Read the bot's message.
-            var botAnswer = messages.LastOrDefault();
-
-            // Cleanup
-            await connector.DisconnectAsync();
-            connector.Dispose();
-
-            // Assert
-            Assert.IsNotNull(botAnswer);
-            Assert.AreEqual(string.Format("You said '{0}'", input), botAnswer.Message);
-        }
-
-        [TestMethod]
         public async Task SendDirectLineSpeechVoiceMessage()
         {
+            // Currently there is no supported way to enable WebSockets on non-Windows Azure App Services
+            // as WebSockets are required for bots using DirectLine Speech, this test can only be run
+            // against the Windows bot. 
+            // Currently functional tests are run on the same environment as the bot they are testing,
+            // here we check to see if the test is running on windows and abort if it is not.
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return;
+            }
+
             GetEnvironmentVars();
 
             // Make sure the sound clip exists
@@ -129,7 +90,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
             // Assert
             Assert.IsNotNull(botAnswer);
-            Assert.AreEqual(string.Format("You said '{0}'", SoundFileMessage), botAnswer.Message);
+            Assert.AreEqual(string.Format("Echo: '{0}'", SoundFileMessage), botAnswer.Message);
         }
 
         /// <summary>
