@@ -162,7 +162,7 @@ ESCAPE_CHARACTER
   ;
 
 EXPRESSION
-  : '@'? '{' (~[\r\n{}] | STRING_LITERAL)*?  '}'  { ignoreWS = false; expectKeywords = false;}
+  : '@'? '{' (STRING_LITERAL| ~[\r\n{}'"] )*? '}'  { ignoreWS = false; expectKeywords = false;}
   ;
 
 TEMPLATE_REF
