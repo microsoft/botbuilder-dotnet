@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            object originalOptions = dc.State.GetValue<object>(ThisPath.OPTIONS);
+            object originalOptions = dc.GetState().GetValue<object>(ThisPath.OPTIONS);
 
             if (options == null)
             {
@@ -39,14 +39,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             var targetDialogId = dc.Parent.ActiveDialog.Id;
 
-            var repeatedIds = dc.State.GetValue<List<string>>(TurnPath.REPEATEDIDS, () => new List<string>());
+            var repeatedIds = dc.GetState().GetValue<List<string>>(TurnPath.REPEATEDIDS, () => new List<string>());
             if (repeatedIds.Contains(targetDialogId))
             {
                 throw new ArgumentException($"Recursive loop detected, {targetDialogId} cannot be repeated twice in one turn.");
             }
 
             repeatedIds.Add(targetDialogId);
-            dc.State.SetValue(TurnPath.REPEATEDIDS, repeatedIds);
+            dc.GetState().SetValue(TurnPath.REPEATEDIDS, repeatedIds);
 
             var turnResult = await dc.Parent.ReplaceDialogAsync(dc.Parent.ActiveDialog.Id, options, cancellationToken).ConfigureAwait(false);
             turnResult.ParentEnded = true;

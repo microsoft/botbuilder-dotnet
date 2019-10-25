@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         {
             // map state into json
             dynamic payload = new JObject();
-            payload.state = dc.State.GetMemorySnapshot();
+            payload.state = dc.GetState().GetMemorySnapshot();
 
             // payload.property = (this.Property != null) ? dc.GetValue<object>(this.Property) : null;
             string payloadJson = JsonConvert.SerializeObject(payload);
@@ -61,10 +61,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             if (!string.IsNullOrEmpty(responseJson))
             {
                 dynamic response = JsonConvert.DeserializeObject(responseJson);
-                dc.State.SetValue(ScopePath.USER, response.state.user);
-                dc.State.SetValue(ScopePath.CONVERSATION, response.state.conversation);
-                dc.State.SetValue(ScopePath.DIALOG, response.state.dialog);
-                dc.State.SetValue(ScopePath.TURN, response.state.turn);
+                dc.GetState().SetValue(ScopePath.USER, response.state.user);
+                dc.GetState().SetValue(ScopePath.CONVERSATION, response.state.conversation);
+                dc.GetState().SetValue(ScopePath.DIALOG, response.state.dialog);
+                dc.GetState().SetValue(ScopePath.TURN, response.state.turn);
                 return dc.EndDialogAsync((object)response.result, cancellationToken: cancellationToken);
             }
 
