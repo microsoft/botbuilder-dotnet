@@ -915,27 +915,35 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var evaled1 = engine.EvaluateTemplate("templateWithBrackets");
             var evaled2 = engine.EvaluateTemplate("templateWithBrackets2");
-            var espectedResult = "don't mix {} and {}";
+            var evaled3 = engine.EvaluateTemplate("templateWithBrackets3").ToString().Trim();
+            var espectedResult = "don't mix {} and '{}'";
             Assert.AreEqual(evaled1, espectedResult);
             Assert.AreEqual(evaled2, espectedResult);
+            Assert.AreEqual(evaled3, espectedResult);
 
             evaled1 = engine.EvaluateTemplate("templateWithQuotationMarks");
             evaled2 = engine.EvaluateTemplate("templateWithQuotationMarks2");
-            espectedResult = "don't mix {\"} and \"'";
+            evaled3 = engine.EvaluateTemplate("templateWithQuotationMarks3").ToString().Trim();
+            espectedResult = "don't mix {\"} and \"\"'\"";
             Assert.AreEqual(evaled1, espectedResult);
             Assert.AreEqual(evaled2, espectedResult);
+            Assert.AreEqual(evaled3, espectedResult);
 
             evaled1 = engine.EvaluateTemplate("templateWithUnpairedBrackets1");
             evaled2 = engine.EvaluateTemplate("templateWithUnpairedBrackets12");
+            evaled3 = engine.EvaluateTemplate("templateWithUnpairedBrackets13").ToString().Trim();
             espectedResult = "{prefix 5 sufix";
             Assert.AreEqual(evaled1, espectedResult);
             Assert.AreEqual(evaled2, espectedResult);
+            Assert.AreEqual(evaled3, espectedResult);
 
             evaled1 = engine.EvaluateTemplate("templateWithUnpairedBrackets2");
             evaled2 = engine.EvaluateTemplate("templateWithUnpairedBrackets22");
+            evaled3 = engine.EvaluateTemplate("templateWithUnpairedBrackets23").ToString().Trim();
             espectedResult = "prefix 5 sufix}";
             Assert.AreEqual(evaled1, espectedResult);
             Assert.AreEqual(evaled2, espectedResult);
+            Assert.AreEqual(evaled3, espectedResult);
         }
 
         public class LoopClass

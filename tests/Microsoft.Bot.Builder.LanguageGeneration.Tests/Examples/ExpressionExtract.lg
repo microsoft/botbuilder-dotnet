@@ -1,9 +1,10 @@
-﻿﻿# templateWithBrackets
-- don't mix {'{}'} and {concat('{',"}")}
+﻿> normal template body test﻿
+# templateWithBrackets
+- don't mix {'{}'} and '{concat('{',"}")}'
 
 # templateWithQuotationMarks
 > please use '"',"\"" is not support. The same, please use "'", '\'' is not support
-- don't mix {'{"}'} and {concat('"',"'")}
+- don't mix {'{"}'} and "{concat('"',"'")}"
 
 # templateWithUnpairedBrackets1
 - {prefix {length('hello')} sufix
@@ -11,12 +12,13 @@
 # templateWithUnpairedBrackets2
 - prefix {length('hello')} sufix}
 
+> structured lg test
 # templateWithBrackets2
 - {structuredTemplateWithBrackets().key}
 
 # structuredTemplateWithBrackets
 [MyStruct
-    key = don't mix {'{}'} and {concat('{',"}")}
+    key = don't mix {'{}'} and '{concat('{',"}")}'
 ]
 
 # templateWithQuotationMarks2
@@ -24,7 +26,7 @@
 
 # structuredTemplateWithQuotationMarks
 [MyStruct
-    key = don't mix {'{"}'} and {concat('"',"'")}
+    key = don't mix {'{"}'} and "{concat('"',"'")}"
 ]
 
 # templateWithUnpairedBrackets12
@@ -43,3 +45,24 @@
 [MyStruct
     key = prefix {length('hello')} sufix}
 ]
+
+> multiline test
+﻿# templateWithBrackets3
+- ```
+don't mix {'{}'} and '{concat('{',"}")}'
+```
+
+# templateWithQuotationMarks3
+- ```
+don't mix {'{"}'} and "{concat('"',"'")}"
+```
+
+# templateWithUnpairedBrackets13
+- ```
+{prefix {length('hello')} sufix
+```
+
+# templateWithUnpairedBrackets23
+- ```
+prefix {length('hello')} sufix}
+```
