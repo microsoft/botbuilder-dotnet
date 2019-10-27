@@ -155,7 +155,7 @@
 ]
 
 # SuggestedActionsReference(text)
-[Activity 
+[  Activity 
     Text = {text}
     @{WelcomeActions()}
 ]
