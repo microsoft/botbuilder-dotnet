@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             dynamic data = new JObject();
             data.title = "titleContent";
             data.text = "textContent";
-
+            
             var activity = await mg.Generate(context, "[HerocardWithCardAction]", data: data) as Activity;
             AssertCardActionActivity(activity);
 
@@ -114,6 +114,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             data.connectionName = "MyConnection";
             activity = await mg.Generate(context, "[OAuthCardTemplate]", data: data) as Activity;
             AssertOAuthCardActivity(activity);
+
+            activity = await mg.Generate(context, "[SuggestedActionsReference]", data: data) as Activity;
+            AssertSuggestedActionsReferenceActivity(activity);
         }
 
         [TestMethod]
@@ -178,11 +181,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             data.connectionName = "MyConnection";
             activity = ActivityGenerator.GenerateFromLG(engine.EvaluateTemplate("OAuthCardTemplate", data));
             AssertOAuthCardActivity(activity);
+
+            activity = ActivityGenerator.GenerateFromLG(engine.EvaluateTemplate("SuggestedActionsReference", data));
+            AssertSuggestedActionsReferenceActivity(activity);
         }
 
         private static string GetProjectFolder()
         {
             return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
+        }
+
+        private void AssertSuggestedActionsReferenceActivity(dynamic activity)
+        {
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.AreEqual("textContent", activity.Text);
+           
+            Assert.AreEqual(activity.SuggestedActions.Actions.Count, 5);
+            Assert.AreEqual(activity.SuggestedActions.Actions[0].Text, "Add todo");
+            Assert.AreEqual(activity.SuggestedActions.Actions[1].Text, "View Todo");
+            Assert.AreEqual(activity.SuggestedActions.Actions[2].Text, "Remove Todo");
+            Assert.AreEqual(activity.SuggestedActions.Actions[3].Text, "Cancel");
+            Assert.AreEqual(activity.SuggestedActions.Actions[4].Text, "Help");
         }
 
         private void AssertMessageActivityAll(Activity activity)

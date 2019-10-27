@@ -154,6 +154,17 @@
     key = value
 ]
 
+# SuggestedActionsReference(text)
+[Activity 
+    Text = {text}
+    @{WelcomeActions()}
+]
+
+# WelcomeActions
+[Activity
+    SuggestedActions = Add todo | View Todo | Remove Todo | Cancel | Help
+]
+
 # adaptivecardjson
 - ```
 {
