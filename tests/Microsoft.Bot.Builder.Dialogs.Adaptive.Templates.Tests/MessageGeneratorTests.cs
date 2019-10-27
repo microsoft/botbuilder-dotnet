@@ -61,7 +61,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             dynamic data = new JObject();
             data.title = "titleContent";
             data.text = "textContent";
-            
             var activity = await mg.Generate(context, "[HerocardWithCardAction]", data: data) as Activity;
             AssertCardActionActivity(activity);
 
