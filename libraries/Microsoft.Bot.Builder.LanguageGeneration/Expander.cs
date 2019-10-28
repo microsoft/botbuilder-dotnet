@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var idToStringDict = new Dictionary<string, string>();
             var stb = context.structuredTemplateBody();
             var result = new JObject();
-            var typeName = stb.structuredBodyNameLine().STRUCTURED_CONTENT().GetText();
+            var typeName = stb.structuredBodyNameLine().STRUCTURED_CONTENT().GetText().Trim();
             result["$type"] = typeName;
             var expandedResult = new List<JObject>();
             expandedResult.Add(result);
