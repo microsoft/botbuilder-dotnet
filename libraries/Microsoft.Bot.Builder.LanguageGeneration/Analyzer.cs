@@ -78,8 +78,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             foreach (var templateStr in context.templateString())
             {
-                var item = Visit(templateStr.normalTemplateString());
-                result.Union(item);
+                if (templateStr.normalTemplateString() != null)
+                {
+                    result.Union(Visit(templateStr.normalTemplateString()));
+                }
+                else if (templateStr.multilineTemplateString() != null)
+                {
+                    result.Union(Visit(templateStr.multilineTemplateString()));
+                }
             }
 
             return result;
@@ -141,13 +147,26 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 switch (node.Symbol.Type)
                 {
-                    case LGFileParser.DASH:
-                        break;
                     case LGFileParser.EXPRESSION:
                         result.Union(AnalyzeExpression(node.GetText()));
                         break;
-                    case LGFileLexer.MULTI_LINE_TEXT:
-                        result.Union(AnalyzeMultiLineText(node.GetText()));
+                    default:
+                        break;
+                }
+            }
+
+            return result;
+        }
+
+        public override AnalyzerResult VisitMultilineTemplateString([NotNull] LGFileParser.MultilineTemplateStringContext context)
+        {
+            var result = new AnalyzerResult();
+            foreach (ITerminalNode node in context.children)
+            {
+                switch (node.Symbol.Type)
+                {
+                    case LGFileParser.MULTILINE_EXPRESSION:
+                        result.Union(AnalyzeExpression(node.GetText()));
                         break;
                     default:
                         break;
@@ -207,25 +226,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             result.Union(new AnalyzerResult(variables: new List<string>(references)));
             result.Union(this.AnalyzeExpressionDirectly(parsed));
-
-            return result;
-        }
-
-        private AnalyzerResult AnalyzeMultiLineText(string exp)
-        {
-            var result = new AnalyzerResult();
-
-            // remove ``` ```
-            exp = exp.Substring(3, exp.Length - 6);
-
-            var matches = Evaluator.ExpressionRecognizeRegex.Matches(exp);
-            foreach (Match matchItem in matches)
-            {
-                if (matchItem.Success)
-                {
-                    result.Union(AnalyzeExpression(matchItem.Value));
-                }
-            }
 
             return result;
         }

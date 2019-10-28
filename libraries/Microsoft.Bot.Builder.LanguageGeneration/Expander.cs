@@ -70,12 +70,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override List<string> VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
         {
-            var normalTemplateStrs = context.templateString();
+            var templateStrs = context.templateString();
             var result = new List<string>();
 
-            foreach (var normalTemplateStr in normalTemplateStrs)
+            foreach (var templateStr in templateStrs)
             {
-                result.AddRange(Visit(normalTemplateStr.normalTemplateString()));
+                if (templateStr.normalTemplateString() != null)
+                {
+                    result.AddRange(Visit(templateStr.normalTemplateString()));
+                }
+                else if (templateStr.multilineTemplateString() != null)
+                {
+                    result.AddRange(Visit(templateStr.multilineTemplateString()));
+                }
             }
 
             return result;
@@ -182,7 +189,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         expandedResult.ForEach(x => x[property] = valueList);
                     }
                 }
-                else if (IsPureExpression(line))
+                else if (Evaluator.IsPureExpression(line))
                 {
                     // [MyStruct
                     // Text = foo
@@ -266,8 +273,31 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     case LGFileParser.EXPRESSION:
                         result = StringListConcat(result, EvalExpression(node.GetText()));
                         break;
-                    case LGFileLexer.MULTI_LINE_TEXT:
-                        result = StringListConcat(result, EvalMultiLineText(node.GetText()));
+                    default:
+                        result = StringListConcat(result, new List<string>() { node.GetText() });
+                        break;
+                }
+            }
+
+            return result;
+        }
+
+        public override List<string> VisitMultilineTemplateString([NotNull] LGFileParser.MultilineTemplateStringContext context)
+        {
+            var result = new List<string>() { string.Empty };
+            foreach (ITerminalNode node in context.children)
+            {
+                switch (node.Symbol.Type)
+                {
+                    case LGFileParser.DASH:
+                    case LGFileParser.MULTILINE_PREFIX:
+                    case LGFileParser.MULTILINE_SUFFIX:
+                        break;
+                    case LGFileParser.MULTILINE_ESCAPE_CHARACTER:
+                        result = StringListConcat(result, EvalEscape(node.GetText()));
+                        break;
+                    case LGFileParser.MULTILINE_EXPRESSION:
+                        result = StringListConcat(result, EvalExpression(node.GetText()));
                         break;
                     default:
                         result = StringListConcat(result, new List<string>() { node.GetText() });
@@ -370,38 +400,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         // just don't want to write evaluationTargetStack.Peek() everywhere
         private EvaluationTarget CurrentTarget() => evaluationTargetStack.Peek();
-
-        private List<string> EvalMultiLineText(string exp)
-        {
-            // remove ``` ```
-            exp = exp.Substring(3, exp.Length - 6);
-            var templateRefValues = new Dictionary<string, List<string>>();
-            var matches = Evaluator.ExpressionRecognizeRegex.Matches(exp);
-            if (matches != null)
-            {
-                foreach (Match match in matches)
-                {
-                    templateRefValues.Add(match.Value, EvalExpression(match.Value));
-                }
-            }
-
-            var result = new List<string>() { exp };
-            foreach (var templateRefValue in templateRefValues)
-            {
-                var tempRes = new List<string>();
-                foreach (var res in result)
-                {
-                    foreach (var refValue in templateRefValue.Value)
-                    {
-                        tempRes.Add(res.Replace(templateRefValue.Key, refValue));
-                    }
-                }
-
-                result = tempRes;
-            }
-
-            return result;
-        }
 
         private (object value, string error) EvalByExpressionEngine(string exp, object scope)
         {
@@ -549,7 +547,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new List<string>() { exp };
             }
 
-            if (IsPureExpression(exp))
+            if (Evaluator.IsPureExpression(exp))
             {
                 // @{} or {} text, get object result
                 return EvalExpression(exp);
@@ -558,18 +556,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 return EvalTextContainsExpression(exp).Select(x => Regex.Unescape(x)).ToList();
             }
-        }
-
-        private bool IsPureExpression(string exp)
-        {
-            if (string.IsNullOrWhiteSpace(exp))
-            {
-                return false;
-            }
-
-            exp = exp.Trim();
-            var expressions = Evaluator.ExpressionRecognizeRegex.Matches(exp);
-            return expressions.Count == 1 && expressions[0].Value == exp;
         }
     }
 }
