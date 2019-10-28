@@ -166,11 +166,11 @@ EXPRESSION
   ;
 
 TEXT_SEPARATOR
-  : [\t\r\n@]  { ignoreWS = false; expectKeywords = false;}
+  : [\t@]  { ignoreWS = false; expectKeywords = false;}
   ;
 
 TEXT
-  : ~[\t\r\n@]+?  { ignoreWS = false; expectKeywords = false;}
+  : ~[\t\r\n@]+  { ignoreWS = false; expectKeywords = false;}
   ;
 
 mode STRUCTURED_TEMPLATE_BODY_MODE;
