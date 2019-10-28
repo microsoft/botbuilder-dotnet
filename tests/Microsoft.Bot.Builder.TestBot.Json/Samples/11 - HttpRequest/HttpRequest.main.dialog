@@ -29,12 +29,12 @@
                         "test2": "test2"
                     },
                     "body": {
-                        "id": "{dialog.petid}",
+                        "id": "@{dialog.petid}",
                         "category": {
                             "id": 0,
                             "name": "string"
                         },
-                        "name": "{dialog.petname}",
+                        "name": "@{dialog.petname}",
                         "photoUrls": [
                             "string"
                         ],
@@ -59,7 +59,7 @@
                 },
               {
                 "$type": "Microsoft.HttpRequest",
-                "url": "http://petstore.swagger.io/v2/pet/{$id2}",
+                "url": "http://petstore.swagger.io/v2/pet/@{$id2}",
                 "method": "GET",
                 "resultProperty": "dialog.getResponse"
               },
