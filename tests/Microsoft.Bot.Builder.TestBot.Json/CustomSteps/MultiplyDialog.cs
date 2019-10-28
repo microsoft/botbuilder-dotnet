@@ -51,13 +51,13 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var engine = new ExpressionEngine();
-            var (arg1, err1) = engine.Parse(Arg1).TryEvaluate(dc.State);
-            var (arg2, err2) = engine.Parse(Arg2).TryEvaluate(dc.State);
+            var (arg1, err1) = engine.Parse(Arg1).TryEvaluate(dc.GetState());
+            var (arg2, err2) = engine.Parse(Arg2).TryEvaluate(dc.GetState());
 
             var result = Convert.ToInt32(arg1) * Convert.ToInt32(arg2);
             if (this.ResultProperty != null)
             {
-                dc.State.SetValue(this.ResultProperty, result);
+                dc.GetState().SetValue(this.ResultProperty, result);
             }
 
             return dc.EndDialogAsync(result: result, cancellationToken: cancellationToken);

@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public override object VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
         {
             var result = new JObject();
-            var typeName = context.structuredBodyNameLine().STRUCTURED_CONTENT().GetText();
+            var typeName = context.structuredBodyNameLine().STRUCTURED_CONTENT().GetText().Trim();
             result["$type"] = typeName;
 
             var bodys = context.structuredBodyContentLine().STRUCTURED_CONTENT();

@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             private string currentSource = string.Empty;
             private readonly ExpressionEngine baseExpressionEngine;
-            private readonly Regex structuredNameRegex = new Regex(@"^[a-z0-9_][a-z0-9_\-\.]*$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+private readonly Regex structuredNameRegex = new Regex(@"^[a-z0-9_][a-z0-9_\-\.]*$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
             private IExpressionParser _expressionParser;
 

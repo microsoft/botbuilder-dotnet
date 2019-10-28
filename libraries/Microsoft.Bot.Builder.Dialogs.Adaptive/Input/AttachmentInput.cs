@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.State.GetValue<List<Attachment>>(VALUE_PROPERTY);
+            var input = dc.GetState().GetValue<List<Attachment>>(VALUE_PROPERTY);
             var first = input.Count > 0 ? input[0] : null;
 
             if (first == null || (string.IsNullOrEmpty(first.ContentUrl) && first.Content == null))
@@ -46,10 +46,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             switch (this.OutputFormat)
             {
                 case AttachmentOutputFormat.All:
-                    dc.State.SetValue(VALUE_PROPERTY, input);
+                    dc.GetState().SetValue(VALUE_PROPERTY, input);
                     break;
                 case AttachmentOutputFormat.First:
-                    dc.State.SetValue(VALUE_PROPERTY, first);
+                    dc.GetState().SetValue(VALUE_PROPERTY, first);
                     break;
             }
 

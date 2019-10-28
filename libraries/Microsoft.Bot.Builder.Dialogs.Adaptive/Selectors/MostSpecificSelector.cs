@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 
         public async Task<IReadOnlyList<int>> Select(SequenceContext context, CancellationToken cancel)
         {
-            var nodes = _tree.Matches(context.State);
+            var nodes = _tree.Matches(context.GetState());
             IReadOnlyList<int> selections;
             if (Selector == null)
             {

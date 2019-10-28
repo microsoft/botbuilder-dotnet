@@ -112,7 +112,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             private string currentSource = string.Empty;
             private readonly ExpressionEngine baseExpressionEngine;
+<<<<<<< HEAD
+=======
+            private readonly Regex expressionRecognizeRegex = new Regex(@"@?(?<!\\)\{.+?(?<!\\)\}", RegexOptions.Compiled);
+            private readonly Regex escapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
             private readonly Regex structuredNameRegex = new Regex(@"^[a-z0-9_][a-z0-9_\-\.]*$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+>>>>>>> master
 
             private IExpressionParser _expressionParser;
 

@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var state = activeDialogState[AdaptiveKey] as AdaptiveDialogState;
 
             // Persist options to dialog state
-            dc.State.SetValue(ThisPath.OPTIONS, options);
+            dc.GetState().SetValue(ThisPath.OPTIONS, options);
 
             // Evaluate events and queue up step changes
             var dialogEvent = new DialogEvent
@@ -227,7 +227,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         protected async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default)
         {
             // Save into turn
-            sequenceContext.State.SetValue(TurnPath.DIALOGEVENT, dialogEvent);
+            sequenceContext.GetState().SetValue(TurnPath.DIALOGEVENT, dialogEvent);
 
             EnsureDependenciesInstalled();
 
@@ -269,7 +269,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             await ProcessEventAsync(sequenceContext, dialogEvent: recognizeUtteranceEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                             // Emit leading RecognizedIntent event
-                            var recognized = sequenceContext.State.GetValue<RecognizerResult>(TurnPath.RECOGNIZED);
+                            var recognized = sequenceContext.GetState().GetValue<RecognizerResult>(TurnPath.RECOGNIZED);
                             var recognizedIntentEvent = new DialogEvent
                             {
                                 Name = AdaptiveEvents.RecognizedIntent,
@@ -285,7 +285,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         //   process the users uterrance when its continued.
                         if (handled)
                         {
-                            sequenceContext.State.SetValue(TurnPath.INTERRUPTED, true);
+                            sequenceContext.GetState().SetValue(TurnPath.INTERRUPTED, true);
                         }
 
                         break;
@@ -297,11 +297,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             // Recognize utterance
                             var recognized = await OnRecognize(sequenceContext, cancellationToken).ConfigureAwait(false);
 
-                            sequenceContext.State.SetValue(TurnPath.RECOGNIZED, recognized);
+                            sequenceContext.GetState().SetValue(TurnPath.RECOGNIZED, recognized);
 
                             var (name, score) = recognized.GetTopScoringIntent();
-                            sequenceContext.State.SetValue(TurnPath.TOPINTENT, name);
-                            sequenceContext.State.SetValue(TurnPath.TOPSCORE, score);
+                            sequenceContext.GetState().SetValue(TurnPath.TOPINTENT, name);
+                            sequenceContext.GetState().SetValue(TurnPath.TOPSCORE, score);
 
                             if (Recognizer != null)
                             {
@@ -358,7 +358,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         //   process the users uterrance when its continued.
                         if (handled)
                         {
-                            sequenceContext.State.SetValue(TurnPath.INTERRUPTED, true);
+                            sequenceContext.GetState().SetValue(TurnPath.INTERRUPTED, true);
                         }
 
                         break;
@@ -470,7 +470,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 if (ShouldEnd(sequenceContext))
                 {
                     RestoreParentGenerator(sequenceContext.Context);
-                    sequenceContext.State.TryGetValue<object>(DefaultResultProperty, out var result);
+                    sequenceContext.GetState().TryGetValue<object>(DefaultResultProperty, out var result);
                     return await sequenceContext.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
                 }
 

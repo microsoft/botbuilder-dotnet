@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 if (this.TokenProperty != null)
                 {
-                    dc.State.SetValue(this.TokenProperty, output);
+                    dc.GetState().SetValue(this.TokenProperty, output);
                 }
 
                 // Return token
@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 if (this.TokenProperty != null)
                 {
-                    dc.State.SetValue(this.TokenProperty, null);
+                    dc.GetState().SetValue(this.TokenProperty, null);
                 }
 
                 // if the token fetch request times out, complete the prompt with no result.
@@ -190,7 +190,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     if (this.TokenProperty != null)
                     {
-                        dc.State.SetValue(this.TokenProperty, recognized.Value);
+                        dc.GetState().SetValue(this.TokenProperty, recognized.Value);
                     }
 
                     return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);

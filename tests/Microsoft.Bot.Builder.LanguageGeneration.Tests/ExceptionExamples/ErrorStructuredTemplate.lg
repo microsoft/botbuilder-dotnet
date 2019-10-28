@@ -18,3 +18,8 @@
 [Activity
   Text = {NOTemplate()}
 ]
+
+# errorStructuredType
+[Activity%
+    Text = hi
+]
