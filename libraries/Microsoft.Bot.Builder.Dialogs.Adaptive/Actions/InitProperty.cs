@@ -51,10 +51,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 switch (Type.ToLower())
                 {
                     case "array":
-                        dc.State.SetValue(this.Property, new JArray());
+                        dc.GetState().SetValue(this.Property, new JArray());
                         break;
                     case "object":
-                        dc.State.SetValue(this.Property, new JObject());
+                        dc.GetState().SetValue(this.Property, new JObject());
                         break;
                 }
 

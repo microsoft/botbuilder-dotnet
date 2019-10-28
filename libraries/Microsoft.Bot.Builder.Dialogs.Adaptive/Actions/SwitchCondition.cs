@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 foreach (var caseCondition in this.Cases)
                 {
-                    var (value, error) = this.caseExpressions[caseCondition.Value].TryEvaluate(dc.State);
+                    var (value, error) = this.caseExpressions[caseCondition.Value].TryEvaluate(dc.GetState());
 
                     if (error != null)
                     {

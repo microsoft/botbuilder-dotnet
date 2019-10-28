@@ -114,9 +114,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             var endpoint = new QnAMakerEndpoint
             {
-                EndpointKey = endpointkey.TryEvaluate(dc.State).error == null ? endpointkey.TryEvaluate(dc.State).value.ToString() : this.EndpointKey,
-                Host = hostname.TryEvaluate(dc.State).error == null ? hostname.TryEvaluate(dc.State).value.ToString() : this.HostName,
-                KnowledgeBaseId = knowledgebaseId.TryEvaluate(dc.State).error == null ? knowledgebaseId.TryEvaluate(dc.State).value.ToString() : this.KnowledgeBaseId
+                EndpointKey = endpointkey.TryEvaluate(dc.GetState()).error == null ? endpointkey.TryEvaluate(dc.GetState()).value.ToString() : this.EndpointKey,
+                Host = hostname.TryEvaluate(dc.GetState()).error == null ? hostname.TryEvaluate(dc.GetState()).value.ToString() : this.HostName,
+                KnowledgeBaseId = knowledgebaseId.TryEvaluate(dc.GetState()).error == null ? knowledgebaseId.TryEvaluate(dc.GetState()).value.ToString() : this.KnowledgeBaseId
             };
 
             var qnamakerOptions = new QnAMakerOptions

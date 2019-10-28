@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 {
                     var conditional = _conditionals[i];
                     var expression = conditional.GetExpression(parser);
-                    var (value, error) = expression.TryEvaluate(context.State);
+                    var (value, error) = expression.TryEvaluate(context.GetState());
                     var result = error == null && (bool)value;
                     if (result == true)
                     {
