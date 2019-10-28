@@ -13,7 +13,7 @@
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "Great! Your pet's name is {dialog.petname}"
+                    "activity": "Great! Your pet's name is @{dialog.petname}"
                 },
                 {
                     "$type": "Microsoft.NumberInput",
@@ -50,22 +50,22 @@
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "Done! You have added a pet named \"{dialog.postResponse.content.name}\" with id \"{dialog.postResponse.content.id}\""
+                    "activity": "Done! You have added a pet named \"@{dialog.postResponse.content.name}\" with id \"@{dialog.postResponse.content.id}\""
                 },
                 {
                     "$type": "Microsoft.NumberInput",
                     "prompt": "Now try to specify the id of your pet, and I will help your find it out from the store.",
                     "property": "$id2"
                 },
-                {
-                    "$type": "Microsoft.HttpRequest",
-                    "url": "http://petstore.swagger.io/v2/pet/{$id2}",
-                    "method": "GET",
-                    "resultProperty": "dialog.getResponse"
-                },
+              {
+                "$type": "Microsoft.HttpRequest",
+                "url": "http://petstore.swagger.io/v2/pet/{$id2}",
+                "method": "GET",
+                "resultProperty": "dialog.getResponse"
+              },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "Great! I found your pet named \"{dialog.getResponse.content.name}\""
+                    "activity": "Great! I found your pet named \"@{dialog.getResponse.content.name}\""
                 }
             ]
         }
