@@ -481,7 +481,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
                 var actualArgsCount = expression.Children.Length - 1;
 
-                if (expectedArgsCount != actualArgsCount)
+                if (actualArgsCount != 0 && expectedArgsCount != actualArgsCount)
                 {
                     throw new Exception($"Arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
                 }
@@ -507,7 +507,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
             var actualArgsCount = expression.Children.Length;
 
-            if (expectedArgsCount != actualArgsCount)
+            if (actualArgsCount != 0 && expectedArgsCount != actualArgsCount)
             {
                 throw new Exception($"arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
             }

@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var context = await GetTurnContext("NormalStructuredLG.lg");
             var mg = new ActivityGenerator();
-            var result = await mg.Generate(context, "[notSupport]", null) as Activity;
+            var result = await mg.Generate(context, "@{notSupport()}", null) as Activity;
         }
 
         [TestMethod]
@@ -61,60 +61,60 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             dynamic data = new JObject();
             data.title = "titleContent";
             data.text = "textContent";
-            var activity = await mg.Generate(context, "[HerocardWithCardAction]", data: data) as Activity;
+            var activity = await mg.Generate(context, "@{HerocardWithCardAction()}", data: data) as Activity;
             AssertCardActionActivity(activity);
 
             data.adaptiveCardTitle = "test";
-            activity = await mg.Generate(context, "[adaptivecardActivity]", data: data) as Activity;
+            activity = await mg.Generate(context, "@{adaptivecardActivity()}", data: data) as Activity;
             AssertAdaptiveCardActivity(activity);
 
-            activity = await mg.Generate(context, "[eventActivity]", data: data) as Activity;
+            activity = await mg.Generate(context, "@{eventActivity()}", data: data) as Activity;
             AssertEventActivity(activity);
 
-            activity = await mg.Generate(context, "[activityWithHeroCardAttachment]", data: data) as Activity;
+            activity = await mg.Generate(context, "@{activityWithHeroCardAttachment()}", data: data) as Activity;
             AssertActivityWithHeroCardAttachment(activity);
 
-            activity = await mg.Generate(context, "[activityWithMultiAttachments]", data: data) as Activity;
+            activity = await mg.Generate(context, "@{activityWithMultiAttachments()}", data: data) as Activity;
             AssertActivityWithMultiAttachments(activity);
 
-            activity = await mg.Generate(context, "[activityWithSuggestionActions]", data: data) as Activity;
+            activity = await mg.Generate(context, "@{activityWithSuggestionActions()}", data: data) as Activity;
             AssertActivityWithSuggestionActions(activity);
 
-            activity = await mg.Generate(context, "[messageActivityAll]", data: data) as Activity;
+            activity = await mg.Generate(context, "@{messageActivityAll()}", data: data) as Activity;
             AssertMessageActivityAll(activity);
 
-            activity = await mg.Generate(context, "[activityWithMultiStructuredSuggestionActions]", data: data) as Activity;
+            activity = await mg.Generate(context, "@{activityWithMultiStructuredSuggestionActions()}", data: data) as Activity;
             AssertActivityWithMultiStructuredSuggestionActions(activity);
 
-            activity = await mg.Generate(context, "[activityWithMultiStringSuggestionActions]", data: data) as Activity;
+            activity = await mg.Generate(context, "@{activityWithMultiStringSuggestionActions()}", data: data) as Activity;
             AssertActivityWithMultiStringSuggestionActions(activity);
 
             data.type = "herocard";
-            activity = await mg.Generate(context, "[HeroCardTemplate]", data: data) as Activity;
+            activity = await mg.Generate(context, "@{HeroCardTemplate()}", data: data) as Activity;
             AssertHeroCardActivity(activity);
 
             data.type = "thumbnailcard";
-            activity = await mg.Generate(context, "[ThumbnailCardTemplate]", data: data) as Activity;
+            activity = await mg.Generate(context, "@{ThumbnailCardTemplate()}", data: data) as Activity;
             AssertThumbnailCardActivity(activity);
 
             data.type = "audiocard";
-            activity = await mg.Generate(context, "[AudioCardTemplate]", data: data) as Activity;
+            activity = await mg.Generate(context, "@{AudioCardTemplate()}", data: data) as Activity;
             AssertAudioCardActivity(activity);
 
             data.type = "videocard";
-            activity = await mg.Generate(context, "[VideoCardTemplate]", data: data) as Activity;
+            activity = await mg.Generate(context, "@{VideoCardTemplate()}", data: data) as Activity;
             AssertVideoCardActivity(activity);
 
             data.signinlabel = "Sign in";
             data.url = "https://login.microsoftonline.com/";
-            activity = await mg.Generate(context, "[SigninCardTemplate]", data: data) as Activity;
+            activity = await mg.Generate(context, "@{SigninCardTemplate()}", data: data) as Activity;
             AssertSigninCardActivity(activity);
 
             data.connectionName = "MyConnection";
-            activity = await mg.Generate(context, "[OAuthCardTemplate]", data: data) as Activity;
+            activity = await mg.Generate(context, "@{OAuthCardTemplate()}", data: data) as Activity;
             AssertOAuthCardActivity(activity);
 
-            activity = await mg.Generate(context, "[SuggestedActionsReference]", data: data) as Activity;
+            activity = await mg.Generate(context, "@{SuggestedActionsReference()}", data: data) as Activity;
             AssertSuggestedActionsReferenceActivity(activity);
         }
 
