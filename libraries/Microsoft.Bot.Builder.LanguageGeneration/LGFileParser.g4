@@ -72,12 +72,17 @@ normalTemplateBody
 
 templateString
     : normalTemplateString
+    | multilineTemplateString
     | errorTemplateString
     ;
 
 normalTemplateString
 	: DASH (WS|TEXT|EXPRESSION|MULTI_LINE_TEXT|ESCAPE_CHARACTER)*
 	;
+
+multilineTemplateString
+    : DASH MULTILINE_PREFIX (NEWLINE|WS|MULTILINE_TEXT|MULTILINE_EXPRESSION|MULTILINE_ESCAPE_CHARACTER)* MULTILINE_SUFFIX?
+    ;
 
 errorTemplateString
 	: INVALID_TOKEN_DEFAULT_MODE+

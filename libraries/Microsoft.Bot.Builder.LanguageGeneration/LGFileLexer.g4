@@ -125,6 +125,10 @@ WS_IN_BODY
   : WHITESPACE+  -> type(WS)
   ;
 
+MULTILINE_PREFIX
+  : '```' -> pushMode(MULTILINE)
+  ;
+
 NEWLINE_IN_BODY
   : '\r'? '\n' {ignoreWS = true;} -> type(NEWLINE), popMode
   ;
@@ -151,10 +155,6 @@ CASE
 
 DEFAULT
   : D E F A U L T WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
-  ;
-
-MULTI_LINE_TEXT
-  : '```' .*? '```' { ignoreWS = false; expectKeywords = false;}
   ;
 
 ESCAPE_CHARACTER
@@ -189,4 +189,30 @@ STRUCTURED_TEMPLATE_BODY_END
 
 STRUCTURED_CONTENT
   : ~[\r\n]+
+  ;
+
+mode MULTILINE;
+
+MULTILINE_SUFFIX
+  : '```' -> popMode
+  ;
+
+MULTILINE_NEWLINE
+  : '\r'? '\n' -> type(NEWLINE)
+  ;
+
+MULTILINE_WS
+  : WHITESPACE+  -> type(WS)
+  ;
+
+MULTILINE_ESCAPE_CHARACTER
+  : '\\' ~[\r\n]?
+  ;
+
+MULTILINE_EXPRESSION
+  : '@' '{' (STRING_LITERAL| ~[\r\n{}'"] )*? '}'
+  ;
+
+MULTILINE_TEXT
+  : ~[\r\n]+?
   ;

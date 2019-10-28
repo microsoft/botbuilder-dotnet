@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class Evaluator : LGFileParserBaseVisitor<object>
     {
-        public static readonly Regex ExpressionRecognizeRegex = new Regex(@"@?{(((\'([^'\r\n])*?\')|(\""([^""\r\n])*?\""))|[^\r\n{}'""])*?}", RegexOptions.Compiled);
+        public static readonly Regex ExpressionRecognizeRegex = new Regex(@"@{(((\'([^'\r\n])*?\')|(\""([^""\r\n])*?\""))|[^\r\n{}'""])*?}", RegexOptions.Compiled);
         public static readonly Regex EscapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
@@ -167,9 +167,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override object VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
         {
-            var normalTemplateStrs = context.templateString();
+            var templateStrs = context.templateString();
             var rd = new Random();
-            return Visit(normalTemplateStrs[rd.Next(normalTemplateStrs.Length)].normalTemplateString());
+            var templateStr = templateStrs[rd.Next(templateStrs.Length)];
+
+            if (templateStr.normalTemplateString() != null)
+            {
+                return Visit(templateStr.normalTemplateString());
+            }
+            else if (templateStr.multilineTemplateString() != null)
+            {
+                return Visit(templateStr.multilineTemplateString());
+            }
+
+            return null;
         }
 
         public override object VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
@@ -242,9 +253,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     case LGFileParser.EXPRESSION:
                         result.Add(EvalExpression(node.GetText()));
                         break;
-                    case LGFileLexer.MULTI_LINE_TEXT:
-                        result.Add(EvalMultiLineText(node.GetText()));
-                        break;
                     default:
                         result.Add(node.GetText());
                         break;
@@ -254,6 +262,32 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             if (result.Count == 1 && !(result[0] is string))
             {
                 return result[0];
+            }
+
+            return string.Join(string.Empty, result);
+        }
+
+        public override object VisitMultilineTemplateString([NotNull] LGFileParser.MultilineTemplateStringContext context)
+        {
+            var result = new List<string>();
+            foreach (ITerminalNode node in context.children)
+            {
+                switch (node.Symbol.Type)
+                {
+                    case LGFileParser.DASH:
+                    case LGFileParser.MULTILINE_PREFIX:
+                    case LGFileParser.MULTILINE_SUFFIX:
+                        break;
+                    case LGFileParser.MULTILINE_ESCAPE_CHARACTER:
+                        result.Add(EvalEscape(node.GetText()));
+                        break;
+                    case LGFileParser.MULTILINE_EXPRESSION:
+                        result.Add(EvalExpression(node.GetText()).ToString());
+                        break;
+                    default:
+                        result.Add(node.GetText());
+                        break;
+                }
             }
 
             return string.Join(string.Empty, result);
@@ -326,7 +360,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private object EvalEscape(string exp)
+        private string EvalEscape(string exp)
         {
             var commonEscapes = new List<string>() { "\\r", "\\n", "\\t" };
             if (commonEscapes.Contains(exp))
@@ -359,19 +393,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // just don't want to write evaluationTargetStack.Peek() everywhere
             evaluationTargetStack.Peek();
 
-        private string EvalMultiLineText(string exp)
-        {
-            // remove ``` ```
-            exp = exp.Substring(3, exp.Length - 6);
-            return EvalTextContainsExpression(exp);
-        }
-
-        private string EvalTextContainsExpression(string exp)
-        {
-            var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
-            return ExpressionRecognizeRegex.Replace(exp, evalutor);
-        }
-
         private JToken EvalText(string exp)
         {
             if (string.IsNullOrEmpty(exp))
@@ -386,7 +407,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             else
             {
-                return Regex.Unescape(EvalTextContainsExpression(exp));
+                var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
+                return Regex.Unescape(ExpressionRecognizeRegex.Replace(exp, evalutor));
             }
         }
 

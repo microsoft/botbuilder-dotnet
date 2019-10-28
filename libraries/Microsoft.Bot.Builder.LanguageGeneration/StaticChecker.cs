@@ -224,10 +224,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         result.Add(BuildLGDiagnostic($"Invalid template body line, did you miss '-' at line begin", context: errorTemplateStr));
                     }
-                    else
+                    else if (templateStr.normalTemplateString() != null)
                     {
-                        var item = Visit(templateStr.normalTemplateString());
-                        result.AddRange(item);
+                        result.AddRange(Visit(templateStr.normalTemplateString()));
+                    }
+                    else if (templateStr.multilineTemplateString() != null)
+                    {
+                        result.AddRange(Visit(templateStr.multilineTemplateString()));
                     }
                 }
 
@@ -463,12 +466,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         case LGFileParser.EXPRESSION:
                             result.AddRange(CheckExpression(node.GetText(), context));
                             break;
-                        case LGFileLexer.MULTI_LINE_TEXT:
-                            result.AddRange(CheckMultiLineText(node.GetText(), context));
-                            break;
-                        case LGFileLexer.TEXT:
-                            result.AddRange(CheckErrorMultiLineText(node.GetText(), context));
-                            break;
                         default:
                             break;
                     }
@@ -477,11 +474,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return result;
             }
 
-            private List<Diagnostic> CheckMultiLineText(string exp, ParserRuleContext context)
+            public override List<Diagnostic> VisitMultilineTemplateString([NotNull] LGFileParser.MultilineTemplateStringContext context)
             {
-                // remove ``` ```
-                exp = exp.Substring(3, exp.Length - 6);
-                return CheckText(exp, context);
+                var result = new List<Diagnostic>();
+
+                foreach (ITerminalNode node in context.children)
+                {
+                    switch (node.Symbol.Type)
+                    {
+                        case LGFileParser.MULTILINE_EXPRESSION:
+                            result.AddRange(CheckExpression(node.GetText(), context));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                return result;
             }
 
             private List<Diagnostic> CheckText(string exp, ParserRuleContext context)
@@ -493,18 +502,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 foreach (Match match in mc)
                 {
                     result.AddRange(CheckExpression(match.Value, context));
-                }
-
-                return result;
-            }
-
-            private List<Diagnostic> CheckErrorMultiLineText(string exp, ParserRuleContext context)
-            {
-                var result = new List<Diagnostic>();
-
-                if (exp.StartsWith("```"))
-                {
-                    result.Add(BuildLGDiagnostic("Multi line variation must be enclosed in ```", context: context));
                 }
 
                 return result;
