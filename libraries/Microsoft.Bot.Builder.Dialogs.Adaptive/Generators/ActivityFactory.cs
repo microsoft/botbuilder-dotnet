@@ -17,10 +17,10 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
     /// <summary>
-    /// The ActivityGenerator implements IActivityGenerator by using ILanguageGenerator
+    /// The ActivityFactory by using ILanguageGenerator
     /// to generate text and then uses simple markdown semantics like chatdown to create Activity.
     /// </summary>
-    public class ActivityGenerator : IActivityGenerator
+    public class ActivityFactory
     {
         private static readonly Dictionary<string, string> GenericCardTypeMapping = new Dictionary<string, string>
         {
@@ -32,10 +32,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             { nameof(SigninCard).ToLower(), SigninCard.ContentType },
             { nameof(OAuthCard).ToLower(), OAuthCard.ContentType }
         };
-
-        public ActivityGenerator()
-        {
-        }
 
         /// <summary>
         /// Generate the activity From LG output.
@@ -71,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="template">(optional) inline template definition.</param>
         /// <param name="data">data to bind the template to.</param>
         /// <returns>activity.</returns>
-        public async Task<Activity> Generate(ITurnContext turnContext, string template, object data)
+        public static async Task<Activity> Generate(ITurnContext turnContext, string template, object data)
         {
             var lgStringResult = template;
             var languageGenerator = turnContext.TurnState.Get<ILanguageGenerator>();

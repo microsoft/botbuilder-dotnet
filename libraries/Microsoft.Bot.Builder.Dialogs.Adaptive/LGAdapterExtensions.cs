@@ -50,14 +50,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="botAdapter">botAdapter to add services to.</param>
         /// <param name="resourceExplorer">resourceExporer to provide to LanguageGenerator.</param>
         /// <param name="languageGenerator">LanguageGenerator to use.</param>
-        /// <param name="messageGenerator">(OPTIONAL) Default is TextMessageActivityGenerator(). </param>
         /// <returns>botAdapter.</returns>
-        public static BotAdapter UseLanguageGeneration(this BotAdapter botAdapter, ResourceExplorer resourceExplorer, ILanguageGenerator languageGenerator, IActivityGenerator messageGenerator = null)
+        public static BotAdapter UseLanguageGeneration(this BotAdapter botAdapter, ResourceExplorer resourceExplorer, ILanguageGenerator languageGenerator)
         {
             DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
             botAdapter.Use(new RegisterClassMiddleware<LanguageGeneratorManager>(new LanguageGeneratorManager(resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer)))));
             botAdapter.Use(new RegisterClassMiddleware<ILanguageGenerator>(languageGenerator ?? throw new ArgumentNullException(nameof(languageGenerator))));
-            botAdapter.UseMessageActivityGeneration(messageGenerator);
+            botAdapter.UseMessageActivityGeneration();
             return botAdapter;
         }
 
@@ -65,12 +64,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Register MessageActivityGeneration. 
         /// </summary>
         /// <param name="botAdapter">botAdapter to add services to.</param>
-        /// <param name="messageGenerator">(OPTIONAL) Default is TextMessageActivityGenerator(). </param>
         /// <returns>botAdapter.</returns>
-        public static BotAdapter UseMessageActivityGeneration(this BotAdapter botAdapter, IActivityGenerator messageGenerator = null)
+        public static BotAdapter UseMessageActivityGeneration(this BotAdapter botAdapter)
         {
             DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
-            botAdapter.Use(new RegisterClassMiddleware<IActivityGenerator>(messageGenerator ?? new ActivityGenerator()));
             return botAdapter;
         }
     }

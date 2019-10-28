@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
@@ -34,36 +35,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
             if (!string.IsNullOrEmpty(this.Template))
             {
                 // if there is a message generator use that
-                IActivityGenerator activityGenerator = context.TurnState.Get<IActivityGenerator>();
-                if (activityGenerator != null)
-                {
-                    var result = await activityGenerator.Generate(
-                        turnContext: context,
-                        template: this.Template,
-                        data: data).ConfigureAwait(false);
-                    return result;
-                }
-
-                // fallback to just text based LG if there is a language generator
-                var message = Activity.CreateMessageActivity();
-                message.Text = this.Template;
-                message.Speak = this.Template;
-
-                ILanguageGenerator languageGenerator = context.TurnState.Get<ILanguageGenerator>();
-                if (languageGenerator != null)
-                {
-                    var result = await languageGenerator.Generate(
-                        turnContext: context,
-                        template: Template,
-                        data: data).ConfigureAwait(false);
-                    if (result != null)
-                    {
-                        message.Text = result;
-                        message.Speak = result;
-                    }
-                }
-
-                return message as Activity;
+                var result = await ActivityFactory.Generate(
+                    turnContext: context,
+                    template: this.Template,
+                    data: data).ConfigureAwait(false);
+                return result;
             }
 
             return null;
