@@ -158,23 +158,19 @@ MULTI_LINE_TEXT
   ;
 
 ESCAPE_CHARACTER
-  : '\\{' | '\\[' | '\\\\' | '\\'[rtn\]}]  { ignoreWS = false; expectKeywords = false;}
+  : '\\' ~[\r\n]?  { ignoreWS = false; expectKeywords = false;}
   ;
 
 EXPRESSION
-  : '@'? '{' (STRING_LITERAL| ~[\r\n{}'"] )*? '}'  { ignoreWS = false; expectKeywords = false;}
-  ;
-
-TEMPLATE_REF
-  : '[' (~[\r\n\]] | TEMPLATE_REF)* ']'  { ignoreWS = false; expectKeywords = false;}
+  : '@' '{' (STRING_LITERAL| ~[\r\n{}'"] )*? '}'  { ignoreWS = false; expectKeywords = false;}
   ;
 
 TEXT_SEPARATOR
-  : [\t\r\n{}[\]()]  { ignoreWS = false; expectKeywords = false;}
+  : [\t\r\n@]  { ignoreWS = false; expectKeywords = false;}
   ;
 
 TEXT
-  : ~[\t\r\n{}[\]()]+?  { ignoreWS = false; expectKeywords = false;}
+  : ~[\t\r\n@]+?  { ignoreWS = false; expectKeywords = false;}
   ;
 
 mode STRUCTURED_TEMPLATE_BODY_MODE;

@@ -460,9 +460,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     switch (node.Symbol.Type)
                     {
-                        case LGFileParser.TEMPLATE_REF:
-                            result.AddRange(CheckTemplateRef(node.GetText(), context));
-                            break;
                         case LGFileParser.EXPRESSION:
                             result.AddRange(CheckExpression(node.GetText(), context));
                             break;

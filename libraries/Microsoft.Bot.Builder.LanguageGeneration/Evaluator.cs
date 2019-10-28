@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -236,13 +237,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     case LGFileParser.DASH:
                         break;
                     case LGFileParser.ESCAPE_CHARACTER:
-                        result.Add(Regex.Unescape(node.GetText()));
+                        result.Add(EvalEscape(node.GetText()));
                         break;
                     case LGFileParser.EXPRESSION:
                         result.Add(EvalExpression(node.GetText()));
-                        break;
-                    case LGFileParser.TEMPLATE_REF:
-                        result.Add(EvalTemplateRef(node.GetText()));
                         break;
                     case LGFileLexer.MULTI_LINE_TEXT:
                         result.Add(EvalMultiLineText(node.GetText()));
@@ -326,6 +324,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 Debug.WriteLine(e.Message);
                 return false;
             }
+        }
+
+        private object EvalEscape(string exp)
+        {
+            var commonEscapes = new List<string>() { "\\r", "\\n", "\\t", "\\\\" };
+            if (commonEscapes.Contains(exp))
+            {
+                return Regex.Unescape(exp);
+            }
+
+            return exp.Substring(1);
         }
 
         private object EvalExpression(string exp)

@@ -261,13 +261,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     case LGFileParser.DASH:
                         break;
                     case LGFileParser.ESCAPE_CHARACTER:
-                        result = StringListConcat(result, new List<string>() { Regex.Unescape(node.GetText()) });
+                        result = StringListConcat(result, new List<string>() { EvalExcape(node.GetText()) });
                         break;
                     case LGFileParser.EXPRESSION:
                         result = StringListConcat(result, EvalExpression(node.GetText()));
-                        break;
-                    case LGFileParser.TEMPLATE_REF:
-                        result = StringListConcat(result, EvalTemplateRef(node.GetText()));
                         break;
                     case LGFileLexer.MULTI_LINE_TEXT:
                         result = StringListConcat(result, EvalMultiLineText(node.GetText()));
@@ -331,6 +328,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 Debug.WriteLine(e.Message);
                 return false;
             }
+        }
+
+        private string EvalExcape(string exp)
+        {
+            // TODO: handle excape like evaluator
+            return exp;
         }
 
         private List<string> EvalExpression(string exp)

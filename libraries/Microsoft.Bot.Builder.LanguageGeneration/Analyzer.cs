@@ -146,9 +146,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     case LGFileParser.EXPRESSION:
                         result.Union(AnalyzeExpression(node.GetText()));
                         break;
-                    case LGFileParser.TEMPLATE_REF:
-                        result.Union(AnalyzeTemplateRef(node.GetText()));
-                        break;
                     case LGFileLexer.MULTI_LINE_TEXT:
                         result.Union(AnalyzeMultiLineText(node.GetText()));
                         break;
