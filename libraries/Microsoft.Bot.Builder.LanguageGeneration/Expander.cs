@@ -368,24 +368,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return new List<string>() { result.ToString() };
         }
 
-        private List<string> EvalTemplateRef(string exp)
-        {
-            exp = exp.TrimStart('[').TrimEnd(']').Trim();
-            if (exp.IndexOf('(') < 0)
-            {
-                if (TemplateMap.ContainsKey(exp))
-                {
-                    exp = exp + "(" + string.Join(",", TemplateMap[exp].Parameters) + ")";
-                }
-                else
-                {
-                    exp = exp + "()";
-                }
-            }
-
-            return EvalExpression(exp);
-        }
-
         // just don't want to write evaluationTargetStack.Peek() everywhere
         private EvaluationTarget CurrentTarget() => evaluationTargetStack.Peek();
 

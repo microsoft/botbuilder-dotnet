@@ -211,14 +211,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        private AnalyzerResult AnalyzeTemplateRef(string exp)
-        {
-            exp = exp.TrimStart('[').TrimEnd(']').Trim();
-            exp = exp.IndexOf('(') < 0 ? exp + "()" : exp;
-
-            return AnalyzeExpression(exp);
-        }
-
         private AnalyzerResult AnalyzeMultiLineText(string exp)
         {
             var result = new AnalyzerResult();

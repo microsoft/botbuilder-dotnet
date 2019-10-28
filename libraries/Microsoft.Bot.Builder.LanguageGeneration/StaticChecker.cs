@@ -477,37 +477,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return result;
             }
 
-            public List<Diagnostic> CheckTemplateRef(string exp, ParserRuleContext context)
-            {
-                var result = new List<Diagnostic>();
-
-                exp = exp.TrimStart('[').TrimEnd(']').Trim();
-                var expression = exp;
-                if (exp.IndexOf('(') < 0)
-                {
-                    if (this.templateMap.ContainsKey(exp))
-                    {
-                        expression = exp + "(" + string.Join(",", this.templateMap[exp].Parameters) + ")";
-                    }
-                    else
-                    {
-                        expression = exp + "()";
-                    }
-                }
-
-                try
-                {
-                    ExpressionParser.Parse(expression);
-                }
-                catch (Exception e)
-                {
-                    result.Add(BuildLGDiagnostic(e.Message + $" in template reference `{exp}`", context: context));
-                    return result;
-                }
-
-                return result;
-            }
-
             private List<Diagnostic> CheckMultiLineText(string exp, ParserRuleContext context)
             {
                 // remove ``` ```
