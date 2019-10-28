@@ -5,7 +5,7 @@
 
 > Ref such a template should work fine
 # Hello
-- [Hello.World]
+- @{Hello.World()}
 
 > But
 > if it's used as a lambda, it might have problems like

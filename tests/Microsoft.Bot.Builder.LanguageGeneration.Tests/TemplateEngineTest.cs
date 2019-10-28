@@ -200,8 +200,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var emptyEngine = new TemplateEngine();
             Assert.AreEqual(emptyEngine.Evaluate("Hi"), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" }), "Hi DL");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
+            Assert.AreEqual(emptyEngine.Evaluate("Hi @{name}", new { name = "DL" }), "Hi DL");
+            Assert.AreEqual(emptyEngine.Evaluate("Hi @{name.FirstName}@{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
             Assert.AreEqual(emptyEngine.Evaluate("Hi \n Hello", null), "Hi \n Hello");
             Assert.AreEqual(emptyEngine.Evaluate("Hi \r\n Hello", null), "Hi \r\n Hello");
             Assert.AreEqual(emptyEngine.Evaluate("Hi \r\n @{name}", new { name = "DL" }), "Hi \r\n DL");
@@ -213,11 +213,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var emptyEngine = new TemplateEngine().AddFile(GetExampleFilePath("8.lg"));
             Assert.AreEqual(emptyEngine.Evaluate("Hi"), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" }), "Hi DL");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
+            Assert.AreEqual(emptyEngine.Evaluate("Hi @{name}", new { name = "DL" }), "Hi DL");
+            Assert.AreEqual(emptyEngine.Evaluate("Hi @{name.FirstName}@{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
             Assert.AreEqual(
                 emptyEngine.Evaluate(
-                "Hi {name.FirstName}{name.LastName} [RecentTasks]",
+                "Hi @{name.FirstName}@{name.LastName} @{RecentTasks()}",
                 new
                 {
                     name = new
@@ -228,7 +228,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 }), "Hi DL You don't have any tasks.");
             Assert.AreEqual(
                 emptyEngine.Evaluate(
-                "Hi {name.FirstName}{name.LastName} [RecentTasks]",
+                "Hi @{name.FirstName}@{name.LastName} @{RecentTasks()}",
                 new
                 {
                     name = new
@@ -270,8 +270,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 name = "Dong Lei"
             };
             Assert.AreEqual(engine.EvaluateTemplate("Hello", scope), "Good morning Dong Lei");
-            Assert.AreEqual(engine.EvaluateTemplate("Hello2", scope), "Good morning Dong Lei");
-            Assert.AreEqual(engine.EvaluateTemplate("Hello3", scope), "Good morning Dong Lei");
         }
 
         [TestMethod]
@@ -281,8 +279,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled = engine.EvaluateTemplate("wPhrase", null);
             Assert.AreEqual(evaled, "Hi \r\n\t[]{}\\");
 
+            evaled = engine.EvaluateTemplate("AtEscapeChar", null);
+            Assert.AreEqual(evaled, "Hi{1+1}[wPhrase]{wPhrase()}@{wPhrase()}2@{1+1} ");
+
             evaled = engine.EvaluateTemplate("otherEscape", null);
-            Assert.AreEqual(evaled, @"Hi \y \");
+            Assert.AreEqual(evaled, "Hi y ");
 
             evaled = engine.EvaluateTemplate("escapeInExpression", null);
             Assert.AreEqual(evaled, "Hi hello\\\\");

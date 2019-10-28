@@ -328,7 +328,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private object EvalEscape(string exp)
         {
-            var commonEscapes = new List<string>() { "\\r", "\\n", "\\t", "\\\\" };
+            var commonEscapes = new List<string>() { "\\r", "\\n", "\\t" };
             if (commonEscapes.Contains(exp))
             {
                 return Regex.Unescape(exp);

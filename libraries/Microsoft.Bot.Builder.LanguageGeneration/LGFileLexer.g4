@@ -165,12 +165,8 @@ EXPRESSION
   : '@' '{' (STRING_LITERAL| ~[\r\n{}'"] )*? '}'  { ignoreWS = false; expectKeywords = false;}
   ;
 
-TEXT_SEPARATOR
-  : [\t@]  { ignoreWS = false; expectKeywords = false;}
-  ;
-
 TEXT
-  : ~[\t\r\n@]+  { ignoreWS = false; expectKeywords = false;}
+  : ~[\r\n]+?  { ignoreWS = false; expectKeywords = false;}
   ;
 
 mode STRUCTURED_TEMPLATE_BODY_MODE;
