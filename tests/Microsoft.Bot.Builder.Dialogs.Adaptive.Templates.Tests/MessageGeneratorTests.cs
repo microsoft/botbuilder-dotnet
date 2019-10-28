@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var context = GetTurnContext(new MockLanguageGenerator());
             var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
             var lgStringResult = await languageGenerator.Generate(context, "text", data: null).ConfigureAwait(false);
-            var activity = ActivityFactory.GenerateFromLG(lgStringResult) as Activity;
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
 
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
             Assert.AreEqual("text", activity.Text);
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var context = await GetTurnContext("NormalStructuredLG.lg");
             var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
             var lgStringResult = await languageGenerator.Generate(context, "[notSupport]", null).ConfigureAwait(false);
-            var result = ActivityFactory.CreateActivity(lgStringResult) as Activity;
+            var result = ActivityFactory.CreateActivity(lgStringResult);
         }
 
         [TestMethod]
@@ -65,142 +65,75 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             data.title = "titleContent";
             data.text = "textContent";
             var lgStringResult = await languageGenerator.Generate(context, "[HerocardWithCardAction]", data: data).ConfigureAwait(false);
-            var activity = ActivityFactory.CreateActivity(lgStringResult) as Activity;
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertCardActionActivity(activity);
 
             data.adaptiveCardTitle = "test";
             lgStringResult = await languageGenerator.Generate(context, "[adaptivecardActivity]", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult) as Activity;
+            activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertAdaptiveCardActivity(activity);
 
             lgStringResult = await languageGenerator.Generate(context, "[eventActivity]", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult) as Activity;
+            activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertEventActivity(activity);
 
             lgStringResult = await languageGenerator.Generate(context, "[activityWithHeroCardAttachment]", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult) as Activity;
+            activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertActivityWithHeroCardAttachment(activity);
 
             lgStringResult = await languageGenerator.Generate(context, "[activityWithMultiAttachments]", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult) as Activity;
+            activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertActivityWithMultiAttachments(activity);
 
             lgStringResult = await languageGenerator.Generate(context, "[activityWithSuggestionActions]", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult) as Activity;
+            activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertActivityWithSuggestionActions(activity);
 
             lgStringResult = await languageGenerator.Generate(context, "[messageActivityAll]", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult) as Activity;
+            activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertMessageActivityAll(activity);
 
             lgStringResult = await languageGenerator.Generate(context, "[activityWithMultiStructuredSuggestionActions]", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult) as Activity;
+            activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertActivityWithMultiStructuredSuggestionActions(activity);
 
             lgStringResult = await languageGenerator.Generate(context, "[activityWithMultiStringSuggestionActions]", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult) as Activity;
+            activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertActivityWithMultiStringSuggestionActions(activity);
 
             data.type = "herocard";
             lgStringResult = await languageGenerator.Generate(context, "[HeroCardTemplate]", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult) as Activity;
+            activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertHeroCardActivity(activity);
 
             data.type = "thumbnailcard";
             lgStringResult = await languageGenerator.Generate(context, "[ThumbnailCardTemplate]", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult) as Activity;
+            activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertThumbnailCardActivity(activity);
 
             data.type = "audiocard";
             lgStringResult = await languageGenerator.Generate(context, "[AudioCardTemplate]", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult) as Activity;
+            activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertAudioCardActivity(activity);
 
             data.type = "videocard";
             lgStringResult = await languageGenerator.Generate(context, "[VideoCardTemplate]", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult) as Activity;
+            activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertVideoCardActivity(activity);
 
             data.signinlabel = "Sign in";
             data.url = "https://login.microsoftonline.com/";
             lgStringResult = await languageGenerator.Generate(context, "[SigninCardTemplate]", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult) as Activity;
+            activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertSigninCardActivity(activity);
 
             data.connectionName = "MyConnection";
             lgStringResult = await languageGenerator.Generate(context, "[OAuthCardTemplate]", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult) as Activity;
+            activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertOAuthCardActivity(activity);
 
             lgStringResult = await languageGenerator.Generate(context, "[SuggestedActionsReference]", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult) as Activity;
-            AssertSuggestedActionsReferenceActivity(activity);
-        }
-
-        [TestMethod]
-        public void TestGenerateFromLG()
-        {
-            var r = GetLGTFilePath("NormalStructuredLG.lg");
-            dynamic data = new JObject();
-            data.title = "titleContent";
-            data.text = "textContent";
-
-            var engine = new TemplateEngine().AddFile(GetLGTFilePath("NormalStructuredLG.lg"));
-
-            var activity = ActivityFactory.GenerateFromLG(engine.EvaluateTemplate("HerocardWithCardAction", data));
-            AssertCardActionActivity(activity);
-
-            data.adaptiveCardTitle = "test";
-            activity = ActivityFactory.GenerateFromLG(engine.EvaluateTemplate("adaptivecardActivity", data));
-            AssertAdaptiveCardActivity(activity);
-
-            activity = ActivityFactory.GenerateFromLG(engine.EvaluateTemplate("eventActivity", data));
-            AssertEventActivity(activity);
-
-            activity = ActivityFactory.GenerateFromLG(engine.EvaluateTemplate("activityWithHeroCardAttachment", data));
-            AssertActivityWithHeroCardAttachment(activity);
-
-            activity = ActivityFactory.GenerateFromLG(engine.EvaluateTemplate("activityWithMultiAttachments", data));
-            AssertActivityWithMultiAttachments(activity);
-
-            activity = ActivityFactory.GenerateFromLG(engine.EvaluateTemplate("activityWithSuggestionActions", data));
-            AssertActivityWithSuggestionActions(activity);
-
-            activity = ActivityFactory.GenerateFromLG(engine.EvaluateTemplate("messageActivityAll", data));
-            AssertMessageActivityAll(activity);
-
-            activity = ActivityFactory.GenerateFromLG(engine.EvaluateTemplate("activityWithMultiStructuredSuggestionActions", data));
-            AssertActivityWithMultiStructuredSuggestionActions(activity);
-
-            activity = ActivityFactory.GenerateFromLG(engine.EvaluateTemplate("activityWithMultiStringSuggestionActions", data));
-            AssertActivityWithMultiStringSuggestionActions(activity);
-
-            data.type = "herocard";
-            activity = ActivityFactory.GenerateFromLG(engine.EvaluateTemplate("HeroCardTemplate", data));
-            AssertHeroCardActivity(activity);
-
-            data.type = "thumbnailcard";
-            activity = ActivityFactory.GenerateFromLG(engine.EvaluateTemplate("ThumbnailCardTemplate", data));
-            AssertThumbnailCardActivity(activity);
-
-            data.type = "audiocard";
-            activity = ActivityFactory.GenerateFromLG(engine.EvaluateTemplate("AudioCardTemplate", data));
-            AssertAudioCardActivity(activity);
-
-            data.type = "videocard";
-            activity = ActivityFactory.GenerateFromLG(engine.EvaluateTemplate("VideoCardTemplate", data));
-            AssertVideoCardActivity(activity);
-
-            data.signinlabel = "Sign in";
-            data.url = "https://login.microsoftonline.com/";
-            activity = ActivityFactory.GenerateFromLG(engine.EvaluateTemplate("SigninCardTemplate", data));
-            AssertSigninCardActivity(activity);
-
-            data.connectionName = "MyConnection";
-            activity = ActivityFactory.GenerateFromLG(engine.EvaluateTemplate("OAuthCardTemplate", data));
-            AssertOAuthCardActivity(activity);
-
-            activity = ActivityFactory.GenerateFromLG(engine.EvaluateTemplate("SuggestedActionsReference", data));
+            activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertSuggestedActionsReferenceActivity(activity);
         }
 

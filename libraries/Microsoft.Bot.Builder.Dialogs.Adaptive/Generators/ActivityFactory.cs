@@ -34,33 +34,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         };
 
         /// <summary>
-        /// Generate the activity From LG output.
-        /// </summary>
-        /// <param name="lgResult">LG output.</param>
-        /// <returns>activity.</returns>
-        public static Activity GenerateFromLG(object lgResult)
-        {
-            if (lgResult is string)
-            {
-                return BuildActivityFromText(lgResult?.ToString()?.Trim());
-            }
-            else
-            {
-                JObject lgStructuredResult;
-                try
-                {
-                    lgStructuredResult = JObject.FromObject(lgResult);
-                }
-                catch
-                {
-                    return BuildActivityFromText(lgResult?.ToString()?.Trim());
-                }
-
-                return BuildActivityFromLGStructuredResult(lgStructuredResult);
-            }
-        }
-
-        /// <summary>
         /// Generate the activity. 
         /// </summary>
         /// <param name="lgStringResult">string result from languageGenerator.</param>
