@@ -18,8 +18,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Test("TemplateParamsNotMatchArgsNum.lg"),
             Test("ErrorSeperateChar.lg"),
             Test("ErrorSeperateChar2.lg"),
-
-            //Test("MultilineVariation.lg"), will add it later
+            Test("MultilineVariation.lg"),
             Test("InvalidTemplateName.lg"),
             Test("InvalidTemplateName2.lg"),
             Test("DuplicatedTemplates.lg"),

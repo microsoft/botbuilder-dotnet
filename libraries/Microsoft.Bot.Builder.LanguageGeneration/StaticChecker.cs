@@ -459,16 +459,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 var result = new List<Diagnostic>();
 
-                foreach (ITerminalNode node in context.children)
+                foreach (var expression in context.EXPRESSION())
                 {
-                    switch (node.Symbol.Type)
-                    {
-                        case LGFileParser.EXPRESSION:
-                            result.AddRange(CheckExpression(node.GetText(), context));
-                            break;
-                        default:
-                            break;
-                    }
+                    result.AddRange(CheckExpression(expression.GetText(), context));
                 }
 
                 return result;
@@ -477,17 +470,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             public override List<Diagnostic> VisitMultilineTemplateString([NotNull] LGFileParser.MultilineTemplateStringContext context)
             {
                 var result = new List<Diagnostic>();
-
-                foreach (ITerminalNode node in context.children)
+                if (context.MULTILINE_SUFFIX() == null)
                 {
-                    switch (node.Symbol.Type)
-                    {
-                        case LGFileParser.MULTILINE_EXPRESSION:
-                            result.AddRange(CheckExpression(node.GetText(), context));
-                            break;
-                        default:
-                            break;
-                    }
+                    result.Add(BuildLGDiagnostic("Close ``` is missing.", context: context));
+                }
+
+                foreach (var expression in context.MULTILINE_EXPRESSION())
+                {
+                    result.AddRange(CheckExpression(expression.GetText(), context));
                 }
 
                 return result;

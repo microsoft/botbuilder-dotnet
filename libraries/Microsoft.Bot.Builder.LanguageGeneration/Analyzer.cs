@@ -143,16 +143,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public override AnalyzerResult VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
         {
             var result = new AnalyzerResult();
-            foreach (ITerminalNode node in context.children)
+            foreach (var expression in context.EXPRESSION())
             {
-                switch (node.Symbol.Type)
-                {
-                    case LGFileParser.EXPRESSION:
-                        result.Union(AnalyzeExpression(node.GetText()));
-                        break;
-                    default:
-                        break;
-                }
+                result.Union(AnalyzeExpression(expression.GetText()));
             }
 
             return result;
@@ -161,16 +154,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public override AnalyzerResult VisitMultilineTemplateString([NotNull] LGFileParser.MultilineTemplateStringContext context)
         {
             var result = new AnalyzerResult();
-            foreach (ITerminalNode node in context.children)
+
+            foreach (var expression in context.MULTILINE_EXPRESSION())
             {
-                switch (node.Symbol.Type)
-                {
-                    case LGFileParser.MULTILINE_EXPRESSION:
-                        result.Union(AnalyzeExpression(node.GetText()));
-                        break;
-                    default:
-                        break;
-                }
+                result.Union(AnalyzeExpression(expression.GetText()));
             }
 
             return result;
