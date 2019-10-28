@@ -17,7 +17,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
     /// <summary>
-    /// The ActivityFactory by using ILanguageGenerator
+    /// The ActivityFactory
     /// to generate text and then uses simple markdown semantics like chatdown to create Activity.
     /// </summary>
     public class ActivityFactory
@@ -63,24 +63,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Generate the activity. 
         /// </summary>
-        /// <param name="turnContext">turn context.</param>
-        /// <param name="template">(optional) inline template definition.</param>
-        /// <param name="data">data to bind the template to.</param>
+        /// <param name="lgStringResult">string result from languageGenerator.</param>
         /// <returns>activity.</returns>
-        public static async Task<Activity> Generate(ITurnContext turnContext, string template, object data)
+        public static Activity CreateActivity(string lgStringResult)
         {
-            var lgStringResult = template;
-            var languageGenerator = turnContext.TurnState.Get<ILanguageGenerator>();
-            if (languageGenerator != null)
-            {
-                // data bind template 
-                lgStringResult = await languageGenerator.Generate(turnContext, template, data).ConfigureAwait(false);
-            }
-            else
-            {
-                Trace.TraceWarning($"There is no ILanguageGenerator registered in the ITurnContext so no data binding was performed for template: {template}");
-            }
-
             JObject lgStructuredResult;
             try
             {

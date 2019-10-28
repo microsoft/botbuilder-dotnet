@@ -34,11 +34,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         {
             if (!string.IsNullOrEmpty(this.Template))
             {
-                // if there is a message generator use that
-                var result = await ActivityFactory.Generate(
-                    turnContext: context,
-                    template: this.Template,
-                    data: data).ConfigureAwait(false);
+                var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+                var lgStringResult = await languageGenerator.Generate(context, this.Template, data).ConfigureAwait(false);
+                var result = ActivityFactory.CreateActivity(lgStringResult);
                 return result;
             }
 

@@ -56,18 +56,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
             botAdapter.Use(new RegisterClassMiddleware<LanguageGeneratorManager>(new LanguageGeneratorManager(resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer)))));
             botAdapter.Use(new RegisterClassMiddleware<ILanguageGenerator>(languageGenerator ?? throw new ArgumentNullException(nameof(languageGenerator))));
-            botAdapter.UseMessageActivityGeneration();
-            return botAdapter;
-        }
-
-        /// <summary>
-        /// Register MessageActivityGeneration. 
-        /// </summary>
-        /// <param name="botAdapter">botAdapter to add services to.</param>
-        /// <returns>botAdapter.</returns>
-        public static BotAdapter UseMessageActivityGeneration(this BotAdapter botAdapter)
-        {
-            DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
             return botAdapter;
         }
     }
