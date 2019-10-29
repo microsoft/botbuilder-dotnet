@@ -115,14 +115,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
                 throw new ArgumentNullException(nameof(bot));
             }
 
-            var route = GetRoute(httpRequest);
-
-            if (route == null)
-            {
-                httpResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                return;
-            }
-
             object result = null;
             var statusCode = (int)HttpStatusCode.OK;
             try
@@ -130,6 +122,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
                 // grab the auth header from the inbound http request
                 var authHeader = httpRequest.Headers["Authorization"];
                 var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialsProvider, _channelProvider, "unknown").ConfigureAwait(false);
+                
+                var route = GetRoute(httpRequest);
+                if (route == null)
+                {
+                    httpResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                    return;
+                }
 
                 switch (route.Method)
                 {
