@@ -226,7 +226,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 }
                 else if (reply.Equals(qnaDialogResponseOptions.CardNoMatchText, StringComparison.OrdinalIgnoreCase))
                 {
-                    var activity = await qnaDialogResponseOptions.CardNoMatchResponse.BindToData(stepContext.Context, stepContext.State).ConfigureAwait(false);
+                    var activity = await qnaDialogResponseOptions.CardNoMatchResponse.BindToData(stepContext.Context, stepContext.GetState()).ConfigureAwait(false);
                     if (activity == null)
                     {
                         await stepContext.Context.SendActivityAsync(DefaultCardNoMatchResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -298,7 +298,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (reply.Equals(qnaDialogResponseOptions.CardNoMatchText, StringComparison.OrdinalIgnoreCase))
             {
-                var activity = await qnaDialogResponseOptions.CardNoMatchResponse.BindToData(stepContext.Context, stepContext.State).ConfigureAwait(false);
+                var activity = await qnaDialogResponseOptions.CardNoMatchResponse.BindToData(stepContext.Context, stepContext.GetState()).ConfigureAwait(false);
                 if (activity == null)
                 {
                     await stepContext.Context.SendActivityAsync(DefaultCardNoMatchResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -325,7 +325,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
             else
             {
-                var activity = await qnaDialogResponseOptions.NoAnswer.BindToData(stepContext.Context, stepContext.State).ConfigureAwait(false);
+                var activity = await qnaDialogResponseOptions.NoAnswer.BindToData(stepContext.Context, stepContext.GetState()).ConfigureAwait(false);
                 if (activity == null)
                 {
                     await stepContext.Context.SendActivityAsync(DefaultNoAnswer, cancellationToken: cancellationToken).ConfigureAwait(false);

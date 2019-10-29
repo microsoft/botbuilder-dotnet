@@ -69,14 +69,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     pageSize = this.PageSize;
                 }
 
-                var (items, error) = itemsProperty.TryEvaluate(dc.State);
+                var (items, error) = itemsProperty.TryEvaluate(dc.GetState());
                 if (error == null)
                 {
                     var page = this.GetPage(items, offset, pageSize);
 
                     if (page.Count() > 0)
                     {
-                        dc.State.SetValue(ForEachPage, page);
+                        dc.GetState().SetValue(ForEachPage, page);
                         var changes = new ActionChangeList()
                         {
                             ChangeType = ActionChangeType.InsertActions,

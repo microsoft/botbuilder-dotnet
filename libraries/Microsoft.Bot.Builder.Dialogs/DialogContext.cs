@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Memory;
 using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -31,9 +30,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
-            State = new DialogStateManager(this);
 
-            State.SetValue(TurnPath.ACTIVITY, Context.Activity);
+            ObjectPath.SetPathValue(turnContext.TurnState, TurnPath.ACTIVITY, Context.Activity);
         }
 
         /// <summary>
@@ -74,14 +72,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// The current dialog stack.
         /// </value>
         public List<DialogInstance> Stack { get; private set; }
-
-        /// <summary>
-        /// Gets current active scoped state with (user|conversation|dialog|settings scopes).
-        /// </summary>
-        /// <value>
-        /// Current active scoped state with (user|conversation|dialog|settings scopes).
-        /// </value>
-        public DialogStateManager State { get; private set; }
 
         /// <summary>
         /// Gets or sets the parent <see cref="DialogContext"/>, if any. Used when searching for the ID of a dialog to start.
@@ -426,7 +416,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // End the current dialog and giving the reason.
             await EndActiveDialogAsync(DialogReason.ReplaceCalled, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            this.State.SetValue("turn.__repeatDialogId", dialogId);
+            ObjectPath.SetPathValue(this.Context.TurnState, "turn.__repeatDialogId", dialogId);
 
             // Start replacement dialog
             return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
@@ -569,7 +559,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Stack.RemoveAt(0);
 
                 // set Turn.LastResult to result
-                this.State.SetValue(TurnPath.LASTRESULT, result);
+                ObjectPath.SetPathValue(this.Context.TurnState, TurnPath.LASTRESULT, result);
             }
         }
 

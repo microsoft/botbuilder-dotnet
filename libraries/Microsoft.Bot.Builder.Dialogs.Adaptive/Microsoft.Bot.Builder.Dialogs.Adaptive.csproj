@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version Condition=" '$(PreviewPackageVersion)' == '' ">4.6.0-local</Version>
-    <Version Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</Version>
-    <PackageVersion Condition=" '$(PreviewPackageVersion)' == '' ">4.6.0-local</PackageVersion>
-    <PackageVersion Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</PackageVersion>
+    <Version Condition=" '$(IsBuildServer)' == '' ">4.6.0-local</Version>
+    <Version Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</Version>
+    <PackageVersion Condition=" '$(IsBuildServer)' == '' ">4.6.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
@@ -40,16 +40,16 @@
     <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.2.6.1" />
     <PackageReference Include="Microsoft.Recognizers.Text.Number" Version="1.2.6.1" />
     <PackageReference Include="Microsoft.Recognizers.Text.Sequence" Version="1.2.6.1" />
-    <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Condition=" '$(PackageVersion)' == '' " Version="4.6.0-local" />
-    <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(PackageVersion)' == '' " Version="4.6.0-local" />
-    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(PreviewPackageVersion)' == '' " Version="4.6.0-local" />
-    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Condition=" '$(PreviewPackageVersion)' == '' " Version="4.6.0-local" />
-    <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(PreviewPackageVersion)' == '' " Version="4.6.0-local" />
-    <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(IsBuildServer)' != '' " Version="$(PreviewPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Condition=" '$(IsBuildServer)' != '' " Version="$(PreviewPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
+    <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(IsBuildServer)' != '' " Version="$(PreviewPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>

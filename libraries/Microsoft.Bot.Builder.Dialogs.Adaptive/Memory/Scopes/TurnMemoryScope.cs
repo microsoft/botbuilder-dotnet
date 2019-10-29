@@ -29,10 +29,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            if (!dc.Context.TurnState.TryGetValue(nameof(TurnMemoryScope), out object val))
+            if (!dc.Context.TurnState.TryGetValue(ScopePath.TURN, out object val))
             {
                 val = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-                dc.Context.TurnState[nameof(TurnMemoryScope)] = val;
+                dc.Context.TurnState[ScopePath.TURN] = val;
             }
 
             return val;
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            dc.Context.TurnState[nameof(TurnMemoryScope)] = memory;
+            dc.Context.TurnState[ScopePath.TURN] = memory;
         }
     }
 }

@@ -114,6 +114,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             private readonly ExpressionEngine baseExpressionEngine;
             private readonly Regex expressionRecognizeRegex = new Regex(@"@?(?<!\\)\{.+?(?<!\\)\}", RegexOptions.Compiled);
             private readonly Regex escapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
+            private readonly Regex structuredNameRegex = new Regex(@"^[a-z0-9_][a-z0-9_\-\.]*$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
             private IExpressionParser _expressionParser;
 
@@ -209,16 +210,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         result.AddRange(Visit(context.templateBody()));
                     }
-
-                    var parameters = context.templateNameLine().parameters();
-                    if (parameters != null)
-                    {
-                        if (parameters.CLOSE_PARENTHESIS() == null
-                               || parameters.OPEN_PARENTHESIS() == null)
-                        {
-                            result.Add(BuildLGDiagnostic($"parameters: {parameters.GetText()} format error", context: context.templateNameLine()));
-                        }
-                    }
                 }
 
                 return result;
@@ -248,6 +239,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             public override List<Diagnostic> VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
             {
                 var result = new List<Diagnostic>();
+
+                var typeName = context.structuredBodyNameLine().STRUCTURED_CONTENT().GetText().Trim();
+                if (!structuredNameRegex.IsMatch(typeName))
+                {
+                    result.Add(BuildLGDiagnostic($"Structured type {typeName} is invalid. Letter, number, '_', '-' and '.' is allowed.", context: context.structuredBodyContentLine()));
+                }
 
                 var bodys = context.structuredBodyContentLine()?.STRUCTURED_CONTENT();
                 if (bodys == null || bodys.Length == 0 || bodys.All(u => string.IsNullOrEmpty(u.GetText())))

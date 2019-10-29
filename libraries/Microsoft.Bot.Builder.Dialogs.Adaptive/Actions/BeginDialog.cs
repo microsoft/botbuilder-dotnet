@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             if (this.ResultProperty != null)
             {
-                dc.State.SetValue(this.ResultProperty, result);
+                dc.GetState().SetValue(this.ResultProperty, result);
             }
 
             // By default just end the current dialog and return result to parent.

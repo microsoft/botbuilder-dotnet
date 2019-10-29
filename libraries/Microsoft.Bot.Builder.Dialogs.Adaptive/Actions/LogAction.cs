@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var text = await Text.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+            var text = await Text.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
 
             System.Diagnostics.Trace.TraceInformation(text);
 

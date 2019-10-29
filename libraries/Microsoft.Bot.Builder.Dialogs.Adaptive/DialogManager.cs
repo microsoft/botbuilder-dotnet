@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // send trace of memory
-            await dc.Context.SendActivityAsync((Activity)Activity.CreateTraceActivity("BotState", "https://www.botframework.com/schemas/botState", dc.State.GetMemorySnapshot(), "Bot State")).ConfigureAwait(false);
+            await dc.Context.SendActivityAsync((Activity)Activity.CreateTraceActivity("BotState", "https://www.botframework.com/schemas/botState", dc.GetState().GetMemorySnapshot(), "Bot State")).ConfigureAwait(false);
 
             return new DialogManagerResult() { TurnResult = turnResult };
         }
