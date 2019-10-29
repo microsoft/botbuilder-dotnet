@@ -42,7 +42,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                 if (!string.IsNullOrWhiteSpace(actualText))
                 {
                     actualText = actualText.Trim();
-                    await this.HandleBotCommand(turnContext, actualText, cancellationToken);
+                    await HandleBotCommand(turnContext, actualText, cancellationToken);
                 }
             }
             else
@@ -315,11 +315,13 @@ namespace Microsoft.BotBuilderSamples.Bots
                 var activity = await _log.Find(turnContext.Activity.ReplyToId);
                 if (activity == null)
                 {
+                    activity = MessageFactory.Text($"Activity {turnContext.Activity.ReplyToId} not found in the log.");
                     // If we had sent the message from the error handler we wouldn't have recorded the Activity Id and so we shouldn't expect to see it in the log.
-                    await SendMessageAndLogActivityIdAsync(turnContext, $"Activity {turnContext.Activity.ReplyToId} not found in the log.", cancellationToken);
+                    await SendMessageAndLogActivityIdAsync(turnContext, activity, cancellationToken);
                 }
 
-                await SendMessageAndLogActivityIdAsync(turnContext, $"You added '{reaction.Type}' regarding '{activity.Text}'", cancellationToken);
+                activity = MessageFactory.Text($"You added '{reaction.Type}' regarding '{activity.Text}'");
+                await SendMessageAndLogActivityIdAsync(turnContext, activity, cancellationToken);
             }
         }
 
@@ -332,10 +334,12 @@ namespace Microsoft.BotBuilderSamples.Bots
                 if (activity == null)
                 {
                     // If we had sent the message from the error handler we wouldn't have recorded the Activity Id and so we shouldn't expect to see it in the log.
-                    await SendMessageAndLogActivityIdAsync(turnContext, $"Activity {turnContext.Activity.ReplyToId} not found in the log.", cancellationToken);
+                    activity = MessageFactory.Text($"Activity {turnContext.Activity.ReplyToId} not found in the log.");
+                    await SendMessageAndLogActivityIdAsync(turnContext, activity, cancellationToken);
                 }
 
-                await SendMessageAndLogActivityIdAsync(turnContext, $"You removed '{reaction.Type}' regarding '{activity.Text}'", cancellationToken);
+                activity = MessageFactory.Text($"You removed '{reaction.Type}' regarding '{activity.Text}'");
+                await SendMessageAndLogActivityIdAsync(turnContext, activity, cancellationToken);
             }
         }
 
@@ -630,6 +634,9 @@ namespace Microsoft.BotBuilderSamples.Bots
                 case "delete":
                     await HandleDeleteActivitiesAsync(turnContext, cancellationToken);
                     break;
+                case "update":
+                    await HandleUpdateActivitiesAsync(turnContext, cancellationToken);
+                    break;
                 case "1":
                     await SendAdaptiveCard1Async(turnContext, cancellationToken);
                     break;
@@ -682,7 +689,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                     await turnContext.SendActivityAsync(MessageFactory.Attachment(this.GetTaskModuleHeroCard()), cancellationToken);
                     break;
                 default:
-                    await SendMessageAndLogActivityIdAsync(turnContext, $"{turnContext.Activity.Text}", cancellationToken);
+                    await SendMessageAndLogActivityIdAsync(turnContext, MessageFactory.Text($"{turnContext.Activity.Text}"), cancellationToken);
                     foreach (var activityId in this._activityIds)
                     {
                         var newActivity = MessageFactory.Text(turnContext.Activity.Text);
@@ -696,12 +703,8 @@ namespace Microsoft.BotBuilderSamples.Bots
         private async Task ShowDetailsAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             var teamId = turnContext.Activity.TeamsGetTeamInfo().Id;
-
             var teamDetails = await TeamsInfo.GetTeamDetailsAsync(turnContext, teamId, cancellationToken);
-
-            var replyActivity = MessageFactory.Text($"The team name is {teamDetails.Name}. The team ID is {teamDetails.Id}. The ADD GroupID is {teamDetails.AadGroupId}.");
-
-            await turnContext.SendActivityAsync(replyActivity, cancellationToken);
+            await SendMessageAndLogActivityIdAsync(turnContext, MessageFactory.Text($"The team name is {teamDetails.Name}. The team ID is {teamDetails.Id}. The ADD GroupID is {teamDetails.AadGroupId}."), cancellationToken);
         }
 
         private async Task ShowMembersAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
@@ -735,7 +738,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             await SendInBatchesAsync(turnContext, messages, cancellationToken);
         }
 
-        private static async Task SendInBatchesAsync(ITurnContext<IMessageActivity> turnContext, IEnumerable<string> messages, CancellationToken cancellationToken)
+        private async Task SendInBatchesAsync(ITurnContext<IMessageActivity> turnContext, IEnumerable<string> messages, CancellationToken cancellationToken)
         {
             var batch = new List<string>();
             foreach (var msg in messages)
@@ -744,14 +747,14 @@ namespace Microsoft.BotBuilderSamples.Bots
 
                 if (batch.Count == 10)
                 {
-                    await turnContext.SendActivityAsync(MessageFactory.Text(string.Join("<br>", batch)), cancellationToken);
+                    await SendMessageAndLogActivityIdAsync(turnContext, MessageFactory.Text(string.Join("<br>", batch)), cancellationToken);
                     batch.Clear();
                 }
             }
 
             if (batch.Count > 0)
             {
-                await turnContext.SendActivityAsync(MessageFactory.Text(string.Join("<br>", batch)), cancellationToken);
+                await SendMessageAndLogActivityIdAsync(turnContext, MessageFactory.Text(string.Join("<br>", batch)), cancellationToken);
             }
         }
 
@@ -847,7 +850,7 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         private async Task HandleDeleteActivitiesAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            foreach (var activityId in this._activityIds)
+            foreach (var activityId in _activityIds)
             {
                 await turnContext.DeleteActivityAsync(activityId, cancellationToken);
             }
@@ -855,10 +858,19 @@ namespace Microsoft.BotBuilderSamples.Bots
             this._activityIds.Clear();
         }
 
-        private async Task SendMessageAndLogActivityIdAsync(ITurnContext turnContext, string text, CancellationToken cancellationToken)
+        private async Task HandleUpdateActivitiesAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            foreach (var activityId in _activityIds)
+            {
+                var newActivity = MessageFactory.Text(turnContext.Activity.Text);
+                newActivity.Id = activityId;
+                await turnContext.UpdateActivityAsync(newActivity, cancellationToken);
+            }
+        }
+
+        private async Task SendMessageAndLogActivityIdAsync(ITurnContext turnContext, Activity replyActivity, CancellationToken cancellationToken)
         {
             // We need to record the Activity Id from the Activity just sent in order to understand what the reaction is a reaction too. 
-            var replyActivity = MessageFactory.Text(text);
             var resourceResponse = await turnContext.SendActivityAsync(replyActivity, cancellationToken);
             _activityIds.Add(resourceResponse.Id);
             await _log.Append(resourceResponse.Id, replyActivity);
