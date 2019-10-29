@@ -70,19 +70,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override List<string> VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
         {
-            var templateStrs = context.templateString();
+            var normalTemplateStrs = context.templateString();
             var result = new List<string>();
 
-            foreach (var templateStr in templateStrs)
+            foreach (var normalTemplateStr in normalTemplateStrs)
             {
-                if (templateStr.normalTemplateString() != null)
-                {
-                    result.AddRange(Visit(templateStr.normalTemplateString()));
-                }
-                else if (templateStr.multilineTemplateString() != null)
-                {
-                    result.AddRange(Visit(templateStr.multilineTemplateString()));
-                }
+                result.AddRange(Visit(normalTemplateStr.normalTemplateString()));
             }
 
             return result;
@@ -266,37 +259,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 switch (node.Symbol.Type)
                 {
                     case LGFileParser.DASH:
+                    case LGFileParser.MULTILINE_PREFIX:
+                    case LGFileParser.MULTILINE_SUFFIX:
                         break;
                     case LGFileParser.ESCAPE_CHARACTER:
                         result = StringListConcat(result, EvalEscape(node.GetText()));
                         break;
                     case LGFileParser.EXPRESSION:
-                        result = StringListConcat(result, EvalExpression(node.GetText()));
-                        break;
-                    default:
-                        result = StringListConcat(result, new List<string>() { node.GetText() });
-                        break;
-                }
-            }
-
-            return result;
-        }
-
-        public override List<string> VisitMultilineTemplateString([NotNull] LGFileParser.MultilineTemplateStringContext context)
-        {
-            var result = new List<string>() { string.Empty };
-            foreach (ITerminalNode node in context.children)
-            {
-                switch (node.Symbol.Type)
-                {
-                    case LGFileParser.DASH:
-                    case LGFileParser.MULTILINE_PREFIX:
-                    case LGFileParser.MULTILINE_SUFFIX:
-                        break;
-                    case LGFileParser.MULTILINE_ESCAPE_CHARACTER:
-                        result = StringListConcat(result, EvalEscape(node.GetText()));
-                        break;
-                    case LGFileParser.MULTILINE_EXPRESSION:
                         result = StringListConcat(result, EvalExpression(node.GetText()));
                         break;
                     default:

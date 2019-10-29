@@ -78,14 +78,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             foreach (var templateStr in context.templateString())
             {
-                if (templateStr.normalTemplateString() != null)
-                {
-                    result.Union(Visit(templateStr.normalTemplateString()));
-                }
-                else if (templateStr.multilineTemplateString() != null)
-                {
-                    result.Union(Visit(templateStr.multilineTemplateString()));
-                }
+                var item = Visit(templateStr.normalTemplateString());
+                result.Union(item);
             }
 
             return result;
@@ -144,18 +138,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var result = new AnalyzerResult();
             foreach (var expression in context.EXPRESSION())
-            {
-                result.Union(AnalyzeExpression(expression.GetText()));
-            }
-
-            return result;
-        }
-
-        public override AnalyzerResult VisitMultilineTemplateString([NotNull] LGFileParser.MultilineTemplateStringContext context)
-        {
-            var result = new AnalyzerResult();
-
-            foreach (var expression in context.MULTILINE_EXPRESSION())
             {
                 result.Union(AnalyzeExpression(expression.GetText()));
             }

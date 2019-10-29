@@ -167,20 +167,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override object VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
         {
-            var templateStrs = context.templateString();
+            var normalTemplateStrs = context.templateString();
             var rd = new Random();
-            var templateStr = templateStrs[rd.Next(templateStrs.Length)];
-
-            if (templateStr.normalTemplateString() != null)
-            {
-                return Visit(templateStr.normalTemplateString());
-            }
-            else if (templateStr.multilineTemplateString() != null)
-            {
-                return Visit(templateStr.multilineTemplateString());
-            }
-
-            return null;
+            return Visit(normalTemplateStrs[rd.Next(normalTemplateStrs.Length)].normalTemplateString());
         }
 
         public override object VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
@@ -246,6 +235,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 switch (node.Symbol.Type)
                 {
                     case LGFileParser.DASH:
+                    case LGFileParser.MULTILINE_PREFIX:
+                    case LGFileParser.MULTILINE_SUFFIX:
                         break;
                     case LGFileParser.ESCAPE_CHARACTER:
                         result.Add(EvalEscape(node.GetText()));
@@ -262,32 +253,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             if (result.Count == 1 && !(result[0] is string))
             {
                 return result[0];
-            }
-
-            return string.Join(string.Empty, result);
-        }
-
-        public override object VisitMultilineTemplateString([NotNull] LGFileParser.MultilineTemplateStringContext context)
-        {
-            var result = new List<string>();
-            foreach (ITerminalNode node in context.children)
-            {
-                switch (node.Symbol.Type)
-                {
-                    case LGFileParser.DASH:
-                    case LGFileParser.MULTILINE_PREFIX:
-                    case LGFileParser.MULTILINE_SUFFIX:
-                        break;
-                    case LGFileParser.MULTILINE_ESCAPE_CHARACTER:
-                        result.Add(EvalEscape(node.GetText()));
-                        break;
-                    case LGFileParser.MULTILINE_EXPRESSION:
-                        result.Add(EvalExpression(node.GetText()).ToString());
-                        break;
-                    default:
-                        result.Add(node.GetText());
-                        break;
-                }
             }
 
             return string.Join(string.Empty, result);

@@ -224,13 +224,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         result.Add(BuildLGDiagnostic($"Invalid template body line, did you miss '-' at line begin", context: errorTemplateStr));
                     }
-                    else if (templateStr.normalTemplateString() != null)
+                    else
                     {
                         result.AddRange(Visit(templateStr.normalTemplateString()));
-                    }
-                    else if (templateStr.multilineTemplateString() != null)
-                    {
-                        result.AddRange(Visit(templateStr.multilineTemplateString()));
                     }
                 }
 
@@ -464,20 +460,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     result.AddRange(CheckExpression(expression.GetText(), context));
                 }
 
-                return result;
-            }
-
-            public override List<Diagnostic> VisitMultilineTemplateString([NotNull] LGFileParser.MultilineTemplateStringContext context)
-            {
-                var result = new List<Diagnostic>();
-                if (context.MULTILINE_SUFFIX() == null)
+                var multiLinePrefixNum = context.MULTILINE_PREFIX().Length;
+                var multiLineSuffixNum = context.MULTILINE_SUFFIX().Length;
+                if (multiLinePrefixNum > 0 && multiLinePrefixNum > multiLineSuffixNum)
                 {
                     result.Add(BuildLGDiagnostic("Close ``` is missing.", context: context));
-                }
-
-                foreach (var expression in context.MULTILINE_EXPRESSION())
-                {
-                    result.AddRange(CheckExpression(expression.GetText(), context));
                 }
 
                 return result;

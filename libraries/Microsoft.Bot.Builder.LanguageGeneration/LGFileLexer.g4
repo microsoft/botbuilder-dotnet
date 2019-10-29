@@ -197,22 +197,14 @@ MULTILINE_SUFFIX
   : '```' -> popMode
   ;
 
-MULTILINE_NEWLINE
-  : '\r'? '\n' -> type(NEWLINE)
-  ;
-
-MULTILINE_WS
-  : WHITESPACE+  -> type(WS)
-  ;
-
 MULTILINE_ESCAPE_CHARACTER
-  : '\\' ~[\r\n]?
+  : '\\' ~[\r\n]? -> type(ESCAPE_CHARACTER)
   ;
 
 MULTILINE_EXPRESSION
-  : '@' '{' (STRING_LITERAL| ~[\r\n{}'"] )*? '}'
+  : '@' '{' (STRING_LITERAL| ~[\r\n{}'"] )*? '}' -> type(EXPRESSION)
   ;
 
 MULTILINE_TEXT
-  : ~[\r\n]+?
+  : (('\r'? '\n') | ~[\r\n])+? -> type(TEXT)
   ;
