@@ -24,62 +24,62 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             new ChannelRoute
             {
                 Method = ChannelApiMethods.GetActivityMembers,
-                Pattern = new Regex(@"/GET:/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>.*)/members", RegexOptions.Compiled | RegexOptions.IgnoreCase)
-            },
-            new ChannelRoute
-            {
-                Method = ChannelApiMethods.ReplyToActivity,
-                Pattern = new Regex(@"/POST:/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>[^\s/]*)?", RegexOptions.Compiled | RegexOptions.IgnoreCase)
-            },
-            new ChannelRoute
-            {
-                Method = ChannelApiMethods.UpdateActivity,
-                Pattern = new Regex(@"/PUT:/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>[^\s/]*)?", RegexOptions.Compiled | RegexOptions.IgnoreCase)
-            },
-            new ChannelRoute
-            {
-                Method = ChannelApiMethods.DeleteActivity,
-                Pattern = new Regex(@"/DELETE:/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>[^\s/]*)?", RegexOptions.Compiled | RegexOptions.IgnoreCase)
-            },
-            new ChannelRoute
-            {
-                Method = ChannelApiMethods.SendToConversation,
-                Pattern = new Regex(@"/POST:/v3/conversations/(?<conversationId>[^\s/]*)/activities", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                Pattern = new Regex(@"/GET:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>.*)/members", RegexOptions.Compiled | RegexOptions.IgnoreCase)
             },
             new ChannelRoute
             {
                 Method = ChannelApiMethods.SendConversationHistory,
-                Pattern = new Regex(@"/POST:/v3/conversations/(?<conversationId>[^\s/]*)/activities/history", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                Pattern = new Regex(@"/POST:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities/history", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+            },
+            new ChannelRoute
+            {
+                Method = ChannelApiMethods.ReplyToActivity,
+                Pattern = new Regex(@"/POST:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>[^\s/]*)?", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+            },
+            new ChannelRoute
+            {
+                Method = ChannelApiMethods.UpdateActivity,
+                Pattern = new Regex(@"/PUT:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>[^\s/]*)?", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+            },
+            new ChannelRoute
+            {
+                Method = ChannelApiMethods.DeleteActivity,
+                Pattern = new Regex(@"/DELETE:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>[^\s/]*)?", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+            },
+            new ChannelRoute
+            {
+                Method = ChannelApiMethods.SendToConversation,
+                Pattern = new Regex(@"/POST:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities", RegexOptions.Compiled | RegexOptions.IgnoreCase)
             },
             new ChannelRoute
             {
                 Method = ChannelApiMethods.DeleteConversationMember,
-                Pattern = new Regex(@"/DELETE:/v3/conversations/(?<conversationId>[^\s/]*)/members/(?<memberId>.*)", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                Pattern = new Regex(@"/DELETE:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/members/(?<memberId>.*)", RegexOptions.Compiled | RegexOptions.IgnoreCase)
             },
             new ChannelRoute
             {
                 Method = ChannelApiMethods.UploadAttachment,
-                Pattern = new Regex(@"/POST:/v3/conversations/(?<conversationId>[^\s/]*)/attachments", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                Pattern = new Regex(@"/POST:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/attachments", RegexOptions.Compiled | RegexOptions.IgnoreCase)
             },
             new ChannelRoute
             {
                 Method = ChannelApiMethods.GetConversationMembers,
-                Pattern = new Regex(@"/GET:/v3/conversations/(?<conversationId>[^\s/]*)/members", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                Pattern = new Regex(@"/GET:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/members", RegexOptions.Compiled | RegexOptions.IgnoreCase)
             },
             new ChannelRoute
             {
                 Method = ChannelApiMethods.GetConversationPagedMembers,
-                Pattern = new Regex(@"/GET:/v3/conversations/(?<conversationId>[^\s/]*)/pagedmember", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                Pattern = new Regex(@"/GET:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/pagedmember", RegexOptions.Compiled | RegexOptions.IgnoreCase)
             },
             new ChannelRoute
             {
                 Method = ChannelApiMethods.GetConversations,
-                Pattern = new Regex(@"/GET:/v3/conversations/", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                Pattern = new Regex(@"/GET:(?<path>.*)/v3/conversations/", RegexOptions.Compiled | RegexOptions.IgnoreCase)
             },
             new ChannelRoute
             {
                 Method = ChannelApiMethods.CreateConversation,
-                Pattern = new Regex(@"/POST:/v3/conversations/", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                Pattern = new Regex(@"/POST:(?<path>.*)/v3/conversations/", RegexOptions.Compiled | RegexOptions.IgnoreCase)
             }
         };
 
@@ -215,7 +215,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             HttpHelper.WriteResponse(httpResponse, statusCode, result);
         }
 
-        private static RouteResult GetRoute(HttpRequest httpRequest)
+        internal static RouteResult GetRoute(HttpRequest httpRequest)
         {
             var path = $"/{httpRequest.Method}:{httpRequest.Path}";
             foreach (var route in _routes)
