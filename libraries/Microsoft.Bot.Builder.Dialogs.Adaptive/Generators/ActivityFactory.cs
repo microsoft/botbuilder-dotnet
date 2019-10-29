@@ -17,10 +17,10 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
     /// <summary>
-    /// The ActivityGenerator implements IActivityGenerator by using ILanguageGenerator
+    /// The ActivityFactory
     /// to generate text and then uses simple markdown semantics like chatdown to create Activity.
     /// </summary>
-    public class ActivityGenerator : IActivityGenerator
+    public class ActivityFactory
     {
         private static readonly Dictionary<string, string> GenericCardTypeMapping = new Dictionary<string, string>
         {
@@ -33,58 +33,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             { nameof(OAuthCard).ToLower(), OAuthCard.ContentType }
         };
 
-        public ActivityGenerator()
-        {
-        }
-
-        /// <summary>
-        /// Generate the activity From LG output.
-        /// </summary>
-        /// <param name="lgResult">LG output.</param>
-        /// <returns>activity.</returns>
-        public static Activity GenerateFromLG(object lgResult)
-        {
-            if (lgResult is string)
-            {
-                return BuildActivityFromText(lgResult?.ToString()?.Trim());
-            }
-            else
-            {
-                JObject lgStructuredResult;
-                try
-                {
-                    lgStructuredResult = JObject.FromObject(lgResult);
-                }
-                catch
-                {
-                    return BuildActivityFromText(lgResult?.ToString()?.Trim());
-                }
-
-                return BuildActivityFromLGStructuredResult(lgStructuredResult);
-            }
-        }
-
         /// <summary>
         /// Generate the activity. 
         /// </summary>
-        /// <param name="turnContext">turn context.</param>
-        /// <param name="template">(optional) inline template definition.</param>
-        /// <param name="data">data to bind the template to.</param>
+        /// <param name="lgStringResult">string result from languageGenerator.</param>
         /// <returns>activity.</returns>
-        public async Task<Activity> Generate(ITurnContext turnContext, string template, object data)
+        public static Activity CreateActivity(string lgStringResult)
         {
-            var lgStringResult = template;
-            var languageGenerator = turnContext.TurnState.Get<ILanguageGenerator>();
-            if (languageGenerator != null)
-            {
-                // data bind template 
-                lgStringResult = await languageGenerator.Generate(turnContext, template, data).ConfigureAwait(false);
-            }
-            else
-            {
-                Trace.TraceWarning($"There is no ILanguageGenerator registered in the ITurnContext so no data binding was performed for template: {template}");
-            }
-
             JObject lgStructuredResult;
             try
             {
