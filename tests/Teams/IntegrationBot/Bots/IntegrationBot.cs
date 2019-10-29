@@ -3,7 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards;
@@ -21,6 +24,14 @@ namespace Microsoft.BotBuilderSamples.Bots
     {
         private ActivityLog _log;
         private List<string> _activityIds;
+        private readonly IHttpClientFactory _clientFactory;
+
+        public IntegrationBot(ActivityLog log, List<string> activityIds, IHttpClientFactory clientFactory)
+        {
+            _clientFactory = clientFactory;
+            _log = log;
+            _activityIds = activityIds;
+        }
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
@@ -192,7 +203,7 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         protected override async Task<TaskModuleResponse> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
-            var reply = MessageFactory.Text("OnTeamsTaskModuleFetchAsync TaskModuleRequest: " + JsonConvert.SerializeObject(taskModuleRequest));
+            var reply = MessageFactory.Text("handleTeamsTaskModuleFetchAsync TaskModuleRequest: " + JsonConvert.SerializeObject(taskModuleRequest));
             await turnContext.SendActivityAsync(reply, cancellationToken);
 
             var adaptiveCard = new AdaptiveCard();
@@ -216,7 +227,7 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         protected override async Task<TaskModuleResponse> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
-            await turnContext.SendActivityAsync(MessageFactory.Text($"OnTeamsTaskModuleSubmitAsync value: { JsonConvert.SerializeObject(taskModuleRequest) }"), cancellationToken);
+            await turnContext.SendActivityAsync(MessageFactory.Text($"handleTeamsTaskModuleFetchAsync Value: { JsonConvert.SerializeObject(taskModuleRequest) }"), cancellationToken);
 
             return new TaskModuleResponse
             {
@@ -305,10 +316,10 @@ namespace Microsoft.BotBuilderSamples.Bots
                 if (activity == null)
                 {
                     // If we had sent the message from the error handler we wouldn't have recorded the Activity Id and so we shouldn't expect to see it in the log.
-                    await SendMessageAndLogActivityId(turnContext, $"Activity {turnContext.Activity.ReplyToId} not found in the log.", cancellationToken);
+                    await SendMessageAndLogActivityIdAsync(turnContext, $"Activity {turnContext.Activity.ReplyToId} not found in the log.", cancellationToken);
                 }
 
-                await SendMessageAndLogActivityId(turnContext, $"You added '{reaction.Type}' regarding '{activity.Text}'", cancellationToken);
+                await SendMessageAndLogActivityIdAsync(turnContext, $"You added '{reaction.Type}' regarding '{activity.Text}'", cancellationToken);
             }
         }
 
@@ -321,10 +332,10 @@ namespace Microsoft.BotBuilderSamples.Bots
                 if (activity == null)
                 {
                     // If we had sent the message from the error handler we wouldn't have recorded the Activity Id and so we shouldn't expect to see it in the log.
-                    await SendMessageAndLogActivityId(turnContext, $"Activity {turnContext.Activity.ReplyToId} not found in the log.", cancellationToken);
+                    await SendMessageAndLogActivityIdAsync(turnContext, $"Activity {turnContext.Activity.ReplyToId} not found in the log.", cancellationToken);
                 }
 
-                await SendMessageAndLogActivityId(turnContext, $"You removed '{reaction.Type}' regarding '{activity.Text}'", cancellationToken);
+                await SendMessageAndLogActivityIdAsync(turnContext, $"You removed '{reaction.Type}' regarding '{activity.Text}'", cancellationToken);
             }
         }
 
@@ -363,6 +374,253 @@ namespace Microsoft.BotBuilderSamples.Bots
         protected override async Task OnTeamsO365ConnectorCardActionAsync(ITurnContext<IInvokeActivity> turnContext, O365ConnectorCardActionQuery query, CancellationToken cancellationToken)
         {
             await turnContext.SendActivityAsync(MessageFactory.Text($"O365ConnectorCardActionQuery event value: {JsonConvert.SerializeObject(query)}"));
+        }
+
+        protected override async Task<MessagingExtensionResponse> OnTeamsMessagingExtensionQueryAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
+        {
+            var searchQuery = query.Parameters[0].Value as string;
+            var messagingExtensionResponse = new MessagingExtensionResponse();
+
+            messagingExtensionResponse.ComposeExtension = CreateMessagingExtensionResult(new List<MessagingExtensionAttachment>
+            {
+                CreateSearchResultAttachment(searchQuery),
+                CreateDummySearchResultAttachment(),
+                CreateSelectItemsResultAttachment(searchQuery)
+            });
+
+            return messagingExtensionResponse;
+        }
+
+        protected override async Task<MessagingExtensionResponse> OnTeamsMessagingExtensionSelectItemAsync(ITurnContext<IInvokeActivity> turnContext, JObject query, CancellationToken cancellationToken)
+        {
+            var searchQuery = query.ToObject<SearchQuery>();
+            var bfLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU";
+            var card = new HeroCard
+            {
+                Title = $"You selected a search result!",
+                Text = $"You searched for \"{searchQuery.Query}\"",
+                Images = new List<CardImage>
+                    {
+                        new CardImage { Url = bfLogo }
+                    }
+            };
+
+            var attachment = new MessagingExtensionAttachment
+            {
+                ContentType = HeroCard.ContentType,
+                Content = card
+            };
+
+            var messagingExtensionResponse = new MessagingExtensionResponse();
+            messagingExtensionResponse.ComposeExtension = CreateMessagingExtensionResult(new List<MessagingExtensionAttachment> { attachment });
+            return messagingExtensionResponse;
+        }
+
+        protected override async Task OnTeamsFileConsentAcceptAsync(ITurnContext<IInvokeActivity> turnContext, FileConsentCardResponse fileConsentCardResponse, CancellationToken cancellationToken)
+        {
+            try
+            {
+                JToken context = JObject.FromObject(fileConsentCardResponse.Context);
+
+                string filePath = Path.Combine("Files", context["filename"].ToString());
+                long fileSize = new FileInfo(filePath).Length;
+                var client = _clientFactory.CreateClient();
+                using (var fileStream = File.OpenRead(filePath))
+                {
+                    var fileContent = new StreamContent(fileStream);
+                    fileContent.Headers.ContentLength = fileSize;
+                    fileContent.Headers.ContentRange = new ContentRangeHeaderValue(0, fileSize - 1, fileSize);
+                    await client.PutAsync(fileConsentCardResponse.UploadInfo.UploadUrl, fileContent, cancellationToken);
+                }
+
+                await FileUploadCompletedAsync(turnContext, fileConsentCardResponse, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                await FileUploadFailedAsync(turnContext, e.ToString(), cancellationToken);
+            }
+        }
+
+        protected override async Task OnTeamsFileConsentDeclineAsync(ITurnContext<IInvokeActivity> turnContext, FileConsentCardResponse fileConsentCardResponse, CancellationToken cancellationToken)
+        {
+            JToken context = JObject.FromObject(fileConsentCardResponse.Context);
+
+            var reply = ((Activity)turnContext.Activity).CreateReply();
+            reply.TextFormat = "xml";
+            reply.Text = $"Declined. We won't upload file <b>{context["filename"]}</b>.";
+            await turnContext.SendActivityAsync(reply, cancellationToken);
+        }
+
+        private async Task FileUploadCompletedAsync(ITurnContext turnContext, FileConsentCardResponse fileConsentCardResponse, CancellationToken cancellationToken)
+        {
+            var downloadCard = new FileInfoCard
+            {
+                UniqueId = fileConsentCardResponse.UploadInfo.UniqueId,
+                FileType = fileConsentCardResponse.UploadInfo.FileType,
+            };
+
+            var asAttachment = new Attachment
+            {
+                Content = downloadCard,
+                ContentType = FileInfoCard.ContentType,
+                Name = fileConsentCardResponse.UploadInfo.Name,
+                ContentUrl = fileConsentCardResponse.UploadInfo.ContentUrl,
+            };
+
+            var reply = turnContext.Activity.CreateReply();
+            reply.TextFormat = "xml";
+            reply.Text = $"<b>File uploaded.</b> Your file <b>{fileConsentCardResponse.UploadInfo.Name}</b> is ready to download";
+            reply.Attachments = new List<Attachment> { asAttachment };
+
+            await turnContext.SendActivityAsync(reply, cancellationToken);
+        }
+
+        private async Task FileUploadFailedAsync(ITurnContext turnContext, string error, CancellationToken cancellationToken)
+        {
+            var reply = turnContext.Activity.CreateReply();
+            reply.TextFormat = "xml";
+            reply.Text = $"<b>File upload failed.</b> Error: <pre>{error}</pre>";
+            await turnContext.SendActivityAsync(reply, cancellationToken);
+        }
+
+        private Attachment GetTaskModuleHeroCard()
+        {
+            return new HeroCard()
+            {
+                Title = "Task Module Invocation from Hero Card",
+                Subtitle = "This is a hero card with a Task Module Action button.  Click the button to show an Adaptive Card within a Task Module.",
+                Buttons = new List<CardAction>()
+                    {
+                        new TaskModuleAction("Adaptive Card", new { data = "adaptivecard" }),
+                    },
+            }.ToAttachment();
+        }
+
+        private Attachment GetTaskModuleAdaptiveCard()
+        {
+            var card = new AdaptiveCard(new AdaptiveSchemaVersion("1.0"))
+            {
+                Body = new List<AdaptiveElement>()
+                {
+                    new AdaptiveTextBlock() { Text = "Enter Text Here" },
+                    new AdaptiveTextInput()
+                    {
+                        Id = "usertext",
+                        Spacing = AdaptiveSpacing.None,
+                        IsMultiline = true,
+                        Placeholder = "add some text and submit",
+                    },
+                },
+                Actions = new List<AdaptiveAction>()
+                {
+                    new AdaptiveSubmitAction() { Title = "Submit" },
+                },
+            };
+
+            return new Attachment
+            {
+                Content = card,
+                ContentType = AdaptiveCards.AdaptiveCard.ContentType,
+            };
+        }
+
+        private MessagingExtensionResult CreateMessagingExtensionResult(List<MessagingExtensionAttachment> attachments)
+        {
+            return new MessagingExtensionResult
+            {
+                Type = "result",
+                AttachmentLayout = "list",
+                Attachments = attachments
+            };
+        }
+
+        private MessagingExtensionAttachment CreateSearchResultAttachment(string searchQuery)
+        {
+            var cardText = $"You said \"{searchQuery}\"";
+            var bfLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU";
+
+            var button = new CardAction
+            {
+                Type = "openUrl",
+                Title = "Click for more Information",
+                Value = "https://docs.microsoft.com/en-us/microsoftteams/platform/concepts/bots/bots-overview"
+            };
+
+            var images = new List<CardImage>();
+            images.Add(new CardImage(bfLogo));
+            var buttons = new List<CardAction>();
+            buttons.Add(button);
+
+            var heroCard = new HeroCard("You searched for:", text: cardText, images: images, buttons: buttons);
+            var preview = new HeroCard("You searched for:", text: cardText, images: images);
+
+            return new MessagingExtensionAttachment
+            {
+                ContentType = HeroCard.ContentType,
+                Content = heroCard,
+                Preview = preview.ToAttachment()
+            };
+        }
+
+        private MessagingExtensionAttachment CreateDummySearchResultAttachment()
+        {
+            var cardText = "https://docs.microsoft.com/en-us/microsoftteams/platform/concepts/bots/bots-overview";
+            var bfLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU";
+
+            var button = new CardAction
+            {
+                Type = "openUrl",
+                Title = "Click for more Information",
+                Value = "https://docs.microsoft.com/en-us/microsoftteams/platform/concepts/bots/bots-overview"
+            };
+
+            var images = new List<CardImage>();
+            images.Add(new CardImage(bfLogo));
+            var buttons = new List<CardAction>();
+            buttons.Add(button);
+
+            var heroCard = new HeroCard("Learn more about Teams:", text: cardText, images: images, buttons: buttons);
+            var preview = new HeroCard("Learn more about Teams:", text: cardText, images: images);
+
+            return new MessagingExtensionAttachment
+            {
+                ContentType = HeroCard.ContentType,
+                Content = heroCard,
+                Preview = preview.ToAttachment()
+            };
+        }
+
+        private MessagingExtensionAttachment CreateSelectItemsResultAttachment(string searchQuery)
+        {
+            var bfLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU";
+            var cardText = $"You said \"{searchQuery}\"";
+
+            var button = new CardAction
+            {
+                Type = "openUrl",
+                Title = "Click for more Information",
+                Value = "https://docs.microsoft.com/en-us/microsoftteams/platform/concepts/bots/bots-overview"
+            };
+
+            var images = new List<CardImage>();
+            images.Add(new CardImage(bfLogo));
+            var buttons = new List<CardAction>();
+            buttons.Add(button);
+            var selectItemTap = new CardAction
+            {
+                Type = "invoke",
+                Value = new SearchQuery { Query = searchQuery }
+            };
+
+            var heroCard = new HeroCard(cardText, text: cardText, images: images);
+            var preview = new HeroCard(cardText, text: cardText, images: images, tap: selectItemTap);
+
+            return new MessagingExtensionAttachment
+            {
+                ContentType = HeroCard.ContentType,
+                Content = heroCard,
+                Preview = preview.ToAttachment()
+            };
         }
 
         private async Task HandleBotCommand(ITurnContext<IMessageActivity> turnContext, string actualText, CancellationToken cancellationToken)
@@ -409,7 +667,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                     await SendO365CardAttachmentAsync(turnContext, cancellationToken);
                     break;
                 case "file":
-                    await SendFileCard(turnContext, cancellationToken);
+                    await SendFileCardAsync(turnContext, cancellationToken);
                     break;
                 case "show members":
                     await ShowMembersAsync(turnContext, cancellationToken);
@@ -424,7 +682,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                     await turnContext.SendActivityAsync(MessageFactory.Attachment(this.GetTaskModuleHeroCard()), cancellationToken);
                     break;
                 default:
-                    await SendMessageAndLogActivityId(turnContext, $"{turnContext.Activity.Text}", cancellationToken);
+                    await SendMessageAndLogActivityIdAsync(turnContext, $"{turnContext.Activity.Text}", cancellationToken);
                     foreach (var activityId in this._activityIds)
                     {
                         var newActivity = MessageFactory.Text(turnContext.Activity.Text);
@@ -497,9 +755,40 @@ namespace Microsoft.BotBuilderSamples.Bots
             }
         }
 
-        private async Task SendFileCard(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        private async Task SendFileCardAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            string filename = "teams-logo.png";
+            string filePath = Path.Combine("Files", filename);
+            long fileSize = new FileInfo(filePath).Length;
+            await SendFileCardAsync(turnContext, filename, fileSize, cancellationToken);
+        }
+
+        private async Task SendFileCardAsync(ITurnContext turnContext, string filename, long filesize, CancellationToken cancellationToken)
+        {
+            var consentContext = new Dictionary<string, string>
+            {
+                { "filename", filename },
+            };
+
+            var fileCard = new FileConsentCard
+            {
+                Description = "This is the file I want to send you",
+                SizeInBytes = filesize,
+                AcceptContext = consentContext,
+                DeclineContext = consentContext,
+            };
+
+            var asAttachment = new Attachment
+            {
+                Content = fileCard,
+                ContentType = FileConsentCard.ContentType,
+                Name = filename,
+            };
+
+            var replyActivity = turnContext.Activity.CreateReply();
+            replyActivity.Attachments = new List<Attachment>() { asAttachment };
+
+            await turnContext.SendActivityAsync(replyActivity, cancellationToken);
         }
 
         private async Task SendO365CardAttachmentAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
@@ -563,20 +852,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             this._activityIds.Clear();
         }
 
-        private Attachment GetTaskModuleHeroCard()
-        {
-            return new HeroCard()
-            {
-                Title = "Task Module Invocation from Hero Card",
-                Subtitle = "This is a hero card with a Task Module Action button.  Click the button to show an Adaptive Card within a Task Module.",
-                Buttons = new List<CardAction>()
-                    {
-                        new TaskModuleAction("Adaptive Card", new { data = "adaptivecard" }),
-                    },
-            }.ToAttachment();
-        }
-
-        private async Task SendMessageAndLogActivityId(ITurnContext turnContext, string text, CancellationToken cancellationToken)
+        private async Task SendMessageAndLogActivityIdAsync(ITurnContext turnContext, string text, CancellationToken cancellationToken)
         {
             // We need to record the Activity Id from the Activity just sent in order to understand what the reaction is a reaction too. 
             var replyActivity = MessageFactory.Text(text);

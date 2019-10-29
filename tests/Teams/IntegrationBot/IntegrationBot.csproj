@@ -10,6 +10,11 @@
     <Compile Include="..\BotFrameworkCards\Cards.cs" Link="Cards.cs" />
     <Compile Include="..\MessageReaction\ActivityLog.cs" Link="ActivityLog.cs" />
     <Compile Include="..\Office365Card\O365Cards.cs" Link="O365Cards.cs" />
+    <Compile Include="..\SearchBasedMessagingExtension\SearchQuery.cs" Link="SearchQuery.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\FileUpload\Files\teams-logo.png" Link="Files\teams-logo.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +31,10 @@
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Files\" />
   </ItemGroup>
 
 </Project>
