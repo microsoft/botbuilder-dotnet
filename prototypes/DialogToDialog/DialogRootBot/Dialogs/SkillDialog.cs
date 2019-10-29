@@ -16,9 +16,12 @@ namespace DialogRootBot.Dialogs
 {
     public class SkillDialog : Dialog
     {
-        public SkillDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        private readonly ConversationState _conversationState;
+
+        public SkillDialog(ConversationState conversationState, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(nameof(SkillDialog))
         {
+            _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
             RegisterSourceLocation(callerPath, callerLine);
         }
 
@@ -149,13 +152,9 @@ namespace DialogRootBot.Dialogs
             var skillId = dc.GetState().GetValue<string>("this.SkillId");
 
             // TODO: consider having an extension method in DC that saves state for you.
-            // Always save state before forwarding (things won't work if you don't)
-            var conversationState = dc.Context.TurnState.Get<ConversationState>();
-            if (conversationState != null)
-            {
-                await conversationState.SaveChangesAsync(dc.Context, true, cancellationToken);
-            }
-
+            // Always save state before forwarding
+            // (the dialog stack won't get updated with the skillDialog and 'things won't work if you don't)
+            await _conversationState.SaveChangesAsync(dc.Context, true, cancellationToken);
             await dc.Context.TurnState.Get<SkillHostAdapter>().ForwardActivityAsync(dc.Context, skillId, activity, cancellationToken);
             return EndOfTurn;
         }
