@@ -840,6 +840,9 @@ namespace Microsoft.BotBuilderSamples.Bots
             adaptiveCard.Actions.Add(action2.ToAdaptiveCardAction());
             adaptiveCard.Actions.Add(action3.ToAdaptiveCardAction());
             adaptiveCard.Actions.Add(action4.ToAdaptiveCardAction());
+
+            var replyActivity = MessageFactory.Attachment(adaptiveCard.ToAttachment());
+            await turnContext.SendActivityAsync(replyActivity, cancellationToken);
         }
 
         private async Task HandleDeleteActivitiesAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
