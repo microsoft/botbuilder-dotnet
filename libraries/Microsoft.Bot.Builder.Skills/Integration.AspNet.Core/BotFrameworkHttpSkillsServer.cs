@@ -145,7 +145,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 
         private readonly ConfigurationChannelProvider _channelProvider;
         private readonly ConfigurationCredentialProvider _credentialsProvider;
-
         private readonly BotFrameworkSkillHostAdapter _skillAdapter;
 
         public BotFrameworkHttpSkillsServer(BotFrameworkSkillHostAdapter skillAdapter, IConfiguration configuration)
