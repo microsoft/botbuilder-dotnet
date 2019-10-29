@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.BotBuilderSamples
 {
-    public static class Extensions
+    public static class AdaptiveCardExtensions
     {
         /// <summary>
         /// Creates a new attachment from AdaptiveCard.

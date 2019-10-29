@@ -6,7 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\AdaptiveCards\AdaptiveCardExtensions.cs" Link="AdaptiveCardExtensions.cs" />
     <Compile Include="..\BotFrameworkCards\Cards.cs" Link="Cards.cs" />
+    <Compile Include="..\MessageReaction\ActivityLog.cs" Link="ActivityLog.cs" />
+    <Compile Include="..\Office365Card\O365Cards.cs" Link="O365Cards.cs" />
   </ItemGroup>
 
   <ItemGroup>

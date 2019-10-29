@@ -12,6 +12,7 @@ namespace Microsoft.BotBuilderSamples
     public class ActivityLog
     {
         private IStorage _storage;
+
         public ActivityLog(IStorage storage)
         {
             _storage = storage;
