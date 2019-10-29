@@ -92,8 +92,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         {
             // adapter to use for calling back to channel
             _skillAdapter = skillAdapter;
-
-            // _botAppId = configuration.GetValue<string>("MicrosoftAppId");
             _credentialsProvider = new ConfigurationCredentialProvider(configuration);
             _channelProvider = new ConfigurationChannelProvider(configuration);
         }

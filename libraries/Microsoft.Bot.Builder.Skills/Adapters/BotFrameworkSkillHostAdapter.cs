@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -173,7 +174,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         /// <value>
         /// The callback URL that will be used by the skills to communicate back to the bot.
         /// </value>
-        public string SkillHostEndpoint { get; set; }
+        public Uri SkillHostEndpoint { get; set; }
 
         /// <summary>
         /// Forwards an activity to a skill (bot).
@@ -195,6 +196,21 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
                 throw new ArgumentException($"Skill:{skillId} isn't a registered skill");
             }
 
+            return await ForwardActivityAsync(turnContext, skill, SkillHostEndpoint, activity, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Forwards an activity to a skill (bot).
+        /// </summary>
+        /// <remarks>NOTE: Forwarding an activity to a skill will flush UserState and ConversationState changes so that skill has accurate state.</remarks>
+        /// <param name="turnContext">turnContext.</param>
+        /// <param name="skill">A <see cref="BotFrameworkSkill"/> instance with the skill information.</param>
+        /// <param name="skillHostEndpoint">The callback Url for the skill host.</param>
+        /// <param name="activity">activity to forward.</param>
+        /// <param name="cancellationToken">cancellation Token.</param>
+        /// <returns>Async task with optional invokeResponse.</returns>
+        public async Task<InvokeResponse> ForwardActivityAsync(ITurnContext turnContext, BotFrameworkSkill skill, Uri skillHostEndpoint, Activity activity, CancellationToken cancellationToken)
+        {
             // Pull the current claims identity from TurnState (it is stored there on the way in).
             var identity = (ClaimsIdentity)turnContext.TurnState.Get<IIdentity>(BotIdentityKey);
             if (identity.AuthenticationType.Equals("anonymous", StringComparison.InvariantCultureIgnoreCase))
@@ -230,7 +246,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
                     activity.Conversation.Id,
                     activity.ServiceUrl
                 })));
-                activity.ServiceUrl = SkillHostEndpoint;
+                activity.ServiceUrl = skillHostEndpoint.ToString();
                 activity.Recipient.Properties["skillId"] = skill.Id;
                 using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
                 {
@@ -294,7 +310,11 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
                 Skills.AddRange(skills);
             }
 
-            SkillHostEndpoint = configuration?.GetValue<string>(nameof(SkillHostEndpoint));
+            var skillHostEndpoint = configuration?.GetValue<string>(nameof(SkillHostEndpoint));
+            if (!string.IsNullOrWhiteSpace(skillHostEndpoint))
+            {
+                SkillHostEndpoint = new Uri(skillHostEndpoint);
+            }
         }
     }
 }
