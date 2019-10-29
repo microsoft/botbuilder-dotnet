@@ -45,5 +45,17 @@ namespace Microsoft.Bot.Builder.Skills.Tests.Integration.AspNet.Core
 
             Assert.Equal(expectedMethod, routeAction.Method);
         }
+
+        [Fact]
+        public void GetActionForPathReturnsNull()
+        {
+            var mockRequest = new Mock<HttpRequest>();
+            mockRequest.Setup(x => x.Method).Returns("POST");
+            mockRequest.Setup(x => x.Path).Returns("/somePath/thatIsNotThere");
+
+            var routeAction = BotFrameworkHttpSkillsServer.GetRoute(mockRequest.Object);
+
+            Assert.Null(routeAction);
+        }
     }
 }
