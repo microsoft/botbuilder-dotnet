@@ -34,6 +34,9 @@ namespace Microsoft.BotBuilderSamples
             services.AddSingleton<List<string>>();
             services.AddSingleton<ActivityLog>();
 
+            // The Bot needs an HttpClient to download and upload files.
+            services.AddHttpClient();
+
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 

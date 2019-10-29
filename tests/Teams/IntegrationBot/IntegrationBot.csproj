@@ -14,7 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\FileUpload\Files\teams-logo.png" Link="Files\teams-logo.png" />
+    <Content Include="..\FileUpload\Files\teams-logo.png" Link="Files\teams-logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
