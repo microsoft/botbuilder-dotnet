@@ -64,7 +64,7 @@ namespace DialogRootBot.Dialogs
 
             var dialogArgs = options as SkillDialogArgs;
             var skillId = dialogArgs?.SkillId ?? SkillId;
-            dc.State.SetValue("this.SkillId", skillId);
+            dc.GetState().SetValue("this.SkillId", skillId);
             var eventName = dialogArgs?.EventName ?? EventName;
             var boundValue = BindValue(dc, dialogArgs?.Value);
             var fwdActivity = dc.Context.Activity;
@@ -100,7 +100,7 @@ namespace DialogRootBot.Dialogs
                 if (ResultProperty != null)
                 {
                     // set the result of the remote skill into ResultProperty memory
-                    dc.State.SetValue(ResultProperty, dc.Context.Activity.Value);
+                    dc.GetState().SetValue(ResultProperty, dc.Context.Activity.Value);
                 }
 
                 return await dc.EndDialogAsync(dc.Context.Activity.Value, cancellationToken);
@@ -146,7 +146,7 @@ namespace DialogRootBot.Dialogs
 
         private async Task<DialogTurnResult> SendToSkill(DialogContext dc, Activity activity, CancellationToken cancellationToken)
         {
-            var skillId = dc.State.GetValue<string>("this.SkillId");
+            var skillId = dc.GetState().GetValue<string>("this.SkillId");
 
             // TODO: consider having an extension method in DC that saves state for you.
             // Always save state before forwarding (things won't work if you don't)
