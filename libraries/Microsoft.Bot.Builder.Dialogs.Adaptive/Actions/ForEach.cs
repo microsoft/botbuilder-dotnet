@@ -30,12 +30,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets property path expression to the collection of items.
         /// </summary>
+        /// <value>
+        /// Property path expression to the collection of items.
+        /// </value>
         [JsonProperty("itemsProperty")]
         public string ItemsProperty { get; set; }
 
         /// <summary>
         /// Gets or sets the actions to be run for each of items.
         /// </summary>
+        /// <value>
+        /// The actions to be run for each of items.
+        /// </value>
         [JsonProperty("actions")]
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
@@ -59,23 +65,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 if (options != null && options is ForeachOptions)
                 {
                     var opt = options as ForeachOptions;
-                    if (!String.IsNullOrEmpty(opt.List))
+                    if (!string.IsNullOrEmpty(opt.List))
                     {
                         itemsProperty = new ExpressionEngine().Parse(opt.List);
                     }
+
                     offset = opt.Offset;
                 }
 
                 itemsProperty = new ExpressionEngine().Parse(this.ItemsProperty);
-                var (itemList, error) = itemsProperty.TryEvaluate(dc.State);
+                var (itemList, error) = itemsProperty.TryEvaluate(dc.GetState());
 
                 if (error == null)
                 {
                     var item = this.GetItem(itemList, offset);
                     if (item != null)
                     {
-                        dc.State.SetValue(VALUE, item);
-                        dc.State.SetValue(INDEX, offset);
+                        dc.GetState().SetValue(VALUE, item);
+                        dc.GetState().SetValue(INDEX, offset);
                         var changes = new ActionChangeList()
                         {
                             ChangeType = ActionChangeType.InsertActions,

@@ -1,7 +1,11 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
@@ -164,8 +168,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        private static bool PathEquals(string one, string two) =>
-            Path.Equals(Path.GetFullPath(one), Path.GetFullPath(two));
+        private static bool PathEquals(string one, string two)
+        {
+            var ext1 = Path.GetExtension(one).ToLower();
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // we want to be case insensitive on windows
+                one = one.ToLower();
+                two = two.ToLower();
+            }
+
+            // if it's resource path, we only care about resource name
+            if (ext1 == ".dialog" || ext1 == ".lg" || ext1 == ".lu")
+            {
+                return Path.GetFileName(one) == Path.GetFileName(two);
+            }
+
+            return Path.Equals(Path.GetFullPath(one), Path.GetFullPath(two));
+        }
 
         private bool TryUpdate(Row row, KeyValuePair<object, SourceRange> sourceItem)
         {

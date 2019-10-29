@@ -16,6 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Samples\QnAMakerBot\QnAMakerBot.main.dialog" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Samples\GeneratedForm\sandwich-MeatAndCheeseAsk.dialog" />
   </ItemGroup>
 

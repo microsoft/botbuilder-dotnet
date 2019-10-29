@@ -1,11 +1,14 @@
-﻿using Microsoft.Bot.Builder.Dialogs.Declarative;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 
 namespace Microsoft.Bot.Builder.AI.QnA
 {
     public static class AdapterExtensions
     {
         /// <summary>
-        /// Register QnAMaker types 
+        /// Register QnAMaker types.
         /// </summary>
         /// <param name="botAdapter">BotAdapter to add middleware to.</param>
         /// <returns>The bot adapter.</returns>

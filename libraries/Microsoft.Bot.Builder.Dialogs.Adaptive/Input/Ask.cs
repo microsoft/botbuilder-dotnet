@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-            dc.State.SetValue("dialog.expectedProperties", ExpectedProperties);
+            dc.GetState().SetValue(DialogPath.ExpectedProperties, ExpectedProperties);
             var result = await base.BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
             result.Status = DialogTurnStatus.CompleteAndWait;
             return result;

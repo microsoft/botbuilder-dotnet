@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private Expression value;
 
         [JsonConstructor]
-        public EndDialog(string property = null, string value = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public EndDialog(string value = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -30,8 +30,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets a value expression for the result to be returned to the caller
+        /// Gets or sets a value expression for the result to be returned to the caller.
         /// </summary>
+        /// <value>
+        /// A value expression for the result to be returned to the caller.
+        /// </value>
         [JsonProperty("value")]
         public string Value
         {
@@ -48,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (this.Value != null)
             {
-                var (result, error) = this.value.TryEvaluate(dc.State);
+                var (result, error) = this.value.TryEvaluate(dc.GetState());
                 return await EndParentDialogAsync(dc, result, cancellationToken).ConfigureAwait(false);
             }
 

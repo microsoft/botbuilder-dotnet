@@ -45,35 +45,18 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>True, if the token was issued by the Emulator. Otherwise, false.</returns>
         public static bool IsTokenFromEmulator(string authHeader)
         {
-            // The Auth Header generally looks like this:
-            // "Bearer eyJ0e[...Big Long String...]XAiO"
-            if (string.IsNullOrWhiteSpace(authHeader))
+            if (!JwtTokenValidation.IsValidTokenFormat(authHeader))
             {
-                // No token. Can't be an emulator token.
                 return false;
             }
 
-            string[] parts = authHeader?.Split(' ');
-            if (parts.Length != 2)
-            {
-                // Emulator tokens MUST have exactly 2 parts. If we don't have 2 parts, it's not an emulator token
-                return false;
-            }
-
-            string authScheme = parts[0];
-            string bearerToken = parts[1];
-
-            // We now have an array that should be:
+            // We know is a valid token, split it and work with it:
             // [0] = "Bearer"
             // [1] = "[Big Long String]"
-            if (authScheme != "Bearer")
-            {
-                // The scheme from the emulator MUST be "Bearer"
-                return false;
-            }
+            var bearerToken = authHeader.Split(' ')[1];
 
             // Parse the Big Long String into an actual token.
-            JwtSecurityToken token = new JwtSecurityToken(bearerToken);
+            var token = new JwtSecurityToken(bearerToken);
 
             // Is there an Issuer?
             if (string.IsNullOrWhiteSpace(token.Issuer))
@@ -148,7 +131,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     openIdMetadataUrl,
                     AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfig.RequiredEndorsements);
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfig.RequiredEndorsements).ConfigureAwait(false);
             if (identity == null)
             {
                 // No valid identity. Not Authorized.
@@ -207,7 +190,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException($"Unknown Emulator Token version '{tokenVersion}'.");
             }
 
-            if (!await credentials.IsValidAppIdAsync(appID))
+            if (!await credentials.IsValidAppIdAsync(appID).ConfigureAwait(false))
             {
                 throw new UnauthorizedAccessException($"Invalid AppId passed on token: {appID}");
             }

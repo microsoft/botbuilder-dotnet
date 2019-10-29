@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Concurrent;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
@@ -18,6 +21,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Gets or sets the language generators for multiple languages.
         /// </summary>
+        /// <value>
+        /// The language generators for multiple languages.
+        /// </value>
         public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>

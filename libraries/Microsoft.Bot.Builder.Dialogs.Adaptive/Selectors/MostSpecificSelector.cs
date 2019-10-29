@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
@@ -25,6 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// <summary>
         /// Gets or sets the expression parser to use.
         /// </summary>
+        /// <value>Expression parser.</value>
         [Newtonsoft.Json.JsonIgnore]
         public IExpressionParser Parser { get; set; } = new ExpressionEngine(TriggerTree.LookupFunction);
 
@@ -38,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 
         public virtual async Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel)
         {
-            var nodes = _tree.Matches(context.State);
+            var nodes = _tree.Matches(context.GetState());
             var matches = new List<OnCondition>();
             foreach (var node in nodes)
             {

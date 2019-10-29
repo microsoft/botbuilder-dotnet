@@ -24,31 +24,40 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         /// <summary>
         /// Gets or sets memory path to bind to arg1 (ex: conversation.width).
         /// </summary>
+        /// <value>
+        /// Memory path to bind to arg1 (ex: conversation.width).
+        /// </value>
         [JsonProperty("arg1")]
         public string Arg1 { get; set; }
 
         /// <summary>
         /// Gets or sets memory path to bind to arg2 (ex: conversation.height).
         /// </summary>
+        /// <value>
+        /// Memory path to bind to arg2 (ex: conversation.height).
+        /// </value>
         [JsonProperty("arg2")]
         public string Arg2 { get; set; }
 
         /// <summary>
         /// Gets or sets caller's memory path to store the result of this step in (ex: conversation.area).
         /// </summary>
+        /// <value>
+        /// Caller's memory path to store the result of this step in (ex: conversation.area).
+        /// </value>
         [JsonProperty("resultProperty")]
         public string ResultProperty { get; set; }
 
         public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var engine = new ExpressionEngine();
-            var (arg1, err1) = engine.Parse(Arg1).TryEvaluate(dc.State);
-            var (arg2, err2) = engine.Parse(Arg2).TryEvaluate(dc.State);
+            var (arg1, err1) = engine.Parse(Arg1).TryEvaluate(dc.GetState());
+            var (arg2, err2) = engine.Parse(Arg2).TryEvaluate(dc.GetState());
 
             var result = Convert.ToInt32(arg1) * Convert.ToInt32(arg2);
             if (this.ResultProperty != null)
             {
-                dc.State.SetValue(this.ResultProperty, result);
+                dc.GetState().SetValue(this.ResultProperty, result);
             }
 
             return dc.EndDialogAsync(result: result, cancellationToken: cancellationToken);

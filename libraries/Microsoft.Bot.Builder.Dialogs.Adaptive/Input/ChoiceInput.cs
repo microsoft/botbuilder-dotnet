@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Gets or sets list of choices to present to user.
         /// </summary>
         /// <value>
-        /// Value Expression or List of choices (string or Choice objects) to present to user 
+        /// Value Expression or List of choices (string or Choice objects) to present to user.
         /// </value>
         public ChoiceSet Choices { get; set; }
 
@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     op = new ChoiceInputOptions();
                 }
 
-                var choices = this.Choices.GetValue(dc.State);
+                var choices = this.Choices.GetValue(dc.GetState());
                 op.Choices = choices;
             }
 
@@ -129,8 +129,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.State.GetValue<object>(VALUE_PROPERTY);
-            var options = dc.State.GetValue<ChoiceInputOptions>(ThisPath.OPTIONS);
+            var input = dc.GetState().GetValue<object>(VALUE_PROPERTY);
+            var options = dc.GetState().GetValue<ChoiceInputOptions>(ThisPath.OPTIONS);
 
             var choices = options.Choices;
 
@@ -150,10 +150,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     case ChoiceOutputFormat.Value:
                     default:
-                        dc.State.SetValue(VALUE_PROPERTY, foundChoice.Value);
+                        dc.GetState().SetValue(VALUE_PROPERTY, foundChoice.Value);
                         break;
                     case ChoiceOutputFormat.Index:
-                        dc.State.SetValue(VALUE_PROPERTY, foundChoice.Index);
+                        dc.GetState().SetValue(VALUE_PROPERTY, foundChoice.Index);
                         break;
                 }
             }
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var choicePrompt = new ChoicePrompt(this.Id);
             var choiceOptions = this.ChoiceOptions ?? ChoiceInput.DefaultChoiceOptions[locale];
 
-            var choices = this.Choices.GetValue(dc.State);
+            var choices = this.Choices.GetValue(dc.GetState());
 
             return this.AppendChoices(prompt.AsMessageActivity(), channelId, choices, this.Style, choiceOptions);
         }

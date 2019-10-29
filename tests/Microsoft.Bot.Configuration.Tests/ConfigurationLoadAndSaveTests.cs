@@ -436,7 +436,7 @@ namespace Microsoft.Bot.Configuration.Tests
             var endpointSvc = publicConfig.Services.Single(x => x.Type == ServiceTypes.Endpoint) as EndpointService;
             Assert.IsNotNull(endpointSvc);
             Assert.IsNull(endpointSvc.ChannelService);
-            
+
             var govConfig = BotConfiguration.Load(NormalizePath(@"..\..\..\govTest.bot"));
             endpointSvc = govConfig.Services.Single(x => x.Type == ServiceTypes.Endpoint) as EndpointService;
             Assert.IsNotNull(endpointSvc);

@@ -19,12 +19,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets value expression to be compared against condition.
         /// </summary>
+        /// <value>
+        /// Value expression to be compared against condition.
+        /// </value>
         [JsonProperty("value")]
         public string Value { get; set; }
 
         /// <summary>
         /// Gets or sets set of actions to be executed given that the condition of the switch matches the value of this case.
         /// </summary>
+        /// <value>
+        /// Set of actions to be executed given that the condition of the switch matches the value of this case.
+        /// </value>
         [JsonProperty("actions")]
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
 

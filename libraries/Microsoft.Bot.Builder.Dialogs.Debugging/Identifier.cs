@@ -1,4 +1,11 @@
-﻿namespace Microsoft.Bot.Builder.Dialogs.Debugging
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     public static class Identifier
     {

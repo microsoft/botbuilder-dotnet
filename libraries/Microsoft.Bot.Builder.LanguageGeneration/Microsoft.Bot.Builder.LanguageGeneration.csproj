@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version Condition=" '$(PreviewPackageVersion)' == '' ">4.6.0-local</Version>
-    <Version Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</Version>
-    <PackageVersion Condition=" '$(PreviewPackageVersion)' == '' ">4.6.0-local</PackageVersion>
-    <PackageVersion Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</PackageVersion>
+    <Version Condition=" '$(IsBuildServer)' == '' ">4.6.0-local</Version>
+    <Version Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</Version>
+    <PackageVersion Condition=" '$(IsBuildServer)' == '' ">4.6.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
@@ -44,12 +44,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(PreviewPackageVersion)' == '' " Version="4.6.0-local" />
-    <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
+    <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(IsBuildServer)' != '' " Version="$(PreviewPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>

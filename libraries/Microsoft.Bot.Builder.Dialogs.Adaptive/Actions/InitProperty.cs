@@ -25,6 +25,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets property path to initialize.
         /// </summary>
+        /// <value>
+        /// Property path to initialize.
+        /// </value>
         public string Property { get; set; }
 
         /// <summary>
@@ -48,10 +51,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 switch (Type.ToLower())
                 {
                     case "array":
-                        dc.State.SetValue(this.Property, new JArray());
+                        dc.GetState().SetValue(this.Property, new JArray());
                         break;
                     case "object":
-                        dc.State.SetValue(this.Property, new JObject());
+                        dc.GetState().SetValue(this.Property, new JObject());
                         break;
                 }
 

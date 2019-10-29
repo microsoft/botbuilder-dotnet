@@ -25,11 +25,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets event name. 
         /// </summary>
+        /// <value>
+        /// Event name. 
+        /// </value>
         public string EventName { get; set; }
 
         /// <summary>
-        /// Gets or sets value expression for EventValue
+        /// Gets or sets value expression for EventValue.
         /// </summary>
+        /// <value>
+        /// Value expression for EventValue.
+        /// </value>
         public string EventValue { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -42,16 +48,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             object eventValue = null;
             if (this.EventValue != null)
             {
-                eventValue = new ExpressionEngine().Parse(this.EventValue).TryEvaluate(dc.State);
+                eventValue = new ExpressionEngine().Parse(this.EventValue).TryEvaluate(dc.GetState());
             }
 
             if (dc.Parent == null)
             {
-                return await dc.CancelAllDialogsAsync(EventName, eventValue, cancellationToken).ConfigureAwait(false);
+                return await dc.CancelAllDialogsAsync(true, EventName, eventValue, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                var turnResult = await dc.Parent.CancelAllDialogsAsync(EventName, eventValue, cancellationToken).ConfigureAwait(false);
+                var turnResult = await dc.Parent.CancelAllDialogsAsync(true, EventName, eventValue, cancellationToken).ConfigureAwait(false);
                 turnResult.ParentEnded = true;
                 return turnResult;
             }

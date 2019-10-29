@@ -37,6 +37,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <example>
         /// user.age will remove "age" from "user".
         /// </example>
+        /// <value>
+        /// Property path to remove.
+        /// </value>
         public string Property { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -49,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Ensure planning context
             if (dc is SequenceContext planning)
             {
-                dc.State.RemoveValue(Property);
+                dc.GetState().RemoveValue(Property);
                 return await dc.EndDialogAsync();
             }
             else

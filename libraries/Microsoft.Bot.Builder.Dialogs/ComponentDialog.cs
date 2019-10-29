@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             set
             {
                 base.TelemetryClient = value ?? NullBotTelemetryClient.Instance;
-                _dialogs.TelemetryClient = base.TelemetryClient;
+                Dialogs.TelemetryClient = base.TelemetryClient;
             }
         }
 
@@ -233,9 +233,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>The <see cref="ComponentDialog"/> after the operation is complete.</returns>
         /// <remarks>The added dialog's <see cref="Dialog.TelemetryClient"/> is set to the
         /// <see cref="TelemetryClient"/> of the component dialog.</remarks>
-        public virtual ComponentDialog AddDialog(Dialog dialog)
+        public ComponentDialog AddDialog(Dialog dialog)
         {
-            this._dialogs.Add(dialog);
+            this.Dialogs.Add(dialog);
 
             if (this.InitialDialogId == null)
             {
@@ -265,7 +265,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             if (this.InitialDialogId == null)
             {
-                this.InitialDialogId = _dialogs.GetDialogs().FirstOrDefault()?.Id;
+                this.InitialDialogId = Dialogs.GetDialogs().FirstOrDefault()?.Id;
             }
 
             return Task.CompletedTask;
@@ -397,7 +397,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 state.DialogStack = new List<DialogInstance>();
             }
 
-            return new DialogContext(this._dialogs, context, state);
+            return new DialogContext(this.Dialogs, context, state);
         }
     }
 }

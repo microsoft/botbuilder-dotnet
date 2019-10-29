@@ -3,14 +3,22 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Tests;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
+using Microsoft.Rest.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Teams.Tests
 {
@@ -21,17 +29,144 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         public async Task TestConversationUpdateTeamsMemberAdded()
         {
             // Arrange
+            var baseUri = new Uri("https://test.coffee");
+            var customHttpClient = new HttpClient(new RosterHttpMessageHandler());
+
+            // Set a special base address so then we can make sure the connector client is honoring this http client
+            customHttpClient.BaseAddress = baseUri;
+            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
                 MembersAdded = new List<ChannelAccount>
                 {
-                    new ChannelAccount { Id = "a" },
+                    new ChannelAccount { Id = "id-1" },
                 },
                 Recipient = new ChannelAccount { Id = "b" },
-                ChannelData = new TeamsChannelData { EventType = "teamMemberAdded" },
+                ChannelData = new TeamsChannelData
+                {
+                    EventType = "teamMemberAdded",
+                    Team = new TeamInfo
+                    {
+                        Id = "team-id",
+                    },
+                },
+                ChannelId = Channels.Msteams,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            var turnContext = new TurnContext(new SimpleAdapter(), activity);
+            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(2, bot.Record.Count);
+            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnTeamsMembersAddedAsync", bot.Record[1]);
+        }
+
+        [TestMethod]
+        public async Task TestConversationUpdateTeamsMemberAddedNoTeam()
+        {
+            // Arrange
+            var baseUri = new Uri("https://test.coffee");
+            var customHttpClient = new HttpClient(new RosterHttpMessageHandler());
+
+            // Set a special base address so then we can make sure the connector client is honoring this http client
+            customHttpClient.BaseAddress = baseUri;
+            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                MembersAdded = new List<ChannelAccount>
+                {
+                    new ChannelAccount { Id = "id-3" },
+                },
+                Recipient = new ChannelAccount { Id = "b" },
+                Conversation = new ConversationAccount { Id = "conversation-id" },
+                ChannelId = Channels.Msteams,
+            };
+
+            var turnContext = new TurnContext(new SimpleAdapter(), activity);
+            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(2, bot.Record.Count);
+            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnTeamsMembersAddedAsync", bot.Record[1]);
+        }
+
+        [TestMethod]
+        public async Task TestConversationUpdateTeamsMemberAddedFullDetailsInEvent()
+        {
+            // Arrange
+            var baseUri = new Uri("https://test.coffee");
+            var customHttpClient = new HttpClient(new RosterHttpMessageHandler());
+
+            // Set a special base address so then we can make sure the connector client is honoring this http client
+            customHttpClient.BaseAddress = baseUri;
+            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                MembersAdded = new List<ChannelAccount>
+                {
+                    new TeamsChannelAccount
+                    {
+                        Id = "id-1",
+                        Name = "name-1",
+                        AadObjectId = "aadobject-1",
+                        Email = "test@microsoft.com",
+                        GivenName = "given-1",
+                        Surname = "surname-1",
+                        UserPrincipalName = "t@microsoft.com",
+                    },
+                },
+                Recipient = new ChannelAccount { Id = "b" },
+                ChannelData = new TeamsChannelData
+                {
+                    EventType = "teamMemberAdded",
+                    Team = new TeamInfo
+                    {
+                        Id = "team-id",
+                    },
+                },
+                ChannelId = Channels.Msteams,
+            };
+
+            // code taken from connector - i.e. the send or serialize side
+            var serializationSettings = new JsonSerializerSettings();
+            serializationSettings.ContractResolver = new DefaultContractResolver();
+            var json = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, serializationSettings);
+
+            // code taken from integration layer - i.e. the receive or deserialize side
+            var botMessageSerializer = JsonSerializer.Create(new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                Formatting = Formatting.Indented,
+                DateFormatHandling = DateFormatHandling.IsoDateFormat,
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                ContractResolver = new ReadOnlyJsonContractResolver(),
+                Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() },
+            });
+
+            using (var bodyReader = new JsonTextReader(new StringReader(json)))
+            {
+                activity = botMessageSerializer.Deserialize<Activity>(bodyReader);
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(), activity);
+            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
 
             // Act
             var bot = new TestActivityHandler();
@@ -50,12 +185,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersAdded = new List<ChannelAccount>
+                MembersRemoved = new List<ChannelAccount>
                 {
                     new ChannelAccount { Id = "a" },
                 },
                 Recipient = new ChannelAccount { Id = "b" },
                 ChannelData = new TeamsChannelData { EventType = "teamMemberRemoved" },
+                ChannelId = Channels.Msteams,
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -77,6 +213,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Type = ActivityTypes.ConversationUpdate,
                 ChannelData = new TeamsChannelData { EventType = "channelCreated" },
+                ChannelId = Channels.Msteams,
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -98,6 +235,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Type = ActivityTypes.ConversationUpdate,
                 ChannelData = new TeamsChannelData { EventType = "channelDeleted" },
+                ChannelId = Channels.Msteams,
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -119,6 +257,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Type = ActivityTypes.ConversationUpdate,
                 ChannelData = new TeamsChannelData { EventType = "channelRenamed" },
+                ChannelId = Channels.Msteams,
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -140,6 +279,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Type = ActivityTypes.ConversationUpdate,
                 ChannelData = new TeamsChannelData { EventType = "teamRenamed" },
+                ChannelId = Channels.Msteams,
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -644,6 +784,38 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
+        [TestMethod]
+        public async Task TestSigninVerifyState()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "signin/verifyState",
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+           
+            // Assert
+            Assert.AreEqual(2, bot.Record.Count);
+            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnTeamsSigninVerifyStateAsync", bot.Record[1]);
+            Assert.IsNotNull(activitiesToSend);
+            Assert.AreEqual(1, activitiesToSend.Length);
+            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
+            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
         private class NotImplementedAdapter : BotAdapter
         {
             public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
@@ -697,13 +869,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return base.OnTeamsTeamRenamedAsync(teamInfo, turnContext, cancellationToken);
             }
 
-            protected override Task OnTeamsMembersAddedAsync(IList<ChannelAccount> membersAdded, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task OnTeamsMembersAddedAsync(IList<TeamsChannelAccount> membersAdded, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.CompletedTask;
             }
 
-            protected override Task OnTeamsMembersRemovedAsync(IList<ChannelAccount> membersRemoved, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task OnTeamsMembersRemovedAsync(IList<TeamsChannelAccount> membersRemoved, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.CompletedTask;
@@ -770,7 +942,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return base.OnTeamsMessagingExtensionCardButtonClickedAsync(turnContext, obj, cancellationToken);
             }
 
-            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
+            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.FromResult(new MessagingExtensionActionResponse());
@@ -824,16 +996,94 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return base.OnTeamsCardActionInvokeAsync(turnContext, cancellationToken);
             }
 
-            protected override Task<TaskModuleTaskInfo> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
+            protected override Task<TaskModuleResponse> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return Task.FromResult(new TaskModuleTaskInfo());
+                return Task.FromResult(new TaskModuleResponse());
             }
 
-            protected override Task<TaskModuleResponseBase> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
+            protected override Task<TaskModuleResponse> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return Task.FromResult(new TaskModuleResponseBase());
+                return Task.FromResult(new TaskModuleResponse());
+            }
+
+            protected override Task OnTeamsSigninVerifyStateAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return Task.CompletedTask;
+            }
+        }
+
+        private class RosterHttpMessageHandler : HttpMessageHandler
+        {
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                var response = new HttpResponseMessage(HttpStatusCode.OK);
+
+                // GetMembers (Team)
+                if (request.RequestUri.PathAndQuery.EndsWith("team-id/members"))
+                {
+                    var content = new JArray
+                    {
+                        new JObject
+                        {
+                            new JProperty("id", "id-1"),
+                            new JProperty("objectId", "objectId-1"),
+                            new JProperty("name", "name-1"),
+                            new JProperty("givenName", "givenName-1"),
+                            new JProperty("surname", "surname-1"),
+                            new JProperty("email", "email-1"),
+                            new JProperty("userPrincipalName", "userPrincipalName-1"),
+                            new JProperty("tenantId", "tenantId-1"),
+                        },
+                        new JObject
+                        {
+                            new JProperty("id", "id-2"),
+                            new JProperty("objectId", "objectId-2"),
+                            new JProperty("name", "name-2"),
+                            new JProperty("givenName", "givenName-2"),
+                            new JProperty("surname", "surname-2"),
+                            new JProperty("email", "email-2"),
+                            new JProperty("userPrincipalName", "userPrincipalName-2"),
+                            new JProperty("tenantId", "tenantId-2"),
+                        },
+                    };
+                    response.Content = new StringContent(content.ToString());
+                }
+
+                // GetMembers (Group Chat)
+                else if (request.RequestUri.PathAndQuery.EndsWith("conversation-id/members"))
+                {
+                    var content = new JArray
+                    {
+                        new JObject
+                        {
+                            new JProperty("id", "id-3"),
+                            new JProperty("objectId", "objectId-3"),
+                            new JProperty("name", "name-3"),
+                            new JProperty("givenName", "givenName-3"),
+                            new JProperty("surname", "surname-3"),
+                            new JProperty("email", "email-3"),
+                            new JProperty("userPrincipalName", "userPrincipalName-3"),
+                            new JProperty("tenantId", "tenantId-3"),
+                        },
+                        new JObject
+                        {
+                            new JProperty("id", "id-4"),
+                            new JProperty("objectId", "objectId-4"),
+                            new JProperty("name", "name-4"),
+                            new JProperty("givenName", "givenName-4"),
+                            new JProperty("surname", "surname-4"),
+                            new JProperty("email", "email-4"),
+                            new JProperty("userPrincipalName", "userPrincipalName-4"),
+                            new JProperty("tenantId", "tenantId-4"),
+                        },
+                    };
+                    response.Content = new StringContent(content.ToString());
+                }
+
+                return Task.FromResult(response);
             }
         }
     }

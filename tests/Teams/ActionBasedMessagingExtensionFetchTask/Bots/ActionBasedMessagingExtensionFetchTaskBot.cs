@@ -37,7 +37,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             }
         }
 
-        protected override async Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
+        protected override async Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
         {
             var adaptiveCardEditor = AdaptiveCardHelper.CreateAdaptiveCardEditor();
 
@@ -159,7 +159,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             // THIS WILL WORK IF THE BOT IS INSTALLED. (GetMembers() will NOT throw if the bot is installed.)
             // (The application should fail gracefully.)
             var channelId = turnContext.Activity.TeamsGetChannelId();
-            await turnContext.TeamsCreateConversationAsync(channelId, message, cancellationToken);
+            //await turnContext.TeamsCreateConversationAsync(channelId, message, cancellationToken);
 
             return null;
         }

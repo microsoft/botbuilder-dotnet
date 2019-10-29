@@ -43,4 +43,3 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
         }
     }
 }
-

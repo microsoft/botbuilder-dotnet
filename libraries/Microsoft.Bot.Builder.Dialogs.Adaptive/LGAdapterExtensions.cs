@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -35,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
             else
             {
-                botAdapter.UseLanguageGeneration(resourceExplorer, new TemplateEngineLanguageGenerator(string.Empty, defaultLg, LanguageGeneratorManager.ResourceResolver(resourceExplorer)));
+                botAdapter.UseLanguageGeneration(resourceExplorer, new TemplateEngineLanguageGenerator(string.Empty, defaultLg, LanguageGeneratorManager.MultiLanguageResolverDelegate(resourceExplorer)));
             }
 
             return botAdapter;

@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Version Condition=" '$(IsBuildServer)' == '' ">4.6.0-local</Version>
+    <Version Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</Version>
+    <PackageVersion Condition=" '$(IsBuildServer)' == '' ">4.6.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</PackageVersion>
+    <Configurations>Debug;Release;</Configurations>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Microsoft.Bot.Builder.Adapters.Slack</PackageId>
+    <Description>Library for connecting bots with Slack.</Description>
+    <Summary>This library implements C# classes for the Slack adapter.</Summary>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Adapters.Slack.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="SlackAPI" Version="1.1.2" />
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
+    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
+    <ProjectReference Include="..\..\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
+    <ProjectReference Include="..\..\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
+  </ItemGroup>
+
+</Project>

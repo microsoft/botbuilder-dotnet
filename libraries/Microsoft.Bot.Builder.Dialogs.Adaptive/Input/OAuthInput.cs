@@ -51,6 +51,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <summary>
         /// Gets or sets the memory property to use for token result.
         /// </summary>
+        /// <value>
+        /// The memory property to use for token result.
+        /// </value>
         public string TokenProperty { get; set; }
 
         /// <summary>
@@ -115,7 +118,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 if (this.TokenProperty != null)
                 {
-                    dc.State.SetValue(this.TokenProperty, output);
+                    dc.GetState().SetValue(this.TokenProperty, output);
                 }
 
                 // Return token
@@ -160,7 +163,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 if (this.TokenProperty != null)
                 {
-                    dc.State.SetValue(this.TokenProperty, null);
+                    dc.GetState().SetValue(this.TokenProperty, null);
                 }
 
                 // if the token fetch request times out, complete the prompt with no result.
@@ -187,7 +190,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     if (this.TokenProperty != null)
                     {
-                        dc.State.SetValue(this.TokenProperty, recognized.Value);
+                        dc.GetState().SetValue(this.TokenProperty, recognized.Value);
                     }
 
                     return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);

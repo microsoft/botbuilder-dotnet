@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Threading.Tasks;
 using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
@@ -6,15 +9,11 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
     /// <summary>
-    /// Defines a Expression or value for a property
+    /// Defines a Expression or value for a property.
     /// </summary>
-    /// <typeparam name="T">type of object the expression should evaluate to</typeparam>
+    /// <typeparam name="T">type of object the expression should evaluate to.</typeparam>
     public class ExpressionProperty<T> : IExpressionProperty
     {
-#pragma warning disable SA1401 // Fields should be private
-        protected Expression expression;
-#pragma warning restore SA1401 // Fields should be private
-
         public ExpressionProperty()
         {
         }
@@ -35,23 +34,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         }
 
         /// <summary>
-        /// Gets or sets expression to use to get the value from data
+        /// Gets or sets expression to use to get the value from data.
         /// </summary>
+        /// <value>
+        /// Expression to use to get the value from data.
+        /// </value>
         public string Expression
         {
-            get { return expression?.ToString(); }
-            set { expression = new ExpressionEngine().Parse(value); }
+            get { return InnerExpression?.ToString(); }
+            set { InnerExpression = new ExpressionEngine().Parse(value); }
         }
 
         /// <summary>
-        /// Gets or sets static value to use for the result (instead of data binding)
+        /// Gets or sets static value to use for the result (instead of data binding).
         /// </summary>
+        /// <value>
+        /// Static value to use for the result (instead of data binding).
+        /// </value>
         public T Value { get; set; }
 
+        protected Expression InnerExpression { get; set; }
+
         /// <summary>
-        /// Set the value
+        /// Set the value.
         /// </summary>
-        /// <param name="value">vfalue to set</param>
+        /// <param name="value">vfalue to set.</param>
         public virtual void SetValue(object value)
         {
             if (value is string expression)
@@ -65,10 +72,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         }
 
         /// <summary>
-        /// Get the value 
+        /// Get the value.
         /// </summary>
-        /// <param name="data">data to use for expression binding</param>
-        /// <returns>value</returns>
+        /// <param name="data">data to use for expression binding.</param>
+        /// <returns>value.</returns>
         public virtual T GetValue(object data)
         {
             if (Value != null)
@@ -76,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                 return Value;
             }
 
-            var (result, error) = expression.TryEvaluate(data);
+            var (result, error) = InnerExpression.TryEvaluate(data);
             if (error != null)
             {
                 return default(T);
@@ -86,13 +93,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         }
 
         /// <summary>
-        /// Convert raw object to desired value type
+        /// Convert raw object to desired value type.
         /// </summary>
         /// <remarks>
         /// This method is called whenever an object is fected via expression or is deserialized from raw text.
         /// </remarks>
-        /// <param name="result">result to convert to object of type T</param>
-        /// <returns>object of type T</returns>
+        /// <param name="result">result to convert to object of type T.</param>
+        /// <returns>object of type T.</returns>
         protected virtual T ConvertObject(object result)
         {
             if (result is T)

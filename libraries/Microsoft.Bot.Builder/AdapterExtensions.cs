@@ -31,42 +31,18 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(botAdapter));
             }
 
-            if (userState == null || conversationState == null)
+            if (userState == null)
             {
-                var storageMiddleware = botAdapter.MiddlewareSet.Where(mw => mw is RegisterClassMiddleware<IStorage>).Cast<RegisterClassMiddleware<IStorage>>().FirstOrDefault();
-                if (storageMiddleware == null)
-                {
-                    throw new ArgumentNullException("There is no IStorage registered in the middleware");
-                }
-
-                if (userState == null)
-                {
-                    var userStateMiddleware = botAdapter.MiddlewareSet.Where(mw => mw is RegisterClassMiddleware<UserState>).Cast<RegisterClassMiddleware<UserState>>().FirstOrDefault();
-                    if (userStateMiddleware != null)
-                    {
-                        userState = userStateMiddleware.Service;
-                    }
-                    else
-                    {
-                        userState = new UserState(storageMiddleware.Service);
-                        botAdapter.Use(new RegisterClassMiddleware<UserState>(userState));
-                    }
-                }
-
-                if (conversationState == null)
-                {
-                    var conversationStateMiddleware = botAdapter.MiddlewareSet.Where(mw => mw is RegisterClassMiddleware<ConversationState>).Cast<RegisterClassMiddleware<ConversationState>>().FirstOrDefault();
-                    if (conversationStateMiddleware != null)
-                    {
-                        conversationState = conversationStateMiddleware.Service;
-                    }
-                    else
-                    {
-                        conversationState = new ConversationState(storageMiddleware.Service);
-                        botAdapter.Use(new RegisterClassMiddleware<ConversationState>(conversationState));
-                    }
-                }
+                throw new ArgumentNullException(nameof(userState));
             }
+
+            if (conversationState == null)
+            {
+                throw new ArgumentNullException(nameof(conversationState));
+            }
+
+            botAdapter.Use(new RegisterClassMiddleware<UserState>(userState));
+            botAdapter.Use(new RegisterClassMiddleware<ConversationState>(conversationState));
 
             if (auto)
             {

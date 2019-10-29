@@ -7,32 +7,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
 {
     public class EventQueues
     {
+        private const string Events = "this.events";
+
         /// <summary>
         /// Gets unknown entities.
         /// </summary>
+        /// <value>List of unknown entities.</value>
         public List<EntityInfo> UnknownEntity { get; } = new List<EntityInfo>();
 
         /// <summary>
         /// Gets mappings where a property is ready to be set to a specific entity.
         /// </summary>
+        /// <value>List of entities to use when changeing properties.</value>
         public List<EntityToProperty> SetProperty { get; } = new List<EntityToProperty>();
 
         /// <summary>
         /// Gets mappings where the entity is ambiguous.
         /// </summary>
+        /// <value>List of ambiguous entities and the property they should be assigned to.</value>
         public List<EntityToProperty> ClarifyEntity { get; } = new List<EntityToProperty>();
 
         /// <summary>
         /// Gets entity that can be consumed by more than one slot.
         /// </summary>
+        /// <value>List of choices between entity and property assignments.</value>
         public List<List<EntityToProperty>> ChooseProperty { get; } = new List<List<EntityToProperty>>();
 
-        // Slots to clear
+        /// <summary>
+        /// Gets slist of properties to clear.
+        /// </summary>
+        /// <value>List of peropties to clear.</value>
         public List<string> ClearProperty { get; } = new List<string>();
 
+        /// <summary>
+        /// Read event queues from memory.
+        /// </summary>
+        /// <param name="context">Context for memory.</param>
+        /// <returns>Event queues.</returns>
         public static EventQueues Read(SequenceContext context)
         {
-            if (!context.State.TryGetValue<EventQueues>("this.events", out var queues))
+            if (!context.GetState().TryGetValue<EventQueues>(Events, out var queues))
             {
                 queues = new EventQueues();
             }
@@ -40,9 +54,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
             return queues;
         }
 
+        /// <summary>
+        /// Write state into memory.
+        /// </summary>
+        /// <param name="context">Memory context.</param>
         public void Write(SequenceContext context)
-            => context.State.Add("this.events", this);
+            => context.GetState().SetValue(Events, this);
 
+        /// <summary>
+        /// Merge another event queue.
+        /// </summary>
+        /// <param name="queues">Queues to merge.</param>
         public void Merge(EventQueues queues)
         {
             UnknownEntity.AddRange(queues.UnknownEntity);
@@ -52,6 +74,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
             ClearProperty.AddRange(queues.ClearProperty);
         }
 
+        /// <summary>
+        /// Remove an event result from queues.
+        /// </summary>
+        /// <param name="eventName">Event to remove.</param>
+        /// <returns>True if event was found.</returns>
         public bool DequeueEvent(string eventName)
         {
             var changed = true;

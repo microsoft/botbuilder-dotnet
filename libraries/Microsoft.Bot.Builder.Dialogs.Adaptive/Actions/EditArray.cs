@@ -101,6 +101,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets property path expression to the collection of items.
         /// </summary>
+        /// <value>
+        /// Property path expression to the collection of items.
+        /// </value>
         [JsonProperty("itemsProperty")]
         public string ItemsProperty
         {
@@ -111,6 +114,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets the path expression to store the result of the action.
         /// </summary>
+        /// <value>
+        /// The path expression to store the result of the action.
+        /// </value>
         [JsonProperty("resultProperty")]
         public string ResultProperty
         {
@@ -121,6 +127,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets the expression of the value to put onto the array.
         /// </summary>
+        /// <value>
+        /// The expression of the value to put onto the array.
+        /// </value>
         [JsonProperty("value")]
         public string Value
         {
@@ -140,7 +149,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new Exception($"EditArray: \"{ChangeType}\" operation couldn't be performed because the arrayProperty wasn't specified.");
             }
 
-            var array = dc.State.GetValue<JArray>(this.ItemsProperty, () => new JArray());
+            var array = dc.GetState().GetValue<JArray>(this.ItemsProperty, () => new JArray());
 
             object item = null;
             object result = null;
@@ -154,7 +163,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
                 case ArrayChangeType.Push:
                     EnsureValue();
-                    var (itemResult, error) = this.value.TryEvaluate(dc.State);
+                    var (itemResult, error) = this.value.TryEvaluate(dc.GetState());
                     if (error == null && itemResult != null)
                     {
                         array.Add(itemResult);
@@ -173,7 +182,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
                 case ArrayChangeType.Remove:
                     EnsureValue();
-                    (itemResult, error) = this.value.TryEvaluate(dc.State);
+                    (itemResult, error) = this.value.TryEvaluate(dc.GetState());
                     if (error == null && itemResult != null)
                     {
                         result = false;
@@ -195,11 +204,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
             }
 
-            dc.State.SetValue(this.ItemsProperty, array);
+            dc.GetState().SetValue(this.ItemsProperty, array);
 
             if (ResultProperty != null)
             {
-                dc.State.SetValue(this.ResultProperty, result);
+                dc.GetState().SetValue(this.ResultProperty, result);
             }
 
             return await dc.EndDialogAsync(result);

@@ -1,11 +1,12 @@
-﻿#pragma warning disable SA1401 // Fields should be private
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.Bot.Expressions;
 
 namespace Microsoft.Bot.Expressions.TriggerTrees
 {
@@ -77,11 +78,6 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
         /// </remarks>
         public const string Ignore = "ignore";
 
-        public List<IOptimizer> Optimizers = new List<IOptimizer>();
-        public Dictionary<string, IPredicateComparer> Comparers = new Dictionary<string, IPredicateComparer>();
-        public Node Root;
-        public int TotalTriggers = 0;
-
         private static readonly IExpressionParser _parser = new ExpressionEngine(LookupFunction);
 
         /// <summary>
@@ -91,6 +87,14 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
         {
             Root = new Node(new Clause(), this);
         }
+
+        public List<IOptimizer> Optimizers { get; } = new List<IOptimizer>();
+
+        public Dictionary<string, IPredicateComparer> Comparers { get; } = new Dictionary<string, IPredicateComparer>();
+
+        public Node Root { get; set; }
+
+        public int TotalTriggers { get; set; }
 
         public static ExpressionEvaluator LookupFunction(string type)
         {
@@ -120,7 +124,7 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
         /// <param name="quantifiers">Quantifiers to use when expanding expressions.</param>
         /// <returns>New trigger.</returns>
         public Trigger AddTrigger(string expression, object action, params Quantifier[] quantifiers)
-                    => AddTrigger(_parser.Parse(expression), action, quantifiers);
+            => AddTrigger(_parser.Parse(expression), action, quantifiers);
 
         /// <summary>
         /// Add a trigger expression to the tree.
@@ -283,16 +287,18 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
 
         private class Debugger
         {
-            public string TreeString;
-            public List<IOptimizer> _optimizers;
-            public Dictionary<string, IPredicateComparer> _comparers;
-
             public Debugger(TriggerTree triggers)
             {
                 TreeString = triggers.TreeToString();
-                _optimizers = triggers.Optimizers;
-                _comparers = triggers.Comparers;
+                Optimizers = triggers.Optimizers;
+                Comparers = triggers.Comparers;
             }
+
+            public Dictionary<string, IPredicateComparer> Comparers { get; set; }
+
+            public List<IOptimizer> Optimizers { get; set; }
+
+            public string TreeString { get; set; }
         }
     }
 }

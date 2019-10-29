@@ -1,8 +1,11 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Bot.Expressions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -101,6 +104,37 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         IEnumerator IEnumerable.GetEnumerator()
         {
             throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            try
+            {
+                var result = string.Empty;
+                if (LocalScope != null)
+                {
+                    result += JsonConvert.SerializeObject(LocalScope, GetSerializerSettings());
+                }
+
+                if (GlobalScope != null)
+                {
+                    result += JsonConvert.SerializeObject(GlobalScope, GetSerializerSettings());
+                }
+
+                return result;
+            }
+            catch
+            {
+                return GetHashCode().ToString();
+            }
+        }
+
+        private JsonSerializerSettings GetSerializerSettings()
+        {
+            return new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
         }
     }
 }

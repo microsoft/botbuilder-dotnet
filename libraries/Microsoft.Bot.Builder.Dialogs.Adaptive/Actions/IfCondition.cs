@@ -32,6 +32,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <example>
         /// "user.age > 18".
         /// </example>
+        /// <value>
+        /// The memory expression. 
+        /// </value>
         [JsonProperty("condition")]
         public string Condition
         {
@@ -62,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Ensure planning context
             if (dc is SequenceContext planning)
             {
-                var (value, error) = condition.TryEvaluate(dc.State);
+                var (value, error) = condition.TryEvaluate(dc.GetState());
                 var conditionResult = error == null && value != null && (bool)value;
 
                 var actions = new List<Dialog>();

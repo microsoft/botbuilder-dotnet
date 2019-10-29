@@ -1,11 +1,9 @@
 ﻿#pragma warning disable SA1402 // File may only contain a single type
 #pragma warning disable SA1201 // Elements should appear in the correct order
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -35,45 +33,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         public TestContext TestContext { get; set; }
 
-        [TestMethod]
-        public void TestMemoryScopeNullChecks()
+        public TestFlow CreateDialogContext(Func<DialogContext, CancellationToken, Task> handler)
         {
-            var dialogs = new DialogSet();
-            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            DialogStateManager state = new DialogStateManager(dc);
-
-            foreach (var memoryScope in DialogStateManager.MemoryScopes)
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            adapter
+                .UseStorage(new MemoryStorage())
+                .UseState(new UserState(new MemoryStorage()), new ConversationState(new MemoryStorage()));
+            DialogManager dm = new DialogManager(new LamdaDialog(handler));
+            return new TestFlow(adapter, (context, ct) =>
             {
-                try
-                {
-                    memoryScope.GetMemory(null);
-                    Assert.Fail($"Should have thrown exception with null for {memoryScope.Name}");
-                }
-                catch (ArgumentNullException)
-                {
-                }
+                return dm.OnTurnAsync(context, ct);
+            }).SendConversationUpdate();
+        }
 
-                if (!memoryScope.IsReadOnly)
+        [TestMethod]
+        public async Task TestMemoryScopeNullChecks()
+        {
+            await CreateDialogContext(async (context, ct) =>
+            {
+                foreach (var memoryScope in DialogStateManager.MemoryScopes)
                 {
+                    try
+                    {
+                        memoryScope.GetMemory(null);
+                        Assert.Fail($"Should have thrown exception with null for {memoryScope.Name}");
+                    }
+                    catch (ArgumentNullException)
+                    {
+                    }
+
                     try
                     {
                         memoryScope.SetMemory(null, new object());
                         Assert.Fail($"Should have thrown exception with null dc for SetMemory {memoryScope.Name}");
                     }
-                    catch (ArgumentNullException)
-                    {
-                    }
-
-                    try
-                    {
-                        memoryScope.SetMemory(dc, null);
-                        Assert.Fail($"Should have thrown exception with null memory for SetMemory {memoryScope.Name}");
-                    }
-                    catch (ArgumentNullException)
+                    catch (Exception)
                     {
                     }
                 }
-            }
+            })
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -93,24 +92,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        public void TestMemorySnapshot()
+        public async Task TestMemorySnapshot()
         {
-            var dialogs = new DialogSet();
-            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            DialogStateManager state = new DialogStateManager(dc);
-
-            JObject snapshot = state.GetMemorySnapshot();
-            foreach (var memoryScope in DialogStateManager.MemoryScopes.Where(ms => ms.Name != "dialog" && ms.Name != "this"))
+            await CreateDialogContext(async (context, ct) =>
             {
-                if (memoryScope.IsReadOnly)
+                JObject snapshot = context.GetState().GetMemorySnapshot();
+                foreach (var memoryScope in DialogStateManager.MemoryScopes)
                 {
-                    Assert.IsNull(snapshot.Property(memoryScope.Name));
+                    if (memoryScope.IncludeInSnapshot)
+                    {
+                        Assert.IsNotNull(snapshot.Property(memoryScope.Name));
+                    }
+                    else
+                    {
+                        Assert.IsNull(snapshot.Property(memoryScope.Name));
+                    }
                 }
-                else
-                {
-                    Assert.IsNotNull(snapshot.Property(memoryScope.Name));
-                }
-            }
+            })
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -143,186 +142,181 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        public void TestSimpleValues()
+        public async Task TestSimpleValues()
         {
-            var dialogs = new DialogSet();
-            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            DialogStateManager state = new DialogStateManager(dc);
-
-            // simple value types
-            state.SetValue("UseR.nuM", 15);
-            state.SetValue("uSeR.NuM", 25);
-            Assert.AreEqual(25, state.GetValue<int>("user.num"));
-
-            state.SetValue("UsEr.StR", "string1");
-            state.SetValue("usER.STr", "string2");
-            Assert.AreEqual("string2", state.GetValue<string>("USer.str"));
-
-            // simple value types
-            state.SetValue("ConVErsation.nuM", 15);
-            state.SetValue("ConVErSation.NuM", 25);
-            Assert.AreEqual(25, state.GetValue<int>("conversation.num"));
-
-            state.SetValue("ConVErsation.StR", "string1");
-            state.SetValue("CoNVerSation.STr", "string2");
-            Assert.AreEqual("string2", state.GetValue<string>("conversation.str"));
-
-            // simple value types
-            state.SetValue("tUrn.nuM", 15);
-            state.SetValue("turN.NuM", 25);
-            Assert.AreEqual(25, state.GetValue<int>("turn.num"));
-
-            state.SetValue("tuRn.StR", "string1");
-            state.SetValue("TuRn.STr", "string2");
-            Assert.AreEqual("string2", state.GetValue<string>("turn.str"));
-        }
-
-        [TestMethod]
-        public void TestEntitiesRetrieval()
-        {
-            var dialogs = new DialogSet();
-            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            DialogStateManager state = new DialogStateManager(dc);
-            
-            var array = new JArray();
-            array.Add("test1");
-            array.Add("test2");
-            array.Add("test3");
-            
-            var array2 = new JArray();
-            array2.Add("testx");
-            array2.Add("testy");
-            array2.Add("testz"); 
-            
-            var arrayarray = new JArray();
-            arrayarray.Add(array2);
-            arrayarray.Add(array);
-            
-            state.SetValue("turn.recognized.entities.single", array);
-            state.SetValue("turn.recognized.entities.double", arrayarray);
-
-            Assert.AreEqual("test1", state.GetValue<string>("@single"));
-            Assert.AreEqual("testx", state.GetValue<string>("@double"));
-            Assert.AreEqual("test1", state.GetValue<string>("turn.recognized.entities.single.First()"));
-            Assert.AreEqual("testx", state.GetValue<string>("turn.recognized.entities.double.First()"));
-        }
-
-        [TestMethod]
-        public void TestComplexValuePaths()
-        {
-            var dialogs = new DialogSet();
-            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            DialogStateManager state = new DialogStateManager(dc);
-
-            // complex type paths
-            state.SetValue("UseR.fOo", foo);
-            Assert.AreEqual("bob", state.GetValue<string>("user.foo.SuBname.name"));
-
-            // complex type paths
-            state.SetValue("ConVerSation.FOo", foo);
-            Assert.AreEqual("bob", state.GetValue<string>("conversation.foo.SuBname.name"));
-
-            // complex type paths
-            state.SetValue("TurN.fOo", foo);
-            Assert.AreEqual("bob", state.GetValue<string>("TuRN.foo.SuBname.name"));
-        }
-
-        [TestMethod]
-        [Ignore] // NOTE: This needs to be revisited
-        public void TestComplexPathExpressions()
-        {
-            var dialogs = new DialogSet();
-            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            DialogStateManager state = new DialogStateManager(dc);
-
-            // complex type paths
-            state.SetValue("user.name", "joe");
-            state.SetValue("conversation.stuff[user.name]", "test");
-            var value = state.GetValue<string>("conversation.stuff.joe");
-            Assert.AreEqual("test", value, "complex set should set");
-            value = state.GetValue<string>("conversation.stuff[user.name]");
-            Assert.AreEqual("test", value, "complex get should get");
-        }
-
-        [TestMethod]
-        public void TestGetValue()
-        {
-            var dialogs = new DialogSet();
-            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            DialogStateManager state = new DialogStateManager(dc);
-
-            // complex type paths
-            state.SetValue("user.name.first", "joe");
-            Assert.AreEqual("joe", state.GetValue<string>("user.name.first"));
-
-            Assert.AreEqual(null, state.GetValue<string>("user.xxx"));
-            Assert.AreEqual("default", state.GetValue<string>("user.xxx", () => "default"));
-
-            foreach (var key in state.Keys)
+            await CreateDialogContext(async (dc, ct) =>
             {
-                Assert.AreEqual(state.GetValue<object>(key), state[key]);
-            }
+                // simple value types
+                dc.GetState().SetValue("UseR.nuM", 15);
+                dc.GetState().SetValue("uSeR.NuM", 25);
+                Assert.AreEqual(25, dc.GetState().GetValue<int>("user.num"));
+
+                dc.GetState().SetValue("UsEr.StR", "string1");
+                dc.GetState().SetValue("usER.STr", "string2");
+                Assert.AreEqual("string2", dc.GetState().GetValue<string>("USer.str"));
+
+                // simple value types
+                dc.GetState().SetValue("ConVErsation.nuM", 15);
+                dc.GetState().SetValue("ConVErSation.NuM", 25);
+                Assert.AreEqual(25, dc.GetState().GetValue<int>("conversation.num"));
+
+                dc.GetState().SetValue("ConVErsation.StR", "string1");
+                dc.GetState().SetValue("CoNVerSation.STr", "string2");
+                Assert.AreEqual("string2", dc.GetState().GetValue<string>("conversation.str"));
+
+                // simple value types
+                dc.GetState().SetValue("tUrn.nuM", 15);
+                dc.GetState().SetValue("turN.NuM", 25);
+                Assert.AreEqual(25, dc.GetState().GetValue<int>("turn.num"));
+
+                dc.GetState().SetValue("tuRn.StR", "string1");
+                dc.GetState().SetValue("TuRn.STr", "string2");
+                Assert.AreEqual("string2", dc.GetState().GetValue<string>("turn.str"));
+            }).StartTestAsync();
         }
 
         [TestMethod]
-        public void TestGetValueT()
+        public async Task TestEntitiesRetrieval()
         {
-            var dialogs = new DialogSet();
-            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            DialogStateManager state = new DialogStateManager(dc);
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                var array = new JArray();
+                array.Add("test1");
+                array.Add("test2");
+                array.Add("test3");
 
-            // complex type paths
-            state.SetValue("UseR.fOo", foo);
-            Assert.AreEqual(state.GetValue<Foo>("user.foo").SubName.Name, "bob");
+                var array2 = new JArray();
+                array2.Add("testx");
+                array2.Add("testy");
+                array2.Add("testz");
 
-            // complex type paths
-            state.SetValue("ConVerSation.FOo", foo);
-            Assert.AreEqual(state.GetValue<Foo>("conversation.foo").SubName.Name, "bob");
+                var arrayarray = new JArray();
+                arrayarray.Add(array2);
+                arrayarray.Add(array);
 
-            // complex type paths
-            state.SetValue("TurN.fOo", foo);
-            Assert.AreEqual(state.GetValue<Foo>("turn.foo").SubName.Name, "bob");
+                dc.GetState().SetValue("turn.recognized.entities.single", array);
+                dc.GetState().SetValue("turn.recognized.entities.double", arrayarray);
+
+                Assert.AreEqual("test1", dc.GetState().GetValue<string>("@single"));
+                Assert.AreEqual("testx", dc.GetState().GetValue<string>("@double"));
+                Assert.AreEqual("test1", dc.GetState().GetValue<string>("turn.recognized.entities.single.First()"));
+                Assert.AreEqual("testx", dc.GetState().GetValue<string>("turn.recognized.entities.double.First()"));
+            }).StartTestAsync();
         }
 
         [TestMethod]
-        public void TestHashResolver()
+        public async Task TestComplexValuePaths()
         {
-            var dialogs = new DialogSet();
-            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            DialogStateManager state = new DialogStateManager(dc);
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                // complex type paths
+                dc.GetState().SetValue("UseR.fOo", foo);
+                Assert.AreEqual("bob", dc.GetState().GetValue<string>("user.foo.SuBname.name"));
 
-            // test HASH
-            state.SetValue($"turn.recognized.intents.test", "intent1");
-            state.SetValue($"#test2", "intent2");
+                // complex type paths
+                dc.GetState().SetValue("ConVerSation.FOo", foo);
+                Assert.AreEqual("bob", dc.GetState().GetValue<string>("conversation.foo.SuBname.name"));
 
-            Assert.AreEqual("intent1", state.GetValue<string>("turn.recognized.intents.test"));
-            Assert.AreEqual("intent1", state.GetValue<string>("#test"));
-            Assert.AreEqual("intent2", state.GetValue<string>("turn.recognized.intents.test2"));
-            Assert.AreEqual("intent2", state.GetValue<string>("#test2"));
+                // complex type paths
+                dc.GetState().SetValue("TurN.fOo", foo);
+                Assert.AreEqual("bob", dc.GetState().GetValue<string>("TuRN.foo.SuBname.name"));
+            }).StartTestAsync();
         }
 
         [TestMethod]
-        public void TestEntityResolvers()
+        public async Task TestComplexPathExpressions()
         {
-            var dialogs = new DialogSet();
-            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            DialogStateManager state = new DialogStateManager(dc);
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                // complex type paths
+                dc.GetState().SetValue("user.name", "joe");
+                dc.GetState().SetValue("conversation.stuff[user.name]", "test");
+                dc.GetState().SetValue("conversation.stuff['frank']", "test2");
+                dc.GetState().SetValue("conversation.stuff[\"susan\"]", "test3");
+                dc.GetState().SetValue("conversation.stuff['Jo.Bob']", "test4");
+                Assert.AreEqual("test", dc.GetState().GetValue<string>("conversation.stuff.joe"), "complex set should set");
+                Assert.AreEqual("test", dc.GetState().GetValue<string>("conversation.stuff[user.name]"), "complex get should get");
+                Assert.AreEqual("test2", dc.GetState().GetValue<string>("conversation.stuff['frank']"), "complex get should get");
+                Assert.AreEqual("test3", dc.GetState().GetValue<string>("conversation.stuff[\"susan\"]"), "complex get should get");
+                Assert.AreEqual("test4", dc.GetState().GetValue<string>("conversation.stuff[\"Jo.Bob\"]"), "complex get should get");
+            }).StartTestAsync();
+        }
 
-            // test @ and @@
-            var testEntities = new string[] { "entity1", "entity2" };
-            var testEntities2 = new string[] { "entity3", "entity4" };
-            state.SetValue($"turn.recognized.entities.test", testEntities);
-            state.SetValue($"@@test2", testEntities2);
+        [TestMethod]
+        public async Task TestGetValue()
+        {
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                // complex type paths
+                dc.GetState().SetValue("user.name.first", "joe");
+                Assert.AreEqual("joe", dc.GetState().GetValue<string>("user.name.first"));
 
-            Assert.AreEqual(testEntities.First(), state.GetValue<string>("turn.recognized.entities.test[0]"));
-            Assert.AreEqual(testEntities.First(), state.GetValue<string>("@test"));
-            Assert.IsTrue(testEntities.SequenceEqual(state.GetValue<string[]>("turn.recognized.entities.test")));
-            Assert.IsTrue(testEntities.SequenceEqual(state.GetValue<string[]>("@@test")));
+                Assert.AreEqual(null, dc.GetState().GetValue<string>("user.xxx"));
+                Assert.AreEqual("default", dc.GetState().GetValue<string>("user.xxx", () => "default"));
 
-            Assert.AreEqual(testEntities2.First(), state.GetValue<string>("turn.recognized.entities.test2[0]"));
-            Assert.AreEqual(testEntities2.First(), state.GetValue<string>("@test2"));
-            Assert.IsTrue(testEntities2.SequenceEqual(state.GetValue<string[]>("turn.recognized.entities.test2")));
-            Assert.IsTrue(testEntities2.SequenceEqual(state.GetValue<string[]>("@@test2")));
+                foreach (var key in dc.GetState().Keys)
+                {
+                    Assert.AreEqual(dc.GetState().GetValue<object>(key), dc.GetState()[key]);
+                }
+            }).StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task TestGetValueT()
+        {
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                // complex type paths
+                dc.GetState().SetValue("UseR.fOo", foo);
+                Assert.AreEqual(dc.GetState().GetValue<Foo>("user.foo").SubName.Name, "bob");
+
+                // complex type paths
+                dc.GetState().SetValue("ConVerSation.FOo", foo);
+                Assert.AreEqual(dc.GetState().GetValue<Foo>("conversation.foo").SubName.Name, "bob");
+
+                // complex type paths
+                dc.GetState().SetValue("TurN.fOo", foo);
+                Assert.AreEqual(dc.GetState().GetValue<Foo>("turn.foo").SubName.Name, "bob");
+            }).StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task TestHashResolver()
+        {
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                // test HASH
+                dc.GetState().SetValue($"turn.recognized.intents.test", "intent1");
+                dc.GetState().SetValue($"#test2", "intent2");
+
+                Assert.AreEqual("intent1", dc.GetState().GetValue<string>("turn.recognized.intents.test"));
+                Assert.AreEqual("intent1", dc.GetState().GetValue<string>("#test"));
+                Assert.AreEqual("intent2", dc.GetState().GetValue<string>("turn.recognized.intents.test2"));
+                Assert.AreEqual("intent2", dc.GetState().GetValue<string>("#test2"));
+            }).StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task TestEntityResolvers()
+        {
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                // test @ and @@
+                var testEntities = new string[] { "entity1", "entity2" };
+                var testEntities2 = new string[] { "entity3", "entity4" };
+                dc.GetState().SetValue($"turn.recognized.entities.test", testEntities);
+                dc.GetState().SetValue($"@@test2", testEntities2);
+
+                Assert.AreEqual(testEntities.First(), dc.GetState().GetValue<string>("turn.recognized.entities.test[0]"));
+                Assert.AreEqual(testEntities.First(), dc.GetState().GetValue<string>("@test"));
+                Assert.IsTrue(testEntities.SequenceEqual(dc.GetState().GetValue<string[]>("turn.recognized.entities.test")));
+                Assert.IsTrue(testEntities.SequenceEqual(dc.GetState().GetValue<string[]>("@@test")));
+
+                Assert.AreEqual(testEntities2.First(), dc.GetState().GetValue<string>("turn.recognized.entities.test2[0]"));
+                Assert.AreEqual(testEntities2.First(), dc.GetState().GetValue<string>("@test2"));
+                Assert.IsTrue(testEntities2.SequenceEqual(dc.GetState().GetValue<string[]>("turn.recognized.entities.test2")));
+                Assert.IsTrue(testEntities2.SequenceEqual(dc.GetState().GetValue<string[]>("@@test2")));
+            }).StartTestAsync();
         }
 
         public class D2Dialog : Dialog
@@ -334,14 +328,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             public int MaxValue { get; set; } = 20;
 
-            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
             {
-                dc.State.SetValue($"dialog.options", options);
-                dc.State.SetValue($"$bbb", "bbb");
-                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("$bbb"));
-                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("dialog.options.test"));
-                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("%MaxValue"));
-                return await dc.EndDialogAsync(dc.State.GetValue<string>("$bbb"));
+                dc.GetState().SetValue($"dialog.options", options);
+                dc.GetState().SetValue($"$bbb", "bbb");
+                await dc.Context.SendActivityAsync(dc.GetState().GetValue<string>("$bbb"));
+                await dc.Context.SendActivityAsync(dc.GetState().GetValue<string>("dialog.options.test"));
+                await dc.Context.SendActivityAsync(dc.GetState().GetValue<string>("%MaxValue"));
+                return await dc.EndDialogAsync(dc.GetState().GetValue<string>("$bbb"));
             }
         }
 
@@ -355,27 +349,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             public int MaxValue { get; set; } = 10;
 
-            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
             {
-                dc.State.SetValue("dialog.xyz", "dialog");
-                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("dialog.xyz"));
-                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("$xyz"));
-                dc.State.SetValue("$aaa", "dialog2");
-                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("dialog.aaa"));
-                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("$aaa"));
-                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("%MaxValue"));
+                dc.GetState().SetValue("dialog.xyz", "dialog");
+                await dc.Context.SendActivityAsync(dc.GetState().GetValue<string>("dialog.xyz"));
+                await dc.Context.SendActivityAsync(dc.GetState().GetValue<string>("$xyz"));
+                dc.GetState().SetValue("$aaa", "dialog2");
+                await dc.Context.SendActivityAsync(dc.GetState().GetValue<string>("dialog.aaa"));
+                await dc.Context.SendActivityAsync(dc.GetState().GetValue<string>("$aaa"));
+                await dc.Context.SendActivityAsync(dc.GetState().GetValue<string>("%MaxValue"));
                 return await dc.BeginDialogAsync("d2", options: new { test = "123" });
             }
 
             public IEnumerable<Dialog> GetDependencies()
             {
-                return _dialogs.GetDialogs();
+                return this.Dialogs.GetDialogs();
             }
 
-            public async override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
             {
-                dc.State.SetValue("$xyz", result);
-                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("$xyz"));
+                dc.GetState().SetValue("$xyz", result);
+                await dc.Context.SendActivityAsync(dc.GetState().GetValue<string>("$xyz"));
                 return await dc.EndDialogAsync(result);
             }
         }
@@ -421,10 +415,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
             }
 
-            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default)
             {
-                outerDc.State.SetValue("$name", "d2");
-                var name = outerDc.State.GetValue<string>("$name");
+                outerDc.GetState().SetValue("$name", "d2");
+                var name = outerDc.GetState().GetValue<string>("$name");
                 await outerDc.Context.SendActivityAsync($"nested {name}");
                 return await outerDc.EndDialogAsync(this.Id);
             }
@@ -437,12 +431,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
             }
 
-            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
             {
-                dc.State.SetValue("$name", "d1");
-                var name = dc.State.GetValue<string>("$name");
+                dc.GetState().SetValue("$name", "d1");
+                var name = dc.GetState().GetValue<string>("$name");
                 await dc.Context.SendActivityAsync($"nested {name}");
-                name = dc.State.GetValue<string>("dialog.name");
+                name = dc.GetState().GetValue<string>("dialog.name");
                 await dc.Context.SendActivityAsync($"nested {name}");
                 return await dc.EndDialogAsync(this.Id);
             }
@@ -457,31 +451,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 AddDialog(new NestedContainerDialog2());
             }
 
-            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
             {
-                dc.State.SetValue("$name", "testDialog");
-                var name = dc.State.GetValue<String>("$name");
+                dc.GetState().SetValue("$name", "testDialog");
+                var name = dc.GetState().GetValue<string>("$name");
                 await dc.Context.SendActivityAsync(name);
-                name = dc.State.GetValue<String>("dialog.name");
+                name = dc.GetState().GetValue<string>("dialog.name");
                 await dc.Context.SendActivityAsync(name);
                 return await dc.BeginDialogAsync("d1");
             }
 
             public IEnumerable<Dialog> GetDependencies()
             {
-                return _dialogs.GetDialogs();
+                return Dialogs.GetDialogs();
             }
 
-            public async override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
             {
                 if ((string)result == "d2")
                 {
                     return await dc.EndDialogAsync();
                 }
 
-                var name = dc.State.GetValue<string>("$name");
+                var name = dc.GetState().GetValue<string>("$name");
                 await dc.Context.SendActivityAsync(name);
-                name = dc.State.GetValue<string>("dialog.name");
+                name = dc.GetState().GetValue<string>("dialog.name");
                 await dc.Context.SendActivityAsync(name);
                 return await dc.BeginDialogAsync("d2");
             }
@@ -503,21 +497,118 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        public void TestExpressionSet()
+        public async Task TestExpressionSet()
         {
-            var dialogs = new DialogSet();
-            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            DialogStateManager state = new DialogStateManager(dc);
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                dc.GetState().SetValue($"turn.x.y.z", null);
+                Assert.AreEqual(null, dc.GetState().GetValue<object>("turn.x.y.z"));
+            }).StartTestAsync();
+        }
 
-            state.SetValue($"turn.x.y.z", null);
-            Assert.AreEqual(null, state.GetValue<object>("turn.x.y.z"));
+        internal class TestDialog : Dialog
+        {
+            public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            {
+                dc.Context.SendActivityAsync(dc.GetState().GetValue<string>("conversation.test", () => "unknown"));
+                dc.GetState().SetValue("conversation.test", "havedata");
+                return Task.FromResult(new DialogTurnResult(DialogTurnStatus.Waiting));
+            }
+
+            public override Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
+            {
+                switch (dc.Context.Activity.Text)
+                {
+                    case "throw":
+                        throw new Exception("throwing");
+                    case "end":
+                        return dc.EndDialogAsync();
+                }
+
+                dc.Context.SendActivityAsync(dc.GetState().GetValue<string>("conversation.test", () => "unknown"));
+                return Task.FromResult(new DialogTurnResult(DialogTurnStatus.Waiting));
+            }
+        }
+
+        [TestMethod]
+        public async Task TestConversationResetOnException()
+        {
+            var storage = new MemoryStorage();
+            var userState = new UserState(storage);
+            var conversationState = new ConversationState(storage);
+
+            var adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseState(userState, conversationState);
+            adapter.OnTurnError = async (context, exception) =>
+            {
+                await conversationState.DeleteAsync(context);
+                await context.SendActivityAsync(exception.Message);
+            };
+
+            var dm = new DialogManager(new TestDialog());
+
+            await new TestFlow((TestAdapter)adapter, (turnContext, cancellationToken) =>
+            {
+                return dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken);
+            })
+            .Send("yo")
+                .AssertReply("unknown")
+            .Send("yo")
+                .AssertReply("havedata")
+            .Send("throw")
+                .AssertReply("throwing")
+            .Send("yo")
+                .AssertReply("unknown")
+            .Send("yo")
+                .AssertReply("havedata")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task TestConversationResetOnExpiration()
+        {
+            var storage = new MemoryStorage();
+            var userState = new UserState(storage);
+            var conversationState = new ConversationState(storage);
+
+            var adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseState(userState, conversationState);
+            adapter.OnTurnError = async (context, exception) =>
+            {
+                await conversationState.DeleteAsync(context);
+                await context.SendActivityAsync(exception.Message);
+            };
+
+            var dm = new DialogManager(new TestDialog())
+            {
+                ExpireAfter = 1000
+            };
+
+            await new TestFlow((TestAdapter)adapter, (turnContext, cancellationToken) =>
+            {
+                return dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken);
+            })
+            .Send("yo")
+                .AssertReply("unknown")
+            .Send("yo")
+                .AssertReply("havedata")
+            .Delay(TimeSpan.FromSeconds(1.1))
+            .Send("yo")
+                .AssertReply("unknown", "Should have expired conversation and ended up with yo=>unknown")
+            .Send("yo")
+                .AssertReply("havedata")
+            .Send("yo")
+                .AssertReply("havedata")
+            .StartTestAsync();
         }
 
         private TestFlow CreateFlow(Dialog dialog, ConversationState convoState = null, UserState userState = null, bool sendTrace = false)
         {
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
                 .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
-                .Use(new AutoSaveStateMiddleware(userState ?? new UserState(new MemoryStorage()), convoState ?? new ConversationState(new MemoryStorage())))
+                .UseState(new UserState(new MemoryStorage()), convoState ?? new ConversationState(new MemoryStorage()))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var dm = new DialogManager(dialog);
@@ -549,4 +640,3 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public Bar SubName { get; set; }
     }
 }
-

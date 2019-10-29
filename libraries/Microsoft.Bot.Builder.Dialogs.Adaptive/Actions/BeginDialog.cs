@@ -23,8 +23,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets the property path to store the dialog result in
+        /// Gets or sets the property path to store the dialog result in.
         /// </summary>
+        /// <value>
+        /// The property path to store the dialog result in.
+        /// </value>
         public string ResultProperty { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -47,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             if (this.ResultProperty != null)
             {
-                dc.State.SetValue(this.ResultProperty, result);
+                dc.GetState().SetValue(this.ResultProperty, result);
             }
 
             // By default just end the current dialog and return result to parent.

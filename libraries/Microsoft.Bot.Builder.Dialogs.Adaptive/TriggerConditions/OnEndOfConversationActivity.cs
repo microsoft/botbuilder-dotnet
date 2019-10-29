@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Actions triggered when EndOfConversationActivity is received
+    /// Actions triggered when EndOfConversationActivity is received.
     /// </summary>
     public class OnEndOfConversationActivity : OnActivity
     {

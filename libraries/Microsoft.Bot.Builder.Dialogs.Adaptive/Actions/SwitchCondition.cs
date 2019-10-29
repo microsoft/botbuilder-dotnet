@@ -52,6 +52,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets Cases.
         /// </summary>
+        /// <value>
+        /// Cases.
+        /// </value>
         public List<Case> Cases { get; set; } = new List<Case>();
 
         public virtual IEnumerable<Dialog> GetDependencies()
@@ -104,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 foreach (var caseCondition in this.Cases)
                 {
-                    var (value, error) = this.caseExpressions[caseCondition.Value].TryEvaluate(dc.State);
+                    var (value, error) = this.caseExpressions[caseCondition.Value].TryEvaluate(dc.GetState());
 
                     if (error != null)
                     {

@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// <summary>
         /// Gets or sets the expression parser to use.
         /// </summary>
+        /// <value>Expression parser.</value>
         [Newtonsoft.Json.JsonIgnore]
         public IExpressionParser Parser { get; set; } = new ExpressionEngine();
 
@@ -36,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 foreach (var conditional in _conditionals)
                 {
                     var expression = conditional.GetExpression(Parser);
-                    var (value, error) = expression.TryEvaluate(context.State);
+                    var (value, error) = expression.TryEvaluate(context.GetState());
                     var result = error == null && (bool)value;
                     if (result == true)
                     {

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -20,6 +23,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         /// <summary>
         /// Gets or sets the template to evaluate to create the text.
         /// </summary>
+        /// <value>
+        /// The template to evaluate to create the text.
+        /// </value>
         public string Template { get; set; }
 
         public virtual async Task<string> BindToData(ITurnContext turnContext, object data)

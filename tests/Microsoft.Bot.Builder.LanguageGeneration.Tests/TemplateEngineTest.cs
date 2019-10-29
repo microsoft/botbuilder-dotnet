@@ -768,17 +768,20 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled = engine.EvaluateTemplate("AskForAge.prompt");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"how old are you?\"}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"how old are you?\"}"), evaled as JObject)
+                || JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"what's your age?\"}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("AskForAge.prompt2");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"suggestedactions\":[\"10\",\"20\",\"30\"]}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"suggestedactions\":[\"10\",\"20\",\"30\"]}"), evaled as JObject)
+                || JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"suggestedactions\":[\"10\",\"20\",\"30\"]}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("AskForAge.prompt3");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject)
+                || JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("T1");
 
@@ -807,6 +810,109 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.IsTrue(
                 JToken.DeepEquals(JObject.Parse("{\"$type\":\"MyStruct\",\"text\":\"hi\"}"), evaled as JObject));
+
+            evaled = engine.EvaluateTemplate("MultiStructuredRef");
+
+            Assert.IsTrue(
+                JToken.DeepEquals(JObject.Parse("{\"$type\":\"MyStruct\",\"list\":[{\"$type\":\"SubStruct\",\"text\":\"hello\"},{\"$type\":\"SubStruct\",\"text\":\"world\"}]}"), evaled as JObject));
+
+            evaled = engine.EvaluateTemplate("templateWithSquareBrackets", new { manufacturer = new { Name = "Acme Co" } });
+
+            Assert.IsTrue(
+                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Struct\",\"text\":\"Acme Co\"}"), evaled as JObject));
+        }
+
+        [TestMethod]
+        public void TestEvaluateOnce()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("EvaluateOnce.lg"));
+
+            var evaled = engine.EvaluateTemplate("templateWithSameParams", new { param = "ms" });
+            Assert.IsNotNull(evaled);
+
+            var resultList = evaled.ToString().Split(" ");
+            Assert.IsTrue(resultList.Length == 2);
+            Assert.IsTrue(resultList[0] == resultList[1]);
+
+            // may be has different values
+            evaled = engine.EvaluateTemplate("templateWithDifferentParams", new { param1 = "ms", param2 = "newms" });
+        }
+
+        [TestMethod]
+        public void TestConditionExpression()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("ConditionExpression.lg"));
+
+            var evaled = engine.EvaluateTemplate("conditionTemplate", new { num = 1 });
+
+            Assert.AreEqual(evaled, "Your input is one");
+
+            evaled = engine.EvaluateTemplate("conditionTemplate", new { num = 2 });
+
+            Assert.AreEqual(evaled, "Your input is two");
+
+            evaled = engine.EvaluateTemplate("conditionTemplate", new { num = 3 });
+
+            Assert.AreEqual(evaled, "Your input is three");
+
+            evaled = engine.EvaluateTemplate("conditionTemplate", new { num = 4 });
+
+            Assert.AreEqual(evaled, "Your input is not one, two or three");
+        }
+
+        [TestMethod]
+        public void TestLoopScope()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("LoopScope.lg"));
+
+            var loopClass1 = new LoopClass();
+            loopClass1.Name = "jack";
+
+            var loopClass2 = new LoopClass();
+            loopClass2.Name = "jones";
+
+            loopClass1.LoopObj = loopClass2;
+            loopClass2.LoopObj = loopClass1;
+
+            engine.EvaluateTemplate("template1", new { scope = loopClass1 });
+        }
+
+        [TestMethod]
+        public void TestExpandTemplateWithStructuredLG()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("StructuredTemplate.lg"));
+
+            // without scope
+            var evaled = engine.ExpandTemplate("AskForAge.prompt");
+            Assert.AreEqual(4, evaled.Count);
+            var expectedResults = new List<string>()
+            {
+                "{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"how old are you?\"}",
+                "{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"what's your age?\"}",
+                "{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"how old are you?\"}",
+                "{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"what's your age?\"}"
+            };
+
+            expectedResults.ForEach(x => Assert.AreEqual(true, evaled.Contains(x)));
+
+            evaled = engine.ExpandTemplate("ExpanderT1");
+            Assert.AreEqual(4, evaled.Count);
+            expectedResults = new List<string>()
+            {
+                "{\"$type\":\"MyStruct\",\"text\":\"Hi\",\"speak\":\"how old are you?\"}",
+                "{\"$type\":\"MyStruct\",\"text\":\"Hi\",\"speak\":\"what's your age?\"}",
+                "{\"$type\":\"MyStruct\",\"text\":\"Hello\",\"speak\":\"how old are you?\"}",
+                "{\"$type\":\"MyStruct\",\"text\":\"Hello\",\"speak\":\"what's your age?\"}"
+            };
+
+            expectedResults.ForEach(x => Assert.AreEqual(true, evaled.Contains(x)));
+        }
+
+        public class LoopClass
+        {
+            public string Name { get; set; }
+
+            public object LoopObj { get; set; }
         }
     }
 }

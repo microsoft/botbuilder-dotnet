@@ -69,7 +69,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             await turnContext.SendActivityAsync("Proactive response to the thread.");
         }
 
-        protected override async Task OnTeamsMembersAddedAsync(IList<ChannelAccount> membersAdded, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        protected override async Task OnTeamsMembersAddedAsync(IList<TeamsChannelAccount> membersAdded, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             foreach (var member in membersAdded)
             {
@@ -82,7 +82,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             }
         }
 
-        protected override async Task OnTeamsMembersRemovedAsync(IList<ChannelAccount> membersRemoved, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        protected override async Task OnTeamsMembersRemovedAsync(IList<TeamsChannelAccount> membersRemoved, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             foreach (var member in membersRemoved)
             {

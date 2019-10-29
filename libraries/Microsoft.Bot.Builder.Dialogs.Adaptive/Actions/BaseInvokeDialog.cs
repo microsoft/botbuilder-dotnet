@@ -38,6 +38,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets the dialog to call.
         /// </summary>
+        /// <value>
+        /// The dialog to call.
+        /// </value>
         public Dialog Dialog { get; set; }
 
         public virtual IEnumerable<Dialog> GetDependencies()
@@ -75,7 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             foreach (var binding in bindingOptions)
             {
                 // evalute the value
-                var (result, error) = new ExpressionEngine().Parse(binding.Value.ToString()).TryEvaluate(dc.State);
+                var (result, error) = new ExpressionEngine().Parse(binding.Value.ToString()).TryEvaluate(dc.GetState());
 
                 if (error != null)
                 {

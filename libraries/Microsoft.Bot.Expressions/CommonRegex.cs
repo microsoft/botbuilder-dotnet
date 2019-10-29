@@ -1,11 +1,14 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
 namespace Microsoft.Bot.Expressions
 {
-    public class CommonRegex
+    public static class CommonRegex
     {
         private static readonly LRUCache<string, Regex> RegexCache = new LRUCache<string, Regex>(15);
 

@@ -1,14 +1,13 @@
-﻿#pragma warning disable SA1401 // Fields should be private
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 
 namespace Microsoft.Bot.Expressions.TriggerTrees.Tests
 {
     public class ExpressionInfo
     {
-        public Expression Expression;
-        public Dictionary<string, Comparison> Bindings = new Dictionary<string, Comparison>();
-        public List<Quantifier> Quantifiers = new List<Quantifier>();
-
         public ExpressionInfo(Expression expression)
         {
             Expression = expression;
@@ -29,6 +28,12 @@ namespace Microsoft.Bot.Expressions.TriggerTrees.Tests
                 Quantifiers = quantifiers;
             }
         }
+
+        public Expression Expression { get; set; }
+
+        public Dictionary<string, Comparison> Bindings { get; set; } = new Dictionary<string, Comparison>();
+
+        public List<Quantifier> Quantifiers { get; set; } = new List<Quantifier>();
 
         public override string ToString() => Expression.ToString();
     }

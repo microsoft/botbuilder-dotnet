@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,6 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// <summary>
         /// Gets or sets the expression parser to use.
         /// </summary>
+        /// <value>Expression parser.</value>
         [Newtonsoft.Json.JsonIgnore]
         public IExpressionParser Parser { get; set; } = new ExpressionEngine();
 
@@ -58,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 
         public async Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel = default)
         {
-            var (value, error) = condition.TryEvaluate(context.State);
+            var (value, error) = condition.TryEvaluate(context.GetState());
             var eval = error == null && (bool)value;
             ITriggerSelector selector;
             if (eval)

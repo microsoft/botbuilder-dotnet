@@ -13,18 +13,11 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form
 {
+    /// <summary>
+    /// Form dialog.
+    /// </summary>
     public partial class FormDialog : AdaptiveDialog
     {
-        /// <summary>
-        /// Last surfaced event from a form dialog.
-        /// </summary>
-        public const string LASTEVENT = "dialog.LastEvevt";
-
-        /// <summary>
-        /// Currently required properties.
-        /// </summary>
-        public const string REQUIRED = "dialog.requiredProperties";
-
         // TODO: This should be wired up to be declarative for the selector and for the schemas
         public FormDialog(DialogSchema schema)
         {
@@ -42,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         {
             DialogEvent evt;
             var queues = EventQueues.Read(sequenceContext);
-            var changed = queues.DequeueEvent(sequenceContext.State.GetValue<string>(LASTEVENT));
+            var changed = queues.DequeueEvent(sequenceContext.GetState().GetValue<string>(DialogPath.LastEvent));
             if (queues.ClearProperty.Any())
             {
                 evt = new DialogEvent() { Name = FormEvents.ClearProperty, Value = queues.ClearProperty[0], Bubble = false };
@@ -51,6 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             {
                 var val = queues.SetProperty[0];
                 evt = new DialogEvent() { Name = FormEvents.SetProperty, Value = val, Bubble = false };
+
                 // TODO: For now, I'm going to dereference to a one-level array value.  There is a bug in the current code in the distinction between
                 // @ which is supposed to unwrap down to non-array and @@ which returns the whole thing. @ in the curent code works by doing [0] which
                 // is not enough.
@@ -60,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                     entity = new object[] { entity };
                 }
 
-                sequenceContext.State.SetValue($"{TurnPath.RECOGNIZED}.entities.{val.Entity.Name}", entity);
+                sequenceContext.GetState().SetValue($"{TurnPath.RECOGNIZED}.entities.{val.Entity.Name}", entity);
             }
             else if (queues.UnknownEntity.Any())
             {
@@ -84,7 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 queues.Write(sequenceContext);
             }
 
-            sequenceContext.State.SetValue(LASTEVENT, evt.Name);
+            sequenceContext.GetState().SetValue(DialogPath.LastEvent, evt.Name);
             var handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             if (!handled)
             {
@@ -102,12 +96,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         protected override async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default)
         {
             bool handled;
+
             // Save schema into turn
-            sequenceContext.State.SetValue(TurnPath.SCHEMA, this.Schema.Schema);
-            if (!sequenceContext.State.ContainsKey(REQUIRED))
+            sequenceContext.GetState().SetValue(TurnPath.SCHEMA, this.Schema.Schema);
+            if (!sequenceContext.GetState().ContainsKey(DialogPath.RequiredProperties))
             {
                 // All properties required by default unless specified.
-                sequenceContext.State.SetValue(REQUIRED, this.Schema.Required());
+                sequenceContext.GetState().SetValue(DialogPath.RequiredProperties, this.Schema.Required());
             }
 
             if (preBubble)
@@ -145,7 +140,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             var queues = EventQueues.Read(context);
             var entities = NormalizeEntities(context);
             var utterance = context.Context.Activity?.AsMessageActivity()?.Text;
-            if (!context.State.TryGetValue<string[]>("$expectedProperties", out var properties))
+            if (!context.GetState().TryGetValue<string[]>("$expectedProperties", out var properties))
             {
                 properties = new string[0];
             }
@@ -159,23 +154,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             var newQueues = new EventQueues();
             AssignEntities(entities, properties, newQueues);
             queues.Merge(newQueues);
-            var turn = context.State.GetValue<uint>(AdaptiveDialog.EVENTCOUNTER);
+            var turn = context.GetState().GetValue<uint>(DialogPath.EventCounter);
             CombineOldEntityToPropertys(queues, turn);
             queues.Write(context);
         }
 
         private void UpdateLastEvent(SequenceContext context, EventQueues queues, Dictionary<string, List<EntityInfo>> entities)
         {
-            if (context.State.TryGetValue<string>(LASTEVENT, out var evt))
+            if (context.GetState().TryGetValue<string>(DialogPath.LastEvent, out var evt))
             {
                 switch (evt)
                 {
                     case FormEvents.ClarifyEntity:
                         {
-                            context.State.RemoveValue(LASTEVENT);
+                            context.GetState().RemoveValue(DialogPath.LastEvent);
                             var entityToProperty = queues.ClarifyEntity[0];
                             var ambiguousEntity = entityToProperty.Entity;
                             var choices = ambiguousEntity.Value as JArray;
+
                             // TODO: There could be no way to resolve the ambiguity, i.e. wheat has synonym wheat and
                             // honeywheat has synonym wheat.  For now rely on the model to not have that issue.
                             if (entities.TryGetValue(ambiguousEntity.Name, out var infos) && infos.Count() == 1)
@@ -199,7 +195,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
                     case FormEvents.ChooseProperty:
                         {
-                            context.State.RemoveValue(LASTEVENT);
+                            context.GetState().RemoveValue(DialogPath.LastEvent);
+
                             // NOTE: This assumes the existance of a property entity which contains the normalized
                             // names of the properties.
                             if (entities.TryGetValue("PROPERTYName", out var infos) && infos.Count() == 1)
@@ -214,9 +211,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                                     queues.ChooseProperty.Dequeue();
                                     choice.Expected = true;
                                     queues.SetProperty.Add(choice);
+
                                     // TODO: This seems a little draconian, but we don't want property names to trigger help
-                                    context.State.SetValue("turn.recognized.intent", "None");
-                                    context.State.SetValue("turn.recognized.score", 1.0);
+                                    context.GetState().SetValue("turn.recognized.intent", "None");
+                                    context.GetState().SetValue("turn.recognized.score", 1.0);
                                 }
                             }
 
@@ -286,11 +284,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         private Dictionary<string, List<EntityInfo>> NormalizeEntities(SequenceContext context)
         {
             var entityToInfo = new Dictionary<string, List<EntityInfo>>();
-            var text = context.State.GetValue<string>(TurnPath.RECOGNIZED + ".text");
-            if (context.State.TryGetValue<dynamic>(TurnPath.RECOGNIZED + ".entities", out var entities))
+            var text = context.GetState().GetValue<string>(TurnPath.RECOGNIZED + ".text");
+            if (context.GetState().TryGetValue<dynamic>(TurnPath.RECOGNIZED + ".entities", out var entities))
             {
                 // TODO: We should have RegexRecognizer return $instance or make this robust to it missing, i.e. assume no entities overlap
-                var turn = context.State.GetValue<uint>(AdaptiveDialog.EVENTCOUNTER);
+                var turn = context.GetState().GetValue<uint>(DialogPath.EventCounter);
                 var metaData = entities["$instance"];
                 foreach (var entry in entities)
                 {
@@ -321,6 +319,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                                 Role = (string)instance.role,
                                 Score = (double)(instance.score ?? 0.0d),
                             };
+
                             // Eventually this could be passed in
                             info.Priority = info.Role == null ? 1 : 0;
                             info.Coverage = (info.End - info.Start) / (double)text.Length;
@@ -395,6 +394,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                                 Entity = entity,
                                 Schema = schema,
                                 Property = schema.Path,
+
                                 // TODO: Eventually we should be able to pick up an add/remove composite here as an alternative
                                 Operation = Operations.Add,
                                 Expected = expected.Contains(schema.Name)
@@ -443,6 +443,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             {
                 var schema = propChoices.Key;
                 var choices = propChoices.ToList();
+
                 // Assume preference by order listed in mappings
                 // Alternatives would be to look at coverage or other metrices
                 foreach (var entity in schema.Mappings)

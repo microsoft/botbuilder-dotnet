@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Actions triggered when condition is true
+    /// Actions triggered when condition is true.
     /// </summary>
     [DebuggerDisplay("{GetIdentity()}")]
     public class OnCondition : IItemIdentity, IDialogDependencies
@@ -36,10 +36,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         }
 
         /// <summary>
-        /// Gets or sets the condition which needs to be met for the actions to be executed (OPTIONAL)
+        /// Gets or sets the condition which needs to be met for the actions to be executed (OPTIONAL).
         /// </summary>
         /// <value>
-        /// The condition which needs to be met for the actions to be executed 
+        /// The condition which needs to be met for the actions to be executed.
         /// </value>
         [JsonProperty("condition")]
         public string Condition { get; set; }
@@ -56,18 +56,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <summary>
         /// Gets or sets the rule priority where 0 is the highest.
         /// </summary>
+        /// <value>Priority of condition.</value>
         [JsonProperty("priority")]
         public int? Priority { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether rule should only run once per unique set of memory paths.
         /// </summary>
+        /// <value>Boolean if should run once per unique values.</value>
         [JsonProperty("runOnce")]
         public bool RunOnce { get; set; }
 
         /// <summary>
         /// Gets or sets the value of the Unique id for this condition.
         /// </summary>
+        /// <value>Id for condition.</value>
         [JsonIgnore]
         public uint Id { get; set; }
 
@@ -118,10 +121,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                                 (expression, os) =>
                                 {
                                     var state = os as DialogStateManager;
-                                    var basePath = AdaptiveDialog.CONDITION_TRACKER + "." + Id.ToString() + ".";
+                                    var basePath = DialogPath.ConditionTracker + "." + Id.ToString() + ".";
                                     var lastRun = state.GetValue<uint>(basePath + "lastRun");
                                     var paths = state.GetValue<string[]>(basePath + "paths");
-                                    var changed = MemoryScope.AnyChanged(state, lastRun, paths);
+                                    var changed = state.AnyChanged(lastRun, paths);
                                     return (changed, null);
                                 },
                                 ReturnType.Boolean,
@@ -165,8 +168,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         {
             if (RunOnce)
             {
-                var count = planningContext.State.GetValue<uint>(AdaptiveDialog.EVENTCOUNTER);
-                planningContext.State.SetValue(AdaptiveDialog.CONDITION_TRACKER + "." + Id.ToString() + ".lastRun", count);
+                var count = planningContext.GetState().GetValue<uint>(DialogPath.EventCounter);
+                planningContext.GetState().SetValue(DialogPath.ConditionTracker + "." + Id.ToString() + ".lastRun", count);
             }
 
             return await Task.FromResult(new List<ActionChangeList>()

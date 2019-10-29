@@ -1,5 +1,8 @@
-﻿#pragma warning disable SA1401 // Fields should be private
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #pragma warning disable SA1124 // Do not use regions
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,8 +15,6 @@ namespace Microsoft.Bot.Expressions.Tests
     [TestClass]
     public class ExpressionEngineTests
     {
-        public static HashSet<string> One = new HashSet<string> { "one" };
-        public static HashSet<string> OneTwo = new HashSet<string> { "one", "two" };
         private static readonly string NullStr = null;
 
         private readonly object scope = new Dictionary<string, object>
@@ -215,6 +216,10 @@ namespace Microsoft.Bot.Expressions.Tests
                 }
             }
         };
+
+        public static HashSet<string> One { get; set; } = new HashSet<string> { "one" };
+
+        public static HashSet<string> OneTwo { get; set; } = new HashSet<string> { "one", "two" };
 
         public static IEnumerable<object[]> Data => new[]
         {
@@ -594,7 +599,10 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("lastIndexOf(newGuid(), '-')", 23),
             Test("lastIndexOf(hello, '-')", -1),
             Test("length(newGuid())", 36),
-
+            Test("sortBy(items)", new List<object> { "one", "two", "zero" }),
+            Test("sortBy(nestedItems, 'x')[0].x", 1),
+            Test("sortByDescending(items)", new List<object> { "zero", "two", "one" }),
+            Test("sortByDescending(nestedItems, 'x')[0].x", 3),
             #endregion
 
             #region  Object manipulation and construction functions
@@ -645,6 +653,11 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("isMatch('12abc', '([0-9]+)([a-z]+)([0-9]+)')", false), // "(...)" (simple group)
             Test(@"isMatch('a', '\\w{1}')", true), // "\w" (match [a-zA-Z0-9_])
             Test(@"isMatch('1', '\\d{1}')", true), // "\d" (match [0-9])
+            #endregion
+
+            #region Empty expression
+            Test(string.Empty, string.Empty),
+            Test(string.Empty, string.Empty),
             #endregion
         };
 
@@ -718,13 +731,44 @@ namespace Microsoft.Bot.Expressions.Tests
                 Assert.AreEqual(expectedList.Count, actualList.Count);
                 for (var i = 0; i < expectedList.Count; i++)
                 {
-                    Assert.AreEqual(expectedList[i], actualList[i]);
+                    Assert.AreEqual(ResolveValue(expectedList[i]), ResolveValue(actualList[i]));
                 }
             }
             else
             {
                 Assert.AreEqual(expected, actual);
             }
+        }
+
+        private object ResolveValue(object obj)
+        {
+            object value;
+            if (!(obj is JValue jval))
+            {
+                value = obj;
+            }
+            else
+            {
+                value = jval.Value;
+                if (jval.Type == JTokenType.Integer)
+                {
+                    value = jval.ToObject<int>();
+                }
+                else if (jval.Type == JTokenType.String)
+                {
+                    value = jval.ToObject<string>();
+                }
+                else if (jval.Type == JTokenType.Boolean)
+                {
+                    value = jval.ToObject<bool>();
+                }
+                else if (jval.Type == JTokenType.Float)
+                {
+                    value = jval.ToObject<float>();
+                }
+            }
+
+            return value;
         }
     }
 }

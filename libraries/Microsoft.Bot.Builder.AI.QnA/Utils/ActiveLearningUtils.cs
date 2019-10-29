@@ -19,12 +19,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Previous Low Score Variation Multiplier.
         /// </summary>
-        private const double PreviousLowScoreVariationMultiplier = 1.4;
+        private const double PreviousLowScoreVariationMultiplier = 0.7;
 
         /// <summary>
         /// Max Low Score Variation Multiplier.
         /// </summary>
-        private const double MaxLowScoreVariationMultiplier = 2.0;
+        private const double MaxLowScoreVariationMultiplier = 1.0;
 
         /// <summary>
         /// Maximum Score For Low Score Variation.

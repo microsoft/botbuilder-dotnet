@@ -144,9 +144,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             public string Property { get; set; }
 
-            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default)
             {
-                if (outerDc.State.TryGetValue<string>(this.Property, out string result))
+                if (outerDc.GetState().TryGetValue<string>(this.Property, out string result))
                 {
                     await outerDc.Context.SendActivityAsync($"Hello {result.ToString()}, nice to meet you!");
                     return await outerDc.EndDialogAsync(result);
@@ -165,12 +165,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             public IEnumerable<Dialog> GetDependencies()
             {
-                return this._dialogs.GetDialogs();
+                return this.Dialogs.GetDialogs();
             }
 
-            public async override Task<DialogTurnResult> ResumeDialogAsync(DialogContext outerDc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext outerDc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
             {
-                outerDc.State.SetValue(this.Property, result);
+                outerDc.GetState().SetValue(this.Property, result);
                 await outerDc.Context.SendActivityAsync($"Hello {result.ToString()}, nice to meet you!");
                 return await outerDc.EndDialogAsync(result);
             }

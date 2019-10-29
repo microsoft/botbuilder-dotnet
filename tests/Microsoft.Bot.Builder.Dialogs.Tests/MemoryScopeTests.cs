@@ -1,12 +1,14 @@
-﻿#pragma warning disable SA1402 // File may only contain a single type
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+#pragma warning disable SA1402 // File may only contain a single type
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Castle.Core.Configuration;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
@@ -21,31 +23,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     {
         public TestContext TestContext { get; set; }
 
-        [TestMethod]
-        public void SimpleMemoryScopesTest()
+        public TestFlow CreateDialogContext(Func<DialogContext, CancellationToken, Task> handler)
         {
-            var dc = new DialogContext(new DialogSet(), new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            var dsm = new DialogStateManager(dc);
-
-            foreach (var memoryScope in DialogStateManager.MemoryScopes.Where(ms => !(ms is ThisMemoryScope || ms is DialogMemoryScope || ms is ClassMemoryScope)))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            adapter
+                .UseStorage(new MemoryStorage())
+                .UseState(new UserState(new MemoryStorage()), new ConversationState(new MemoryStorage()));
+            DialogManager dm = new DialogManager(new LamdaDialog(handler));
+            return new TestFlow(adapter, (context, ct) =>
             {
-                var memory = memoryScope.GetMemory(dc);
-                Assert.IsNotNull(memory, "should get memory without any set");
-                ObjectPath.SetPathValue(memory, "test", 15);
-                memory = memoryScope.GetMemory(dc);
-                Assert.AreEqual(15, ObjectPath.GetPathValue<int>(memory, "test"), "Should roundtrip memory");
-                ObjectPath.SetPathValue(memory, "test", 25);
-                memory = memoryScope.GetMemory(dc);
-                Assert.AreEqual(25, ObjectPath.GetPathValue<int>(memory, "test"), "Should roundtrip memory2");
-                memory = memoryScope.GetMemory(dc);
-                ObjectPath.SetPathValue(memory, "source", "destination");
-                ObjectPath.SetPathValue(memory, "{source}", 24);
-                Assert.AreEqual(24, ObjectPath.GetPathValue<int>(memory, "{source}"), "Roundtrip computed path");
-                ObjectPath.RemovePathValue(memory, "{source}");
-                Assert.AreEqual(false, ObjectPath.TryGetPathValue<int>(memory, "{source}", out var _), "Removed computed path");
-                ObjectPath.RemovePathValue(memory, "source");
-                Assert.AreEqual(false, ObjectPath.TryGetPathValue<int>(memory, "{source}", out var _), "No computed path");
-            }
+                return dm.OnTurnAsync(context, ct);
+            }).SendConversationUpdate();
+        }
+
+        [TestMethod]
+        public async Task SimpleMemoryScopesTest()
+        {
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                foreach (var memoryScope in DialogStateManager.MemoryScopes.Where(ms => !(ms is ThisMemoryScope || ms is DialogMemoryScope || ms is ClassMemoryScope)))
+                {
+                    var memory = memoryScope.GetMemory(dc);
+                    Assert.IsNotNull(memory, "should get memory without any set");
+                    ObjectPath.SetPathValue(memory, "test", 15);
+                    memory = memoryScope.GetMemory(dc);
+                    Assert.AreEqual(15, ObjectPath.GetPathValue<int>(memory, "test"), "Should roundtrip memory");
+                    ObjectPath.SetPathValue(memory, "test", 25);
+                    memory = memoryScope.GetMemory(dc);
+                    Assert.AreEqual(25, ObjectPath.GetPathValue<int>(memory, "test"), "Should roundtrip memory2");
+                    memory = memoryScope.GetMemory(dc);
+                    ObjectPath.SetPathValue(memory, "source", "destination");
+                    ObjectPath.SetPathValue(memory, "{source}", 24);
+                    Assert.AreEqual(24, ObjectPath.GetPathValue<int>(memory, "{source}"), "Roundtrip computed path");
+                    ObjectPath.RemovePathValue(memory, "{source}");
+                    Assert.AreEqual(false, ObjectPath.TryGetPathValue<int>(memory, "{source}", out var _), "Removed computed path");
+                    ObjectPath.RemovePathValue(memory, "source");
+                    Assert.AreEqual(false, ObjectPath.TryGetPathValue<int>(memory, "{source}", out var _), "No computed path");
+                }
+            }).StartTestAsync();
         }
 
         [TestMethod]
@@ -71,7 +86,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task SettingsMemoryScopeTest()
         {
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("test", "yoyo") }).Build();
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("test", "yoyo") })
+                .AddJsonFile(@"test.settings.json")
+                .Build();
             var storage = new MemoryStorage();
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .UseStorage(storage)
@@ -87,6 +105,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .Send("settings.test")
                 .AssertReply("yoyo")
+            .Send("settings.string")
+                .AssertReply("test")
+            .Send("settings.int")
+                .AssertReply("3")
+            .Send("settings.array[0]")
+                .AssertReply("zero")
+            .Send("settings.array[1]")
+                .AssertReply("one")
+            .Send("settings.array[2]")
+                .AssertReply("two")
+            .Send("settings.array[3]")
+                .AssertReply("three")
+            .Send("settings.fakeArray.0")
+                .AssertReply("zero")
+            .Send("settings.fakeArray.1")
+                .AssertReply("one")
+            .Send("settings.fakeArray.2")
+                .AssertReply("two")
+            .Send("settings.fakeArray.3")
+                .AssertReply("three")
+            .Send("settings.fakeArray.zzz")
+                .AssertReply("cat")
             .StartTestAsync();
         }
 
@@ -115,13 +155,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     {
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            foreach (var scope in DialogStateManager.MemoryScopes.Where(ms => !(ms is DialogMemoryScope) && ms.IsReadOnly == false).Select(ms => ms.Name))
+            foreach (var scope in DialogStateManager.MemoryScopes.Where(ms => !(ms is DialogMemoryScope) && ms.IncludeInSnapshot == true).Select(ms => ms.Name))
             {
                 var path = $"{scope}.test";
-                Assert.IsNull(dc.State.GetValue<string>(path), $"{path} should be null");
-                dc.State.SetValue(path, scope);
-                Assert.IsNotNull(dc.State.GetValue<string>(path), $"{path} should not be null");
-                Assert.AreEqual(scope, dc.State.GetValue<string>(path), $"{path} should be {scope}");
+                Assert.IsNull(dc.GetState().GetValue<string>(path), $"{path} should be null");
+                dc.GetState().SetValue(path, scope);
+                Assert.IsNotNull(dc.GetState().GetValue<string>(path), $"{path} should not be null");
+                Assert.AreEqual(scope, dc.GetState().GetValue<string>(path), $"{path} should be {scope}");
             }
 
             await dc.Context.SendActivityAsync("next");
@@ -133,7 +173,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     {
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await dc.Context.SendActivityAsync(dc.State.GetValue<string>(dc.Context.Activity.Text));
+            await dc.Context.SendActivityAsync(dc.GetState().GetValue<string>(dc.Context.Activity.Text));
             return await dc.EndDialogAsync();
         }
     }
@@ -147,8 +187,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             ValidateSetValue(dc, "#test", "turn.recognized.intents.test");
             ValidateSetValue(dc, "$test", "dialog.test");
             ValidateSetValue(dc, "@@test", "turn.recognized.entities.test", entities);
-            Assert.AreEqual("test1", dc.State.GetValue<string>("@test"));
-            Assert.AreEqual("test2", dc.State.GetValue<string[]>("@@test")[1]);
+            Assert.AreEqual("test1", dc.GetState().GetValue<string>("@test"));
+            Assert.AreEqual("test2", dc.GetState().GetValue<string[]>("@@test")[1]);
 
             ValidateRemoveValue(dc, "#test", "turn.recognized.intents.test");
             ValidateRemoveValue(dc, "$test", "dialog.test");
@@ -161,16 +201,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         private void ValidateSetValue(DialogContext dc, string alias, string path, object value = null)
         {
-            Assert.IsNull(dc.State.GetValue<object>(alias), $"{alias} should be null");
-            dc.State.SetValue(path, value ?? alias);
+            Assert.IsNull(dc.GetState().GetValue<object>(alias), $"{alias} should be null");
+            dc.GetState().SetValue(path, value ?? alias);
             ValidateValue(dc, alias, path);
         }
 
         private void ValidateValue(DialogContext dc, string alias, string path)
         {
-            var p = dc.State.GetValue<object>(path);
+            var p = dc.GetState().GetValue<object>(path);
             Assert.IsNotNull(p);
-            var a = dc.State.GetValue<object>(alias);
+            var a = dc.GetState().GetValue<object>(alias);
             Assert.IsNotNull(a);
 
             Assert.AreEqual(JsonConvert.SerializeObject(p), JsonConvert.SerializeObject(a), $"{alias} should be same as {path}");
@@ -179,9 +219,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private void ValidateRemoveValue(DialogContext dc, string alias, string path)
         {
             ValidateValue(dc, alias, path);
-            dc.State.RemoveValue(alias);
-            Assert.IsNull(dc.State.GetValue<object>(path), $"property should be removed by alias {alias}");
-            Assert.IsNull(dc.State.GetValue<object>(alias), $"property should be removed by alias {alias}");
+            dc.GetState().RemoveValue(alias);
+            Assert.IsNull(dc.GetState().GetValue<object>(path), $"property should be removed by alias {alias}");
+            Assert.IsNull(dc.GetState().GetValue<object>(alias), $"property should be removed by alias {alias}");
         }
     }
 }
