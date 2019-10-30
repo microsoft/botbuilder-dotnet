@@ -714,20 +714,31 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(lgResource.Templates[1].Parameters[1], "name");
             Assert.AreEqual(lgResource.Templates[1].Body, "- hi ");
 
-            lgResource = lgResource.UpdateTemplate("newtemplate", new List<string> { "newage", "newname" }, "- new hi\r\n#hi");
-            Assert.AreEqual(lgResource.Templates.Count, 2);
+            lgResource = lgResource.AddTemplate("newtemplate2", null, "- hi2 ");
+            Assert.AreEqual(lgResource.Templates.Count, 3);
+            Assert.AreEqual(lgResource.Templates[2].Name, "newtemplate2");
+            Assert.AreEqual(lgResource.Templates[2].Body, "- hi2 ");
+
+            lgResource = lgResource.UpdateTemplate("newtemplate", "newtemplateName", new List<string> { "newage", "newname" }, "- new hi\r\n#hi");
+            Assert.AreEqual(lgResource.Templates.Count, 3);
             Assert.AreEqual(lgResource.Imports.Count, 0);
-            Assert.AreEqual(lgResource.Templates[1].Name, "newtemplate");
+            Assert.AreEqual(lgResource.Templates[1].Name, "newtemplateName");
             Assert.AreEqual(lgResource.Templates[1].Parameters.Count, 2);
             Assert.AreEqual(lgResource.Templates[1].Parameters[0], "newage");
             Assert.AreEqual(lgResource.Templates[1].Parameters[1], "newname");
             Assert.AreEqual(lgResource.Templates[1].Body, "- new hi\r\n- #hi");
 
-            lgResource = lgResource.DeleteTemplate("newtemplate");
-            Assert.AreEqual(lgResource.Templates.Count, 1);
+            lgResource = lgResource.UpdateTemplate("newtemplate2", "newtemplateName2", new List<string> { "newage2", "newname2" }, "- new hi\r\n#hi2");
+            Assert.AreEqual(lgResource.Templates.Count, 3);
             Assert.AreEqual(lgResource.Imports.Count, 0);
-            Assert.AreEqual(lgResource.Templates[0].Name, "wPhrase");
-            Assert.AreEqual(lgResource.Templates[0].Body.Replace("\r\n", "\n"), "- Hi\n- Hello\n- Hiya\n- Hi");
+            Assert.AreEqual(lgResource.Templates[2].Name, "newtemplateName2");
+            Assert.AreEqual(lgResource.Templates[2].Body, "- new hi\r\n- #hi2");
+
+            lgResource = lgResource.DeleteTemplate("newtemplateName");
+            Assert.AreEqual(lgResource.Templates.Count, 2);
+
+            lgResource = lgResource.DeleteTemplate("newtemplateName2");
+            Assert.AreEqual(lgResource.Templates.Count, 1);
         }
 
         [TestMethod]
