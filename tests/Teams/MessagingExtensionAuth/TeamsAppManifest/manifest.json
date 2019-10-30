@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
   "manifestVersion": "1.5",
   "version": "1.0",
-  "id": "",
-  "packageName": "com.teams.sample.messaging.extension",
+  "id": "00000000-0000-0000-0000-000000000000",
+  "packageName": "com.teams.sample.messaging.extensionAuth",
   "developer": {
     "name": "Microsoft",
     "websiteUrl": "https://www.microsoft.com",
@@ -25,7 +25,7 @@
   "accentColor": "#FFFFFF",
   "bots": [
     {
-      "botId": "",
+      "botId": "00000000-0000-0000-0000-000000000000",
       "scopes": [
         "personal",
         "team",
@@ -37,7 +37,7 @@
   ],
   "composeExtensions": [
     {
-      "botId": "",
+      "botId": "00000000-0000-0000-0000-000000000000",
       "canUpdateConfiguration": false,
       "commands": [
         {
