@@ -1,5 +1,5 @@
 {
-  "$schema": "file:///C:/Projects/Repos/botbuilder-dotnet/prototypes/SkillManifest.schema.json",
+  "$schema": "file:///C:/Projects/Repos/botbuilder-dotnet/prototypes/SkillManifest.schema-1-0-0.json",
   "$id": "SkillBot",
   "name": "Demo skill bot with dialogs",
   "version": "1.0",

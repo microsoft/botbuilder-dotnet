@@ -168,7 +168,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Prototypes", "Prototypes", "{41ED27B0-1D25-41C1-A1E4-AA2814F4F224}"
 	ProjectSection(SolutionItems) = preProject
 		prototypes\SkillManifest.json = prototypes\SkillManifest.json
-		prototypes\SkillManifest.schema.json = prototypes\SkillManifest.schema.json
+		prototypes\SkillManifest.schema-1-0-0.json = prototypes\SkillManifest.schema-1-0-0.json
 		prototypes\SkillManifestVA.json = prototypes\SkillManifestVA.json
 	EndProjectSection
 	ProjectSection(FolderGlobals) = preProject

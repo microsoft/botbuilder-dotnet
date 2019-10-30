@@ -1,19 +1,24 @@
 {
-  "$id": "https://botframework.com/schemas/SkillManifest.schema.json",
+  "$id": "https://botframework.com/schemas/SkillManifest.schema-1-0-0.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "version": "1.0.0",
   "title": "Skill Manifest",
   "description": "A schema for Bot Framework skill manifests",
   "definitions": {
     "endpoint": {
       "type":"object",
       "description": "Skill service endpoint.",
-      "required": ["serviceUrl", "activities"],
+      "required": ["endpointUrl", "protocol", "activities"],
       "properties": {
-        "serviceUrl": {
+        "endpointUrl": {
           "type": "string",
           "format": "uri",
           "description": "The skill URL"
+        },
+        "protocol": {
+          "type": "string",
+          "description": "A list of protocols supported by the skill",
+          "minItems": 1,
+          "default": "BotframeworkV3"
         },
         "activities": {
           "type":"array",
@@ -57,14 +62,6 @@
         "resultValue":{
           "type":"object",
           "description": "An optional json object with parameters for the skill (defined as json schema)"
-        },
-        "triggerModels": {
-          "type": "array",
-          "items": {
-            "anyOf": [
-              {"$ref": "#/definitions/model"}
-            ]
-          }
         }
       }
     },
@@ -136,7 +133,7 @@
     "publisherName",
     "endpoints"
   ],
-  "additionalProperties": true,
+  "additionalProperties": false,
   "properties": {
     "$schema": {
       "type": "string",
