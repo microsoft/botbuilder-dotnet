@@ -12,7 +12,7 @@ for /f "delims=" %%a in ('git rev-parse --abbrev-ref HEAD') do @set current=%%a
 rem Ensure we have a new branch or 4.Future by default
 set branch=%1
 if "%branch%" neq "" goto update
-set branch=4.Future
+set branch=master
 
 rem Update .schema 
 :update
