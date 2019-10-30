@@ -140,19 +140,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             var queues = EventQueues.Read(context);
             var entities = NormalizeEntities(context);
             var utterance = context.Context.Activity?.AsMessageActivity()?.Text;
-            if (!context.GetState().TryGetValue<string[]>("$expectedProperties", out var properties))
+            if (!context.GetState().TryGetValue<string[]>("$expectedProperties", out var expected))
             {
-                properties = new string[0];
+                expected = new string[0];
             }
 
-            if (properties.Contains("utterance"))
+            if (expected.Contains("utterance"))
             {
                 entities["utterance"] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = "utterance", Score = 0.0, Type = "string", Value = utterance, Text = utterance } };
             }
 
             UpdateLastEvent(context, queues, entities);
             var newQueues = new EventQueues();
-            AssignEntities(entities, properties, newQueues);
+            AssignEntities(entities, expected, newQueues);
             queues.Merge(newQueues);
             var turn = context.GetState().GetValue<uint>(DialogPath.EventCounter);
             CombineOldEntityToPropertys(queues, turn);
@@ -381,24 +381,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         // Generate possible entity to property mappings
         private IEnumerable<EntityToProperty> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected)
         {
-            foreach (var schema in Schema.Property.Children)
+            var expectedOnly = Schema.Schema["$expectedOnly"]?.ToObject<List<string>>() ?? new List<string>();
+            foreach (var propSchema in Schema.Property.Children)
             {
-                foreach (var entityName in schema.Mappings)
+                var isExpected = expected.Contains(propSchema.Path);
+                if (isExpected || !expectedOnly.Contains(propSchema.Path))
                 {
-                    if (entities.TryGetValue(entityName, out var matches))
+                    foreach (var entityName in propSchema.Mappings)
                     {
-                        foreach (var entity in matches)
+                        if (entities.TryGetValue(entityName, out var matches))
                         {
-                            yield return new EntityToProperty
+                            foreach (var entity in matches)
                             {
-                                Entity = entity,
-                                Schema = schema,
-                                Property = schema.Path,
+                                yield return new EntityToProperty
+                                {
+                                    Entity = entity,
+                                    Schema = propSchema,
+                                    Property = propSchema.Path,
 
-                                // TODO: Eventually we should be able to pick up an add/remove composite here as an alternative
-                                Operation = Operations.Add,
-                                Expected = expected.Contains(schema.Name)
-                            };
+                                    // TODO: Eventually we should be able to pick up an add/remove composite here as an alternative
+                                    Operation = Operations.Add,
+                                    Expected = isExpected
+                                };
+                            }
                         }
                     }
                 }
@@ -467,7 +472,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             choices.RemoveAll(choice => choice.Entity.Overlaps(candidate.Entity));
                             yield return candidate;
                         }
-                    } 
+                    }
                     while (candidate != null);
                 }
             }
