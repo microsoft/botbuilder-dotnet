@@ -10,12 +10,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
         private const string Events = "this.events";
 
         /// <summary>
-        /// Gets unknown entities.
-        /// </summary>
-        /// <value>List of unknown entities.</value>
-        public List<EntityInfo> UnknownEntity { get; } = new List<EntityInfo>();
-
-        /// <summary>
         /// Gets mappings where a property is ready to be set to a specific entity.
         /// </summary>
         /// <value>List of entities to use when changeing properties.</value>
@@ -67,7 +61,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
         /// <param name="queues">Queues to merge.</param>
         public void Merge(EventQueues queues)
         {
-            UnknownEntity.AddRange(queues.UnknownEntity);
             SetProperty.AddRange(queues.SetProperty);
             ClarifyEntity.AddRange(queues.ClarifyEntity);
             ChooseProperty.AddRange(queues.ChooseProperty);
@@ -88,7 +81,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
                 case FormEvents.ClarifyEntity: ClarifyEntity.Dequeue(); break;
                 case FormEvents.ClearProperty: ClearProperty.Dequeue(); break;
                 case FormEvents.SetProperty: SetProperty.Dequeue(); break;
-                case FormEvents.UnknownEntity: UnknownEntity.Dequeue(); break;
                 case FormEvents.Ask:
                 default:
                     changed = false;

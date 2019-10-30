@@ -29,11 +29,11 @@
 
 # help(property)
 - IF: {property}
-- help1(property)
+- {help1(property)}
 - ELSEIF: {$expectedProperties}
 - {join(foreach($expectedProperties, expected, help1(expected)), '\n')}
 - ELSE:
-- {requiredProperties()}{optionalProperties()}You can find out about a specific property by doing 'help <property>'.
+- {requiredProperties()}\n{optionalProperties()}\nYou can find out about a specific property by doing 'help <property>'.
 
 # help1(property)
 - IF: {turn.schema.properties[property].enum}
@@ -52,7 +52,7 @@
 - 
 
 # optionalProperties
-- IF: {count(turn.schema.required) > count(turn.schema.properties)}
+- IF: {add(count(turn.schema.required),count(turn.schema.$expectedOnly)) < count(turn.schema.properties)}
 - Optional properties include: {join(foreach(where(turn.form.properties, property, !contains(turn.schema.required && !contains(turn.schema.$expectedOnly, property), property)), property, name(property)), ', ')}\n
 - ELSE:
 - 
@@ -89,3 +89,6 @@
 
 # chooseProperty
 - Which property do you want to change?
+
+# notUnderstood
+- Sorry, I do not understand @{join(foreach(turn.unrecognizedtext, chunk, concat("'", chunk, "'")), ' or ')}\n\n@{help(null)}

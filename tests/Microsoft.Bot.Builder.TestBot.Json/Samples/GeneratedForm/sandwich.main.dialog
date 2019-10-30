@@ -7,6 +7,7 @@
     "schema": "sandwich.schema",
     "triggers": [ 
         "sandwich-DirectionsAsk",
+"sandwich-DirectionsSetDirectionsEntity",
 "sandwich-BreadAsk",
 "sandwich-BreadSetBreadEntity",
 "sandwich-BreadEntityClarify",
@@ -17,6 +18,7 @@
 "sandwich-MeatSetMeatEntity",
 "sandwich-MeatEntityClarify",
 "sandwich-NameAsk",
+"sandwich-NameSetNameEntity",
 "sandwich-CancelConfirmation",
 "sandwich-CancelConfirmationSet",
 "sandwich-CompleteConfirmation",
@@ -24,6 +26,7 @@
 "sandwich-PropertyToChangeSet",
 "sandwich-BeginDialog",
 "sandwich-ChooseProperty",
-"sandwich-Help" 
+"sandwich-Help",
+"sandwich-NotUnderstood" 
         ]
 }

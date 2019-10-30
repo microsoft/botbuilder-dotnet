@@ -103,11 +103,13 @@
     ],
     "$templates": [
         "help.lu",
+        "cancel.lu",
         "locale.lu",
         "locale.lg",
         "BeginDialog.dialog",
         "ChooseProperty.dialog",
         "Help.dialog",
+        "NotUnderstood.dialog",
         "luconfig.json",
         "lu.dialog",
         "Main.dialog"

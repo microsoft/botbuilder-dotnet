@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
@@ -55,10 +56,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 }
 
                 sequenceContext.GetState().SetValue($"{TurnPath.RECOGNIZED}.entities.{val.Entity.Name}", entity);
-            }
-            else if (queues.UnknownEntity.Any())
-            {
-                evt = new DialogEvent() { Name = FormEvents.UnknownEntity, Value = queues.UnknownEntity[0], Bubble = false };
             }
             else if (queues.ChooseProperty.Any())
             {
@@ -152,11 +149,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
             UpdateLastEvent(context, queues, entities);
             var newQueues = new EventQueues();
-            AssignEntities(entities, expected, newQueues);
+            var recognized = AssignEntities(entities, expected, newQueues);
+            var unrecognized = SplitUtterance(utterance, recognized);
+
+            context.GetState().SetValue(TurnPath.UNRECOGNIZEDTEXT, unrecognized);
+            context.GetState().SetValue(TurnPath.RECOGNIZEDENTITIES, recognized);
+
+            // turn.unrecognizedText = [<text not consumed by entities>]
+            // turn.consumedEntities = [entityInfo] 
             queues.Merge(newQueues);
             var turn = context.GetState().GetValue<uint>(DialogPath.EventCounter);
             CombineOldEntityToPropertys(queues, turn);
             queues.Write(context);
+        }
+
+        private List<string> SplitUtterance(string utterance, List<EntityInfo> recognized)
+        {
+            var unrecognized = new List<string>();
+            var current = 0;
+            foreach (var entity in recognized)
+            {
+                if (entity.Start > current)
+                {
+                    unrecognized.Add(utterance.Substring(current, entity.Start - current).Trim());
+                }
+
+                current = entity.End;
+            }
+
+            if (current < utterance.Length)
+            {
+                unrecognized.Add(utterance.Substring(current));
+            }
+
+            return unrecognized;
         }
 
         private void UpdateLastEvent(SequenceContext context, EventQueues queues, Dictionary<string, List<EntityInfo>> entities)
@@ -478,7 +504,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             }
         }
 
-        private void AddToQueues(Dictionary<string, List<EntityInfo>> entities, string[] expected, EventQueues queues)
+        private List<EntityInfo> AddToQueues(Dictionary<string, List<EntityInfo>> entities, string[] expected, EventQueues queues)
         {
             var candidates = (from candidate in RemoveOverlappingPerProperty(Candidates(entities, expected))
                               orderby candidate.Expected descending
@@ -495,6 +521,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                     alternatives.RemoveAll(a => !a.Expected);
                 }
 
+                foreach (var alternative in alternatives)
+                {
+                    usedEntities.Add(alternative.Entity);
+                }
+
                 if (alternatives.Count() == 1)
                 {
                     AddMappingToQueue(candidate, queues);
@@ -505,14 +536,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 }
             }
 
-            // Collect unknown entities
-            foreach (var entity in entities.Values.SelectMany(e => e))
-            {
-                if (!usedEntities.Contains(entity))
-                {
-                    queues.UnknownEntity.Add(entity);
-                }
-            }
+            return (from entity in usedEntities orderby entity.Start ascending select entity).ToList();
         }
 
         private EventQueues PropertyQueues(string path, Dictionary<PropertySchema, EventQueues> slotToQueues)
@@ -632,10 +656,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         }
 
         // Assign entities to queues
-        private void AssignEntities(Dictionary<string, List<EntityInfo>> entities, string[] expected, EventQueues queues)
+        private List<EntityInfo> AssignEntities(Dictionary<string, List<EntityInfo>> entities, string[] expected, EventQueues queues)
         {
-            AddToQueues(entities, expected, queues);
+            var recognized = AddToQueues(entities, expected, queues);
             CombineNewEntityToPropertys(queues);
+            return recognized;
         }
 
         // For simple singleton property:

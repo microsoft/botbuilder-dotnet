@@ -1,4 +1,7 @@
 # AskName
 - {askString('Name')}
 
+# NameName
+- name
+
 [sandwich-common.en-us.lg](sandwich-common.en-us.lg)
