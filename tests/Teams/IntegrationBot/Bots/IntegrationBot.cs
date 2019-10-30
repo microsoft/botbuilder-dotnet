@@ -240,7 +240,8 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         protected override async Task<InvokeResponse> OnTeamsCardActionInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
-            await turnContext.SendActivityAsync(MessageFactory.Text($"OnTeamsCardActionInvokeAsync value: {turnContext.Activity.Value}"), cancellationToken);
+            var value = turnContext.Activity.Value.ToString().Replace("\r\n", string.Empty).Replace(" ", string.Empty).Trim();
+            await turnContext.SendActivityAsync(MessageFactory.Text($"handleTeamsCardActionInvoke value: {value}"), cancellationToken);
             return new InvokeResponse() { Status = 200 };
         }
 
@@ -367,7 +368,7 @@ namespace Microsoft.BotBuilderSamples.Bots
         protected override async Task OnTeamsMessagingExtensionConfigurationSettingAsync(ITurnContext<IInvokeActivity> turnContext, JObject settings, CancellationToken cancellationToken)
         {
             // This event is fired when the settings page is submitted
-            var reply = MessageFactory.Text($"OnTeamsMessagingExtensionConfigurationSettingAsync event fired with {settings}");
+            var reply = MessageFactory.Text($"handleTeamsMessagingExtensionConfigurationSetting event fired with {settings}");
             await turnContext.SendActivityAsync(reply, cancellationToken);
         }
 
@@ -858,7 +859,7 @@ namespace Microsoft.BotBuilderSamples.Bots
         private async Task SendMessageAndLogActivityIdAsync(ITurnContext turnContext, string text, CancellationToken cancellationToken)
         {
             // We need to record the Activity Id from the Activity just sent in order to understand what the reaction is a reaction too. 
-            var replyActivity = MessageFactory.Text(text);
+            var replyActivity = MessageFactory.Text($"You said '{text}'");
             var resourceResponse = await turnContext.SendActivityAsync(replyActivity, cancellationToken);
             _activityIds.Add(resourceResponse.Id);
             await _log.Append(resourceResponse.Id, replyActivity);
