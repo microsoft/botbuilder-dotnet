@@ -1,0 +1,41 @@
+﻿# ErrorStructuredType
+[MyStruct
+ text = name
+]
+
+# ErrorActivityType
+[Activity
+ type = xxx
+]
+
+# ErrorEventProperty
+[Activity
+ type = event
+ xxx = yyy
+]
+
+# ErrorMessage
+[Activity
+ attachment = @{HerocardWithCardAction()}
+ suggestedaction = hello
+ xxx = yyy
+ attachments = @{HerocardWithCardAction()} | @{ErrorStructuredType()}
+]
+
+# HerocardWithCardAction
+[herocard
+    Title = title
+    Text = text
+    Buttons = @{ErrorStructuredType()} | @{cardActionTemplate()}
+    autoloop = notsure
+    xxx = yyy
+]
+
+# cardActionTemplate
+[CardAction
+    Type = yyy
+    Title = title
+    Value = value
+    Text = text
+    xxx = yyy
+]

@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// </summary>
     public class ActivityFactory
     {
-        private static readonly Dictionary<string, string> GenericCardTypeMapping = new Dictionary<string, string>
+        public static readonly Dictionary<string, string> GenericCardTypeMapping = new Dictionary<string, string>
         {
             { nameof(HeroCard).ToLower(), HeroCard.ContentType },
             { nameof(ThumbnailCard).ToLower(), ThumbnailCard.ContentType },
