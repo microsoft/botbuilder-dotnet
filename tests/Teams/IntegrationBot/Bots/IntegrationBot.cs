@@ -42,7 +42,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                 if (!string.IsNullOrWhiteSpace(actualText))
                 {
                     actualText = actualText.Trim();
-                    await this.HandleBotCommand(turnContext, actualText, cancellationToken);
+                    await HandleBotCommand(turnContext, actualText, cancellationToken);
                 }
             }
             else
@@ -190,7 +190,13 @@ namespace Microsoft.BotBuilderSamples.Bots
             // This call does NOT send the outbound Activity is not being sent through the middleware stack.
             var conversationResourceResponse = await connectorClient.Conversations.CreateConversationAsync(conversationParameters, cancellationToken).ConfigureAwait(false);
 
-            return null;
+            var attachments = new MessagingExtensionAttachment(AdaptiveCard.ContentType, null, adaptiveCard);
+            var result = new MessagingExtensionResult(AttachmentLayoutTypes.List, "result", new[] { attachments }, null);
+
+            return new MessagingExtensionActionResponse()
+            {
+                ComposeExtension = result,
+            };
         }
 
         protected override async Task OnTeamsMessagingExtensionCardButtonClickedAsync(ITurnContext<IInvokeActivity> turnContext, JObject obj, CancellationToken cancellationToken)
@@ -631,6 +637,9 @@ namespace Microsoft.BotBuilderSamples.Bots
                 case "delete":
                     await HandleDeleteActivitiesAsync(turnContext, cancellationToken);
                     break;
+                case "update":
+                    await HandleUpdateActivitiesAsync(turnContext, cancellationToken);
+                    break;
                 case "1":
                     await SendAdaptiveCard1Async(turnContext, cancellationToken);
                     break;
@@ -684,12 +693,6 @@ namespace Microsoft.BotBuilderSamples.Bots
                     break;
                 default:
                     await SendMessageAndLogActivityIdAsync(turnContext, $"{turnContext.Activity.Text}", cancellationToken);
-                    foreach (var activityId in this._activityIds)
-                    {
-                        var newActivity = MessageFactory.Text(turnContext.Activity.Text);
-                        newActivity.Id = activityId;
-                        await turnContext.UpdateActivityAsync(newActivity, cancellationToken);
-                    }
                     break;
             }
         }
@@ -697,12 +700,8 @@ namespace Microsoft.BotBuilderSamples.Bots
         private async Task ShowDetailsAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             var teamId = turnContext.Activity.TeamsGetTeamInfo().Id;
-
             var teamDetails = await TeamsInfo.GetTeamDetailsAsync(turnContext, teamId, cancellationToken);
-
-            var replyActivity = MessageFactory.Text($"The team name is {teamDetails.Name}. The team ID is {teamDetails.Id}. The ADDGroupID is {teamDetails.AadGroupId}.");
-
-            await turnContext.SendActivityAsync(replyActivity, cancellationToken);
+            await SendMessageAndLogActivityIdAsync(turnContext, $"The team name is {teamDetails.Name}. The team ID is {teamDetails.Id}. The ADD GroupID is {teamDetails.AadGroupId}.", cancellationToken);
         }
 
         private async Task ShowMembersAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
@@ -736,7 +735,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             await SendInBatchesAsync(turnContext, messages, cancellationToken);
         }
 
-        private static async Task SendInBatchesAsync(ITurnContext<IMessageActivity> turnContext, IEnumerable<string> messages, CancellationToken cancellationToken)
+        private async Task SendInBatchesAsync(ITurnContext<IMessageActivity> turnContext, IEnumerable<string> messages, CancellationToken cancellationToken)
         {
             var batch = new List<string>();
             foreach (var msg in messages)
@@ -745,14 +744,14 @@ namespace Microsoft.BotBuilderSamples.Bots
 
                 if (batch.Count == 10)
                 {
-                    await turnContext.SendActivityAsync(MessageFactory.Text(string.Join("<br>", batch)), cancellationToken);
+                    await SendMessageAndLogActivityIdAsync(turnContext, string.Join("<br>", batch), cancellationToken);
                     batch.Clear();
                 }
             }
 
             if (batch.Count > 0)
             {
-                await turnContext.SendActivityAsync(MessageFactory.Text(string.Join("<br>", batch)), cancellationToken);
+                await SendMessageAndLogActivityIdAsync(turnContext, string.Join("<br>", batch), cancellationToken);
             }
         }
 
@@ -848,12 +847,22 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         private async Task HandleDeleteActivitiesAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            foreach (var activityId in this._activityIds)
+            foreach (var activityId in _activityIds)
             {
                 await turnContext.DeleteActivityAsync(activityId, cancellationToken);
             }
 
             this._activityIds.Clear();
+        }
+
+        private async Task HandleUpdateActivitiesAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            foreach (var activityId in _activityIds)
+            {
+                var newActivity = MessageFactory.Text(turnContext.Activity.Text);
+                newActivity.Id = activityId;
+                await turnContext.UpdateActivityAsync(newActivity, cancellationToken);
+            }
         }
 
         private async Task SendMessageAndLogActivityIdAsync(ITurnContext turnContext, string text, CancellationToken cancellationToken)
