@@ -168,7 +168,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Prototypes", "Prototypes", "{41ED27B0-1D25-41C1-A1E4-AA2814F4F224}"
 	ProjectSection(SolutionItems) = preProject
 		prototypes\SkillManifest.json = prototypes\SkillManifest.json
+		prototypes\SkillManifest.schema.json = prototypes\SkillManifest.schema.json
 		prototypes\SkillManifestVA.json = prototypes\SkillManifestVA.json
+	EndProjectSection
+	ProjectSection(FolderGlobals) = preProject
+		C_5_4Projects_4Repos_4botbuilder-dotnet_4prototypes_4SkillManifest_1json__JsonSchema = 
+		C_5_4Projects_4Repos_4botbuilder-dotnet_4prototypes_4SkillManifest_1schema_1json__JsonSchema = https://github.com/json-schema-org/json-schema-spec/blob/master/output/schema.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00. ChannelPrototype", "00. ChannelPrototype", "{00C07701-AA41-4157-B93C-212C6FF9A06F}"
