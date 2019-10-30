@@ -52,10 +52,6 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         private readonly AuthenticationConfiguration _authConfiguration;
         private readonly IChannelProvider _channelProvider;
         private readonly RetryPolicy _connectorClientRetryPolicy;
-
-        // There is a significant boost in throughput if we reuse a connectorClient
-        // _connectorClients is a cache using [serviceUrl + appId].
-        private readonly ConcurrentDictionary<string, ConnectorClient> _connectorClients = new ConcurrentDictionary<string, ConnectorClient>();
         private readonly ICredentialProvider _credentialProvider;
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
@@ -177,7 +173,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
         /// <value>
         /// The callback URL that will be used by the skills to communicate back to the bot.
         /// </value>
-        public string SkillHostEndpoint { get; set; }
+        public Uri SkillHostEndpoint { get; set; }
 
         /// <summary>
         /// Forwards an activity to a skill (bot).
@@ -199,6 +195,21 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
                 throw new ArgumentException($"Skill:{skillId} isn't a registered skill");
             }
 
+            return await ForwardActivityAsync(turnContext, skill, SkillHostEndpoint, activity, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Forwards an activity to a skill (bot).
+        /// </summary>
+        /// <remarks>NOTE: Forwarding an activity to a skill will flush UserState and ConversationState changes so that skill has accurate state.</remarks>
+        /// <param name="turnContext">turnContext.</param>
+        /// <param name="skill">A <see cref="BotFrameworkSkill"/> instance with the skill information.</param>
+        /// <param name="skillHostEndpoint">The callback Url for the skill host.</param>
+        /// <param name="activity">activity to forward.</param>
+        /// <param name="cancellationToken">cancellation Token.</param>
+        /// <returns>Async task with optional invokeResponse.</returns>
+        public async Task<InvokeResponse> ForwardActivityAsync(ITurnContext turnContext, BotFrameworkSkill skill, Uri skillHostEndpoint, Activity activity, CancellationToken cancellationToken)
+        {
             // Pull the current claims identity from TurnState (it is stored there on the way in).
             var identity = (ClaimsIdentity)turnContext.TurnState.Get<IIdentity>(BotIdentityKey);
             if (identity.AuthenticationType.Equals("anonymous", StringComparison.InvariantCultureIgnoreCase))
@@ -234,7 +245,7 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
                     activity.Conversation.Id,
                     activity.ServiceUrl
                 })));
-                activity.ServiceUrl = SkillHostEndpoint;
+                activity.ServiceUrl = skillHostEndpoint.ToString();
                 activity.Recipient.Properties["skillId"] = skill.Id;
                 using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
                 {
@@ -249,80 +260,6 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
             }
 
             return null;
-        }
-
-        /// <summary>
-        /// Creates the connector client asynchronous.
-        /// </summary>
-        /// <param name="serviceUrl">The service URL.</param>
-        /// <param name="claimsIdentity">The claims identity.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>ConnectorClient instance.</returns>
-        /// <exception cref="NotSupportedException">ClaimsIdentity cannot be null. Pass Anonymous ClaimsIdentity if authentication is turned off.</exception>
-        private async Task<IConnectorClient> CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
-        {
-            if (claimsIdentity == null)
-            {
-                throw new NotSupportedException("ClaimsIdentity cannot be null. Pass Anonymous ClaimsIdentity if authentication is turned off.");
-            }
-
-            // For requests from channel App Id is in Audience claim of JWT token. For emulator it is in AppId claim. For
-            // unauthenticated requests we have anonymous identity provided auth is disabled.
-            // For Activities coming from Emulator AppId claim contains the bot's AAD AppId.
-            var botAppIdClaim = claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim);
-            if (botAppIdClaim == null)
-            {
-                botAppIdClaim = claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AppIdClaim);
-            }
-
-            // For anonymous requests (requests with no header) appId is not set in claims.
-            AppCredentials appCredentials = null;
-            if (botAppIdClaim != null)
-            {
-                var botId = botAppIdClaim.Value;
-                string scope = null;
-                if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
-                {
-                    // The skill connector has the target skill in the OAuthScope.
-                    scope = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
-                }
-
-                appCredentials = await GetAppCredentialsAsync(botId, scope, cancellationToken).ConfigureAwait(false);
-            }
-
-            return CreateConnectorClient(serviceUrl, appCredentials);
-        }
-
-        /// <summary>
-        /// Creates the connector client.
-        /// </summary>
-        /// <param name="serviceUrl">The service URL.</param>
-        /// <param name="appCredentials">The application credentials for the bot.</param>
-        /// <returns>Connector client instance.</returns>
-        private IConnectorClient CreateConnectorClient(string serviceUrl, AppCredentials appCredentials = null)
-        {
-            var clientKey = $"{serviceUrl}{appCredentials?.MicrosoftAppId ?? string.Empty}";
-
-            return _connectorClients.GetOrAdd(clientKey, key =>
-            {
-                ConnectorClient connectorClient;
-                if (appCredentials != null)
-                {
-                    connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials, customHttpClient: _httpClient);
-                }
-                else
-                {
-                    var emptyCredentials = _channelProvider != null && _channelProvider.IsGovernment() ? MicrosoftGovernmentAppCredentials.Empty : MicrosoftAppCredentials.Empty;
-                    connectorClient = new ConnectorClient(new Uri(serviceUrl), emptyCredentials, customHttpClient: _httpClient);
-                }
-
-                if (_connectorClientRetryPolicy != null)
-                {
-                    connectorClient.SetRetryPolicy(_connectorClientRetryPolicy);
-                }
-
-                return connectorClient;
-            });
         }
 
         /// <summary>
@@ -372,7 +309,11 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
                 Skills.AddRange(skills);
             }
 
-            SkillHostEndpoint = configuration?.GetValue<string>(nameof(SkillHostEndpoint));
+            var skillHostEndpoint = configuration?.GetValue<string>(nameof(SkillHostEndpoint));
+            if (!string.IsNullOrWhiteSpace(skillHostEndpoint))
+            {
+                SkillHostEndpoint = new Uri(skillHostEndpoint);
+            }
         }
     }
 }

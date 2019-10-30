@@ -4,6 +4,7 @@
 using System;
 using System.Globalization;
 using System.Net;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 {
+    internal delegate Task<object> RouteAction(BotFrameworkSkillHostAdapter skillAdapter, IBot bot, ClaimsIdentity claimsIdentity, HttpRequest httpRequest, GroupCollection parameters, CancellationToken cancellationToken);
+
     public class BotFrameworkHttpSkillsServer
     {
         private static readonly ChannelRoute[] _routes =
@@ -24,76 +27,130 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             new ChannelRoute
             {
                 Method = ChannelApiMethods.GetActivityMembers,
-                Pattern = new Regex(@"/GET:/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>.*)/members", RegexOptions.Compiled | RegexOptions.IgnoreCase)
-            },
-            new ChannelRoute
-            {
-                Method = ChannelApiMethods.ReplyToActivity,
-                Pattern = new Regex(@"/POST:/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>[^\s/]*)?", RegexOptions.Compiled | RegexOptions.IgnoreCase)
-            },
-            new ChannelRoute
-            {
-                Method = ChannelApiMethods.UpdateActivity,
-                Pattern = new Regex(@"/PUT:/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>[^\s/]*)?", RegexOptions.Compiled | RegexOptions.IgnoreCase)
-            },
-            new ChannelRoute
-            {
-                Method = ChannelApiMethods.DeleteActivity,
-                Pattern = new Regex(@"/DELETE:/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>[^\s/]*)?", RegexOptions.Compiled | RegexOptions.IgnoreCase)
-            },
-            new ChannelRoute
-            {
-                Method = ChannelApiMethods.SendToConversation,
-                Pattern = new Regex(@"/POST:/v3/conversations/(?<conversationId>[^\s/]*)/activities", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                Pattern = new Regex(@"/GET:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>.*)/members", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+                Action = async (skillAdapter, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                {
+                    return await skillAdapter.GetActivityMembersAsync(bot, claimsIdentity, parameters["conversationId"].Value, parameters["activityId"].Value, cancellationToken).ConfigureAwait(false);
+                }
             },
             new ChannelRoute
             {
                 Method = ChannelApiMethods.SendConversationHistory,
-                Pattern = new Regex(@"/POST:/v3/conversations/(?<conversationId>[^\s/]*)/activities/history", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                Pattern = new Regex(@"/POST:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities/history", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+                Action = async (skillAdapter, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                {
+                    var history = HttpHelper.ReadRequest<Transcript>(httpRequest);
+                    return await skillAdapter.SendConversationHistoryAsync(bot, claimsIdentity, parameters["conversationId"].Value, history, cancellationToken).ConfigureAwait(false);
+                }
+            },
+            new ChannelRoute
+            {
+                Method = ChannelApiMethods.ReplyToActivity,
+                Pattern = new Regex(@"/POST:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>[^\s/]*)?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+                Action = async (skillAdapter, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                {
+                    var replyToActivity = HttpHelper.ReadRequest<Activity>(httpRequest);
+                    return await skillAdapter.ReplyToActivityAsync(bot, claimsIdentity, replyToActivity.Conversation.Id, parameters["activityId"].Value, replyToActivity, cancellationToken).ConfigureAwait(false);
+                }
+            },
+            new ChannelRoute
+            {
+                Method = ChannelApiMethods.UpdateActivity,
+                Pattern = new Regex(@"/PUT:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>[^\s/]*)?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+                Action = async (skillAdapter, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                {
+                    var updateActivity = HttpHelper.ReadRequest<Activity>(httpRequest);
+                    return await skillAdapter.UpdateActivityAsync(bot, claimsIdentity, parameters["conversationId"].Value, parameters["activityId"].Value, updateActivity, cancellationToken).ConfigureAwait(false);
+                }
+            },
+            new ChannelRoute
+            {
+                Method = ChannelApiMethods.DeleteActivity,
+                Pattern = new Regex(@"/DELETE:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>[^\s/]*)?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+                Action = async (skillAdapter, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                {
+                   await skillAdapter.DeleteActivityAsync(bot, claimsIdentity, parameters["conversationId"].Value, parameters["activityId"].Value, cancellationToken).ConfigureAwait(false);
+                   return null;
+                }
+            },
+            new ChannelRoute
+            {
+                Method = ChannelApiMethods.SendToConversation,
+                Pattern = new Regex(@"/POST:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+                Action = async (skillAdapter, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                {
+                    var sendToConversationActivity = HttpHelper.ReadRequest<Activity>(httpRequest);
+                    return await skillAdapter.SendToConversationAsync(bot, claimsIdentity, parameters["conversationId"].Value, sendToConversationActivity, cancellationToken).ConfigureAwait(false);
+                }
             },
             new ChannelRoute
             {
                 Method = ChannelApiMethods.DeleteConversationMember,
-                Pattern = new Regex(@"/DELETE:/v3/conversations/(?<conversationId>[^\s/]*)/members/(?<memberId>.*)", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                Pattern = new Regex(@"/DELETE:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/members/(?<memberId>.*)", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+                Action = async (skillAdapter, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                {
+                    await skillAdapter.DeleteConversationMemberAsync(bot, claimsIdentity, parameters["conversationId"].Value, parameters["memberId"].Value, cancellationToken).ConfigureAwait(false);
+                    return null;
+                }
             },
             new ChannelRoute
             {
                 Method = ChannelApiMethods.UploadAttachment,
-                Pattern = new Regex(@"/POST:/v3/conversations/(?<conversationId>[^\s/]*)/attachments", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                Pattern = new Regex(@"/POST:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/attachments", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+                Action = async (skillAdapter, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                {
+                    var uploadAttachment = HttpHelper.ReadRequest<AttachmentData>(httpRequest);
+                    return await skillAdapter.UploadAttachmentAsync(bot, claimsIdentity, parameters["conversationId"].Value, uploadAttachment, cancellationToken).ConfigureAwait(false);
+                }
             },
             new ChannelRoute
             {
                 Method = ChannelApiMethods.GetConversationMembers,
-                Pattern = new Regex(@"/GET:/v3/conversations/(?<conversationId>[^\s/]*)/members", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                Pattern = new Regex(@"/GET:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/members", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+                Action = async (skillAdapter, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                {
+                    return await skillAdapter.GetConversationMembersAsync(bot, claimsIdentity, parameters["conversationId"].Value, cancellationToken).ConfigureAwait(false);
+                }
             },
             new ChannelRoute
             {
                 Method = ChannelApiMethods.GetConversationPagedMembers,
-                Pattern = new Regex(@"/GET:/v3/conversations/(?<conversationId>[^\s/]*)/pagedmember", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                Pattern = new Regex(@"/GET:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/pagedmember", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+                Action = async (skillAdapter, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                {
+                    var pageSize = string.IsNullOrWhiteSpace(parameters["pageSize"].Value) ? -1 : int.Parse(parameters["pageSize"].Value, CultureInfo.InvariantCulture);
+                    return await skillAdapter.GetConversationPagedMembersAsync(bot, claimsIdentity, parameters["conversationId"].Value, pageSize, parameters["continuationToken"].Value, cancellationToken).ConfigureAwait(false);
+                }
             },
             new ChannelRoute
             {
                 Method = ChannelApiMethods.GetConversations,
-                Pattern = new Regex(@"/GET:/v3/conversations/", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                Pattern = new Regex(@"/GET:(?<path>.*)/v3/conversations/", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+                Action = async (skillAdapter, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                {
+                    return await skillAdapter.GetConversationsAsync(bot, claimsIdentity, parameters["conversationId"].Value, cancellationToken: cancellationToken).ConfigureAwait(false);
+                }
             },
             new ChannelRoute
             {
                 Method = ChannelApiMethods.CreateConversation,
-                Pattern = new Regex(@"/POST:/v3/conversations/", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                Pattern = new Regex(@"/POST:(?<path>.*)/v3/conversations/", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+                Action = async (skillAdapter, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                {
+                    var conversationParameters = HttpHelper.ReadRequest<ConversationParameters>(httpRequest);
+                    return await skillAdapter.CreateConversationAsync(bot, claimsIdentity, parameters["conversationId"].Value, conversationParameters, cancellationToken).ConfigureAwait(false);
+                }
             }
         };
 
         private readonly ConfigurationChannelProvider _channelProvider;
         private readonly ConfigurationCredentialProvider _credentialsProvider;
-
         private readonly BotFrameworkSkillHostAdapter _skillAdapter;
 
         public BotFrameworkHttpSkillsServer(BotFrameworkSkillHostAdapter skillAdapter, IConfiguration configuration)
         {
             // adapter to use for calling back to channel
             _skillAdapter = skillAdapter;
-
-            // _botAppId = configuration.GetValue<string>("MicrosoftAppId");
             _credentialsProvider = new ConfigurationCredentialProvider(configuration);
             _channelProvider = new ConfigurationChannelProvider(configuration);
         }
@@ -115,14 +172,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
                 throw new ArgumentNullException(nameof(bot));
             }
 
-            var route = GetRoute(httpRequest);
-
-            if (route == null)
-            {
-                httpResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                return;
-            }
-
             object result = null;
             var statusCode = (int)HttpStatusCode.OK;
             try
@@ -130,81 +179,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
                 // grab the auth header from the inbound http request
                 var authHeader = httpRequest.Headers["Authorization"];
                 var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialsProvider, _channelProvider, "unknown").ConfigureAwait(false);
-
-                switch (route.Method)
+                
+                var route = GetRoute(httpRequest);
+                if (route == null)
                 {
-                    // [Route("/v3/conversations")]
-                    case ChannelApiMethods.CreateConversation:
-                        var parameters = HttpHelper.ReadRequest<ConversationParameters>(httpRequest);
-                        result = await _skillAdapter.CreateConversationAsync(bot, claimsIdentity, route.Parameters["conversationId"].Value, parameters, cancellationToken).ConfigureAwait(false);
-                        break;
-
-                    // [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
-                    case ChannelApiMethods.DeleteActivity:
-                        // TODO: ask Tom why we use the value from the route and not from the activity here.
-                        await _skillAdapter.DeleteActivityAsync(bot, claimsIdentity, route.Parameters["conversationId"].Value, route.Parameters["activityId"].Value, cancellationToken).ConfigureAwait(false);
-                        break;
-
-                    // [Route("/v3/conversations/{conversationId}/members/{memberId}")]
-                    case ChannelApiMethods.DeleteConversationMember:
-                        await _skillAdapter.DeleteConversationMemberAsync(bot, claimsIdentity, route.Parameters["conversationId"].Value, route.Parameters["memberId"].Value, cancellationToken).ConfigureAwait(false);
-                        break;
-
-                    // [Route("/v3/conversations/{conversationId}/activities/{activityId}/members")]
-                    case ChannelApiMethods.GetActivityMembers:
-                        result = await _skillAdapter.GetActivityMembersAsync(bot, claimsIdentity, route.Parameters["conversationId"].Value, route.Parameters["activityId"].Value, cancellationToken).ConfigureAwait(false);
-                        break;
-
-                    // [Route("/v3/conversations/{conversationId}/members")]
-                    case ChannelApiMethods.GetConversationMembers:
-                        result = await _skillAdapter.GetConversationMembersAsync(bot, claimsIdentity, route.Parameters["conversationId"].Value, cancellationToken).ConfigureAwait(false);
-                        break;
-
-                    // [Route("/v3/conversations/{conversationId}/pagedmembers")]
-                    case ChannelApiMethods.GetConversationPagedMembers:
-                        var pageSize = string.IsNullOrWhiteSpace(route.Parameters["pageSize"].Value) ? -1 : int.Parse(route.Parameters["pageSize"].Value, CultureInfo.InvariantCulture);
-                        result = await _skillAdapter.GetConversationPagedMembersAsync(bot, claimsIdentity, route.Parameters["conversationId"].Value, pageSize, route.Parameters["continuationToken"].Value, cancellationToken).ConfigureAwait(false);
-                        break;
-
-                    // [Route("/v3/conversations")]
-                    case ChannelApiMethods.GetConversations:
-                        result = await _skillAdapter.GetConversationsAsync(bot, claimsIdentity, route.Parameters["conversationId"].Value, cancellationToken: cancellationToken).ConfigureAwait(false);
-                        break;
-
-                    // [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
-                    case ChannelApiMethods.ReplyToActivity:
-                        var replyToActivity = HttpHelper.ReadRequest<Activity>(httpRequest);
-                        result = await _skillAdapter.ReplyToActivityAsync(bot, claimsIdentity, replyToActivity.Conversation.Id, route.Parameters["activityId"].Value, replyToActivity, cancellationToken).ConfigureAwait(false);
-                        break;
-
-                    // [Route("/v3/conversations/{conversationId}/activities/history")]
-                    case ChannelApiMethods.SendConversationHistory:
-                        var history = HttpHelper.ReadRequest<Transcript>(httpRequest);
-                        result = await _skillAdapter.SendConversationHistoryAsync(bot, claimsIdentity, route.Parameters["conversationId"].Value, history, cancellationToken).ConfigureAwait(false);
-                        break;
-
-                    // [Route("/v3/conversations/{conversationId}/activities")]
-                    case ChannelApiMethods.SendToConversation:
-                        var sendToConversationActivity = HttpHelper.ReadRequest<Activity>(httpRequest);
-                        result = await _skillAdapter.SendToConversationAsync(bot, claimsIdentity, sendToConversationActivity.Conversation.Id, sendToConversationActivity, cancellationToken).ConfigureAwait(false);
-                        break;
-
-                    // [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
-                    case ChannelApiMethods.UpdateActivity:
-                        var updateActivity = HttpHelper.ReadRequest<Activity>(httpRequest);
-                        result = await _skillAdapter.UpdateActivityAsync(bot, claimsIdentity, route.Parameters["conversationId"].Value, route.Parameters["activityId"].Value, updateActivity, cancellationToken).ConfigureAwait(false);
-                        break;
-
-                    // [Route("/v3/conversations/{conversationId}/attachments")]
-                    case ChannelApiMethods.UploadAttachment:
-                        var uploadAttachment = HttpHelper.ReadRequest<AttachmentData>(httpRequest);
-                        result = await _skillAdapter.UploadAttachmentAsync(bot, claimsIdentity, route.Parameters["conversationId"].Value, uploadAttachment, cancellationToken).ConfigureAwait(false);
-                        break;
-
-                    default:
-                        httpResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                        return;
+                    httpResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                    return;
                 }
+
+                // Execute the route action
+                result = await route.Action.Invoke(_skillAdapter, bot, claimsIdentity, httpRequest, route.Parameters, cancellationToken).ConfigureAwait(false);
             }
             catch (UnauthorizedAccessException)
             {
@@ -215,7 +199,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             HttpHelper.WriteResponse(httpResponse, statusCode, result);
         }
 
-        private static RouteResult GetRoute(HttpRequest httpRequest)
+        internal static RouteResult GetRoute(HttpRequest httpRequest)
         {
             var path = $"/{httpRequest.Method}:{httpRequest.Path}";
             foreach (var route in _routes)
@@ -226,7 +210,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
                     var result = new RouteResult
                     {
                         Method = route.Method,
-                        Parameters = match.Groups
+                        Parameters = match.Groups,
+                        Action = route.Action
                     };
 
                     return result;
@@ -241,6 +226,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             public Regex Pattern { get; set; }
 
             public string Method { get; set; }
+
+            public RouteAction Action { get; set; }
         }
 
         internal class RouteResult
@@ -248,6 +235,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             public string Method { get; set; }
 
             public GroupCollection Parameters { get; set; }
+
+            public RouteAction Action { get; set; }
         }
     }
 }
