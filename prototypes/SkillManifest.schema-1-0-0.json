@@ -111,10 +111,10 @@
                         "$ref": "#/definitions/messageActivity"
                     },
                     {
-                        "$ref": "#/definitions/eventActivity"
+                        "$ref": "#/definitions/eventOrInvokeActivity"
                     },
                     {
-                        "$ref": "#/definitions/invokeActivity"
+                        "$ref": "#/definitions/otherActivity"
                     }
                 ]
             }
@@ -125,10 +125,13 @@
             "additionalProperties": {
                 "anyOf": [
                     {
-                        "$ref": "#/definitions/eventActivity"
+                        "$ref": "#/definitions/messageActivity"
                     },
                     {
-                        "$ref": "#/definitions/invokeActivity"
+                        "$ref": "#/definitions/eventOrInvokeActivity"
+                    },
+                    {
+                        "$ref": "#/definitions/otherActivity"
                     }
                 ]
             }
@@ -178,9 +181,9 @@
                 "msAppId"
             ]
         },
-        "eventActivity": {
+        "eventOrInvokeActivity": {
             "type": "object",
-            "description": "Define Activity.Type=Event, with the name, the value that should be passed in on the activity and the shape of the EndOfConversation.Value result",
+            "description": "Define Activity.Type=Event|Invoke, with the name, the value that should be passed in on the activity and the shape of the EndOfConversation.Value result",
             "required": [
                 "type",
                 "name"
@@ -190,7 +193,8 @@
                 "type": {
                     "type": "string",
                     "enum": [
-                        "Event"
+                        "event",
+                        "invoke"
                     ]
                 },
                 "name": {
@@ -217,45 +221,6 @@
                 }
             }
         },
-        "invokeActivity": {
-            "type": "object",
-            "description": "Define Activity.Type=Invoke, with the name, the value that should be passed in on the activity and the shape of the InvokeResponse.Value result",
-            "required": [
-                "type",
-                "name"
-            ],
-            "additionalProperties": false,
-            "properties": {
-                "type": {
-                    "type": "string",
-                    "enum": [
-                        "Invoke"
-                    ]
-                },
-                "name": {
-                    "type": "string",
-                    "description": "The name property for the event",
-                    "examples": [
-                        "GetWeather"
-                    ]
-                },
-                "description": {
-                    "type": "string",
-                    "title": "Description",
-                    "description": "Description which describes usage the activity"
-                },
-                "value": {
-                    "type": "object",
-                    "description": "The JsonSchema definition of the shape of the value property that this invoke activity expects",
-                    "$ref": "http://json-schema.org/draft-07/schema#"
-                },
-                "resultValue": {
-                    "type": "object",
-                    "description": "The JsonSchema definition of the shape of the resultValue that this invoke activity returns",
-                    "$ref": "http://json-schema.org/draft-07/schema#"
-                }
-            }
-        },
         "messageActivity": {
             "type": "object",
             "description": "The description of the activity",
@@ -267,7 +232,7 @@
                 "type": {
                     "type": "string",
                     "enum": [
-                        "Message"
+                        "message"
                     ]
                 },
                 "description": {
@@ -279,13 +244,38 @@
                     "type": "object",
                     "description": "The JsonSchema definition of the shape of the value property that this message would like to have",
                     "$ref": "http://json-schema.org/draft-07/schema#"
+                }
+            }
+        },
+        "otherActivity": {
+            "type": "object",
+            "description": "The description of the activity",
+            "required": [
+                "type"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "contactRelationUpdate",
+                        "conversationUpdate",
+                        "typing",
+                        "endOfConversation",
+                        "deleteUserData",
+                        "messageUpdate",
+                        "messageDelete",
+                        "installationUpdate",
+                        "messageReaction",
+                        "suggestion",
+                        "trace",
+                        "handoff"
+                    ]
                 },
-                "intents": {
-                    "type": "array",
-                    "description": "Intents to route to the skill as a message activity",
-                    "items": {
-                        "type": "string"
-                    }
+                "description": {
+                    "type": "string",
+                    "title": "Description",
+                    "description": "Description which describes the usage of the activity"
                 }
             }
         }

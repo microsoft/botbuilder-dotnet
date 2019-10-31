@@ -41,23 +41,23 @@
     },
     "activities": {
         "message": {
-            "type": "Message"
+            "type": "message"
         },
         "messageWithLocale": {
-            "type": "Message",
+            "type": "message",
             "value": {
                 "$ref": "#/definitions/localeValue"
             }
         },
         "messageWithUserProfile": {
-            "type": "Message",
+            "type": "message",
             "value": {
                 "$ref": "#/definitions/userProfile"
             }
         },
         "BookFlightEvent": {
             "description": "Defines how to send an 'BookFlight' Event Activity to the skill.",
-            "type": "Event",
+            "type": "event",
             "name": "BookFlight",
             "value": {
                 "$ref": "#/definitions/bookingInfo"
@@ -68,7 +68,7 @@
         },
         "GetWeather": {
             "description": "Defines how to send an 'GetWeather' Invoke Activity to the skill.",
-            "type": "Invoke",
+            "type": "invoke",
             "name": "GetWeather",
             "value": {
                 "$ref": "#/definitions/location"
@@ -80,7 +80,7 @@
     },
     "sendActivities": {
         "FlightUpdatedEvent": {
-            "type": "Event",
+            "type": "event",
             "name": "FlightUpdated",
             "value": {
                 "$ref": "#/definitions/flightUpdatePayload"
