@@ -39,6 +39,8 @@ fragment U: 'u' | 'U';
 fragment W: 'w' | 'W';
 
 fragment STRING_LITERAL : ('\'' (~['\r\n])* '\'') | ('"' (~["\r\n])* '"');
+fragment EXPRESSION_FRAGMENT : '@' '{' (STRING_LITERAL| ~[\r\n{}'"] )*? '}';
+fragment ESCAPE_CHARACTER_FRAGMENT : '\\' ~[\r\n]?;
 
 COMMENTS
   : ('>'|'$') ~('\r'|'\n')+ NEWLINE? -> skip
@@ -158,11 +160,11 @@ DEFAULT
   ;
 
 ESCAPE_CHARACTER
-  : '\\' ~[\r\n]?  { ignoreWS = false; expectKeywords = false;}
+  : ESCAPE_CHARACTER_FRAGMENT  { ignoreWS = false; expectKeywords = false;}
   ;
 
 EXPRESSION
-  : '@' '{' (STRING_LITERAL| ~[\r\n{}'"] )*? '}'  { ignoreWS = false; expectKeywords = false;}
+  : EXPRESSION_FRAGMENT  { ignoreWS = false; expectKeywords = false;}
   ;
 
 TEXT
@@ -198,11 +200,11 @@ MULTILINE_SUFFIX
   ;
 
 MULTILINE_ESCAPE_CHARACTER
-  : '\\' ~[\r\n]? -> type(ESCAPE_CHARACTER)
+  : ESCAPE_CHARACTER_FRAGMENT -> type(ESCAPE_CHARACTER)
   ;
 
 MULTILINE_EXPRESSION
-  : '@' '{' (STRING_LITERAL| ~[\r\n{}'"] )*? '}' -> type(EXPRESSION)
+  : EXPRESSION_FRAGMENT -> type(EXPRESSION)
   ;
 
 MULTILINE_TEXT
