@@ -1,112 +1,177 @@
 {
-  "$schema": "file:///C:/Projects/Repos/botbuilder-dotnet/prototypes/SkillManifest.schema-1-0-0.json",
-  "$id": "SkillBot",
-  "name": "Demo skill bot with dialogs",
-  "version": "1.0",
-  "description": "This is a demo ",
-  "publisherName": "Microsoft",
-  "privacyUrl": "https://myskill.com/privacy.html",
-  "copyright": "Copyright (c) Microsoft Corporation. All rights reserved.",
-  "license": "",
-  "iconUrl": "https://myskill.com/icon.png",
-  "tags": [
-    "sample",
-    "authentication",
-    "travel"
-  ],
-
-  "endpoints":[
-    {
-      "serviceUrl": "http://lala1",
-      "activities": [
-        {"$ref": "#BookFight"},
-        {"$ref": "#GetWeather"}
-      ]
-    },
-    {
-      "serviceUrl": "http://lala2",
-      "activities": [
-        {"$ref": "#BookFight"},
-        {"$ref": "#PassThroughMessage"}
-      ]
-    }
-  ],
-
-  "activities": [
-    {
-      "$id": "#BookFight",
-      "type": "Event",
-      "name": "BookFlight",
-      "direction": "Inbound",
-      "value": { "$ref": "#/definitions/bookingInfo" },
-      "resultValue": { "$ref": "#/definitions/bookingInfo" },
-      "triggerModels": [
-        {"$ref": "#FlightBooking"},
-        {"$ref": "#FlightBooking-ES"}
-      ]
-    },
-    {
-      "$id": "#GetWeather",
-      "type": "Event",
-      "name": "GetWeather",
-      "direction": "Inbound",
-      "triggerModels": [
-        {"$ref": "#FlightBooking"}
-      ]
-    },
-    {
-      "$id": "#PassThroughMessage",
-      "type": "Message",
-      "text": "The text I will receive",
-      "value": {
-        "type": "object",
-        "properties": {
-          "locale": {
-            "type": "string",
-            "description": "The current user's locale ISO code"
-          }
-        }
-      }
-    }
-  ],
-
-  "models": [
-    {
-      "$id": "#FlightBooking",
-      "url": "http://sample.com/flightbooking.lu",
-      "description": "English LU for flight booking model.",
-      "locale": "en-US"
-    },
-    {
-      "$id": "#FlightBooking-ES",
-      "url": "http://sample.com/flightbooking-es.lu",
-      "description": "Spanish LU for flight booking model.",
-      "locale": "es-ES"
-    },
-    {
-      "$id": "#MyAssistantDispatch",
-      "url": "http://sample.com/dispatch.lu"
-    }
-  ],
-
-  "definitions": {
-    "bookingInfo": {
-      "type": "object",
-      "required": [ "origin" ],
-      "properties": {
-        "origin": {
-          "type": "string",
-          "description": "this is the origin city for the flight"
+    "$schema": "file:///C:/source/GitHub/botbuilder-dotnet/prototypes/SkillManifest.schema-1-0-0.json",
+    "$id": "SkillBot",
+    "name": "Demo skill bot with dialogs",
+    "version": "1.0",
+    "description": "This is a demo ",
+    "publisherName": "Microsoft",
+    "privacyUrl": "https://myskill.com/privacy.html",
+    "copyright": "Copyright (c) Microsoft Corporation. All rights reserved.",
+    "license": "",
+    "iconUrl": "https://myskill.com/icon.png",
+    "tags": [
+        "sample",
+        "authentication",
+        "travel"
+    ],
+    "endpoints": {
+        "production": {
+            "protocol": "BotframeworkV3",
+            "description": "Production  endpoint for SkillBot.",
+            "endpointUrl": "http://contoso.com/api/messages",
+            "msAppId": "00000000-0000-0000-0000-00000000000"
         },
-        "destination": {
-          "type": "string",
-          "description": "this is the destination city for the flight"
-        },
-        "date": {
-          "type": "date",
-          "description": "The date for the flight in YYYY-MM-DD format"
+        "staging": {
+            "protocol": "BotframeworkV3",
+            "description": "Staging endpoint for SkillBot.",
+            "endpointUrl": "http://staging.contoso.com/api/messages",
+            "msAppId": "11111111-1111-1111-1111-11111111111"
         }
-      }
+    },
+    "language": {
+        "models": {
+            "en": "http://sample.com/SkillBot-en.lu",
+            "es": "http://sample.com/SkillBot-es.lu"
+        },
+        "intents": {
+            "help": "#/activities/message",
+            "getWeather": "#/activities/messageWithLocale",
+            "bookAFlight": "#/activities/messageWithUserProfile"
+        }
+    },
+    "activities": {
+        "message": {
+            "type": "message"
+        },
+        "messageWithLocale": {
+            "type": "message",
+            "value": {
+                "$ref": "#/definitions/localeValue"
+            }
+        },
+        "messageWithUserProfile": {
+            "type": "message",
+            "value": {
+                "$ref": "#/definitions/userProfile"
+            }
+        },
+        "BookFlightEvent": {
+            "description": "Defines how to send an 'BookFlight' Event Activity to the skill.",
+            "type": "event",
+            "name": "BookFlight",
+            "value": {
+                "$ref": "#/definitions/bookingInfo"
+            },
+            "resultValue": {
+                "$ref": "#/definitions/bookingInfo"
+            }
+        },
+        "GetWeather": {
+            "description": "Defines how to send an 'GetWeather' Invoke Activity to the skill.",
+            "type": "invoke",
+            "name": "GetWeather",
+            "value": {
+                "$ref": "#/definitions/location"
+            },
+            "resultValue": {
+                "$ref": "#/definitions/weatherReport"
+            }
+        }
+    },
+    "sendActivities": {
+        "FlightUpdatedEvent": {
+            "type": "event",
+            "name": "FlightUpdated",
+            "value": {
+                "$ref": "#/definitions/flightUpdatePayload"
+            }
+        }
+    },
+    "definitions": {
+        "localeValue": {
+            "type": "object",
+            "properties": {
+                "locale": {
+                    "type": "string",
+                    "description": "The current user's locale ISO code"
+                }
+            }
+        },
+        "bookingInfo": {
+            "type": "object",
+            "required": [
+                "origin"
+            ],
+            "properties": {
+                "origin": {
+                    "type": "string",
+                    "description": "this is the origin city for the flight"
+                },
+                "destination": {
+                    "type": "string",
+                    "description": "this is the destination city for the flight"
+                },
+                "date": {
+                    "type": "string",
+                    "description": "The date for the flight in YYYY-MM-DD format"
+                }
+            }
+        },
+        "flightUpdatePayload": {
+            "type": "object",
+            "description": "Event which is sent by the skill when there is an update in flight info",
+            "properties": {
+                "flightNumber": {
+                    "type": "string"
+                },
+                "departureDate": {
+                    "type": "string"
+                },
+                "departureTime": {
+                    "type": "string"
+                }
+            }
+        },
+        "weatherReport": {
+            "type": "array",
+            "description": "Array of forecasts for the next week.",
+            "items": [
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "userProfile": {
+            "type": "object",
+            "description": "User Profile properties",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The current user's name  (OPTIONAL)"
+                },
+                "zip": {
+                    "type": "string",
+                    "description": "The current user's zip code (OPTIONAL)"
+                }
+            }
+        },
+        "location": {
+            "type": "object",
+            "description": "Location metadata",
+            "properties": {
+                "latitude": {
+                    "type": "number",
+                    "title": "Latitude"
+                },
+                "longitude": {
+                    "type": "number",
+                    "title": "Longitute"
+                },
+                "postalCode": {
+                    "type": "string",
+                    "title": "Postal code"
+                }
+            }
+        }
     }
-  }
 }

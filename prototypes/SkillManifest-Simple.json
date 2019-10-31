@@ -1,0 +1,30 @@
+{
+    "$schema": "file:///C:/source/GitHub/botbuilder-dotnet/prototypes/SkillManifest.schema-1-0-0.json",
+    "$id": "SkillBot",
+    "name": "Demo skill bot with dialogs",
+    "version": "1.0",
+    "description": "This is a demo ",
+    "publisherName": "Microsoft",
+    "privacyUrl": "https://myskill.com/privacy.html",
+    "copyright": "Copyright (c) Microsoft Corporation. All rights reserved.",
+    "license": "",
+    "iconUrl": "https://myskill.com/icon.png",
+    "tags": [
+        "sample",
+        "authentication",
+        "travel"
+    ],
+    "endpoints": {
+        "production": {
+            "protocol": "BotframeworkV3",
+            "description": "Production  endpoint for SkillBot.",
+            "endpointUrl": "http://contoso.com/api/messages",
+            "msAppId": "00000000-0000-0000-0000-00000000000"
+        }
+    },
+    "language": {
+        "models": {
+            "en": "http://sample.com/SkillBot-en.lu"
+        }
+    }
+}
