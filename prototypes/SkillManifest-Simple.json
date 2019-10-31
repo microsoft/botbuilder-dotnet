@@ -1,6 +1,6 @@
 {
-    "$schema": "file:///C:/Projects/Repos/botbuilder-dotnet/prototypes/SkillManifest.schema-1-0-0.json",
-  "$id": "SkillBot",
+    "$schema": "file:///C:/source/GitHub/botbuilder-dotnet/prototypes/SkillManifest.schema-1-0-0.json",
+    "$id": "SkillBot",
     "name": "Demo skill bot with dialogs",
     "version": "1.0",
     "description": "This is a demo ",
@@ -25,10 +25,6 @@
     "language": {
         "models": {
             "en": "http://sample.com/SkillBot-en.lu"
-        },
-        "intents": {
-          
-        } 
-        
+        }
     }
 }

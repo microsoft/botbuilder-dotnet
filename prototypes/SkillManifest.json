@@ -1,5 +1,5 @@
 {
-    "$schema": "file:///C:/Projects/Repos/botbuilder-dotnet/prototypes/SkillManifest.schema-1-0-0.json",
+    "$schema": "file:///C:/source/GitHub/botbuilder-dotnet/prototypes/SkillManifest.schema-1-0-0.json",
     "$id": "SkillBot",
     "name": "Demo skill bot with dialogs",
     "version": "1.0",
@@ -35,7 +35,7 @@
         },
         "intents": {
             "help": "#/activities/message",
-          "getWeather": { "$ref": "#/activities/messageWithLocale" },
+            "getWeather": "#/activities/messageWithLocale",
             "bookAFlight": "#/activities/messageWithUserProfile"
         }
     },
