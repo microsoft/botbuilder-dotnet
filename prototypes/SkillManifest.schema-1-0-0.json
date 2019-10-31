@@ -1,219 +1,293 @@
 {
-  "$id": "https://botframework.com/schemas/SkillManifest.schema-1-0-0.json",
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Skill Manifest",
-  "description": "A schema for Bot Framework skill manifests",
-  "definitions": {
-    "endpoint": {
-      "type":"object",
-      "description": "Skill service endpoint.",
-      "required": ["endpointUrl", "protocol", "activities"],
-      "properties": {
-        "endpointUrl": {
-          "type": "string",
-          "format": "uri",
-          "description": "The skill URL"
+    "$id": "https://botframework.com/schemas/SkillManifest.schema-1-0-0.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Skill Manifest",
+    "description": "A schema for Bot Framework skill manifests",
+    "type": "object",
+    "required": [
+        "$id",
+        "name",
+        "version",
+        "publisherName",
+        "endpoints"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "format": "uri",
+            "description": "The schema to verify this skill manifest against"
         },
-        "protocol": {
-          "type": "string",
-          "description": "A list of protocols supported by the skill",
-          "minItems": 1,
-          "default": "BotframeworkV3"
-        },
-        "activities": {
-          "type":"array",
-          "minItems": 1,
-          "items": {
-            "anyOf": [
-              {"$ref": "#/definitions/messageActivity"},
-              {"$ref": "#/definitions/eventActivity"}
-            ]
-          }
-        }
-      }
-    },
-    "eventActivity":{
-      "type":"object",
-      "description": "The description of the activity",
-      "required": ["$id", "type", "name"],
-      "properties": {
         "$id": {
-          "type": "string",
-          "description": "The identifier for activity type"
-        },        
-        "type":{
-          "type":"string",
-          "description": "The type of the activity (Event, Message, Invoke)",
-          "enum": [ "Event"]
+            "type": "string",
+            "description": "The identifier for the skill manifest"
         },
         "name": {
-          "type": "string",
-          "description": "The name of the event"
+            "type": "string",
+            "description": "Name for your skill"
         },
-        "direction": {
-          "type": "string",
-          "description": "The name of the event",
-          "enum": ["Inbound", "Outbound"]
-        },
-        "value":{
-          "type":"object",
-          "description": "An optional json object with parameters for the skill (defined as json schema)"
-        },
-        "resultValue":{
-          "type":"object",
-          "description": "An optional json object with parameters for the skill (defined as json schema)"
-        }
-      }
-    },
-    "messageActivity":{
-      "type":"object",
-      "description": "The description of the activity",
-      "required": ["$id", "type"],
-      "properties": {
-        "$id": {
-          "type": "string",
-          "description": "The identifier for activity type"
-        },  
-        "type":{
-          "type":"string",
-          "description": "The type of the activity (Event, Message, Invoke)",
-          "enum": ["Message"]
-        },
-        "text": {
-          "type": "string",
-          "description": "The utterance to be sent to the skill"
-        },
-        "value":{
-          "type":"object",
-          "description": "The json schema for a parameter sent to the skill"
-        },
-        "resultValue":{
-          "type":"object",
-          "description": "The json schema for a parameter returned by the skill"
-        },
-        "triggerModels": {
-          "type": "array",
-          "items": {
-            "anyOf": [
-              {"$ref": "#/definitions/model"}
-            ]
-          }
-        }
-      }
-    },
-    "model":{
-      "type":"object",
-      "description": "The description of the activity",
-      "properties": {
-        "$id": {
-          "type": "string",
-          "description": "The identifier for activity type"
-        }, 
-        "url":{
-          "type":"string",
-          "format": "uri",
-          "description": "the URL to the model"
+        "version": {
+            "type": "string",
+            "description": "The version for the skill in Major.Minor format"
         },
         "description": {
-          "type": "string",
-          "description": "Decription of the model"
+            "type": "string",
+            "description": "A human readable description for the skill."
         },
-        "locale" : {
-          "type": "string",
-          "description": "The ISO locale for the language supported"
+        "publisherName": {
+            "type": "string",
+            "description": "The name of the skill publisher."
+        },
+        "privacyUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "The URL with the privacy description for the skill."
+        },
+        "copyright": {
+            "type": "string",
+            "description": "The copyright for the skill."
+        },
+        "license": {
+            "type": "string",
+            "description": "The licence agreement for the skill"
+        },
+        "iconUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Optional icon to be shown for the skill"
+        },
+        "tags": {
+            "type": "array",
+            "uniqueItems": true,
+            "description": "An array of strings with tags for the skill"
+        },
+        "endpoints": {
+            "type": "object",
+            "description": "Endpoints supported by the skill",
+            "additionalProperties": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/endpoint"
+                    }
+                ]
+            }
+        },
+        "language": {
+            "type": "object",
+            "description": "Languge resources for the skill",
+            "properties": {
+                "models": {
+                    "type": "object",
+                    "description": "Locale -> Language models for the skill",
+                    "additionalProperties": {
+                        "oneOf": [
+                            {
+                                "type": "string",
+                                "format": "uri"
+                            }
+                        ]
+                    }
+                },
+                "intents": {
+                    "type": "object",
+                    "description": "map of intent to message activity to send",
+                    "additionalProperties": {
+                        "oneOf": [
+                            {
+                                "type": "string",
+                                "format": "uri-reference"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "activities": {
+            "type": "object",
+            "description": "Activity definitions",
+            "additionalProperties": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/messageActivity"
+                    },
+                    {
+                        "$ref": "#/definitions/eventActivity"
+                    },
+                    {
+                        "$ref": "#/definitions/invokeActivity"
+                    }
+                ]
+            }
+        },
+        "sendActivities": {
+            "type": "object",
+            "description": "Activity definitions",
+            "additionalProperties": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/eventActivity"
+                    },
+                    {
+                        "$ref": "#/definitions/invokeActivity"
+                    }
+                ]
+            }
+        },
+        "definitions": {
+            "type": "object",
+            "description": "Definitions of the structure of object payloads",
+            "additionalProperties": {
+                "$ref": "http://json-schema.org/draft-07/schema#"
+            }
         }
-      }
+    },
+    "definitions": {
+        "endpoint": {
+            "type": "object",
+            "description": "Skill endpoint definition.",
+            "properties": {
+                "protocol": {
+                    "type": "string",
+                    "description": "Supported protocol",
+                    "default": "BotframeworkV3"
+                },
+                "description": {
+                    "type": "string",
+                    "title": "Description",
+                    "description": "Description of the endpoint.",
+                    "examples": [
+                        "Production bot"
+                    ]
+                },
+                "endpointUrl": {
+                    "type": "string",
+                    "title": "Endpoint Url",
+                    "descrition": "Endpoint of the skill",
+                    "examples": [
+                        "http://contoso.com/api/messaages"
+                    ]
+                },
+                "msAppId": {
+                    "type": "string",
+                    "title": "Microsoft App Id",
+                    "description": "The Microsoft AppId used for creating JWT tokens to authenticate this skill"
+                }
+            },
+            "required": [
+                "endpointUrl",
+                "msAppId"
+            ]
+        },
+        "eventActivity": {
+            "type": "object",
+            "description": "Define Activity.Type=Event, with the name, the value that should be passed in on the activity and the shape of the EndOfConversation.Value result",
+            "required": [
+                "type",
+                "name"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "Event"
+                    ]
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name property for the event",
+                    "examples": [
+                        "GetWeather"
+                    ]
+                },
+                "description": {
+                    "type": "string",
+                    "title": "Description",
+                    "description": "Description which describes the usage of the activity"
+                },
+                "value": {
+                    "type": "object",
+                    "description": "The JsonSchema definition of the shape of the value property that this event expects",
+                    "$ref": "http://json-schema.org/draft-07/schema#"
+                },
+                "resultValue": {
+                    "type": "object",
+                    "description": "The JsonSchema definition of the shape of the resultValue that this event may produce",
+                    "$ref": "http://json-schema.org/draft-07/schema#"
+                }
+            }
+        },
+        "invokeActivity": {
+            "type": "object",
+            "description": "Define Activity.Type=Invoke, with the name, the value that should be passed in on the activity and the shape of the InvokeResponse.Value result",
+            "required": [
+                "type",
+                "name"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "Invoke"
+                    ]
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name property for the event",
+                    "examples": [
+                        "GetWeather"
+                    ]
+                },
+                "description": {
+                    "type": "string",
+                    "title": "Description",
+                    "description": "Description which describes usage the activity"
+                },
+                "value": {
+                    "type": "object",
+                    "description": "The JsonSchema definition of the shape of the value property that this invoke activity expects",
+                    "$ref": "http://json-schema.org/draft-07/schema#"
+                },
+                "resultValue": {
+                    "type": "object",
+                    "description": "The JsonSchema definition of the shape of the resultValue that this invoke activity returns",
+                    "$ref": "http://json-schema.org/draft-07/schema#"
+                }
+            }
+        },
+        "messageActivity": {
+            "type": "object",
+            "description": "The description of the activity",
+            "required": [
+                "type"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "Message"
+                    ]
+                },
+                "description": {
+                    "type": "string",
+                    "title": "Description",
+                    "description": "Description which describes the usage of the activity"
+                },
+                "value": {
+                    "type": "object",
+                    "description": "The JsonSchema definition of the shape of the value property that this message would like to have",
+                    "$ref": "http://json-schema.org/draft-07/schema#"
+                },
+                "intents": {
+                    "type": "array",
+                    "description": "Intents to route to the skill as a message activity",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
     }
-  },
-  "type": "object",
-  "required": [
-    "$id",
-    "name",
-    "version",
-    "publisherName",
-    "endpoints"
-  ],
-  "additionalProperties": false,
-  "properties": {
-    "$schema": {
-      "type": "string",
-      "format": "uri",
-      "description": "The schema to verify this skill manifest against"
-    },
-    "$id": {
-      "type": "string",
-      "description": "The identifier for the skill manifest"
-    },
-    "name": {
-      "type": "string",
-      "description": "TODO"
-    },
-    "version": {
-      "type": "string",
-      "description": "The version for the skill in Major.Minor format"
-    },
-    "description": {
-      "type": "string",
-      "description": "A human readable description for the skill."
-    },
-    "publisherName": {
-      "type": "string",
-      "description": "The name of the skill publisher."
-    },
-    "privacyUrl": {
-      "type": "string",
-      "format": "uri",
-      "description": "The URL with the privacy description for the skill."
-    },
-    "copyright": {
-      "type": "string",
-      "description": "The copyright for the skill."
-    },    
-    "license": {
-      "type": "string",
-      "description": "The licence agreement for the skill"
-    },
-    "iconUrl": {
-      "type": "string",
-      "format": "uri",
-      "description": "Optional icon to be shown for the skill"
-    },
-    "tags": {
-      "type": "array",
-      "uniqueItems": true,
-      "description": "An array of strings with tags for the skill"
-    },
-
-    "endpoints":{
-      "type":"array",
-      "uniqueItems": true,
-      "description": "A list of endpoints supported by the skill",
-      "minItems": 1,
-      "items": {
-				"$ref": "#/definitions/endpoint"
-			}
-    },
-
-    "activities":{
-      "type":"array",
-      "uniqueItems": true,
-      "description": "A list of activities supported by the skill",
-      "minItems": 1,
-      "items": {
-        "anyOf": [
-          {"$ref": "#/definitions/messageActivity"},
-          {"$ref": "#/definitions/eventActivity"}
-        ]
-			}
-    },
-
-    "models":{
-      "type":"array",
-      "uniqueItems": true,
-      "description": "Lauguage models used by the skill",
-      "items": {
-				"$ref": "#/definitions/model"
-      }
-    }
-  }
 }
