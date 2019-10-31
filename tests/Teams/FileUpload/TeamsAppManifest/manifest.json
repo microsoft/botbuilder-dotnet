@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
   "manifestVersion": "1.5",
   "version": "1.0",
-  "id": "",
-  "packageName": "com.microsoft.teams.samples.v4bot",
+  "id": "00000000-0000-0000-0000-000000000000",
+  "packageName": "com.microsoft.teams.samples.fileUpload",
   "developer": {
     "name": "Microsoft Corp",
     "websiteUrl": "https://example.azurewebsites.net",
@@ -25,11 +25,9 @@
   "accentColor": "#abcdef",
   "bots": [
     {
-      "botId": "",
+      "botId": "00000000-0000-0000-0000-000000000000",
       "scopes": [
-        "personal",
-        "team",
-        "groupchat"
+        "personal"
       ],
       "supportsFiles": true
     }

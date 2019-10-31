@@ -71,13 +71,13 @@
                     "actions": [
                         {
                             "$type": "Microsoft.SendActivity",
-                            "activity": "Your have no items in your {dialog.listName} list."
+                            "activity": "Your have no items in your @{dialog.listName} list."
                         }
                     ],
                     "elseActions": [
                         {
                             "$type": "Microsoft.SendActivity",
-                            "activity": "[ShowItems(user, dialog.listName)]"
+                            "activity": "@{ShowItems(user, dialog.listName)}"
                         }
                     ]
                 }

@@ -11,7 +11,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
 
-namespace Cards.Bots
+namespace Microsoft.BotBuilderSamples
 {
     /*
      * You can install this bot in any scope. From the UI just @mention the bot.
@@ -20,7 +20,7 @@ namespace Cards.Bots
     {
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            var card = Cards.CreateSampleO365ConnectorCard();
+            var card = O365Cards.CreateSampleO365ConnectorCard();
             var cardAttachment = new Attachment
             {
                 Content = card,

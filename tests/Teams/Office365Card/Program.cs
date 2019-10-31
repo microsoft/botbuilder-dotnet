@@ -6,7 +6,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Cards
+namespace Microsoft.BotBuilderSamples
 {
     public class Program
     {

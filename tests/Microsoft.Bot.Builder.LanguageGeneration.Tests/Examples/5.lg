@@ -8,14 +8,14 @@
 > Using a template in another template
 > Sometimes the bot will say 'Hi' and other times it will say 'Hi :)'
 # welcome-user
-- [wPhrase]
-- [wPhrase] :)
+- @{wPhrase()}
+- @{wPhrase()} :)
  
 > Using entity references
 # welcome-user2
-- [wPhrase]
-- [wPhrase] @{userName}
-- [wPhrase] @{userName} :)
+- @{wPhrase()}
+- @{wPhrase()} @{userName}
+- @{wPhrase()} @{userName} :)
 
 > Conditional response template
 > Outer list is condition expression; L2 list is one-of collection

@@ -113,7 +113,7 @@
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "Successfully removed {dialog.item} from {dialog.listName} list."
+                    "activity": "Successfully removed @{dialog.item} from @{dialog.listName} list."
                 }
             ]
         }

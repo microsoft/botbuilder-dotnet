@@ -4,9 +4,9 @@
 using System.Collections.Generic;
 using Microsoft.Bot.Schema.Teams;
 
-namespace Cards
+namespace Microsoft.BotBuilderSamples
 {
-    public static class Cards
+    public static class O365Cards
     {
         public static O365ConnectorCard CreateSampleO365ConnectorCard()
         {
