@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder
         public static readonly string LocaleProperty = "locale";
         public static readonly string RecipientIdProperty = "recipientId";
         public static readonly string RecipientNameProperty = "recipientName";
-        public static readonly string ReplyActivityIDProperty = "replyActivityId";
+        public static readonly string ReplyActivityIdProperty = "replyActivityId";
         public static readonly string TextProperty = "text";
         public static readonly string SpeakProperty = "speak";
         public static readonly string UserIdProperty = "userId";

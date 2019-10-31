@@ -230,7 +230,7 @@ namespace Microsoft.Bot.Builder
         {
             var properties = new Dictionary<string, string>()
                 {
-                    { TelemetryConstants.ReplyActivityIDProperty, activity.ReplyToId },
+                    { TelemetryConstants.ReplyActivityIdProperty, activity.ReplyToId },
                     { TelemetryConstants.RecipientIdProperty, activity.Recipient.Id },
                     { TelemetryConstants.ConversationNameProperty, activity.Conversation.Name },
                     { TelemetryConstants.LocaleProperty, activity.Locale },
