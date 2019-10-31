@@ -32,24 +32,24 @@
         },
         "description": {
             "type": "string",
-            "description": "A human readable description for the skill."
+            "description": "A human readable description for the skill"
         },
         "publisherName": {
             "type": "string",
-            "description": "The name of the skill publisher."
+            "description": "The name of the skill publisher"
         },
         "privacyUrl": {
             "type": "string",
             "format": "uri",
-            "description": "The URL with the privacy description for the skill."
+            "description": "The URL with the privacy description for the skill"
         },
         "copyright": {
             "type": "string",
-            "description": "The copyright for the skill."
+            "description": "The copyright for the skill"
         },
         "license": {
             "type": "string",
-            "description": "The licence agreement for the skill"
+            "description": "The license agreement for the skill"
         },
         "iconUrl": {
             "type": "string",
@@ -76,6 +76,10 @@
             "type": "object",
             "description": "Languge resources for the skill",
             "properties": {
+                "description": {
+                  "type": "string",
+                  "description": "A human readable description for the language model"
+                },
                 "models": {
                     "type": "object",
                     "description": "Locale -> Language models for the skill",
@@ -147,7 +151,7 @@
     "definitions": {
         "endpoint": {
             "type": "object",
-            "description": "Skill endpoint definition.",
+            "description": "Skill endpoint definition",
             "properties": {
                 "protocol": {
                     "type": "string",
@@ -157,7 +161,7 @@
                 "description": {
                     "type": "string",
                     "title": "Description",
-                    "description": "Description of the endpoint.",
+                    "description": "Description of the endpoint",
                     "examples": [
                         "Production bot"
                     ]
@@ -165,6 +169,7 @@
                 "endpointUrl": {
                     "type": "string",
                     "title": "Endpoint Url",
+                    "format": "uri",
                     "descrition": "Endpoint of the skill",
                     "examples": [
                         "http://contoso.com/api/messaages"
