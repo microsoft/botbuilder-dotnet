@@ -11,9 +11,7 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using Cards.Bots;
-
-namespace Cards
+namespace Microsoft.BotBuilderSamples
 {
     public class Startup
     {

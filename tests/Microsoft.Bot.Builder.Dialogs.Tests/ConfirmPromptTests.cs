@@ -2,8 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -356,6 +358,98 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send("no")
             .AssertReply("Not confirmed.")
             .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task ShouldUsePromptClassStyleProperty()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+            var prompt = new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English)
+            {
+                Style = ListStyle.Inline
+            };
+            dialogs.Add(prompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+                {
+                    var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                    var results = await dc.ContinueDialogAsync(cancellationToken);
+                    if (results.Status == DialogTurnStatus.Empty)
+                    {
+                        await dc.PromptAsync(
+                            "ConfirmPrompt",
+                            new PromptOptions
+                            {
+                                Prompt = new Activity { Type = ActivityTypes.Message, Text = "is it true?" },
+                            },
+                            cancellationToken);
+                    }
+                })
+                .Send("hello")
+                .AssertReply("is it true? (1) Yes or (2) No")
+                .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task PromptOptionsStyleShouldOverridePromptClassStyleProperty()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+            var prompt = new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English)
+            {
+                Style = ListStyle.Inline
+            };
+            dialogs.Add(prompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+                {
+                    var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                    var results = await dc.ContinueDialogAsync(cancellationToken);
+                    if (results.Status == DialogTurnStatus.Empty)
+                    {
+                        await dc.PromptAsync(
+                            "ConfirmPrompt",
+                            new PromptOptions
+                            {
+                                Prompt = new Activity { Type = ActivityTypes.Message, Text = "is it true?" },
+                                Style = ListStyle.None
+                            },
+                            cancellationToken);
+                    }
+                })
+                .Send("hello")
+                .AssertReply("is it true?")
+                .StartTestAsync();
+        }
+
+        private Action<IActivity> SuggestedActionsValidator(string expectedText, SuggestedActions expectedSuggestedActions)
+        {
+            return activity =>
+            {
+                Assert.IsInstanceOfType(activity, typeof(IMessageActivity));
+                var msg = (IMessageActivity)activity;
+                Assert.AreEqual(expectedText, msg.Text);
+                Assert.AreEqual(expectedSuggestedActions.Actions.Count, msg.SuggestedActions.Actions.Count);
+                for (var i = 0; i < expectedSuggestedActions.Actions.Count; i++)
+                {
+                    Assert.AreEqual(expectedSuggestedActions.Actions[i].Type, msg.SuggestedActions.Actions[i].Type);
+                    Assert.AreEqual(expectedSuggestedActions.Actions[i].Value, msg.SuggestedActions.Actions[i].Value);
+                    Assert.AreEqual(expectedSuggestedActions.Actions[i].Title, msg.SuggestedActions.Actions[i].Title);
+                }
+            };
         }
     }
 }

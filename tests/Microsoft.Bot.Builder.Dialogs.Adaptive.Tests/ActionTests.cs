@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new List<Dialog>()
                     {
                         new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), Property = "user.name" },
-                        new SendActivity("Hello {user.name}, nice to meet you!"),
+                        new SendActivity("Hello @{user.name}, nice to meet you!"),
                     })
             });
 
@@ -152,11 +152,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     Prompt = new ActivityTemplate("Hello, what is your name?"),
                                     Property = "user.name"
                                 },
-                                new SendActivity("Hello {user.name}, nice to meet you!")
+                                new SendActivity("Hello @{user.name}, nice to meet you!")
                             },
                             ElseActions = new List<Dialog>()
                             {
-                                new SendActivity("Hello {user.name}, nice to see you again!")
+                                new SendActivity("Hello @{user.name}, nice to see you again!")
                             }
                         },
                     })
@@ -350,7 +350,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 }
                             }
                         },
-                        new SendActivity("Hello {user.name}, nice to meet you!")
+                        new SendActivity("Hello @{user.name}, nice to meet you!")
                     })
             });
 
@@ -382,7 +382,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             Prompt = new ActivityTemplate("What is your age?"),
                             Property = "turn.age"
                         },
-                        new SendActivity("You said {turn.age}")
+                        new SendActivity("You said @{turn.age}")
                     }
                 }
             });
@@ -424,7 +424,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             Property = "turn.age",
                             Value = "@number"
                         },
-                        new SendActivity("You said {turn.age}")
+                        new SendActivity("You said @{turn.age}")
                     }
                 }
             });
@@ -453,7 +453,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 UnrecognizedPrompt = new ActivityTemplate("I need a yes or no."),
                                 Property = "user.confirmed"
                             },
-                            new SendActivity("confirmation: {user.confirmed}"),
+                            new SendActivity("confirmation: @{user.confirmed}"),
                             new ConfirmInput()
                             {
                                 Prompt = new ActivityTemplate("yes or no"),
@@ -461,7 +461,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.confirmed",
                                 AlwaysPrompt = true
                             },
-                            new SendActivity("confirmation: {user.confirmed}"),
+                            new SendActivity("confirmation: @{user.confirmed}"),
                             new ConfirmInput()
                             {
                                 Prompt = new ActivityTemplate("yes or no"),
@@ -469,7 +469,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.confirmed",
                                 AlwaysPrompt = true
                             },
-                            new SendActivity("confirmation: {user.confirmed}"),
+                            new SendActivity("confirmation: @{user.confirmed}"),
                         }
                     }
                 }
@@ -508,7 +508,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Choices = new ChoiceSet(new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") }),
                                 Style = ListStyle.Inline
                             },
-                            new SendActivity("{user.color}"),
+                            new SendActivity("@{user.color}"),
                             new ChoiceInput()
                             {
                                 Property = "user.color",
@@ -518,7 +518,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
-                            new SendActivity("{user.color}"),
+                            new SendActivity("@{user.color}"),
                             new ChoiceInput()
                             {
                                 Property = "user.color",
@@ -528,7 +528,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
-                            new SendActivity("{user.color}"),
+                            new SendActivity("@{user.color}"),
                         }
                     }
                 }
@@ -567,7 +567,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Choices = new ChoiceSet(new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") }),
                                 Style = ListStyle.Inline
                             },
-                            new SendActivity("{user.color}"),
+                            new SendActivity("@{user.color}"),
                             new ChoiceInput()
                             {
                                 Property = "user.color",
@@ -577,7 +577,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
-                            new SendActivity("{user.color}"),
+                            new SendActivity("@{user.color}"),
                             new ChoiceInput()
                             {
                                 Property = "user.color",
@@ -587,7 +587,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
-                            new SendActivity("{user.color}"),
+                            new SendActivity("@{user.color}"),
                         }
                     }
                 }
@@ -631,7 +631,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Choices = new ChoiceSet("user.choices"),
                                 Style = ListStyle.Inline
                             },
-                            new SendActivity("{user.color}"),
+                            new SendActivity("@{user.color}"),
                             new ChoiceInput()
                             {
                                 Property = "user.color",
@@ -641,7 +641,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
-                            new SendActivity("{user.color}"),
+                            new SendActivity("@{user.color}"),
                             new ChoiceInput()
                             {
                                 Property = "user.color",
@@ -651,7 +651,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
-                            new SendActivity("{user.color}"),
+                            new SendActivity("@{user.color}"),
                         }
                     }
                 }
@@ -695,7 +695,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Choices = new ChoiceSet("user.choices"),
                                 Style = ListStyle.Inline
                             },
-                            new SendActivity("{user.color}"),
+                            new SendActivity("@{user.color}"),
                             new ChoiceInput()
                             {
                                 Property = "user.color",
@@ -705,7 +705,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
-                            new SendActivity("{user.color}"),
+                            new SendActivity("@{user.color}"),
                             new ChoiceInput()
                             {
                                 Property = "user.color",
@@ -715,7 +715,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
-                            new SendActivity("{user.color}"),
+                            new SendActivity("@{user.color}"),
                         }
                     }
                 }
@@ -758,7 +758,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 "this.value > 0 && this.value < 150"
                             }
                         },
-                        new SendActivity("I have your age as {user.userProfile.Age}."),
+                        new SendActivity("I have your age as @{user.userProfile.Age}."),
                     })
             });
 
@@ -792,7 +792,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             Prompt = new ActivityTemplate("Please enter a date."),
                             Property = "user.date",
                         },
-                        new SendActivity("You entered {user.date[0].Value}"),
+                        new SendActivity("You entered @{user.date[0].Value}"),
                     })
             });
 
@@ -832,7 +832,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 }
                             }
                         },
-                        new SendActivity("Hello {user.name}, nice to meet you!")
+                        new SendActivity("Hello @{user.name}, nice to meet you!")
                     })
             });
 
@@ -940,7 +940,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 }
                             }
                         },
-                        new SendActivity("Hello {user.name}, nice to meet you!")
+                        new SendActivity("Hello @{user.name}, nice to meet you!")
                     })
             });
 
@@ -997,7 +997,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     }
                                 }
                             },
-                            new SendActivity("Hello {user.name}, nice to meet you!")
+                            new SendActivity("Hello @{user.name}, nice to meet you!")
                         }
                     }
                 }
@@ -1080,7 +1080,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     }
                                 }
                             },
-                            new SendActivity("Hello {user.name}, nice to meet you!")
+                            new SendActivity("Hello @{user.name}, nice to meet you!")
                         }
                     }
                 }
@@ -1183,7 +1183,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         Actions = new List<Dialog>()
                         {
                             new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), Property = "user.name" },
-                            new SendActivity("Hello {user.name}, nice to meet you!"),
+                            new SendActivity("Hello @{user.name}, nice to meet you!"),
                             new EndTurn(),
                             new RepeatDialog()
                         }
@@ -1321,7 +1321,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 ItemsProperty = "dialog.todo",
                                 Actions = new List<Dialog>()
                                 {
-                                    new SendActivity("index is: {dialog.foreach.index} and value is: {dialog.foreach.value}")
+                                    new SendActivity("index is: @{dialog.foreach.index} and value is: @{dialog.foreach.value}")
                                 }
                             }
                         }
@@ -1411,7 +1411,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                         ItemsProperty = "dialog.foreach.page",
                                         Actions = new List<Dialog>()
                                         {
-                                            new SendActivity("index is: {dialog.foreach.index} and value is: {dialog.foreach.value}")
+                                            new SendActivity("index is: @{dialog.foreach.index} and value is: @{dialog.foreach.value}")
                                         }
                                     }
                                 }
@@ -1475,7 +1475,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             },
                             new SendActivity() 
                             {
-                                Activity = new ActivityTemplate("\\[set name]::I have {$userName} as your name")
+                                Activity = new ActivityTemplate("\\[set name]::I have @{$userName} as your name")
                             }
                         }
                     },
@@ -1492,7 +1492,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             },
                             new SendActivity() 
                             {
-                                Activity = new ActivityTemplate("\\[start]::I have {$userName} as your name")
+                                Activity = new ActivityTemplate("\\[start]::I have @{$userName} as your name")
                             },
                             new DateTimeInput() 
                             {
@@ -1503,7 +1503,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             },
                             new SendActivity() 
                             {
-                                Activity = new ActivityTemplate("\\[start]:: I have {$fromDate} as date 1")
+                                Activity = new ActivityTemplate("\\[start]:: I have @{$fromDate} as date 1")
                             },
                             new DateTimeInput() 
                             {
@@ -1513,7 +1513,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             },
                             new SendActivity() 
                             {
-                                Activity = new ActivityTemplate("\\[start]:: I have {$toDate} as date 2")
+                                Activity = new ActivityTemplate("\\[start]:: I have @{$toDate} as date 2")
                             }
                         }
                     },
@@ -1522,7 +1522,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         Intent = "cancel",
                         Actions = new List<Dialog>()
                         {
-                            new SendActivity("{WelcomeUser()}")
+                            new SendActivity("@{WelcomeUser()}")
                         }
                     }
                 }

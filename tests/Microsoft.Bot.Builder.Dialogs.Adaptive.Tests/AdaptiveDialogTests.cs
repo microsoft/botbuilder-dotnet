@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             Prompt = new ActivityTemplate("Hello, what is your name?"),
                             Property = "user.name"
                         },
-                        new SendActivity("Hello {user.name}, nice to meet you!")
+                        new SendActivity("Hello @{user.name}, nice to meet you!")
                     }));
 
             await CreateFlow(ruleDialog)
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         Type = "array"
                     },
                     new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                    new SendActivity { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                    new SendActivity { Activity = new ActivityTemplate("Your todos: @{join(user.todos, ',')}") },
                     new TextInput
                     {
                         AlwaysPrompt = true,
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         Property = "dialog.todo"
                     },
                     new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                    new SendActivity { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                    new SendActivity { Activity = new ActivityTemplate("Your todos: @{join(user.todos, ',')}") },
 
                     // Remove item
                     new TextInput
@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         Property = "dialog.todo"
                     },
                     new EditArray(EditArray.ArrayChangeType.Remove, "user.todos", "dialog.todo"),
-                    new SendActivity { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                    new SendActivity { Activity = new ActivityTemplate("Your todos: @{join(user.todos, ',')}") },
 
                     // Add item and pop item
                     new TextInput
@@ -140,17 +140,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         Property = "dialog.todo"
                     },
                     new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                    new SendActivity { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                    new SendActivity { Activity = new ActivityTemplate("Your todos: @{join(user.todos, ',')}") },
                     new EditArray(EditArray.ArrayChangeType.Pop, "user.todos"),
-                    new SendActivity { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                    new SendActivity { Activity = new ActivityTemplate("Your todos: @{join(user.todos, ',')}") },
 
                     // Take item
                     new EditArray(EditArray.ArrayChangeType.Take, "user.todos"),
-                    new SendActivity { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                    new SendActivity { Activity = new ActivityTemplate("Your todos: @{join(user.todos, ',')}") },
 
                     // Clear list
                     new EditArray(EditArray.ArrayChangeType.Clear, "user.todos"),
-                    new SendActivity { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") }
+                    new SendActivity { Activity = new ActivityTemplate("Your todos: @{join(user.todos, ',')}") }
                 }
             });
 
@@ -195,7 +195,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             }
                         }
                     },
-                    new SendActivity("Hello {user.name}, nice to meet you!")
+                    new SendActivity("Hello @{user.name}, nice to meet you!")
                 }));
 
             await CreateFlow(ruleDialog)
@@ -230,7 +230,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     }
                                 }
                             },
-                            new SendActivity("Hello {user.name}, nice to meet you!")
+                            new SendActivity("Hello @{user.name}, nice to meet you!")
                         }
                     }
                 }
@@ -274,7 +274,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Condition = "user.name == 'Carlos'",
                                 Actions = new List<Dialog> { new SendActivity("Hello carlin") }
                             },
-                            new SendActivity("Hello {user.name}, nice to meet you!")
+                            new SendActivity("Hello @{user.name}, nice to meet you!")
                         }
                     }
                 }
@@ -317,7 +317,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 MaxTurnCount = 2,
                                 DefaultValueResponse = new ActivityTemplate("I am going to say you are 10.")
                             },
-                            new SendActivity { Activity = new ActivityTemplate("Your age is {user.age}.") }
+                            new SendActivity { Activity = new ActivityTemplate("Your age is @{user.age}.") }
                         }
                     }
                 }
@@ -352,7 +352,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 DefaultValue = "10",
                                 DefaultValueResponse = new ActivityTemplate("I am going to say you are 10.")
                             },
-                            new SendActivity { Activity = new ActivityTemplate("Your age is {user.age}.") }
+                            new SendActivity { Activity = new ActivityTemplate("Your age is @{user.age}.") }
                         }
                     }
                 }
@@ -402,7 +402,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     }
                                 }
                             },
-                            new SendActivity("Hello {user.name}, nice to meet you!")
+                            new SendActivity("Hello @{user.name}, nice to meet you!")
                         }
                     },
                     new OnIntent
@@ -418,7 +418,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent
                     {
                         Intent = "HelloIntent",
-                        Actions = new List<Dialog> { new SendActivity("Hello {user.name}, nice to meet you!") }
+                        Actions = new List<Dialog> { new SendActivity("Hello @{user.name}, nice to meet you!") }
                     }
                 }
             };
@@ -469,13 +469,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 }
                             }
                         },
-                        new SendActivity("Hello {user.name}, nice to meet you!")
+                        new SendActivity("Hello @{user.name}, nice to meet you!")
                     }
                 },
                 new OnIntent
                 {
                     Intent = "GreetingIntent",
-                    Actions = new List<Dialog> { new SendActivity("Hello {user.name}, nice to meet you!") }
+                    Actions = new List<Dialog> { new SendActivity("Hello @{user.name}, nice to meet you!") }
                 },
                 new OnIntent(
                     "JokeIntent",
@@ -536,12 +536,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     }
                                 }
                             },
-                            new SendActivity("Hello {user.name}, nice to meet you!")
+                            new SendActivity("Hello @{user.name}, nice to meet you!")
                         }
                     },
                     new OnIntent(
                         "GreetingIntemt",
-                        actions: new List<Dialog> { new SendActivity("Hello {user.name}, nice to meet you!") }),
+                        actions: new List<Dialog> { new SendActivity("Hello @{user.name}, nice to meet you!") }),
                     new OnIntent(
                         "JokeIntent",
                         actions: new List<Dialog>
@@ -641,9 +641,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                             Prompt = new ActivityTemplate("Hello, what is your name?"),
                                             Property = "user.name"
                                         },
-                                        new SendActivity("Hello {user.name}, nice to meet you!")
+                                        new SendActivity("Hello @{user.name}, nice to meet you!")
                                     },
-                                    ElseActions = new List<Dialog> { new SendActivity("Hello {user.name}, nice to see you again!") }
+                                    ElseActions = new List<Dialog> { new SendActivity("Hello @{user.name}, nice to see you again!") }
                                 }
                             }
                         }
@@ -739,7 +739,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Prompt = new ActivityTemplate("name?"),
                                 Property = "user.name"
                             },
-                            new SendActivity("{user.name}"),
+                            new SendActivity("@{user.name}"),
                             new NumberInput
                             {
                                 Prompt = new ActivityTemplate("age?"),
@@ -753,7 +753,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.age",
                                 AllowInterruptions = "true"
                             },
-                            new SendActivity("{user.age}")
+                            new SendActivity("@{user.age}")
                         }
                     },
                     new OnIntent("SideIntent") { Actions = new List<Dialog> { new SendActivity("sideintent") } },
@@ -899,7 +899,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "$number",
                                 Prompt = new ActivityTemplate("Give me a number")
                             },
-                            new SendActivity { Activity = new ActivityTemplate("You said {$number}") }
+                            new SendActivity { Activity = new ActivityTemplate("You said @{$number}") }
                         }
                     }
                 }
@@ -979,8 +979,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         Actions = new List<Dialog>
                         {
-                            new SendActivity("Hello, you are {dialog.options.userAge} years old!"),
-                            new SendActivity("And your actual age is {$options.userAge}")
+                            new SendActivity("Hello, you are @{dialog.options.userAge} years old!"),
+                            new SendActivity("And your actual age is @{$options.userAge}")
                         }
                     }
                 }
@@ -1017,9 +1017,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new NumberInput
                             {
                                 Property = "$age",
-                                Prompt = new ActivityTemplate("Hello {$name}, how old are you?")
+                                Prompt = new ActivityTemplate("Hello @{$name}, how old are you?")
                             },
-                            new SendActivity { Activity = new ActivityTemplate("Hello {$name}, I have your age as {$age}") }
+                            new SendActivity { Activity = new ActivityTemplate("Hello @{$name}, I have your age as @{$age}") }
                         }
                     }
                 }
@@ -1100,7 +1100,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.name",
                                 AllowInterruptions = "true"
                             },
-                            new SendActivity("I have {user.name} as your name")
+                            new SendActivity("I have @{user.name} as your name")
                         }
                     },
                     new OnIntent
@@ -1190,7 +1190,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.name",
                                 AllowInterruptions = "true"
                             },
-                            new SendActivity("I have {user.name} as your name")
+                            new SendActivity("I have @{user.name} as your name")
                         }
                     },
                     new OnIntent
@@ -1248,14 +1248,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.name",
                                 AllowInterruptions = "true"
                             },
-                            new SendActivity("I have {user.name} as your name"),
+                            new SendActivity("I have @{user.name} as your name"),
                             new NumberInput
                             {
                                 Prompt = new ActivityTemplate("What is your age?"),
                                 Property = "user.age",
                                 AllowInterruptions = "true"
                             },
-                            new SendActivity("I have {user.age} as your age")
+                            new SendActivity("I have @{user.age} as your age")
                         }
                     },
                     new OnIntent
@@ -1279,7 +1279,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         Intent = "None",
                         Actions = new List<Dialog>
                         {
-                            new SendActivity("You said {turn.activity.text}"),
+                            new SendActivity("You said @{turn.activity.text}"),
                             new SetProperty
                             {
                                 Property = "turn.interrupted",
@@ -1334,9 +1334,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     "int(this.value) >= 1",
                                     "int(this.value) <= 150"
                                 },
-                                InvalidPrompt = new ActivityTemplate("Sorry. {this.value} does not work. I'm looking for a value between 1-150. What is your age?")
+                                InvalidPrompt = new ActivityTemplate("Sorry. @{this.value} does not work. I'm looking for a value between 1-150. What is your age?")
                             },
-                            new SendActivity("I have {user.age} as your age")
+                            new SendActivity("I have @{user.age} as your age")
                         }
                     },
                     new OnIntent
@@ -1397,9 +1397,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     "int(this.value) >= 1",
                                     "int(this.value) <= 150"
                                 },
-                                InvalidPrompt = new ActivityTemplate("Sorry. {this.value} does not work. I'm looking for a value between 1-150. What is your age?")
+                                InvalidPrompt = new ActivityTemplate("Sorry. @{this.value} does not work. I'm looking for a value between 1-150. What is your age?")
                             },
-                            new SendActivity("I have {user.age} as your age")
+                            new SendActivity("I have @{user.age} as your age")
                         }
                     },
                     new OnIntent
@@ -1453,7 +1453,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.age",
                                 AllowInterruptions = "false"
                             },
-                            new SendActivity("I have {user.age} as your age")
+                            new SendActivity("I have @{user.age} as your age")
                         }
                     },
                     new OnIntent
@@ -1508,7 +1508,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 AllowInterruptions = "false",
                                 UnrecognizedPrompt = new ActivityTemplate("Sorry. I did not recognize a number. What is your age?")
                             },
-                            new SendActivity("I have {user.age} as your age")
+                            new SendActivity("I have @{user.age} as your age")
                         }
                     },
                     new OnIntent
@@ -1566,9 +1566,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     "int(this.value) >= 1",
                                     "int(this.value) <= 150"
                                 },
-                                InvalidPrompt = new ActivityTemplate("Sorry. {this.value} does not work. I'm looking for a value between 1-150. What is your age?")
+                                InvalidPrompt = new ActivityTemplate("Sorry. @{this.value} does not work. I'm looking for a value between 1-150. What is your age?")
                             },
-                            new SendActivity("I have {user.age} as your age")
+                            new SendActivity("I have @{user.age} as your age")
                         }
                     },
                     new OnIntent
@@ -1624,7 +1624,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 MaxTurnCount = 2,
                                 DefaultValue = "30"
                             },
-                            new SendActivity("I have {user.age} as your age")
+                            new SendActivity("I have @{user.age} as your age")
                         }
                     },
                     new OnIntent
@@ -1676,7 +1676,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Options = options,
                                 ResultProperty = "$age"
                             },
-                            new SendActivity("Hello {$name}, you are {$age} years old!")
+                            new SendActivity("Hello @{$name}, you are @{$age} years old!")
                         }
                     }
                 }
@@ -1692,7 +1692,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {
                             new NumberInput
                             {
-                                Prompt = new ActivityTemplate("Hello {$options.userName}, how old are you?"),
+                                Prompt = new ActivityTemplate("Hello @{$options.userName}, how old are you?"),
                                 Property = "$age"
                             },
                             new EndDialog { Value = "$age" }
@@ -1743,7 +1743,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     new TextInput
                                     {
                                         AlwaysPrompt = true,
-                                        Prompt = new ActivityTemplate("Give me something that is '{$foreach.value}' in color"),
+                                        Prompt = new ActivityTemplate("Give me something that is '@{$foreach.value}' in color"),
                                         Property = "$answer"
                                     },
                                     new EditArray
@@ -1752,10 +1752,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                         ChangeType = EditArray.ArrayChangeType.Push,
                                         Value = "$answer"
                                     },
-                                    new SendActivity("You said '{$answer}' is '{$foreach.value}'.")
+                                    new SendActivity("You said '@{$answer}' is '@{$foreach.value}'.")
                                 }
                             },
-                            new SendActivity("Here is all I have: {join($userAnswers, ', ')}.")
+                            new SendActivity("Here is all I have: @{join($userAnswers, ', ')}.")
                         }
                     }
                 }
@@ -1797,7 +1797,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Options = new { name = "$userName" },
                                 ResultProperty = "$userAge"
                             },
-                            new SendActivity("Hello {$userName}, you are {$userAge} years old!")
+                            new SendActivity("Hello @{$userName}, you are @{$userAge} years old!")
                         }
                     }
                 }
@@ -1814,7 +1814,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {
                             new NumberInput
                             {
-                                Prompt = new ActivityTemplate("Hello {$options.name}, how old are you?"),
+                                Prompt = new ActivityTemplate("Hello @{$options.name}, how old are you?"),
                                 Property = "$age"
                             }
                         }
@@ -1841,7 +1841,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer { Intents = new List<IntentPattern> { new IntentPattern("SubmitIntent", "123123123") } },
-                Triggers = new List<OnCondition> { new OnIntent(intent: "SubmitIntent") { Actions = new List<Dialog> { new SendActivity("The city is {@city}!") } } }
+                Triggers = new List<OnCondition> { new OnIntent(intent: "SubmitIntent") { Actions = new List<Dialog> { new SendActivity("The city is @{@city}!") } } }
             };
 
             var submitActivity = Activity.CreateMessageActivity();
@@ -1919,7 +1919,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 new Foreach
                                 {
                                     ItemsProperty = "$options.Items",
-                                    Actions = new List<Dialog> { new SendActivity { Activity = new ActivityTemplate("{$foreach.value}") } }
+                                    Actions = new List<Dialog> { new SendActivity { Activity = new ActivityTemplate("@{$foreach.value}") } }
                                 }
                             }
                         }

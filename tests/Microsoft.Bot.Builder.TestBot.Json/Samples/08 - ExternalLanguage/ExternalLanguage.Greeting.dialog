@@ -14,15 +14,15 @@
                             "$type": "Microsoft.TextInput",
                             "pattern": "\\w{3,50}",
                             "property": "user.name",
-                            "prompt": "[Greeting.Name.initialPrompt]",
-                            "retryPrompt": "[Greeting.Name.retryPrompt]",
-                            "invalidPrompt": "[Greeting.Name.notMatched]"
+                            "prompt": "@{Greeting.Name.initialPrompt()}",
+                            "retryPrompt": "@{Greeting.Name.retryPrompt()}",
+                            "invalidPrompt": "@{Greeting.Name.notMatched()}"
                         }
                     ]
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "[Greeting.GreetUser]"
+                    "activity": "@{Greeting.GreetUser()}"
                 }
             ]
         }

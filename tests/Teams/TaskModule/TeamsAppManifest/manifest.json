@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
   "manifestVersion": "1.5",
   "version": "1.0.0",
-  "id": "",
-  "packageName": "com.teams.microsoft.bot.test",
+  "id": "00000000-0000-0000-0000-000000000000",
+  "packageName": "com.microsoft.teams.samples.taskModule",
   "developer": {
     "name": "Bot Framework Team",
     "websiteUrl": "https://dev.botframework.com",
@@ -25,7 +25,7 @@
   "accentColor": "#FFFFFF",
   "bots": [
     {
-      "botId": "13808447-43f1-4998-bcf1-8f816509a36c",
+      "botId": "00000000-0000-0000-0000-000000000000",
       "scopes": [
         "personal",
         "team",

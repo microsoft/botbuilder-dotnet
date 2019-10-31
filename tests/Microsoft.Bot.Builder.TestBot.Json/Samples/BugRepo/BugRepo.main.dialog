@@ -46,7 +46,7 @@
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "Hello {dialog.name}, nice to meet you!"
+                    "activity": "Hello @{dialog.name}, nice to meet you!"
                 },
                 {
                     "$type": "Microsoft.BeginDialog",
@@ -54,7 +54,7 @@
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "Hello {dialog.name}, nice to meet you!"
+                    "activity": "Hello @{dialog.name}, nice to meet you!"
                 }
             ]
         }

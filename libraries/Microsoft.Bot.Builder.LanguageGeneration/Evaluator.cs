@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -15,8 +16,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class Evaluator : LGFileParserBaseVisitor<object>
     {
-        private readonly Regex expressionRecognizeRegex = new Regex(@"@?(?<!\\)\{.+?(?<!\\)\}", RegexOptions.Compiled);
-        private readonly Regex escapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
+        public static readonly Regex ExpressionRecognizeRegex = new Regex(@"@{(((\'([^'\r\n])*?\')|(\""([^""\r\n])*?\""))|[^\r\n{}'""])*?}", RegexOptions.Compiled);
+        public static readonly Regex EscapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
         public Evaluator(List<LGTemplate> templates, ExpressionEngine expressionEngine)
@@ -33,6 +34,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public ExpressionEngine ExpressionEngine { get; }
 
         public Dictionary<string, LGTemplate> TemplateMap { get; }
+
+        public static bool IsPureExpression(string exp)
+        {
+            if (string.IsNullOrWhiteSpace(exp))
+            {
+                return false;
+            }
+
+            exp = exp.Trim();
+            var expressions = ExpressionRecognizeRegex.Matches(exp);
+            return expressions.Count == 1 && expressions[0].Value == exp;
+        }
 
         public object EvaluateTemplate(string templateName, object scope)
         {
@@ -107,7 +120,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var property = line.Substring(0, start).Trim().ToLower();
                     var originValue = line.Substring(start + 1).Trim();
 
-                    var valueArray = escapeSeperatorRegex.Split(originValue);
+                    var valueArray = EscapeSeperatorRegex.Split(originValue);
                     if (valueArray.Length == 1)
                     {
                         result[property] = EvalText(originValue);
@@ -222,18 +235,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 switch (node.Symbol.Type)
                 {
                     case LGFileParser.DASH:
+                    case LGFileParser.MULTILINE_PREFIX:
+                    case LGFileParser.MULTILINE_SUFFIX:
                         break;
                     case LGFileParser.ESCAPE_CHARACTER:
-                        result.Add(Regex.Unescape(node.GetText()));
+                        result.Add(EvalEscape(node.GetText()));
                         break;
                     case LGFileParser.EXPRESSION:
                         result.Add(EvalExpression(node.GetText()));
-                        break;
-                    case LGFileParser.TEMPLATE_REF:
-                        result.Add(EvalTemplateRef(node.GetText()));
-                        break;
-                    case LGFileLexer.MULTI_LINE_TEXT:
-                        result.Add(EvalMultiLineText(node.GetText()));
                         break;
                     default:
                         result.Add(node.GetText());
@@ -316,6 +325,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
+        private string EvalEscape(string exp)
+        {
+            var commonEscapes = new List<string>() { "\\r", "\\n", "\\t" };
+            if (commonEscapes.Contains(exp))
+            {
+                return Regex.Unescape(exp);
+            }
+
+            return exp.Substring(1);
+        }
+
         private object EvalExpression(string exp)
         {
             exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
@@ -333,41 +353,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        private object EvalTemplateRef(string exp)
-        {
-            exp = exp.TrimStart('[').TrimEnd(']').Trim();
-            if (exp.IndexOf('(') < 0)
-            {
-                if (TemplateMap.ContainsKey(exp))
-                {
-                    exp += "(" + string.Join(",", TemplateMap[exp].Parameters) + ")";
-                }
-                else
-                {
-                    exp += "()";
-                }
-            }
-
-            return EvalExpression(exp);
-        }
-
         private EvaluationTarget CurrentTarget() =>
 
             // just don't want to write evaluationTargetStack.Peek() everywhere
             evaluationTargetStack.Peek();
-
-        private string EvalMultiLineText(string exp)
-        {
-            // remove ``` ```
-            exp = exp.Substring(3, exp.Length - 6);
-            return EvalTextContainsExpression(exp);
-        }
-
-        private string EvalTextContainsExpression(string exp)
-        {
-            var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
-            return expressionRecognizeRegex.Replace(exp, evalutor);
-        }
 
         private JToken EvalText(string exp)
         {
@@ -383,20 +372,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             else
             {
-                return Regex.Unescape(EvalTextContainsExpression(exp));
+                var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
+                return Regex.Unescape(ExpressionRecognizeRegex.Replace(exp, evalutor));
             }
-        }
-
-        private bool IsPureExpression(string exp)
-        {
-            if (string.IsNullOrWhiteSpace(exp))
-            {
-                return false;
-            }
-
-            exp = exp.Trim();
-            var expressions = expressionRecognizeRegex.Matches(exp);
-            return expressions.Count == 1 && expressions[0].Value == exp;
         }
 
         private (object value, string error) EvalByExpressionEngine(string exp, object scope)
@@ -468,7 +446,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
                 var actualArgsCount = expression.Children.Length - 1;
 
-                if (expectedArgsCount != actualArgsCount)
+                if (actualArgsCount != 0 && expectedArgsCount != actualArgsCount)
                 {
                     throw new Exception($"Arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
                 }
@@ -494,7 +472,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
             var actualArgsCount = expression.Children.Length;
 
-            if (expectedArgsCount != actualArgsCount)
+            if (actualArgsCount != 0 && expectedArgsCount != actualArgsCount)
             {
                 throw new Exception($"arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
             }

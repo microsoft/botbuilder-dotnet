@@ -22,7 +22,7 @@
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "Set conversation.order.meat to {@meat}"
+                                    "activity": "Set conversation.order.meat to @{@meat}"
                                 },
                                 {
                                     "$type": "Microsoft.SetProperty",
@@ -51,7 +51,7 @@
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "Set conversation.order.cheese to {@cheese}"
+                                    "activity": "Set conversation.order.cheese to @{@cheese}"
                                 },
                                 {
                                     "$type": "Microsoft.SetProperty",
@@ -79,7 +79,7 @@
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "Set conversation.order.bread to {@bread}"
+                                    "activity": "Set conversation.order.bread to @{@bread}"
                                 },
                                 {
                                     "$type": "Microsoft.SetProperty",
@@ -107,7 +107,7 @@
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "Set conversation.order.topping to {join(foreach(@@topping, list, first(list)), ', ')}"
+                                    "activity": "Set conversation.order.topping to @{join(foreach(@@topping, list, first(list)), ', ')}"
                                 },
                                 {
                                     "$type": "Microsoft.SetProperty",
@@ -135,7 +135,7 @@
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "Set conversation.order.confirmation to {@confirmation}"
+                                    "activity": "Set conversation.order.confirmation to @{@confirmation}"
                                 },
                                 {
                                     "$type": "Microsoft.SetProperty",
@@ -164,7 +164,7 @@
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "[MeatAndBread]"
+                                    "activity": "@{MeatAndBread()}"
                                 }
                             ]
                         },
@@ -177,7 +177,7 @@
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "[CheeseAndToppingsWithMeatAndBread]"
+                                    "activity": "@{CheeseAndToppingsWithMeatAndBread()}"
                                 }
                             ]
                         },
@@ -190,7 +190,7 @@
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "[Confirmation]"
+                                    "activity": "@{Confirmation()}"
                                 }
                             ]
                         },
@@ -204,7 +204,7 @@
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "[BeingProcessed]"
+                                    "activity": "@{BeingProcessed()}"
                                 },
                                 {
                                     "$type": "Microsoft.SetProperty",
@@ -222,11 +222,11 @@
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "[StartAgain]"
+                                    "activity": "@{StartAgain()}"
                                 },
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "[Initial]"
+                                    "activity": "@{Initial()}"
                                 },
                                 {
                                     "$type": "Microsoft.DeleteProperty",
@@ -243,7 +243,7 @@
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "[NoIntent]"
+                                    "activity": "@{NoIntent()}"
                                 }
                             ]
                         },
@@ -256,7 +256,7 @@
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "[BreadAndToppingsWithMeatAndCheese]"
+                                    "activity": "@{BreadAndToppingsWithMeatAndCheese()}"
                                 }
                             ]
                         },
@@ -269,7 +269,7 @@
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "[MeatWithBread]"
+                                    "activity": "@{MeatWithBread()}"
                                 }
                             ]
                         },
@@ -283,7 +283,7 @@
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "[Meat]"
+                                    "activity": "@{Meat()}"
                                 },
                                 {
                                     "$type": "Microsoft.EndTurn"
@@ -299,7 +299,7 @@
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "[Cheese]"
+                                    "activity": "@{Cheese()}"
                                 }
                             ]
                         },
@@ -312,7 +312,7 @@
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "[Bread]"
+                                    "activity": "@{Bread()}"
                                 }
                             ]
                         },
@@ -325,7 +325,7 @@
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "[Toppings]"
+                                    "activity": "@{Toppings()}"
                                 }
                             ]
                         }
@@ -346,7 +346,7 @@
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "[SandwichOptions]"
+                    "activity": "@{SandwichOptions()}"
                 }
             ]
         },
@@ -356,7 +356,7 @@
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "[BreadOptions]"
+                    "activity": "@{BreadOptions()}"
                 }
             ]
         },
@@ -366,7 +366,7 @@
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "[ToppingOptions]"
+                    "activity": "@{ToppingOptions()}"
                 }
             ]
         },
@@ -376,7 +376,7 @@
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "[CheeseOptions]"
+                    "activity": "@{CheeseOptions()}"
                 }
             ]
         },
@@ -386,7 +386,7 @@
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "[Greeting]"
+                    "activity": "@{Greeting()}"
                 }
             ]
         },
@@ -398,7 +398,7 @@
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "[Initial]"
+                    "activity": "@{Initial()}"
                 }
             ]
         }

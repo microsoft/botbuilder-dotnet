@@ -29,7 +29,7 @@
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "Hello {user.name}, nice to meet you! (type cancel to end this)"
+                    "activity": "Hello @{user.name}, nice to meet you! (type cancel to end this)"
                 },
                 {
                     "$type": "Microsoft.EndTurn"

@@ -10,7 +10,7 @@ cardContent
 - ```
 @{name}
 ```
-- {name}
+- @{name}
 
 # refTemplate
 - ```
