@@ -24,11 +24,11 @@
         },
         "name": {
             "type": "string",
-            "description": "Name for your skill"
+            "description": "Name of the skill"
         },
         "version": {
             "type": "string",
-            "description": "The version for the skill in Major.Minor format"
+            "description": "The version for the skill"
         },
         "description": {
             "type": "string",

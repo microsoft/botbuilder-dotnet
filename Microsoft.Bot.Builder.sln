@@ -167,12 +167,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapt
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Prototypes", "Prototypes", "{41ED27B0-1D25-41C1-A1E4-AA2814F4F224}"
 	ProjectSection(SolutionItems) = preProject
+		prototypes\SkillManifest-EchoBot.json = prototypes\SkillManifest-EchoBot.json
+		prototypes\SkillManifest-Inline.json = prototypes\SkillManifest-Inline.json
+		prototypes\SkillManifest-Simple.json = prototypes\SkillManifest-Simple.json
 		prototypes\SkillManifest.json = prototypes\SkillManifest.json
 		prototypes\SkillManifest.schema-1-0-0.json = prototypes\SkillManifest.schema-1-0-0.json
 		prototypes\SkillManifestVA.json = prototypes\SkillManifestVA.json
 	EndProjectSection
 	ProjectSection(FolderGlobals) = preProject
-		C_5_4Projects_4Repos_4botbuilder-dotnet_4prototypes_4SkillManifest_1json__JsonSchema = 
+		C_5_4Projects_4Repos_4botbuilder-dotnet_4prototypes_4SkillManifest-Simple_1json__JsonSchema = SkillManifest.schema-1-0-0.json
+		C_5_4Projects_4Repos_4botbuilder-dotnet_4prototypes_4SkillManifest_1json__JsonSchema = SkillManifest.schema-1-0-0.json
 		C_5_4Projects_4Repos_4botbuilder-dotnet_4prototypes_4SkillManifest_1schema_1json__JsonSchema = https://github.com/json-schema-org/json-schema-spec/blob/master/output/schema.json
 	EndProjectSection
 EndProject
