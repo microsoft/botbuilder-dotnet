@@ -137,24 +137,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public override AnalyzerResult VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
         {
             var result = new AnalyzerResult();
-            foreach (ITerminalNode node in context.children)
+            foreach (var expression in context.EXPRESSION())
             {
-                switch (node.Symbol.Type)
-                {
-                    case LGFileParser.DASH:
-                        break;
-                    case LGFileParser.EXPRESSION:
-                        result.Union(AnalyzeExpression(node.GetText()));
-                        break;
-                    case LGFileParser.TEMPLATE_REF:
-                        result.Union(AnalyzeTemplateRef(node.GetText()));
-                        break;
-                    case LGFileLexer.MULTI_LINE_TEXT:
-                        result.Union(AnalyzeMultiLineText(node.GetText()));
-                        break;
-                    default:
-                        break;
-                }
+                result.Union(AnalyzeExpression(expression.GetText()));
             }
 
             return result;
@@ -210,33 +195,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             result.Union(new AnalyzerResult(variables: new List<string>(references)));
             result.Union(this.AnalyzeExpressionDirectly(parsed));
-
-            return result;
-        }
-
-        private AnalyzerResult AnalyzeTemplateRef(string exp)
-        {
-            exp = exp.TrimStart('[').TrimEnd(']').Trim();
-            exp = exp.IndexOf('(') < 0 ? exp + "()" : exp;
-
-            return AnalyzeExpression(exp);
-        }
-
-        private AnalyzerResult AnalyzeMultiLineText(string exp)
-        {
-            var result = new AnalyzerResult();
-
-            // remove ``` ```
-            exp = exp.Substring(3, exp.Length - 6);
-
-            var matches = Regex.Matches(exp, @"@\{[^{}]+\}");
-            foreach (Match matchItem in matches)
-            {
-                if (matchItem.Success)
-                {
-                    result.Union(AnalyzeExpression(matchItem.Value));
-                }
-            }
 
             return result;
         }

@@ -41,7 +41,7 @@
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "[LuisToDoHelp]"
+                    "activity": "@{LuisToDoHelp()}"
                 }
             ]
         }

@@ -39,6 +39,8 @@ fragment U: 'u' | 'U';
 fragment W: 'w' | 'W';
 
 fragment STRING_LITERAL : ('\'' (~['\r\n])* '\'') | ('"' (~["\r\n])* '"');
+fragment EXPRESSION_FRAGMENT : '@' '{' (STRING_LITERAL| ~[\r\n{}'"] )*? '}';
+fragment ESCAPE_CHARACTER_FRAGMENT : '\\' ~[\r\n]?;
 
 COMMENTS
   : ('>'|'$') ~('\r'|'\n')+ NEWLINE? -> skip
@@ -125,6 +127,10 @@ WS_IN_BODY
   : WHITESPACE+  -> type(WS)
   ;
 
+MULTILINE_PREFIX
+  : '```' -> pushMode(MULTILINE)
+  ;
+
 NEWLINE_IN_BODY
   : '\r'? '\n' {ignoreWS = true;} -> type(NEWLINE), popMode
   ;
@@ -153,28 +159,16 @@ DEFAULT
   : D E F A U L T WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
   ;
 
-MULTI_LINE_TEXT
-  : '```' .*? '```' { ignoreWS = false; expectKeywords = false;}
-  ;
-
 ESCAPE_CHARACTER
-  : '\\{' | '\\[' | '\\\\' | '\\'[rtn\]}]  { ignoreWS = false; expectKeywords = false;}
+  : ESCAPE_CHARACTER_FRAGMENT  { ignoreWS = false; expectKeywords = false;}
   ;
 
 EXPRESSION
-  : '@'? '{' (~[\r\n{}] | STRING_LITERAL)*?  '}'  { ignoreWS = false; expectKeywords = false;}
-  ;
-
-TEMPLATE_REF
-  : '[' (~[\r\n\]] | TEMPLATE_REF)* ']'  { ignoreWS = false; expectKeywords = false;}
-  ;
-
-TEXT_SEPARATOR
-  : [\t\r\n{}[\]()]  { ignoreWS = false; expectKeywords = false;}
+  : EXPRESSION_FRAGMENT  { ignoreWS = false; expectKeywords = false;}
   ;
 
 TEXT
-  : ~[\t\r\n{}[\]()]+?  { ignoreWS = false; expectKeywords = false;}
+  : ~[\r\n]+?  { ignoreWS = false; expectKeywords = false;}
   ;
 
 mode STRUCTURED_TEMPLATE_BODY_MODE;
@@ -197,4 +191,22 @@ STRUCTURED_TEMPLATE_BODY_END
 
 STRUCTURED_CONTENT
   : ~[\r\n]+
+  ;
+
+mode MULTILINE;
+
+MULTILINE_SUFFIX
+  : '```' -> popMode
+  ;
+
+MULTILINE_ESCAPE_CHARACTER
+  : ESCAPE_CHARACTER_FRAGMENT -> type(ESCAPE_CHARACTER)
+  ;
+
+MULTILINE_EXPRESSION
+  : EXPRESSION_FRAGMENT -> type(EXPRESSION)
+  ;
+
+MULTILINE_TEXT
+  : (('\r'? '\n') | ~[\r\n])+? -> type(TEXT)
   ;

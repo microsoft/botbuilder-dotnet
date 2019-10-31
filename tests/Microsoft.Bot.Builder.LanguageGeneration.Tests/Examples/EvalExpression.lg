@@ -1,5 +1,5 @@
 ﻿# template1
-- Hi {userName}
+- Hi @{userName}
 
 # template2
 - Hi @{userName}
