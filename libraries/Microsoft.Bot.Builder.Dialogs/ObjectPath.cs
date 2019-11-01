@@ -451,11 +451,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                         value is ushort || value is uint || value is ulong ||
                         value is decimal || value is float || value is double)
                 {
-                    val = JValue.FromObject(value);
+                    val = JToken.FromObject(value);
                 }
                 else
                 {
-                    val = (JToken)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, expressionCaseSettings));
+                    val = JToken.FromObject(JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, expressionCaseSettings)));
                 }
             }
             else
