@@ -201,6 +201,7 @@
       "properties": {
         "type": {
           "type": "string",
+          "description": "The activity type",
           "enum": [
             "event",
             "invoke"
@@ -240,9 +241,11 @@
       "properties": {
         "type": {
           "type": "string",
+          "description": "The activity type",
           "enum": [
             "message"
-          ]
+          ],
+          "default": "message"
         },
         "description": {
           "type": "string",
