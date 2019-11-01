@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
   "manifestVersion": "1.5",
   "version": "1.0",
-  "id": "<<YOUR_GENERATED_APP_GUID>>",
-  "packageName": "com.microsoft.teams.samples.v4bot",
+  "id": "00000000-0000-0000-0000-000000000000",
+  "packageName": "com.microsoft.teams.samples.actionBasedMessagingExtension",
   "developer": {
     "name": "Microsoft Corp",
     "websiteUrl": "https://example.azurewebsites.net",
@@ -25,13 +25,13 @@
   "accentColor": "#0080FF",
   "bots": [
     {
-      "botId": "<<YOUR_BOTS_MSA_APP_ID>>",
+      "botId": "00000000-0000-0000-0000-000000000000",
       "scopes": [ "personal", "team" ]
     }
   ],
   "composeExtensions": [
     {
-      "botId": "<<YOUR_BOTS_MSA_APP_ID>>",
+      "botId": "00000000-0000-0000-0000-000000000000",
       "commands": [
         {
           "id": "createCard",

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -57,10 +58,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// update an exist template.
         /// </summary>
         /// <param name="templateName">origin template name. the only id of a template.</param>
+        /// <param name="newTemplateName">new template Name.</param>
         /// <param name="parameters">new params.</param>
         /// <param name="templateBody">new template body.</param>
         /// <returns>new LG resource.</returns>
-        public LGResource UpdateTemplate(string templateName, List<string> parameters, string templateBody)
+        public LGResource UpdateTemplate(string templateName, string newTemplateName, List<string> parameters, string templateBody)
         {
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
             if (template == null)
@@ -68,7 +70,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return this;
             }
 
-            var templateNameLine = BuildTemplateNameLine(templateName, parameters);
+            var templateNameLine = BuildTemplateNameLine(newTemplateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
             var content = $"{templateNameLine}\r\n{newTemplateBody}";
             var startLine = template.ParseTree.Start.Line - 1;
@@ -206,7 +208,27 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             destList.AddRange(originList.Skip(stopLine + 1));
 
-            return string.Join("\n", destList);
+            return BuildNewLGContent(destList);
+        }
+
+        private string BuildNewLGContent(List<string> destList)
+        {
+            var result = new StringBuilder();
+            for (var i = 0; i < destList.Count; i++)
+            {
+                var currentItem = destList[i];
+                result.Append(currentItem);
+                if (currentItem.EndsWith("\r"))
+                {
+                    result.Append("\n");
+                }
+                else if (i < destList.Count - 1)
+                {
+                    result.Append("\r\n");
+                }
+            }
+
+            return result.ToString();
         }
 
         private string ConvertTemplateBody(string templateBody)
@@ -224,6 +246,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         // we will warp '# abc' into '- #abc', to avoid adding additional template.
         private string WrapTemplateBodyString(string replaceItem) => replaceItem.TrimStart().StartsWith("#") ? $"- {replaceItem.TrimStart()}" : replaceItem;
 
-        private string BuildTemplateNameLine(string templateName, List<string> parameters) => $"# {templateName}({string.Join(", ", parameters)})";
+        private string BuildTemplateNameLine(string templateName, List<string> parameters)
+        {
+            if (parameters == null)
+            {
+                return $"# {templateName}";
+            }
+            else
+            {
+                return $"# {templateName}({string.Join(", ", parameters)})";
+            }
+        }
     }
 }

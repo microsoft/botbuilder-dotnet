@@ -112,8 +112,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             private string currentSource = string.Empty;
             private readonly ExpressionEngine baseExpressionEngine;
-            private readonly Regex expressionRecognizeRegex = new Regex(@"@?(?<!\\)\{.+?(?<!\\)\}", RegexOptions.Compiled);
-            private readonly Regex escapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
+            private readonly Regex structuredNameRegex = new Regex(@"^[a-z0-9_][a-z0-9_\-\.]*$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
             private IExpressionParser _expressionParser;
 
@@ -227,8 +226,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     }
                     else
                     {
-                        var item = Visit(templateStr.normalTemplateString());
-                        result.AddRange(item);
+                        result.AddRange(Visit(templateStr.normalTemplateString()));
                     }
                 }
 
@@ -238,6 +236,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             public override List<Diagnostic> VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
             {
                 var result = new List<Diagnostic>();
+
+                var typeName = context.structuredBodyNameLine().STRUCTURED_CONTENT().GetText().Trim();
+                if (!structuredNameRegex.IsMatch(typeName))
+                {
+                    result.Add(BuildLGDiagnostic($"Structured type {typeName} is invalid. Letter, number, '_', '-' and '.' is allowed.", context: context.structuredBodyContentLine()));
+                }
 
                 var bodys = context.structuredBodyContentLine()?.STRUCTURED_CONTENT();
                 if (bodys == null || bodys.Length == 0 || bodys.All(u => string.IsNullOrEmpty(u.GetText())))
@@ -252,7 +256,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         if (!string.IsNullOrWhiteSpace(line))
                         {
                             var start = line.IndexOf('=');
-                            if (start < 0 && !IsPureExpression(line))
+                            if (start < 0 && !Evaluator.IsPureExpression(line))
                             {
                                 result.Add(BuildLGDiagnostic($"Structured content does not support", context: context.structuredBodyContentLine()));
                             }
@@ -262,7 +266,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                                 {
                                     var property = line.Substring(0, start).Trim().ToLower();
                                     var originValue = line.Substring(start + 1).Trim();
-                                    var valueArray = escapeSeperatorRegex.Split(originValue);
+                                    var valueArray = Evaluator.EscapeSeperatorRegex.Split(originValue);
 
                                     if (valueArray.Length == 1)
                                     {
@@ -276,7 +280,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                                         }
                                     }
                                 }
-                                else if (IsPureExpression(line))
+                                else if (Evaluator.IsPureExpression(line))
                                 {
                                     result.AddRange(CheckExpression(line, context.structuredBodyContentLine()));
                                 }
@@ -451,91 +455,30 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 var result = new List<Diagnostic>();
 
-                foreach (ITerminalNode node in context.children)
+                foreach (var expression in context.EXPRESSION())
                 {
-                    switch (node.Symbol.Type)
-                    {
-                        case LGFileParser.TEMPLATE_REF:
-                            result.AddRange(CheckTemplateRef(node.GetText(), context));
-                            break;
-                        case LGFileParser.EXPRESSION:
-                            result.AddRange(CheckExpression(node.GetText(), context));
-                            break;
-                        case LGFileLexer.MULTI_LINE_TEXT:
-                            result.AddRange(CheckMultiLineText(node.GetText(), context));
-                            break;
-                        case LGFileLexer.TEXT:
-                            result.AddRange(CheckErrorMultiLineText(node.GetText(), context));
-                            break;
-                        default:
-                            break;
-                    }
+                    result.AddRange(CheckExpression(expression.GetText(), context));
+                }
+
+                var multiLinePrefixNum = context.MULTILINE_PREFIX().Length;
+                var multiLineSuffixNum = context.MULTILINE_SUFFIX().Length;
+                if (multiLinePrefixNum > 0 && multiLinePrefixNum > multiLineSuffixNum)
+                {
+                    result.Add(BuildLGDiagnostic("Close ``` is missing.", context: context));
                 }
 
                 return result;
             }
 
-            public List<Diagnostic> CheckTemplateRef(string exp, ParserRuleContext context)
+            private List<Diagnostic> CheckText(string exp, ParserRuleContext context)
             {
                 var result = new List<Diagnostic>();
 
-                exp = exp.TrimStart('[').TrimEnd(']').Trim();
-                var expression = exp;
-                if (exp.IndexOf('(') < 0)
-                {
-                    if (this.templateMap.ContainsKey(exp))
-                    {
-                        expression = exp + "(" + string.Join(",", this.templateMap[exp].Parameters) + ")";
-                    }
-                    else
-                    {
-                        expression = exp + "()";
-                    }
-                }
-
-                try
-                {
-                    ExpressionParser.Parse(expression);
-                }
-                catch (Exception e)
-                {
-                    result.Add(BuildLGDiagnostic(e.Message + $" in template reference `{exp}`", context: context));
-                    return result;
-                }
-
-                return result;
-            }
-
-            private List<Diagnostic> CheckMultiLineText(string exp, ParserRuleContext context)
-            {
-                // remove ``` ```
-                exp = exp.Substring(3, exp.Length - 6);
-                return CheckText(exp, context, true);
-            }
-
-            private List<Diagnostic> CheckText(string exp, ParserRuleContext context, bool isMultiLineText = false)
-            {
-                var result = new List<Diagnostic>();
-
-                var reg = isMultiLineText ? @"@\{[^{}]+\}" : @"@?\{[^{}]+\}";
-
-                var mc = Regex.Matches(exp, reg);
+                var mc = Evaluator.ExpressionRecognizeRegex.Matches(exp);
 
                 foreach (Match match in mc)
                 {
                     result.AddRange(CheckExpression(match.Value, context));
-                }
-
-                return result;
-            }
-
-            private List<Diagnostic> CheckErrorMultiLineText(string exp, ParserRuleContext context)
-            {
-                var result = new List<Diagnostic>();
-
-                if (exp.StartsWith("```"))
-                {
-                    result.Add(BuildLGDiagnostic("Multi line variation must be enclosed in ```", context: context));
                 }
 
                 return result;
@@ -576,18 +519,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var range = new Range(startPosition, stopPosition);
                 message = $"source: {currentSource}. error message: {message}";
                 return new Diagnostic(range, message, severity);
-            }
-
-            private bool IsPureExpression(string exp)
-            {
-                if (string.IsNullOrWhiteSpace(exp))
-                {
-                    return false;
-                }
-
-                exp = exp.Trim();
-                var expressions = expressionRecognizeRegex.Matches(exp);
-                return expressions.Count == 1 && expressions[0].Value == exp;
             }
         }
     }

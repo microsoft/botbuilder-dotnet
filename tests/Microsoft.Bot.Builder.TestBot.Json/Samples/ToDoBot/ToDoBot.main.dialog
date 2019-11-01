@@ -88,7 +88,7 @@
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "[help]"
+                    "activity": "@{help()}"
                 }
             ]
         },
