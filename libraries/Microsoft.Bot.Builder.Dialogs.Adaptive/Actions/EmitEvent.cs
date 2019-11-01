@@ -5,6 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -14,6 +15,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class EmitEvent : Dialog
     {
+        private Expression eventValue;
+
         [JsonConstructor]
         public EmitEvent(string eventName = null, string eventValue = null, bool bubble = true, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
@@ -38,7 +41,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// The memory property path to use to get the value to send as part of the event.
         /// </value>
-        public string EventValue { get; set; }
+        public string EventValue
+        {
+            get { return eventValue?.ToString(); }
+            set { this.eventValue = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether gets or sets whether the event should bubble or not.
