@@ -1,5 +1,6 @@
 ﻿#pragma warning disable SA1402
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Bot.Builder.Adapters;
@@ -476,6 +477,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }
         }
 
+        public void AssertGetSetValueType<T>(object test, T val)
+        {
+            ObjectPath.SetPathValue(test, val.GetType().Name, val);
+            var result = ObjectPath.GetPathValue<T>(test, typeof(T).Name);
+            Assert.AreEqual(val, result);
+            Assert.AreEqual(val.GetType(), result.GetType());
+        }
+
         [TestMethod]
         public void SetPathValue()
         {
@@ -495,6 +504,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("yabba", value2);
             Assert.IsTrue(ObjectPath.TryGetPathValue<string>(test, "x.a[0]", out value2));
             Assert.AreEqual("dabba", value2);
+
+            // value type tests
+#pragma warning disable SA1121 // Use built-in type alias
+            AssertGetSetValueType(test, true);
+            AssertGetSetValueType(test, DateTime.UtcNow);
+            AssertGetSetValueType(test, DateTimeOffset.UtcNow);
+            AssertGetSetValueType(test, Byte.MaxValue);
+            AssertGetSetValueType(test, Int16.MaxValue);
+            AssertGetSetValueType(test, Int32.MaxValue);
+            AssertGetSetValueType(test, Int64.MaxValue);
+            AssertGetSetValueType(test, UInt16.MaxValue);
+            AssertGetSetValueType(test, UInt32.MaxValue);
+            AssertGetSetValueType(test, UInt64.MaxValue);
+            AssertGetSetValueType(test, Single.MaxValue);
+            AssertGetSetValueType(test, Decimal.MaxValue);
+            AssertGetSetValueType(test, Double.MaxValue);
+#pragma warning restore SA1121 // Use built-in type alias
         }
 
         [TestMethod]
@@ -513,7 +539,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 ObjectPath.GetPathValue<int>(test, "x.y.z");
                 Assert.Fail("should have throw exception");
             }
-            catch 
+            catch
             {
             }
 
