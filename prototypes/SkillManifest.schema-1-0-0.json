@@ -156,7 +156,7 @@
                 "protocol": {
                     "type": "string",
                     "description": "Supported protocol",
-                    "default": "BotframeworkV3"
+                    "default": "BotFrameworkV3"
                 },
                 "description": {
                     "type": "string",

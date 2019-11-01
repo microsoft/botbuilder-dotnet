@@ -16,7 +16,7 @@
     ],
     "endpoints": {
         "production": {
-            "protocol": "BotframeworkV3",
+            "protocol": "BotFrameworkV3",
             "description": "Production  endpoint for SkillBot.",
             "endpointUrl": "http://contoso.com/api/messages",
             "msAppId": "00000000-0000-0000-0000-000000000000"

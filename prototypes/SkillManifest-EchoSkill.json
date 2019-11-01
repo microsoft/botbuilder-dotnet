@@ -15,10 +15,10 @@
   ],
   "endpoints": {
     "production": {
-      "protocol": "BotframeworkV3",
+      "protocol": "BotFrameworkV3",
       "description": "Production  endpoint for SkillBot.",
       "endpointUrl": "http://contoso.com/api/messages",
-      "msAppId": "00000000-0000-0000-0000-00000000000"
+      "msAppId": "a0000f00-Ad00-a000-a000-a0000aaaAaa0"
     }
   },
   "language": {
