@@ -1,8 +1,8 @@
 # Confirmation(value)
-- SWITCH: {value}
-- CASE: {'yes'}
+- SWITCH: @{value}
+- CASE: @{'yes'}
     - yes  
-- CASE: {'no'}
+- CASE: @{'no'}
     -  no
 -  DEFAULT:
     -  Unknown Confirmation value

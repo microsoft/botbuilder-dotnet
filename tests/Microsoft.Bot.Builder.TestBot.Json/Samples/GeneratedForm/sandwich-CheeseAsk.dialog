@@ -2,14 +2,30 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
     "$type": "Microsoft.OnAsk",
-    "condition":"!$Cheese",
+    "condition":"and(!$Cheese, contains(dialog.requiredProperties, 'Cheese'))",
     "actions": [
+        {
+            "$type": "Microsoft.IfCondition",
+            "condition":"$lastExpectedProperty == 'Cheese'",
+            "actions":[
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "@{help(@PropertyName)}"
+                }
+                    
+            ]
+        },
         {
             "$type": "Microsoft.Ask",
             "activity": "@{AskCheese()}",
             "expectedProperties": [
                 "Cheese"
             ]
+        },
+        {
+            "$type": "Microsoft.SetProperty",
+            "property": "$lastExpectedProperty",
+            "value": "'Cheese'"
         }
     ]
 }

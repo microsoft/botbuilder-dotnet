@@ -409,7 +409,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return baseLookup(name);
         };
 
-        // Evaluator for lgTemplate(templateName, ...args) 
+        // Evaluator for Template(templateName, ...args) 
         // normal case we can just use templateName(...args), but lgTemplate is particularly useful when the template name is not pre-known
         private Func<IReadOnlyList<object>, object> LgTemplate()
         => (IReadOnlyList<object> args) =>
@@ -423,7 +423,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (expression.Children.Length == 0)
             {
-                throw new Exception("No template name is provided when calling lgTemplate, expected: lgTemplate(templateName, ...args) ");
+                throw new Exception("No template name is provided when calling template, expected: template(templateName, ...args) ");
             }
 
             var children0 = expression.Children[0];

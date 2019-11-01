@@ -1,25 +1,25 @@
 # MeatEntity(value) 
-- SWITCH: {value}
-- CASE: {'bacon'} 
+- SWITCH: @{value}
+- CASE: @{'bacon'} 
  - bacon
-- CASE: {'chicken'} 
+- CASE: @{'chicken'} 
  - chicken
-- CASE: {'ham'} 
+- CASE: @{'ham'} 
  - ham
-- CASE: {'pulled pork'} 
+- CASE: @{'pulled pork'} 
  - pulled pork
-- CASE: {'roast beef'} 
+- CASE: @{'roast beef'} 
  - roast beef
-- CASE: {'salami'} 
+- CASE: @{'salami'} 
  - salami
-- CASE: {'turkey'} 
+- CASE: @{'turkey'} 
  - turkey
-- CASE: {'none'} 
+- CASE: @{'none'} 
  - none
 - DEFAULT: 
- - I don't understand {value}
+ - I don't understand @{value}
 
 # clarifyMeatEntity
-- {clarifyEnumEntity('Meat')}
+- @{clarifyEnumEntity('Meat')}
 
 [sandwich-common.en-us.lg](sandwich-common.en-us.lg)

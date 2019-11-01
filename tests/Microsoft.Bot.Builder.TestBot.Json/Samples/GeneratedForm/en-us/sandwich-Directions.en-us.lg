@@ -1,5 +1,5 @@
 # AskDirections
-- {askString('Directions')}
+- @{askString('Directions')}
 
 # DirectionsName
 - directions

@@ -86,6 +86,13 @@
             "$templates": [
                 "PropertyToChangeSet.dialog"
             ]
+        },
+        "lastExpectedProperty": {
+            "type": "string",
+            "$mappings": [
+                "PROPERTYName"
+            ],
+            "$templates": []
         }
     },
     "required": [
@@ -99,7 +106,8 @@
     "$expectedOnly": [
         "CancelConfirmation",
         "CompleteConfirmation",
-        "PropertyToChange"
+        "PropertyToChange",
+        "lastExpectedProperty"
     ],
     "$templates": [
         "help.lu",

@@ -11,7 +11,7 @@
         },
         {
             "$type": "Microsoft.DeleteProperty",
-            "property": "{dialog.PropertyToChange}"            
+            "property": "@{dialog.PropertyToChange}"            
         }
     ]
 }

@@ -1,11 +1,11 @@
 # AskBread
-- {askEnum('Bread')}
+- @{askEnum('Bread')}
 
 # BreadName
 - bread
 
 # Bread(val)
-- {BreadEntity(val)}
+- @{BreadEntity(val)}
 
 [sandwich-BreadEntity.en-us.lg](sandwich-BreadEntity.en-us.lg)
 [sandwich-common.en-us.lg](sandwich-common.en-us.lg)
