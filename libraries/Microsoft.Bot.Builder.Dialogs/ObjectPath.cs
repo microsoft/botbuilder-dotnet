@@ -451,7 +451,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         value is ushort || value is uint || value is ulong ||
                         value is decimal || value is float || value is double)
                 {
-                    val = JToken.FromObject(value);
+                    val = JValue.FromObject(value);
                 }
                 else
                 {

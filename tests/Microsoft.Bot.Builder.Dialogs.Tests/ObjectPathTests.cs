@@ -1,5 +1,6 @@
 ﻿#pragma warning disable SA1402
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Bot.Builder.Adapters;
@@ -485,6 +486,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             ObjectPath.SetPathValue(test, "foo", new { Bar = 15, Blat = "yo" });
             ObjectPath.SetPathValue(test, "x.a[1]", "yabba");
             ObjectPath.SetPathValue(test, "x.a[0]", "dabba");
+            ObjectPath.SetPathValue(test, "date", DateTime.Today);
 
             Assert.AreEqual(15, ObjectPath.GetPathValue<int>(test, "x.y.z"));
             Assert.AreEqual("hello", ObjectPath.GetPathValue<string>(test, "x.p"));
@@ -495,6 +497,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("yabba", value2);
             Assert.IsTrue(ObjectPath.TryGetPathValue<string>(test, "x.a[0]", out value2));
             Assert.AreEqual("dabba", value2);
+            Assert.AreEqual(DateTime.Today, ObjectPath.GetPathValue<DateTime>(test, "date"));
         }
 
         [TestMethod]
