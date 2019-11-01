@@ -11,8 +11,8 @@
   "iconUrl": "https://myskill.com/icon.png",
   "tags": [
     "sample",
-    "authentication",
-    "travel"
+    "travel",
+    "weather"
   ],
   "endpoints": [
     {
@@ -107,7 +107,7 @@
         },
         "longitude": {
           "type": "number",
-          "title": "Longitute"
+          "title": "Longitude"
         },
         "postalCode": {
           "type": "string",
