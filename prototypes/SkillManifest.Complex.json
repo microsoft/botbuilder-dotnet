@@ -55,7 +55,7 @@
                 "$ref": "#/definitions/userProfile"
             }
         },
-        "BookFlightEvent": {
+        "bookFlightEvent": {
             "description": "Defines how to send an 'BookFlight' Event Activity to the skill.",
             "type": "event",
             "name": "BookFlight",
@@ -66,7 +66,7 @@
                 "$ref": "#/definitions/bookingInfo"
             }
         },
-        "GetWeather": {
+        "getWeather": {
             "description": "Defines how to send an 'GetWeather' Invoke Activity to the skill.",
             "type": "invoke",
             "name": "GetWeather",
@@ -165,7 +165,7 @@
                 },
                 "longitude": {
                     "type": "number",
-                    "title": "Longitute"
+                    "title": "Longitude"
                 },
                 "postalCode": {
                     "type": "string",
