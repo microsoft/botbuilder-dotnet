@@ -1,8 +1,8 @@
 {
   "$id": "https://microsoft.com/botframework/schemas/skill-manifest-1-0-preview-1.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Skill Manifest",
-  "description": "A schema for Bot Framework skill manifests",
+  "title": "Skill Manifest (Preview)",
+  "description": "A schema for Bot Framework skill manifests (Preview)",
   "type": "object",
   "required": [
     "$id",
@@ -108,10 +108,13 @@
       "additionalProperties": {
         "anyOf": [
           {
-            "$ref": "#/definitions/messageActivity"
+            "$ref": "#/definitions/eventActivity"
           },
           {
-            "$ref": "#/definitions/eventOrInvokeActivity"
+            "$ref": "#/definitions/invokeActivity"
+          },
+          {
+            "$ref": "#/definitions/messageActivity"
           },
           {
             "$ref": "#/definitions/otherActivity"
@@ -121,14 +124,17 @@
     },
     "sendActivities": {
       "type": "object",
-      "description": "Activity definitions",
+      "description": "Definition for the activies sent by the skill",
       "additionalProperties": {
         "anyOf": [
           {
-            "$ref": "#/definitions/messageActivity"
+            "$ref": "#/definitions/eventActivity"
           },
           {
-            "$ref": "#/definitions/eventOrInvokeActivity"
+            "$ref": "#/definitions/invokeActivity"
+          },
+          {
+            "$ref": "#/definitions/messageActivity"
           },
           {
             "$ref": "#/definitions/otherActivity"
@@ -157,7 +163,7 @@
       "properties": {
         "name": {
           "type": "string",
-          "description": "Name for the endpoint",
+          "description": "Unique name for the endpoint",
           "default": "BotFrameworkV3"
         },
         "protocol": {
@@ -186,13 +192,13 @@
           "type": "string",
           "title": "Microsoft App Id",
           "pattern": "[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$",
-          "description": "The Microsoft AppId used for creating JWT tokens to authenticate this skill"
+          "description": "The Microsoft AppId for the skill. This app ID is used to authenticate requests"
         }
       }
     },
-    "eventOrInvokeActivity": {
+    "eventActivity": {
       "type": "object",
-      "description": "Define Activity.Type=Event|Invoke, with the name, the value that should be passed in on the activity and the shape of the EndOfConversation.Value result",
+      "description": "An activity with Type=Event where the Name property indicates the task that the skill will execute",
       "required": [
         "type",
         "name"
@@ -203,13 +209,52 @@
           "type": "string",
           "description": "The activity type",
           "enum": [
-            "event",
+            "event"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "description": "The name for the event",
+          "examples": [
+            "BookFlight"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "title": "Description",
+          "description": "Description for the activity"
+        },
+        "value": {
+          "type": "object",
+          "description": "The JsonSchema definition of the shape of the value property that this event expects",
+          "$ref": "http://json-schema.org/draft-07/schema#"
+        },
+        "resultValue": {
+          "type": "object",
+          "description": "The JsonSchema definition of the shape of the resultValue that this event may produce",
+          "$ref": "http://json-schema.org/draft-07/schema#"
+        }
+      }
+    },
+    "invokeActivity": {
+      "type": "object",
+      "description": "An activity with Type=Invoke where the Name property indicates the task that the skill will execute",
+      "required": [
+        "type",
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The activity type",
+          "enum": [
             "invoke"
           ]
         },
         "name": {
           "type": "string",
-          "description": "The name property for the event",
+          "description": "The name property for the invoke activity",
           "examples": [
             "GetWeather"
           ]
@@ -217,7 +262,7 @@
         "description": {
           "type": "string",
           "title": "Description",
-          "description": "Description which describes the usage of the activity"
+          "description": "Description for the activity"
         },
         "value": {
           "type": "object",
@@ -233,7 +278,7 @@
     },
     "messageActivity": {
       "type": "object",
-      "description": "The description of the activity",
+      "description": "An activity with Type=Message where the utterance is passed to the skill in the Text property",
       "required": [
         "type"
       ],
@@ -250,18 +295,23 @@
         "description": {
           "type": "string",
           "title": "Description",
-          "description": "Description which describes the usage of the activity"
+          "description": "Description for the activity"
         },
         "value": {
           "type": "object",
           "description": "The JsonSchema definition of the shape of the value property that this message would like to have",
+          "$ref": "http://json-schema.org/draft-07/schema#"
+        },
+        "resultValue": {
+          "type": "object",
+          "description": "The JsonSchema definition of the shape of the resultValue that this message may produce",
           "$ref": "http://json-schema.org/draft-07/schema#"
         }
       }
     },
     "otherActivity": {
       "type": "object",
-      "description": "The description of the activity",
+      "description": "(Preview), other type of activities the skill can handle",
       "required": [
         "type"
       ],
@@ -287,7 +337,7 @@
         "description": {
           "type": "string",
           "title": "Description",
-          "description": "Description which describes the usage of the activity"
+          "description": "Description for the usage of the activity"
         }
       }
     }
