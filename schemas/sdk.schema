@@ -2298,10 +2298,10 @@
                     ]
                 },
                 "eventValue": {
-                    "type": "object",
+                    "$role": "expression",
                     "title": "Event value",
                     "description": "Value to emit with the event (optional).",
-                    "additionalProperties": true
+                    "type": "string"
                 },
                 "bubbleEvent": {
                     "type": "boolean",
