@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/gabog/SkillsSecondPass/prototypes/SkillManifest.schema-1-0-0.json",
+  "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/gabog/SkillsSecondPass/prototypes/skill-manifest-schema-1-0-0.json",
   "$id": "EchoSkill",
   "name": "Echo skill",
   "version": "1.0",
@@ -13,19 +13,15 @@
     "sample",
     "echo"
   ],
-  "endpoints": {
-    "production": {
+  "endpoints": [
+    {
+      "name": "default",
       "protocol": "BotFrameworkV3",
       "description": "Production  endpoint for SkillBot.",
       "endpointUrl": "http://contoso.com/api/messages",
       "msAppId": "a0000f00-Ad00-a000-a000-a0000aaaAaa0"
     }
-  },
-  "language": {
-    "intents": {
-      "echo": "#/activities/message"
-    }
-  },
+  ],
   "activities": {
     "message": {
       "type": "message",

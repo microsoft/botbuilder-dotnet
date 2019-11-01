@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/gabog/SkillsSecondPass/prototypes/skill-manifest-schema-1-0-0.json",
+  "$id": "CatchAllSkill",
+  "name": "Simple Skill",
+  "version": "1.0",
+  "description": "This is the simplest skill you can think of, it just defines an endpoint that can receive any activity",
+  "publisherName": "Microsoft",
+  "privacyUrl": "https://myskill.com/privacy.html",
+  "copyright": "Copyright (c) Microsoft Corporation. All rights reserved.",
+  "license": "",
+  "iconUrl": "https://myskill.com/icon.png",
+  "tags": [
+    "sample"
+  ],
+  "endpoints": [
+    {
+      "name": "default",
+      "protocol": "BotFrameworkV3",
+      "description": "Production  endpoint for SkillBot.",
+      "endpointUrl": "http://contoso.com/api/messages",
+      "msAppId": "00000000-0000-0000-0000-000000000000"
+    }
+  ]
+}

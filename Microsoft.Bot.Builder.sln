@@ -169,11 +169,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Prototypes", "Prototypes", 
 	ProjectSection(SolutionItems) = preProject
 		prototypes\cc-skill-manifest-sample.json = prototypes\cc-skill-manifest-sample.json
 		prototypes\SampleComplexSkillManifest.json = prototypes\SampleComplexSkillManifest.json
+		prototypes\SampleEchoSkillManifest.json = prototypes\SampleEchoSkillManifest.json
+		prototypes\SampleSimpleSkillManifest.json = prototypes\SampleSimpleSkillManifest.json
 		prototypes\skill-manifest-schema-1-0-0.json = prototypes\skill-manifest-schema-1-0-0.json
 		prototypes\skill-manifest-schema-1-0-preview-1.json = prototypes\skill-manifest-schema-1-0-preview-1.json
-		prototypes\SkillManifest-EchoSkill.json = prototypes\SkillManifest-EchoSkill.json
 		prototypes\SkillManifest-Inline.json = prototypes\SkillManifest-Inline.json
-		prototypes\SkillManifest-Simple.json = prototypes\SkillManifest-Simple.json
 		prototypes\SkillManifestVA.json = prototypes\SkillManifestVA.json
 	EndProjectSection
 	ProjectSection(FolderGlobals) = preProject
