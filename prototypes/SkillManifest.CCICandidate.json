@@ -19,7 +19,7 @@
             "protocol": "BotframeworkV3",
             "description": "Production  endpoint for SkillBot.",
             "endpointUrl": "http://contoso.com/api/messages",
-            "msAppId": "00000000-0000-0000-0000-00000000000"
+            "msAppId": "00000000-0000-0000-0000-000000000000"
         }
     },
     "activities": {

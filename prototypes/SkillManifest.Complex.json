@@ -19,13 +19,13 @@
             "protocol": "BotframeworkV3",
             "description": "Production  endpoint for SkillBot.",
             "endpointUrl": "http://contoso.com/api/messages",
-            "msAppId": "00000000-0000-0000-0000-00000000000"
+            "msAppId": "00000000-0000-0000-0000-000000000000"
         },
         "staging": {
             "protocol": "BotframeworkV3",
             "description": "Staging endpoint for SkillBot.",
             "endpointUrl": "http://staging.contoso.com/api/messages",
-            "msAppId": "11111111-1111-1111-1111-11111111111"
+            "msAppId": "11111111-1111-1111-1111-111111111111"
         }
     },
     "language": {
