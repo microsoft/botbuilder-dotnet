@@ -23,7 +23,7 @@
     }
   ],
   "activities": {
-    "message": {
+    "passthroughMessage": {
       "type": "message",
       "description": "A message activity containing the utterance that the skill will echo back to the user"
     }

@@ -25,7 +25,7 @@
     {
       "name": "eu",
       "protocol": "BotFrameworkV3",
-      "description": "Production  endpoint for SkillBot un EU",
+      "description": "Production  endpoint for SkillBot in Europe",
       "endpointUrl": "http://contoso.com/api/messages",
       "msAppId": "11111111-0000-0000-0000-000000000000"
     }
