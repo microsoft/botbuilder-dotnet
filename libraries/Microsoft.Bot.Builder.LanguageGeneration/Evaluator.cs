@@ -399,19 +399,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
             }
 
-            const string lgTemplate = "lgTemplate";
+            const string template = "template";
 
-            if (name.Equals(lgTemplate))
+            if (name.Equals(template))
             {
-                return new ExpressionEvaluator(lgTemplate, BuiltInFunctions.Apply(this.LgTemplate()), ReturnType.Object, this.ValidateLgTemplate);
+                return new ExpressionEvaluator(template, BuiltInFunctions.Apply(this.TemplateFunction()), ReturnType.Object, this.ValidateTemplateFunction);
             }
 
             return baseLookup(name);
         };
 
-        // Evaluator for lgTemplate(templateName, ...args) 
-        // normal case we can just use templateName(...args), but lgTemplate is particularly useful when the template name is not pre-known
-        private Func<IReadOnlyList<object>, object> LgTemplate()
+        // Evaluator for template(templateName, ...args) 
+        // normal case we can just use templateName(...args), but template function is particularly useful when the template name is not pre-known
+        private Func<IReadOnlyList<object>, object> TemplateFunction()
         => (IReadOnlyList<object> args) =>
         {
             var templateName = args[0].ToString();
@@ -419,11 +419,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return this.EvaluateTemplate(templateName, newScope);
         };
 
-        private void ValidateLgTemplate(Expression expression)
+        // Validator for template(...)
+        private void ValidateTemplateFunction(Expression expression)
         {
             if (expression.Children.Length == 0)
             {
-                throw new Exception("No template name is provided when calling lgTemplate, expected: lgTemplate(templateName, ...args) ");
+                throw new Exception("No template name is provided when calling template, expected: template(templateName, ...args) ");
             }
 
             var children0 = expression.Children[0];
