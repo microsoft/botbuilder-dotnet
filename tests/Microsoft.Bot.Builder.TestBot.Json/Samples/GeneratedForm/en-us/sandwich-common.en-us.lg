@@ -82,7 +82,7 @@
 - @{join(foreach(dialog.requiredProperties, property, readingProperty(property)), ', ')}
 
 # readingProperty(property)
-- @@{toLower(property)}=@@{dialog[property]}
+- @{toLower(property)}=@{dialog[property]}
 
 # confirmChange
 - Is there any property you want to change? (yes/no)
@@ -91,4 +91,18 @@
 - Which property do you want to change?
 
 # notUnderstood
-- Sorry, I do not understand @@{join(foreach(turn.unrecognizedtext, chunk, concat("'", chunk, "'")), ' or ')}\n\n@@{help(null)}
+- Sorry, I do not understand @{join(foreach(turn.unrecognizedtext, chunk, concat("'", chunk, "'")), ' or ')}\n\n@{help(null)}
+
+# CompleteConfirmationName
+- confirmation
+
+# CompleteConfirmation(value)
+- @{Confirmation(value)}
+
+# PropertyToChangeName
+- property
+
+# PropertyToChange(value)
+- @{PROPERTYName(value)}
+
+[sandwich-PropertyNAME.en-us.lg](sandwich-PropertyNAME.en-us.lg)

@@ -147,10 +147,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 entities["utterance"] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = "utterance", Score = 0.0, Type = "string", Value = utterance, Text = utterance } };
             }
 
-            UpdateLastEvent(context, queues, entities);
+            var updated = UpdateLastEvent(context, queues, entities);
             var newQueues = new EventQueues();
             var recognized = AssignEntities(entities, expected, newQueues);
             var unrecognized = SplitUtterance(utterance, recognized);
+            recognized.AddRange(updated);
 
             context.GetState().SetValue(TurnPath.UNRECOGNIZEDTEXT, unrecognized);
             context.GetState().SetValue(TurnPath.RECOGNIZEDENTITIES, recognized);
@@ -185,8 +186,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             return unrecognized;
         }
 
-        private void UpdateLastEvent(SequenceContext context, EventQueues queues, Dictionary<string, List<EntityInfo>> entities)
+        private List<EntityInfo> UpdateLastEvent(SequenceContext context, EventQueues queues, Dictionary<string, List<EntityInfo>> entities)
         {
+            var recognized = new List<EntityInfo>();
             if (context.GetState().TryGetValue<string>(DialogPath.LastEvent, out var evt))
             {
                 switch (evt)
@@ -208,6 +210,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                                 if (common.Count() == 1)
                                 {
                                     // Resolve and move to SetProperty
+                                    recognized.Add(info);
                                     infos.Clear();
                                     entityToProperty.Entity = info;
                                     entityToProperty.Expected = true;
@@ -233,6 +236,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                                 if (choice != null)
                                 {
                                     // Resolve and move to SetProperty
+                                    recognized.Add(info);
                                     infos.Clear();
                                     queues.ChooseProperty.Dequeue();
                                     choice.Expected = true;
@@ -248,6 +252,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                         }
                 }
             }
+
+            return recognized;
         }
 
         // A big issue is that we want multiple firings.  We can get this from quantification, but not arrays.

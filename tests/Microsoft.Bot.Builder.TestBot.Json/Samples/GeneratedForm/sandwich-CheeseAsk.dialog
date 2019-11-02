@@ -21,11 +21,6 @@
             "expectedProperties": [
                 "Cheese"
             ]
-        },
-        {
-            "$type": "Microsoft.SetProperty",
-            "property": "$lastExpectedProperty",
-            "value": "'Cheese'"
         }
     ]
 }

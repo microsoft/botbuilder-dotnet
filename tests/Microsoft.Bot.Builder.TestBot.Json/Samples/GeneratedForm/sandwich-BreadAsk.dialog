@@ -21,11 +21,6 @@
             "expectedProperties": [
                 "Bread"
             ]
-        },
-        {
-            "$type": "Microsoft.SetProperty",
-            "property": "$lastExpectedProperty",
-            "value": "'Bread'"
         }
     ]
 }
