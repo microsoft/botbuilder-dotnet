@@ -62,8 +62,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            var eventValue = (this.EventValue != null) ? dc.GetState().GetValue<object>(this.EventValue) : null;
-            var handled = await dc.EmitEventAsync(EventName, eventValue, BubbleEvent, false, cancellationToken).ConfigureAwait(false);
+            var handled = false;
+            if (eventValue != null)
+            {
+                var (value, valueError) = this.eventValue.TryEvaluate(dc.GetState());
+                if (valueError == null)
+                {
+                    handled = await dc.EmitEventAsync(EventName, value, BubbleEvent, false, cancellationToken).ConfigureAwait(false);
+                } 
+                else 
+                {
+                    throw new Exception($"Expression evaluation resulted in an error. Expression: {eventValue.ToString()}. Error: {valueError}");
+                }               
+            }
+            else
+            {
+                handled = await dc.EmitEventAsync(EventName, EventValue, BubbleEvent, false, cancellationToken).ConfigureAwait(false);
+            }
+
             return await dc.EndDialogAsync(handled, cancellationToken).ConfigureAwait(false);
         }
 
