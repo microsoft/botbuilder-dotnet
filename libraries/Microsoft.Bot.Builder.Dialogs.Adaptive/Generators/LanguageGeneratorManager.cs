@@ -26,6 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         public LanguageGeneratorManager(ResourceExplorer resourceExplorer)
         {
             this.resourceExplorer = resourceExplorer;
+
             // load all LG resources
             foreach (var resource in this.resourceExplorer.GetResources("lg"))
             {
