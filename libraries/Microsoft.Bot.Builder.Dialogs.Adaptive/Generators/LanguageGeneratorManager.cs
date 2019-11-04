@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -25,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         public LanguageGeneratorManager(ResourceExplorer resourceExplorer)
         {
             this.resourceExplorer = resourceExplorer;
-            
+
             // load all LG resources
             foreach (var resource in this.resourceExplorer.GetResources("lg"))
             {
@@ -44,37 +45,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </value>
         public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 
-        public static Func<string, ImportResolverDelegate> MultiLanguageResolverDelegate(ResourceExplorer resourceExplorer) =>
-            (string targetLocale) =>
-               (string source, string id) =>
-               {
-                   var languagePolicy = new LanguagePolicy();
+        public static ImportResolverDelegate ResourceExplorerResolver(string local, Dictionary<string, List<IResource>> resourceMapping)
+        {
+            return (string source, string id) =>
+            {
+                var resources = new List<IResource>();
+                if (resourceMapping.ContainsKey(local))
+                {
+                    resources = resourceMapping[local];
+                }
+                else
+                {
+                    resources = resourceMapping[string.Empty];
+                }
 
-                   var locales = new string[] { string.Empty };
-                   if (!languagePolicy.TryGetValue(targetLocale, out locales))
-                   {
-                       if (!languagePolicy.TryGetValue(string.Empty, out locales))
-                       {
-                           throw new Exception($"No supported language found for {targetLocale}");
-                       }
-                   }
+                var resourceName = Path.GetFileName(PathUtils.NormalizePath(id));
 
-                   var resourceName = Path.GetFileName(PathUtils.NormalizePath(id));
-
-                   foreach (var locale in locales)
-                   {
-                       var resourceId = string.IsNullOrEmpty(locale) ? resourceName : resourceName.Replace(".lg", $".{locale}.lg");
-
-                       if (resourceExplorer.TryGetResource(resourceId, out var resource))
-                       {
-                           var content = resource.ReadTextAsync().GetAwaiter().GetResult();
-
-                           return (content, resourceName);
-                       }
-                   }
-
-                   return (string.Empty, resourceName);
-               };
+                var resource = resources.FirstOrDefault(u => MultiLanguageResourceLoader.ParseLGFile(u.Id).prefix == MultiLanguageResourceLoader.ParseLGFile(resourceName).prefix);
+                if (resource == null)
+                {
+                    return (string.Empty, resourceName);
+                }
+                else
+                {
+                    var content = resource.ReadTextAsync().GetAwaiter().GetResult();
+                    return (content, resourceName);
+                }
+            };
+        }
 
         private void ResourceExplorer_Changed(IResource[] resources)
         {
@@ -87,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(IResource resource)
         {
-            return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, MultiLanguageResolverDelegate(resourceExplorer));
+            return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, MultiLanguageResourceLoader.LoadResources(resourceExplorer));
         }
     }
 }

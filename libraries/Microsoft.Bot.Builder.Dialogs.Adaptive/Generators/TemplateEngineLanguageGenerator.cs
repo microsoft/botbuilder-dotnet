@@ -2,7 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
@@ -14,7 +18,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     {
         private const string DEFAULTLABEL = "Unknown";
 
-        // lazy loading
+        private readonly Dictionary<string, TemplateEngine> multiLangEngines = new Dictionary<string, TemplateEngine>();
+
         private TemplateEngine engine;
 
         /// <summary>
@@ -30,12 +35,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </summary>
         /// <param name="lgText">lg template text.</param>
         /// <param name="id">optional label for the source of the templates (used for labeling source of template errors).</param>
-        /// <param name="multiLanguageResolver">template resource loader delegate (local) -> <see cref="ImportResolverDelegate"/>.</param>
-        public TemplateEngineLanguageGenerator(string lgText, string id = null, Func<string, ImportResolverDelegate> multiLanguageResolver = null)
+        /// <param name="resourceMapping">template resource loader delegate (local) -> <see cref="ImportResolverDelegate"/>.</param>
+        public TemplateEngineLanguageGenerator(string lgText, string id, Dictionary<string, List<IResource>> resourceMapping)
         {
-            this.LGText = lgText ?? string.Empty;
             this.Id = id ?? DEFAULTLABEL;
-            this.MultiLanguageResolver = multiLanguageResolver;
+            foreach (var mappingItem in resourceMapping)
+            {
+                var engine = new TemplateEngine().AddText(lgText ?? string.Empty, Id, LanguageGeneratorManager.ResourceExplorerResolver(mappingItem.Key, resourceMapping));
+                multiLangEngines.Add(mappingItem.Key, engine);
+            }
         }
 
         /// <summary>
@@ -54,22 +62,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// Id of the source of this template (used for labeling errors).
         /// </value>
         public string Id { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets text content of the LG file.
-        /// </summary>
-        /// <value>
-        /// Text content of the LG file.
-        /// </value>
-        public string LGText { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets get <see cref="ImportResolverDelegate"/> from local.
-        /// </summary>
-        /// <value>
-        /// get <see cref="ImportResolverDelegate"/> from local.
-        /// </value>
-        public Func<string, ImportResolverDelegate> MultiLanguageResolver { get; set; }
 
         /// <summary>
         /// Method to generate text from given template and data.
@@ -99,14 +91,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private TemplateEngine InitTemplateEngine(ITurnContext turnContext)
         {
-            if (MultiLanguageResolver != null)
+            var local = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
+            if (multiLangEngines.ContainsKey(local))
             {
-                var local = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
-                engine = new TemplateEngine().AddText(LGText, Id, MultiLanguageResolver(local));
+                return multiLangEngines[local];
             }
-            else if (!string.IsNullOrWhiteSpace(LGText) || !string.IsNullOrWhiteSpace(Id))
+            else if (multiLangEngines.Count > 0 && multiLangEngines.ContainsKey(string.Empty))
             {
-                engine = new TemplateEngine().AddText(LGText, Id);
+                return multiLangEngines[string.Empty];
             }
             else
             {
