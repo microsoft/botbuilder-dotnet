@@ -4,6 +4,9 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
+    /// <summary>
+    /// load all lg resource and split them into different language group.
+    /// </summary>
     public class MultiLanguageResourceLoader
     {
         public static Dictionary<string, List<IResource>> LoadResources(ResourceExplorer resourceExplorer)
