@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents;
+using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Handover;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
@@ -79,16 +80,53 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         [JsonProperty(PropertyName = "sender_action")]
         public string SenderAction { get; set; }
 
+        /// <summary>
+        /// Gets or sets the timestamp.
+        /// </summary>
+        /// <value>Timestamp.</value>
         [JsonProperty(PropertyName = "timestamp")]
         public long TimeStamp { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the message was received while in Standby mode.
+        /// </summary>
+        /// <value>Value indicating whether the message was received while in Standby mode.</value>
         [JsonProperty(PropertyName = "standby")]
-        public bool Standby { get; set; }
+        public bool IsStandby { get; set; }
 
+        /// <summary>
+        /// Gets or sets the value of the postback property.
+        /// </summary>
+        /// <value>The postback payload. Postbacks occur when a postback button, Get Started button, or persistent menu item is tapped.</value>
         [JsonProperty(PropertyName = "postback")]
         public FacebookPostBack PostBack { get; set; }
 
+        /// <summary>
+        /// Gets or sets the value of the optin property.
+        /// </summary>
+        /// <value>The optin field. See https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_optins. </value>
         [JsonProperty(PropertyName = "optin")]
         public FacebookRecipient OptIn { get; set; }
+
+        /// <summary>
+        /// Gets or sets the contents of the pass_thread_control property.
+        /// </summary>
+        /// <value>A <see cref="FacebookPassThreadControl"> holding the contents of the pass_thread_control property.</value>.
+        [JsonProperty(PropertyName = "pass_thread_control")]
+        public FacebookPassThreadControl PassThreadControl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the contents of the take_thread_control property.
+        /// </summary>
+        /// <value>A <see cref="FacebookTakeThreadControl"> holding the contents of the pass_thread_control property.</value>.
+        [JsonProperty(PropertyName = "take_thread_control")]
+        public FacebookTakeThreadControl TakeThreadControl { get; set; }
+
+        /// <summary>
+        ///  Gets or sets the contents of the request_thread_control property.
+        /// </summary>
+        /// <value>A <see cref="FacebookRequestThreadControl"> holding the contents of the pass_thread_control property.</value>.
+        [JsonProperty(PropertyName = "request_thread_control")]
+        public FacebookRequestThreadControl RequestThreadControl { get; set; }
     }
 }

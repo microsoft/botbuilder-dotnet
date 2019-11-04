@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents;
 using Microsoft.Bot.Schema;
 using Moq;
 using Newtonsoft.Json;
@@ -100,6 +101,57 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
 
             Assert.NotNull(activity.Text);
             Assert.Equal(facebookMessage.PostBack.Payload, activity.Text);
+        }
+
+        [Fact]
+        public void ProcessSingleMessageShouldReturnActivityWithPassThreadControlRequest()
+        {
+            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/PayloadWithPassThreadControl.json");
+            var facebookResponse = JsonConvert.DeserializeObject<FacebookResponseEvent>(facebookMessageJson);
+
+            var payload = new List<FacebookMessage>();
+
+            payload = facebookResponse.Entry[0].Messaging;
+
+            var activity = FacebookHelper.ProcessSingleMessage(payload[0]);
+            Assert.Equal(facebookResponse.Entry[0].Messaging[0].Recipient.Id, activity.Recipient.Id);
+            Assert.Equal(facebookResponse.Entry[0].Messaging[0].Sender.Id, activity.Conversation.Id);
+            Assert.Equal(facebookResponse.Entry[0].Messaging[0].Sender.Id, activity.Conversation.Id);
+            Assert.Equal(facebookResponse.Entry[0].Messaging[0].PassThreadControl, activity.Value);
+        }
+
+        [Fact]
+        public void ProcessSingleMessageShouldReturnActivityWithRequestThreadControlRequest()
+        {
+            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/PayloadWithRequestThreadControl.json");
+            var facebookResponse = JsonConvert.DeserializeObject<FacebookResponseEvent>(facebookMessageJson);
+
+            var payload = new List<FacebookMessage>();
+
+            payload = facebookResponse.Entry[0].Messaging;
+
+            var activity = FacebookHelper.ProcessSingleMessage(payload[0]);
+            Assert.Equal(facebookResponse.Entry[0].Messaging[0].Recipient.Id, activity.Recipient.Id);
+            Assert.Equal(facebookResponse.Entry[0].Messaging[0].Sender.Id, activity.Conversation.Id);
+            Assert.Equal(facebookResponse.Entry[0].Messaging[0].Sender.Id, activity.Conversation.Id);
+            Assert.Equal(facebookResponse.Entry[0].Messaging[0].RequestThreadControl, activity.Value);
+        }
+
+        [Fact]
+        public void ProcessSingleMessageShouldReturnActivityWithTakeThreadControlRequest()
+        {
+            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/PayloadWithTakeThreadControl.json");
+            var facebookResponse = JsonConvert.DeserializeObject<FacebookResponseEvent>(facebookMessageJson);
+
+            var payload = new List<FacebookMessage>();
+
+            payload = facebookResponse.Entry[0].Messaging;
+
+            var activity = FacebookHelper.ProcessSingleMessage(payload[0]);
+            Assert.Equal(facebookResponse.Entry[0].Messaging[0].Recipient.Id, activity.Recipient.Id);
+            Assert.Equal(facebookResponse.Entry[0].Messaging[0].Sender.Id, activity.Conversation.Id);
+            Assert.Equal(facebookResponse.Entry[0].Messaging[0].Sender.Id, activity.Conversation.Id);
+            Assert.Equal(facebookResponse.Entry[0].Messaging[0].TakeThreadControl, activity.Value);
         }
 
         [Fact]

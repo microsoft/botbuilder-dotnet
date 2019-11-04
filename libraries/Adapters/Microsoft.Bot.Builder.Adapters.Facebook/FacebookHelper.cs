@@ -32,7 +32,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             facebookMessage.Message.Text = activity.Text;
 
-            // map these fields to their appropriate place
             if (activity.ChannelData != null)
             {
                 facebookMessage = activity.GetChannelData<FacebookMessage>();
@@ -52,7 +51,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             if (activity.Attachments != null && activity.Attachments.Count > 0)
             {
-                var payload = JsonConvert.DeserializeObject<MessagePayload>(JsonConvert.SerializeObject(
+                var payload = JsonConvert.DeserializeObject<AttachmentPayload>(JsonConvert.SerializeObject(
                     activity.Attachments[0].Content,
                     Formatting.None,
                     new JsonSerializerSettings
@@ -60,13 +59,13 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                         NullValueHandling = NullValueHandling.Ignore,
                     }));
                 
-                var attach = new FacebookAttachment
+                var facebookAttachment = new FacebookAttachment
                 {
                     Type = activity.Attachments[0].ContentType,
                     Payload = payload,
                 };
 
-                facebookMessage.Message.Attachment = attach;
+                facebookMessage.Message.Attachment = facebookAttachment;
             }
 
             return facebookMessage;
@@ -112,18 +111,24 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 Text = null,
             };
 
+            if (message.PassThreadControl != null)
+            {
+                activity.Value = message.PassThreadControl;
+            }
+            else if (message.RequestThreadControl != null)
+            {
+                activity.Value = message.RequestThreadControl;
+            }
+            else if (message.TakeThreadControl != null)
+            {
+                activity.Value = message.TakeThreadControl;
+            }
+
             if (message.Message != null)
             {
-                activity.Type = ActivityTypes.Message;
                 activity.Text = message.Message.Text;
-
-                if (activity.GetChannelData<FacebookMessage>().Message.IsEcho)
-                {
-                    activity.Type = ActivityTypes.Event;
-                }
-
-                // copy all fields (like attachments, sticker, quick_reply, nlp, etc.)
-                activity.ChannelData = message.Message;
+                activity.Type = activity.GetChannelData<FacebookMessage>().Message.IsEcho ? ActivityTypes.Event : ActivityTypes.Message;
+                
                 if (message.Message.Attachments != null && message.Message.Attachments.Count > 0)
                 {
                     activity.Attachments = HandleMessageAttachments(message.Message);
@@ -138,6 +143,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             return activity;
         }
 
+        /// <summary>
+        /// Extracts attachments from the facebook message.
+        /// </summary>
+        /// <param name="message">The <see cref="Message"/>used for input.</param>
+        /// <returns>A List of <see cref="Attachment"/>.</returns>
         public static List<Attachment> HandleMessageAttachments(Message message)
         {
             var attachmentsList = new List<Attachment>();

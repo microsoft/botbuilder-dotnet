@@ -226,24 +226,101 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsyncShouldFailWithActivityTypeNotMessage()
+        public async void SendActivitiesAsyncShouldPostToFacebookOnPassThreadControl()
         {
-            var facebookAdapter = new FacebookAdapter(new Mock<FacebookClientWrapper>(_testOptions).Object);
+            const string testResponse = "Test Response";
+            var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
             var activity = new Activity
             {
                 Type = ActivityTypes.Event,
+                Text = "Test text",
+                Name = "pass_thread_control",
+                Conversation = new ConversationAccount()
+                {
+                    Id = "Test id",
+                },
+                ChannelData = new FacebookMessage("recipientId", new Message(), "messagingtype"),
             };
             Activity[] activities = { activity };
+            ResourceResponse[] responses = null;
+
+            facebookClientWrapper.Setup(api => api.SendMessageAsync(It.IsAny<string>(), It.IsAny<FacebookMessage>(), It.IsAny<HttpMethod>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(testResponse));
+            facebookClientWrapper.Setup(api => api.PassThreadControlAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
 
             using (var turnContext = new TurnContext(facebookAdapter, activity))
             {
-                await Assert.ThrowsAsync<Exception>(async () =>
-                {
-                    await facebookAdapter.SendActivitiesAsync(turnContext, activities, default);
-                });
+                responses = await facebookAdapter.SendActivitiesAsync(turnContext, activities, default);
             }
+
+            Assert.Equal(testResponse, responses[0].Id);
+            facebookClientWrapper.Verify(api => api.PassThreadControlAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
 
+        [Fact]
+        public async void SendActivitiesAsyncShouldPostToFacebookOnTakeThreadControl()
+        {
+            const string testResponse = "Test Response";
+            var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Event,
+                Text = "Test text",
+                Name = "take_thread_control",
+                Conversation = new ConversationAccount()
+                {
+                    Id = "Test id",
+                },
+                ChannelData = new FacebookMessage("recipientId", new Message(), "messagingtype"),
+            };
+            Activity[] activities = { activity };
+            ResourceResponse[] responses = null;
+
+            facebookClientWrapper.Setup(api => api.SendMessageAsync(It.IsAny<string>(), It.IsAny<FacebookMessage>(), It.IsAny<HttpMethod>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(testResponse));
+            facebookClientWrapper.Setup(api => api.TakeThreadControlAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
+
+            using (var turnContext = new TurnContext(facebookAdapter, activity))
+            {
+                responses = await facebookAdapter.SendActivitiesAsync(turnContext, activities, default);
+            }
+
+            Assert.Equal(testResponse, responses[0].Id);
+            facebookClientWrapper.Verify(api => api.TakeThreadControlAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public async void SendActivitiesAsyncShouldPostToFacebookOnRequestThreadControl()
+        {
+            const string testResponse = "Test Response";
+            var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Event,
+                Text = "Test text",
+                Name = "request_thread_control",
+                Conversation = new ConversationAccount()
+                {
+                    Id = "Test id",
+                },
+                ChannelData = new FacebookMessage("recipientId", new Message(), "messagingtype"),
+            };
+            Activity[] activities = { activity };
+            ResourceResponse[] responses = null;
+
+            facebookClientWrapper.Setup(api => api.SendMessageAsync(It.IsAny<string>(), It.IsAny<FacebookMessage>(), It.IsAny<HttpMethod>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(testResponse));
+            facebookClientWrapper.Setup(api => api.RequestThreadControlAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
+
+            using (var turnContext = new TurnContext(facebookAdapter, activity))
+            {
+                responses = await facebookAdapter.SendActivitiesAsync(turnContext, activities, default);
+            }
+
+            Assert.Equal(testResponse, responses[0].Id);
+            facebookClientWrapper.Verify(api => api.RequestThreadControlAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        }
+        
         [Fact]
         public async Task UpdateActivityAsyncShouldThrowNotImplementedException()
         {

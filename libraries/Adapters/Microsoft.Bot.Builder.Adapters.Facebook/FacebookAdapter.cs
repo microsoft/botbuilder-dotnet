@@ -20,6 +20,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
     public class FacebookAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         private const string HubModeSubscribe = "subscribe";
+        
+        /// <summary>
+        /// The constant ID representing the page inbox.
+        /// </summary>
+        private const string PageInboxId = "263902037430900";
 
         private readonly FacebookClientWrapper _facebookClient;
 
@@ -61,9 +66,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             foreach (var activity in activities)
             {
-                if (activity.Type != ActivityTypes.Message)
+                if (activity.Type != ActivityTypes.Message && activity.Type != ActivityTypes.Event)
                 {
-                    throw new Exception("Only Activities of type Message are supported for sending.");
+                    continue;
                 }
 
                 var message = FacebookHelper.ActivityToFacebook(activity);
@@ -75,6 +80,23 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 }
 
                 var res = await _facebookClient.SendMessageAsync("/me/messages", message, null, cancellationToken).ConfigureAwait(false);
+
+                if (activity.Type == ActivityTypes.Event)
+                {
+                    if (activity.Name.Equals("pass_thread_control", StringComparison.InvariantCulture))
+                    {
+                        var recipient = (string)activity.Value == "inbox" ? PageInboxId : (string)activity.Value;
+                        await _facebookClient.PassThreadControlAsync(recipient, activity.Conversation.Id, "Pass thread control").ConfigureAwait(false);
+                    }
+                    else if (activity.Name.Equals("take_thread_control", StringComparison.InvariantCulture))
+                    {
+                        await _facebookClient.TakeThreadControlAsync(activity.Conversation.Id, "Take thread control from a secondary receiver").ConfigureAwait(false);
+                    }
+                    else if (activity.Name.Equals("request_thread_control", StringComparison.InvariantCulture))
+                    {
+                        await _facebookClient.RequestThreadControlAsync(activity.Conversation.Id, "Request thread control to the primary receiver").ConfigureAwait(false);
+                    }
+                }
 
                 var response = new ResourceResponse()
                 {
@@ -153,54 +175,38 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 return;
             }
 
-            string stringifyBody;
+            string stringifiedBody;
 
             using (var sr = new StreamReader(request.Body))
             {
-                stringifyBody = sr.ReadToEnd();
+                stringifiedBody = sr.ReadToEnd();
             }
 
-            if (!_facebookClient.VerifySignature(request, stringifyBody))
+            if (!_facebookClient.VerifySignature(request, stringifiedBody))
             {
                 await FacebookHelper.WriteAsync(response, HttpStatusCode.Unauthorized, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
                 throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
             }
 
-            FacebookResponseEvent facebookEvent = null;
+            FacebookResponseEvent facebookResponseEvent = null;
 
-            facebookEvent = JsonConvert.DeserializeObject<FacebookResponseEvent>(stringifyBody);
+            facebookResponseEvent = JsonConvert.DeserializeObject<FacebookResponseEvent>(stringifiedBody);
 
-            foreach (var entry in facebookEvent.Entry)
+            foreach (var entry in facebookResponseEvent.Entry)
             {
                 var payload = new List<FacebookMessage>();
 
-                payload = entry.Changes ?? entry.Messaging;
+                payload = entry.Changes ?? entry.Messaging ?? entry.Standby;
 
                 foreach (var message in payload)
                 {
+                    message.IsStandby = entry.Standby != null;
+
                     var activity = FacebookHelper.ProcessSingleMessage(message);
 
                     using (var context = new TurnContext(this, activity))
                     {
                         await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
-                    }
-                }
-
-                // Handle standby messages (this bot is not the active receiver)
-                if (entry.Standby != null)
-                {
-                    payload = entry.Standby;
-
-                    foreach (var message in payload)
-                    {
-                        // Indicate that this message was received in standby mode rather than normal mode.
-                        message.Standby = true;
-                        var activity = FacebookHelper.ProcessSingleMessage(message);
-
-                        using (var context = new TurnContext(this, activity))
-                        {
-                            await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
-                        }
                     }
                 }
             }

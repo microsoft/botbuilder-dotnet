@@ -26,14 +26,14 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <summary>
         /// Gets or sets a list of attachments.
         /// </summary>
-        /// <value>Attachments.</value>
+        /// <value>Attachments that could come with a Facebook message.</value>
         [JsonProperty(PropertyName = "attachments")]
         public List<FacebookAttachment> Attachments { get; set; }
 
         /// <summary>
         /// Gets or sets the attachment.
         /// </summary>
-        /// <value>Attachment.</value>
+        /// <value>Single attachment that will be sent back to Facebook.</value>
         [JsonProperty(PropertyName = "attachment")]
         public FacebookAttachment Attachment { get; set; }
 
@@ -52,8 +52,19 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         [JsonProperty(PropertyName = "quick_replies")]
         public List<FacebookQuickReply> QuickReplies { get; set; } = new List<FacebookQuickReply>();
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the message was sent from the page itself.
+        /// </summary>
+        /// <value>A value indicating whether the message was sent from the page itself.</value>
         [JsonProperty(PropertyName = "is_echo")]
         public bool IsEcho { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Mid.
+        /// </summary>
+        /// <value>Message ID.</value>
+        [JsonProperty(PropertyName = "mid")]
+        public string Mid { get; set; }
 
         public bool ShouldSerializeQuickReplies()
         {

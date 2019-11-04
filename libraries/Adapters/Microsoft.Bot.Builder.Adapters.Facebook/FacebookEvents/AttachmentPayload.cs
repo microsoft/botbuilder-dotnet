@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
 {
-    public class MessagePayload
+    public class AttachmentPayload
     {
         /// <summary>
         /// Gets or sets the url of the attachment.
