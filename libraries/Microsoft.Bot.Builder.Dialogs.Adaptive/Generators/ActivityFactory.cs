@@ -40,6 +40,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>activity.</returns>
         public static Activity CreateActivity(string lgStringResult)
         {
+            var diagnostics = ActivityChecker.Check(lgStringResult);
+            var errors = diagnostics.Where(u => u.Severity == DiagnosticSeverity.Error).ToList();
+            if (errors.Count != 0)
+            {
+                throw new Exception(string.Join("\n", errors));
+            }
+
             JObject lgStructuredResult;
             try
             {

@@ -54,45 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 result.Add(BuildDiagnostic($"type '{type}' is not support currently."));
             }
 
-            if (result.Count > 0)
-            {
-                return result;
-            }
-
-            return SchemaCheck(lgJObj);
-        }
-
-        private static List<Diagnostic> SchemaCheck(JObject lgJObj)
-        {
-            var result = new List<Diagnostic>();
-            var assembly = Assembly.GetExecutingAssembly();
-
-            using (var sr = new StreamReader(assembly.GetManifestResourceStream("Microsoft.Bot.Builder.Dialogs.Adaptive.Generators.StructuredLG.schema")))
-            {
-                var schemaContent = sr.ReadToEnd();
-                var schema = JSchema.Parse(schemaContent);
-                ChangePropertiesToLowerCase(lgJObj);
-
-                var valid = lgJObj.IsValid(schema, out IList<ValidationError> errors);
-
-                if (!valid)
-                {
-                    foreach (var error in errors)
-                    {
-                        result.Add(BuildDiagnostic($"schema error : {error.Message}"));
-                    }
-                }
-
-                return result;
-            }
-        }
-
-        private static void ChangePropertiesToLowerCase(JObject jsonObject)
-        {
-            foreach (var property in jsonObject.Properties().ToList())
-            {
-                property.Replace(new JProperty(property.Name.ToLower(), property.Value));
-            }
+            return result;
         }
 
         private static List<Diagnostic> CheckActivity(JObject lgJObj)

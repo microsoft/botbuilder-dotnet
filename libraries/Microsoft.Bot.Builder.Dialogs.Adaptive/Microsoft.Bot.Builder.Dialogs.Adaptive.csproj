@@ -63,7 +63,6 @@
     <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Condition=" '$(IsBuildServer)' != '' " Version="$(PreviewPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
     <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(IsBuildServer)' != '' " Version="$(PreviewPackageVersion)" />
-    <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.12-beta1" />
   </ItemGroup>
 
   <ItemGroup>
