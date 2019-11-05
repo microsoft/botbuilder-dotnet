@@ -225,17 +225,17 @@ namespace Microsoft.Bot.Expressions.Tests
         public static IEnumerable<object[]> Data => new[]
         {
             #region SetPathToProperty test
-            Test("setPathToValue(path.simple, 3) + path.simple", 6),
-            Test("setPathToValue(path.simple, 5) + path.simple", 10),
-            Test("setPathToValue(path.array[0], 7) + path.array[0]", 14),
-            Test("setPathToValue(path.array[1], 9) + path.array[1]", 18),
-            Test("setPathToValue(path.darray[2][0], 11) + path.darray[2][0]", 22),
-            Test("setPathToValue(path.darray[2][3].foo, 13) + path.darray[2][3].foo", 26),
-            Test("setPathToValue(path.overwrite, 3) + setPathToValue(path.overwrite[0], 4) + path.overwrite[0]", 11),
-            Test("setPathToValue(path.overwrite[0], 3) + setPathToValue(path.overwrite, 4) + path.overwrite", 11),
-            Test("setPathToValue(path.overwrite.prop, 3) + setPathToValue(path.overwrite, 4) + path.overwrite", 11),
-            Test("setPathToValue(path.overwrite.prop, 3) + setPathToValue(path.overwrite[0], 4) + path.overwrite[0]", 11),
-            Test("setPathToValue(path.x.y.z, null)", null),
+            //Test("setPathToValue(path.simple, 3) + path.simple", 6),
+            //Test("setPathToValue(path.simple, 5) + path.simple", 10),
+            //Test("setPathToValue(path.array[0], 7) + path.array[0]", 14),
+            //Test("setPathToValue(path.array[1], 9) + path.array[1]", 18),
+            //Test("setPathToValue(path.darray[2][0], 11) + path.darray[2][0]", 22),
+            //Test("setPathToValue(path.darray[2][3].foo, 13) + path.darray[2][3].foo", 26),
+            //Test("setPathToValue(path.overwrite, 3) + setPathToValue(path.overwrite[0], 4) + path.overwrite[0]", 11),
+            //Test("setPathToValue(path.overwrite[0], 3) + setPathToValue(path.overwrite, 4) + path.overwrite", 11),
+            //Test("setPathToValue(path.overwrite.prop, 3) + setPathToValue(path.overwrite, 4) + path.overwrite", 11),
+            //Test("setPathToValue(path.overwrite.prop, 3) + setPathToValue(path.overwrite[0], 4) + path.overwrite[0]", 11),
+            //Test("setPathToValue(path.x.y.z, null)", null),
             #endregion
 
             #region Operators test

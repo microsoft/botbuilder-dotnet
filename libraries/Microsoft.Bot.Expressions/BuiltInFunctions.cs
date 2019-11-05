@@ -1398,13 +1398,13 @@ namespace Microsoft.Bot.Expressions
                         {
                             { iteratorName, AccessIndex(ilist, idx).value },
                         };
-                        var newScope = new Dictionary<string, object>
+                        var newMemory = new Dictionary<string, IMemory>
                         {
                             { "$global", state },
-                            { "$local", local },
+                            { "$local", new SimpleObjectMemory(local) },
                         };
 
-                        (var r, var e) = expression.Children[2].TryEvaluate(newScope);
+                        (var r, var e) = expression.Children[2].TryEvaluate(new ComposedMemory(newMemory));
                         if (e != null)
                         {
                             return (null, e);
@@ -1443,13 +1443,13 @@ namespace Microsoft.Bot.Expressions
                         {
                             { iteratorName, AccessIndex(ilist, idx).value },
                         };
-                        var newScope = new Dictionary<string, object>
+                        var newMemory = new Dictionary<string, IMemory>
                         {
                             { "$global", state },
-                            { "$local", local },
+                            { "$local", new SimpleObjectMemory(local) },
                         };
 
-                        (var r, var e) = expression.Children[2].TryEvaluate(newScope);
+                        (var r, var e) = expression.Children[2].TryEvaluate(new ComposedMemory(newMemory));
                         if (e != null)
                         {
                             return (null, e);
