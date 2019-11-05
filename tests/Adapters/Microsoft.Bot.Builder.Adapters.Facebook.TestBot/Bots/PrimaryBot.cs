@@ -13,10 +13,8 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot.Bots
 {
-    public class EchoBot : ActivityHandler
+    public class PrimaryBot : ActivityHandler
     {
-        private const string PageInboxId = "263902037430900";
-
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             var activity = MessageFactory.Text("Hello and Welcome!");
@@ -25,29 +23,29 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot.Bots
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.GetChannelData<FacebookMessage>().IsStandby)
-            {
-                if ((turnContext.Activity as Activity)?.Text == "Little")
-                {
-                    var activity = MessageFactory.Text("Primary Bot taking back control...");
-                    activity.Type = ActivityTypes.Event;
-
-                    //Action
-                    (activity as IEventActivity).Name = "take_thread_control";
-                    await turnContext.SendActivityAsync(activity, cancellationToken);
-                }
-            }
-            else if (turnContext.Activity.Attachments != null)
+            if (turnContext.Activity.Attachments != null)
             {
                 foreach (var attachment in turnContext.Activity.Attachments)
                 {
                     var activity = MessageFactory.Text($" I got {turnContext.Activity.Attachments.Count} attachments");
 
                     var image = new Attachment(
-                       attachment.ContentType,
-                       content: attachment.Content);
+                        attachment.ContentType,
+                        content: attachment.Content);
 
                     activity.Attachments.Add(image);
+                    await turnContext.SendActivityAsync(activity, cancellationToken);
+                }
+            }
+            else if (turnContext.Activity.GetChannelData<FacebookMessage>().IsStandby)
+            {
+                if ((turnContext.Activity as Activity)?.Text == "Invoke a take")
+                {
+                    var activity = MessageFactory.Text("Hi! I'm the primary bot!");
+                    activity.Type = ActivityTypes.Event;
+
+                    //Action
+                    ((IEventActivity)activity).Name = HandoverConstants.TakeThreadControl;
                     await turnContext.SendActivityAsync(activity, cancellationToken);
                 }
             }
@@ -81,8 +79,8 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot.Bots
                     case "Handover":
                         activity = MessageFactory.Text("Redirecting...");
                         activity.Type = ActivityTypes.Event;
-                        (activity as IEventActivity).Name = "pass_thread_control";
-                        (activity as IEventActivity).Value = "inbox";
+                        ((IEventActivity)activity).Name = HandoverConstants.PassThreadControl;
+                        ((IEventActivity)activity).Value = "inbox";
                         break;
                     case "bot template":
                         activity = MessageFactory.Attachment(CreateTemplateAttachment(Directory.GetCurrentDirectory() + @"/Resources/HandoverBotsTemplatePayload.json"));
@@ -92,19 +90,12 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot.Bots
                         activity.Type = ActivityTypes.Event;
 
                         //Action
-                        (activity as IEventActivity).Name = "pass_thread_control";
+                        ((IEventActivity)activity).Name = HandoverConstants.PassThreadControl;
 
                         //AppId
-                        (activity as IEventActivity).Value = "<SECOND RECEIVER APP ID>";
+                        ((IEventActivity)activity).Value = "<SECONDARY RECEIVER APP ID>";
                         break;
-                    case "TakeControl":
-                        activity = MessageFactory.Text("Primary Bot Taking control...");
-                        activity.Type = ActivityTypes.Event;
-
-                        //Action
-                        (activity as IEventActivity).Name = "take_thread_control";
-                        break;
-                    case "OtherBot":
+                    case "Other Bot":
                         activity = MessageFactory.Text($"Secondary bot is requesting me the thread control. Passing thread control!");
                         break;
                     default:
@@ -120,33 +111,37 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot.Bots
         {
             if (turnContext.Activity.Value != null)
             {
-                var metadata = (turnContext.Activity.Value as FacebookThreadControl).Metadata;
-
-                if (metadata == null)
+                var metadata = ((FacebookThreadControl)turnContext.Activity.Value).Metadata;
+                var activity = new Activity();
+                switch (metadata)
                 {
-                    var requester = (turnContext.Activity.Value as FacebookRequestThreadControl).RequestedOwnerAppId;
+                    case null:
+                        var requester = ((FacebookRequestThreadControl)turnContext.Activity.Value).RequestedOwnerAppId;
 
-                    if (requester == PageInboxId)
-                    {
-                        var activity = MessageFactory.Text($"The Inbox is requesting me the thread control. Passing thread control!");
+                        if (requester == HandoverConstants.PageInboxId)
+                        {
+                            activity = MessageFactory.Text($"The Inbox is requesting me the thread control. Passing thread control!");
+                            activity.Type = ActivityTypes.Event;
+                            ((IEventActivity)activity).Name = HandoverConstants.PassThreadControl;
+                            ((IEventActivity)activity).Value = "inbox";
+                            await turnContext.SendActivityAsync(activity, cancellationToken);
+                        }
+
+                        break;
+
+                    case HandoverConstants.MetadataRequestThreadControl:
+
                         activity.Type = ActivityTypes.Event;
-                        (activity as IEventActivity).Name = "pass_thread_control";
-                        (activity as IEventActivity).Value = "inbox";
+                        ((IEventActivity)activity).Name = HandoverConstants.PassThreadControl;
+                        ((IEventActivity)activity).Value = "<SECONDARY RECEIVER APP ID>";
                         await turnContext.SendActivityAsync(activity, cancellationToken);
-                    }
-                }
-                else if (metadata.Equals("Request thread control to the primary receiver"))
-                {
-                    var activity = new Activity();
-                    activity.Type = ActivityTypes.Event;
-                    (activity as IEventActivity).Name = "pass_thread_control";
-                    (activity as IEventActivity).Value = "<APP ID>";
-                    await turnContext.SendActivityAsync(activity, cancellationToken);
-                }
-                else if (metadata.Equals("Pass thread control") || metadata.Equals("Pass thread control from Page Inbox"))
-                {
-                    var activity = MessageFactory.Text("Hello Again Human, I'm the bot");
-                    await turnContext.SendActivityAsync(activity, cancellationToken);
+                        break;
+
+                    case HandoverConstants.MetadataPassThreadControl: 
+                    case "Pass thread control from Page Inbox":
+                        activity = MessageFactory.Text("Hello Again Human, I'm the bot");
+                        await turnContext.SendActivityAsync(activity, cancellationToken);
+                        break;
                 }
             }
         }

@@ -23,30 +23,31 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.Bots
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.GetChannelData<FacebookMessage>().IsStandby)
-            {
-                /*request control al primero */
-                if ((turnContext.Activity as Activity)?.Text == "OtherBot") 
-                {
-                    var activity = new Activity();
-                    activity.Type = ActivityTypes.Event;
-
-                    //Action
-                    (activity as IEventActivity).Name = "request_thread_control";
-                    await turnContext.SendActivityAsync(activity, cancellationToken);
-                }
-            }
-            else if (turnContext.Activity.Attachments != null)
+            if (turnContext.Activity.Attachments != null)
             {
                 foreach (var attachment in turnContext.Activity.Attachments)
                 {
                     var activity = MessageFactory.Text($" I got {turnContext.Activity.Attachments.Count} attachments");
 
                     var image = new Attachment(
-                       attachment.ContentType,
-                       content: attachment.Content);
+                        attachment.ContentType,
+                        content: attachment.Content);
 
                     activity.Attachments.Add(image);
+                    await turnContext.SendActivityAsync(activity, cancellationToken);
+                }
+            }
+            else if (turnContext.Activity.GetChannelData<FacebookMessage>().IsStandby)
+            {
+                if ((turnContext.Activity as Activity)?.Text == "Other Bot")
+                {
+                    var activity = new Activity
+                    {
+                        Type = ActivityTypes.Event,
+                    };
+
+                    // Action
+                    ((IEventActivity)activity).Name = HandoverConstants.RequestThreadControl;
                     await turnContext.SendActivityAsync(activity, cancellationToken);
                 }
             }
@@ -59,14 +60,14 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.Bots
                     case "Pass to primary":
                         activity = MessageFactory.Text("Redirecting to the primary bot...");
                         activity.Type = ActivityTypes.Event;
-                        (activity as IEventActivity).Name = "pass_thread_control";
-                        (activity as IEventActivity).Value = "<PRIMARY RECEIVER APP ID>";
+                        ((IEventActivity)activity).Name = HandoverConstants.PassThreadControl;
+                        ((IEventActivity)activity).Value = "<PRIMARY RECEIVER APP ID>";
                         break;
                     case "Redirected to the bot":
                         activity = MessageFactory.Text("Hello, I'm the secondary bot. How can I help you?");
                         break;
-                    case "Little":
-                        activity = MessageFactory.Text($"You have spoken the forbidden word!"); // escribe que el primero hizo take control
+                    case "Invoke a take":
+                        activity = MessageFactory.Text($"The Primary bot will take back the control");
                         break;
                     default:
                         activity = MessageFactory.Text($"Echo Secondary: {turnContext.Activity.Text}");
@@ -81,11 +82,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.Bots
         {
             if (turnContext.Activity.Value != null)
             {
-                var metadata = (turnContext.Activity.Value as FacebookThreadControl).Metadata;
+                var metadata = ((FacebookThreadControl)turnContext.Activity.Value).Metadata;
 
-                if (metadata.Equals("Pass thread control"))
+                if (metadata.Equals(HandoverConstants.MetadataPassThreadControl))
                 {
-                    var activity = MessageFactory.Text("Hello Human, I'm the secondary bot to help you!");
+                    var activity = MessageFactory.Text("Hello, I'm the secondary bot. How can I help you?");
                     await turnContext.SendActivityAsync(activity, cancellationToken);
                 }
             }

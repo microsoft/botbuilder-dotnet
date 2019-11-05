@@ -11,6 +11,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
         [JsonProperty(PropertyName = "object")]
         public string ResponseObject { get; set; }
 
-        public List<FacebookEntry> Entry { get; }
+        public List<FacebookEntry> Entry { get; } = new List<FacebookEntry>();
     }
 }

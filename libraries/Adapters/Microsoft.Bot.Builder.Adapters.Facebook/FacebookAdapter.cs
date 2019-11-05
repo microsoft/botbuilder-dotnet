@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents;
+using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Handover;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -20,11 +21,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
     public class FacebookAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         private const string HubModeSubscribe = "subscribe";
-        
-        /// <summary>
-        /// The constant ID representing the page inbox.
-        /// </summary>
-        private const string PageInboxId = "263902037430900";
 
         private readonly FacebookClientWrapper _facebookClient;
 
@@ -83,16 +79,16 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
                 if (activity.Type == ActivityTypes.Event)
                 {
-                    if (activity.Name.Equals("pass_thread_control", StringComparison.InvariantCulture))
+                    if (activity.Name.Equals(HandoverConstants.PassThreadControl, StringComparison.InvariantCulture))
                     {
-                        var recipient = (string)activity.Value == "inbox" ? PageInboxId : (string)activity.Value;
+                        var recipient = (string)activity.Value == "inbox" ? HandoverConstants.PageInboxId : (string)activity.Value;
                         await _facebookClient.PassThreadControlAsync(recipient, activity.Conversation.Id, "Pass thread control").ConfigureAwait(false);
                     }
-                    else if (activity.Name.Equals("take_thread_control", StringComparison.InvariantCulture))
+                    else if (activity.Name.Equals(HandoverConstants.TakeThreadControl, StringComparison.InvariantCulture))
                     {
                         await _facebookClient.TakeThreadControlAsync(activity.Conversation.Id, "Take thread control from a secondary receiver").ConfigureAwait(false);
                     }
-                    else if (activity.Name.Equals("request_thread_control", StringComparison.InvariantCulture))
+                    else if (activity.Name.Equals(HandoverConstants.RequestThreadControl, StringComparison.InvariantCulture))
                     {
                         await _facebookClient.RequestThreadControlAsync(activity.Conversation.Id, "Request thread control to the primary receiver").ConfigureAwait(false);
                     }
@@ -194,13 +190,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             foreach (var entry in facebookResponseEvent.Entry)
             {
-                var payload = new List<FacebookMessage>();
-
-                payload = entry.Changes ?? entry.Messaging ?? entry.Standby;
+                var payload = entry.Changes.Count > 0 ? entry.Changes : entry.Messaging.Count > 0 ? entry.Messaging : entry.Standby.Count > 0 ? entry.Standby : new List<FacebookMessage>();
 
                 foreach (var message in payload)
                 {
-                    message.IsStandby = entry.Standby != null;
+                    message.IsStandby = entry.Standby.Count > 0;
 
                     var activity = FacebookHelper.ProcessSingleMessage(message);
 
