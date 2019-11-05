@@ -71,6 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 var schemaContent = sr.ReadToEnd();
                 var schema = JSchema.Parse(schemaContent);
+                ChangePropertiesToLowerCase(lgJObj);
 
                 var valid = lgJObj.IsValid(schema, out IList<ValidationError> errors);
 
@@ -83,6 +84,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 }
 
                 return result;
+            }
+        }
+
+        private static void ChangePropertiesToLowerCase(JObject jsonObject)
+        {
+            foreach (var property in jsonObject.Properties().ToList())
+            {
+                property.Replace(new JProperty(property.Name.ToLower(), property.Value));
             }
         }
 
