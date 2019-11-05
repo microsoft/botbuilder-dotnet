@@ -161,7 +161,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Facebook.Tests", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.Tests\Microsoft.Bot.Builder.Adapters.Facebook.Tests.csproj", "{9F7B2BDF-973B-4639-B890-357EB967B2ED}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Facebook.TestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.TestBot\Microsoft.Bot.Builder.Adapters.Facebook.TestBot.csproj", "{E372D54C-73AA-41DB-A471-81348AC37F36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.csproj", "{E372D54C-73AA-41DB-A471-81348AC37F36}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Facebook", "libraries\Adapters\Microsoft.Bot.Builder.Adapters.Facebook\Microsoft.Bot.Builder.Adapters.Facebook.csproj", "{C8E31CD2-89D4-4659-9557-43EC9C99D984}"
 EndProject
