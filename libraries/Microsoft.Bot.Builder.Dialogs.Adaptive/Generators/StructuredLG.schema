@@ -1,0 +1,436 @@
+﻿{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "type": "object",
+    "definitions": {
+        "herocard": {
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "pattern": "^(?i)herocard$"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "subtitle": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "images": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    ]
+                },
+                "buttons": {
+                    "$ref": "#/definitions/buttons"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "adaptivecard": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "adaptivecard"
+                    ]
+                },
+                "version": {
+                    "type": "string",
+                    "enum": [
+                        "1.0",
+                        "1.1",
+                        "1.2"
+                    ]
+                }
+            },
+            "required": [
+                "type",
+                "version"
+            ]
+        },
+        "animationcard": {
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "pattern": "^(?i)animationcard$"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "subtitle": {
+                    "type": "string"
+                },
+                "autostart": {
+                    "type": "string",
+                    "pattern": "^(?i)true|false$"
+                },
+                "autoloop": {
+                    "type": "string",
+                    "pattern": "^(?i)true|false$"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "media": {
+                    "type": "string"
+                },
+                "buttons": {
+                    "$ref": "#/definitions/buttons"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "audiocard": {
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "pattern": "^(?i)audiocard$"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "subtitle": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "buttons": {
+                    "$ref": "#/definitions/buttons"
+                },
+                "media": {
+                    "type": "string"
+                },
+                "shareable": {
+                    "type": "string",
+                    "pattern": "^(?i)true|false$"
+                },
+                "autoloop": {
+                    "type": "string",
+                    "pattern": "^(?i)true|false$"
+                },
+                "autostart": {
+                    "type": "string",
+                    "pattern": "^(?i)true|false$"
+                },
+                "aspect": {
+                    "type": "string",
+                    "pattern": "^[0-9]+:[0-9]+$"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "cardaction": {
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "pattern": "^(?i)cardaction$"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                },
+                "displaytext": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "oauthcard": {
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "pattern": "^(?i)oauthcard$"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "connectionname": {
+                    "type": "string"
+                },
+                "buttons": {
+                    "$ref": "#/definitions/buttons"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "signincard": {
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "pattern": "^(?i)signincard$"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "buttons": {
+                    "$ref": "#/definitions/buttons"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "thumbnailcard": {
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "pattern": "^(?i)thumbnailcard$"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "subtitle": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "images": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    ]
+                },
+                "buttons": {
+                    "$ref": "#/definitions/buttons"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "videocard": {
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "pattern": "^(?i)videocard$"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "subtitle": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "buttons": {
+                    "$ref": "#/definitions/buttons"
+                },
+                "media": {
+                    "type": "string"
+                },
+                "shareable": {
+                    "type": "string",
+                    "pattern": "^(?i)true|false$"
+                },
+                "autoloop": {
+                    "type": "string",
+                    "pattern": "^(?i)true|false$"
+                },
+                "autostart": {
+                    "type": "string",
+                    "pattern": "^(?i)true|false$"
+                },
+                "aspect": {
+                    "type": "string",
+                    "pattern": "^[0-9]+:[0-9]+$"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "activity": {
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "pattern": "^(?i)activity$"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "speak": {
+                    "type": "string"
+                },
+                "inputhint": {
+                    "type": "string"
+                },
+                "attachments": {
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/adaptivecard"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "suggestedactions": {
+                    "$ref": "#/definitions/button"
+                },
+                "attachmentlayout": {
+                    "type": "string",
+                    "pattern": "^(?i)list|carousel$"
+                }
+            },
+            "required": [
+                "$type",
+                "text"
+            ]
+        },
+        "buttons": {
+            "oneOf": [
+                {
+                    "type": "array",
+                    "items": [
+                        {
+                            "$ref": "#/definitions/button"
+                        }
+                    ]
+                },{
+                    "$ref": "#/definitions/button"
+                }
+            ]
+        },
+        "button": {
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "$ref": "#/definitions/cardaction"
+                }
+            ]
+        },
+        "attachments": {
+            "oneOf": [
+                {
+                    "type": "array",
+                    "items": [
+                        {
+                            "$ref": "#/definitions/attachment"
+                        }
+                    ]
+                },{
+                    "$ref": "#/definitions/attachment"
+                }
+            ]
+        },
+        "attachment": {
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/adaptivecard"
+                },
+                {
+                    "$ref": "#/definitions/animationcard"
+                },
+                {
+                    "$ref": "#/definitions/audiocard"
+                },
+                {
+                    "$ref": "#/definitions/herocard"
+                },
+                {
+                    "$ref": "#/definitions/oauthcard"
+                },
+                {
+                    "$ref": "#/definitions/signincard"
+                },
+                {
+                    "$ref": "#/definitions/thumbnailcard"
+                },
+                {
+                    "$ref": "#/definitions/videocard"
+                }
+            ]
+        }
+    },
+    "oneOf": [
+        {
+            "$ref": "#/definitions/herocard"
+        },
+        {
+            "$ref": "#/definitions/animationcard"
+        },
+        {
+            "$ref": "#/definitions/audiocard"
+        },
+        {
+            "$ref": "#/definitions/oauthcard"
+        },
+        {
+            "$ref": "#/definitions/signincard"
+        },
+        {
+            "$ref": "#/definitions/thumbnailcard"
+        },
+        {
+            "$ref": "#/definitions/videocard"
+        },
+        {
+            "$ref": "#/definitions/activity"
+        }
+    ]
+}

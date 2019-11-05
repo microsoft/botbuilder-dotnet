@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using AdaptiveCards;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
@@ -51,7 +54,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 result.Add(BuildDiagnostic($"type '{type}' is not support currently."));
             }
 
-            return result;
+            if (result.Count > 0)
+            {
+                return result;
+            }
+
+            return SchemaCheck(lgJObj);
+        }
+
+        private static List<Diagnostic> SchemaCheck(JObject lgJObj)
+        {
+            var result = new List<Diagnostic>();
+            var assembly = Assembly.GetExecutingAssembly();
+
+            using (var sr = new StreamReader(assembly.GetManifestResourceStream("Microsoft.Bot.Builder.Dialogs.Adaptive.Generators.StructuredLG.schema")))
+            {
+                var schemaContent = sr.ReadToEnd();
+                var schema = JSchema.Parse(schemaContent);
+
+                var valid = lgJObj.IsValid(schema, out IList<ValidationError> errors);
+
+                if (!valid)
+                {
+                    foreach (var error in errors)
+                    {
+                        result.Add(BuildDiagnostic($"schema error : {error.Message}"));
+                    }
+                }
+
+                return result;
+            }
         }
 
         private static List<Diagnostic> CheckActivity(JObject lgJObj)
