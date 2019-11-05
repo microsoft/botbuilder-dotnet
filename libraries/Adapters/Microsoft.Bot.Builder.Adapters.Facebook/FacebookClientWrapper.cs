@@ -16,6 +16,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
     public class FacebookClientWrapper
     {
+        /// <summary>
+        /// An instance of the FacebookAdapterOptions class.
+        /// </summary>
         private readonly FacebookAdapterOptions _options;
 
         /// <summary>
@@ -161,7 +164,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         }
 
         /// <summary>
-        /// Posts webhook control events to Facebook. 
+        /// Posts webhook control events to Facebook.
         /// </summary>
         /// <param name="postType">The REST post type (GET, PUT, POST, etc).</param>
         /// <param name="content">The string content to be posted to Facebook.</param>

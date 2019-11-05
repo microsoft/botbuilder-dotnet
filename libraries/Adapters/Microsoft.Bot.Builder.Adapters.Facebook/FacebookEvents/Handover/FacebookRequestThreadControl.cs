@@ -1,18 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Handover
 {
-    /// <summary>
-    /// A Facebook thread control message, including appid of requested thread owner and an optional message to send with the request
-    /// <see cref="Metadata"/>.
-    /// </summary>
+    /// <summary>A Facebook thread control message, including appid of requested thread owner and an optional message to send with the request.</summary>
     public class FacebookRequestThreadControl : FacebookThreadControl
     {
         /// <summary>

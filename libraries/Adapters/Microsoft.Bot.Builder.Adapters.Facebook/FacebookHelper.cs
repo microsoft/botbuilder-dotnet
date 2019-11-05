@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                     {
                         NullValueHandling = NullValueHandling.Ignore,
                     }));
-                
+
                 var facebookAttachment = new FacebookAttachment
                 {
                     Type = activity.Attachments[0].ContentType,
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             var activity = new Activity()
             {
                 ChannelId = "facebook",
-                Timestamp = new DateTime(),
+                Timestamp = default(DateTime),
                 Conversation = new ConversationAccount()
                 {
                     Id = message.Sender?.Id,
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             {
                 activity.Text = message.Message.Text;
                 activity.Type = activity.GetChannelData<FacebookMessage>().Message.IsEcho ? ActivityTypes.Event : ActivityTypes.Message;
-                
+
                 if (message.Message.Attachments != null && message.Message.Attachments.Count > 0)
                 {
                     activity.Attachments = HandleMessageAttachments(message.Message);

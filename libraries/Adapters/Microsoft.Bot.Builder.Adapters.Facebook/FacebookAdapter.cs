@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Security.Authentication;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +23,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
     {
         private const string HubModeSubscribe = "subscribe";
 
+        /// <summary>
+        /// An instance of the FacebookClientWrapper class.
+        /// </summary>
         private readonly FacebookClientWrapper _facebookClient;
 
         /// <summary>
@@ -52,11 +56,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <summary>
         /// Standard BotBuilder adapter method to send a message from the bot to the messaging API.
         /// </summary>
-        /// <param name="context">A TurnContext representing the current incoming message and environment.</param>
+        /// <param name="turnContext">A TurnContext representing the current incoming message and environment.</param>
         /// <param name="activities">An array of outgoing activities to be sent back to the messaging API.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext context, Activity[] activities, CancellationToken cancellationToken)
+        public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
             var responses = new List<ResourceResponse>();
 
@@ -79,16 +83,16 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
                 if (activity.Type == ActivityTypes.Event)
                 {
-                    if (activity.Name.Equals(HandoverConstants.PassThreadControl, StringComparison.InvariantCulture))
+                    if (activity.Name.Equals(HandoverConstants.PassThreadControl, StringComparison.Ordinal))
                     {
                         var recipient = (string)activity.Value == "inbox" ? HandoverConstants.PageInboxId : (string)activity.Value;
                         await _facebookClient.PassThreadControlAsync(recipient, activity.Conversation.Id, "Pass thread control").ConfigureAwait(false);
                     }
-                    else if (activity.Name.Equals(HandoverConstants.TakeThreadControl, StringComparison.InvariantCulture))
+                    else if (activity.Name.Equals(HandoverConstants.TakeThreadControl, StringComparison.Ordinal))
                     {
                         await _facebookClient.TakeThreadControlAsync(activity.Conversation.Id, "Take thread control from a secondary receiver").ConfigureAwait(false);
                     }
-                    else if (activity.Name.Equals(HandoverConstants.RequestThreadControl, StringComparison.InvariantCulture))
+                    else if (activity.Name.Equals(HandoverConstants.RequestThreadControl, StringComparison.Ordinal))
                     {
                         await _facebookClient.RequestThreadControlAsync(activity.Conversation.Id, "Request thread control to the primary receiver").ConfigureAwait(false);
                     }
@@ -158,30 +162,30 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <summary>
         /// Accept an incoming webhook request and convert it into a TurnContext which can be processed by the bot's logic.
         /// </summary>
-        /// <param name="request">A request object.</param>
-        /// <param name="response">A response object.</param>
+        /// <param name="httpRequest">A request object.</param>
+        /// <param name="httpResponse">A response object.</param>
         /// <param name="bot">A bot logic function.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken)
+        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken)
         {
-            if (request.Query["hub.mode"] == HubModeSubscribe)
+            if (httpRequest.Query["hub.mode"] == HubModeSubscribe)
             {
-                await _facebookClient.VerifyWebhookAsync(request, response, cancellationToken).ConfigureAwait(false);
+                await _facebookClient.VerifyWebhookAsync(httpRequest, httpResponse, cancellationToken).ConfigureAwait(false);
                 return;
             }
 
             string stringifiedBody;
 
-            using (var sr = new StreamReader(request.Body))
+            using (var sr = new StreamReader(httpRequest.Body))
             {
                 stringifiedBody = sr.ReadToEnd();
             }
 
-            if (!_facebookClient.VerifySignature(request, stringifiedBody))
+            if (!_facebookClient.VerifySignature(httpRequest, stringifiedBody))
             {
-                await FacebookHelper.WriteAsync(response, HttpStatusCode.Unauthorized, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
-                throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
+                await FacebookHelper.WriteAsync(httpResponse, HttpStatusCode.Unauthorized, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+                throw new AuthenticationException("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
             }
 
             FacebookResponseEvent facebookResponseEvent = null;
