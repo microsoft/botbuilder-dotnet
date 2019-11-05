@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot
             services.AddSingleton<IBotFrameworkHttpAdapter, FacebookAdapter>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            services.AddTransient<IBot, EchoBot>();
+            services.AddTransient<IBot, SecondaryBot>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

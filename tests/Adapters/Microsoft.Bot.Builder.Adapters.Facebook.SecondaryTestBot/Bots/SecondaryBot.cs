@@ -13,13 +13,8 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.Bots
 {
-    public class EchoBot : ActivityHandler
+    public class SecondaryBot : ActivityHandler
     {
-        /// <summary>
-        /// This option passes thread control from the secondary receiver to a primary receiver.
-        /// </summary>
-        private const string OptionPassPrimaryBot = "Pass to primary";
-
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             var activity = MessageFactory.Text("Hello and Welcome!");
@@ -30,7 +25,8 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.Bots
         {
             if (turnContext.Activity.GetChannelData<FacebookMessage>().IsStandby)
             {
-                if ((turnContext.Activity as Activity)?.Text == "OtherBot")
+                /*request control al primero */
+                if ((turnContext.Activity as Activity)?.Text == "OtherBot") 
                 {
                     var activity = new Activity();
                     activity.Type = ActivityTypes.Event;
@@ -60,18 +56,17 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.Bots
 
                 switch (turnContext.Activity.Text)
                 {
-                    case OptionPassPrimaryBot:
+                    case "Pass to primary":
                         activity = MessageFactory.Text("Redirecting to the primary bot...");
                         activity.Type = ActivityTypes.Event;
                         (activity as IEventActivity).Name = "pass_thread_control";
                         (activity as IEventActivity).Value = "<PRIMARY RECEIVER APP ID>";
                         break;
-
                     case "Redirected to the bot":
-                        activity = MessageFactory.Text("Hello Human, I'm the secondary bot to help you!");
+                        activity = MessageFactory.Text("Hello, I'm the secondary bot. How can I help you?");
                         break;
                     case "Little":
-                        activity = MessageFactory.Text($"You have spoken the forbidden word!");
+                        activity = MessageFactory.Text($"You have spoken the forbidden word!"); // escribe que el primero hizo take control
                         break;
                     default:
                         activity = MessageFactory.Text($"Echo Secondary: {turnContext.Activity.Text}");
