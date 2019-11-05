@@ -1273,7 +1273,7 @@ namespace Microsoft.Bot.Expressions
             dynamic str;
             (str, error) = expression.Children[0].TryEvaluate(state);
             if (error == null)
-            {
+            {   
                 if (str is string)
                 {
                     dynamic start;
@@ -2568,33 +2568,160 @@ namespace Microsoft.Bot.Expressions
                 // String
                 new ExpressionEvaluator(
                     ExpressionType.Concat,
-                    Apply(
+                    ApplyWithError(
                         args =>
                         {
                             var builder = new StringBuilder();
+                            string error = null;
                             foreach (var arg in args)
-                            {
-                                builder.Append(arg);
+                            {   
+                                if (arg is string str)
+                                {
+                                    builder.Append(str);
+                                }
+                                else if (arg == null)
+                                {
+                                    builder.Append(string.Empty);
+                                }
+                                else
+                                {
+                                    error = $"{arg.ToString()} is nor a string neither null";
+                                }
                             }
 
-                            return builder.ToString();
-                        }, VerifyString),
+                            return (builder.ToString(), error);
+                        }),
                     ReturnType.String,
                     ValidateString),
-                new ExpressionEvaluator(ExpressionType.Length, Apply(args => args[0].Length, VerifyString), ReturnType.Number, ValidateUnaryString),
+                new ExpressionEvaluator(
+                    ExpressionType.Length, 
+                    ApplyWithError(
+                        args => 
+                            {
+                                var result = 0;
+                                string error = null;
+                                if (args[0] is string str)
+                                    {
+                                        result = str.Length;
+                                    }
+                                else if (args[0] == null)
+                                    {
+                                        result = 0;
+                                    }
+                                else
+                                    {
+                                        error = $"{args[0].ToString()} should be null or a string";
+                                    }
+
+                                return (result, error);
+                            }), 
+                    ReturnType.Number, 
+                    ValidateAtLeastOne),
                 new ExpressionEvaluator(
                     ExpressionType.Replace,
-                    Apply(args => args[0].Replace(args[1], args[2]), VerifyString),
+                    ApplyWithError(
+                        args =>
+                        {
+                            var result = string.Empty;
+                            string error = null;
+                            string inputStr = null;
+                            if (args[0] is string str)
+                            {
+                                inputStr = str;
+                            }
+                            else if (args[0] == null)
+                            {
+                                inputStr = string.Empty;
+                            }
+                            else
+                            {
+                                error = $"the {args[0].ToString()} should be null or a string";
+                            }
+
+                            if (error == null)
+                                {
+                                    result = inputStr.Replace(args[1], args[2]);
+                                }
+
+                            return (result, error);
+                        }),
                     ReturnType.String,
                     (expression) => ValidateArityAndAnyType(expression, 3, 3, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.ReplaceIgnoreCase,
-                    Apply(args => Regex.Replace(args[0], args[1], args[2], RegexOptions.IgnoreCase), VerifyString),
+                    ApplyWithError(
+                        args =>
+                        {
+                            var result = string.Empty;
+                            string error = null;
+                            string inputStr = null;
+                            if (args[0] is string str)
+                            {
+                                inputStr = str;
+                            }
+                            else if (args[0] == null)
+                            {
+                                inputStr = string.Empty;
+                            }
+                            else
+                            {
+                                error = $"the {args[0].ToString()} should be null or a string";
+                            }
+
+                            if (error == null)
+                            {
+                                result = Regex.Replace(inputStr, args[1], args[2], RegexOptions.IgnoreCase);
+                            }
+
+                            return (result, error);
+                        }),
                     ReturnType.String,
                     (expression) => ValidateArityAndAnyType(expression, 3, 3, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.Split,
-                    Apply(args => args[0].Split(args[1].ToCharArray()), VerifyString),
+                    ApplyWithError(
+                        args =>
+                        {
+                            string error = null;
+                            string value = null;
+                            string delimeter = null;
+                            object result = null;
+                            if (args[0] is string str)
+                            {
+                                value = str;
+                            }
+                            else if (args[0] == null)
+                            {
+                                value = string.Empty;
+                            }
+                            else
+                            {
+                                error = $"the first parameter should be null or a string";
+                            }
+
+                            if (error == null)
+                            {
+                                if (args[1] is string strDel)
+                                    {
+                                        delimeter = strDel;
+                                    }
+                                else if (args[1] == null)
+                                    {
+                                        delimeter = string.Empty;
+                                    }
+                                else
+                                    {
+                                        error = $"the second parameter should be null or a string";
+                                    }
+                            }
+
+                            if (error == null)
+                            {
+                                result = value.Split(delimeter.ToCharArray());
+                            }
+
+                            return (result, error);
+                        }),
                     ReturnType.Object,
                     (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
                 new ExpressionEvaluator(
