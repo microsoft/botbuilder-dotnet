@@ -702,6 +702,53 @@ namespace Microsoft.Bot.Expressions
         }
 
         /// <summary>
+        /// Lookup an index property of instance.
+        /// </summary>
+        /// <param name="instance">Instance with property.</param>
+        /// <param name="index">Property to lookup.</param>
+        /// <returns>Value and error information if any.</returns>
+        public static (object value, string error) AccessIndex(object instance, int index)
+        {
+            // NOTE: This returns null rather than an error if property is not present
+            if (instance == null)
+            {
+                return (null, null);
+            }
+
+            object value = null;
+            string error = null;
+
+            var count = -1;
+            if (TryParseList(instance, out var list))
+            {
+                count = list.Count;
+            }
+
+            var itype = instance.GetType();
+            var indexer = itype.GetProperties().Except(itype.GetDefaultMembers().OfType<PropertyInfo>());
+            if (count != -1 && indexer != null)
+            {
+                if (index >= 0 && count > index)
+                {
+                    dynamic idyn = instance;
+                    value = idyn[index];
+                }
+                else
+                {
+                    error = $"{index} is out of range for ${instance}";
+                }
+            }
+            else
+            {
+                error = $"{instance} is not a collection.";
+            }
+
+            value = ResolveValue(value);
+
+            return (value, error);
+        }
+
+        /// <summary>
         /// Lookup a property in IDictionary, JObject or through reflection.
         /// </summary>
         /// <param name="instance">Instance with property.</param>
@@ -913,52 +960,7 @@ namespace Microsoft.Bot.Expressions
             return result;
         }
 
-        /// <summary>
-        /// Lookup an index property of instance.
-        /// </summary>
-        /// <param name="instance">Instance with property.</param>
-        /// <param name="index">Property to lookup.</param>
-        /// <returns>Value and error information if any.</returns>
-        public static (object value, string error) AccessIndex(object instance, int index)
-        {
-            // NOTE: This returns null rather than an error if property is not present
-            if (instance == null)
-            {
-                return (null, null);
-            }
-
-            object value = null;
-            string error = null;
-
-            var count = -1;
-            if (TryParseList(instance, out var list))
-            {
-                count = list.Count;
-            }
-
-            var itype = instance.GetType();
-            var indexer = itype.GetProperties().Except(itype.GetDefaultMembers().OfType<PropertyInfo>());
-            if (count != -1 && indexer != null)
-            {
-                if (index >= 0 && count > index)
-                {
-                    dynamic idyn = instance;
-                    value = idyn[index];
-                }
-                else
-                {
-                    error = $"{index} is out of range for ${instance}";
-                }
-            }
-            else
-            {
-                error = $"{instance} is not a collection.";
-            }
-
-            value = ResolveValue(value);
-
-            return (value, error);
-        }
+        
 
         private static (object value, string error) ExtractElement(Expression expression, IMemory state)
         {
