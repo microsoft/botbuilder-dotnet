@@ -806,6 +806,75 @@ namespace Microsoft.Bot.Expressions
             return (value, error);
         }
 
+        public static object SetProperty(object instance, string property, object value)
+        {
+            object result = value;
+
+            if (instance is IDictionary<string, object> idict)
+            {
+                idict[property] = value;
+            }
+            else if (instance is IDictionary dict)
+            {
+                dict[property] = value;
+            }
+            else if (instance is JObject jobj)
+            {
+                if (value != null)
+                {
+                    result = JToken.FromObject(value);
+                    jobj[property] = (JToken)result;
+                }
+                else
+                {
+                    jobj[property] = null;
+                }
+            }
+            else
+            {
+                // Use reflection
+                var type = instance.GetType();
+                var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
+                if (prop != null)
+                {
+                    prop.SetValue(instance, value);
+                }
+            }
+
+            return result;
+        }
+
+        public static object ResolveValue(object obj)
+        {
+            object value;
+            if (!(obj is JValue jval))
+            {
+                value = obj;
+            }
+            else
+            {
+                value = jval.Value;
+                if (jval.Type == JTokenType.Integer)
+                {
+                    value = jval.ToObject<int>();
+                }
+                else if (jval.Type == JTokenType.String)
+                {
+                    value = jval.ToObject<string>();
+                }
+                else if (jval.Type == JTokenType.Boolean)
+                {
+                    value = jval.ToObject<bool>();
+                }
+                else if (jval.Type == JTokenType.Float)
+                {
+                    value = jval.ToObject<float>();
+                }
+            }
+
+            return value;
+        }
+
         private static void ValidateAccessor(Expression expression)
         {
             var children = expression.Children;
@@ -922,44 +991,6 @@ namespace Microsoft.Bot.Expressions
             return (value, error);
         }
 
-        private static object SetProperty(object instance, string property, object value)
-        {
-            object result = value;
-
-            if (instance is IDictionary<string, object> idict)
-            {
-                idict[property] = value;
-            }
-            else if (instance is IDictionary dict)
-            {
-                dict[property] = value;
-            }
-            else if (instance is JObject jobj)
-            {
-                if (value != null)
-                {
-                    result = JToken.FromObject(value);
-                    jobj[property] = (JToken)result;
-                }
-                else
-                {
-                    jobj[property] = null;
-                }
-            }
-            else
-            {
-                // Use reflection
-                var type = instance.GetType();
-                var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
-                if (prop != null)
-                {
-                    prop.SetValue(instance, value);
-                }
-            }
-
-            return result;
-        }
-
         private static (object value, string error) ExtractElement(Expression expression, IMemory state)
         {
             object value = null;
@@ -1017,152 +1048,30 @@ namespace Microsoft.Bot.Expressions
             return modifiable;
         }
 
-        // Expected is null if expecting an object or the desired offset in a list.
-        // intermediatePath is true when setting intermediate paths, and false at the root to apply the value
-        // x.y.z => intermediatePath will be true when procesing x.y so that path is initialized, and false when assigning value to leaf node z
-        private static (object, string) SetPathToValue(Expression path, int? expected, object value, object state, bool intermediatePath = false)
+        private static (object value, string error) SetPathToValue(Expression expr, IMemory state)
         {
-            object result = null;
-            string error;
-            object instance;
-            object index;
-            var children = path.Children;
-            if (path.Type == ExpressionType.Accessor || path.Type == ExpressionType.Element)
-            {
-                (index, error) = children[path.Type == ExpressionType.Accessor ? 0 : 1].TryEvaluate(state);
-                if (error == null)
-                {
-                    var iindex = index as int?;
-                    if (children.Count() == 2)
-                    {
-                        (instance, error) = SetPathToValue(children[path.Type == ExpressionType.Accessor ? 1 : 0], iindex, null, state, intermediatePath: true);
-                    }
-                    else
-                    {
-                        instance = state;
-                    }
+            var (path, left, error) = TryAccumulatePath(expr.Children[0], state);
 
-                    if (error == null)
-                    {
-                        if (index is string propName)
-                        {
-                            if (!intermediatePath)
-                            {
-                                // if !InitPath then we are on the leaf property path and we always set the value regardless off it's value (null or not)
-                                result = SetProperty(instance, propName, value);
-                            }
-                            else
-                            {
-                                (result, error) = AccessProperty(instance, propName);
-                                if (error != null || result == null || !CanBeModified(result, propName, expected))
-                                {
-                                    // Create new value for parents to use
-                                    if (expected.HasValue)
-                                    {
-                                        result = SetProperty(instance, propName, new List<object>(expected.Value + 1));
-                                    }
-                                    else
-                                    {
-                                        result = SetProperty(instance, propName, new Dictionary<string, object>());
-                                    }
-                                }
-                            }
-                        }
-                        else if (iindex.HasValue)
-                        {
-                            // Child instance should be a list already because we passed down the iindex.
-                            if (TryParseList(instance, out IList list))
-                            {
-                                if (list.Count <= iindex.Value)
-                                {
-                                    // Extend list.
-                                    while (list.Count <= iindex.Value)
-                                    {
-                                        list.Add(null);
-                                    }
-                                }
-
-                                // Assign value or expected list size or object
-                                if (list is JArray arr)
-                                {
-                                    result = value != null ? JToken.FromObject(value)
-                                        : (expected.HasValue ? (object)new JArray() : new JObject());
-                                    arr[iindex.Value] = (JToken)result;
-                                }
-                                else
-                                {
-                                    result = value ?? (expected.HasValue ? (object)new List<object>(expected.Value + 1) : (object)new Dictionary<string, object>());
-                                    list[iindex.Value] = result;
-                                }
-                            }
-                            else
-                            {
-                                error = $"{children[0]} is not a list.";
-                            }
-                        }
-                        else
-                        {
-                            error = $"{children[0]} is not a valid path";
-                        }
-                    }
-                }
-            }
-            else
+            if (error != null)
             {
-                error = $"{path} is not a path that can be set to a value.";
+                return (null, error);
             }
 
-            return (result, error);
+            if (left != null)
+            {
+                // the expression can't be fully merged as a path
+                return (null, $"{expr.Children[0].ToString()} is not a valid path to set value");
+            }
+
+            var (value, err) = expr.Children[1].TryEvaluate(state);
+            if (err != null)
+            {
+                return (null, err);
+            }
+
+            return state.SetValue(path, value);
         }
-
-        private static (object value, string error) SetPathToValue(Expression expr, object state)
-        {
-            var path = expr.Children[0];
-            var valueExpr = expr.Children[1];
-            var (value, error) = valueExpr.TryEvaluate(state);
-            if (error == null)
-            {
-                (_, error) = SetPathToValue(path, null, value, state);
-                if (error != null)
-                {
-                    value = null;
-                }
-            }
-
-            return (value, error);
-        }
-
-        private static object ResolveValue(object obj)
-        {
-            object value;
-            if (!(obj is JValue jval))
-            {
-                value = obj;
-            }
-            else
-            {
-                value = jval.Value;
-                if (jval.Type == JTokenType.Integer)
-                {
-                    value = jval.ToObject<int>();
-                }
-                else if (jval.Type == JTokenType.String)
-                {
-                    value = jval.ToObject<string>();
-                }
-                else if (jval.Type == JTokenType.Boolean)
-                {
-                    value = jval.ToObject<bool>();
-                }
-                else if (jval.Type == JTokenType.Float)
-                {
-                    value = jval.ToObject<float>();
-                }
-            }
-
-            return value;
-        }
-
+        
         /// <summary>
         /// Return new object list replace jarray.ToArray&lt;object&gt;().
         /// </summary>

@@ -51,9 +51,81 @@ namespace Microsoft.Bot.Expressions.Memory
             return (value, null);
         }
 
+        // In this simple object scope, we don't allow you to set a path in which some parts in middle don't exist
+        // for example
+        // if you set dialog.a.b = x, but dialog.a don't exist, this will result in an error
+        // because we can't and shouldn't smart create structure in the middle
+        // you can implement a customzied Scope that support such behavior
         public (object value, string error) SetValue(string path, object value)
         {
-            throw new NotImplementedException();
+            var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+            var curScope = memory;
+            string error = null;
+
+            // find the 2nd last value, ie, the container
+            for (var i = 0; i < parts.Length - 1; i++)
+            {
+                if (int.TryParse(parts[i], out var index))
+                {
+                    (curScope, error) = BuiltInFunctions.AccessIndex(curScope, index);
+                }
+                else
+                {
+                    (curScope, error) = BuiltInFunctions.AccessProperty(curScope, parts[i]);
+                }
+
+                if (error != null)
+                {
+                    return (null, error);
+                }
+            }
+
+            if (curScope == null)
+            {
+                return (null, $"Some parts in the middle of path doesn't exist: {path}");
+            }
+
+            // set the last value
+            if (int.TryParse(parts.Last(), out var idx))
+            {
+                if (BuiltInFunctions.TryParseList(curScope, out var li))
+                {
+                    if (li is JArray)
+                    {
+                        value = JToken.FromObject(value);
+                    }
+
+                    if (idx > li.Count)
+                    {
+                        error = $"{idx} index out of range";
+                    }
+                    else if (idx == li.Count)
+                    {
+                        // expand for one
+                        li.Add(value);
+                    }
+                    else
+                    {
+                        li[idx] = value;
+                    }
+                }
+                else
+                {
+                    error = $"set value for an index to a non-list object";
+                }
+
+                if (error != null)
+                {
+                    return (null, error);
+                }
+            }
+            else
+            {
+                BuiltInFunctions.SetProperty(curScope, parts.Last(), value);
+            }
+
+            return (BuiltInFunctions.ResolveValue(value), null);
         }
     }
 }
