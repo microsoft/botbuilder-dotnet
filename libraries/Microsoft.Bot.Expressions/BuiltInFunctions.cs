@@ -901,7 +901,7 @@ namespace Microsoft.Bot.Expressions
             }
         }
 
-        private static (object value, string error) GetProperty(Expression expression, object state)
+        private static (object value, string error) GetProperty(Expression expression, IMemory state)
         {
             object value = null;
             string error;
@@ -959,8 +959,6 @@ namespace Microsoft.Bot.Expressions
 
             return result;
         }
-
-        
 
         private static (object value, string error) ExtractElement(Expression expression, IMemory state)
         {
