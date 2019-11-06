@@ -38,16 +38,17 @@ namespace DialogChildBot.Bots
             }
 
             // Send end of conversation if it is complete
-            if (result.Status == DialogTurnStatus.Complete || result.Status == DialogTurnStatus.Cancelled) 
+            if (result.Status == DialogTurnStatus.Complete)
             {
-                await turnContext.SendActivityAsync(MessageFactory.Text("Skill dialog completed sending EndOfConversation"), cancellationToken);
+                await turnContext.SendActivityAsync(MessageFactory.Text($"**SkillBot.** The dialog in the skill has completed with status {result.Status} sending EndOfConversation"), cancellationToken);
 
                 // Send End of conversation at the end.
-                var activity = new Activity(ActivityTypes.EndOfConversation)
-                {
-                    Value = result.Result,
-                };
+                var activity = new Activity(ActivityTypes.EndOfConversation) { Value = result.Result };
                 await turnContext.SendActivityAsync(activity, cancellationToken);
+            }
+            else if (result.Status == DialogTurnStatus.Cancelled)
+            {
+                await turnContext.SendActivityAsync(MessageFactory.Text("**SkillBot.** The current dialog in the skill was cancelled by a request from the host, do some cleanup if needed here"), cancellationToken);
             }
 
             // Save any state changes that might have occured during the turn.

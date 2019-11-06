@@ -7,13 +7,13 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Extensions.Configuration;
 
-namespace DialogRootBot
+namespace DialogChildBot.Dialogs
 {
-    public class FlightBookingRecognizer : IRecognizer
+    public class DialogSkillBotRecognizer : IRecognizer
     {
         private readonly LuisRecognizer _recognizer;
 
-        public FlightBookingRecognizer(IConfiguration configuration)
+        public DialogSkillBotRecognizer(IConfiguration configuration)
         {
             var luisIsConfigured = !string.IsNullOrEmpty(configuration["LuisAppId"]) && !string.IsNullOrEmpty(configuration["LuisAPIKey"]) && !string.IsNullOrEmpty(configuration["LuisAPIHostName"]);
             if (luisIsConfigured)

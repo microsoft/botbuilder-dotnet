@@ -14,6 +14,9 @@ using Newtonsoft.Json.Linq;
 
 namespace DialogRootBot.Dialogs
 {
+    /// <summary>
+    /// A sample dialog that can wrap remote calls to a skill.
+    /// </summary>
     public class SkillDialog : Dialog
     {
         private readonly ConversationState _conversationState;
@@ -96,6 +99,21 @@ namespace DialogRootBot.Dialogs
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             await dc.Context.SendActivityAsync($"SkillDialog: InContinueDialog, ActivityType: {dc.Context.Activity.Type}", cancellationToken: cancellationToken);
+
+            if (dc.Context.Activity.Type == ActivityTypes.Message && dc.Context.Activity.Text.Equals("abort", StringComparison.CurrentCultureIgnoreCase))
+            {
+                // Send a message to the skill to let it do some cleanup
+                var eocActivity = Activity.CreateEndOfConversationActivity();
+                eocActivity.ApplyConversationReference(dc.Context.Activity.GetConversationReference());
+                eocActivity.From = dc.Context.Activity.From;
+                eocActivity.Recipient = dc.Context.Activity.Recipient;
+                await SendToSkill(dc, (Activity)eocActivity, cancellationToken);
+
+                // End this dialog and return (we don't care if the skill response or not)
+                await dc.Context.SendActivityAsync($"SkillDialog: Cancelled", cancellationToken: cancellationToken);
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken);
+            }
+            
             if (dc.Context.Activity.Type == ActivityTypes.EndOfConversation && (string)dc.Context.Activity.Recipient.Properties["SkillId"] == SkillId)
             {
                 // look at the dc.Context.Activity.Code for exit status.
@@ -113,11 +131,11 @@ namespace DialogRootBot.Dialogs
             return await SendToSkill(dc, dc.Context.Activity, cancellationToken);
         }
 
-        public override async Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
-        {
-            await turnContext.SendActivityAsync("SkillDialog: In EndDialog", cancellationToken: cancellationToken);
-            await base.EndDialogAsync(turnContext, instance, reason, cancellationToken);
-        }
+        //public override async Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
+        //{
+        //    await turnContext.SendActivityAsync("SkillDialog: In EndDialog", cancellationToken: cancellationToken);
+        //    await base.EndDialogAsync(turnContext, instance, reason, cancellationToken);
+        //}
 
         protected override string OnComputeId()
         {
@@ -147,7 +165,7 @@ namespace DialogRootBot.Dialogs
             return boundValue;
         }
 
-        private async Task<DialogTurnResult> SendToSkill(DialogContext dc, Activity activity, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> SendToSkill(DialogContext dc, Activity activity, CancellationToken cancellationToken, bool saveState = true)
         {
             var skillId = dc.GetState().GetValue<string>("this.SkillId");
 
@@ -155,7 +173,8 @@ namespace DialogRootBot.Dialogs
             // Always save state before forwarding
             // (the dialog stack won't get updated with the skillDialog and 'things won't work if you don't)
             await _conversationState.SaveChangesAsync(dc.Context, true, cancellationToken);
-            await dc.Context.TurnState.Get<SkillHostAdapter>().ForwardActivityAsync(dc.Context, skillId, activity, cancellationToken);
+ 
+            var result = await dc.Context.TurnState.Get<SkillHostAdapter>().ForwardActivityAsync(dc.Context, skillId, activity, cancellationToken);
             return EndOfTurn;
         }
     }

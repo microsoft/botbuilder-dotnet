@@ -3,27 +3,25 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DialogRootBot.CognitiveModels;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
-using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Newtonsoft.Json;
 
 namespace DialogRootBot.Dialogs
 {
     public class MainDialog : ComponentDialog
     {
-        private readonly FlightBookingRecognizer _luisRecognizer;
+        private readonly ConversationState _conversationState;
 
         // Dependency injection uses this constructor to instantiate MainDialog
-        public MainDialog(FlightBookingRecognizer luisRecognizer, SkillDialog bookingDialog)
+        public MainDialog(ConversationState conversationState, SkillDialog bookingDialog)
             : base(nameof(MainDialog))
         {
-            _luisRecognizer = luisRecognizer;
+            _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(bookingDialog);
@@ -35,14 +33,6 @@ namespace DialogRootBot.Dialogs
 
         private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (!_luisRecognizer.IsConfigured)
-            {
-                await stepContext.Context.SendActivityAsync(
-                    MessageFactory.Text("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file.", inputHint: InputHints.IgnoringInput), cancellationToken);
-
-                return await stepContext.NextAsync(null, cancellationToken);
-            }
-
             // Use the text provided in FinalStepAsync or the default if it is the first time.
             var messageText = stepContext.Options?.ToString() ?? "What can I help you with today?";
             var promptMessage = CreateTaskPromptMessageWithActions(messageText);
@@ -51,30 +41,28 @@ namespace DialogRootBot.Dialogs
 
         private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (!_luisRecognizer.IsConfigured)
+            // TODO: simplify this method.
+            // Forward to skill as message.
+            if (stepContext.Context.Activity.Text.StartsWith("m:", StringComparison.CurrentCultureIgnoreCase))
             {
-                // LUIS is not configured, we just run the SkillDialog path with an empty BookingDetailsInstance.
-                return await stepContext.BeginDialogAsync(nameof(SkillDialog), new BookingDetails(), cancellationToken);
-            }
-
-            // Forward to remote as is.
-            if (stepContext.Context.Activity.Text.StartsWith("r:", StringComparison.CurrentCultureIgnoreCase))
-            {
+                stepContext.Context.Activity.Text = stepContext.Context.Activity.Text.Substring(2).Trim();
                 var dialogArgs = new SkillDialogArgs { SkillId = "SkillBot" };
                 return await stepContext.BeginDialogAsync(nameof(SkillDialog), dialogArgs, cancellationToken);
             }
 
-            // Forward to remote with some artificial parameters in value
-            if (stepContext.Context.Activity.Text.StartsWith("rv:", StringComparison.CurrentCultureIgnoreCase))
+            // Forward to skill as a message with some artificial parameters in value
+            if (stepContext.Context.Activity.Text.StartsWith("mv:", StringComparison.CurrentCultureIgnoreCase))
             {
-                var dialogArgs = new SkillDialogArgs { SkillId = "SkillBot" };
-
-                // Forward to remote but inject some parameters in value so they can be seen on the other end.
-                stepContext.Context.Activity.Value = new BookingDetails { Destination = "New York" };
+                stepContext.Context.Activity.Text = stepContext.Context.Activity.Text.Substring(3).Trim();
+                var dialogArgs = new SkillDialogArgs
+                {
+                    SkillId = "SkillBot",
+                    Value = new BookingDetails { Destination = "New York" }
+                };
                 return await stepContext.BeginDialogAsync(nameof(SkillDialog), dialogArgs, cancellationToken);
             }
 
-            // Forward to remote as is.
+            // Forward to skill as event with "OAuthTest" in the name.
             if (stepContext.Context.Activity.Text.Equals("OAuthTest", StringComparison.CurrentCultureIgnoreCase))
             {
                 var dialogArgs = new SkillDialogArgs
@@ -85,118 +73,84 @@ namespace DialogRootBot.Dialogs
                 return await stepContext.BeginDialogAsync(nameof(SkillDialog), dialogArgs, cancellationToken);
             }
 
-            // Call LUIS and gather any potential booking details. (Note the TurnContext has the response to the prompt.)
-            // Run it through the recognizer and decide what to do
-            var luisResult = await _luisRecognizer.RecognizeAsync<FlightBooking>(stepContext.Context, cancellationToken);
-            switch (luisResult.TopIntent().intent)
+            // Forward to skill as event with "BookFlight" in the name.
+            if (stepContext.Context.Activity.Text.Equals("BookFlight", StringComparison.CurrentCultureIgnoreCase))
             {
-                case FlightBooking.Intent.BookFlight:
-                    await ShowWarningForUnsupportedCities(stepContext.Context, luisResult, cancellationToken);
-
-                    // Initialize BookingDetails with any entities we may have found in the response.
-                    var bookingDetails = new BookingDetails
-                    {
-                        // Get destination and origin from the composite entities arrays.
-                        Destination = luisResult.ToEntities.Airport,
-                        Origin = luisResult.FromEntities.Airport,
-                        TravelDate = luisResult.TravelDate
-                    };
-
-                    var bookFlightArgs = new SkillDialogArgs
-                    {
-                        SkillId = "SkillBot",
-                        EventName = "BookFlight",
-                        Value = bookingDetails
-                    };
-
-                    // Run the SkillDialog giving it whatever details we have from the LUIS call, it will fill out the remainder.
-                    return await stepContext.BeginDialogAsync(nameof(SkillDialog), bookFlightArgs, cancellationToken);
-
-                case FlightBooking.Intent.GetWeather:
-                    var getWeatherArgs = new SkillDialogArgs
-                    {
-                        SkillId = "SkillBot",
-                        EventName = "GetWeather"
-                    };
-
-                    // Run the SkillDialog
-                    return await stepContext.BeginDialogAsync(nameof(SkillDialog), getWeatherArgs, cancellationToken);
-
-                default:
-                    // Catch all for unhandled intents
-                    var didntUnderstandMessageText = $"Sorry, I didn't get that. Please try asking in a different way (intent was {luisResult.TopIntent().intent})";
-                    var didntUnderstandMessage = MessageFactory.Text(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
-                    await stepContext.Context.SendActivityAsync(didntUnderstandMessage, cancellationToken);
-                    break;
+                var dialogArgs = new SkillDialogArgs
+                {
+                    SkillId = "SkillBot",
+                    EventName = "BookFlight"
+                };
+                return await stepContext.BeginDialogAsync(nameof(SkillDialog), dialogArgs, cancellationToken);
             }
+
+            // Forward to skill as event with "BookFlight" in the name and some testing values.
+            if (stepContext.Context.Activity.Text.Equals("BookFlightWithValues", StringComparison.CurrentCultureIgnoreCase))
+            {
+                var dialogArgs = new SkillDialogArgs
+                {
+                    SkillId = "SkillBot",
+                    EventName = "BookFlight",
+                    Value = new BookingDetails
+                    {
+                        Destination = "New York",
+                        Origin = "Seattle"
+                    }
+                };
+                return await stepContext.BeginDialogAsync(nameof(SkillDialog), dialogArgs, cancellationToken);
+            }
+
+            // Forward to skill as event with "BookFlight" in the name and some testing values.
+            if (stepContext.Context.Activity.Text.Equals("BookFlightWithValues", StringComparison.CurrentCultureIgnoreCase))
+            {
+                var dialogArgs = new SkillDialogArgs
+                {
+                    SkillId = "SkillBot",
+                    EventName = "BookFlight",
+                    Value = new BookingDetails
+                    {
+                        Destination = "New York",
+                        Origin = "Seattle"
+                    }
+                };
+                return await stepContext.BeginDialogAsync(nameof(SkillDialog), dialogArgs, cancellationToken);
+            }
+
+            // Forward to skill as an InvokeActivity with "GetWeather" in the name and some testing values.
+            // Note that this operation doesn't use SkillDialog, InvokeActivities are single turn Request/Response.
+            if (stepContext.Context.Activity.Text.Equals("GetWeather", StringComparison.CurrentCultureIgnoreCase))
+            {
+                var invokeActivity = Activity.CreateInvokeActivity();
+                invokeActivity.Name = "GetWeather";
+                invokeActivity.ApplyConversationReference(stepContext.Context.Activity.GetConversationReference());
+                invokeActivity.From = stepContext.Context.Activity.From;
+                invokeActivity.Recipient = stepContext.Context.Activity.Recipient;
+
+                await _conversationState.SaveChangesAsync(stepContext.Context, true, cancellationToken);
+                var response = await stepContext.Context.TurnState.Get<SkillHostAdapter>().ForwardActivityAsync(stepContext.Context, "SkillBot", (Activity)invokeActivity, cancellationToken);
+                return await stepContext.NextAsync(response.Body, cancellationToken);
+            }
+
+            // Catch all for unhandled intents
+            var didntUnderstandMessageText = $"Sorry, I didn't get that. Please try asking in a different way.";
+            var didntUnderstandMessage = MessageFactory.Text(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
+            await stepContext.Context.SendActivityAsync(didntUnderstandMessage, cancellationToken);
 
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
-        // Shows a warning if the requested From or To cities are recognized as entities but they are not in the Airport entity list.
-        // In some cases LUIS will recognize the From and To composite entities as a valid cities but the From and To Airport values
-        // will be empty if those entity values can't be mapped to a canonical item in the Airport.
-        private async Task ShowWarningForUnsupportedCities(ITurnContext context, FlightBooking luisResult, CancellationToken cancellationToken)
-        {
-            var unsupportedCities = new List<string>();
-
-            var fromEntities = luisResult.FromEntities;
-            if (!string.IsNullOrEmpty(fromEntities.From) && string.IsNullOrEmpty(fromEntities.Airport))
-            {
-                unsupportedCities.Add(fromEntities.From);
-            }
-
-            var toEntities = luisResult.ToEntities;
-            if (!string.IsNullOrEmpty(toEntities.To) && string.IsNullOrEmpty(toEntities.Airport))
-            {
-                unsupportedCities.Add(toEntities.To);
-            }
-
-            if (unsupportedCities.Any())
-            {
-                var messageText = $"Sorry but the following airports are not supported: {string.Join(',', unsupportedCities)}";
-                var message = MessageFactory.Text(messageText, messageText, InputHints.IgnoringInput);
-                await context.SendActivityAsync(message, cancellationToken);
-            }
-        }
-
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            // If the child dialog ("SkillDialog") was cancelled, the user failed to confirm or if the intent wasn't BookFlight
-            // the Result here will be null.
-            var bookingDetails = TryGetBookingDetailsFromResult(stepContext.Result);
-            if (bookingDetails != null)
+            var stepResult = string.Empty;
+            if (stepContext.Result != null)
             {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Got result from remote: {JsonConvert.SerializeObject(bookingDetails)}"), cancellationToken);
-
-                // If the call to the booking service was successful tell the user.
-                var timeProperty = new TimexProperty(bookingDetails.TravelDate);
-                var travelDateMsg = timeProperty.ToNaturalLanguage(DateTime.Now);
-                var messageText = $"I have you booked to {bookingDetails.Destination} from {bookingDetails.Origin} on {travelDateMsg}";
-                var message = MessageFactory.Text(messageText, messageText, InputHints.IgnoringInput);
-                await stepContext.Context.SendActivityAsync(message, cancellationToken);
+                stepResult = JsonConvert.SerializeObject(stepContext.Result);
             }
+
+            await stepContext.Context.SendActivityAsync($"Skill invocation complete. Result: {stepResult}", cancellationToken: cancellationToken);
 
             // Restart the main dialog with a different message the second time around
-            var promptMessage = "What else can I do for you?";
-            return await stepContext.ReplaceDialogAsync(InitialDialogId, promptMessage, cancellationToken);
-        }
-
-        private BookingDetails TryGetBookingDetailsFromResult(object result)
-        {
-            if (result == null)
-            {
-                return null;
-            }
-
-            try
-            {
-                return JsonConvert.DeserializeObject<BookingDetails>(result.ToString());
-            }
-            catch (JsonException)
-            {
-                return null;
-            }
+            return await stepContext.ReplaceDialogAsync(InitialDialogId, "What else can I do for you?", cancellationToken);
         }
 
         private Activity CreateTaskPromptMessageWithActions(string messageText)
@@ -209,7 +163,7 @@ namespace DialogRootBot.Dialogs
                 {
                     new CardAction
                     {
-                        Title = "Hi",
+                        Title = "Hi (local)",
                         Type = ActionTypes.ImBack,
                         Value = "Hi"
                     },
@@ -221,27 +175,27 @@ namespace DialogRootBot.Dialogs
                     },
                     new CardAction
                     {
-                        Title = "r:some message",
+                        Title = "m:some message",
                         Type = ActionTypes.ImBack,
-                        Value = "r:some message"
+                        Value = "m:some message"
                     },
                     new CardAction
                     {
-                        Title = "rv:some message with value",
+                        Title = "mv:some message with value",
                         Type = ActionTypes.ImBack,
-                        Value = "rv:some message with value"
+                        Value = "mv:some message with value"
                     },
                     new CardAction
                     {
                         Title = "Book a flight",
                         Type = ActionTypes.ImBack,
-                        Value = "Book a flight"
+                        Value = "BookFlight"
                     },
                     new CardAction
                     {
-                        Title = "what is the weather like",
+                        Title = "Get Weather",
                         Type = ActionTypes.ImBack,
-                        Value = "what is the weather like"
+                        Value = "GetWeather"
                     }
                 }
             };

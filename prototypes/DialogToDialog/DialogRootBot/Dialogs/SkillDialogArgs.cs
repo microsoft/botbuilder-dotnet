@@ -3,6 +3,9 @@
 
 namespace DialogRootBot.Dialogs
 {
+    /// <summary>
+    /// Dialog arguments for a <see cref="SkillDialog"/>.
+    /// </summary>
     public class SkillDialogArgs
     {
         public string SkillId { get; set; }

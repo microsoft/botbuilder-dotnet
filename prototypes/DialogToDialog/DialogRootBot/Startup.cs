@@ -40,9 +40,6 @@ namespace DialogRootBot
             // Create the Conversation state. (Used by the Dialog system itself.)
             services.AddSingleton<ConversationState>();
 
-            // Register LUIS recognizer
-            services.AddSingleton<FlightBookingRecognizer>();
-
             // Register the SkillDialog (remote skill).
             services.AddSingleton<SkillDialog>();
 

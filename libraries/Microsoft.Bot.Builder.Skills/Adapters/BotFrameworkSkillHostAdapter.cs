@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Rest.TransientFaultHandling;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Skills.Adapters
 {
@@ -236,25 +237,32 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
             // POST to skill 
             using (var client = new HttpClient())
             {
+                // Create a deep clone of the activity so we can update it without impacting the original activity.
+                var activityClone = JObject.FromObject(activity).ToObject<Activity>();
+
                 // TODO use SkillConversation class here instead of hard coded encoding...
                 // Encode original bot service URL and ConversationId in the new conversation ID so we can unpack it later.
                 // var skillConversation = new SkillConversation() { ServiceUrl = activity.ServiceUrl, ConversationId = activity.Conversation.Id };
                 // activity.Conversation.Id = skillConversation.GetSkillConversationId()
-                activity.Conversation.Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new[]
+                activityClone.Conversation.Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new[]
                 {
-                    activity.Conversation.Id,
-                    activity.ServiceUrl
+                    activityClone.Conversation.Id,
+                    activityClone.ServiceUrl
                 })));
-                activity.ServiceUrl = skillHostEndpoint.ToString();
-                activity.Recipient.Properties["skillId"] = skill.Id;
-                using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
+                activityClone.ServiceUrl = skillHostEndpoint.ToString();
+                activityClone.Recipient.Properties["skillId"] = skill.Id;
+                using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activityClone, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
                 {
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     var response = await client.PostAsync($"{skill.SkillEndpoint}", jsonContent, cancellationToken).ConfigureAwait(false);
                     var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     if (content.Length > 0)
                     {
-                        return JsonConvert.DeserializeObject<InvokeResponse>(content);
+                        return new InvokeResponse()
+                        {
+                            Status = (int)response.StatusCode,
+                            Body = JsonConvert.DeserializeObject(content)
+                        };
                     }
                 }
             }

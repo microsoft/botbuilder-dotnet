@@ -46,7 +46,7 @@
     {
       "type": "TextBlock",
       "size": "default",
-      "text": "Say **r:some message**, the text after r: will be sent directly to the skill and the skill will have to do intent recogniztion on it",
+      "text": "Say **m:some message**, the text after m: will be sent directly to the skill and the skill will have to do intent recogniztion on it",
       "wrap": true,
       "spacing": "None"
     },
@@ -61,7 +61,7 @@
     {
       "type": "TextBlock",
       "size": "default",
-      "text": "Say **rv:some message**, in addition to the message after rv: the root bot will send some complex object in the Value property of the activity",
+      "text": "Say **mv:some message**, in addition to the message after mv: the root bot will send some complex object in the Value property of the activity",
       "wrap": true,
       "spacing": "None"
     },

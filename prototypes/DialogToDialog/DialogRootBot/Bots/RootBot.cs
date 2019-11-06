@@ -61,17 +61,7 @@ namespace DialogRootBot.Bots
                     var welcomeCard = CreateAdaptiveCardAttachment();
                     var activity = MessageFactory.Attachment(welcomeCard);
                     await turnContext.SendActivityAsync(activity, cancellationToken);
-                    var dialogSet = new DialogSet(_conversationState.CreateProperty<DialogState>("DialogState")) { TelemetryClient = _mainDialog.TelemetryClient };
-                    dialogSet.Add(_mainDialog);
-
-                    var dialogContext = await dialogSet.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
-                    var results = await dialogContext.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
-                    if (results.Status == DialogTurnStatus.Empty)
-                    {
-                        results = await dialogContext.BeginDialogAsync(_mainDialog.Id, null, cancellationToken).ConfigureAwait(false);
-                    }
-
-                    DialogTurnResult temp = results;
+                    await _mainDialog.RunAsync(turnContext, _conversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
                 }
             }
         }
