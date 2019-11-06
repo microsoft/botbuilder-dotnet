@@ -229,9 +229,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
 
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            if (ObjectPath.TryResolvePath(this, ref path))
+            if (TrackChange(path, value))
             {
-                TrackChange(path, value);
                 ObjectPath.SetPathValue(this, path, value);
             }
         }
@@ -243,9 +242,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public void RemoveValue(string path)
         {
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            if (ObjectPath.TryResolvePath(this, ref path))
+            if (TrackChange(path, null))
             {
-                TrackChange(path, null);
                 ObjectPath.RemovePathValue(this, path);
             }
         }
@@ -334,15 +332,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             foreach (var path in paths)
             {
                 var tpath = TransformPath(path);
-                var parts = tpath.ToLower().Split('.');
 
-                // Don't track root memory scope
-                var npath = parts[0];
-                for (var i = 1; i < parts.Length; ++i)
+                // Track any path that resolves to a constant path
+                if (ObjectPath.TryResolvePath(this, tpath, out var segments))
                 {
-                    npath += "_" + parts[i];
-                    SetValue(DialogPath.ConditionTracker + "." + npath, count);
-                    allPaths.Add(npath);
+                    var parts = tpath.ToLower().Split('.');
+
+                    // Don't track root memory scope
+                    var npath = parts[0];
+                    for (var i = 1; i < parts.Length; ++i)
+                    {
+                        npath += "_" + parts[i];
+                        SetValue(DialogPath.ConditionTracker + "." + npath, count);
+                        allPaths.Add(npath);
+                    }
                 }
             }
 
@@ -377,13 +380,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             return $"'{path}' does not match memory scopes:{string.Join(",", MemoryScopes.Select(ms => ms.Name))}";
         }
 
-        private void TrackChange(string path, object value)
+        private bool TrackChange(string path, object value)
         {
-            var pathName = DialogPath.ConditionTracker + "." + path.ToLower().Replace('.', '_');
-            if (TryGetValue<uint>(pathName, out var lastChanged))
+            var hasPath = false;
+            if (ObjectPath.TryResolvePath(this, path, out var segments))
             {
-                SetValue(pathName, GetValue<uint>(DialogPath.EventCounter));
+                var pathName = DialogPath.ConditionTracker + "." + string.Join("_", segments);
+                if (TryGetValue<uint>(pathName, out var lastChanged))
+                {
+                    SetValue(pathName, GetValue<uint>(DialogPath.EventCounter));
+                }
+
+                hasPath = true;
             }
+
+            return hasPath;
         }
 
         private bool TryGetFirstNestedValue<T>(ref T value, ref string remainingPath, object memory)
