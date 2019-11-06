@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace DialogChildBot.Dialogs
 {
-    public class OAuthTestDialog : ComponentDialog
+    public class OAuthTestDialog : CancelAndHelpDialog
     {
         private readonly string _connectionName;
 

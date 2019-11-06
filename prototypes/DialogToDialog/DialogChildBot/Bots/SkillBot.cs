@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace DialogChildBot.Bots
 {
@@ -30,29 +31,45 @@ namespace DialogChildBot.Bots
 
             var dialogContext = await dialogSet.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
 
-            // Run the Dialog with the new message Activity and capture the results so we can send end of conversation if needed.
-            var result = await dialogContext.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
-            if (result.Status == DialogTurnStatus.Empty)
+            if (turnContext.Activity.Type == ActivityTypes.EndOfConversation && dialogContext.Stack.Any())
             {
-                result = await dialogContext.BeginDialogAsync(Dialog.Id, null, cancellationToken).ConfigureAwait(false);
+                // Handle remote cancellation request if we have something in the stack.
+                await dialogContext.CancelAllDialogsAsync(cancellationToken);
+                
+                // Must force saving conversation state after cancelling (or things won't work).
+                await ConversationState.SaveChangesAsync(turnContext, false, cancellationToken);
+                await turnContext.SendActivityAsync(MessageFactory.Text("**SkillBot.** The current dialog in the skill was **cancelled** by a request **from the host**, do some cleanup if needed here"), cancellationToken);
             }
-
-            // Send end of conversation if it is complete
-            if (result.Status == DialogTurnStatus.Complete)
+            else
             {
-                await turnContext.SendActivityAsync(MessageFactory.Text($"**SkillBot.** The dialog in the skill has completed with status {result.Status} sending EndOfConversation"), cancellationToken);
+                // Run the Dialog with the new message Activity and capture the results so we can send end of conversation if needed.
+                var result = await dialogContext.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+                if (result.Status == DialogTurnStatus.Empty)
+                {
+                    result = await dialogContext.BeginDialogAsync(Dialog.Id, null, cancellationToken).ConfigureAwait(false);
+                }
 
-                // Send End of conversation at the end.
-                var activity = new Activity(ActivityTypes.EndOfConversation) { Value = result.Result };
-                await turnContext.SendActivityAsync(activity, cancellationToken);
-            }
-            else if (result.Status == DialogTurnStatus.Cancelled)
-            {
-                await turnContext.SendActivityAsync(MessageFactory.Text("**SkillBot.** The current dialog in the skill was cancelled by a request from the host, do some cleanup if needed here"), cancellationToken);
-            }
+                // Send end of conversation if it is complete
+                if (result.Status == DialogTurnStatus.Complete)
+                {
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"**SkillBot.** The dialog in the skill has **completed**. Sending EndOfConversation"), cancellationToken);
 
-            // Save any state changes that might have occured during the turn.
-            await ConversationState.SaveChangesAsync(turnContext, false, cancellationToken);
+                    // Send End of conversation at the end.
+                    var activity = new Activity(ActivityTypes.EndOfConversation) { Value = result.Result };
+                    await turnContext.SendActivityAsync(activity, cancellationToken);
+                }
+                else if (result.Status == DialogTurnStatus.Cancelled)
+                {
+                    await turnContext.SendActivityAsync(MessageFactory.Text("**SkillBot.** The current dialog in the skill was **cancelled from the skill** code. . Sending EndOfConversation"), cancellationToken);
+                    
+                    // Send End of conversation at the end.
+                    var activity = new Activity(ActivityTypes.EndOfConversation) { Value = result.Result };
+                    await turnContext.SendActivityAsync(activity, cancellationToken);
+                }
+
+                // Save any state changes that might have occured during the turn.
+                await ConversationState.SaveChangesAsync(turnContext, false, cancellationToken);
+            }
         }
     }
 }

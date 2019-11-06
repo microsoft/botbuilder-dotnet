@@ -36,20 +36,6 @@ namespace DialogChildBot.Bots
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        protected override async Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken = default)
-        {
-            if (innerDc.Context.Activity.Type == ActivityTypes.EndOfConversation)
-            {
-                await innerDc.Context.SendActivityAsync(MessageFactory.Text($"**{GetType().Name}.OnContinueDialogAsync().**\r\nGot an EndOfConversation request to end skill dialog, cancelling..."), cancellationToken);
-
-                // The parent bot requested we cancel the skill.
-                // Cancel all the dialogs that are currently in progress.
-                return await innerDc.CancelAllDialogsAsync(true, cancellationToken: cancellationToken);
-            }
-
-            return await base.OnContinueDialogAsync(innerDc, cancellationToken);
-        }
-
         private async Task<DialogTurnResult> ProcessActivityAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // A skill can send trace activities if needed :)
