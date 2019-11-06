@@ -12,7 +12,6 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Skills.Adapters;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using Xunit;
 using Xunit.Sdk;
 
@@ -25,7 +24,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
         {
             var botAdapter = CreateAdapter("TestSkillAdapterInjectsMiddleware");
 
-            var skillAdapter = new BotFrameworkSkillHostAdapter(botAdapter, new MicrosoftAppCredentials(string.Empty, string.Empty), new AuthenticationConfiguration(), configuration: new ConfigurationBuilder().Build());
+            var skillAdapter = new BotFrameworkSkillHostAdapter(botAdapter, new MicrosoftAppCredentials(string.Empty, string.Empty), new AuthenticationConfiguration());
 
             Assert.Equal(1, botAdapter.MiddlewareSet.Count(s => s is ChannelApiMiddleware));
         }
@@ -43,7 +42,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
             var middleware = new AssertInvokeMiddleware(botAdapter, activityId);
             botAdapter.Use(middleware);
             var bot = new CallbackBot();
-            var skillAdapter = new BotFrameworkSkillHostAdapter(botAdapter, new MicrosoftAppCredentials(string.Empty, string.Empty), new AuthenticationConfiguration(), configuration: new ConfigurationBuilder().Build());
+            var skillAdapter = new BotFrameworkSkillHostAdapter(botAdapter, new MicrosoftAppCredentials(string.Empty, string.Empty), new AuthenticationConfiguration());
 
             var sc = new SkillConversation()
             {

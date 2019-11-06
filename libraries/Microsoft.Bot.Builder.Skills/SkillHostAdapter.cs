@@ -1,11 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Skills.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -45,11 +47,12 @@ namespace Microsoft.Bot.Builder.Skills
         /// Forwards an activity to a skill.
         /// </summary>
         /// <param name="turnContext">turnContext.</param>
-        /// <param name="skillId">skillId of the skill to forward the activity to.</param>
+        /// <param name="skill">A <see cref="BotFrameworkSkill"/> instance with the skill information.</param>
+        /// <param name="skillHostEndpoint">The callback Url for the skill host.</param>
         /// <param name="activity">activity to forward.</param>
         /// <param name="cancellationToken">cancellation Token.</param>
         /// <returns>Async task with optional InvokeResponse.</returns>
-        public abstract Task<InvokeResponse> ForwardActivityAsync(ITurnContext turnContext, string skillId, Activity activity, CancellationToken cancellationToken);
+        public abstract Task<InvokeResponse> ForwardActivityAsync(ITurnContext turnContext, BotFrameworkSkill skill, Uri skillHostEndpoint, Activity activity, CancellationToken cancellationToken);
 
         /// <summary>
         /// GetConversationsAsync() API for Skill.
@@ -367,6 +370,8 @@ namespace Microsoft.Bot.Builder.Skills
 
         protected async Task<T> InvokeChannelApiAsync<T>(IBot bot, ClaimsIdentity claimsIdentity, string method, string conversationId, params object[] args)
         {
+            _logger.LogInformation($"InvokeChannelApiAsync(). Invoking method \"{method}\"");
+
             var skillConversation = new SkillConversation(conversationId);
 
             var channelApiInvokeActivity = Activity.CreateInvokeActivity();
