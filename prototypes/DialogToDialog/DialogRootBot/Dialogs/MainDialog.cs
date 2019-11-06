@@ -163,27 +163,15 @@ namespace DialogRootBot.Dialogs
                 {
                     new CardAction
                     {
-                        Title = "Hi (local)",
+                        Title = "Hi",
                         Type = ActionTypes.ImBack,
                         Value = "Hi"
                     },
                     new CardAction
                     {
-                        Title = "OAuthTest",
-                        Type = ActionTypes.ImBack,
-                        Value = "OAuthTest"
-                    },
-                    new CardAction
-                    {
                         Title = "m:some message",
                         Type = ActionTypes.ImBack,
-                        Value = "m:some message"
-                    },
-                    new CardAction
-                    {
-                        Title = "mv:some message with value",
-                        Type = ActionTypes.ImBack,
-                        Value = "mv:some message with value"
+                        Value = "m:some message for tomorrow"
                     },
                     new CardAction
                     {
@@ -196,6 +184,24 @@ namespace DialogRootBot.Dialogs
                         Title = "Get Weather",
                         Type = ActionTypes.ImBack,
                         Value = "GetWeather"
+                    },
+                    new CardAction
+                    {
+                        Title = "OAuthTest",
+                        Type = ActionTypes.ImBack,
+                        Value = "OAuthTest"
+                    },
+                    new CardAction
+                    {
+                        Title = "mv:some message with value",
+                        Type = ActionTypes.ImBack,
+                        Value = "mv:some message with value"
+                    },
+                    new CardAction
+                    {
+                        Title = "Book a flight with values",
+                        Type = ActionTypes.ImBack,
+                        Value = "BookFlightWithValues"
                     }
                 }
             };

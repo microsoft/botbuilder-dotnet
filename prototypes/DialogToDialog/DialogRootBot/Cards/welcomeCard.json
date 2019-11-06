@@ -16,14 +16,14 @@
     {
       "type": "TextBlock",
       "size": "default",
-      "text": "The suggested actions bellow are quick tests for different dialog to dialog skill interactions.",
+      "text": "Here are some things you can do:",
       "wrap": true,
       "maxLines": 0
     },
     {
       "type": "TextBlock",
       "size": "default",
-      "text": "OAuthTest",
+      "text": "Send a text message to the bot (message, single-turn)",
       "wrap": true,
       "weight": "Bolder",
       "color": "Accent"
@@ -31,14 +31,14 @@
     {
       "type": "TextBlock",
       "size": "default",
-      "text": "Say **oauthtest** to test the oauth card",
+      "text": "**m:some message** sends the text after **m:** directly to the skill and the skill does intent and entity recognition against LUIS.",
       "wrap": true,
       "spacing": "None"
     },
     {
       "type": "TextBlock",
       "size": "default",
-      "text": "Message to the bot",
+      "text": "Send a BookFlight event (event, multi-turn)",
       "wrap": true,
       "weight": "Bolder",
       "color": "Accent"
@@ -46,14 +46,14 @@
     {
       "type": "TextBlock",
       "size": "default",
-      "text": "Say **m:some message**, the text after m: will be sent directly to the skill and the skill will have to do intent recogniztion on it",
+      "text": "**bookflight** sends an event to the skill with the name = 'BookFlight' to start a flight booking dialog.",
       "wrap": true,
       "spacing": "None"
     },
     {
       "type": "TextBlock",
       "size": "default",
-      "text": "Message to the bot with values",
+      "text": "Send a GetWeather invoke activity (invoke, single-turn)",
       "wrap": true,
       "weight": "Bolder",
       "color": "Accent"
@@ -61,14 +61,14 @@
     {
       "type": "TextBlock",
       "size": "default",
-      "text": "Say **mv:some message**, in addition to the message after mv: the root bot will send some complex object in the Value property of the activity",
+      "text": "**getweather** sends an invoke activity to the skill with the name = 'GetWeather'. The skill replies right away (Invoke activities are Request/Response).",
       "wrap": true,
       "spacing": "None"
     },
     {
       "type": "TextBlock",
       "size": "default",
-      "text": "Book a flight (LUIS)",
+      "text": "OAuthTest (event, multi-turn)",
       "wrap": true,
       "weight": "Bolder",
       "color": "Accent"
@@ -76,14 +76,14 @@
     {
       "type": "TextBlock",
       "size": "default",
-      "text": "Say **book a flight** or **book a flight to seattle** to start a flight booking dialog on the skill, the root bot will send an event to the skill with the name = 'BookFlight'",
+      "text": "**oauthtest** sends an event to the skill to start an OAuthCard dialog.",
       "wrap": true,
       "spacing": "None"
     },
     {
       "type": "TextBlock",
       "size": "default",
-      "text": "Get Weather (LUIS)",
+      "text": "Send a message to the bot with values (message, single-turn)",
       "wrap": true,
       "weight": "Bolder",
       "color": "Accent"
@@ -91,9 +91,38 @@
     {
       "type": "TextBlock",
       "size": "default",
-      "text": "Say **What's the weather like** the root bot will send an event to the skill with the name = 'GetWeather' that will trigger a single turn flow",
+      "text": "**mv:some message** sends some complex object in the Value property of the activity in addition to the message after **mv:**.",
       "wrap": true,
       "spacing": "None"
+    },
+    {
+      "type": "TextBlock",
+      "size": "default",
+      "text": "Cancelling multi-turn conversations",
+      "wrap": true,
+      "weight": "Bolder",
+      "color": "Accent"
+    },
+    {
+      "type": "TextBlock",
+      "size": "default",
+      "text": "**abort** during a multi-turn dialog (i.e. BookFlight) sends an EndOfConversation activity to the skill to cancel the conversation.",
+      "wrap": true,
+      "spacing": "None"
+    },
+    {
+      "type": "TextBlock",
+      "size": "default",
+      "text": "**cancel** during a multi-turn dialog (i.e. OAuthTest) is recognized by the skill, it cancels its current dialog and sends an EndOfConversation activity to the parent.",
+      "wrap": true,
+      "spacing": "None"
+    },
+    {
+      "type": "TextBlock",
+      "size": "default",
+      "text": "Use the suggested actions bellow to test different parent to skill interactions.",
+      "wrap": true,
+      "maxLines": 0
     }
   ]
 }
