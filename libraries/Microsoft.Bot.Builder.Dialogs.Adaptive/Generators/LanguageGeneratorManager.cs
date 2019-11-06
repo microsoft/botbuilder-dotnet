@@ -87,7 +87,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(IResource resource)
         {
-            return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, MultiLanguageResolverDelegate(resourceExplorer));
+            var fileResource = resource as FileResource;
+            if (fileResource != null)
+            {
+                return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, MultiLanguageResolverDelegate(resourceExplorer));
+            }
+            else
+            {
+                return new TemplateEngineLanguageGenerator(fileResource.FullName, MultiLanguageResolverDelegate(resourceExplorer));
+            }
         }
     }
 }

@@ -73,6 +73,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertAdaptiveCardActivity(activity);
 
+            lgStringResult = await languageGenerator.Generate(context, "@{a()}", data: data).ConfigureAwait(false);
+            activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertAdaptiveCardActivity(activity);
+
             lgStringResult = await languageGenerator.Generate(context, "@{eventActivity()}", data: data).ConfigureAwait(false);
             activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertEventActivity(activity);
@@ -431,8 +435,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private async Task<ITurnContext> GetTurnContext(string lgFile)
         {
             var context = new TurnContext(new TestAdapter(), new Activity());
-            var lgText = await resourceExplorer.GetResource(lgFile).ReadTextAsync();
-            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgText, "test", LanguageGeneratorManager.MultiLanguageResolverDelegate(resourceExplorer)));
+            var lgresource = resourceExplorer.GetResource(lgFile) as FileResource;
+            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgresource.FullName, LanguageGeneratorManager.MultiLanguageResolverDelegate(resourceExplorer)));
             return context;
         }
 

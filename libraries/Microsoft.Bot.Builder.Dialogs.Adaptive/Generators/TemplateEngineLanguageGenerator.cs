@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.LanguageGeneration;
 
@@ -41,11 +42,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
+        /// <param name="filePath">lg template file absolute path.</param>
+        /// <param name="multiLanguageResolver">template resource loader delegate (local) -> <see cref="ImportResolverDelegate"/>.</param>
+        public TemplateEngineLanguageGenerator(string filePath, Func<string, ImportResolverDelegate> multiLanguageResolver = null)
+        {
+            filePath = PathUtils.NormalizePath(filePath);
+            this.Id = Path.GetFileName(filePath);
+            this.MultiLanguageResolver = multiLanguageResolver;
+            this.FilePath = filePath;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
+        /// </summary>
         /// <param name="engine">template engine.</param>
         public TemplateEngineLanguageGenerator(TemplateEngine engine)
         {
             this.engine = engine;
         }
+
+        public string FilePath { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets id of the source of this template (used for labeling errors).
@@ -102,7 +118,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             if (MultiLanguageResolver != null)
             {
                 var local = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
-                engine = new TemplateEngine().AddText(LGText, Id, MultiLanguageResolver(local));
+                if (!string.IsNullOrWhiteSpace(FilePath))
+                {
+                    engine = new TemplateEngine().AddFile(FilePath, MultiLanguageResolver(local));
+                }
+                else
+                {
+                    engine = new TemplateEngine().AddText(LGText, Id, MultiLanguageResolver(local));
+                }
+            }
+            else if (!string.IsNullOrWhiteSpace(FilePath))
+            {
+                engine = new TemplateEngine().AddFile(FilePath);
             }
             else if (!string.IsNullOrWhiteSpace(LGText) || !string.IsNullOrWhiteSpace(Id))
             {
