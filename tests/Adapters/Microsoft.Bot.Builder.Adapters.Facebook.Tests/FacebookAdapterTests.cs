@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Security.Authentication;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -161,7 +162,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
                     }
                 });
 
-            await Assert.ThrowsAsync<Exception>(() => facebookAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default(CancellationToken)));
+            await Assert.ThrowsAsync<AuthenticationException>(() => facebookAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default(CancellationToken)));
         }
 
         [Fact]
