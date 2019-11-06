@@ -1,3 +1,4 @@
+
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
     "$type": "Microsoft.OnSetProperty",
@@ -5,7 +6,7 @@
     "actions": [
         {
             "$type": "Microsoft.DeleteProperty",
-            "property": "dialog[@PropertyName]"
+            "property": "dialog[@PROPERTYName]"            
         }
     ]
 }

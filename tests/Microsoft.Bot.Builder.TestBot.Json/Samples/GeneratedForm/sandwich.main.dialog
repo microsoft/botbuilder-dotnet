@@ -26,7 +26,8 @@
 "sandwich-PropertyToChangeSet",
 "sandwich-BeginDialog",
 "sandwich-ChooseProperty",
-"sandwich-Help",
-"sandwich-NotUnderstood" 
+"sandwich-HelpIntent",
+"sandwich-NotUnderstood",
+"sandwich-sandwichIntent" 
         ]
 }

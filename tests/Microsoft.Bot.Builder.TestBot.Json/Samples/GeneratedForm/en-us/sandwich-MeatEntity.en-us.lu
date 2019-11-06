@@ -25,16 +25,3 @@ $MeatEntity:turkey=
 
 $MeatEntity:none=
 - none
-# None
-- bacon
-- chicken
-- ham
-- pulled
-- pork
-- pulled pork
-- roast
-- beef
-- roast beef
-- salami
-- turkey
-- none

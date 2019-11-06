@@ -110,14 +110,17 @@
         "lastExpectedProperty"
     ],
     "$templates": [
-        "help.lu",
-        "cancel.lu",
+        "helpIntent.lu",
+        "cancelIntent.lu",
+        "noneIntent.lu",
+        "triggerIntent.lu",
         "locale.lu",
         "locale.lg",
         "BeginDialog.dialog",
         "ChooseProperty.dialog",
-        "Help.dialog",
+        "HelpIntent.dialog",
         "NotUnderstood.dialog",
+        "TriggerIntent.dialog",
         "luconfig.json",
         "lu.dialog",
         "Main.dialog"
