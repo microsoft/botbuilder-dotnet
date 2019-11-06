@@ -806,9 +806,10 @@ namespace Microsoft.Bot.Expressions
             return (value, error);
         }
 
-        public static object SetProperty(object instance, string property, object value)
+        public static (object result, string error) SetProperty(object instance, string property, object value)
         {
             object result = value;
+            string error = null;
 
             if (instance is IDictionary<string, object> idict)
             {
@@ -837,11 +838,18 @@ namespace Microsoft.Bot.Expressions
                 var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
                 if (prop != null)
                 {
-                    prop.SetValue(instance, value);
+                    if (prop.CanWrite)
+                    {
+                        prop.SetValue(instance, value);
+                    }
+                    else
+                    {
+                        error = $"property {prop.Name} is read-only";
+                    }
                 }
             }
 
-            return result;
+            return (result, error);
         }
 
         public static object ResolveValue(object obj)
@@ -911,7 +919,7 @@ namespace Microsoft.Bot.Expressions
                     path = (string)((Constant)left.Children[0]).Value + "." + path;
                     left = left.Children.Length == 2 ? left.Children[1] : null;
                 }
-                else if (left.Type == ExpressionType.Element && left.Children[0].Type == ExpressionType.Accessor)
+                else if (left.Type == ExpressionType.Element)
                 {
                     var (value, error) = left.Children[1].TryEvaluate(state);
                     if (error != null)
@@ -924,8 +932,8 @@ namespace Microsoft.Bot.Expressions
                         return (null, null, $"{left.Children[1].ToString()} dones't return a int or string");
                     }
 
-                    path = (string)((Constant)left.Children[0].Children[0]).Value + $"[{value}]" + "." + path;
-                    left = left.Children[0].Children.Length == 2 ? left.Children[0].Children[1] : null;
+                    path = $"[{value}]" + "." + path;
+                    left = left.Children[0];
                 }
                 else
                 {
@@ -933,7 +941,8 @@ namespace Microsoft.Bot.Expressions
                 }
             }
 
-            path = path.TrimEnd('.');
+            // make sure we generated a valid path
+            path = path.TrimEnd('.').Replace(".[", "[");
 
             if (string.IsNullOrEmpty(path))
             {

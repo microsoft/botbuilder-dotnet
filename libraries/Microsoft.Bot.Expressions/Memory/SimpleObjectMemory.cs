@@ -61,6 +61,7 @@ namespace Microsoft.Bot.Expressions.Memory
             var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
             var curScope = memory;
+            var curPath = string.Empty; // valid path so far
             string error = null;
 
             // find the 2nd last value, ie, the container
@@ -68,10 +69,12 @@ namespace Microsoft.Bot.Expressions.Memory
             {
                 if (int.TryParse(parts[i], out var index))
                 {
+                    curPath += $"{parts[i]}";
                     (curScope, error) = BuiltInFunctions.AccessIndex(curScope, index);
                 }
                 else
                 {
+                    curPath += $".{parts[i]}";
                     (curScope, error) = BuiltInFunctions.AccessProperty(curScope, parts[i]);
                 }
 
@@ -79,11 +82,12 @@ namespace Microsoft.Bot.Expressions.Memory
                 {
                     return (null, error);
                 }
-            }
 
-            if (curScope == null)
-            {
-                return (null, $"Some parts in the middle of path doesn't exist: {path}");
+                if (curScope == null)
+                {
+                    curPath = curPath.TrimStart('.');
+                    return (null, $"Can set value to path: '{path}', reason: '{curPath}' is null");
+                }
             }
 
             // set the last value
@@ -122,7 +126,11 @@ namespace Microsoft.Bot.Expressions.Memory
             }
             else
             {
-                BuiltInFunctions.SetProperty(curScope, parts.Last(), value);
+                (_, error) = BuiltInFunctions.SetProperty(curScope, parts.Last(), value);
+                if (error != null)
+                {
+                    return (null, $"Can set value to path: '{path}', reason: {error}");
+                }
             }
 
             return (BuiltInFunctions.ResolveValue(value), null);
