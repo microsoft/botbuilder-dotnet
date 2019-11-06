@@ -20,10 +20,12 @@ namespace DialogRootBot.Dialogs
     public class SkillDialog : Dialog
     {
         private readonly ConversationState _conversationState;
+        private readonly SkillsConfiguration _skillsConfig;
 
-        public SkillDialog(ConversationState conversationState, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SkillDialog(ConversationState conversationState, SkillsConfiguration skillsConfig, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(nameof(SkillDialog))
         {
+            _skillsConfig = skillsConfig;
             _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
             RegisterSourceLocation(callerPath, callerLine);
         }
@@ -174,7 +176,7 @@ namespace DialogRootBot.Dialogs
             // (the dialog stack won't get updated with the skillDialog and 'things won't work if you don't)
             await _conversationState.SaveChangesAsync(dc.Context, true, cancellationToken);
  
-            var result = await dc.Context.TurnState.Get<SkillHostAdapter>().ForwardActivityAsync(dc.Context, skillId, activity, cancellationToken);
+            var result = await dc.Context.TurnState.Get<SkillHostAdapter>().ForwardActivityAsync(dc.Context, _skillsConfig.Skills[skillId], _skillsConfig.SkillHostEndpoint, activity, cancellationToken);
             return EndOfTurn;
         }
     }

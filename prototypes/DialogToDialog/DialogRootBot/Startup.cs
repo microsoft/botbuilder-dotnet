@@ -26,6 +26,9 @@ namespace DialogRootBot
             // Configure credentials
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
 
+            // Load the skills configuration
+            services.AddSingleton<SkillsConfiguration>();
+
             // Create the Bot Framework Adapter with error handling enabled.
             var botAdapter = new AdapterWithErrorHandler(services.BuildServiceProvider().GetService<IConfiguration>(), null);
             services.AddSingleton<BotAdapter>(botAdapter);

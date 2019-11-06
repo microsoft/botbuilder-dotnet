@@ -29,14 +29,22 @@ namespace SimpleChildBot.Controllers
         [HttpPost]
         public async Task PostAsync()
         {
-            // Entering skill
-            var authToken = Request.Headers["Authorization"].ToString();
+            try
+            {
+                // Entering skill
+                var authToken = Request.Headers["Authorization"].ToString();
 
-            // DebugTokenClaims();
+                // DebugTokenClaims();
 
-            // Delegate the processing of the HTTP POST to the adapter.
-            // The adapter will invoke the bot.
-            await _adapter.ProcessAsync(Request, Response, _bot);
+                // Delegate the processing of the HTTP POST to the adapter.
+                // The adapter will invoke the bot.
+                await _adapter.ProcessAsync(Request, Response, _bot);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
         }
 
         /// <summary>

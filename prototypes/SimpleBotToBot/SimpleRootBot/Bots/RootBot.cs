@@ -14,9 +14,11 @@ namespace SimpleRootBot.Bots
     {
         private readonly IStatePropertyAccessor<string> _activeSkillProperty;
         private readonly ConversationState _conversationState;
+        private readonly SkillsConfiguration _skillsConfig;
 
-        public RootBot(ConversationState conversationState)
+        public RootBot(ConversationState conversationState, SkillsConfiguration skillsConfig)
         {
+            _skillsConfig = skillsConfig;
             _conversationState = conversationState;
             _activeSkillProperty = conversationState.CreateProperty<string>("activeSkillProperty");
         }
@@ -31,7 +33,7 @@ namespace SimpleRootBot.Bots
                 await _conversationState.SaveChangesAsync(turnContext, force: true, cancellationToken: cancellationToken);
 
                 // route activity to the skill
-                await turnContext.TurnState.Get<SkillHostAdapter>().ForwardActivityAsync(turnContext, activeSkillId, (Activity)turnContext.Activity, cancellationToken);
+                await turnContext.TurnState.Get<SkillHostAdapter>().ForwardActivityAsync(turnContext, _skillsConfig.Skills[activeSkillId], _skillsConfig.SkillHostEndpoint, (Activity)turnContext.Activity, cancellationToken);
             }
             else
             {
@@ -46,7 +48,7 @@ namespace SimpleRootBot.Bots
                     await _conversationState.SaveChangesAsync(turnContext, force: true, cancellationToken: cancellationToken);
 
                     // route the activity to the skill
-                    await turnContext.TurnState.Get<SkillHostAdapter>().ForwardActivityAsync(turnContext, "SkillBot", (Activity)turnContext.Activity, cancellationToken);
+                    await turnContext.TurnState.Get<SkillHostAdapter>().ForwardActivityAsync(turnContext, _skillsConfig.Skills["SkillBot"], _skillsConfig.SkillHostEndpoint, (Activity)turnContext.Activity, cancellationToken);
                 }
                 else
                 {

@@ -16,11 +16,13 @@ namespace DialogRootBot.Dialogs
     public class MainDialog : ComponentDialog
     {
         private readonly ConversationState _conversationState;
+        private readonly SkillsConfiguration _skillsConfig;
 
         // Dependency injection uses this constructor to instantiate MainDialog
-        public MainDialog(ConversationState conversationState, SkillDialog bookingDialog)
+        public MainDialog(ConversationState conversationState, SkillsConfiguration skillsConfig, SkillDialog bookingDialog)
             : base(nameof(MainDialog))
         {
+            _skillsConfig = skillsConfig;
             _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
@@ -127,7 +129,7 @@ namespace DialogRootBot.Dialogs
                 invokeActivity.Recipient = stepContext.Context.Activity.Recipient;
 
                 await _conversationState.SaveChangesAsync(stepContext.Context, true, cancellationToken);
-                var response = await stepContext.Context.TurnState.Get<SkillHostAdapter>().ForwardActivityAsync(stepContext.Context, "SkillBot", (Activity)invokeActivity, cancellationToken);
+                var response = await stepContext.Context.TurnState.Get<SkillHostAdapter>().ForwardActivityAsync(stepContext.Context, _skillsConfig.Skills["SkillBot"], _skillsConfig.SkillHostEndpoint, (Activity)invokeActivity, cancellationToken);
                 return await stepContext.NextAsync(response.Body, cancellationToken);
             }
 
