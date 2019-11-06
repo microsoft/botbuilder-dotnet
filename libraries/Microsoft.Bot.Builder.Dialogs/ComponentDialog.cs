@@ -121,20 +121,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Check for end of inner dialog
             if (turnResult.Status != DialogTurnStatus.Waiting)
             {
-                if (turnResult.Status == DialogTurnStatus.Cancelled)
-                {
-                    await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
-                    return new DialogTurnResult(DialogTurnStatus.Cancelled, turnResult.Result);
-                }
-
                 // Return to calling dialog
                 return await this.EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
             }
-            else
-            {
-                // Signal end of turn
-                return Dialog.EndOfTurn;
-            }
+
+            // Just signal waiting
+            return Dialog.EndOfTurn;
         }
 
         /// <summary>
