@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
+using Microsoft.Bot.Expressions.Memory;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory
@@ -18,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
     /// MemoryScopes are named root level objects, which can exist either in the dialogcontext or off of turn state
     /// PathResolvers allow for shortcut behavior for mapping things like $foo -> dialog.foo.
     /// </summary>
-    public class DialogStateManager : IDictionary<string, object>
+    public class DialogStateManager : IDictionary<string, object>, IMemory
     {
         private readonly DialogContext dialogContext;
 
@@ -88,6 +89,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
 
             return MemoryScopes.FirstOrDefault(ms => string.Compare(ms.Name, name, ignoreCase: true) == 0);
+        }
+
+        (object value, string error) IMemory.GetValue(string path)
+        {
+            if (this.TryGetValue<object>(path, out var result))
+            {
+                return (result, null);
+            }
+            else
+            {
+                return (null, $"Get value for path: '{path}' failed");
+            }
+        }
+
+        (object value, string error) IMemory.SetValue(string path, object value)
+        {
+            try
+            {
+                this.SetValue(path, value);
+                return (value, null);
+            }
+            catch (Exception e)
+            {
+                return (value, $"Set value to path: '{path}' failed, Reason: {e.Message}");
+            }
         }
 
         /// <summary>
