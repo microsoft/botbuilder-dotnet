@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using AdaptiveCards;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
