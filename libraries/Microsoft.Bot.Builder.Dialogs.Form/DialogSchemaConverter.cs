@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Converters
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            serializer.Serialize(writer, value);
+            serializer.Serialize(writer, ((DialogSchema)value).Schema);
         }
     }
 }

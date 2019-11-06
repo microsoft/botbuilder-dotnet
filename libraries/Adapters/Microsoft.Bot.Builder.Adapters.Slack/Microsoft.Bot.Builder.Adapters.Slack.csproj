@@ -29,8 +29,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
-    <ProjectReference Include="..\..\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
-    <ProjectReference Include="..\..\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
   </ItemGroup>
 
 </Project>

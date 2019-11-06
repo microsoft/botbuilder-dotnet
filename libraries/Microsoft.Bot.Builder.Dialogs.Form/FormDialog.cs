@@ -19,18 +19,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
     /// </summary>
     public partial class FormDialog : AdaptiveDialog
     {
-        // TODO: This should be wired up to be declarative for the selector and for the schemas
-        public FormDialog(DialogSchema schema)
+        public FormDialog()
         {
-            Schema = schema;
-            Selector = new MostSpecificSelector
-            {
-                Selector = new FirstSelector()
-            };
         }
 
-        [JsonProperty("schema")]
-        public DialogSchema Schema { get; }
+        public DialogSchema Schema { get; set; }
 
         protected async Task<bool> ProcessFormAsync(SequenceContext sequenceContext, CancellationToken cancellationToken)
         {
