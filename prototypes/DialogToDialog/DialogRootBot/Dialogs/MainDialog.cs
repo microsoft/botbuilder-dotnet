@@ -141,13 +141,13 @@ namespace DialogRootBot.Dialogs
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var stepResult = string.Empty;
+            var message = "Skill invocation complete.";
             if (stepContext.Result != null)
             {
-                stepResult = JsonConvert.SerializeObject(stepContext.Result);
+                message += $" Result: {JsonConvert.SerializeObject(stepContext.Result)}";
             }
 
-            await stepContext.Context.SendActivityAsync($"Skill invocation complete. Result: {stepResult}", cancellationToken: cancellationToken);
+            await stepContext.Context.SendActivityAsync(message, cancellationToken: cancellationToken);
 
             // Restart the main dialog with a different message the second time around
             return await stepContext.ReplaceDialogAsync(InitialDialogId, "What else can I do for you?", cancellationToken);
