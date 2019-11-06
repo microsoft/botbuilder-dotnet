@@ -319,6 +319,7 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("replace('hello', 'L', 'k')", "hello"),
             Test("replace(nullObj, 'L', 'k')", string.Empty),
             Test("replace('hello', 'L', 'k')", "hello"),
+            Test("replace('hello', 'l', nullObj)", "heo"),
             Test("replace(\"hello'\", \"'\", '\"')", "hello\""),
             Test("replace('hello\"', '\"', \"'\")", "hello'"),
             Test("replace('hello\"', '\"', '\n')", "hello\n"),

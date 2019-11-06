@@ -380,7 +380,7 @@ namespace Microsoft.Bot.Expressions
         public static string VerifyStringOrNull(object value, Expression expression, int number)
         {
             string error = null;
-            if (!(value is string) && !(value == null))
+            if (!(value is string) && value != null)
             {
                 error = $"{expression} is neither a string nor a null object.";
             }
@@ -440,6 +440,21 @@ namespace Microsoft.Bot.Expressions
             }
 
             return error;
+        }
+
+        public static string ParseStringOrNull(object value)
+        {
+            string result = null; 
+            if (value is string str)
+            {
+                result = str;
+            }
+            else
+            {
+                result = string.Empty;
+            }
+
+            return result;
         }
 
         // Apply -- these are helpers for adding functions to the expression library.
@@ -2583,11 +2598,10 @@ namespace Microsoft.Bot.Expressions
                 // String
                 new ExpressionEvaluator(
                     ExpressionType.Concat,
-                    ApplyWithError(
+                    Apply(
                         args =>
                         {
                             var builder = new StringBuilder();
-                            string error = null;
                             foreach (var arg in args)
                             {   
                                 if (arg is string str)
@@ -2600,7 +2614,7 @@ namespace Microsoft.Bot.Expressions
                                 }
                             }
 
-                            return (builder.ToString(), error);
+                            return builder.ToString();
                         }, VerifyStringOrNull),
                     ReturnType.String,
                     ValidateString),
@@ -2625,79 +2639,49 @@ namespace Microsoft.Bot.Expressions
                     ValidateAtLeastOne),
                 new ExpressionEvaluator(
                     ExpressionType.Replace,
-                    Apply(
+                    ApplyWithError(
                         args =>
                         {
-                            string inputStr = null;
-                            string oldStr = null;
-                            string newStr = null;
-                            if (args[0] is string str)
+                            string error = null;
+                            string result = null;
+                            string inputStr = ParseStringOrNull(args[0]);
+                            string oldStr = ParseStringOrNull(args[1]);
+                            if (oldStr.Length == 0)
                             {
-                                inputStr = str;
-                            }
-                            else
-                            {
-                                inputStr = string.Empty;
+                                error = $"{args[1]} the oldValue in replace function should be a string with at least length 1.";
                             }
 
-                            if (args[1] is string str1)
+                            string newStr = ParseStringOrNull(args[2]);
+                            if (error == null)
                             {
-                                oldStr = str1;
-                            }
-                            else
-                            {
-                                oldStr = string.Empty;
+                                result = inputStr.Replace(oldStr, newStr);
                             }
 
-                            if (args[2] is string str2)
-                            {
-                                newStr = str2;
-                            }
-                            else
-                            {
-                                newStr = string.Empty;
-                            }
-
-                            return inputStr.Replace(oldStr, newStr);
+                            return (result, error);
                         }, VerifyStringOrNull),
                     ReturnType.String,
                     (expression) => ValidateArityAndAnyType(expression, 3, 3, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.ReplaceIgnoreCase,
-                    Apply(
+                    ApplyWithError(
                         args =>
                         {
-                            string inputStr = null;
-                            string oldStr = null;
-                            string newStr = null;
-                            if (args[0] is string str)
+                            string error = null;
+                            string result = null;
+                            string inputStr = ParseStringOrNull(args[0]);
+                            string oldStr = ParseStringOrNull(args[1]);
+                            if (oldStr.Length == 0)
                             {
-                                inputStr = str;
-                            }
-                            else
-                            {
-                                inputStr = string.Empty;
+                                error = $"{args[1]} the oldValue in replace function should be a string with at least length 1.";
                             }
 
-                            if (args[1] is string str1)
+                            string newStr = ParseStringOrNull(args[2]);
+                            if (error == null)
                             {
-                                oldStr = str1;
-                            }
-                            else
-                            {
-                                oldStr = string.Empty;
+                                result = Regex.Replace(inputStr, oldStr, newStr, RegexOptions.IgnoreCase);
                             }
 
-                            if (args[2] is string str2)
-                            {
-                                newStr = str2;
-                            }
-                            else
-                            {
-                                newStr = string.Empty;
-                            }
-
-                            return Regex.Replace(inputStr, oldStr, newStr, RegexOptions.IgnoreCase);
+                            return (result, error);
                         }, VerifyStringOrNull),
                     ReturnType.String,
                     (expression) => ValidateArityAndAnyType(expression, 3, 3, ReturnType.String)),
@@ -2706,26 +2690,8 @@ namespace Microsoft.Bot.Expressions
                     Apply(
                         args =>
                         {
-                            string inputStr = null;
-                            string segStr = null;
-                            if (args[0] is string str)
-                            {
-                                inputStr = str;
-                            }
-                            else
-                            {
-                                inputStr = string.Empty;
-                            }
-
-                            if (args[1] is string str1)
-                            {
-                                segStr = str1;
-                            }
-                            else
-                            {
-                                segStr = string.Empty;
-                            }
-
+                            string inputStr = ParseStringOrNull(args[0]);
+                            string segStr = ParseStringOrNull(args[1]);
                             return inputStr.Split(segStr.ToCharArray());
                         }, VerifyStringOrNull),
                     ReturnType.Object,
@@ -2779,26 +2745,8 @@ namespace Microsoft.Bot.Expressions
                     Apply(
                         args =>
                         {
-                            string rawStr = null;
-                            string seekStr = null;
-                            if (args[0] is string str)
-                            {
-                                rawStr = str;
-                            }
-                            else
-                            {
-                                rawStr = string.Empty;
-                            }
-
-                            if (args[1] is string str1)
-                            {
-                                seekStr = str1;
-                            }
-                            else
-                            {
-                                seekStr = string.Empty;
-                            }
-
+                            string rawStr = ParseStringOrNull(args[0]);
+                            string seekStr = ParseStringOrNull(args[1]);
                             return rawStr.StartsWith(seekStr);
                         }, VerifyStringOrNull),
                     ReturnType.Boolean,
@@ -2808,26 +2756,8 @@ namespace Microsoft.Bot.Expressions
                     Apply(
                         args =>
                         {
-                            string rawStr = null;
-                            string seekStr = null;
-                            if (args[0] is string str)
-                            {
-                                rawStr = str;
-                            }
-                            else
-                            {
-                                rawStr = string.Empty;
-                            }
-
-                            if (args[1] is string str1)
-                            {
-                                seekStr = str1;
-                            }
-                            else
-                            {
-                                seekStr = string.Empty;
-                            }
-
+                            string rawStr = ParseStringOrNull(args[0]);
+                            string seekStr = ParseStringOrNull(args[1]);
                             return rawStr.EndsWith(seekStr);
                         }, VerifyStringOrNull),
                     ReturnType.Boolean,
@@ -2900,26 +2830,8 @@ namespace Microsoft.Bot.Expressions
                     Apply(
                         args =>
                         {
-                            string rawStr = null;
-                            string seekStr = null;
-                            if (args[0] is string str)
-                            {
-                                rawStr = str;
-                            }
-                            else
-                            {
-                                rawStr = string.Empty;
-                            }
-
-                            if (args[1] is string str1)
-                            {
-                                seekStr = str1;
-                            }
-                            else
-                            {
-                                seekStr = string.Empty;
-                            }
-
+                            string rawStr = ParseStringOrNull(args[0]);
+                            string seekStr = ParseStringOrNull(args[1]);
                             return rawStr.IndexOf(seekStr);
                         }, VerifyStringOrNull),
                     ReturnType.Number,
@@ -2929,26 +2841,8 @@ namespace Microsoft.Bot.Expressions
                     Apply(
                         args =>
                         {
-                            string rawStr = null;
-                            string seekStr = null;
-                            if (args[0] is string str)
-                            {
-                                rawStr = str;
-                            }
-                            else
-                            {
-                                rawStr = string.Empty;
-                            }
-
-                            if (args[1] is string str1)
-                            {
-                                seekStr = str1;
-                            }
-                            else
-                            {
-                                seekStr = string.Empty;
-                            }
-
+                            string rawStr = ParseStringOrNull(args[0]);
+                            string seekStr = ParseStringOrNull(args[1]);
                             return rawStr.LastIndexOf(seekStr);
                         }, VerifyStringOrNull),
                     ReturnType.Number,
