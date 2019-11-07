@@ -349,12 +349,78 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 attachment = new Attachment(AdaptiveCard.ContentType, content: lgJObj);
             }
+            else if (type == nameof(Attachment).ToLower())
+            {
+                attachment = GetNormalAttachment(lgJObj);
+            }
             else
             {
                 isAttachment = false;
             }
 
             return isAttachment;
+        }
+
+        private static Attachment GetNormalAttachment(JObject lgJObj)
+        {
+            var attachment = new Attachment();
+
+            foreach (var item in lgJObj)
+            {
+                var property = item.Key.Trim();
+                var value = item.Value;
+
+                switch (property.ToLower())
+                {
+                    case "$type":
+                        break;
+
+                    case "contenttype":
+                        {
+                            var type = value.ToString().ToLower();
+                            if (GenericCardTypeMapping.ContainsKey(type))
+                            {
+                                attachment.ContentType = GenericCardTypeMapping[type];
+                            }
+                            else if (type == nameof(AdaptiveCard).ToLower())
+                            {
+                                attachment.ContentType = AdaptiveCard.ContentType;
+                            }
+                            else
+                            {
+                                attachment.ContentType = type;
+                            }
+
+                            break;
+                        }
+
+                    case "contenturl":
+                        attachment.ContentUrl = value.ToString();
+                        break;
+
+                    case "content":
+                        attachment.Content = value;
+                        break;
+
+                    case "name":
+                        attachment.Name = value.ToString();
+                        break;
+
+                    case "thumbnailurl":
+                        attachment.ThumbnailUrl = value.ToString();
+                        break;
+
+                    case "properties":
+                        attachment.Properties = value as JObject;
+                        break;
+
+                    default:
+                        Debug.WriteLine(string.Format("Skipping unknown activity property {0}", property));
+                        break;
+                }
+            }
+
+            return attachment;
         }
 
         private static Attachment GetCardAtttachment(string type, JObject lgJObj)

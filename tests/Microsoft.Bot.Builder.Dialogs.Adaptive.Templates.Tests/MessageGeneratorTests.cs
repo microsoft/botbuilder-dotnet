@@ -73,7 +73,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertAdaptiveCardActivity(activity);
 
-            lgStringResult = await languageGenerator.Generate(context, "@{a()}", data: data).ConfigureAwait(false);
+            lgStringResult = await languageGenerator.Generate(context, "@{externalAdaptiveCardActivity()}", data: data).ConfigureAwait(false);
+            activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertAdaptiveCardActivity(activity);
+
+            lgStringResult = await languageGenerator.Generate(context, "@{externalHeroCardActivity()}", data: data).ConfigureAwait(false);
+            activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertCardActionActivity(activity);
+
+            lgStringResult = await languageGenerator.Generate(context, "@{adaptivecardActivityWithAttachmentStructure()}", data: data).ConfigureAwait(false);
             activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertAdaptiveCardActivity(activity);
 
@@ -82,6 +90,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             AssertEventActivity(activity);
 
             lgStringResult = await languageGenerator.Generate(context, "@{activityWithHeroCardAttachment()}", data: data).ConfigureAwait(false);
+            activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertActivityWithHeroCardAttachment(activity);
+
+            lgStringResult = await languageGenerator.Generate(context, "@{herocardActivityWithAttachmentStructure()}", data: data).ConfigureAwait(false);
             activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertActivityWithHeroCardAttachment(activity);
 

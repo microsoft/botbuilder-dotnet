@@ -1,0 +1,12 @@
+﻿{
+  "title": "titleContent",
+  "text": "textContent",
+  "Buttons": [
+    {
+      "type": "imBack",
+      "Title": "titleContent",
+      "Value": "textContent",
+      "Text": "textContent"
+    }
+  ]
+}

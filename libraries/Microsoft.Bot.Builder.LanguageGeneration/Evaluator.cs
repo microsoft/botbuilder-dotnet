@@ -427,10 +427,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private Func<IReadOnlyList<object>, object> ActivityAttachment()
         => (IReadOnlyList<object> args) =>
         {
-            var jsonFile = args[0] as JObject;
-            var format = args[1].ToString();
-            jsonFile["$type"] = format;
-            return jsonFile;
+            return new JObject
+            {
+                ["$type"] = "attachment",
+                ["contenttype"] = args[1].ToString(),
+                ["content"] = args[0] as JObject
+            };
         };
 
         private void ValidateActivityAttachment(Expression expression)
