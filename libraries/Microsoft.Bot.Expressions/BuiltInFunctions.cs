@@ -442,20 +442,7 @@ namespace Microsoft.Bot.Expressions
             return error;
         }
 
-        public static string ParseStringOrNull(object value)
-        {
-            string result = null; 
-            if (value is string str)
-            {
-                result = str;
-            }
-            else
-            {
-                result = string.Empty;
-            }
 
-            return result;
-        }
 
         // Apply -- these are helpers for adding functions to the expression library.
 
@@ -1135,6 +1122,21 @@ namespace Microsoft.Bot.Expressions
             }
 
             return value;
+        }
+
+        private static string ParseStringOrNull(object value)
+        {
+            string result = null;
+            if (value is string str)
+            {
+                result = str;
+            }
+            else
+            {
+                result = string.Empty;
+            }
+
+            return result;
         }
 
         /// <summary>
