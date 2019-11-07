@@ -408,11 +408,13 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="userId">The user id.</param>
         /// <param name="token">The token to store.</param>
         /// <param name="magicCode">The optional magic code to associate with this token.</param>
-        public void AddUserToken(string connectionName, string channelId, string userId, string token, string magicCode = null)
+        /// <param name="serviceProvider">The optional service provider name. Default same as the connection name.</param>
+        public void AddUserToken(string connectionName, string channelId, string userId, string token, string magicCode = null, string serviceProvider = null)
         {
             var key = new UserTokenKey()
             {
                 ConnectionName = connectionName,
+                ServiceProviderDisplayName = serviceProvider ?? connectionName,
                 ChannelId = channelId,
                 UserId = userId,
             };
@@ -551,7 +553,7 @@ namespace Microsoft.Bot.Builder.Adapters
                     x.Key.ChannelId == context.Activity.ChannelId &&
                     x.Key.UserId == context.Activity.From.Id &&
                     (includeFilter == null || filter.Contains(x.Key.ConnectionName))).
-                Select(r => new TokenStatus() { ConnectionName = r.Key.ConnectionName, HasToken = true, ServiceProviderDisplayName = r.Key.ConnectionName }).ToArray();
+                Select(r => new TokenStatus() { ChannelId = r.Key.ChannelId, ConnectionName = r.Key.ConnectionName, HasToken = true, ServiceProviderDisplayName = r.Key.ServiceProviderDisplayName }).ToArray();
 
             if (records.Any())
             {
@@ -578,6 +580,8 @@ namespace Microsoft.Bot.Builder.Adapters
         private class UserTokenKey
         {
             public string ConnectionName { get; set; }
+
+            public string ServiceProviderDisplayName { get; set; }
 
             public string UserId { get; set; }
 

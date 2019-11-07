@@ -439,6 +439,12 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             var status = await adapter.GetTokenStatusAsync(turnContext, userId);
             Assert.IsNotNull(status);
             Assert.AreEqual(2, status.Length);
+            foreach (var tokenStatus in status)
+            {
+                Assert.IsTrue(tokenStatus.HasToken.Value);
+                Assert.AreEqual(tokenStatus.ServiceProviderDisplayName, tokenStatus.ConnectionName);
+                Assert.AreEqual(tokenStatus.ChannelId, channelId);
+            }
         }
 
         [TestMethod]
@@ -464,6 +470,38 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             var status = await adapter.GetTokenStatusAsync(turnContext, userId, "DEF");
             Assert.IsNotNull(status);
             Assert.AreEqual(1, status.Length);
+        }
+
+        [TestMethod]
+        public async Task TestAdapter_GetTokenStatusWithServiceProvider()
+        {
+            TestAdapter adapter = new TestAdapter();
+            string serviceProvider = "provider";
+            string channelId = "directline";
+            string userId = "testUser";
+            string token = "abc123";
+            Activity activity = new Activity()
+            {
+                ChannelId = channelId,
+                From = new ChannelAccount()
+                {
+                    Id = userId,
+                },
+            };
+            TurnContext turnContext = new TurnContext(adapter, activity);
+
+            adapter.AddUserToken("ABC", channelId, userId, token, null, serviceProvider);
+            adapter.AddUserToken("DEF", channelId, userId, token, null, serviceProvider);
+
+            var status = await adapter.GetTokenStatusAsync(turnContext, userId);
+            Assert.IsNotNull(status);
+            Assert.AreEqual(2, status.Length);
+            foreach (var tokenStatus in status)
+            {
+                Assert.IsTrue(tokenStatus.HasToken.Value);
+                Assert.AreEqual(tokenStatus.ServiceProviderDisplayName, serviceProvider);
+                Assert.AreEqual(tokenStatus.ChannelId, channelId);
+            }
         }
 
         [DataTestMethod]
