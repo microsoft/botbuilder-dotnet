@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Skills.Adapters;
 using Microsoft.Bot.Connector.Authentication;
@@ -25,29 +26,23 @@ namespace SimpleRootBot
             // Configure credentials
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
 
-            // Load the skills configuration
-            services.AddSingleton<SkillsConfiguration>();
+            // Register the Bot Framework Adapter with error handling enabled.
+            services.AddSingleton<BotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
-            // Create the Bot Framework Adapter with error handling enabled.
-            var botAdapter = new AdapterWithErrorHandler(services.BuildServiceProvider().GetService<IConfiguration>(), null);
-            services.AddSingleton<BotAdapter>(botAdapter);
-
-            // Create skills server and skills host adapter.
-            services.AddSingleton<BotFrameworkSkillHostAdapter>();
+            // Register the skills server and skills host adapter.
             services.AddSingleton<BotFrameworkHttpSkillsServer>();
 
-            // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
+            // Register the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
             services.AddSingleton<IStorage, MemoryStorage>();
 
-            // Create the Conversation state. (Used by the Dialog system itself.)
+            // Register Conversation state (used by the Dialog system itself).
             services.AddSingleton<ConversationState>();
 
-            // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
+            // Register the skills configuration class
+            services.AddSingleton<SkillsConfiguration>();
+
+            // Register the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, RootBot>();
-            
-            // force this to be resolved
-            // TODO: you can manually add skills that are not in config by adding your own elements to skillAdapter.Skills 
-            var skillAdapter = services.BuildServiceProvider().GetService<BotFrameworkSkillHostAdapter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,6 +62,9 @@ namespace SimpleRootBot
 
             // app.UseHttpsRedirection();
             app.UseMvc();
+            
+            // Configure Bot Skills
+            app.UseBotSkills();
         }
     }
 }

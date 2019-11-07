@@ -19,9 +19,9 @@ namespace SimpleRootBot.Controllers
         private readonly BotFrameworkHttpAdapter _adapter;
         private readonly IBot _bot;
 
-        public BotController(BotAdapter adapter, IBot bot)
+        public BotController(BotFrameworkHttpAdapter adapter, IBot bot)
         {
-            _adapter = (BotFrameworkHttpAdapter)adapter;
+            _adapter = adapter;
             _bot = bot;
         }
 
