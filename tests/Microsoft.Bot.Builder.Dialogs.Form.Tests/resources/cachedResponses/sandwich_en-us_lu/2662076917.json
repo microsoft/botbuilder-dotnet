@@ -1,0 +1,1 @@
+{"query":"wheat","alteredQuery":null,"topScoringIntent":{"intent":"sandwich","score":0.99999},"intents":null,"entities":[{"entity":"wheat","type":"BreadEntity","startIndex":0,"endIndex":4,"resolution":{"values":["multiGrainWheat","wholeWheat"]},"role":""}],"compositeEntities":null,"sentimentAnalysis":null,"connectedServiceResult":null}

@@ -3,14 +3,16 @@
     "type": "object",
     "properties": {
         "Quantity": {
-            "type": "number"
+            "type": "number",
+            "minimum": 1,
+            "maximum": 10
         },
         "Directions": {
             "type": "string",
             "$comment": "This indicates the whole string is what maps to this."
         },
         "Length": {
-            "type": "string",
+            "type": "number",
             "$mappings": [
                 "dimension",
                 "number"
@@ -21,10 +23,10 @@
         "Bread": {
             "type": "string",
             "enum": [
-                "multigrain",
+                "multiGrainWheat",
                 "rye",
                 "white",
-                "none"
+                "wholeWheat"
             ]
         },
         "Cheese": {
@@ -54,34 +56,15 @@
             ]
         },
         "Name": {
-            "type": "string",
-            "$mappings": [
-                "utterance"
-            ]
-        },
-        "Toppings": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": [
-                    "avocado",
-                    "banana peppers",
-                    "green peppers",
-                    "green onions",
-                    "ketchup",
-                    "lettuce",
-                    "olive oil",
-                    "mayo",
-                    "mushrooms",
-                    "mustard",
-                    "olives",
-                    "radish",
-                    "red peppers",
-                    "tomatoes",
-                    "pickles",
-                    "white onions"
-                ]
-            }
+            "type": "string"
         }
-    }
+    },
+    "required": [
+        "Meat",
+        "Bread",
+        "Cheese"
+    ],
+    "$requires": [
+        "standard.schema.dialog"
+    ]
 }

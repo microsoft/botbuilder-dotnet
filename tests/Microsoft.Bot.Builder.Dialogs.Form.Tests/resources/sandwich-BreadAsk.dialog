@@ -1,11 +1,23 @@
+
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
     "$type": "Microsoft.OnAsk",
-    "condition": "!this.Bread",
+    "condition":"and(!$Bread, contains(dialog.requiredProperties, 'Bread'))",
     "actions": [
         {
+            "$type": "Microsoft.IfCondition",
+            "condition":"$lastExpectedProperty == 'Bread'",
+            "actions":[
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "@{help(@PropertyName)}"
+                }
+                    
+            ]
+        },
+        {
             "$type": "Microsoft.Ask",
-            "activity": "[askBread]",
+            "activity": "@{AskBread()}",
             "expectedProperties": [
                 "Bread"
             ]

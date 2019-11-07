@@ -82,7 +82,7 @@
 - @{join(foreach(dialog.requiredProperties, property, readingProperty(property)), ', ')}
 
 # readingProperty(property)
-- @{toLower(property)}=@{dialog[property]}
+- @{toLower(property)}=@{value(property, dialog[property])}
 
 # confirmChange
 - Is there any property you want to change? (yes/no)

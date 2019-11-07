@@ -1,0 +1,129 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "Quantity": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 10
+        },
+        "Directions": {
+            "type": "string",
+            "$comment": "This indicates the whole string is what maps to this."
+        },
+        "Length": {
+            "type": "number",
+            "$mappings": [
+                "dimension",
+                "number"
+            ],
+            "$comment": "This is used by the mapping to convert underlying dimensions to inches.",
+            "$units": "inches"
+        },
+        "Bread": {
+            "type": "string",
+            "enum": [
+                "multiGrainWheat",
+                "rye",
+                "white",
+                "wholeWheat"
+            ]
+        },
+        "Cheese": {
+            "type": "string",
+            "enum": [
+                "american",
+                "cheddar",
+                "feta",
+                "gouda",
+                "pepper jack",
+                "provolone",
+                "swiss",
+                "none"
+            ]
+        },
+        "Meat": {
+            "type": "string",
+            "enum": [
+                "bacon",
+                "chicken",
+                "ham",
+                "pulled pork",
+                "roast beef",
+                "salami",
+                "turkey",
+                "none"
+            ]
+        },
+        "Name": {
+            "type": "string"
+        },
+        "CancelConfirmation": {
+            "type": "string",
+            "$mappings": [
+                "Confirmation"
+            ],
+            "$templates": [
+                "CancelConfirmation.dialog",
+                "CancelConfirmationSet.dialog"
+            ]
+        },
+        "CompleteConfirmation": {
+            "type": "string",
+            "$mappings": [
+                "Confirmation"
+            ],
+            "$templates": [
+                "CompleteConfirmation.dialog",
+                "CompleteConfirmationSet.dialog"
+            ]
+        },
+        "PropertyToChange": {
+            "type": "string",
+            "$mappings": [
+                "PROPERTYName"
+            ],
+            "$templates": [
+                "PropertyToChangeSet.dialog"
+            ]
+        },
+        "lastExpectedProperty": {
+            "type": "string",
+            "$mappings": [
+                "PROPERTYName"
+            ],
+            "$templates": []
+        }
+    },
+    "required": [
+        "Meat",
+        "Bread",
+        "Cheese"
+    ],
+    "$requires": [
+        "standard.schema.dialog"
+    ],
+    "$expectedOnly": [
+        "CancelConfirmation",
+        "CompleteConfirmation",
+        "PropertyToChange",
+        "lastExpectedProperty"
+    ],
+    "$templates": [
+        "helpIntent.lu",
+        "cancelIntent.lu",
+        "noneIntent.lu",
+        "triggerIntent.lu",
+        "locale.lu",
+        "locale.lg",
+        "BeginDialog.dialog",
+        "ChooseProperty.dialog",
+        "HelpIntent.dialog",
+        "NotUnderstood.dialog",
+        "TriggerIntent.dialog",
+        "luconfig.json",
+        "lu.dialog",
+        "Main.dialog"
+    ],
+    "definition": {}
+}

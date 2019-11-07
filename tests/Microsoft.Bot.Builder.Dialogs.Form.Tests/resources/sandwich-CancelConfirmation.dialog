@@ -1,13 +1,14 @@
+
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
-    "$type": "Microsoft.OnClarifySlotValue",
-    "condition": "turn.dialogEvent.Value.Change.Slot == 'Bread'",
+    "$type": "Microsoft.OnIntent",
+    "intent": "Cancel",
     "actions": [
         {
             "$type": "Microsoft.Ask",
-            "activity": "[clarifyBread]",
+            "activity": "@{cancel()}",
             "expectedProperties": [
-                "Bread"
+                "CancelConfirmation"
             ]
         }
     ]

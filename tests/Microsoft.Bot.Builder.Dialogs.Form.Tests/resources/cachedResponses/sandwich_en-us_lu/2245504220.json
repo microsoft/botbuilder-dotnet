@@ -1,0 +1,1 @@
+{"query":"swiss","alteredQuery":null,"topScoringIntent":{"intent":"sandwich","score":0.99999},"intents":null,"entities":[{"entity":"swiss","type":"CheeseEntity","startIndex":0,"endIndex":4,"resolution":{"values":["swiss"]},"role":""}],"compositeEntities":null,"sentimentAnalysis":null,"connectedServiceResult":null}

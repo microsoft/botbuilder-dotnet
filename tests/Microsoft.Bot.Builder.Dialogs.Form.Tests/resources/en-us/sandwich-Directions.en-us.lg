@@ -1,3 +1,7 @@
 # AskDirections
-- [askString('Directions')]
-[sandwich-common.en-us.lg](./sandwich-common.en-us.lg)
+- @{askString('Directions')}
+
+# DirectionsName
+- directions
+
+[sandwich-common.en-us.lg](sandwich-common.en-us.lg)

@@ -1,1 +1,0 @@
-{"query":"Order a ham sandwich","alteredQuery":null,"topScoringIntent":{"intent":"Cancel","score":0.0378792919},"intents":null,"entities":[{"entity":"ham","type":"Meat","startIndex":8,"endIndex":10,"resolution":{"values":["ham"]}}],"compositeEntities":null,"sentimentAnalysis":null,"connectedServiceResult":null}

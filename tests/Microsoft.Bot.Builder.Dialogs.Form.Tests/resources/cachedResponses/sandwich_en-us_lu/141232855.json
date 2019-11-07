@@ -1,0 +1,1 @@
+{"query":"rye","alteredQuery":null,"topScoringIntent":{"intent":"sandwich","score":0.99999},"intents":null,"entities":[{"entity":"rye","type":"BreadEntity","startIndex":0,"endIndex":2,"resolution":{"values":["rye"]},"role":""}],"compositeEntities":null,"sentimentAnalysis":null,"connectedServiceResult":null}

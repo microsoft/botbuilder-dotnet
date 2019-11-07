@@ -7,6 +7,146 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="resources\en-us\sandwich-Bread.en-us.lg" />
+    <None Remove="resources\en-us\sandwich-BreadEntity.en-us.lg" />
+    <None Remove="resources\en-us\sandwich-BreadEntity.en-us.lu" />
+    <None Remove="resources\en-us\sandwich-cancel.en-us.lu" />
+    <None Remove="resources\en-us\sandwich-cancelIntent.en-us.lu" />
+    <None Remove="resources\en-us\sandwich-Cheese.en-us.lg" />
+    <None Remove="resources\en-us\sandwich-CheeseEntity.en-us.lg" />
+    <None Remove="resources\en-us\sandwich-CheeseEntity.en-us.lu" />
+    <None Remove="resources\en-us\sandwich-common.en-us.lg" />
+    <None Remove="resources\en-us\sandwich-Confirmation.en-us.lg" />
+    <None Remove="resources\en-us\sandwich-Confirmation.en-us.lu" />
+    <None Remove="resources\en-us\sandwich-dimension.en-us.lu" />
+    <None Remove="resources\en-us\sandwich-Directions.en-us.lg" />
+    <None Remove="resources\en-us\sandwich-DirectionsEntity.en-us.lg" />
+    <None Remove="resources\en-us\sandwich-DirectionsEntity.en-us.lu" />
+    <None Remove="resources\en-us\sandwich-help.en-us.lu" />
+    <None Remove="resources\en-us\sandwich-helpIntent.en-us.lu" />
+    <None Remove="resources\en-us\sandwich-Meat.en-us.lg" />
+    <None Remove="resources\en-us\sandwich-MeatEntity.en-us.lg" />
+    <None Remove="resources\en-us\sandwich-MeatEntity.en-us.lu" />
+    <None Remove="resources\en-us\sandwich-Name.en-us.lg" />
+    <None Remove="resources\en-us\sandwich-NameEntity.en-us.lg" />
+    <None Remove="resources\en-us\sandwich-NameEntity.en-us.lu" />
+    <None Remove="resources\en-us\sandwich-noneIntent.en-us.lu" />
+    <None Remove="resources\en-us\sandwich-number.en-us.lu" />
+    <None Remove="resources\en-us\sandwich-PROPERTYName.en-us.lg" />
+    <None Remove="resources\en-us\sandwich-PROPERTYName.en-us.lu" />
+    <None Remove="resources\en-us\sandwich-Quantity.en-us.lu" />
+    <None Remove="resources\en-us\sandwich-sandwich.lu" />
+    <None Remove="resources\en-us\sandwich.en-us.lg" />
+    <None Remove="resources\en-us\sandwich.en-us.lu" />
+    <None Remove="resources\en-us\sandwich.en-us.lu.dialog" />
+    <None Remove="resources\luconfig.json" />
+    <None Remove="resources\luis.settings.chrimc.westus.json" />
+    <None Remove="resources\sandwich-BeginDialog.dialog" />
+    <None Remove="resources\sandwich-BreadAsk.dialog" />
+    <None Remove="resources\sandwich-BreadEntityClarify.dialog" />
+    <None Remove="resources\sandwich-BreadSetBreadEntity.dialog" />
+    <None Remove="resources\sandwich-CancelConfirmation.dialog" />
+    <None Remove="resources\sandwich-CancelConfirmationSet.dialog" />
+    <None Remove="resources\sandwich-CheeseAsk.dialog" />
+    <None Remove="resources\sandwich-CheeseEntityClarify.dialog" />
+    <None Remove="resources\sandwich-CheeseSetCheeseEntity.dialog" />
+    <None Remove="resources\sandwich-ChooseProperty.dialog" />
+    <None Remove="resources\sandwich-CompleteConfirmation.dialog" />
+    <None Remove="resources\sandwich-CompleteConfirmationSet.dialog" />
+    <None Remove="resources\sandwich-DirectionsAsk.dialog" />
+    <None Remove="resources\sandwich-DirectionsSetDirectionsEntity.dialog" />
+    <None Remove="resources\sandwich-Help.dialog" />
+    <None Remove="resources\sandwich-HelpIntent.dialog" />
+    <None Remove="resources\sandwich-MeatAsk.dialog" />
+    <None Remove="resources\sandwich-MeatEntityClarify.dialog" />
+    <None Remove="resources\sandwich-MeatSetMeatEntity.dialog" />
+    <None Remove="resources\sandwich-NameAsk.dialog" />
+    <None Remove="resources\sandwich-NameSetNameEntity.dialog" />
+    <None Remove="resources\sandwich-NotUnderstood.dialog" />
+    <None Remove="resources\sandwich-PropertyToChangeSet.dialog" />
+    <None Remove="resources\sandwich-sandwichIntent.dialog" />
+    <None Remove="resources\sandwich-sandwichTrigger.dialog" />
+    <None Remove="resources\sandwich.form.dialog" />
+    <None Remove="resources\sandwich.lu.dialog" />
+    <None Remove="resources\sandwich.main.dialog" />
+    <None Remove="resources\sandwich.schema.dialog" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="resources\en-us\sandwich-Bread.en-us.lg" />
+    <Content Include="resources\en-us\sandwich-BreadEntity.en-us.lg" />
+    <Content Include="resources\en-us\sandwich-BreadEntity.en-us.lu" />
+    <Content Include="resources\en-us\sandwich-cancel.en-us.lu" />
+    <Content Include="resources\en-us\sandwich-cancelIntent.en-us.lu" />
+    <Content Include="resources\en-us\sandwich-Cheese.en-us.lg" />
+    <Content Include="resources\en-us\sandwich-CheeseEntity.en-us.lg" />
+    <Content Include="resources\en-us\sandwich-CheeseEntity.en-us.lu" />
+    <Content Include="resources\en-us\sandwich-common.en-us.lg" />
+    <Content Include="resources\en-us\sandwich-Confirmation.en-us.lg" />
+    <Content Include="resources\en-us\sandwich-Confirmation.en-us.lu" />
+    <Content Include="resources\en-us\sandwich-dimension.en-us.lu" />
+    <Content Include="resources\en-us\sandwich-Directions.en-us.lg" />
+    <Content Include="resources\en-us\sandwich-DirectionsEntity.en-us.lg" />
+    <Content Include="resources\en-us\sandwich-DirectionsEntity.en-us.lu" />
+    <Content Include="resources\en-us\sandwich-help.en-us.lu" />
+    <Content Include="resources\en-us\sandwich-helpIntent.en-us.lu" />
+    <Content Include="resources\en-us\sandwich-Meat.en-us.lg" />
+    <Content Include="resources\en-us\sandwich-MeatEntity.en-us.lg" />
+    <Content Include="resources\en-us\sandwich-MeatEntity.en-us.lu" />
+    <Content Include="resources\en-us\sandwich-Name.en-us.lg" />
+    <Content Include="resources\en-us\sandwich-NameEntity.en-us.lg" />
+    <Content Include="resources\en-us\sandwich-NameEntity.en-us.lu" />
+    <Content Include="resources\en-us\sandwich-noneIntent.en-us.lu" />
+    <Content Include="resources\en-us\sandwich-number.en-us.lu" />
+    <Content Include="resources\en-us\sandwich-PROPERTYName.en-us.lg" />
+    <Content Include="resources\en-us\sandwich-PROPERTYName.en-us.lu" />
+    <Content Include="resources\en-us\sandwich-Quantity.en-us.lu" />
+    <Content Include="resources\en-us\sandwich-sandwich.lu" />
+    <Content Include="resources\en-us\sandwich.en-us.lg" />
+    <Content Include="resources\en-us\sandwich.en-us.lu" />
+    <Content Include="resources\en-us\sandwich.en-us.lu.dialog" />
+    <Content Include="resources\luconfig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="resources\luis.settings.chrimc.westus.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="resources\sandwich-BeginDialog.dialog" />
+    <Content Include="resources\sandwich-BreadAsk.dialog" />
+    <Content Include="resources\sandwich-BreadEntityClarify.dialog" />
+    <Content Include="resources\sandwich-BreadSetBreadEntity.dialog" />
+    <Content Include="resources\sandwich-CancelConfirmation.dialog" />
+    <Content Include="resources\sandwich-CancelConfirmationSet.dialog" />
+    <Content Include="resources\sandwich-CheeseAsk.dialog" />
+    <Content Include="resources\sandwich-CheeseEntityClarify.dialog" />
+    <Content Include="resources\sandwich-CheeseSetCheeseEntity.dialog" />
+    <Content Include="resources\sandwich-ChooseProperty.dialog" />
+    <Content Include="resources\sandwich-CompleteConfirmation.dialog" />
+    <Content Include="resources\sandwich-CompleteConfirmationSet.dialog" />
+    <Content Include="resources\sandwich-DirectionsAsk.dialog" />
+    <Content Include="resources\sandwich-DirectionsSetDirectionsEntity.dialog" />
+    <Content Include="resources\sandwich-Help.dialog" />
+    <Content Include="resources\sandwich-HelpIntent.dialog" />
+    <Content Include="resources\sandwich-MeatAsk.dialog" />
+    <Content Include="resources\sandwich-MeatEntityClarify.dialog" />
+    <Content Include="resources\sandwich-MeatSetMeatEntity.dialog" />
+    <Content Include="resources\sandwich-NameAsk.dialog" />
+    <Content Include="resources\sandwich-NameSetNameEntity.dialog" />
+    <Content Include="resources\sandwich-NotUnderstood.dialog" />
+    <Content Include="resources\sandwich-PropertyToChangeSet.dialog" />
+    <Content Include="resources\sandwich-sandwichIntent.dialog" />
+    <Content Include="resources\sandwich-sandwichTrigger.dialog" />
+    <Content Include="resources\sandwich.form.dialog" />
+    <Content Include="resources\sandwich.lu.dialog" />
+    <Content Include="resources\sandwich.main.dialog" />
+    <Content Include="resources\sandwich.schema.dialog" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">

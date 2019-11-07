@@ -1,0 +1,1 @@
+{"query":"no","alteredQuery":null,"topScoringIntent":{"intent":"sandwich","score":0.99999},"intents":null,"entities":[{"entity":"no","type":"Confirmation","startIndex":0,"endIndex":1,"resolution":{"values":["no"]},"role":""}],"compositeEntities":null,"sentimentAnalysis":null,"connectedServiceResult":null}
