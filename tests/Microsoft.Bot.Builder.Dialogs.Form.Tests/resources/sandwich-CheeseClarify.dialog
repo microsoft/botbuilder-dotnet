@@ -1,0 +1,14 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$type": "Microsoft.OnClarifySlotValue",
+    "condition": "turn.dialogEvent.Value.Change.Slot == 'Cheese'",
+    "actions": [
+        {
+            "$type": "Microsoft.Ask",
+            "activity": "[clarifyCheese]",
+            "expectedProperties": [
+                "Cheese"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,30 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$type": "Microsoft.OnAsk",
+    "condition": "and(!$Account, contains(dialog.requiredProperties, 'Account'))",
+    "actions": [
+        {
+            "$type": "Microsoft.IfCondition",
+            "condition": "contains(turn.schema.properties['Account'].$mappings, 'utterance')",
+            "actions": [
+                {
+                    "$type": "Microsoft.Ask",
+                    "activity": "[AskAccount]",
+                    "expectedProperties": [
+                        "utterance",
+                        "Account"
+                    ]
+                }
+            ],
+            "elseActions": [
+                {
+                    "$type": "Microsoft.Ask",
+                    "activity": "[AskAccount]",
+                    "expectedProperties": [
+                        "Account"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -6,12 +6,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public class SequenceContext : DialogContext
     {
+#pragma warning disable SA1310 // Field should not contain underscore.
+        private const string WAIT_FOR_INPUT_PATH = "turn.waitForInput";
+#pragma warning restore SA1310 // Field should not contain underscore.
+
         private readonly string changeKey;
 
         private DialogSet actionDialogs;

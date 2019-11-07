@@ -1,0 +1,7 @@
+{
+    "name": "activity",
+    "defaultLanguage": "en-us",
+    "models": [
+        "en-us/activity.en-us.lu"
+    ]
+  }

@@ -1,0 +1,7 @@
+{
+    "$type": "Microsoft.MultiLanguageRecognizer",
+    "recognizers": {
+        "en-us": "contact.en-us.lu",
+        "": "contact.en-us.lu"
+    }
+}

@@ -14,8 +14,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnEventActivity : OnActivity
     {
         [JsonConstructor]
-        public OnEventActivity(List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(type: ActivityTypes.Event, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine)
+        public OnEventActivity(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(type: ActivityTypes.Event, actions: actions, condition: condition, callerPath: callerPath, callerLine: callerLine)
         {
         }
     }

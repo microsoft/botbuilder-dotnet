@@ -9,7 +9,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Expressions;
@@ -113,7 +116,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 throw new ArgumentException($"{nameof(options)} should not ever be a cancellation token");
             }
 
-            EnsureDependenciesInstalled();
+            EnsureDependenciesInstalled(dc);
 
             SetLocalGenerator(dc.Context);
 
@@ -140,7 +143,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
-            EnsureDependenciesInstalled();
+            EnsureDependenciesInstalled(dc);
 
             SetLocalGenerator(dc.Context);
 
@@ -224,12 +227,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return await ProcessEventAsync(sequenceContext, dialogEvent, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
-        protected async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default)
+        protected virtual async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Save into turn
             sequenceContext.GetState().SetValue(TurnPath.DIALOGEVENT, dialogEvent);
 
-            EnsureDependenciesInstalled();
+            EnsureDependenciesInstalled(sequenceContext);
+
+            // Count of events processed
+            var count = sequenceContext.GetState().GetValue<uint>(DialogPath.EventCounter);
+            sequenceContext.GetState().SetValue(DialogPath.EventCounter, ++count);
 
             // Look for triggered evt
             var handled = await QueueFirstMatchAsync(sequenceContext, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
@@ -420,7 +427,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // End current step
                 await EndCurrentActionAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
 
-                // Check for changes to any of our parents
+                if (result.Status == DialogTurnStatus.CompleteAndWait)
+                {
+                    // Waiting in next step
+                    result.Status = DialogTurnStatus.Waiting;
+                    return result;
+                }
+
                 var parentChanges = false;
                 DialogContext root = sequenceContext;
                 var parent = sequenceContext.Parent;
@@ -464,10 +477,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         protected async Task<DialogTurnResult> OnEndOfActionsAsync(SequenceContext sequenceContext, CancellationToken cancellationToken = default)
         {
-            // End dialog and return result
+            // Is the current dialog still on the stack?
             if (sequenceContext.ActiveDialog != null)
             {
-                if (ShouldEnd(sequenceContext))
+                // Raise EndOfActions event
+                var endOfActionsEvent = new DialogEvent() { Name = AdaptiveEvents.EndOfActions, Bubble = false };
+                var handled = await OnDialogEventAsync(sequenceContext, endOfActionsEvent, cancellationToken).ConfigureAwait(false);
+
+                if (handled)
+                {
+                    // EndOfActions event was handled
+                    return await ContinueActionsAsync(sequenceContext, null, cancellationToken).ConfigureAwait(false);
+                }
+                else if (ShouldEnd(sequenceContext))
                 {
                     RestoreParentGenerator(sequenceContext.Context);
                     sequenceContext.GetState().TryGetValue<object>(DefaultResultProperty, out var result);
@@ -547,12 +569,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var selection = await Selector.Select(sequenceContext, cancellationToken).ConfigureAwait(false);
             if (selection.Any())
             {
-                var evt = Triggers[selection.First()];
+                var evt = (from conditional in selection orderby conditional.Priority ascending select conditional).First();
                 await sequenceContext.DebuggerStepAsync(evt, dialogEvent, cancellationToken).ConfigureAwait(false);
                 Trace.TraceInformation($"Executing Dialog: {Id} Rule[{selection}]: {evt.GetType().Name}: {evt.GetExpression(new ExpressionEngine())}");
                 var changes = await evt.ExecuteAsync(sequenceContext).ConfigureAwait(false);
 
-                if (changes != null && changes.Count > 0)
+                if (changes != null && changes.Count() > 0)
                 {
                     sequenceContext.QueueChanges(changes[0]);
                     return true;
@@ -562,7 +584,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return false;
         }
 
-        private void EnsureDependenciesInstalled()
+        private void EnsureDependenciesInstalled(DialogContext dc)
         {
             lock (this)
             {
@@ -570,6 +592,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     installedDependencies = true;
 
+                    var needsTracker = false;
+                    var id = 0u;
+                    var noActivity = 0;
+                    var activity = 1000;
+                    var input = 2000;
                     foreach (var @event in Triggers)
                     {
                         if (@event is IDialogDependencies depends)
@@ -579,6 +606,47 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                                 Dialogs.Add(dlg);
                             }
                         }
+
+                        if (@event.RunOnce)
+                        {
+                            needsTracker = true;
+                        }
+
+                        if (!@event.Priority.HasValue)
+                        {
+                            // Analyze actions to set default priorities
+                            // 0-999 Non-activity
+                            // 1000-1999 Sends activity
+                            // 2000+ Contains input action
+                            var foundActivity = false;
+                            var foundInput = false;
+                            foreach (var action in @event.Actions)
+                            {
+                                if (action is InputDialog || action is Ask)
+                                {
+                                    foundInput = true;
+                                }
+                                else if (action is SendActivity)
+                                {
+                                    foundActivity = true;
+                                }
+                            }
+
+                            if (foundInput)
+                            {
+                                @event.Priority = input++;
+                            }
+                            else if (foundActivity)
+                            {
+                                @event.Priority = activity++;
+                            }
+                            else
+                            {
+                                @event.Priority = noActivity++;
+                            }
+                        }
+
+                        @event.Id = id++;
                     }
 
                     // Wire up selector
@@ -588,7 +656,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         Selector = new MostSpecificSelector { Selector = new FirstSelector() };
                     }
 
-                    Selector.Initialize(Triggers);
+                    if (needsTracker)
+                    {
+                        if (!dc.GetState().ContainsKey(DialogPath.EventCounter))
+                        {
+                            dc.GetState().SetValue(DialogPath.EventCounter, 0u);
+                        }
+
+                        if (!dc.GetState().ContainsKey(DialogPath.ConditionTracker))
+                        {
+                            var parser = Selector.Parser;
+                            foreach (var trigger in Triggers)
+                            {
+                                if (trigger.RunOnce)
+                                {
+                                    // TODO: We should probably use the full expression, but wrap things like event processing in ignore
+                                    var paths = dc.GetState().Track(parser.Parse(trigger.Condition).References());
+                                    var triggerPath = DialogPath.ConditionTracker + "." + trigger.Id + ".";
+                                    dc.GetState().SetValue(triggerPath + "paths", paths);
+                                    dc.GetState().SetValue(triggerPath + "lastRun", 0u);
+                                }
+                            }
+                        }
+                    }
+
+                    this.Selector.Initialize(Triggers, true);
                 }
             }
         }

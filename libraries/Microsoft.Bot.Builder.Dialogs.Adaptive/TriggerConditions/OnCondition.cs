@@ -8,6 +8,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Memory;
+using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 
@@ -52,6 +54,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
         /// <summary>
+        /// Gets or sets the rule priority where 0 is the highest.
+        /// </summary>
+        /// <value>Priority of condition.</value>
+        [JsonProperty("priority")]
+        public int? Priority { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether rule should only run once per unique set of memory paths.
+        /// </summary>
+        /// <value>Boolean if should run once per unique values.</value>
+        [JsonProperty("runOnce")]
+        public bool RunOnce { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Unique id for this condition.
+        /// </summary>
+        /// <value>Id for condition.</value>
+        [JsonIgnore]
+        public uint Id { get; set; }
+
+        /// <summary>
         /// Get the expression for this rule by calling GatherConstraints().
         /// </summary>
         /// <param name="parser">Expression parser.</param>
@@ -62,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             {
                 if (this.fullConstraint == null)
                 {
-                    List<Expression> allExpressions = new List<Expression>();
+                    var allExpressions = new List<Expression>();
                     if (!string.IsNullOrWhiteSpace(this.Condition))
                     {
                         try
@@ -82,11 +105,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
                     if (allExpressions.Any())
                     {
-                        return Expression.AndExpression(allExpressions.ToArray());
+                        this.fullConstraint = Expression.AndExpression(allExpressions.ToArray());
                     }
                     else
                     {
-                        return Expression.ConstantExpression(true);
+                        this.fullConstraint = Expression.ConstantExpression(true);
+                    }
+
+                    if (RunOnce)
+                    {
+                        this.fullConstraint = Expression.AndExpression(
+                            this.fullConstraint,
+                            new Expression(new ExpressionEvaluator(
+                                "runOnce",
+                                (expression, os) =>
+                                {
+                                    var state = os as DialogStateManager;
+                                    var basePath = DialogPath.ConditionTracker + "." + Id.ToString() + ".";
+                                    var lastRun = state.GetValue<uint>(basePath + "lastRun");
+                                    var paths = state.GetValue<string[]>(basePath + "paths");
+                                    var changed = state.AnyChanged(lastRun, paths);
+                                    return (changed, null);
+                                },
+                                ReturnType.Boolean,
+                                BuiltInFunctions.ValidateUnary)));
                     }
                 }
             }
@@ -124,6 +166,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <returns>A <see cref="Task"/> with plan change list.</returns>
         public virtual async Task<List<ActionChangeList>> ExecuteAsync(SequenceContext planningContext)
         {
+            if (RunOnce)
+            {
+                var count = planningContext.GetState().GetValue<uint>(DialogPath.EventCounter);
+                planningContext.GetState().SetValue(DialogPath.ConditionTracker + "." + Id.ToString() + ".lastRun", count);
+            }
+
             return await Task.FromResult(new List<ActionChangeList>()
             {
                 this.OnCreateChangeList(planningContext)

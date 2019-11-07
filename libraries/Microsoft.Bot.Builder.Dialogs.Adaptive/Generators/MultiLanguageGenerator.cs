@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Concurrent;
-using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {

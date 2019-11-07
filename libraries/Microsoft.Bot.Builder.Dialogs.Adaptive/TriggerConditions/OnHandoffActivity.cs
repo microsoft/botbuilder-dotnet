@@ -14,8 +14,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnHandoffActivity : OnActivity
     {
         [JsonConstructor]
-        public OnHandoffActivity(List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(type: ActivityTypes.Handoff, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine)
+        public OnHandoffActivity(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(type: ActivityTypes.Handoff, actions: actions, condition: condition, callerPath: callerPath, callerLine: callerLine)
         {
         }
     }

@@ -1,0 +1,14 @@
+# AskActivityType
+- [askEnum('ActivityType', ActivityTypeName())]
+
+# ClarifyActivityType
+- [clarifyEnum('ActivityType', ActivityTypeName())]
+
+# HelpActivityType
+- [helpProperty('ActivityType', ActivityTypeName())]
+
+# ActivityTypeName
+- activity type 
+
+[activity-common.en-us.lg](./activity-common.en-us.lg)
+ 

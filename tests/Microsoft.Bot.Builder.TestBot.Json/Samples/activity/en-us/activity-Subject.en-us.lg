@@ -1,0 +1,7 @@
+# AskSubject
+- [askString('Subject', SubjectName())]
+
+# SubjectName
+- subject 
+[activity-common.en-us.lg](./activity-common.en-us.lg)
+ 

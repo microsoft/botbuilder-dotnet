@@ -1,0 +1,7 @@
+{
+    "$type": "Microsoft.MultiLanguageRecognizer",
+    "recognizers": {
+        "en-us": "opportunity.en-us.lu",
+        "": "opportunity.en-us.lu"
+    }
+}

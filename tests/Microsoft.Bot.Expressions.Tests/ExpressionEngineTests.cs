@@ -8,7 +8,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Bot.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Expressions.Tests

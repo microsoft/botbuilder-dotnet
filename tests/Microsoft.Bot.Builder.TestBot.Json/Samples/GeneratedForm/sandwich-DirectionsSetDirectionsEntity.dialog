@@ -1,0 +1,36 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$type": "Microsoft.OnSetProperty",
+    "property": "Directions",
+    "entity": "DirectionsEntity",
+    "actions": [
+        {
+            "$type": "Microsoft.IfCondition",
+            "condition": "!turn.dialogevent.value.expected",
+            "actions":[               
+                {
+                    "$type": "Microsoft.IfCondition",
+                    "condition": "!$Directions",
+                    "actions":[
+                        {
+                            "$type": "Microsoft.SendActivity",
+                            "activity": "@{unexpectedPropertySet('Directions', @DirectionsEntity)}"
+                        }
+                    ],
+                    "elseActions":[
+                        {
+                            "$type": "Microsoft.SendActivity",
+                            "activity": "@{unexpectedPropertyChange('Directions', @DirectionsEntity, $Directions)}"
+                        }
+                    ]
+                }                
+            ]           
+        },
+        {
+            "$type": "Microsoft.SetProperty",
+            "property": "$Directions",
+            "value": "@DirectionsEntity"
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+# AskTerritory
+- [askString('Territory', TerritoryName())]
+
+# TerritoryName
+- territory 
+[opportunity-common.en-us.lg](./opportunity-common.en-us.lg)
+ 

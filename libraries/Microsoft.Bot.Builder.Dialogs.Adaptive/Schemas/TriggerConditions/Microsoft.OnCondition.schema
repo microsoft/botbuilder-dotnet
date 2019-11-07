@@ -19,6 +19,14 @@
             "items": {
                 "$type": "Microsoft.IDialog"
             }
+        },
+        "priority": {
+            "type": "integer",
+            "description": "Priority of rule with 0 being the most important"
+        },
+        "runOnce": {
+            "type": "boolean",
+            "description": "True if rule should run once per unique conditions"
         }
     },
     "required": [

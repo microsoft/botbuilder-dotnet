@@ -103,12 +103,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 new OnIntent("a", actions: new List<Dialog> { new SetProperty { Property = "user.a", Value = "1" } }),
                 new OnIntent("b", actions: new List<Dialog> { new SetProperty { Property = "user.b", Value = "1" } }),
-                new OnIntent("trigger", constraint: "user.a == 1", actions: new List<Dialog> { new SendActivity("ruleA1") }),
-                new OnIntent("trigger", constraint: "user.a == 1", actions: new List<Dialog> { new SendActivity("ruleA2") }),
-                new OnIntent("trigger", constraint: "user.b == 1 || user.c == 1", actions: new List<Dialog> { new SendActivity("ruleBorC") }),
-                new OnIntent("trigger", constraint: "user.a == 1 && user.b == 1", actions: new List<Dialog> { new SendActivity("ruleAandB") }),
-                new OnIntent("trigger", constraint: "user.a == 1 && user.c == 1", actions: new List<Dialog> { new SendActivity("ruleAandC") }),
-                new OnIntent("trigger", constraint: string.Empty, actions: new List<Dialog> { new SendActivity("default") })
+                new OnIntent("trigger", condition: "user.a == 1", actions: new List<Dialog> { new SendActivity("ruleA1") }),
+                new OnIntent("trigger", condition: "user.a == 1", actions: new List<Dialog> { new SendActivity("ruleA2") }),
+                new OnIntent("trigger", condition: "user.b == 1 || user.c == 1", actions: new List<Dialog> { new SendActivity("ruleBorC") }),
+                new OnIntent("trigger", condition: "user.a == 1 && user.b == 1", actions: new List<Dialog> { new SendActivity("ruleAandB") }),
+                new OnIntent("trigger", condition: "user.a == 1 && user.c == 1", actions: new List<Dialog> { new SendActivity("ruleAandC") }),
+                new OnIntent("trigger", condition: string.Empty, actions: new List<Dialog> { new SendActivity("default") })
             });
             dialog.AutoEndDialog = false;
 

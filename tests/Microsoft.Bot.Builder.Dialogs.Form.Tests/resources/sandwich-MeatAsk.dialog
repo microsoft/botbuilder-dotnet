@@ -1,0 +1,14 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$type": "Microsoft.OnAsk",
+    "condition": "!this.Meat",
+    "actions": [
+        {
+            "$type": "Microsoft.Ask",
+            "activity": "[askMeat]",
+            "expectedProperties": [
+                "Meat"
+            ]
+        }
+    ]
+}

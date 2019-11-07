@@ -1,0 +1,11 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$type": "Microsoft.OnClearProperty",
+    "condition": "turn.dialogEvent.Value.Change.Slot == 'ActivityType'",
+    "actions": [
+        {
+            "$type": "Microsoft.DeleteProperty",
+            "property": "$ActivityType"
+        }
+    ]
+}

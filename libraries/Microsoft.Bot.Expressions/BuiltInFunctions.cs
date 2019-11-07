@@ -429,9 +429,8 @@ namespace Microsoft.Bot.Expressions
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
-        /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
-        public static string VerifyBoolean(object value, Expression expression, int number)
+        public static string VerifyBoolean(object value, Expression expression)
         {
             string error = null;
             if (!(value is bool))
@@ -836,7 +835,7 @@ namespace Microsoft.Bot.Expressions
 
         private static object SetProperty(object instance, string property, object value)
         {
-            object result = value;
+            var result = value;
 
             if (instance is IDictionary<string, object> idict)
             {
@@ -2091,7 +2090,7 @@ namespace Microsoft.Bot.Expressions
                     else if (products.Count() > 1)
                     {
                         var nodeList = new List<object>();
-                        foreach (JToken item in products)
+                        foreach (var item in products)
                         {
                             nodeList.Add(ResolveValue(item));
                         }
@@ -2590,7 +2589,7 @@ namespace Microsoft.Bot.Expressions
                     },
                     ReturnType.Boolean,
                     ValidateBinary),
-                Comparison(ExpressionType.Empty, args => IsEmpty(args[0]), ValidateUnary, VerifyNumberOrString),
+                Comparison(ExpressionType.Empty, args => IsEmpty(args[0]), ValidateUnary, VerifyContainer),
                 new ExpressionEvaluator(ExpressionType.And, (expression, state) => And(expression, state), ReturnType.Boolean, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.Or, (expression, state) => Or(expression, state), ReturnType.Boolean, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.Not, (expression, state) => Not(expression, state), ReturnType.Boolean, ValidateUnary),

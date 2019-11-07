@@ -1,0 +1,7 @@
+# AskHomePhone
+- [askString('HomePhone', HomePhoneName())]
+
+# HomePhoneName
+- home phone 
+[contact-common.en-us.lg](./contact-common.en-us.lg)
+ 

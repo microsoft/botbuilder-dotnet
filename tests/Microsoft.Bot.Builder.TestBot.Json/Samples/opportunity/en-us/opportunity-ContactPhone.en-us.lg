@@ -1,0 +1,7 @@
+# AskContactPhone
+- [askString('ContactPhone', ContactPhoneName())]
+
+# ContactPhoneName
+- contact phone 
+[opportunity-common.en-us.lg](./opportunity-common.en-us.lg)
+ 

@@ -1,0 +1,87 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "Quantity": {
+            "type": "number"
+        },
+        "Directions": {
+            "type": "string",
+            "$comment": "This indicates the whole string is what maps to this."
+        },
+        "Length": {
+            "type": "string",
+            "$mappings": [
+                "dimension",
+                "number"
+            ],
+            "$comment": "This is used by the mapping to convert underlying dimensions to inches.",
+            "$units": "inches"
+        },
+        "Bread": {
+            "type": "string",
+            "enum": [
+                "multigrain",
+                "rye",
+                "white",
+                "none"
+            ]
+        },
+        "Cheese": {
+            "type": "string",
+            "enum": [
+                "american",
+                "cheddar",
+                "feta",
+                "gouda",
+                "pepper jack",
+                "provolone",
+                "swiss",
+                "none"
+            ]
+        },
+        "Meat": {
+            "type": "string",
+            "enum": [
+                "bacon",
+                "chicken",
+                "ham",
+                "pulled pork",
+                "roast beef",
+                "salami",
+                "turkey",
+                "none"
+            ]
+        },
+        "Name": {
+            "type": "string",
+            "$mappings": [
+                "utterance"
+            ]
+        },
+        "Toppings": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "avocado",
+                    "banana peppers",
+                    "green peppers",
+                    "green onions",
+                    "ketchup",
+                    "lettuce",
+                    "olive oil",
+                    "mayo",
+                    "mushrooms",
+                    "mustard",
+                    "olives",
+                    "radish",
+                    "red peppers",
+                    "tomatoes",
+                    "pickles",
+                    "white onions"
+                ]
+            }
+        }
+    }
+}

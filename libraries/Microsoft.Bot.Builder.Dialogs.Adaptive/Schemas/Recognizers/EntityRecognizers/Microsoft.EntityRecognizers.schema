@@ -2,6 +2,5 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
     "$role": "unionType",
     "title": "Entity Recognizers",
-    "description": "Union of components which derive from EntityRecognizer abstract class.",
-    "type": "object"
+    "description": "Union of components which derive from EntityRecognizer abstract class."
 }

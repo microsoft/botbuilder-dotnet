@@ -9,7 +9,9 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
+using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
+using static Microsoft.Bot.Builder.Dialogs.Memory.Scopes.MemoryScope;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory
 {
@@ -98,14 +100,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>The memory scope.</returns>
         public virtual MemoryScope ResolveMemoryScope(string path, out string remainingPath)
         {
-            path = path.Trim();
-            if (path.StartsWith("{") && path.EndsWith("}"))
-            {
-                // TODO: Eventually this should use the expression machinery
-                // This allows doing something like {$foo} where dialog.foo contains $blah to compute a path.
-                path = GetValue<string>(path.Substring(1, path.Length - 2));
-            }
-
             var scope = path;
             var dot = path.IndexOf(".");
             if (dot > 0)
@@ -234,8 +228,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 throw new Exception($"{path} = You can't pass an unresolved Task to SetValue");
             }
 
-            path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            ObjectPath.SetPathValue(this, path, value);
+            path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
+            if (TrackChange(path, value))
+            {
+                ObjectPath.SetPathValue(this, path, value);
+            }
         }
 
         /// <summary>
@@ -244,8 +241,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <param name="path">Path to remove the leaf property.</param>
         public void RemoveValue(string path)
         {
-            path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            ObjectPath.RemovePathValue(this, path);
+            path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
+            if (TrackChange(path, null))
+            {
+                ObjectPath.RemovePathValue(this, path);
+            }
         }
 
         /// <summary>
@@ -325,6 +325,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
         }
 
+        public List<string> Track(IEnumerable<string> paths)
+        {
+            var allPaths = new List<string>();
+            var count = GetValue<uint>(DialogPath.EventCounter);
+            foreach (var path in paths)
+            {
+                var tpath = TransformPath(path);
+
+                // Track any path that resolves to a constant path
+                if (ObjectPath.TryResolvePath(this, tpath, out var segments))
+                {
+                    var parts = tpath.ToLower().Split('.');
+
+                    // Don't track root memory scope
+                    var npath = parts[0];
+                    for (var i = 1; i < parts.Length; ++i)
+                    {
+                        npath += "_" + parts[i];
+                        SetValue(DialogPath.ConditionTracker + "." + npath, count);
+                        allPaths.Add(npath);
+                    }
+                }
+            }
+
+            return allPaths;
+        }
+
+        public bool AnyChanged(uint count, IEnumerable<string> paths)
+        {
+            var found = false;
+            foreach (var path in paths)
+            {
+                if (GetValue<uint>(DialogPath.ConditionTracker + "." + path) > count)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            return found;
+        }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             foreach (var ms in MemoryScopes)
@@ -336,6 +378,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         private static string GetBadScopeMessage(string path)
         {
             return $"'{path}' does not match memory scopes:{string.Join(",", MemoryScopes.Select(ms => ms.Name))}";
+        }
+
+        private bool TrackChange(string path, object value)
+        {
+            var hasPath = false;
+            if (ObjectPath.TryResolvePath(this, path, out var segments))
+            {
+                var pathName = DialogPath.ConditionTracker + "." + string.Join("_", segments);
+                if (TryGetValue<uint>(pathName, out var lastChanged))
+                {
+                    SetValue(pathName, GetValue<uint>(DialogPath.EventCounter));
+                }
+
+                hasPath = true;
+            }
+
+            return hasPath;
         }
 
         private bool TryGetFirstNestedValue<T>(ref T value, ref string remainingPath, object memory)

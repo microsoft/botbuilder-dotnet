@@ -1,0 +1,26 @@
+
+$PropertyToChange:Subject=
+ -subject
+
+$PropertyToChange:ActivityType=
+ -activity
+ -type
+ -activity type
+
+$PropertyToChange:StartDate=
+ -start
+ -date
+ -start date
+
+
+# None
+- subject
+
+- activity
+- type
+- activity type
+
+- start
+- date
+- start date
+

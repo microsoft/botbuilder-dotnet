@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
         public FolderResourceProvider(string folder, bool includeSubFolders = true, bool monitorChanges = true)
         {
-            foreach (var extension in new string[] { ".lg", ".lu", ".dialog", ".schema", ".md" })
+            foreach (var extension in new string[] { ".lg", ".lu", ".dialog", ".schema", ".md", ".form" })
             {
                 this.extensions.Add(extension);
             }

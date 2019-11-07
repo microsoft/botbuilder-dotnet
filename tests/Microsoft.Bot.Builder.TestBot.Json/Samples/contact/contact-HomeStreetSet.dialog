@@ -1,0 +1,60 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$type": "Microsoft.OnSetProperty",
+    "property": "HomeStreet",
+    "actions": [
+        {
+            "$type": "Microsoft.SwitchCondition",
+            "condition": "turn.schema.properties['HomeStreet'].$mappings[0]",
+            "cases": [
+                {
+                    "value": "utterance",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SetProperty",
+                            "property": "$HomeStreet",
+                            "value": "@utterance"
+                        }
+                    ]
+                },
+                {
+                    "value": "datetime",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SetProperty",
+                            "property": "$HomeStreet",
+                            "value": "join(@datetime.timex,', ')"
+                        }
+                    ]
+                },
+                {
+                    "value": "datetimeV2",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SetProperty",
+                            "property": "$HomeStreet",
+                            "value": "join(@datetime.timex,', ')"
+                        }
+                    ]
+                },
+                {
+                    "value": "email",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SetProperty",
+                            "property": "$HomeStreet",
+                            "value": "@email"
+                        }
+                    ]
+                }
+            ],
+            "default": [
+                {
+                    "$type": "Microsoft.SetProperty",
+                    "property": "$HomeStreet",
+                    "value": "turn.recognized.entities[turn.schema.properties['HomeStreet'].$mappings[0]]"
+                }
+            ]
+        }
+    ]
+}

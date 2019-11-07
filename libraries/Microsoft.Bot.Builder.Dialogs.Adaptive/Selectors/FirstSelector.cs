@@ -11,34 +11,40 @@ using Microsoft.Bot.Expressions;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
     /// <summary>
-    /// Select the first true rule implementation of <see cref="ITriggerSelector"/>.
+    /// Select the first true triggerHandler implementation of <see cref="ITriggerSelector"/>.
     /// </summary>
     public class FirstSelector : ITriggerSelector
     {
         private List<OnCondition> _conditionals;
         private bool _evaluate;
-        private readonly IExpressionParser _parser = new ExpressionEngine();
+
+        /// <summary>
+        /// Gets or sets the expression parser to use.
+        /// </summary>
+        /// <value>Expression parser.</value>
+        [Newtonsoft.Json.JsonIgnore]
+        public IExpressionParser Parser { get; set;  } = new ExpressionEngine();
 
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
-            _conditionals = conditionals.ToList();
+            _conditionals = (from conditional in conditionals orderby conditional.Priority ascending select conditional).ToList();
             _evaluate = evaluate;
         }
 
-        public Task<IReadOnlyList<int>> Select(SequenceContext context, CancellationToken cancel)
+        public Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel)
         {
-            var selection = -1;
+            OnCondition selection = null;
             if (_evaluate)
             {
                 for (var i = 0; i < _conditionals.Count; i++)
                 {
                     var conditional = _conditionals[i];
-                    var expression = conditional.GetExpression(_parser);
+                    var expression = conditional.GetExpression(Parser);
                     var (value, error) = expression.TryEvaluate(context.GetState());
                     var eval = error == null && (bool)value;
                     if (eval == true)
                     {
-                        selection = i;
+                        selection = conditional;
                         break;
                     }
                 }
@@ -47,17 +53,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             {
                 if (_conditionals.Count > 0)
                 {
-                    selection = 0;
+                    selection = _conditionals[0];
                 }
             }
 
-            var result = new List<int>();
-            if (selection != -1)
+            var result = new List<OnCondition>();
+            if (selection != null)
             {
                 result.Add(selection);
             }
 
-            return Task.FromResult((IReadOnlyList<int>)result);
+            return Task.FromResult((IReadOnlyList<OnCondition>)result);
         }
     }
 }

@@ -41,13 +41,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         public static Activity CreateActivity(string lgStringResult)
         {
             JObject lgStructuredResult;
-            try
+            var lgTrimmed = lgStringResult?.Trim();
+            if (lgTrimmed.StartsWith("{") && lgTrimmed.EndsWith("}"))
             {
-                lgStructuredResult = JObject.Parse(lgStringResult);
+                try
+                {
+                    lgStructuredResult = JObject.Parse(lgTrimmed);
+                }
+                catch
+                {
+                    return BuildActivityFromText(lgTrimmed);
+                }
             }
-            catch
+            else
             {
-                return BuildActivityFromText(lgStringResult?.ToString()?.Trim());
+                return BuildActivityFromText(lgTrimmed);
             }
 
             return BuildActivityFromLGStructuredResult(lgStructuredResult);
