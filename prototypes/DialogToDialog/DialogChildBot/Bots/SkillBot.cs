@@ -34,10 +34,10 @@ namespace DialogChildBot.Bots
             if (turnContext.Activity.Type == ActivityTypes.EndOfConversation && dialogContext.Stack.Any())
             {
                 // Handle remote cancellation request if we have something in the stack.
-                await dialogContext.CancelAllDialogsAsync(cancellationToken);
+                var activeDialogContext = GetActiveDialogContext(dialogContext);
                 
-                // Must force saving conversation state after cancelling (or things won't work).
-                await ConversationState.SaveChangesAsync(turnContext, false, cancellationToken);
+                // Send cancellation message to the top dialog in the stack to ensure all the parents are cancelled in the right order. 
+                await activeDialogContext.CancelAllDialogsAsync(true, cancellationToken: cancellationToken);
                 await turnContext.SendActivityAsync(MessageFactory.Text("**SkillBot.** The current dialog in the skill was **cancelled** by a request **from the host**, do some cleanup if needed here"), cancellationToken);
             }
             else
@@ -60,16 +60,29 @@ namespace DialogChildBot.Bots
                 }
                 else if (result.Status == DialogTurnStatus.Cancelled)
                 {
+                    // TODO: this code doesn't seem to be called
                     await turnContext.SendActivityAsync(MessageFactory.Text("**SkillBot.** The current dialog in the skill was **cancelled from the skill** code. . Sending EndOfConversation"), cancellationToken);
                     
                     // Send End of conversation at the end.
                     var activity = new Activity(ActivityTypes.EndOfConversation) { Value = result.Result };
                     await turnContext.SendActivityAsync(activity, cancellationToken);
                 }
-
-                // Save any state changes that might have occured during the turn.
-                await ConversationState.SaveChangesAsync(turnContext, false, cancellationToken);
             }
+
+            // Save any state changes that might have occured during the turn.
+            await ConversationState.SaveChangesAsync(turnContext, false, cancellationToken);
+        }
+
+        // Recursively walk up the DC stack to find the active DC.
+        private DialogContext GetActiveDialogContext(DialogContext dialogContext)
+        {
+            var child = dialogContext.Child;
+            if (child == null)
+            {
+                return dialogContext;
+            }
+
+            return GetActiveDialogContext(child);
         }
     }
 }

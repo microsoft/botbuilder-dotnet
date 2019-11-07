@@ -48,7 +48,7 @@ namespace DialogChildBot.Dialogs
                     case "quit":
                         var cancelMessage = MessageFactory.Text(CancelMsgText, CancelMsgText, InputHints.IgnoringInput);
                         await innerDc.Context.SendActivityAsync(cancelMessage, cancellationToken);
-                        return await innerDc.CancelAllDialogsAsync(cancellationToken);
+                        return await innerDc.CancelAllDialogsAsync(true, cancellationToken: cancellationToken);
                 }
             }
 
