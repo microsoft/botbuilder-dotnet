@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,15 +37,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests
         [TestMethod]
         public void CheckOutPutNotFromStructuredLG()
         {
-            var diagnostics = ActivityChecker.Check("not a valid json");
+            var diagnostics = ActivityChecker.Check("Not a valid json");
             Assert.AreEqual(diagnostics.Count, 1);
             Assert.IsTrue(diagnostics[0].Severity == DiagnosticSeverity.Warning);
-            Assert.AreEqual(diagnostics[0].Message, "lg output is not a json object, and will fallback to string format.");
+            Assert.AreEqual(diagnostics[0].Message, "LG output is not a json object, and will fallback to string format.");
 
             diagnostics = ActivityChecker.Check("{}");
             Assert.AreEqual(diagnostics.Count, 1);
             Assert.IsTrue(diagnostics[0].Severity == DiagnosticSeverity.Error);
-            Assert.AreEqual(diagnostics[0].Message, "there is no 'type' or '$type' in the lg output json.");
+            Assert.AreEqual(diagnostics[0].Message, "'type' or '$type' is not exist in lg output json object.");
         }
 
         [TestMethod]
@@ -55,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests
             var diagnostics = ActivityChecker.Check(lgStringResult);
             Assert.AreEqual(diagnostics.Count, 1);
             Assert.IsTrue(diagnostics[0].Severity == DiagnosticSeverity.Error);
-            Assert.AreEqual(diagnostics[0].Message, "type 'mystruct' is not support currently.");
+            Assert.AreEqual(diagnostics[0].Message, "Type 'mystruct' is not support currently.");
 
             lgStringResult = await languageGenerator.Generate(context, "@{ErrorActivityType()}", null);
             diagnostics = ActivityChecker.Check(lgStringResult);

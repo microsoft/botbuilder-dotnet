@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AdaptiveCards;
@@ -17,6 +20,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>Diagnostic list.</returns>
         public static List<Diagnostic> Check(string lgStringResult)
         {
+            if (string.IsNullOrWhiteSpace(lgStringResult))
+            {
+                return new List<Diagnostic> { BuildDiagnostic("LG output is empty", false) };
+            }
+
             JObject lgStructuredResult;
             try
             {
@@ -24,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             catch
             {
-                return new List<Diagnostic> { BuildDiagnostic("lg output is not a json object, and will fallback to string format.", false) };
+                return new List<Diagnostic> { BuildDiagnostic("LG output is not a json object, and will fallback to string format.", false) };
             }
 
             return CheckStructuredResult(lgStructuredResult);
@@ -36,19 +44,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             var type = GetStructureType(lgJObj);
             if (string.IsNullOrWhiteSpace(type))
             {
-                result.Add(BuildDiagnostic("there is no 'type' or '$type' in the lg output json."));
+                result.Add(BuildDiagnostic("'type' or '$type' is not exist in lg output json object."));
             }
             else if (ActivityFactory.GenericCardTypeMapping.ContainsKey(type))
             {
                 result.AddRange(CheckAttachment(lgJObj));
             }
-            else if (type == nameof(Activity).ToLower())
+            else if (type == nameof(Activity).ToLowerInvariant())
             {
                 result.AddRange(CheckActivity(lgJObj));
             }
             else
             {
-                result.Add(BuildDiagnostic($"type '{type}' is not support currently."));
+                result.Add(BuildDiagnostic($"Type '{type}' is not support currently."));
             }
 
             return result;
@@ -89,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 var property = item.Key.Trim();
                 var value = item.Value;
 
-                switch (property.ToLower())
+                switch (property.ToLowerInvariant())
                 {
                     case "$type":
                     case "type":
@@ -114,7 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 var property = item.Key.Trim();
                 var value = item.Value;
 
-                switch (property.ToLower())
+                switch (property.ToLowerInvariant())
                 {
                     case "$type":
                     case "type":
@@ -153,13 +161,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             var actions = NormalizedToList(value);
             foreach (var action in actions)
             {
-                if (action is JValue jValue && jValue.Type == JTokenType.String)
+                if (IsStringValue(action))
                 {
                     return result;
                 }
                 else if (action is JObject actionJObj)
                 {
                     result.AddRange(CheckCardAction(actionJObj));
+                }
+                else
+                {
+                    result.Add(BuildDiagnostic($"'{action}' is not a valid suggestion format.", false));
                 }
             }
 
@@ -173,7 +185,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             foreach (var action in actions)
             {
-                if (action is JValue jValue && jValue.Type == JTokenType.String)
+                if (IsStringValue(action))
                 {
                     return result;
                 }
@@ -181,16 +193,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 {
                     result.AddRange(CheckCardAction(actionJObj));
                 }
+                else
+                {
+                    result.Add(BuildDiagnostic($"'{action}' is not a valid button format.", false));
+                }
             }
 
             return result;
+        }
+        
+        private static bool IsStringValue(JToken value)
+        {
+            return value is JValue jValue && jValue.Type == JTokenType.String;
         }
 
         private static List<Diagnostic> CheckCardAction(JObject cardActionJObj)
         {
             var result = new List<Diagnostic>();
             var type = GetStructureType(cardActionJObj);
-            if (type != nameof(CardAction).ToLower())
+            if (type != nameof(CardAction).ToLowerInvariant())
             {
                 result.Add(BuildDiagnostic($"'{type}' is not card action type.", false));
             }
@@ -199,9 +220,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 foreach (var item in cardActionJObj)
                 {
                     var property = item.Key.Trim();
-                    var value = item.Value.ToString().ToLower();
+                    var value = item.Value.ToString().ToLowerInvariant();
 
-                    switch (property.ToLower())
+                    switch (property.ToLowerInvariant())
                     {
                         case "$type":
                         case "title":
@@ -212,18 +233,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                             break;
 
                         case "type":
-                            if (value != ActionTypes.ImBack.ToLower()
-                                && value != ActionTypes.Call.ToLower()
-                                && value != ActionTypes.DownloadFile.ToLower()
-                                && value != ActionTypes.MessageBack.ToLower()
-                                && value != ActionTypes.openApp.ToLower()
-                                && value != ActionTypes.OpenUrl.ToLower()
-                                && value != ActionTypes.Payment.ToLower()
-                                && value != ActionTypes.PlayAudio.ToLower()
-                                && value != ActionTypes.PlayVideo.ToLower()
-                                && value != ActionTypes.PostBack.ToLower()
-                                && value != ActionTypes.ShowImage.ToLower()
-                                && value != ActionTypes.Signin.ToLower())
+                            if (value != ActionTypes.ImBack.ToLowerInvariant()
+                                && value != ActionTypes.Call.ToLowerInvariant()
+                                && value != ActionTypes.DownloadFile.ToLowerInvariant()
+                                && value != ActionTypes.MessageBack.ToLowerInvariant()
+                                && value != ActionTypes.openApp.ToLowerInvariant()
+                                && value != ActionTypes.OpenUrl.ToLowerInvariant()
+                                && value != ActionTypes.Payment.ToLowerInvariant()
+                                && value != ActionTypes.PlayAudio.ToLowerInvariant()
+                                && value != ActionTypes.PlayVideo.ToLowerInvariant()
+                                && value != ActionTypes.PostBack.ToLowerInvariant()
+                                && value != ActionTypes.ShowImage.ToLowerInvariant()
+                                && value != ActionTypes.Signin.ToLowerInvariant())
                             {
                                 result.Add(BuildDiagnostic($"'{value}' is not a valid action type"));
                             }
@@ -253,7 +274,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 type = jObj["type"]?.ToString()?.Trim();
             }
 
-            return type?.ToLower() ?? string.Empty;
+            return type?.ToLowerInvariant() ?? string.Empty;
         }
 
         private static List<Diagnostic> CheckAttachments(JToken value)
@@ -283,7 +304,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 result.AddRange(CheckCardAtttachment(ActivityFactory.GenericCardTypeMapping[type], lgJObj));
             }
-            else if (type == nameof(AdaptiveCard).ToLower())
+            else if (type == nameof(AdaptiveCard).ToLowerInvariant())
             {
                 try
                 {
@@ -315,7 +336,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             foreach (var item in lgJObj)
             {
-                var property = item.Key.Trim().ToLower();
+                var property = item.Key.Trim().ToLowerInvariant();
                 var value = item.Value;
 
                 switch (property)
@@ -338,7 +359,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                     case "autostart":
                     case "shareable":
                     case "autoloop":
-                        if (value.ToString().ToLower() != "true" && value.ToString().ToLower() != "false")
+                        if (!IsValidBooleanValue(value.ToString()))
                         {
                             result.Add(BuildDiagnostic($"'{value.ToString()}' is not a boolean value."));
                         }
@@ -351,6 +372,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
 
             return result;
+        }
+
+        private static bool IsValidBooleanValue(string boolStr)
+        {
+            if (string.IsNullOrWhiteSpace(boolStr))
+            {
+                return false;
+            }
+
+            return boolStr.ToLowerInvariant() == "true" || boolStr.ToLowerInvariant() == "false";
         }
 
         private static List<JToken> NormalizedToList(JToken item)
