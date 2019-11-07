@@ -442,10 +442,6 @@ namespace Microsoft.Bot.Expressions
             return error;
         }
 
-
-
-        // Apply -- these are helpers for adding functions to the expression library.
-
         /// <summary>
         /// Evaluate expression children and return them.
         /// </summary>
@@ -484,6 +480,8 @@ namespace Microsoft.Bot.Expressions
             return (args, error);
         }
 
+        // Apply -- these are helpers for adding functions to the expression library.
+        
         /// <summary>
         /// Generate an expression delegate that applies function after verifying all children.
         /// </summary>
@@ -3477,7 +3475,7 @@ namespace Microsoft.Bot.Expressions
                     ValidateUnary),
 
                 // Object manipulation and construction functions
-                new ExpressionEvaluator(ExpressionType.Json, Apply(args => JToken.Parse(args[0])), ReturnType.String, (expr) => ValidateOrder(expr, null, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.Json, Apply(args => JToken.Parse(args[0])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.AddProperty,
                     ApplyWithError(args =>
