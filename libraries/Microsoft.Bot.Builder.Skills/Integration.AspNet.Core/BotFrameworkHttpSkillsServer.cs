@@ -4,23 +4,23 @@
 using System;
 using System.Globalization;
 using System.Net;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Builder.Skills.Adapters;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 {
     internal delegate Task<object> RouteAction(BotFrameworkSkillHostAdapter skillAdapter, IBot bot, ClaimsIdentity claimsIdentity, HttpRequest httpRequest, GroupCollection parameters, CancellationToken cancellationToken);
 
-    public class BotFrameworkHttpSkillsServer
+    public class BotFrameworkHttpSkillsServer : BotFrameworkSkillHostAdapter
     {
         private static readonly ChannelRoute[] _routes =
         {
@@ -69,8 +69,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
                 Pattern = new Regex(@"/DELETE:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>[^\s/]*)?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
                 Action = async (skillAdapter, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
                 {
-                   await skillAdapter.DeleteActivityAsync(bot, claimsIdentity, parameters["conversationId"].Value, parameters["activityId"].Value, cancellationToken).ConfigureAwait(false);
-                   return null;
+                    await skillAdapter.DeleteActivityAsync(bot, claimsIdentity, parameters["conversationId"].Value, parameters["activityId"].Value, cancellationToken).ConfigureAwait(false);
+                    return null;
                 }
             },
             new ChannelRoute
@@ -143,16 +143,33 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             }
         };
 
-        private readonly ConfigurationChannelProvider _channelProvider;
-        private readonly ConfigurationCredentialProvider _credentialsProvider;
-        private readonly BotFrameworkSkillHostAdapter _skillAdapter;
+        private readonly IChannelProvider _channelProvider;
+        private readonly ICredentialProvider _credentialsProvider;
 
-        public BotFrameworkHttpSkillsServer(BotFrameworkSkillHostAdapter skillAdapter, IConfiguration configuration)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkHttpSkillsServer"/> class,
+        /// using a credential provider.
+        /// </summary>
+        /// <param name="adapter">adapter that this skillAdapter is bound to.</param>
+        /// <param name="credentialProvider">The credential provider.</param>
+        /// <param name="channelProvider">The channel provider.</param>
+        /// <param name="customHttpClient">The HTTP client.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        /// <exception cref="ArgumentNullException">throw ArgumentNullException.</exception>
+        /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
+        /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
+        /// add additional middleware to the adapter after construction.
+        /// </remarks>
+        public BotFrameworkHttpSkillsServer(
+            BotFrameworkHttpAdapter adapter,
+            ICredentialProvider credentialProvider,
+            IChannelProvider channelProvider = null,
+            HttpClient customHttpClient = null,
+            ILogger logger = null)
+            : base(adapter, credentialProvider, channelProvider, customHttpClient, logger)
         {
-            // adapter to use for calling back to channel
-            _skillAdapter = skillAdapter;
-            _credentialsProvider = new ConfigurationCredentialProvider(configuration);
-            _channelProvider = new ConfigurationChannelProvider(configuration);
+            _credentialsProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
+            _channelProvider = channelProvider;
         }
 
         public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
@@ -179,7 +196,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
                 // grab the auth header from the inbound http request
                 var authHeader = httpRequest.Headers["Authorization"];
                 var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialsProvider, _channelProvider, "unknown").ConfigureAwait(false);
-                
+
                 var route = GetRoute(httpRequest);
                 if (route == null)
                 {
@@ -188,7 +205,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
                 }
 
                 // Execute the route action
-                result = await route.Action.Invoke(_skillAdapter, bot, claimsIdentity, httpRequest, route.Parameters, cancellationToken).ConfigureAwait(false);
+                result = await route.Action.Invoke(this, bot, claimsIdentity, httpRequest, route.Parameters, cancellationToken).ConfigureAwait(false);
             }
             catch (UnauthorizedAccessException)
             {

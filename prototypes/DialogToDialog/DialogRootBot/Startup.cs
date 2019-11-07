@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using DialogRootBot.Bots;
 using DialogRootBot.Dialogs;
 using Microsoft.AspNetCore.Builder;
@@ -8,10 +9,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Skills.Adapters;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DialogRootBot
@@ -26,36 +27,29 @@ namespace DialogRootBot
             // Configure credentials
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
 
-            // Load the skills configuration
-            services.AddSingleton<SkillsConfiguration>();
-
-            // Create the Bot Framework Adapter with error handling enabled.
-            var botAdapter = new AdapterWithErrorHandler(services.BuildServiceProvider().GetService<IConfiguration>(), null);
-            services.AddSingleton<BotAdapter>(botAdapter);
-
-            // Create skills server and skills host adapter.
-            services.AddSingleton<BotFrameworkSkillHostAdapter>();
+            // Register the Bot Framework Adapter with error handling enabled.
+            services.AddSingleton<BotFrameworkHttpAdapter, AdapterWithErrorHandler>();
+            
+            // Register the skills server and skills host adapter.
             services.AddSingleton<BotFrameworkHttpSkillsServer>();
 
-            // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
+            // Register the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
             services.AddSingleton<IStorage, MemoryStorage>();
 
-            // Create the Conversation state. (Used by the Dialog system itself.)
+            // Register Conversation state (used by the Dialog system itself).
             services.AddSingleton<ConversationState>();
 
+            // Register the skills configuration class
+            services.AddSingleton<SkillsConfiguration>();
+            
             // Register the SkillDialog (remote skill).
             services.AddSingleton<SkillDialog>();
 
-            // The MainDialog that will be run by the bot.
+            // Register the MainDialog that will be run by the bot.
             services.AddSingleton<MainDialog>();
 
-            // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
+            // Register the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, RootBot<MainDialog>>();
-
-            // force this to be resolved
-            var skillAdapter = services.BuildServiceProvider().GetService<BotFrameworkSkillHostAdapter>();
-
-            // TODO: you can manually add skills that are not in config by adding your own elements to skillAdapter.Skills 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,6 +69,9 @@ namespace DialogRootBot
 
             // app.UseHttpsRedirection();
             app.UseMvc();
+
+            // Configure Bot Skills
+            app.UseBotSkills();
         }
     }
 }
