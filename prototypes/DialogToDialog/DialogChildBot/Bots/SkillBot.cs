@@ -60,7 +60,7 @@ namespace DialogChildBot.Bots
                 }
                 else if (result.Status == DialogTurnStatus.Cancelled)
                 {
-                    // TODO: this code doesn't seem to be called
+                    // TODO: this code doesn't seem to be called. Check with Steve
                     await turnContext.SendActivityAsync(MessageFactory.Text("**SkillBot.** The current dialog in the skill was **cancelled from the skill** code. . Sending EndOfConversation"), cancellationToken);
                     
                     // Send End of conversation at the end.
