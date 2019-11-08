@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Linq;
 using Microsoft.Recognizers.Text;
 
 namespace Microsoft.Bot.Builder.Dialogs.Prompts
@@ -10,6 +12,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
     /// </summary>
     public static class PromptCultureModels
     {
+        private static readonly string[] SupportedLocales = GetSupportedCultures().Select(c => c.Locale).ToArray();
+
         public static PromptCultureModel Chinese =>
             new PromptCultureModel
             {
@@ -103,7 +107,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
         /// </summary>
         /// <param name="cultureCode">Represents locale. Examples: "en-US, en-us, EN".</param>
         /// <returns>Normalized locale.</returns>
-        public static string MapToNearestLanguage(string cultureCode) => Culture.MapToNearestLanguage(cultureCode);
+        public static string MapToNearestLanguage(string cultureCode)
+        {
+            cultureCode = cultureCode.ToLowerInvariant();
+
+            if (SupportedLocales.All(o => o != cultureCode))
+            {
+                // Handle cases like EnglishOthers with cultureCode "en-*"
+                var fallbackCultureCodes = SupportedLocales
+                    .Where(o => o.EndsWith("*", StringComparison.Ordinal) &&
+                                cultureCode.StartsWith(o.Split('-').First(), StringComparison.Ordinal)).ToList();
+
+                if (fallbackCultureCodes.Count == 1)
+                {
+                    return fallbackCultureCodes.First();
+                }
+
+                // If there is no cultureCode like "-*", map only the prefix
+                // For example, "es-mx" will be mapped to "es-es"
+                fallbackCultureCodes = SupportedLocales
+                    .Where(o => cultureCode.StartsWith(o.Split('-').First(), StringComparison.Ordinal)).ToList();
+
+                if (fallbackCultureCodes.Any())
+                {
+                    return fallbackCultureCodes.First();
+                }
+            }
+
+            return cultureCode;
+        }
 
         public static PromptCultureModel[] GetSupportedCultures() => new PromptCultureModel[]
         {

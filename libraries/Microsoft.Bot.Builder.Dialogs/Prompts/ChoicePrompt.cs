@@ -123,10 +123,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Determine culture
-            var culture = MapToNearestLanguage(turnContext.Activity.Locale ?? DefaultLocale);
-            if (string.IsNullOrEmpty(culture) || !_choiceDefaults.ContainsKey(culture))
+            var culture = turnContext.Activity.Locale ?? DefaultLocale ?? English.Locale;
+            if (!_choiceDefaults.ContainsKey(culture))
             {
-                culture = English.Locale;
+                culture = MapToNearestLanguage(culture);
             }
 
             // Format prompt to send
