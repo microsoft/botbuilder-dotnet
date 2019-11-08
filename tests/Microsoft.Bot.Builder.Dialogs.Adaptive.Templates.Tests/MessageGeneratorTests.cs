@@ -56,6 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var result = ActivityFactory.CreateActivity(lgStringResult);
         }
 
+        [Ignore]
         [TestMethod]
         public async Task ActivityFactoryTest()
         {
