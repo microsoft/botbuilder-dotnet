@@ -7,13 +7,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Handover;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot.Bots
+namespace Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.Bots
 {
-    public class EchoBot : ActivityHandler
+    public class SecondaryBot : ActivityHandler
     {
+        /// <summary>
+        /// Id value for the intended primary receiver app.
+        /// </summary>
+        private const string PrimaryReceiverAppId = "<PRIMARY RECEIVER APP ID>";
+
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             var activity = MessageFactory.Text("Hello and Welcome!");
@@ -29,10 +35,24 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot.Bots
                     var activity = MessageFactory.Text($" I got {turnContext.Activity.Attachments.Count} attachments");
 
                     var image = new Attachment(
-                       attachment.ContentType,
-                       content: attachment.Content);
+                        attachment.ContentType,
+                        content: attachment.Content);
 
                     activity.Attachments.Add(image);
+                    await turnContext.SendActivityAsync(activity, cancellationToken);
+                }
+            }
+            else if (turnContext.Activity.GetChannelData<FacebookMessage>().IsStandby)
+            {
+                if ((turnContext.Activity as Activity)?.Text == "Other Bot")
+                {
+                    var activity = new Activity
+                    {
+                        Type = ActivityTypes.Event,
+                    };
+
+                    // Action
+                    ((IEventActivity)activity).Name = HandoverConstants.RequestThreadControl;
                     await turnContext.SendActivityAsync(activity, cancellationToken);
                 }
             }
@@ -42,26 +62,20 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot.Bots
 
                 switch (turnContext.Activity.Text)
                 {
-                    case "button template":
-                        activity = MessageFactory.Attachment(CreateTemplateAttachment(Directory.GetCurrentDirectory() + @"/Resources/ButtonTemplatePayload.json"));
+                    case "Pass to primary":
+                        activity = MessageFactory.Text("Redirecting to the primary bot...");
+                        activity.Type = ActivityTypes.Event;
+                        ((IEventActivity)activity).Name = HandoverConstants.PassThreadControl;
+                        ((IEventActivity)activity).Value = PrimaryReceiverAppId;
                         break;
-                    case "media template":
-                        activity = MessageFactory.Attachment(CreateTemplateAttachment(Directory.GetCurrentDirectory() + @"/Resources/MediaTemplatePayload.json"));
+                    case "Redirected to the bot":
+                        activity = MessageFactory.Text("Hello, I'm the secondary bot. How can I help you?");
                         break;
-                    case "generic template":
-                        activity = MessageFactory.Attachment(CreateTemplateAttachment(Directory.GetCurrentDirectory() + @"/Resources/GenericTemplatePayload.json"));
-                        break;
-                    case "Hello button":
-                        activity = MessageFactory.Text("Hello Human!");
-                        break;
-                    case "Goodbye button":
-                        activity = MessageFactory.Text("Goodbye Human!");
-                        break;
-                    case "Chatting":
-                        activity = MessageFactory.Text("Hello! How can I help you?");
+                    case "Invoke a take":
+                        activity = MessageFactory.Text($"The Primary bot will take back the control");
                         break;
                     default:
-                        activity = MessageFactory.Text($"Echo: {turnContext.Activity.Text}");
+                        activity = MessageFactory.Text($"Echo Secondary: {turnContext.Activity.Text}");
                         break;
                 }
 
@@ -73,11 +87,13 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot.Bots
         {
             if (turnContext.Activity.Value != null)
             {
-                var inputs = (Dictionary<string, string>)turnContext.Activity.Value;
-                var name = inputs["Name"];
+                var metadata = ((FacebookThreadControl)turnContext.Activity.Value).Metadata;
 
-                var activity = MessageFactory.Text($"How are you doing {name}?");
-                await turnContext.SendActivityAsync(activity, cancellationToken);
+                if (metadata.Equals(HandoverConstants.MetadataPassThreadControl))
+                {
+                    var activity = MessageFactory.Text("Hello, I'm the secondary bot. How can I help you?");
+                    await turnContext.SendActivityAsync(activity, cancellationToken);
+                }
             }
         }
 
