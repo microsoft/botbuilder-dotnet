@@ -655,7 +655,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        public async Task ShouldDefaultToEnglishLocale()
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow("not-supported")]
+        public async Task ShouldDefaultToEnglishLocale(string activityLocale)
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
@@ -665,10 +668,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: null));
+            dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: activityLocale));
 
             var helloLocale = MessageFactory.Text("hello");
-            helloLocale.Locale = null;
+            helloLocale.Locale = activityLocale;
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -681,7 +684,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         "ChoicePrompt",
                         new PromptOptions
                         {
-                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?", Locale = null },
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?", Locale = activityLocale },
                             Choices = _colorChoices,
                         },
                         cancellationToken);
