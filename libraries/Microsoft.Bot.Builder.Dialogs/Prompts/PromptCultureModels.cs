@@ -101,6 +101,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
         /// <summary>
         /// Use Recognizers-Text to normalize various potential Locale strings to a standard.
         /// </summary>
+        /// <remarks>
+        /// This is mostly a copy/paste from https://github.com/microsoft/Recognizers-Text/blob/master/.NET/Microsoft.Recognizers.Text/Culture.cs#L66
+        /// This doesn't directly use Recognizers-Text's MapToNearestLanguage because if they add language support before we do, it will break our prompts.
+        /// </remarks>
         /// <param name="cultureCode">Represents locale. Examples: "en-US, en-us, EN".</param>
         /// <returns>Normalized locale.</returns>
         public static string MapToNearestLanguage(string cultureCode) => Culture.MapToNearestLanguage(cultureCode);
