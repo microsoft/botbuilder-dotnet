@@ -122,12 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
-            // Determine culture
-            var culture = MapToNearestLanguage(turnContext.Activity.Locale ?? DefaultLocale);
-            if (string.IsNullOrEmpty(culture) || !_choiceDefaults.ContainsKey(culture))
-            {
-                culture = English.Locale;
-            }
+            var culture = DetermineCulture(turnContext.Activity);
 
             // Format prompt to send
             IMessageActivity prompt;
@@ -174,7 +169,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var activity = turnContext.Activity;
                 var utterance = activity.Text;
                 var opt = RecognizerOptions ?? new FindChoicesOptions();
-                opt.Locale = MapToNearestLanguage(activity.Locale ?? opt.Locale ?? DefaultLocale ?? English.Locale);
+                opt.Locale = DetermineCulture(activity, opt);
                 var results = ChoiceRecognizers.RecognizeChoices(utterance, choices, opt);
                 if (results != null && results.Count > 0)
                 {
@@ -184,6 +179,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return Task.FromResult(result);
+        }
+
+        private string DetermineCulture(Activity activity, FindChoicesOptions opt = null)
+        {
+            var culture = MapToNearestLanguage(activity.Locale ?? opt?.Locale ?? DefaultLocale ?? English.Locale);
+            if (string.IsNullOrEmpty(culture) || !_choiceDefaults.ContainsKey(culture))
+            {
+                culture = English.Locale;
+            }
+
+            return culture;
         }
     }
 }
