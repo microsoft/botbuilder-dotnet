@@ -253,6 +253,10 @@ namespace Microsoft.Bot.Builder
             {
                 return Task.FromResult(obj.ToObject<T>());
             }
+            else if (cachedState.State[propertyName] is JArray jarray)
+            {
+                return Task.FromResult(jarray.ToObject<T>());
+            }
 
             // if there is no value, this will throw, to signal to IPropertyAccesor that a default value should be computed
             // This allows this to work with value types
