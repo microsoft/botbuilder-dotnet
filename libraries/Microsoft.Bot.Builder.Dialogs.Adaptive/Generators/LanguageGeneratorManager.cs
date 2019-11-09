@@ -20,12 +20,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         private ResourceExplorer resourceExplorer;
 
         /// <summary>
+        /// multi language lg resources. en -> [resourcelist].
+        /// </summary>
+        private readonly Dictionary<string, List<IResource>> multilanguageResources;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="LanguageGeneratorManager"/> class.
         /// </summary>
         /// <param name="resourceExplorer">resourceExplorer to manage LG files from.</param>
         public LanguageGeneratorManager(ResourceExplorer resourceExplorer)
         {
             this.resourceExplorer = resourceExplorer;
+            multilanguageResources = MultiLanguageResourceLoader.Load(resourceExplorer);
 
             // load all LG resources
             foreach (var resource in this.resourceExplorer.GetResources("lg"))
@@ -49,19 +55,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             return (string source, string id) =>
             {
-                var resources = new List<IResource>();
-                if (resourceMapping.ContainsKey(local))
-                {
-                    resources = resourceMapping[local];
-                }
-                else
-                {
-                    resources = resourceMapping[string.Empty];
-                }
+                var fallbackLocal = MultiLanguageResourceLoader.FallbackLocal(local, resourceMapping.Keys.ToList());
+                var resources = resourceMapping[fallbackLocal];
 
                 var resourceName = Path.GetFileName(PathUtils.NormalizePath(id));
 
-                var resource = resources.FirstOrDefault(u => MultiLanguageResourceLoader.ParseLGFile(u.Id).prefix == MultiLanguageResourceLoader.ParseLGFile(resourceName).prefix);
+                var resource = resources.FirstOrDefault(u => MultiLanguageResourceLoader.ParseLGFileName(u.Id).prefix == MultiLanguageResourceLoader.ParseLGFileName(resourceName).prefix);
                 if (resource == null)
                 {
                     return (string.Empty, resourceName);
@@ -85,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(IResource resource)
         {
-            return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, MultiLanguageResourceLoader.LoadResources(resourceExplorer));
+            return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, multilanguageResources);
         }
     }
 }

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
@@ -90,13 +91,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         private TemplateEngine InitTemplateEngine(ITurnContext turnContext)
         {
             var local = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
-            if (multiLangEngines.ContainsKey(local))
+            if (multiLangEngines.Count > 0)
             {
-                return multiLangEngines[local];
-            }
-            else if (multiLangEngines.Count > 0 && multiLangEngines.ContainsKey(string.Empty))
-            {
-                return multiLangEngines[string.Empty];
+                var fallbackLocal = MultiLanguageResourceLoader.FallbackLocal(local, multiLangEngines.Keys.ToList());
+                engine = multiLangEngines[fallbackLocal];
             }
             else
             {
