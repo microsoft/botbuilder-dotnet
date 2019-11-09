@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// multi language lg resources. en -> [resourcelist].
         /// </summary>
-        private readonly Dictionary<string, List<IResource>> multilanguageResources;
+        private readonly Dictionary<string, IList<IResource>> multilanguageResources;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LanguageGeneratorManager"/> class.
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </value>
         public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 
-        public static ImportResolverDelegate ResourceExplorerResolver(string local, Dictionary<string, List<IResource>> resourceMapping)
+        public static ImportResolverDelegate ResourceExplorerResolver(string local, Dictionary<string, IList<IResource>> resourceMapping)
         {
             return (string source, string id) =>
             {

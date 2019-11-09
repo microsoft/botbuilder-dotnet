@@ -13,9 +13,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// </summary>
     public class MultiLanguageResourceLoader
     {
-        public static Dictionary<string, List<IResource>> Load(ResourceExplorer resourceExplorer)
+        public static Dictionary<string, IList<IResource>> Load(ResourceExplorer resourceExplorer)
         {
-            var resourceMapping = new Dictionary<string, List<IResource>>();
+            var resourceMapping = new Dictionary<string, IList<IResource>>();
             var allResources = resourceExplorer.GetResources("lg");
             var languagePolicy = new LanguagePolicy();
             foreach (var item in languagePolicy)
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="local">current local.</param>
         /// <param name="optionalLocals">option locals.</param>
         /// <returns>the final local.</returns>
-        public static string FallbackLocal(string local, List<string> optionalLocals)
+        public static string FallbackLocal(string local, IList<string> optionalLocals)
         {
             if (optionalLocals == null)
             {
@@ -143,9 +143,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </summary>
         /// <param name="resourceMapping">input resource mapping.</param>
         /// <returns>merged resource mapping.</returns>
-        private static Dictionary<string, List<IResource>> FallbackMultiLangResource(Dictionary<string, List<IResource>> resourceMapping)
+        private static Dictionary<string, IList<IResource>> FallbackMultiLangResource(Dictionary<string, IList<IResource>> resourceMapping)
         {
-            var resourcePoolDict = new Dictionary<string, List<IResource>>();
+            var resourcePoolDict = new Dictionary<string, IList<IResource>>();
             foreach (var languageItem in resourceMapping)
             {
                 var currentLocal = languageItem.Key;
@@ -203,7 +203,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return string.Empty;
         }
 
-        private static bool HasSameResourcePool(List<IResource> resourceMapping1, List<IResource> resourceMapping2)
+        private static bool HasSameResourcePool(IList<IResource> resourceMapping1, IList<IResource> resourceMapping2)
         {
             if (resourceMapping1 == null && resourceMapping2 == null)
             {

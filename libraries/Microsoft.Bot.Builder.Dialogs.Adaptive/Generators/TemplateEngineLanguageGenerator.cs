@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="lgText">lg template text.</param>
         /// <param name="id">optional label for the source of the templates (used for labeling source of template errors).</param>
         /// <param name="resourceMapping">template resource loader delegate (local) -> <see cref="ImportResolverDelegate"/>.</param>
-        public TemplateEngineLanguageGenerator(string lgText, string id, Dictionary<string, List<IResource>> resourceMapping)
+        public TemplateEngineLanguageGenerator(string lgText, string id, Dictionary<string, IList<IResource>> resourceMapping)
         {
             this.Id = id ?? DEFAULTLABEL;
             foreach (var mappingItem in resourceMapping)
