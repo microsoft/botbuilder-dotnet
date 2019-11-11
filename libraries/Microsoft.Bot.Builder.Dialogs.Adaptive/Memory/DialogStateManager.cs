@@ -99,7 +99,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
             else
             {
-                return (null, $"Get value for path: '{path}' failed");
+                // We choose to swallow error here to let an invalid path evaluate to null
+                // Maybe we can log a warnning message like
+                // $"Get value for path: '{path}' failed".
+                return (null, null);
             }
         }
 
