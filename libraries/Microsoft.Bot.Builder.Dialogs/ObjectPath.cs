@@ -113,14 +113,18 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 var segment = segments[i];
                 var nextSegment = segments[i + 1];
-                current = ResolveSegment(current, segment, nextSegment);
+
+                // value are converted to JSON by default in `SetPathValue`, then in GetPathPath
+                // we need to convert value back from JSON in order to make things like "this.value.Length" work.
+                // we need to align set and get.
+                current = ResolveJValue(ResolveSegment(current, segment, nextSegment));
                 if (current == null)
                 {
                     return false;
                 }
             }
 
-            current = ResolveSegment(current, segments.Last(), null);
+            current = ResolveJValue(ResolveSegment(current, segments.Last(), null));
             if (current == null)
             {
                 return false;
@@ -729,6 +733,42 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Try to resolve JValue.
+        /// </summary>
+        /// <param name="obj">the object to resolve value from.</param>
+        /// <returns>value resolved.</returns>
+        private static object ResolveJValue(object obj)
+        {
+            object value;
+            if (!(obj is JValue jval))
+            {
+                value = obj;
+            }
+            else
+            {
+                value = jval.Value;
+                if (jval.Type == JTokenType.Integer)
+                {
+                    value = jval.ToObject<int>();
+                }
+                else if (jval.Type == JTokenType.String)
+                {
+                    value = jval.ToObject<string>();
+                }
+                else if (jval.Type == JTokenType.Boolean)
+                {
+                    value = jval.ToObject<bool>();
+                }
+                else if (jval.Type == JTokenType.Float)
+                {
+                    value = jval.ToObject<float>();
+                }
+            }
+
+            return value;
         }
     }
 }
