@@ -15,7 +15,7 @@
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "ASKFORNAME ddd Hello {$name}, nice to meet you!"
+                    "activity": "ASKFORNAME ddd Hello @{$name}, nice to meet you!"
                 }
             ]
         }

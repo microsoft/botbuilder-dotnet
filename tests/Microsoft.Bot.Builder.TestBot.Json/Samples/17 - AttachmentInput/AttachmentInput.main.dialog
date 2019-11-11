@@ -14,7 +14,7 @@
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "[ShowImage(dialog.attachments[0].contentUrl, dialog.attachments[0].contentType)]"
+                    "activity": "@{ShowImage(dialog.attachments[0].contentUrl, dialog.attachments[0].contentType)}"
                 }
             ]
         }

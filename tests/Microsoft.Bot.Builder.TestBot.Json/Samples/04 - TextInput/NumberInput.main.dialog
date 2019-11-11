@@ -14,7 +14,7 @@
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "Hello, your age is {user.age}!"
+                    "activity": "Hello, your age is @{user.age}!"
                 },
                 {
                     "$type": "Microsoft.NumberInput",
@@ -29,13 +29,13 @@
                     "actions": [
                         {
                             "$type": "Microsoft.SendActivity",
-                            "activity": "2 * 2.2 equals {user.result}, that's right!"
+                            "activity": "2 * 2.2 equals @{user.result}, that's right!"
                         }
                     ],
                     "elseActions": [
                         {
                             "$type": "Microsoft.SendActivity",
-                            "activity": "2 * 2.2 equals {user.result}, that's wrong!"
+                            "activity": "2 * 2.2 equals @{user.result}, that's wrong!"
                         }
                     ]
                 }

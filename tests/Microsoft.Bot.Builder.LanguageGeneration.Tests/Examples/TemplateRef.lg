@@ -1,16 +1,10 @@
 ﻿# Hello
-- [Welcome(time)] {name}
-
-# Hello2
-- [Welcome] {name}
-
-# Hello3
-- {Welcome(time)} {name}
+- @{Welcome(time)} @{name}
 
 # Welcome(time)
-- IF: {time == 'morning'}
+- IF: @{time == 'morning'}
  - Good morning
-- ELSEIF: {time == 'evening'}
+- ELSEIF: @{time == 'evening'}
  - Good evening
 - ELSE:
  - How are you doing, 

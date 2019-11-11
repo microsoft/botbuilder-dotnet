@@ -5,30 +5,30 @@
 
 > more than 1 if
 # templat2
- - IF: {true}
+ - IF: @{true}
     - hello
-- IF: {false}
+- IF: @{false}
     - hi
 
 > else should not follewed by any expressions
 # templat3
- - IF: {true}
+ - IF: @{true}
     - hello
-- ELSE: {false}
+- ELSE: @{false}
     - hi
 
 > only elseif is allowed in middle of condition
 # template4
-- IF: {true}
+- IF: @{true}
   - hi
-- IF: {true}
+- IF: @{true}
   - hi
 - ELSE: 
  - hi
 
 > at most one space is allowed between if/else/elseif and :
 # template5
-- IF  : {true}
+- IF  : @{true}
   - hi
 - ELSE  : 
  - hi

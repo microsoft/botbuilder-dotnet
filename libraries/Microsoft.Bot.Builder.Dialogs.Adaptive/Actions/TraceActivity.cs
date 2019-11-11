@@ -56,11 +56,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             object value = null;
             if (!string.IsNullOrEmpty(this.Value))
             {
-                value = dc.State.GetValue<object>(this.Value);
+                value = dc.GetState().GetValue<object>(this.Value);
             }
             else
             {
-                value = dc.State.GetMemorySnapshot();
+                value = dc.GetState().GetMemorySnapshot();
             }
 
             var traceActivity = Activity.CreateTraceActivity(this.Name ?? "Trace", valueType: this.ValueType ?? "State", value: value);

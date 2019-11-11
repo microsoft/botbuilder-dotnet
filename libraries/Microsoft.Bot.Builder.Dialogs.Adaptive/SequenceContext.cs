@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     {
                         foreach (var keyValue in change.Turn)
                         {
-                            this.State.SetValue($"turn.{keyValue.Key}", keyValue.Value);
+                            this.GetState().SetValue($"turn.{keyValue.Key}", keyValue.Value);
                         }
                     }
 

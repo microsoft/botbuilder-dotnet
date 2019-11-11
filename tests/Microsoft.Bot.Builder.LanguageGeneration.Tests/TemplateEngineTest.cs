@@ -200,8 +200,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var emptyEngine = new TemplateEngine();
             Assert.AreEqual(emptyEngine.Evaluate("Hi"), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" }), "Hi DL");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
+            Assert.AreEqual(emptyEngine.Evaluate("Hi @{name}", new { name = "DL" }), "Hi DL");
+            Assert.AreEqual(emptyEngine.Evaluate("Hi @{name.FirstName}@{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
             Assert.AreEqual(emptyEngine.Evaluate("Hi \n Hello", null), "Hi \n Hello");
             Assert.AreEqual(emptyEngine.Evaluate("Hi \r\n Hello", null), "Hi \r\n Hello");
             Assert.AreEqual(emptyEngine.Evaluate("Hi \r\n @{name}", new { name = "DL" }), "Hi \r\n DL");
@@ -213,11 +213,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var emptyEngine = new TemplateEngine().AddFile(GetExampleFilePath("8.lg"));
             Assert.AreEqual(emptyEngine.Evaluate("Hi"), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" }), "Hi DL");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
+            Assert.AreEqual(emptyEngine.Evaluate("Hi @{name}", new { name = "DL" }), "Hi DL");
+            Assert.AreEqual(emptyEngine.Evaluate("Hi @{name.FirstName}@{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
             Assert.AreEqual(
                 emptyEngine.Evaluate(
-                "Hi {name.FirstName}{name.LastName} [RecentTasks]",
+                "Hi @{name.FirstName}@{name.LastName} @{RecentTasks()}",
                 new
                 {
                     name = new
@@ -228,7 +228,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 }), "Hi DL You don't have any tasks.");
             Assert.AreEqual(
                 emptyEngine.Evaluate(
-                "Hi {name.FirstName}{name.LastName} [RecentTasks]",
+                "Hi @{name.FirstName}@{name.LastName} @{RecentTasks()}",
                 new
                 {
                     name = new
@@ -270,8 +270,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 name = "Dong Lei"
             };
             Assert.AreEqual(engine.EvaluateTemplate("Hello", scope), "Good morning Dong Lei");
-            Assert.AreEqual(engine.EvaluateTemplate("Hello2", scope), "Good morning Dong Lei");
-            Assert.AreEqual(engine.EvaluateTemplate("Hello3", scope), "Good morning Dong Lei");
         }
 
         [TestMethod]
@@ -281,8 +279,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled = engine.EvaluateTemplate("wPhrase", null);
             Assert.AreEqual(evaled, "Hi \r\n\t[]{}\\");
 
+            evaled = engine.EvaluateTemplate("AtEscapeChar", null);
+            Assert.AreEqual(evaled, "Hi{1+1}[wPhrase]{wPhrase()}@{wPhrase()}2@{1+1} ");
+
             evaled = engine.EvaluateTemplate("otherEscape", null);
-            Assert.AreEqual(evaled, @"Hi \y \");
+            Assert.AreEqual(evaled, "Hi y ");
 
             evaled = engine.EvaluateTemplate("escapeInExpression", null);
             Assert.AreEqual(evaled, "Hi hello\\\\");
@@ -714,20 +715,31 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(lgResource.Templates[1].Parameters[1], "name");
             Assert.AreEqual(lgResource.Templates[1].Body, "- hi ");
 
-            lgResource = lgResource.UpdateTemplate("newtemplate", new List<string> { "newage", "newname" }, "- new hi\r\n#hi");
-            Assert.AreEqual(lgResource.Templates.Count, 2);
+            lgResource = lgResource.AddTemplate("newtemplate2", null, "- hi2 ");
+            Assert.AreEqual(lgResource.Templates.Count, 3);
+            Assert.AreEqual(lgResource.Templates[2].Name, "newtemplate2");
+            Assert.AreEqual(lgResource.Templates[2].Body, "- hi2 ");
+
+            lgResource = lgResource.UpdateTemplate("newtemplate", "newtemplateName", new List<string> { "newage", "newname" }, "- new hi\r\n#hi");
+            Assert.AreEqual(lgResource.Templates.Count, 3);
             Assert.AreEqual(lgResource.Imports.Count, 0);
-            Assert.AreEqual(lgResource.Templates[1].Name, "newtemplate");
+            Assert.AreEqual(lgResource.Templates[1].Name, "newtemplateName");
             Assert.AreEqual(lgResource.Templates[1].Parameters.Count, 2);
             Assert.AreEqual(lgResource.Templates[1].Parameters[0], "newage");
             Assert.AreEqual(lgResource.Templates[1].Parameters[1], "newname");
             Assert.AreEqual(lgResource.Templates[1].Body, "- new hi\r\n- #hi");
 
-            lgResource = lgResource.DeleteTemplate("newtemplate");
-            Assert.AreEqual(lgResource.Templates.Count, 1);
+            lgResource = lgResource.UpdateTemplate("newtemplate2", "newtemplateName2", new List<string> { "newage2", "newname2" }, "- new hi\r\n#hi2");
+            Assert.AreEqual(lgResource.Templates.Count, 3);
             Assert.AreEqual(lgResource.Imports.Count, 0);
-            Assert.AreEqual(lgResource.Templates[0].Name, "wPhrase");
-            Assert.AreEqual(lgResource.Templates[0].Body.Replace("\r\n", "\n"), "- Hi\n- Hello\n- Hiya\n- Hi");
+            Assert.AreEqual(lgResource.Templates[2].Name, "newtemplateName2");
+            Assert.AreEqual(lgResource.Templates[2].Body, "- new hi\r\n- #hi2");
+
+            lgResource = lgResource.DeleteTemplate("newtemplateName");
+            Assert.AreEqual(lgResource.Templates.Count, 2);
+
+            lgResource = lgResource.DeleteTemplate("newtemplateName2");
+            Assert.AreEqual(lgResource.Templates.Count, 1);
         }
 
         [TestMethod]
@@ -906,6 +918,44 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             };
 
             expectedResults.ForEach(x => Assert.AreEqual(true, evaled.Contains(x)));
+        }
+
+        [TestMethod]
+        public void TestExpressionextract()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("ExpressionExtract.lg"));
+
+            var evaled1 = engine.EvaluateTemplate("templateWithBrackets");
+            var evaled2 = engine.EvaluateTemplate("templateWithBrackets2");
+            var evaled3 = engine.EvaluateTemplate("templateWithBrackets3").ToString().Trim();
+            var espectedResult = "don't mix {} and '{}'";
+            Assert.AreEqual(evaled1, espectedResult);
+            Assert.AreEqual(evaled2, espectedResult);
+            Assert.AreEqual(evaled3, espectedResult);
+
+            evaled1 = engine.EvaluateTemplate("templateWithQuotationMarks");
+            evaled2 = engine.EvaluateTemplate("templateWithQuotationMarks2");
+            evaled3 = engine.EvaluateTemplate("templateWithQuotationMarks3").ToString().Trim();
+            espectedResult = "don't mix {\"} and \"\"'\"";
+            Assert.AreEqual(evaled1, espectedResult);
+            Assert.AreEqual(evaled2, espectedResult);
+            Assert.AreEqual(evaled3, espectedResult);
+
+            evaled1 = engine.EvaluateTemplate("templateWithUnpairedBrackets1");
+            evaled2 = engine.EvaluateTemplate("templateWithUnpairedBrackets12");
+            evaled3 = engine.EvaluateTemplate("templateWithUnpairedBrackets13").ToString().Trim();
+            espectedResult = "{prefix 5 sufix";
+            Assert.AreEqual(evaled1, espectedResult);
+            Assert.AreEqual(evaled2, espectedResult);
+            Assert.AreEqual(evaled3, espectedResult);
+
+            evaled1 = engine.EvaluateTemplate("templateWithUnpairedBrackets2");
+            evaled2 = engine.EvaluateTemplate("templateWithUnpairedBrackets22");
+            evaled3 = engine.EvaluateTemplate("templateWithUnpairedBrackets23").ToString().Trim();
+            espectedResult = "prefix 5 sufix}";
+            Assert.AreEqual(evaled1, espectedResult);
+            Assert.AreEqual(evaled2, espectedResult);
+            Assert.AreEqual(evaled3, espectedResult);
         }
 
         public class LoopClass

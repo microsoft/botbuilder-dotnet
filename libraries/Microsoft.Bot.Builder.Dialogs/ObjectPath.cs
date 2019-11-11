@@ -304,6 +304,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 return ((JValue)val).ToObject<T>();
             }
+            else if (typeof(T) == typeof(object))
+            {
+                return (T)(object)val;
+            }
             else if (val is JArray)
             {
                 return ((JArray)val).ToObject<T>();
@@ -349,8 +353,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (obj is IDictionary<string, object> dict)
             {
-                var key = dict.Keys.Where(k => k.ToLower() == property.ToLower()).FirstOrDefault();
-                if (key != null && dict.TryGetValue(key, out var value))
+                var key = dict.Keys.Where(k => k.ToLower() == property.ToLower()).FirstOrDefault() ?? property;
+                if (dict.TryGetValue(key, out var value))
                 {
                     return value;
                 }
@@ -404,13 +408,15 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (obj is IDictionary<string, object> dict)
             {
-                dict[property] = val;
+                var key = dict.Keys.Where(k => k.ToLower() == property.ToLower()).FirstOrDefault() ?? property;
+                dict[key] = val;
                 return;
             }
 
             if (obj is JObject jobj)
             {
-                jobj[property] = (val != null) ? JToken.FromObject(val) : null;
+                var key = jobj.Properties().Where(p => p.Name.ToLower() == property.ToLower()).FirstOrDefault()?.Name ?? property;
+                jobj[key] = (val != null) ? JToken.FromObject(val) : null;
                 return;
             }
 
@@ -441,15 +447,16 @@ namespace Microsoft.Bot.Builder.Dialogs
                     val = null;
                 }
                 else if (value is string || value is byte || value is bool ||
-                        value is short || value is int || value is long ||
-                        value is ushort || value is uint || value is ulong ||
-                        value is decimal || value is float || value is double)
+                       value is DateTime || value is DateTimeOffset ||
+                       value is short || value is int || value is long ||
+                       value is ushort || value is uint || value is ulong ||
+                       value is decimal || value is float || value is double)
                 {
                     val = JValue.FromObject(value);
                 }
                 else
                 {
-                    val = (JToken)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, expressionCaseSettings));
+                    val = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, expressionCaseSettings));
                 }
             }
             else

@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             foreach (var binding in bindingOptions)
             {
                 // evalute the value
-                var (result, error) = new ExpressionEngine().Parse(binding.Value.ToString()).TryEvaluate(dc.State);
+                var (result, error) = new ExpressionEngine().Parse(binding.Value.ToString()).TryEvaluate(dc.GetState());
 
                 if (error != null)
                 {

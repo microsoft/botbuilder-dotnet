@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Ensure planning context
             if (dc is SequenceContext planning)
             {
-                dc.State.RemoveValue(Property);
+                dc.GetState().RemoveValue(Property);
                 return await dc.EndDialogAsync();
             }
             else
