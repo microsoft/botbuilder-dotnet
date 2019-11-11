@@ -1,8 +1,8 @@
-﻿[TestDialog
-	dialog = dialogId
-	description= description]
+﻿[TestScript dialogId
+    Testing a sample]
 [ConversationUpdate=
     MembersAdded=Joe,Susan]
+
 bot: Welcome Joe
 bot: Welcome Susan
 Susan: Hi!
@@ -19,8 +19,8 @@ bot: [AssertReply
 	- reply variation 2
 	- reply variation 3]
 Susan: Send me an json attachment
-bot: [AssertReply here is your attachment
+bot: 
+[AssertReply here is your attachment
 	type=='Message'
-        !null(attachments)
 	attachments.length == 1
 	attachments[0].contentType == 'application/json']
