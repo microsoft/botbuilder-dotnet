@@ -381,6 +381,51 @@
             "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
         },
         {
+            "title": "Microsoft.Test.AssertReply",
+            "description": "Asserts that a reply text is valid.",
+            "$ref": "#/definitions/Microsoft.Test.AssertReply"
+        },
+        {
+            "title": "Microsoft.Test.AssertReplyActivity",
+            "description": "Asserts that a reply activity is valid.",
+            "$ref": "#/definitions/Microsoft.Test.AssertReplyActivity"
+        },
+        {
+            "title": "Microsoft.Test.AssertReplyOneOf",
+            "description": "Asserts that a reply text is one of multiple optional responses.",
+            "$ref": "#/definitions/Microsoft.Test.AssertReplyOneOf"
+        },
+        {
+            "title": "Microsoft.Test.Script",
+            "description": "Defines a sequence of test actions to perform to validate the behavior of dialogs.",
+            "$ref": "#/definitions/Microsoft.Test.Script"
+        },
+        {
+            "title": "Microsoft.Test.UserActivity",
+            "description": "Sends activity to the bot.",
+            "$ref": "#/definitions/Microsoft.Test.UserActivity"
+        },
+        {
+            "title": "Microsoft.Test.UserConversationUpdate",
+            "description": "Sends ConversationUpdate activity to the bot.",
+            "$ref": "#/definitions/Microsoft.Test.UserConversationUpdate"
+        },
+        {
+            "title": "Microsoft.Test.UserDelay",
+            "description": "Delays text script for time period.",
+            "$ref": "#/definitions/Microsoft.Test.UserDelay"
+        },
+        {
+            "title": "Microsoft.Test.UserSays",
+            "description": "Sends text to the bot from the user.",
+            "$ref": "#/definitions/Microsoft.Test.UserSays"
+        },
+        {
+            "title": "Microsoft.Test.UserTyping",
+            "description": "Sends typing activity to the bot.",
+            "$ref": "#/definitions/Microsoft.Test.UserTyping"
+        },
+        {
             "title": "Microsoft.TextInput",
             "description": "Collection information - Ask for a word or sentence.",
             "$ref": "#/definitions/Microsoft.TextInput"
@@ -6623,6 +6668,691 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.AssertReply": {
+            "$role": "unionType(Microsoft.Test.ITestAction)",
+            "title": "Assert Reply",
+            "description": "Asserts that a reply text is valid.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.AssertReply"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "text": {
+                    "type": "string",
+                    "title": "Reply Text",
+                    "description": "Expected reply text"
+                },
+                "exact": {
+                    "type": "boolean",
+                    "title": "Exact Match",
+                    "description": "If true then an exact match must happen, if false then the reply activity.text must contain the reply text. [Default:false]"
+                },
+                "description": {
+                    "type": "string",
+                    "title": "Description",
+                    "description": "The description of what the assertion is testing"
+                },
+                "timeout": {
+                    "type": "number",
+                    "title": "Timeout",
+                    "description": "The amount of time in milliseconds to wait for a reply (default is 3000)"
+                },
+                "assertions": {
+                    "type": "array",
+                    "title": "Assertions to perform to validate Activity that is sent by the dialog",
+                    "description": "Sequence of expressions which must evaluate to true.",
+                    "items": {
+                        "$role": "expression",
+                        "title": "Assertion",
+                        "description": "Assertion as an expression, which must evaluate to true or it will fail the test script.",
+                        "examples": [
+                            "user.vip == true"
+                        ],
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "text",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.AssertReplyActivity": {
+            "$role": "unionType(Microsoft.Test.ITestAction)",
+            "title": "Assert Reply Activity",
+            "description": "Asserts that a reply activity is valid.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.AssertReplyActivity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "description": {
+                    "type": "string",
+                    "title": "Description",
+                    "description": "The description of what the assertion is testing"
+                },
+                "timeout": {
+                    "type": "number",
+                    "title": "Timeout",
+                    "description": "The amount of time in milliseconds to wait for a reply (default is 3000)"
+                },
+                "assertions": {
+                    "type": "array",
+                    "title": "Assertions to perform to validate Activity that is sent by the dialog",
+                    "description": "Sequence of expressions which must evaluate to true.",
+                    "items": {
+                        "$role": "expression",
+                        "title": "Assertion",
+                        "description": "Assertion as an expression, which must evaluate to true or it will fail the test script.",
+                        "examples": [
+                            "user.vip == true"
+                        ],
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "assertions",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.AssertReplyOneOf": {
+            "$role": "unionType(Microsoft.Test.ITestAction)",
+            "title": "Assert Reply OneOf",
+            "description": "Asserts that a reply text is one of multiple optional responses.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.AssertReplyOneOf"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "replies": {
+                    "type": "array",
+                    "title": "Replies",
+                    "description": "Expected replies (one of which must match",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "exact": {
+                    "type": "boolean",
+                    "title": "Exact Match",
+                    "description": "If true then an exact match must happen, if false then the reply activity.text must contain the reply text. [Default:false]"
+                },
+                "description": {
+                    "type": "string",
+                    "title": "Description",
+                    "description": "The description of what the assertion is testing"
+                },
+                "timeout": {
+                    "type": "number",
+                    "title": "Timeout",
+                    "description": "The amount of time in milliseconds to wait for a reply (default is 3000)"
+                },
+                "assertions": {
+                    "type": "array",
+                    "title": "Assertions to perform to validate Activity that is sent by the dialog",
+                    "description": "Sequence of expressions which must evaluate to true.",
+                    "items": {
+                        "$role": "expression",
+                        "title": "Assertion",
+                        "description": "Assertion as an expression, which must evaluate to true or it will fail the test script.",
+                        "examples": [
+                            "user.vip == true"
+                        ],
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "replies",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.ITestAction": {
+            "title": "Microsoft Test ITestAction",
+            "description": "Union of components which implement the Test.ITestAction interface",
+            "$role": "unionType",
+            "oneOf": [
+                {
+                    "title": "Microsoft.Test.AssertReply",
+                    "description": "Asserts that a reply text is valid.",
+                    "$ref": "#/definitions/Microsoft.Test.AssertReply"
+                },
+                {
+                    "title": "Microsoft.Test.AssertReplyActivity",
+                    "description": "Asserts that a reply activity is valid.",
+                    "$ref": "#/definitions/Microsoft.Test.AssertReplyActivity"
+                },
+                {
+                    "title": "Microsoft.Test.AssertReplyOneOf",
+                    "description": "Asserts that a reply text is one of multiple optional responses.",
+                    "$ref": "#/definitions/Microsoft.Test.AssertReplyOneOf"
+                },
+                {
+                    "title": "Microsoft.Test.UserActivity",
+                    "description": "Sends activity to the bot.",
+                    "$ref": "#/definitions/Microsoft.Test.UserActivity"
+                },
+                {
+                    "title": "Microsoft.Test.UserConversationUpdate",
+                    "description": "Sends ConversationUpdate activity to the bot.",
+                    "$ref": "#/definitions/Microsoft.Test.UserConversationUpdate"
+                },
+                {
+                    "title": "Microsoft.Test.UserDelay",
+                    "description": "Delays text script for time period.",
+                    "$ref": "#/definitions/Microsoft.Test.UserDelay"
+                },
+                {
+                    "title": "Microsoft.Test.UserSays",
+                    "description": "Sends text to the bot from the user.",
+                    "$ref": "#/definitions/Microsoft.Test.UserSays"
+                },
+                {
+                    "title": "Microsoft.Test.UserTyping",
+                    "description": "Sends typing activity to the bot.",
+                    "$ref": "#/definitions/Microsoft.Test.UserTyping"
+                },
+                {
+                    "type": "string",
+                    "title": "string"
+                }
+            ]
+        },
+        "Microsoft.Test.Script": {
+            "title": "Test Script",
+            "description": "Defines a sequence of test actions to perform to validate the behavior of dialogs.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.Script"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "dialog": {
+                    "$type": "Microsoft.IDialog",
+                    "title": "Dialog",
+                    "description": "The root dialog to execute the test script against.",
+                    "$ref": "#/definitions/Microsoft.IDialog"
+                },
+                "description": {
+                    "type": "string",
+                    "title": "Description",
+                    "description": "Description of the test script"
+                },
+                "testActions": {
+                    "type": "array",
+                    "description": "Sequence of test actions to execute.",
+                    "items": {
+                        "$type": "Microsoft.Test.ITestAction",
+                        "$ref": "#/definitions/Microsoft.Test.ITestAction"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "dialog",
+                        "testActions",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.UserActivity": {
+            "$role": "unionType(Microsoft.Test.ITestAction)",
+            "title": "Send Activity",
+            "description": "Sends activity to the bot.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.UserActivity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "activity": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "user": {
+                    "type": "string",
+                    "title": "User Name",
+                    "description": "The activity.from.id and activity.from.name will be this if specified."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "activity",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.UserConversationUpdate": {
+            "$role": "unionType(Microsoft.Test.ITestAction)",
+            "title": "Send ConversationUpdate",
+            "description": "Sends ConversationUpdate activity to the bot.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.UserConversationUpdate"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "membersAdded": {
+                    "type": "array",
+                    "title": "Members Added",
+                    "description": "Names of the members to add",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "membersRemoved": {
+                    "type": "array",
+                    "title": "Members Removed",
+                    "description": "Names of the members to remove",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.UserDelay": {
+            "$role": "unionType(Microsoft.Test.ITestAction)",
+            "title": "Delay Execution",
+            "description": "Delays text script for time period.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.UserDelay"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "timespan": {
+                    "type": "number",
+                    "title": "Timespan",
+                    "description": "The amount of time in milliseconds to delay the execution of the test script"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "timespan",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.UserSays": {
+            "$role": "unionType(Microsoft.Test.ITestAction)",
+            "title": "User Text",
+            "description": "Sends text to the bot from the user.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.UserSays"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "text": {
+                    "type": "string",
+                    "title": "Text",
+                    "description": "Text to send to the bot."
+                },
+                "user": {
+                    "type": "string",
+                    "title": "User Name",
+                    "description": "The activity.from.id and activity.from.name will be this if specified."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "text",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.UserTyping": {
+            "$role": "unionType(Microsoft.Test.ITestAction)",
+            "title": "Send Typing",
+            "description": "Sends typing activity to the bot.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.UserTyping"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "user": {
+                    "type": "string",
+                    "title": "User Name",
+                    "description": "The activity.from.id and activity.from.name will be this if specified."
                 }
             },
             "additionalProperties": false,

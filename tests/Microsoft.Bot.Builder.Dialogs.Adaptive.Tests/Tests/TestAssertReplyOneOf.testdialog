@@ -1,0 +1,22 @@
+﻿{
+    "$schema": "../../../schemas/sdk.schema",
+    "$type": "Microsoft.Test.Script",
+    "description": "Test AssertReplyOneOf",
+    "rootDialog": "simpleHello",
+    "testActions": [
+        {
+            "$type": "Microsoft.Test.UserSays",
+            "text": "hello"
+        },
+        {
+            "$type": "Microsoft.Test.AssertReplyOneOf",
+            "text": [
+                "Hi",
+                "hello",
+                " User1",
+                "foobar"
+            ],
+            "exact": false
+        }
+    ]
+}

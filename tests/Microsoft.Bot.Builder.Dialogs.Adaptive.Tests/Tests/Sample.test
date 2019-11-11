@@ -1,0 +1,26 @@
+﻿[TestDialog
+	dialog = dialogId
+	description= description]
+[ConversationUpdate=
+    MembersAdded=Joe,Susan]
+bot: Welcome Joe
+bot: Welcome Susan
+Susan: Hi!
+bot: hello Susan, do you want to play game?
+Joe: I'm out of here
+bot: [AssertReply I'm sorry Joe.] 
+[ConversationUpdate
+	MembersRemoved=Joe]
+Susan: Oh drat, Joe left
+bot: Joe was no fun anyway
+Susan: Let's start!
+bot: [AssertReply
+	- reply variation 1
+	- reply variation 2
+	- reply variation 3]
+Susan: Send me an json attachment
+bot: [AssertReply here is your attachment
+	type=='Message'
+        !null(attachments)
+	attachments.length == 1
+	attachments[0].contentType == 'application/json']

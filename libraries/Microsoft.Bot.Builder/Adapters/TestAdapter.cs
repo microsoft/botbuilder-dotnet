@@ -138,7 +138,11 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
 
                 activity.ChannelId = Conversation.ChannelId;
-                activity.From = Conversation.User;
+                if (activity.From == null)
+                {
+                    activity.From = Conversation.User;
+                }
+
                 activity.Recipient = Conversation.Bot;
                 activity.Conversation = Conversation.Conversation;
                 activity.ServiceUrl = Conversation.ServiceUrl;

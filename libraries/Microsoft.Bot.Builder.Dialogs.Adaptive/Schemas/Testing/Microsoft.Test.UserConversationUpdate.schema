@@ -1,0 +1,26 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "unionType(Microsoft.Test.ITestAction)",
+    "title": "Send ConversationUpdate",
+    "description": "Sends ConversationUpdate activity to the bot.",
+    "type": "object",
+    "required": [],
+    "properties": {
+        "membersAdded": {
+            "type": "array",
+            "title": "Members Added",
+            "description": "Names of the members to add",
+            "items": {
+                "type": "string"
+            }
+        },
+        "membersRemoved": {
+            "type": "array",
+            "title": "Members Removed",
+            "description": "Names of the members to remove",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}

@@ -41,6 +41,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         public static Activity CreateActivity(string lgStringResult)
         {
             JObject lgStructuredResult;
+
+            if (!(lgStringResult.StartsWith("{") && lgStringResult.EndsWith("}")))
+            {
+                return BuildActivityFromText(lgStringResult?.ToString()?.Trim());
+            }
+
             try
             {
                 lgStructuredResult = JObject.Parse(lgStringResult);
@@ -448,7 +454,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private static List<JToken> NormalizedToList(JToken item)
         {
-            return item == null ? 
+            return item == null ?
                 new List<JToken>() :
                 item is JArray array ? array.ToList() : new List<JToken>() { item };
         }

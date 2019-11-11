@@ -8,6 +8,9 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
@@ -110,6 +113,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Dialogs
             yield return new TypeRegistration<AdaptiveDialog>("Microsoft.AdaptiveDialog");
             yield return new TypeRegistration<QnAMakerDialog>("Microsoft.QnAMakerDialog");
+
+            // Testing
+            yield return new TypeRegistration<TestScript>("Microsoft.Test.Script");
+            yield return new TypeRegistration<UserSays>("Microsoft.Test.UserSays");
+            yield return new TypeRegistration<UserTyping>("Microsoft.Test.UserTyping");
+            yield return new TypeRegistration<UserConversationUpdate>("Microsoft.Test.UserConversationUpdate");
+            yield return new TypeRegistration<UserActivity>("Microsoft.Test.UserActivity");
+            yield return new TypeRegistration<UserDelay>("Microsoft.Test.UserDelay");
+            yield return new TypeRegistration<AssertReply>("Microsoft.Test.AssertReply");
+            yield return new TypeRegistration<AssertReplyOneOf>("Microsoft.Test.AssertReplyOneOf");
+            yield return new TypeRegistration<AssertReplyActivity>("Microsoft.Test.AssertReplyActivity");
         }
 
         public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)

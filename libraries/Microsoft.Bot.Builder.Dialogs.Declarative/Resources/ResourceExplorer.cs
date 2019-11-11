@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Versioning;
@@ -141,6 +142,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
             this.resourceProviders.Add(resourceProvider);
             return this;
+        }
+
+        /// <summary>
+        /// Create Type from resource.
+        /// </summary>
+        /// <typeparam name="T">type to create.</typeparam>
+        /// <param name="resourceId">resourceId to bind to.</param>
+        /// <returns>created type.</returns>
+        public T LoadType<T>(string resourceId)
+        {
+            return this.LoadType<T>(this.GetResource(resourceId));
+        }
+
+        /// <summary>
+        /// Create Type from resource.
+        /// </summary>
+        /// <typeparam name="T">type to create.</typeparam>
+        /// <param name="resource">resource to bind to.</param>
+        /// <returns>created type.</returns>
+        public T LoadType<T>(IResource resource)
+        {
+            return DeclarativeTypeLoader.Load<T>(resource, this, DebugSupport.SourceMap);
         }
 
         /// <summary>
