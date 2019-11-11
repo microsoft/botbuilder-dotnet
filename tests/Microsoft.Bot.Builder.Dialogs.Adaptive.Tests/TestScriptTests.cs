@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
             DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
             DeclarativeTypeLoader.AddComponent(new QnAMakerComponentRegistration());
-            TestScripts = ResourceExplorer.GetResources("testdialog").Select(resource => new object[] { resource.Id }).ToList();
+            TestScripts = ResourceExplorer.GetResources("test.dialog").Select(resource => new object[] { resource.Id }).ToList();
         }
 
         [DataTestMethod]
