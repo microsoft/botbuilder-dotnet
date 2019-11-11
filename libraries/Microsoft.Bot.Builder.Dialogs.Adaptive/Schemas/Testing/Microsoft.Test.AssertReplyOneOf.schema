@@ -8,7 +8,7 @@
         "replies"
     ],
     "properties": {
-        "replies": {
+        "text": {
             "type": "array",
             "title": "Replies",
             "description": "Expected replies (one of which must match",

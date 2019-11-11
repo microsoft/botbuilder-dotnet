@@ -1,0 +1,64 @@
+﻿{
+    "$schema": "../../../schemas/sdk.schema",
+    "$type": "Microsoft.Test.Script",
+    "description": "Test AssertReply",
+    "dialog": {
+        "$type": "Microsoft.AdaptiveDialog",
+        "triggers": [
+            {
+                "$type": "Microsoft.OnConversationUpdateActivity",
+                "actions": [
+                    {
+                        "$type": "Microsoft.Foreach",
+                        "itemsProperty": "turn.activity.membersAdded",
+                        "actions": [
+                            {
+                                "$type": "Microsoft.SendActivity",
+                                "activity": "Hello @{dialog.foreach.value.name}"
+                            }
+                        ]
+                    },
+                    {
+                        "$type": "Microsoft.Foreach",
+                        "itemsProperty": "turn.activity.membersRemoved",
+                        "actions": [
+                            {
+                                "$type": "Microsoft.SendActivity",
+                                "activity": "Goodbye @{dialog.foreach.value.name}"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "testActions": [
+        {
+            "$type": "Microsoft.Test.UserConversationUpdate",
+            "membersAdded": [
+                "john",
+                "sue"
+            ],
+            "membersRemoved": [
+                "fred",
+                "joe"
+            ]
+        },
+        {
+            "$type": "Microsoft.Test.AssertReply",
+            "text": "Hello john"
+        },
+        {
+            "$type": "Microsoft.Test.AssertReply",
+            "text": "Hello sue"
+        },
+        {
+            "$type": "Microsoft.Test.AssertReply",
+            "text": "Goodbye fred"
+        },
+        {
+            "$type": "Microsoft.Test.AssertReply",
+            "text": "Goodbye joe"
+        }
+    ]
+}

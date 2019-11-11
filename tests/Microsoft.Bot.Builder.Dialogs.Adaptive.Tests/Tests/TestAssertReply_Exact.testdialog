@@ -2,7 +2,7 @@
     "$schema": "../../../schemas/sdk.schema",
     "$type": "Microsoft.Test.Script",
     "description": "Test AssertReply",
-    "rootDialog": "simpleHello",
+    "dialog": "simpleHello",
     "testActions": [
         {
             "$type": "Microsoft.Test.UserSays",

@@ -6885,7 +6885,7 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "replies": {
+                "text": {
                     "type": "array",
                     "title": "Replies",
                     "description": "Expected replies (one of which must match",
@@ -6989,10 +6989,6 @@
                     "title": "Microsoft.Test.UserTyping",
                     "description": "Sends typing activity to the bot.",
                     "$ref": "#/definitions/Microsoft.Test.UserTyping"
-                },
-                {
-                    "type": "string",
-                    "title": "string"
                 }
             ]
         },

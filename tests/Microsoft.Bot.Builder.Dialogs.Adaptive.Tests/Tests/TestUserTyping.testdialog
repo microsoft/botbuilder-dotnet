@@ -1,0 +1,32 @@
+﻿{
+    "$schema": "../../../schemas/sdk.schema",
+    "$type": "Microsoft.Test.Script",
+    "description": "Test AssertReply",
+    "dialog": {
+        "$type": "Microsoft.AdaptiveDialog",
+        "triggers": [
+            {
+                "$type": "Microsoft.OnTypingActivity",
+                "actions": [
+                    {
+                        "$type": "Microsoft.SendActivity",
+                        "activity": "[received typing]"
+                    }
+                ]
+            }
+        ]
+    },
+    "testActions": [
+        {
+            "$type": "Microsoft.Test.UserSays",
+            "text": "hello"
+        },
+        {
+            "$type": "Microsoft.Test.UserTyping"
+        },
+        {
+            "$type": "Microsoft.Test.AssertReply",
+            "text": "[received typing]"
+        }
+    ]
+}
