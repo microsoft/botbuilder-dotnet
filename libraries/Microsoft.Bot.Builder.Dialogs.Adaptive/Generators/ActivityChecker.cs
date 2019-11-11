@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     public static class ActivityChecker
     {
         /// <summary>
-        /// check the lg string result before generate an Activity.
+        /// check the LG string result before generate an Activity.
         /// </summary>
         /// <param name="lgStringResult">string result from languageGenerator.</param>
         /// <returns>Diagnostic list.</returns>
