@@ -14,7 +14,7 @@
             "title": "Description",
             "description": "Description of the test script"
         },
-        "testActions": {
+        "script": {
             "type": "array",
             "description": "Sequence of test actions to execute.",
             "items": {

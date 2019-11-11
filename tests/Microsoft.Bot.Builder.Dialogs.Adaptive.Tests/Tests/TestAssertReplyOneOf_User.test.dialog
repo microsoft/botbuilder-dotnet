@@ -3,7 +3,7 @@
     "$type": "Microsoft.Test.Script",
     "description": "Test AssertReplyOneOf",
     "dialog": "simpleHello",
-    "testActions": [
+    "script": [
         {
             "$type": "Microsoft.Test.UserSays",
             "text": "hello"

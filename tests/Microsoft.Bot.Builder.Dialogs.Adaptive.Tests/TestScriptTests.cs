@@ -41,6 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
             DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
             DeclarativeTypeLoader.AddComponent(new QnAMakerComponentRegistration());
+
             TestScripts = ResourceExplorer.GetResources("test.dialog").Select(resource => new object[] { resource.Id }).ToList();
         }
 
@@ -51,10 +52,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await ResourceExplorer.LoadType<TestScript>(resourceId).ExecuteAsync(ResourceExplorer).ConfigureAwait(false);
         }
 
-        //[TestMethod]
-        //public async Task TestAssertReply()
-        //{
-        //    await ResourceExplorer.LoadType<TestScript>("TestAssertReply.testdialog").ExecuteAsync(ResourceExplorer);
-        //}
+        [TestMethod]
+        public async Task TestAssertReply()
+        {
+            await ResourceExplorer.LoadType<TestScript>("TestAssertReply_Exact.test.dialog").ExecuteAsync(ResourceExplorer);
+        }
     }
 }

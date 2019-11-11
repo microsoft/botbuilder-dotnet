@@ -32,7 +32,7 @@
             }
         ]
     },
-    "testActions": [
+    "script": [
         {
             "$type": "Microsoft.Test.UserConversationUpdate",
             "membersAdded": [

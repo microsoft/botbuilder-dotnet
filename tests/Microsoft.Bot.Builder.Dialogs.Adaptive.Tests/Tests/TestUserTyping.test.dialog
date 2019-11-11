@@ -16,7 +16,7 @@
             }
         ]
     },
-    "testActions": [
+    "script": [
         {
             "$type": "Microsoft.Test.UserSays",
             "text": "hello"

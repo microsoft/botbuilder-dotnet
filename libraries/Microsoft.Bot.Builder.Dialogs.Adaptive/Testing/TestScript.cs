@@ -46,12 +46,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public Dialog Dialog { get; set; }
 
         /// <summary>
-        /// Gets or sets the test actions.
+        /// Gets or sets the test script actions.
         /// </summary>
         /// <value>
         /// The sequence of test actions to perform to validate the dialog behavior.
         /// </value>
-        public List<TestAction> TestActions { get; set; } = new List<TestAction>();
+        public List<TestAction> Script { get; set; } = new List<TestAction>();
 
         /// <summary>
         /// Starts the execution of the test sequence.
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             }
 
             DialogManager dm = new DialogManager(this.Dialog);
-            foreach (var testAction in this.TestActions)
+            foreach (var testAction in this.Script)
             {
                 if (callback != null)
                 {
