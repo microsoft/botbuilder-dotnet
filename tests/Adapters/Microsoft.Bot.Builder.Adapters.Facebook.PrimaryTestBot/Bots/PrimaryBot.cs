@@ -11,7 +11,7 @@ using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Handover;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot.Bots
+namespace Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.Bots
 {
     public class PrimaryBot : ActivityHandler
     {

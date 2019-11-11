@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents;
+using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Handover;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
@@ -214,7 +215,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
 
             var content = new { recipient = new { id = userId }, metadata = message };
-            return await PostToFacebookApiAsync("/me/request_thread_control", JsonConvert.SerializeObject(content)).ConfigureAwait(false);
+            return await PostToFacebookApiAsync($"/me/{HandoverConstants.RequestThreadControl}", JsonConvert.SerializeObject(content)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -231,7 +232,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
 
             var content = new { recipient = new { id = userId }, metadata = message };
-            return await PostToFacebookApiAsync("/me/take_thread_control", JsonConvert.SerializeObject(content)).ConfigureAwait(false);
+            return await PostToFacebookApiAsync($"/me/{HandoverConstants.TakeThreadControl}", JsonConvert.SerializeObject(content)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -254,7 +255,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
 
             var content = new { recipient = new { id = userId }, target_app_id = targetAppId, metadata = message };
-            return await PostToFacebookApiAsync("/me/pass_thread_control", JsonConvert.SerializeObject(content)).ConfigureAwait(false);
+            return await PostToFacebookApiAsync($"/me/{HandoverConstants.PassThreadControl}", JsonConvert.SerializeObject(content)).ConfigureAwait(false);
         }
     }
 }

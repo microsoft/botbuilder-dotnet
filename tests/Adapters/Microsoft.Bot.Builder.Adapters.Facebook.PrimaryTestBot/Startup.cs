@@ -6,7 +6,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Bot.Builder.Adapters.Facebook.TestBot.Bots;
+using Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.Bots;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.DependencyInjection;
 
