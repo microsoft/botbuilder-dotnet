@@ -1,0 +1,23 @@
+﻿---
+"$schema": "../../../schemas/sdk.schema"
+"$type": Microsoft.Test.Script
+description: Test AssertReplyOneOf
+dialog: simpleHello
+testActions:
+- "$type": Microsoft.Test.UserSays
+  text: hello
+- "$type": Microsoft.Test.AssertReplyOneOf
+  text:
+  - Hi
+  - hello
+  - hi User1
+  - foobar
+- "$type": Microsoft.Test.UserSays
+  text: hello
+  user: John
+- "$type": Microsoft.Test.AssertReplyOneOf
+  text:
+  - Hi
+  - hello
+  - hi John
+  - foobar
