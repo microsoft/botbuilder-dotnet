@@ -11,4 +11,13 @@ bot: [AssertReply
 	- hi
 	- hello
     - hi john
-    - foobar]
+    - foobar
+    test.length > 1]
+
+
+[TestScript dialogId
+    Testing a sample]
+User1: hello
+bot: hi
+John: hello
+bot: Hi John!

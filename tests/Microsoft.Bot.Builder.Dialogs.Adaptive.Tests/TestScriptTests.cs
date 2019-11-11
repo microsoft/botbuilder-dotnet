@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+#pragma warning disable SA1201 // Elements should appear in the correct order
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,34 +30,60 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     [TestClass]
     public class TestScriptTests
     {
-        public static ResourceExplorer ResourceExplorer { get; set; } = new ResourceExplorer();
+        private static string rootFolder = PathUtils.NormalizePath(@"..\..\..");
 
-        public static IEnumerable<object[]> TestScripts { get; set; }
+        public static ResourceExplorer ResourceExplorer { get; set; } = new ResourceExplorer().AddFolder(rootFolder);
+
+        public static IEnumerable<object[]> GetTestScripts(string relativeFolder)
+        {
+            string testFolder = Path.GetFullPath(Path.Combine(rootFolder, PathUtils.NormalizePath(relativeFolder)));
+            return Directory.EnumerateFiles(testFolder, "*.test.dialog", SearchOption.AllDirectories).Select(s => new object[] { Path.GetFileName(s) }).ToArray();
+        }
 
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext context)
         {
-            ResourceExplorer.AddFolder(PathUtils.NormalizePath(@"..\..\.."));
             TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
             DeclarativeTypeLoader.AddComponent(new DialogComponentRegistration());
             DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
             DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
             DeclarativeTypeLoader.AddComponent(new QnAMakerComponentRegistration());
-
-            TestScripts = ResourceExplorer.GetResources("test.dialog").Select(resource => new object[] { resource.Id }).ToList();
         }
 
+        public static IEnumerable<object[]> AllTestScripts => GetTestScripts(@".");
+
         [DataTestMethod]
-        [DynamicData(nameof(TestScripts))]
+        [DynamicData(nameof(AllTestScripts))]
         public async Task RunAllTestScripts(string resourceId)
         {
             await ResourceExplorer.LoadType<TestScript>(resourceId).ExecuteAsync(ResourceExplorer).ConfigureAwait(false);
         }
 
-        [TestMethod]
-        public async Task TestAssertReply()
+        public static IEnumerable<object[]> TestAssertReplyScripts => GetTestScripts(@"Tests\TestAssertReply");
+
+        [DataTestMethod]
+        [DynamicData(nameof(TestAssertReplyScripts))]
+        public async Task TestAssertReply(string resourceId)
         {
-            await ResourceExplorer.LoadType<TestScript>("TestAssertReply_Exact.test.dialog").ExecuteAsync(ResourceExplorer);
+            await ResourceExplorer.LoadType<TestScript>(resourceId).ExecuteAsync(ResourceExplorer).ConfigureAwait(false);
+        }
+
+        public static IEnumerable<object[]> TestAssertReplyOneScripts => GetTestScripts(@"Tests\TestAssertReplyOneOf");
+
+        [DataTestMethod]
+        [DynamicData(nameof(TestAssertReplyOneScripts))]
+        public async Task TestAssertReplyOne(string resourceId)
+        {
+            await ResourceExplorer.LoadType<TestScript>(resourceId).ExecuteAsync(ResourceExplorer).ConfigureAwait(false);
+        }
+
+        public static IEnumerable<object[]> TestUserScripts => GetTestScripts(@"Tests\TestUser");
+
+        [DataTestMethod]
+        [DynamicData(nameof(TestUserScripts))]
+        public async Task TestUser(string resourceId)
+        {
+            await ResourceExplorer.LoadType<TestScript>(resourceId).ExecuteAsync(ResourceExplorer).ConfigureAwait(false);
         }
     }
 }
