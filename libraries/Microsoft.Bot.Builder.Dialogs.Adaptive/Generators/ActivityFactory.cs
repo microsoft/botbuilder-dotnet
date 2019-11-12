@@ -5,12 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Threading.Tasks;
-using System.Xml;
-using AdaptiveCards;
-using Microsoft.Bot.Builder.LanguageGeneration;
-using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -345,9 +339,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 attachment = GetCardAtttachment(GenericCardTypeMapping[type], lgJObj);
             }
-            else if (type == nameof(AdaptiveCard).ToLower())
+            else if (type == "adaptivecard")
             {
-                attachment = new Attachment(AdaptiveCard.ContentType, content: lgJObj);
+                attachment = new Attachment("application/vnd.microsoft.card.adaptive", content: lgJObj);
             }
             else
             {
