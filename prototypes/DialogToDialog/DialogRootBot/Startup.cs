@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using DialogRootBot.Bots;
 using DialogRootBot.Dialogs;
 using Microsoft.AspNetCore.Builder;
@@ -30,7 +29,8 @@ namespace DialogRootBot
             services.AddSingleton<BotFrameworkHttpAdapter, AdapterWithErrorHandler>();
             
             // Register the skills server and skills host adapter.
-            services.AddSingleton<BotFrameworkSkillHttpHostAdapter>();
+            services.AddSingleton<BotAdapter>(sp => sp.GetService<BotFrameworkHttpAdapter>());
+            services.AddSingleton<BotFrameworkSkillClient>();
 
             // Register the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
             services.AddSingleton<IStorage, MemoryStorage>();

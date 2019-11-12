@@ -15,13 +15,13 @@ namespace DialogRootBot.Controllers
     public class SkillHostController : ControllerBase
     {
         private readonly IBot _bot;
-        private readonly BotFrameworkSkillHttpHostAdapter _skillServer;
+        private readonly BotFrameworkSkillClient _skillClient;
 
-        public SkillHostController(BotFrameworkSkillHttpHostAdapter skillServer, IBot bot)
+        public SkillHostController(BotFrameworkSkillClient skillClient, IBot bot)
         {
             // adapter to use for calling back to channel
             _bot = bot;
-            _skillServer = skillServer;
+            _skillClient = skillClient;
         }
 
         [HttpPost]
@@ -39,7 +39,7 @@ namespace DialogRootBot.Controllers
             // The adapter will invoke the bot.
             try
             {
-                await _skillServer.ProcessAsync(Request, Response, _bot);
+                await _skillClient.ProcessAsync(Request, Response, _bot);
             }
             catch (Exception ex)
             {

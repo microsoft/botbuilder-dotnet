@@ -1,13 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Skills.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -18,12 +16,12 @@ namespace Microsoft.Bot.Builder.Skills
     /// A skill host adapter implements API to forward activity to a skill and 
     /// implements routing ChannelAPI calls from the Skill up through the bot/adapter.
     /// </summary>
-    public abstract class SkillHostAdapter
+    public abstract class SkillClient
     {
         public const string InvokeActivityName = "SkillEvents.ChannelApiInvoke";
         private readonly ILogger _logger;
 
-        protected SkillHostAdapter(BotAdapter adapter, ILogger logger = null)
+        protected SkillClient(BotAdapter adapter, ILogger logger = null)
         {
             BotAdapter = adapter;
             _logger = logger ?? NullLogger.Instance;
@@ -43,16 +41,16 @@ namespace Microsoft.Bot.Builder.Skills
         /// </value>
         private BotAdapter BotAdapter { get; }
 
-        /// <summary>
-        /// Forwards an activity to a skill.
-        /// </summary>
-        /// <param name="turnContext">turnContext.</param>
-        /// <param name="skill">A <see cref="BotFrameworkSkill"/> instance with the skill information.</param>
-        /// <param name="skillHostEndpoint">The callback Url for the skill host.</param>
-        /// <param name="activity">activity to forward.</param>
-        /// <param name="cancellationToken">cancellation Token.</param>
-        /// <returns>Async task with optional InvokeResponse.</returns>
-        public abstract Task<InvokeResponse> ForwardActivityAsync(ITurnContext turnContext, BotFrameworkSkill skill, Uri skillHostEndpoint, Activity activity, CancellationToken cancellationToken);
+        ///// <summary>
+        ///// Forwards an activity to a skill.
+        ///// </summary>
+        ///// <param name="turnContext">turnContext.</param>
+        ///// <param name="skill">A <see cref="BotFrameworkSkill"/> instance with the skill information.</param>
+        ///// <param name="skillHostEndpoint">The callback Url for the skill host.</param>
+        ///// <param name="activity">activity to forward.</param>
+        ///// <param name="cancellationToken">cancellation Token.</param>
+        ///// <returns>Async task with optional InvokeResponse.</returns>
+        //public abstract Task<InvokeResponse> ForwardActivityAsync(ITurnContext turnContext, BotFrameworkSkill skill, Uri skillHostEndpoint, Activity activity, CancellationToken cancellationToken);
 
         /// <summary>
         /// GetConversationsAsync() API for Skill.

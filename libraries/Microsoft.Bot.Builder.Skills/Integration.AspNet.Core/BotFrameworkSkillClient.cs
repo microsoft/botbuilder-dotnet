@@ -2,26 +2,36 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Security.Principal;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Skills;
-using Microsoft.Bot.Builder.Skills.Adapters;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 {
-    internal delegate Task<object> RouteAction(BotFrameworkSkillHostAdapter skillAdapter, IBot bot, ClaimsIdentity claimsIdentity, HttpRequest httpRequest, GroupCollection parameters, CancellationToken cancellationToken);
+    internal delegate Task<object> RouteAction(SkillClient skillClient, IBot bot, ClaimsIdentity claimsIdentity, HttpRequest httpRequest, GroupCollection parameters, CancellationToken cancellationToken);
 
-    public class BotFrameworkSkillHttpHostAdapter : BotFrameworkSkillHostAdapter
+    public class BotFrameworkSkillClient : SkillClient
     {
+        internal const string BotIdentityKey = "BotIdentity";
+
         private static readonly ChannelRoute[] _routes =
         {
             new ChannelRoute
@@ -143,14 +153,21 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             }
         };
 
+        private static readonly HttpClient _defaultHttpClient = new HttpClient();
+
+        // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)
+        // AppCredentials are cached using appId + skillId (this last parameter is only used if the app credentials are used to call a skill)
+        private readonly ConcurrentDictionary<string, AppCredentials> _appCredentialMap = new ConcurrentDictionary<string, AppCredentials>();
         private readonly IChannelProvider _channelProvider;
-        private readonly ICredentialProvider _credentialsProvider;
+        private readonly ICredentialProvider _credentialProvider;
+        private readonly HttpClient _httpClient;
+        private readonly ILogger _logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BotFrameworkSkillHttpHostAdapter"/> class,
+        /// Initializes a new instance of the <see cref="BotFrameworkSkillClient"/> class,
         /// using a credential provider.
         /// </summary>
-        /// <param name="adapter">adapter that this skillAdapter is bound to.</param>
+        /// <param name="adapter">adapter that this skillClient is bound to.</param>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="channelProvider">The channel provider.</param>
         /// <param name="customHttpClient">The HTTP client.</param>
@@ -160,16 +177,96 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
-        public BotFrameworkSkillHttpHostAdapter(
-            BotFrameworkHttpAdapter adapter,
+        public BotFrameworkSkillClient(
+            BotAdapter adapter,
             ICredentialProvider credentialProvider,
             IChannelProvider channelProvider = null,
             HttpClient customHttpClient = null,
             ILogger logger = null)
-            : base(adapter, credentialProvider, channelProvider, customHttpClient, logger)
+            : base(adapter, logger)
         {
-            _credentialsProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
+            _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             _channelProvider = channelProvider;
+            _httpClient = customHttpClient ?? _defaultHttpClient;
+            _logger = logger ?? NullLogger.Instance;
+
+            // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
+            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
+        }
+
+                /// <summary>
+        /// Forwards an activity to a skill (bot).
+        /// </summary>
+        /// <remarks>NOTE: Forwarding an activity to a skill will flush UserState and ConversationState changes so that skill has accurate state.</remarks>
+        /// <param name="turnContext">turnContext.</param>
+        /// <param name="skill">A <see cref="BotFrameworkSkill"/> instance with the skill information.</param>
+        /// <param name="skillHostEndpoint">The callback Url for the skill host.</param>
+        /// <param name="activity">activity to forward.</param>
+        /// <param name="cancellationToken">cancellation Token.</param>
+        /// <returns>Async task with optional invokeResponse.</returns>
+        public async Task<InvokeResponse> ForwardActivityAsync(ITurnContext turnContext, BotFrameworkSkill skill, Uri skillHostEndpoint, Activity activity, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation($"Received request to forward activity to skill id {skill.Id}.");
+
+            // Pull the current claims identity from TurnState (it is stored there on the way in).
+            var identity = (ClaimsIdentity)turnContext.TurnState.Get<IIdentity>(BotIdentityKey);
+            if (identity.AuthenticationType.Equals("anonymous", StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new NotSupportedException("Anonymous calls are not supported for skills, please ensure your bot is configured with a MicrosoftAppId and Password).");
+            }
+
+            // Get current Bot ID from the identity audience claim
+            var botAppId = identity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
+            if (string.IsNullOrWhiteSpace(botAppId))
+            {
+                throw new InvalidOperationException("Unable to get the audience from the current request identity");
+            }
+
+            var appCredentials = await GetAppCredentialsAsync(botAppId, skill.AppId).ConfigureAwait(false);
+            if (appCredentials == null)
+            {
+                throw new InvalidOperationException("Unable to get appCredentials to connect to the skill");
+            }
+
+            // Get token for the skill call
+            var token = await appCredentials.GetTokenAsync().ConfigureAwait(false);
+
+            var activityClone = JObject.FromObject(activity).ToObject<Activity>();
+
+            // TODO use SkillConversation class here instead of hard coded encoding...
+            // Encode original bot service URL and ConversationId in the new conversation ID so we can unpack it later.
+            // var skillConversation = new SkillConversation() { ServiceUrl = activity.ServiceUrl, ConversationId = activity.Conversation.Id };
+            // activity.Conversation.Id = skillConversation.GetSkillConversationId()
+            activityClone.Conversation.Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new[]
+            {
+                activityClone.Conversation.Id,
+                activityClone.ServiceUrl
+            })));
+            activityClone.ServiceUrl = skillHostEndpoint.ToString();
+            activityClone.Recipient.Properties["skillId"] = skill.Id;
+            using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activityClone, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
+            {
+                using (var httpRequestMessage = new HttpRequestMessage())
+                {
+                    httpRequestMessage.Method = HttpMethod.Post;
+                    httpRequestMessage.RequestUri = skill.SkillEndpoint;
+                    httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    httpRequestMessage.Content = jsonContent;
+                    var response = await _httpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
+                    response.EnsureSuccessStatusCode();
+                    var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    if (content.Length > 0)
+                    {
+                        return new InvokeResponse
+                        {
+                            Status = (int)response.StatusCode,
+                            Body = JsonConvert.DeserializeObject(content)
+                        };
+                    }
+                }
+            }
+
+            return null;
         }
 
         public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
@@ -195,7 +292,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             {
                 // grab the auth header from the inbound http request
                 var authHeader = httpRequest.Headers["Authorization"];
-                var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialsProvider, _channelProvider, "unknown").ConfigureAwait(false);
+                var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider, "unknown").ConfigureAwait(false);
 
                 var route = GetRoute(httpRequest);
                 if (route == null)
@@ -236,6 +333,35 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Gets the application credentials. App Credentials are cached so as to ensure we are not refreshing
+        /// token every time.
+        /// </summary>
+        /// <param name="appId">The application identifier (AAD Id for the bot).</param>
+        /// <param name="oAuthScope">The scope for the token, skills will use the Skill App Id. </param>
+        /// <returns>App credentials.</returns>
+        private async Task<AppCredentials> GetAppCredentialsAsync(string appId, string oAuthScope = null)
+        {
+            if (appId == null)
+            {
+                return MicrosoftAppCredentials.Empty;
+            }
+
+            var cacheKey = $"{appId}{oAuthScope}";
+            if (_appCredentialMap.TryGetValue(cacheKey, out var appCredentials))
+            {
+                return appCredentials;
+            }
+
+            // NOTE: we can't do async operations inside of a AddOrUpdate, so we split access pattern
+            var appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
+            appCredentials = _channelProvider != null && _channelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient, _logger) : new MicrosoftAppCredentials(appId, appPassword, _httpClient, _logger, oAuthScope);
+
+            // Cache the credentials for later use
+            _appCredentialMap[cacheKey] = appCredentials;
+            return appCredentials;
         }
 
         internal class ChannelRoute

@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -17,11 +17,13 @@ namespace DialogRootBot.Dialogs
     {
         private readonly ConversationState _conversationState;
         private readonly SkillsConfiguration _skillsConfig;
+        private readonly BotFrameworkSkillClient _skillClient;
 
         // Dependency injection uses this constructor to instantiate MainDialog
-        public MainDialog(ConversationState conversationState, SkillsConfiguration skillsConfig, SkillDialog bookingDialog)
+        public MainDialog(ConversationState conversationState, BotFrameworkSkillClient skillClient, SkillsConfiguration skillsConfig, SkillDialog bookingDialog)
             : base(nameof(MainDialog))
         {
+            _skillClient = skillClient;
             _skillsConfig = skillsConfig;
             _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
 
@@ -129,7 +131,7 @@ namespace DialogRootBot.Dialogs
                 invokeActivity.Recipient = stepContext.Context.Activity.Recipient;
 
                 await _conversationState.SaveChangesAsync(stepContext.Context, true, cancellationToken);
-                var response = await stepContext.Context.TurnState.Get<SkillHostAdapter>().ForwardActivityAsync(stepContext.Context, _skillsConfig.Skills["SkillBot"], _skillsConfig.SkillHostEndpoint, (Activity)invokeActivity, cancellationToken);
+                var response = await _skillClient.ForwardActivityAsync(stepContext.Context, _skillsConfig.Skills["SkillBot"], _skillsConfig.SkillHostEndpoint, (Activity)invokeActivity, cancellationToken);
                 return await stepContext.NextAsync(response.Body, cancellationToken);
             }
 

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Skills;
-using Microsoft.Bot.Builder.Skills.Adapters;
 using Microsoft.Bot.Schema;
 
 namespace SimpleRootBot.Bots
@@ -17,11 +16,11 @@ namespace SimpleRootBot.Bots
         private readonly IStatePropertyAccessor<string> _activeSkillProperty;
         private readonly ConversationState _conversationState;
         private readonly SkillsConfiguration _skillsConfig;
-        private readonly BotFrameworkSkillHostAdapter _skillAdapter;
+        private readonly BotFrameworkSkillClient _skillClient;
 
-        public RootBot(ConversationState conversationState, SkillsConfiguration skillsConfig, BotFrameworkSkillHttpHostAdapter skillAdapter)
+        public RootBot(ConversationState conversationState, SkillsConfiguration skillsConfig, BotFrameworkSkillClient skillClient)
         {
-            _skillAdapter = skillAdapter;
+            _skillClient = skillClient;
             _skillsConfig = skillsConfig;
             _conversationState = conversationState;
             _activeSkillProperty = conversationState.CreateProperty<string>("activeSkillProperty");
@@ -37,7 +36,7 @@ namespace SimpleRootBot.Bots
                 await _conversationState.SaveChangesAsync(turnContext, force: true, cancellationToken: cancellationToken);
 
                 // route activity to the skill
-                await turnContext.TurnState.Get<SkillHostAdapter>().ForwardActivityAsync(turnContext, _skillsConfig.Skills[activeSkillId], _skillsConfig.SkillHostEndpoint, (Activity)turnContext.Activity, cancellationToken);
+                await _skillClient.ForwardActivityAsync(turnContext, _skillsConfig.Skills[activeSkillId], _skillsConfig.SkillHostEndpoint, (Activity)turnContext.Activity, cancellationToken);
             }
             else
             {
@@ -52,12 +51,11 @@ namespace SimpleRootBot.Bots
                     await _conversationState.SaveChangesAsync(turnContext, force: true, cancellationToken: cancellationToken);
 
                     // route the activity to the skill
-                    await _skillAdapter.ForwardActivityAsync(turnContext, _skillsConfig.Skills["SkillBot"], _skillsConfig.SkillHostEndpoint, (Activity)turnContext.Activity, cancellationToken);
+                    await _skillClient.ForwardActivityAsync(turnContext, _skillsConfig.Skills["SkillBot"], _skillsConfig.SkillHostEndpoint, (Activity)turnContext.Activity, cancellationToken);
                 }
                 else
                 {
                     // just respond
-                    //await turnContext.TurnState.Get<SkillHostAdapter>().ForwardActivityAsync(turnContext, _skillsConfig.Skills["SkillBot"], _skillsConfig.SkillHostEndpoint, (Activity)turnContext.Activity, cancellationToken);
                     await turnContext.SendActivityAsync(MessageFactory.Text("Me no nothin'. Say \"skill\" and I'll patch you through"), cancellationToken);
                 }
             }

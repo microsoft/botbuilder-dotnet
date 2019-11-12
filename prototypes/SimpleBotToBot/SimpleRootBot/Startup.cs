@@ -28,7 +28,8 @@ namespace SimpleRootBot
             services.AddSingleton<BotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
             // Register the skills server and skills host adapter.
-            services.AddSingleton<BotFrameworkSkillHttpHostAdapter>();
+            services.AddSingleton<BotAdapter>(sp => sp.GetService<BotFrameworkHttpAdapter>());
+            services.AddSingleton<BotFrameworkSkillClient>();
 
             // Register the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
             services.AddSingleton<IStorage, MemoryStorage>();

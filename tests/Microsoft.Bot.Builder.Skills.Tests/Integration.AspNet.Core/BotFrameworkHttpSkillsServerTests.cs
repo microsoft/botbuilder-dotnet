@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests.Integration.AspNet.Core
             mockRequest.Setup(x => x.Method).Returns(httpMethod);
             mockRequest.Setup(x => x.Path).Returns(path);
 
-            var routeAction = BotFrameworkSkillHttpHostAdapter.GetRoute(mockRequest.Object);
+            var routeAction = BotFrameworkSkillClient.GetRoute(mockRequest.Object);
 
             Assert.Equal(expectedMethod, routeAction.Method);
         }
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests.Integration.AspNet.Core
             mockRequest.Setup(x => x.Method).Returns("POST");
             mockRequest.Setup(x => x.Path).Returns("/somePath/thatIsNotThere");
 
-            var routeAction = BotFrameworkSkillHttpHostAdapter.GetRoute(mockRequest.Object);
+            var routeAction = BotFrameworkSkillClient.GetRoute(mockRequest.Object);
 
             Assert.Null(routeAction);
         }

@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.Skills.Adapters;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Extensions.Configuration;
 
 namespace DialogRootBot

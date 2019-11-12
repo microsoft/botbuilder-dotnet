@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Skills.Adapters;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Moq;
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
         {
             var botAdapter = CreateAdapter("TestSkillAdapterInjectsMiddleware");
 
-            var skillAdapter = new BotFrameworkSkillHostAdapter(botAdapter, new Mock<ICredentialProvider>().Object);
+            var skillAdapter = new BotFrameworkSkillClient(botAdapter, new Mock<ICredentialProvider>().Object);
 
             Assert.Equal(1, botAdapter.MiddlewareSet.Count(s => s is ChannelApiMiddleware));
         }
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
             var middleware = new AssertInvokeMiddleware(botAdapter, activityId);
             botAdapter.Use(middleware);
             var bot = new CallbackBot();
-            var skillAdapter = new BotFrameworkSkillHostAdapter(botAdapter, new Mock<ICredentialProvider>().Object);
+            var skillAdapter = new BotFrameworkSkillClient(botAdapter, new Mock<ICredentialProvider>().Object);
 
             var sc = new SkillConversation()
             {
@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
                 Assert.Equal(_adapter.Conversation.Bot.Id, turnContext.Activity.Recipient.Id);
 
                 var invoke = turnContext.Activity.AsInvokeActivity();
-                Assert.Equal(SkillHostAdapter.InvokeActivityName, invoke.Name);
+                Assert.Equal(SkillClient.InvokeActivityName, invoke.Name);
                 var apiArgs = invoke.Value as ChannelApiArgs;
                 Assert.NotNull(apiArgs);
 
