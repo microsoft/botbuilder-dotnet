@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="bot">The bot that will handle the incoming activity.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken)
+        public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken = default)
         {
             if (request == null)
             {
