@@ -27,6 +27,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// Gets or sets a list of attachments.
         /// </summary>
         /// <value>Attachments.</value>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "it needs to be set in ActivityToFacebook method")]
         [JsonProperty(PropertyName = "attachments")]
         public List<FacebookAttachment> Attachments { get; set; }
 

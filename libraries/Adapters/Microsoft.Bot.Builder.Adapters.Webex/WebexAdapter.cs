@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using Thrzn41.WebexTeams.Version1;
 
@@ -18,6 +20,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
     public class WebexAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         private readonly WebexClientWrapper _webexClient;
+        private ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebexAdapter"/> class using configuration settings.
@@ -30,8 +33,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// WebexSecret: The secret used to validate incoming webhooks.
         /// WebexWebhookName: A name for the webhook subscription.
         /// </remarks>
-        public WebexAdapter(IConfiguration configuration)
-            : this(new WebexClientWrapper(new WebexAdapterOptions(configuration["WebexAccessToken"], new Uri(configuration["WebexPublicAddress"]), configuration["WebexSecret"], configuration["WebexWebhookName"])))
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        public WebexAdapter(IConfiguration configuration, ILogger logger)
+            : this(new WebexClientWrapper(new WebexAdapterOptions(configuration["WebexAccessToken"], new Uri(configuration["WebexPublicAddress"]), configuration["WebexSecret"], configuration["WebexWebhookName"])), logger)
         {
         }
 
@@ -40,9 +44,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// Creates a Webex adapter.
         /// </summary>
         /// <param name="webexClient">A Webex API interface.</param>
-        public WebexAdapter(WebexClientWrapper webexClient)
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        public WebexAdapter(WebexClientWrapper webexClient, ILogger logger = null)
         {
             _webexClient = webexClient ?? throw new ArgumentNullException(nameof(webexClient));
+            _logger = logger ?? NullLogger.Instance;
         }
 
         /// <summary>
@@ -59,7 +65,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 if (activity.Type != ActivityTypes.Message)
                 {
-                    throw new ArgumentException("Unsupported Activity Type. Only Activities of type ‘Message’ are supported.", nameof(activities));
+                    _logger.LogTrace($"Unsupported Activity Type: '{activity.Type}'. Only Activities of type ‘Message’ are supported.");
                 }
 
                 // transform activity into the webex message format
