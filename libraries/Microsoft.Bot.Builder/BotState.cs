@@ -91,27 +91,7 @@ namespace Microsoft.Bot.Builder
             {
                 var items = await _storage.ReadAsync(new[] { storageKey }, cancellationToken).ConfigureAwait(false);
                 items.TryGetValue(storageKey, out object val);
-
-                if (val is IDictionary<string, object> asDictionary)
-                {
-                    turnContext.TurnState[_contextServiceKey] = new CachedBotState(asDictionary);
-                }
-                else if (val is JObject asJobject)
-                {
-                    // If types are not used by storage serialization, and Newtonsoft is the serializer
-                    // the item found will be a JObject.
-                    turnContext.TurnState[_contextServiceKey] = new CachedBotState(asJobject.ToObject<IDictionary<string, object>>());
-                }
-                else if (val == null)
-                {
-                    // This is the case where the dictionary did not exist in the store.
-                    turnContext.TurnState[_contextServiceKey] = new CachedBotState();
-                }
-                else
-                {
-                    // This should never happen
-                    throw new InvalidOperationException("Data is not in the correct format for BotState.");
-                }
+                turnContext.TurnState[_contextServiceKey] = new CachedBotState((IDictionary<string, object>)val);
             }
         }
 
@@ -233,7 +213,7 @@ namespace Microsoft.Bot.Builder
         /// <remarks>If the task is successful, the result contains the property value.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> or
         /// <paramref name="propertyName"/> is <c>null</c>.</exception>
-        protected Task<T> GetPropertyValueAsync<T>(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual Task<T> GetPropertyValueAsync<T>(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -246,17 +226,6 @@ namespace Microsoft.Bot.Builder
             }
 
             var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
-
-            // If types are not used by storage serialization, and Newtonsoft is the serializer,
-            // use Newtonsoft to convert the object to the type expected.
-            if (cachedState.State[propertyName] is JObject obj)
-            {
-                return Task.FromResult(obj.ToObject<T>());
-            }
-            else if (cachedState.State[propertyName] is JArray jarray)
-            {
-                return Task.FromResult(jarray.ToObject<T>());
-            }
 
             // if there is no value, this will throw, to signal to IPropertyAccesor that a default value should be computed
             // This allows this to work with value types
@@ -321,7 +290,7 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Internal cached bot state.
         /// </summary>
-        private class CachedBotState
+        protected class CachedBotState
         {
             public CachedBotState(IDictionary<string, object> state = null)
             {

@@ -1,0 +1,48 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
+
+namespace Microsoft.Bot.Builder
+{
+    /// <summary>
+    /// Defines a state management object for conversation state.
+    ///
+    /// This BotState implementation is useful for when the IStorage JsonSerializer's
+    /// TypeNameHandling = TypeNameHandling.None.
+    /// </summary>
+    /// <remarks>
+    /// Conversation state is available in any turn in a specific conversation, regardless of user,
+    /// such as in a group conversation.
+    /// </remarks>
+    public class CustomSerializerConversationState : CustomSerializerBotState
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CustomSerializerConversationState"/> class.
+        /// </summary>
+        /// <param name="storage">The storage layer to use.</param>
+        public CustomSerializerConversationState(IStorage storage)
+            : base(storage, nameof(CustomSerializerConversationState))
+        {
+        }
+
+        /// <summary>
+        /// Gets the key to use when reading and writing state to and from storage.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <returns>The storage key.</returns>
+        /// <remarks>
+        /// Conversation state includes the channel ID and conversation ID as part of its storage key.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException">The <see cref="ITurnContext.Activity"/> for the
+        /// current turn is missing <see cref="Schema.Activity.ChannelId"/> or
+        /// <see cref="Schema.Activity.Conversation"/> information, or the conversation's
+        /// <see cref="Schema.ConversationAccount.Id"/> is missing.</exception>
+        protected override string GetStorageKey(ITurnContext turnContext)
+        {
+            var channelId = turnContext.Activity.ChannelId ?? throw new ArgumentNullException("invalid activity-missing channelId");
+            var conversationId = turnContext.Activity.Conversation?.Id ?? throw new ArgumentNullException("invalid activity-missing Conversation.Id");
+            return $"{channelId}/conversations/{conversationId}";
+        }
+    }
+}

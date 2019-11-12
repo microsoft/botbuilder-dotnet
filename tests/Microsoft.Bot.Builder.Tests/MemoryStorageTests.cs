@@ -66,6 +66,13 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone()
         {
             storage = new MemoryStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
+            await StatePersistsThroughMultiTurn(storage, true);
+        }
+
+        [TestMethod]
+        public async Task StatePersistsThroughMultiTurn()
+        {
+            storage = new MemoryStorage();
             await StatePersistsThroughMultiTurn(storage);
         }
     }

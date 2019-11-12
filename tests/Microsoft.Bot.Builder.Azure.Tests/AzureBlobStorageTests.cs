@@ -159,21 +159,34 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TestConversationStateBlobStorage_TypeNameHandlingNone()
         {
-            await TestConversationStateBlobStorage_Method(GetStorage(true));
+            await TestConversationStateBlobStorage_Method(GetStorage(true), true);
         }
 
         [TestMethod]
         public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone()
         {
-            await StatePersistsThroughMultiTurn(GetStorage(true));
+            await StatePersistsThroughMultiTurn(GetStorage(true), true);
         }
 
-        private async Task TestConversationStateBlobStorage_Method(AzureBlobStorage storage)
+        private async Task TestConversationStateBlobStorage_Method(AzureBlobStorage storage, bool customSerialization = false)
         {
             // Arrange
-            var conversationState = new ConversationState(storage);
-            var propAccessor = conversationState.CreateProperty<Prop>("prop");
+            BotState conversationState = null;
+            IStatePropertyAccessor<Prop> propAccessor = null;
+
+            if (customSerialization)
+            {
+                conversationState = new CustomSerializerConversationState(storage);
+                propAccessor = conversationState.CreateProperty<Prop>("prop");
+            }
+            else
+            {
+                conversationState = new ConversationState(storage);
+                propAccessor = conversationState.CreateProperty<Prop>("prop");
+            }
+
             var adapter = new TestStorageAdapter();
+
             var activity = new Activity
             {
                 ChannelId = "123",

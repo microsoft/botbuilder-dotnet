@@ -244,12 +244,25 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual(createPoco.Id, "1", "createPoco.id should be 1");
         }
 
-        protected async Task StatePersistsThroughMultiTurn(IStorage storage)
+        protected async Task StatePersistsThroughMultiTurn(IStorage storage, bool customSerialization = false)
         {
-            var userState = new UserState(storage);
-            var testProperty = userState.CreateProperty<TestPocoState>("test");
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(userState));
+            BotState userState = null;
+            IStatePropertyAccessor<TestPocoState> testProperty = null;
+            TestAdapter adapter = null;
+            if (customSerialization)
+            {
+                userState = new CustomSerializerUserState(storage);
+                testProperty = userState.CreateProperty<TestPocoState>("test");
+                adapter = new TestAdapter()
+                    .Use(new AutoSaveStateMiddleware(userState));
+            }
+            else
+            {
+                userState = new UserState(storage);
+                testProperty = userState.CreateProperty<TestPocoState>("test");
+                adapter = new TestAdapter()
+                    .Use(new AutoSaveStateMiddleware(userState));
+            }
 
             await new TestFlow(
                 adapter,
