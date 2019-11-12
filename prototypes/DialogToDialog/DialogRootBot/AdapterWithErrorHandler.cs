@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using DialogRootBot.Middleware;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -20,6 +21,8 @@ namespace DialogRootBot
                 // Send a catch-all apology to the user.
                 await turnContext.SendActivityAsync($"Sorry, it looks like something went wrong. \r\n{exception}");
             };
+
+            Use(new DummyMiddleware("Test middleware"));
         }
     }
 }
