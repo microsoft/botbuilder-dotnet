@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -21,10 +22,12 @@ namespace DialogRootBot.Dialogs
     {
         private readonly ConversationState _conversationState;
         private readonly SkillsConfiguration _skillsConfig;
+        private readonly SkillHostAdapter _skillAdapter;
 
-        public SkillDialog(ConversationState conversationState, SkillsConfiguration skillsConfig, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SkillDialog(BotFrameworkSkillHttpHostAdapter skillAdapter, ConversationState conversationState, SkillsConfiguration skillsConfig, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(nameof(SkillDialog))
         {
+            _skillAdapter = skillAdapter;
             _skillsConfig = skillsConfig;
             _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
             RegisterSourceLocation(callerPath, callerLine);
@@ -176,7 +179,7 @@ namespace DialogRootBot.Dialogs
             // (the dialog stack won't get updated with the skillDialog and 'things won't work if you don't)
             await _conversationState.SaveChangesAsync(dc.Context, true, cancellationToken);
  
-            var result = await dc.Context.TurnState.Get<SkillHostAdapter>().ForwardActivityAsync(dc.Context, _skillsConfig.Skills[skillId], _skillsConfig.SkillHostEndpoint, activity, cancellationToken);
+            var result = await _skillAdapter.ForwardActivityAsync(dc.Context, _skillsConfig.Skills[skillId], _skillsConfig.SkillHostEndpoint, activity, cancellationToken);
             return EndOfTurn;
         }
     }

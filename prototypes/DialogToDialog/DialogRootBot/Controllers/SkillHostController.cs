@@ -15,9 +15,9 @@ namespace DialogRootBot.Controllers
     public class SkillHostController : ControllerBase
     {
         private readonly IBot _bot;
-        private readonly BotFrameworkHttpSkillsServer _skillServer;
+        private readonly BotFrameworkSkillHttpHostAdapter _skillServer;
 
-        public SkillHostController(BotFrameworkHttpSkillsServer skillServer, IBot bot)
+        public SkillHostController(BotFrameworkSkillHttpHostAdapter skillServer, IBot bot)
         {
             // adapter to use for calling back to channel
             _bot = bot;

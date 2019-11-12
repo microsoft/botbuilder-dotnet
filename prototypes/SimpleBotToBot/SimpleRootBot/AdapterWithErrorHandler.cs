@@ -4,6 +4,7 @@
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SimpleRootBot.Middleware;
 
 namespace SimpleRootBot
 {
@@ -17,6 +18,10 @@ namespace SimpleRootBot
                 // Send a catch-all apology to the user.
                 await turnContext.SendActivityAsync($"Sorry, it looks like something went wrong. \r\n{exception}");
             };
+            
+            // Register a couple of dummy middleware instances for testing.
+            Use(new DummyMiddleware("Instance 1"));
+            Use(new DummyMiddleware("Instance 2"));
         }
     }
 }

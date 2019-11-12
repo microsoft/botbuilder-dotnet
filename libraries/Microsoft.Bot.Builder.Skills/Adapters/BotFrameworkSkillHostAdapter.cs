@@ -119,31 +119,33 @@ namespace Microsoft.Bot.Builder.Skills.Adapters
             // Get token for the skill call
             var token = await appCredentials.GetTokenAsync().ConfigureAwait(false);
 
-            // POST to skill 
-            using (var client = new HttpClient())
-            {
-                // Create a deep clone of the activity so we can update it without impacting the original activity.
-                var activityClone = JObject.FromObject(activity).ToObject<Activity>();
+            var activityClone = JObject.FromObject(activity).ToObject<Activity>();
 
-                // TODO use SkillConversation class here instead of hard coded encoding...
-                // Encode original bot service URL and ConversationId in the new conversation ID so we can unpack it later.
-                // var skillConversation = new SkillConversation() { ServiceUrl = activity.ServiceUrl, ConversationId = activity.Conversation.Id };
-                // activity.Conversation.Id = skillConversation.GetSkillConversationId()
-                activityClone.Conversation.Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new[]
+            // TODO use SkillConversation class here instead of hard coded encoding...
+            // Encode original bot service URL and ConversationId in the new conversation ID so we can unpack it later.
+            // var skillConversation = new SkillConversation() { ServiceUrl = activity.ServiceUrl, ConversationId = activity.Conversation.Id };
+            // activity.Conversation.Id = skillConversation.GetSkillConversationId()
+            activityClone.Conversation.Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new[]
+            {
+                activityClone.Conversation.Id,
+                activityClone.ServiceUrl
+            })));
+            activityClone.ServiceUrl = skillHostEndpoint.ToString();
+            activityClone.Recipient.Properties["skillId"] = skill.Id;
+            using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activityClone, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
+            {
+                using (var httpRequestMessage = new HttpRequestMessage())
                 {
-                    activityClone.Conversation.Id,
-                    activityClone.ServiceUrl
-                })));
-                activityClone.ServiceUrl = skillHostEndpoint.ToString();
-                activityClone.Recipient.Properties["skillId"] = skill.Id;
-                using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activityClone, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
-                {
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var response = await client.PostAsync($"{skill.SkillEndpoint}", jsonContent, cancellationToken).ConfigureAwait(false);
+                    httpRequestMessage.Method = HttpMethod.Post;
+                    httpRequestMessage.RequestUri = skill.SkillEndpoint;
+                    httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    httpRequestMessage.Content = jsonContent;
+                    var response = await _httpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
+                    response.EnsureSuccessStatusCode();
                     var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     if (content.Length > 0)
                     {
-                        return new InvokeResponse()
+                        return new InvokeResponse
                         {
                             Status = (int)response.StatusCode,
                             Body = JsonConvert.DeserializeObject(content)

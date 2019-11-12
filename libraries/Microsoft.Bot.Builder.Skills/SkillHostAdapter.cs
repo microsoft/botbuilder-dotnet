@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Skills
 
         protected SkillHostAdapter(BotAdapter adapter, ILogger logger = null)
         {
-            ChannelAdapter = adapter;
+            BotAdapter = adapter;
             _logger = logger ?? NullLogger.Instance;
 
             // make sure there is a channel api middleware
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// <value>
         /// The botAdapter to use to process ChannelAPI call from the skill.
         /// </value>
-        public BotAdapter ChannelAdapter { get; }
+        private BotAdapter BotAdapter { get; }
 
         /// <summary>
         /// Forwards an activity to a skill.
@@ -363,12 +363,12 @@ namespace Microsoft.Bot.Builder.Skills
             return InvokeChannelApiAsync<ResourceResponse>(bot, claimsIdentity, ChannelApiMethods.UploadAttachment, conversationId, attachmentUpload);
         }
 
-        protected async Task InvokeChannelApiAsync(IBot bot, ClaimsIdentity claimsIdentity, string method, string conversationId, params object[] args)
+        private async Task InvokeChannelApiAsync(IBot bot, ClaimsIdentity claimsIdentity, string method, string conversationId, params object[] args)
         {
             await InvokeChannelApiAsync<object>(bot, claimsIdentity, method, conversationId, args).ConfigureAwait(false);
         }
 
-        protected async Task<T> InvokeChannelApiAsync<T>(IBot bot, ClaimsIdentity claimsIdentity, string method, string conversationId, params object[] args)
+        private async Task<T> InvokeChannelApiAsync<T>(IBot bot, ClaimsIdentity claimsIdentity, string method, string conversationId, params object[] args)
         {
             _logger.LogInformation($"InvokeChannelApiAsync(). Invoking method \"{method}\"");
 
@@ -409,7 +409,7 @@ namespace Microsoft.Bot.Builder.Skills
             channelApiInvokeActivity.Value = channelApiArgs;
 
             // send up to the bot to process it...
-            await ChannelAdapter.ProcessActivityAsync(claimsIdentity, (Activity)channelApiInvokeActivity, bot.OnTurnAsync, CancellationToken.None).ConfigureAwait(false);
+            await BotAdapter.ProcessActivityAsync(claimsIdentity, (Activity)channelApiInvokeActivity, bot.OnTurnAsync, CancellationToken.None).ConfigureAwait(false);
 
             if (channelApiArgs.Exception != null)
             {

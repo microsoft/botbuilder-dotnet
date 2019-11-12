@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 {
     internal delegate Task<object> RouteAction(BotFrameworkSkillHostAdapter skillAdapter, IBot bot, ClaimsIdentity claimsIdentity, HttpRequest httpRequest, GroupCollection parameters, CancellationToken cancellationToken);
 
-    public class BotFrameworkHttpSkillsServer : BotFrameworkSkillHostAdapter
+    public class BotFrameworkSkillHttpHostAdapter : BotFrameworkSkillHostAdapter
     {
         private static readonly ChannelRoute[] _routes =
         {
@@ -147,7 +147,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         private readonly ICredentialProvider _credentialsProvider;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BotFrameworkHttpSkillsServer"/> class,
+        /// Initializes a new instance of the <see cref="BotFrameworkSkillHttpHostAdapter"/> class,
         /// using a credential provider.
         /// </summary>
         /// <param name="adapter">adapter that this skillAdapter is bound to.</param>
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
-        public BotFrameworkHttpSkillsServer(
+        public BotFrameworkSkillHttpHostAdapter(
             BotFrameworkHttpAdapter adapter,
             ICredentialProvider credentialProvider,
             IChannelProvider channelProvider = null,

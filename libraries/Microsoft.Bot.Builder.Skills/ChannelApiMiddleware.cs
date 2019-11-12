@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Skills
                 var invokeArgs = invokeActivity.Value as ChannelApiArgs;
 
                 // TODO This needs to be more robust to get bot id
-                await CallChannelApiAsync(turnContext, next, invokeArgs, cancellationToken).ConfigureAwait(false);
+                await ProcessSkillActivityAsync(turnContext, next, invokeArgs, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -58,10 +58,11 @@ namespace Microsoft.Bot.Builder.Skills
             await next(cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task CallChannelApiAsync(ITurnContext turnContext, NextDelegate next, ChannelApiArgs invokeArgs, CancellationToken cancellationToken)
+        private async Task ProcessSkillActivityAsync(ITurnContext turnContext, NextDelegate next, ChannelApiArgs invokeArgs, CancellationToken cancellationToken)
         {
             try
             {
+                // TODO: this cast won't work for custom adapters
                 var adapter = turnContext.Adapter as BotFrameworkAdapter;
 
                 switch (invokeArgs.Method)
