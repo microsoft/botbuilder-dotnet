@@ -13,10 +13,14 @@
     <PackageId>Microsoft.Bot.Builder.Adapters.Webex</PackageId>
     <Description>Library for connecting bots with Webex Teams API.</Description>
     <Summary>This library implements C# classes for the Webex Adapter</Summary>
+    <!-- The Thrzn41.WebexTeams package isn't signed, so supress the warning. There seems to not be a way to supress this for ONLY Thrzn41.WebexTeams. -->
+    <NoWarn>$(NoWarn),CS8002</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU' ">
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Adapters.Webex.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
   </PropertyGroup>
 
   <ItemGroup>

@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
     public class WebexAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         private readonly WebexClientWrapper _webexClient;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebexAdapter"/> class using configuration settings.
