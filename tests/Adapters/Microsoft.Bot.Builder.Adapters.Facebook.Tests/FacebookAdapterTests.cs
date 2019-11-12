@@ -226,25 +226,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsyncShouldFailWithActivityTypeNotMessage()
-        {
-            var facebookAdapter = new FacebookAdapter(new Mock<FacebookClientWrapper>(_testOptions).Object);
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Event,
-            };
-            Activity[] activities = { activity };
-
-            using (var turnContext = new TurnContext(facebookAdapter, activity))
-            {
-                await Assert.ThrowsAsync<Exception>(async () =>
-                {
-                    await facebookAdapter.SendActivitiesAsync(turnContext, activities, default);
-                });
-            }
-        }
-
-        [Fact]
         public async Task UpdateActivityAsyncShouldThrowNotImplementedException()
         {
             var facebookAdapter = new FacebookAdapter(new FacebookClientWrapper(_testOptions));

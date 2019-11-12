@@ -322,25 +322,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsyncShouldFailWithActivityTypeNotMessage()
-        {
-            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Event,
-            };
-
-            Activity[] activities = { activity };
-
-            var turnContext = new TurnContext(webexAdapter, activity);
-
-            await Assert.ThrowsAsync<ArgumentException>(async () =>
-            {
-                await webexAdapter.SendActivitiesAsync(turnContext, activities, default);
-            });
-        }
-
-        [Fact]
         public async void SendActivitiesAsyncShouldFailWithNullToPersonEmail()
         {
             // Setup mocked Webex API client

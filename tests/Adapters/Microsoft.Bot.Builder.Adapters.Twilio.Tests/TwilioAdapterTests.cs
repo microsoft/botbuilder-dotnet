@@ -51,24 +51,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsyncShouldFailWithActivityTypeNotMessage()
-        {
-            var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
-
-            var activity = new Activity()
-            {
-                Type = ActivityTypes.Event,
-            };
-
-            Activity[] activities = { activity };
-
-            await Assert.ThrowsAsync<ArgumentException>(async () =>
-            {
-                await twilioAdapter.SendActivitiesAsync(new TurnContext(twilioAdapter, activity), activities, default);
-            });
-        }
-
-        [Fact]
         public async void ProcessAsyncShouldSucceedWithHttpBody()
         {
             var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/NoMediaPayload.txt"));
