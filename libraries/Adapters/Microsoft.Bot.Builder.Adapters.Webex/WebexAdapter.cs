@@ -67,53 +67,57 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 {
                     _logger.LogTrace($"Unsupported Activity Type: '{activity.Type}'. Only Activities of type ‘Message’ are supported.");
                 }
-
-                // transform activity into the webex message format
-                string personIdOrEmail;
-
-                if (activity.GetChannelData<WebhookEventData>()?.MessageData.PersonEmail != null)
-                {
-                    personIdOrEmail = activity.GetChannelData<WebhookEventData>()?.MessageData.PersonEmail;
-                }
                 else
                 {
-                    if (activity.Recipient?.Id != null)
+                    // transform activity into the webex message format
+                    string personIdOrEmail;
+
+                    if (activity.GetChannelData<WebhookEventData>()?.MessageData.PersonEmail != null)
                     {
-                        personIdOrEmail = activity.Recipient.Id;
+                        personIdOrEmail = activity.GetChannelData<WebhookEventData>()?.MessageData.PersonEmail;
                     }
                     else
                     {
-                        throw new Exception("No Person or Email to send the message");
-                    }
-                }
-
-                string responseId;
-
-                if (activity.Attachments != null && activity.Attachments.Count > 0)
-                {
-                    if (activity.Attachments[0].ContentType == "application/vnd.microsoft.card.adaptive")
-                    {
-                        responseId = await _webexClient.CreateMessageWithAttachmentsAsync(personIdOrEmail, activity.Text, activity.Attachments, cancellationToken).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        var files = new List<Uri>();
-
-                        foreach (var attachment in activity.Attachments)
+                        if (activity.Recipient?.Id != null)
                         {
-                            var file = new Uri(attachment.ContentUrl);
-                            files.Add(file);
+                            personIdOrEmail = activity.Recipient.Id;
                         }
-
-                        responseId = await _webexClient.CreateMessageAsync(personIdOrEmail, activity.Text, files.Count > 0 ? files : null, cancellationToken).ConfigureAwait(false);
+                        else
+                        {
+                            throw new Exception("No Person or Email to send the message");
+                        }
                     }
-                }
-                else
-                {
-                    responseId = await _webexClient.CreateMessageAsync(personIdOrEmail, activity.Text, cancellationToken: cancellationToken).ConfigureAwait(false);
-                }
 
-                responses.Add(new ResourceResponse(responseId));
+                    string responseId;
+
+                    if (activity.Attachments != null && activity.Attachments.Count > 0)
+                    {
+                        if (activity.Attachments[0].ContentType == "application/vnd.microsoft.card.adaptive")
+                        {
+                            responseId = await _webexClient.CreateMessageWithAttachmentsAsync(personIdOrEmail, activity.Text, activity.Attachments, cancellationToken).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            var files = new List<Uri>();
+
+                            foreach (var attachment in activity.Attachments)
+                            {
+                                var file = new Uri(attachment.ContentUrl);
+                                files.Add(file);
+                            }
+
+                            responseId = await _webexClient.CreateMessageAsync(personIdOrEmail, activity.Text, files.Count > 0 ? files : null, cancellationToken).ConfigureAwait(false);
+                        }
+                    }
+                    else
+                    {
+                        responseId = await _webexClient
+                            .CreateMessageAsync(personIdOrEmail, activity.Text, cancellationToken: cancellationToken)
+                            .ConfigureAwait(false);
+                    }
+
+                    responses.Add(new ResourceResponse(responseId));
+                }
             }
 
             return responses.ToArray();

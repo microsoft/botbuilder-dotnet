@@ -51,6 +51,25 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         }
 
         [Fact]
+        public async void SendActivitiesAsyncShouldSucceedAndNoActivityReturnedWithActivityTypeNotMessage()
+        {
+            var activity = new Mock<Activity>().SetupAllProperties();
+            activity.Object.Type = ActivityTypes.Trace;
+            activity.Object.Attachments = new List<Attachment> { new Attachment(contentUrl: "http://example.com") };
+            activity.Object.Conversation = new ConversationAccount(id: "MockId");
+            activity.Object.Text = "Trace content";
+
+            const string resourceIdentifier = "Mocked Resource Identifier";
+            var twilioApi = new Mock<TwilioClientWrapper>(_testOptions);
+            twilioApi.Setup(x => x.SendMessage(It.IsAny<CreateMessageOptions>())).Returns(Task.FromResult(resourceIdentifier));
+
+            var twilioAdapter = new TwilioAdapter(twilioApi.Object);
+            var resourceResponses = await twilioAdapter.SendActivitiesAsync(null, new Activity[] { activity.Object }, default).ConfigureAwait(false);
+
+            Assert.True(resourceResponses.Length == 0);
+        }
+
+        [Fact]
         public async void ProcessAsyncShouldSucceedWithHttpBody()
         {
             var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/NoMediaPayload.txt"));
