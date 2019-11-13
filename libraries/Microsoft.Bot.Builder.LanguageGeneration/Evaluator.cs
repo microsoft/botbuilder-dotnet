@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Microsoft.Bot.Expressions;
+using Microsoft.Bot.Expressions.Memory;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -277,14 +278,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var newScope = parameters.Zip(args, (k, v) => new { k, v })
                                     .ToDictionary(x => x.k, x => x.v);
 
-            if (currentScope is CustomizedMemoryScope cms)
+            if (currentScope is CustomizedMemory memory)
             {
-                // if current scope is already customized, inherit it's global scope
-                return new CustomizedMemoryScope(newScope, cms.GlobalScope);
+                // inherit current memory's global scope
+                return new CustomizedMemory(memory.GlobalMemory, new SimpleObjectMemory(newScope));
             }
             else
             {
-                return new CustomizedMemoryScope(newScope, currentScope);
+                throw new Exception("Scope is a LG customized memory");
             }
         }
 

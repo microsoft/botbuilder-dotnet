@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Bot.Expressions;
+using Microsoft.Bot.Expressions.Memory;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -99,8 +100,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Evaluate result.</returns>
         public object EvaluateTemplate(string templateName, object scope = null)
         {
+            return this.EvaluateTemplate(templateName, new SimpleObjectMemory(scope));
+        }
+
+        public object EvaluateTemplate(string templateName, IMemory memory)
+        {
             var evaluator = new Evaluator(Templates, this.expressionEngine);
-            return evaluator.EvaluateTemplate(templateName, scope);
+            return evaluator.EvaluateTemplate(templateName, new CustomizedMemory(memory, null));
         }
 
         /// <summary>

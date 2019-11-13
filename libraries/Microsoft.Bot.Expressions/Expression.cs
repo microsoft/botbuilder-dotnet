@@ -268,7 +268,16 @@ namespace Microsoft.Bot.Expressions
         /// </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
         public (object value, string error) TryEvaluate(object state)
-            => Evaluator.TryEvaluate(this, new SimpleObjectMemory(state));
+        {
+            if (state is IMemory memory)
+            {
+                return this.TryEvaluate(memory);
+            }
+            else
+            {
+                return this.TryEvaluate(new SimpleObjectMemory(state));
+            }
+        }
 
         public (object value, string error) TryEvaluate(IMemory state)
             => Evaluator.TryEvaluate(this, state);
