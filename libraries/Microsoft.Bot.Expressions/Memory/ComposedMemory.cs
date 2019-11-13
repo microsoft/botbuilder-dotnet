@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Microsoft.Bot.Expressions.Memory
 {
@@ -34,11 +33,6 @@ namespace Microsoft.Bot.Expressions.Memory
         public (object value, string error) SetValue(string path, object value)
         {
             throw new NotImplementedException();
-        }
-
-        public override string ToString()
-        {
-            return string.Join("\n", this.memoryMap.Select(pair => $"{pair.Key}: {pair.Value}"));
         }
     }
 }
