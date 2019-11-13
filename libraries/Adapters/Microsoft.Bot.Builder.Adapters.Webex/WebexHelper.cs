@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             var activity = new Activity
             {
                 Id = payload.Id,
-                Timestamp = new DateTime(),
+                Timestamp = default,
                 ChannelId = "webex",
                 Conversation = new ConversationAccount
                 {
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             var activity = new Activity
             {
                 Id = decryptedMessage.Id,
-                Timestamp = new DateTime(),
+                Timestamp = default,
                 ChannelId = "webex",
                 Conversation = new ConversationAccount
                 {
@@ -183,7 +183,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             var activity = new Activity
             {
                 Id = decryptedMessage.Id,
-                Timestamp = new DateTime(),
+                Timestamp = default,
                 ChannelId = "webex",
                 Conversation = new ConversationAccount
                 {
