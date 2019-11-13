@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -72,7 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>Activity for it.</returns>
         private static Activity BuildActivityFromLGStructuredResult(JObject lgJObj)
         {
-            Activity activity;
+            var activity = new Activity();
             var type = GetStructureType(lgJObj);
 
             if (GenericCardTypeMapping.ContainsKey(type))
@@ -81,21 +82,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 {
                     activity = MessageFactory.Attachment(attachment) as Activity;
                 }
-                else
-                {
-                    throw new Exception($"'{lgJObj}' is not an attachment format.");
-                }
             }
-            else
+            else if (type == nameof(Activity).ToLowerInvariant())
             {
-                if (type == nameof(Activity).ToLowerInvariant())
-                {
-                    activity = BuildActivityFromObject(lgJObj);
-                }
-                else
-                {
-                    throw new Exception($"type {type} is not support currently.");
-                }
+                activity = BuildActivityFromObject(lgJObj);
             }
 
             return activity;
@@ -332,14 +322,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                     {
                         attachments.Add(attachment);
                     }
-                    else
-                    {
-                        throw new Exception($"'{attachmentsJsonJObj}' is not an attachment format.");
-                    }
-                }
-                else
-                {
-                    throw new Exception($"'{attachmentsJson}' is not an attachment format.");
                 }
             }
 

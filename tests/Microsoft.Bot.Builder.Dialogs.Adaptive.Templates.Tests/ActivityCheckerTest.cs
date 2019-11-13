@@ -66,33 +66,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests
             Assert.IsTrue(diagnostics[0].Severity == DiagnosticSeverity.Warning);
             Assert.AreEqual(diagnostics[0].Message, "'xxx' is not support currently. It will fallback to message activity.");
 
-            lgStringResult = await languageGenerator.Generate(context, "@{ErrorEventProperty()}", null);
-            diagnostics = ActivityChecker.Check(lgStringResult);
-            Assert.AreEqual(diagnostics.Count, 1);
-            Assert.IsTrue(diagnostics[0].Severity == DiagnosticSeverity.Warning);
-            Assert.AreEqual(diagnostics[0].Message, "'xxx' is not support in Event Activity.");
-
             lgStringResult = await languageGenerator.Generate(context, "@{ErrorMessage()}", null);
             diagnostics = ActivityChecker.Check(lgStringResult);
-            Assert.AreEqual(diagnostics.Count, 9);
+            Assert.AreEqual(diagnostics.Count, 6);
             Assert.IsTrue(diagnostics[0].Severity == DiagnosticSeverity.Warning);
             Assert.AreEqual(diagnostics[0].Message, "'attachment' is not support, do you mean 'attachments'?");
             Assert.IsTrue(diagnostics[1].Severity == DiagnosticSeverity.Warning);
             Assert.AreEqual(diagnostics[1].Message, "'suggestedaction' is not support, do you mean 'suggestedactions'?");
             Assert.IsTrue(diagnostics[2].Severity == DiagnosticSeverity.Warning);
-            Assert.AreEqual(diagnostics[2].Message, "'xxx' is not support in message activity.");
-            Assert.IsTrue(diagnostics[3].Severity == DiagnosticSeverity.Warning);
-            Assert.AreEqual(diagnostics[3].Message, "'mystruct' is not card action type.");
+            Assert.AreEqual(diagnostics[2].Message, "'mystruct' is not card action type.");
+            Assert.IsTrue(diagnostics[3].Severity == DiagnosticSeverity.Error);
+            Assert.AreEqual(diagnostics[3].Message, "'yyy' is not a valid action type");
             Assert.IsTrue(diagnostics[4].Severity == DiagnosticSeverity.Error);
-            Assert.AreEqual(diagnostics[4].Message, "'yyy' is not a valid action type");
+            Assert.AreEqual(diagnostics[4].Message, "'notsure' is not a boolean value.");
             Assert.IsTrue(diagnostics[5].Severity == DiagnosticSeverity.Warning);
-            Assert.AreEqual(diagnostics[5].Message, "'xxx' is not support for card action.");
-            Assert.IsTrue(diagnostics[6].Severity == DiagnosticSeverity.Error);
-            Assert.AreEqual(diagnostics[6].Message, "'notsure' is not a boolean value.");
-            Assert.IsTrue(diagnostics[7].Severity == DiagnosticSeverity.Warning);
-            Assert.AreEqual(diagnostics[7].Message, "'xxx' is not support for card.");
-            Assert.IsTrue(diagnostics[8].Severity == DiagnosticSeverity.Warning);
-            Assert.AreEqual(diagnostics[8].Message, "'mystruct' is not an attachment type.");
+            Assert.AreEqual(diagnostics[5].Message, "'mystruct' is not an attachment type.");
         }
 
         private static string GetProjectFolder()

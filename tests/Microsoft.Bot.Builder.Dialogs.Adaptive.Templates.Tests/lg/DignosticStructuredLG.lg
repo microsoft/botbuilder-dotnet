@@ -8,17 +8,10 @@
  type = xxx
 ]
 
-# ErrorEventProperty
-[Activity
- type = event
- xxx = yyy
-]
-
 # ErrorMessage
 [Activity
  attachment = @{HerocardWithCardAction()}
  suggestedaction = hello
- xxx = yyy
  attachments = @{HerocardWithCardAction()} | @{ErrorStructuredType()}
 ]
 
@@ -28,7 +21,6 @@
     Text = text
     Buttons = @{ErrorStructuredType()} | @{cardActionTemplate()}
     autoloop = notsure
-    xxx = yyy
 ]
 
 # cardActionTemplate
@@ -37,5 +29,4 @@
     Title = title
     Value = value
     Text = text
-    xxx = yyy
 ]

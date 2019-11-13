@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using AdaptiveCards;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
@@ -76,39 +74,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 }
             }
 
-            if (activityType == ActivityTypes.Event)
-            {
-                result.AddRange(CheckEventActivity(lgJObj));
-            }
-            else
+            if (activityType != ActivityTypes.Event)
             {
                 result.AddRange(CheckMessageActivity(lgJObj));
-            }
-
-            return result;
-        }
-
-        private static List<Diagnostic> CheckEventActivity(JObject lgJObj)
-        {
-            var result = new List<Diagnostic>();
-
-            foreach (var item in lgJObj)
-            {
-                var property = item.Key.Trim();
-                var value = item.Value;
-
-                switch (property.ToLowerInvariant())
-                {
-                    case "$type":
-                    case "type":
-                    case "name":
-                    case "value":
-                        break;
-
-                    default:
-                        result.Add(BuildDiagnostic($"'{property}' is not support in Event Activity.", false));
-                        break;
-                }
             }
 
             return result;
@@ -124,14 +92,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                 switch (property.ToLowerInvariant())
                 {
-                    case "$type":
-                    case "type":
-                    case "text":
-                    case "speak":
-                    case "inputhint":
-                    case "attachmentlayout":
-                        break;
-
                     case "attachments":
                         result.AddRange(CheckAttachments(value));
                         break;
@@ -147,7 +107,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                         result.Add(BuildDiagnostic($"'{property}' is not support, do you mean 'suggestedactions'?", false));
                         break;
                     default:
-                        result.Add(BuildDiagnostic($"'{property}' is not support in message activity.", false));
                         break;
                 }
             }
@@ -157,21 +116,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private static List<Diagnostic> CheckSuggestions(JToken value)
         {
-            var result = new List<Diagnostic>();
             var actions = NormalizedToList(value);
+            return CheckCardActions(actions);
+        }
+
+        private static List<Diagnostic> CheckCardActions(List<JToken> actions)
+        {
+            var result = new List<Diagnostic>();
+
             foreach (var action in actions)
             {
-                if (IsStringValue(action))
+                if (!IsStringValue(action))
                 {
-                    return result;
-                }
-                else if (action is JObject actionJObj)
-                {
-                    result.AddRange(CheckCardAction(actionJObj));
-                }
-                else
-                {
-                    result.Add(BuildDiagnostic($"'{action}' is not a valid suggestion format.", false));
+                    if (action is JObject actionJObj)
+                    {
+                        result.AddRange(CheckCardAction(actionJObj));
+                    }
+                    else
+                    {
+                        result.Add(BuildDiagnostic($"'{action}' is not a valid card action format.", false));
+                    }
                 }
             }
 
@@ -180,26 +144,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private static List<Diagnostic> CheckButtons(JToken value)
         {
-            var result = new List<Diagnostic>();
             var actions = NormalizedToList(value);
 
-            foreach (var action in actions)
-            {
-                if (IsStringValue(action))
-                {
-                    return result;
-                }
-                else if (action is JObject actionJObj)
-                {
-                    result.AddRange(CheckCardAction(actionJObj));
-                }
-                else
-                {
-                    result.Add(BuildDiagnostic($"'{action}' is not a valid button format.", false));
-                }
-            }
-
-            return result;
+            return CheckCardActions(actions);
         }
         
         private static bool IsStringValue(JToken value)
@@ -224,14 +171,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                     switch (property.ToLowerInvariant())
                     {
-                        case "$type":
-                        case "title":
-                        case "value":
-                        case "displaytext":
-                        case "text":
-                        case "image":
-                            break;
-
                         case "type":
                             if (value != ActionTypes.ImBack.ToLowerInvariant()
                                 && value != ActionTypes.Call.ToLowerInvariant()
@@ -251,7 +190,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                             break;
                         default:
-                            result.Add(BuildDiagnostic($"'{property}' is not support for card action.", false));
                             break;
                     }
                 }
@@ -304,23 +242,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 result.AddRange(CheckCardAtttachment(ActivityFactory.GenericCardTypeMapping[type], lgJObj));
             }
-            else if (type == nameof(AdaptiveCard).ToLowerInvariant())
+            else if (type == "adaptivecard")
             {
-                try
-                {
-                    var parseResult = AdaptiveCard.FromJson(lgJObj.ToString());
-                    if (parseResult.Warnings.Count > 0)
-                    {
-                        foreach (var warning in parseResult.Warnings)
-                        {
-                            result.Add(BuildDiagnostic(warning.Message, false));
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    result.Add(BuildDiagnostic(e.Message));
-                }
+                // TODO
+                // check adaptivecard format
             }
             else
             {
@@ -341,17 +266,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                 switch (property)
                 {
-                    case "$type":
-                    case "title":
-                    case "subtitle":
-                    case "text":
-                    case "aspect":
-                    case "value":
-                    case "connectionname":
-                    case "image":
-                    case "images":
-                    case "media":
-                        break;
                     case "buttons":
                         result.AddRange(CheckButtons(value));
                         break;
@@ -366,7 +280,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                         break;
                     default:
-                        result.Add(BuildDiagnostic($"'{property}' is not support for card.", false));
                         break;
                 }
             }
