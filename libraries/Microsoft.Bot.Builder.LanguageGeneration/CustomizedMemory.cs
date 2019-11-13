@@ -48,5 +48,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             return (null, "LG memory are readonly");
         }
+
+        public override string ToString()
+        {
+            return $"Global: {this.GlobalMemory?.ToString()}, Local: {this.LocalMemory?.ToString()}";
+        }
     }
 }

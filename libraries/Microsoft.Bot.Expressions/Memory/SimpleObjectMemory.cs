@@ -134,5 +134,10 @@ namespace Microsoft.Bot.Expressions.Memory
 
             return (BuiltInFunctions.ResolveValue(value), null);
         }
+
+        public override string ToString()
+        {
+            return memory?.ToString();
+        }
     }
 }
