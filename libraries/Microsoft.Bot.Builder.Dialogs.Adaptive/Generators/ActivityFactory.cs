@@ -354,7 +354,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 attachment = new Attachment("application/vnd.microsoft.card.adaptive", content: lgJObj);
             }
-            else if (type == nameof(Attachment).ToLower())
+            else if (type == nameof(Attachment).ToLowerInvariant())
             {
                 attachment = GetNormalAttachment(lgJObj);
             }
@@ -375,21 +375,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 var property = item.Key.Trim();
                 var value = item.Value;
 
-                switch (property.ToLower())
+                switch (property.ToLowerInvariant())
                 {
-                    case "$type":
-                        break;
-
                     case "contenttype":
                         {
-                            var type = value.ToString().ToLower();
+                            var type = value.ToString().ToLowerInvariant();
                             if (GenericCardTypeMapping.ContainsKey(type))
                             {
                                 attachment.ContentType = GenericCardTypeMapping[type];
                             }
-                            else if (type == nameof(AdaptiveCard).ToLower())
+                            else if (type == "adaptivecard")
                             {
-                                attachment.ContentType = AdaptiveCard.ContentType;
+                                attachment.ContentType = "application/vnd.microsoft.card.adaptive";
                             }
                             else
                             {
@@ -420,7 +417,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                         break;
 
                     default:
-                        Debug.WriteLine(string.Format("Skipping unknown activity property {0}", property));
                         break;
                 }
             }
