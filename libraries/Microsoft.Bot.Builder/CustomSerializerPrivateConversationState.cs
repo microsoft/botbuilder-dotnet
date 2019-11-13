@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="storage">The storage layer to use.</param>
         public CustomSerializerPrivateConversationState(IStorage storage)
-            : base(storage, nameof(PrivateConversationState))
+            : base(storage, nameof(CustomSerializerPrivateConversationState))
         {
         }
 

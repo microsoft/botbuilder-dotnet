@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="storage">The storage layer to use.</param>
         public CustomSerializerUserState(IStorage storage)
-            : base(storage, nameof(UserState))
+            : base(storage, nameof(CustomSerializerUserState))
         {
         }
 
