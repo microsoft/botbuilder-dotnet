@@ -3,14 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Threading.Tasks;
-using System.Xml;
-using AdaptiveCards;
-using Microsoft.Bot.Builder.LanguageGeneration;
-using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -24,17 +17,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     {
         private static readonly Dictionary<string, string> GenericCardTypeMapping = new Dictionary<string, string>
         {
-            { nameof(HeroCard).ToLower(), HeroCard.ContentType },
-            { nameof(ThumbnailCard).ToLower(), ThumbnailCard.ContentType },
-            { nameof(AudioCard).ToLower(), AudioCard.ContentType },
-            { nameof(VideoCard).ToLower(), VideoCard.ContentType },
-            { nameof(AnimationCard).ToLower(), AnimationCard.ContentType },
-            { nameof(SigninCard).ToLower(), SigninCard.ContentType },
-            { nameof(OAuthCard).ToLower(), OAuthCard.ContentType }
+            { nameof(HeroCard).ToLowerInvariant(), HeroCard.ContentType },
+            { nameof(ThumbnailCard).ToLowerInvariant(), ThumbnailCard.ContentType },
+            { nameof(AudioCard).ToLowerInvariant(), AudioCard.ContentType },
+            { nameof(VideoCard).ToLowerInvariant(), VideoCard.ContentType },
+            { nameof(AnimationCard).ToLowerInvariant(), AnimationCard.ContentType },
+            { nameof(SigninCard).ToLowerInvariant(), SigninCard.ContentType },
+            { nameof(OAuthCard).ToLowerInvariant(), OAuthCard.ContentType }
         };
 
         /// <summary>
-        /// Generate the activity. 
+        /// Generate the activity.
         /// </summary>
         /// <param name="lgStringResult">string result from languageGenerator.</param>
         /// <returns>activity.</returns>
@@ -75,13 +68,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             Activity activity;
             var type = GetStructureType(lgJObj);
 
-            if (GenericCardTypeMapping.ContainsKey(type) && GetAttachment(lgJObj, out var attachment))
+            if (GenericCardTypeMapping.ContainsKey(type))
             {
-                activity = MessageFactory.Attachment(attachment) as Activity;
+                if (GetAttachment(lgJObj, out var attachment))
+                {
+                    activity = MessageFactory.Attachment(attachment) as Activity;
+                }
+                else
+                {
+                    throw new Exception($"'{lgJObj}' is not an attachment format.");
+                }
             }
             else
             {
-                if (type == nameof(Activity).ToLower())
+                if (type == nameof(Activity).ToLowerInvariant())
                 {
                     activity = BuildActivityFromObject(lgJObj);
                 }
@@ -113,182 +113,175 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private static IEventActivity BuildEventActivity(JObject lgJObj)
         {
-            var activity = Activity.CreateEventActivity();
+            var activity = new JObject
+            {
+                ["Type"] = ActivityTypes.Event
+            };
+
             foreach (var item in lgJObj)
             {
                 var property = item.Key.Trim();
                 var value = item.Value;
 
-                switch (property.ToLower())
+                switch (property.ToLowerInvariant())
                 {
-                    case "$type":
-                        break;
-
                     case "name":
-                        activity.Name = value.ToString();
+                        activity["Name"] = value.ToString();
                         break;
 
                     case "value":
-                        activity.Value = value.ToString();
+                        activity["Value"] = value.ToString();
                         break;
 
                     default:
-                        Debug.WriteLine(string.Format("Skipping unknown activity property {0}", property));
+                        activity[property] = value;
                         break;
                 }
             }
 
-            return activity;
+            return activity.ToObject<Activity>();
         }
 
         private static IMessageActivity BuildMessageActivity(JObject lgJObj)
         {
-            var activity = Activity.CreateMessageActivity();
+            var activity = new JObject
+            {
+                ["Type"] = ActivityTypes.Message
+            };
             foreach (var item in lgJObj)
             {
                 var property = item.Key.Trim();
                 var value = item.Value;
 
-                switch (property.ToLower())
+                switch (property.ToLowerInvariant())
                 {
-                    case "$type":
-                        break;
-
                     case "text":
-                        activity.Text = value.ToString();
+                        activity["Text"] = value.ToString();
                         break;
 
                     case "speak":
-                        activity.Speak = value.ToString();
+                        activity["Speak"] = value.ToString();
                         break;
 
                     case "inputhint":
-                        activity.InputHint = value.ToString();
+                        activity["InputHint"] = value.ToString();
                         break;
 
                     case "attachments":
-                        activity.Attachments = GetAttachments(value);
+                        activity["Attachments"] = JArray.FromObject(GetAttachments(value));
                         break;
 
                     case "suggestedactions":
-                        activity.SuggestedActions = GetSuggestions(value);
+                        activity["SuggestedActions"] = JObject.FromObject(GetSuggestions(value));
                         break;
 
                     case "attachmentlayout":
-                        activity.AttachmentLayout = value.ToString();
+                        activity["AttachmentLayout"] = value.ToString();
                         break;
 
                     default:
-                        Debug.WriteLine(string.Format("Skipping unknown activity property {0}", property));
+                        activity[property] = value;
                         break;
                 }
             }
 
-            return activity;
+            return activity.ToObject<Activity>();
         }
 
         private static SuggestedActions GetSuggestions(JToken value)
         {
-            var suggestionActions = new SuggestedActions()
+            var actions = NormalizedToList(value);
+
+            var suggestedActions = new SuggestedActions()
             {
-                Actions = new List<CardAction>()
+                Actions = GetCardActions(actions)
             };
 
-            var actions = NormalizedToList(value);
-
-            foreach (var action in actions)
-            {
-                if (action is JValue jValue && jValue.Type == JTokenType.String)
-                {
-                    var actionStr = jValue.ToObject<string>().Trim();
-                    suggestionActions.Actions.Add(new CardAction(type: ActionTypes.MessageBack, title: actionStr, displayText: actionStr, text: actionStr));
-                }
-                else if (action is JObject actionJObj && GetCardAction(string.Empty, actionJObj, out var cardAction))
-                {
-                    suggestionActions.Actions.Add(cardAction);
-                }
-            }
-
-            return suggestionActions;
+            return suggestedActions;
         }
 
-        private static List<CardAction> GetButtons(string cardType, JToken value)
+        private static bool IsStringValue(JToken value, out string stringValue)
         {
-            var buttons = new List<CardAction>();
-            var actions = NormalizedToList(value);
-
-            foreach (var action in actions)
+            stringValue = string.Empty;
+            if (value is JValue jValue && jValue.Type == JTokenType.String)
             {
-                if (action is JValue jValue && jValue.Type == JTokenType.String)
-                {
-                    var actionStr = jValue.ToObject<string>().Trim();
-                    if (cardType == SigninCard.ContentType || cardType == OAuthCard.ContentType)
-                    {
-                        buttons.Add(new CardAction(type: ActionTypes.Signin, title: actionStr, value: actionStr));
-                    }
-                    else
-                    {
-                        buttons.Add(new CardAction(type: ActionTypes.ImBack, title: actionStr, value: actionStr));
-                    }
-                }
-                else if (action is JObject actionJObj && GetCardAction(cardType, actionJObj, out var cardAction))
-                {
-                    buttons.Add(cardAction);
-                }
-            }
-
-            return buttons;
-        }
-
-        private static bool GetCardAction(string cardType, JObject cardActionJObj, out CardAction cardAction)
-        {
-            var type = GetStructureType(cardActionJObj);
-            cardAction = new CardAction();
-            if (cardType == SigninCard.ContentType || cardType == OAuthCard.ContentType)
-            {
-                cardAction.Type = ActionTypes.Signin;
+                stringValue = jValue.ToObject<string>().Trim();
+                return true;
             }
             else
             {
-                cardAction.Type = ActionTypes.ImBack;
+                return false;
+            }
+        }
+
+        private static List<CardAction> GetCardActions(List<JToken> actions)
+        {
+            var cardActions = new List<CardAction>();
+            foreach (var action in actions)
+            {
+                if (IsStringValue(action, out var actionStr))
+                {
+                    cardActions.Add(new CardAction(type: ActionTypes.ImBack, value: actionStr, title: actionStr));
+                }
+                else if (action is JObject actionJObj && GetCardAction(actionJObj, out var cardAction))
+                {
+                    cardActions.Add(cardAction);
+                }
             }
 
+            return cardActions;
+        }
+
+        private static List<CardAction> GetButtons(JToken value)
+        {
+            var actions = NormalizedToList(value);
+            return GetCardActions(actions);
+        }
+
+        private static bool GetCardAction(JObject cardActionJObj, out CardAction cardAction)
+        {
+            var type = GetStructureType(cardActionJObj);
+            var cardActionJson = new JObject()
+            {
+                ["Type"] = ActionTypes.ImBack
+            };
+
             var isCardAction = true;
-            if (type == nameof(CardAction).ToLower())
+            if (type == nameof(CardAction).ToLowerInvariant())
             {
                 foreach (var item in cardActionJObj)
                 {
                     var property = item.Key.Trim();
                     var value = item.Value;
 
-                    switch (property.ToLower())
+                    switch (property.ToLowerInvariant())
                     {
                         case "type":
-                            cardAction.Type = value.ToString();
+                            cardActionJson["Type"] = value.ToString();
                             break;
 
                         case "title":
-                            cardAction.Title = value.ToString();
+                            cardActionJson["Title"] = value.ToString();
                             break;
 
                         case "value":
-                            cardAction.Value = value.ToString();
+                            cardActionJson["Value"] = value.ToString();
                             break;
 
                         case "displaytext":
-                            cardAction.DisplayText = value.ToString();
+                            cardActionJson["DisplayText"] = value.ToString();
                             break;
 
                         case "text":
-                            cardAction.Text = value.ToString();
+                            cardActionJson["Text"] = value.ToString();
                             break;
 
                         case "image":
-                            cardAction.Image = value.ToString();
+                            cardActionJson["Image"] = value.ToString();
                             break;
 
                         default:
-                            Debug.WriteLine(string.Format("Skipping unknown activity property {0}", property));
+                            cardActionJson[property] = value;
                             break;
                     }
                 }
@@ -298,6 +291,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 isCardAction = false;
             }
 
+            cardAction = cardActionJson.ToObject<CardAction>();
             return isCardAction;
         }
 
@@ -315,7 +309,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 type = jObj["type"]?.ToString()?.Trim();
             }
 
-            return type.ToLower() ?? string.Empty;
+            return type.ToLowerInvariant() ?? string.Empty;
         }
 
         private static List<Attachment> GetAttachments(JToken value)
@@ -325,9 +319,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             foreach (var attachmentsJson in attachmentsJsonList)
             {
-                if (attachmentsJson is JObject attachmentsJsonJObj && GetAttachment(attachmentsJsonJObj, out var attachment))
+                if (attachmentsJson is JObject attachmentsJsonJObj)
                 {
-                    attachments.Add(attachment);
+                    if (GetAttachment(attachmentsJsonJObj, out var attachment))
+                    {
+                        attachments.Add(attachment);
+                    }
+                    else
+                    {
+                        throw new Exception($"'{attachmentsJsonJObj}' is not an attachment format.");
+                    }
+                }
+                else
+                {
+                    throw new Exception($"'{attachmentsJson}' is not an attachment format.");
                 }
             }
 
@@ -345,9 +350,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 attachment = GetCardAtttachment(GenericCardTypeMapping[type], lgJObj);
             }
-            else if (type == nameof(AdaptiveCard).ToLower())
+            else if (type == "adaptivecard")
             {
-                attachment = new Attachment(AdaptiveCard.ContentType, content: lgJObj);
+                attachment = new Attachment("application/vnd.microsoft.card.adaptive", content: lgJObj);
             }
             else
             {
@@ -368,7 +373,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             foreach (var item in lgJObj)
             {
-                var property = item.Key.Trim().ToLower();
+                var property = item.Key.Trim().ToLowerInvariant();
                 var value = item.Value;
 
                 switch (property)
@@ -421,29 +426,45 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                             card[property] = new JArray();
                         }
 
-                        GetButtons(type, value).ForEach(u => ((JArray)card[property]).Add(JObject.FromObject(u)));
+                        GetButtons(value).ForEach(u => ((JArray)card[property]).Add(JObject.FromObject(u)));
                         break;
 
                     case "autostart":
                     case "shareable":
                     case "autoloop":
-                        if (value.ToString().ToLower() == "true")
+                        if (IsValidBooleanValue(value.ToString(), out var result))
                         {
-                            card[property] = true;
-                        }
-                        else if (value.ToString().ToLower() == "false")
-                        {
-                            card[property] = false;
+                            card[property] = result;
                         }
 
                         break;
-                    case "":
-                        break;
                     default:
-                        Debug.WriteLine(string.Format("Skipping unknown card property {0}", property));
+                        card[property] = value;
                         break;
                 }
             }
+        }
+
+        private static bool IsValidBooleanValue(string boolValue, out bool boolResult)
+        {
+            boolResult = false;
+            if (string.IsNullOrWhiteSpace(boolValue))
+            {
+                return false;
+            }
+
+            if (boolValue.ToLowerInvariant() == "true")
+            {
+                boolResult = true;
+                return true;
+            }
+            else if (boolValue.ToLowerInvariant() == "false")
+            {
+                boolResult = false;
+                return true;
+            }
+
+            return false;
         }
 
         private static List<JToken> NormalizedToList(JToken item)
