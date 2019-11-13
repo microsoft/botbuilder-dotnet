@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         new SendActivity()
                         {
-                            Activity = new ActivityTemplate("{settings.ApplicationInsights.InstrumentationKey}")
+                            Activity = new ActivityTemplate("@{settings.ApplicationInsights.InstrumentationKey}")
                         },
                     }),
             });
@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {
                             new SetProperty() { Property = "dialog.name", Value = "'foo'" },
                             new TextInput() { Prompt = new ActivityTemplate("what is your name?"), Property = "dialog.name" },
-                            new SendActivity() { Activity = new ActivityTemplate("{turn.recognized.intent}") }
+                            new SendActivity() { Activity = new ActivityTemplate("@{turn.recognized.intent}") }
                         }
                     }
                 }

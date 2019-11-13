@@ -2,7 +2,7 @@
 - hi 
 
 # template
-- [templateRef('p1','p2','p3')]
+- @{templateRef('p1','p2','p3')}
 
 # template2
 - ```
@@ -10,7 +10,7 @@
  ```
 
 # template3
-- {templateRef()}
+- @{templateRef()}
 
 # template4
-- [templateRef()]
+- @{templateRef()}

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
-namespace Cards.Bots
+namespace Microsoft.BotBuilderSamples
 {
     public class CardsBot : ActivityHandler
     {

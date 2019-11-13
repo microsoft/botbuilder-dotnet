@@ -11,6 +11,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
     {
         public static IEnumerable<object[]> StaticCheckExceptionData => new[]
         {
+            Test("MultilineVariation.lg"),
             Test("ErrorTemplateParameters.lg"),
             Test("NoNormalTemplateBody.lg"),
             Test("ConditionFormatError.lg"),

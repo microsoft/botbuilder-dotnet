@@ -3,12 +3,12 @@
 - Hello
 
 # TemplateB(a)
-- Hi {a}
-- Hello {a}
+- Hi @{a}
+- Hello @{a}
 
 
 # TemplateC
-- {TemplateA()}
+- @{TemplateA()}
 
 #TemplateD
-- {TemplateB(b)}
+- @{TemplateB(b)}

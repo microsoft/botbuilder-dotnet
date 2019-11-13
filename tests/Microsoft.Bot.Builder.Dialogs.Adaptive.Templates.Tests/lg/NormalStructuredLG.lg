@@ -49,20 +49,21 @@
 # SigninCardTemplate(signinlabel, url)
 [SigninCard
         text=This is some text describing the card, it's cool because it's cool
-        buttons={signinButton(signinlabel, url)}
+        buttons=@{signinButton(signinlabel, url)}
 ]
 
 # signinButton(signinlabel, url)
 [CardAction
-    Title = {signinlabel}
-    Value = {url}
+    Title = @{signinlabel}
+    Value = @{url}
+    type = signin
 ]
 
 # OAuthCardTemplate(signinlabel, url, connectionName)
 [OAuthCard
         text=This is some text describing the card, it's cool because it's cool
-        buttons={cardActionTemplate('signin', signinlabel, url)}
-        ConnectionName={connectionName}
+        buttons=@{cardActionTemplate('signin', signinlabel, url)}
+        ConnectionName=@{connectionName}
 ]
 
 
@@ -82,48 +83,48 @@
 [herocard
     Title = @{title}
     Text = @{text}
-    Buttons = {cardActionTemplate(null, title, text)}
+    Buttons = @{cardActionTemplate(null, title, text)}
 ]
 
 # cardActionTemplate(type, title, value)
 [CardAction
-    Type = {if(type == null, 'imBack', type)}
-    Title = {title}
-    Value = {value}
-    Text = {title}
+    Type = @{if(type == null, 'imBack', type)}
+    Title = @{title}
+    Value = @{value}
+    Text = @{title}
 ]
 
 # eventActivity(text)
 [Activity
-    Name = {text}
-    Value = {text}
+    Name = @{text}
+    Value = @{text}
     Type = event
 ]
 
 # activityWithHeroCardAttachment(title, text)
 [Activity
-    Attachments = {HerocardWithCardAction(title, text)}
+    Attachments = @{HerocardWithCardAction(title, text)}
 ]
 
 # activityWithMultiAttachments(title, text)
 [activity
-    Attachments = {HerocardWithCardAction(title, text)} | {ThumbnailCardTemplate('type')}
+    Attachments = @{HerocardWithCardAction(title, text)} | @{ThumbnailCardTemplate('type')}
 ]
 
 # activityWithSuggestionActions(title, text)
 [Activity
     Text = @{text}
-    SuggestedActions = firstItem | {cardActionTemplate(null, title, text)}
+    SuggestedActions = firstItem | @{cardActionTemplate(null, title, text)}
 ]
 
 # activityWithMultiStringSuggestionActions(title, text)
 [Activity
     Text = @{text}
-    SuggestedActions = {getSuggestions()}
+    SuggestedActions = @{getSuggestions()}
 ]
 
 # getSuggestions
-- {foreach(split(stringSuggestions(), '$'), x, trim(x))}
+- @{foreach(split(stringSuggestions(), '$'), x, trim(x))}
 
 # stringSuggestions
 - first suggestion $ second suggestion $ third suggestion
@@ -131,21 +132,21 @@
 # activityWithMultiStructuredSuggestionActions(text)
 [Activity
     Text = @{text}
-    SuggestedActions = {foreach(getSuggestions(), x, cardActionTemplate(null, x, x))}
+    SuggestedActions = @{foreach(getSuggestions(), x, cardActionTemplate(null, x, x))}
 ]
 
 # adaptivecardActivity
 [Activity
-    Attachments = {json(adaptivecardjson())}
+    Attachments = @{json(adaptivecardjson())}
 ]
 
 # messageActivityAll(title, text)
 [Activity
-    Text = {text}
-    Speak = {text}
+    Text = @{text}
+    Speak = @{text}
     InputHint = accepting
-    Attachments = {HerocardWithCardAction(title, text)}
-    SuggestedActions = firstItem | {cardActionTemplate(null, title, text)}
+    Attachments = @{HerocardWithCardAction(title, text)}
+    SuggestedActions = firstItem | @{cardActionTemplate(null, title, text)}
     AttachmentLayout = list
 ]
 
@@ -156,7 +157,7 @@
 
 # SuggestedActionsReference(text)
 [  Activity 
-    Text = {text}
+    Text = @{text}
     @{WelcomeActions()}
 ]
 

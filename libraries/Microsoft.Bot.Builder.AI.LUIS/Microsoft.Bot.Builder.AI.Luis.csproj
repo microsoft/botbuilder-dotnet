@@ -34,9 +34,9 @@
     <PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
     <PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
-    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsbuildServer)' != '' " Version="$(ReleasePackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
-    <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(IsbuildServer)' != '' " Version="$(ReleasePackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />

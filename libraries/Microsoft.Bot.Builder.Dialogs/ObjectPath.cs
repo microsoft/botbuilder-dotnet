@@ -447,15 +447,16 @@ namespace Microsoft.Bot.Builder.Dialogs
                     val = null;
                 }
                 else if (value is string || value is byte || value is bool ||
-                        value is short || value is int || value is long ||
-                        value is ushort || value is uint || value is ulong ||
-                        value is decimal || value is float || value is double)
+                       value is DateTime || value is DateTimeOffset ||
+                       value is short || value is int || value is long ||
+                       value is ushort || value is uint || value is ulong ||
+                       value is decimal || value is float || value is double)
                 {
                     val = JValue.FromObject(value);
                 }
                 else
                 {
-                    val = (JToken)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, expressionCaseSettings));
+                    val = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, expressionCaseSettings));
                 }
             }
             else

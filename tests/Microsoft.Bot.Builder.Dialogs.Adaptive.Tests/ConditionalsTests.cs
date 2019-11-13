@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent(
                         intent: "addColor",
                         entities: new List<string>() { "color" },
-                        actions: new List<Dialog>() { new SendActivity("You picked {@color}") }),
+                        actions: new List<Dialog>() { new SendActivity("You picked @{@color}") }),
                     new OnUnknownIntent(actions: new List<Dialog>() { new SendActivity("pbtpbtpbt!") })
                 }
             };

@@ -1,5 +1,5 @@
 # ShowTodo
-- IF: {count(user.todos) > 0}
+- IF: @{count(user.todos) > 0}
     - ```
 Your most recent @{count(user.todos)} tasks are
 @{join(foreach(user.todos, x, showSingleTodo(x)), '\n')}
@@ -8,10 +8,10 @@ Your most recent @{count(user.todos)} tasks are
     - You don't have any todos.
 
 # showSingleTodo(x)
-- * {x}
+- * @{x}
 
 # ShowGrocery
-- IF: {count(user.groceryList) > 0}
+- IF: @{count(user.groceryList) > 0}
     - ```
 Your most recent @{count(user.groceryList)} tasks are
 @{join(foreach(user.groceryList, x, showSingleTodo(x)), '\n')}
