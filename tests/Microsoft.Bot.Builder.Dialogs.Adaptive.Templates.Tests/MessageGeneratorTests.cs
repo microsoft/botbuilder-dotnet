@@ -164,11 +164,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("textContent", activity.Text);
            
             Assert.AreEqual(activity.SuggestedActions.Actions.Count, 5);
-            Assert.AreEqual(activity.SuggestedActions.Actions[0].Text, "Add todo");
-            Assert.AreEqual(activity.SuggestedActions.Actions[1].Text, "View Todo");
-            Assert.AreEqual(activity.SuggestedActions.Actions[2].Text, "Remove Todo");
-            Assert.AreEqual(activity.SuggestedActions.Actions[3].Text, "Cancel");
-            Assert.AreEqual(activity.SuggestedActions.Actions[4].Text, "Help");
+            Assert.AreEqual(activity.SuggestedActions.Actions[0].Value, "Add todo");
+            Assert.AreEqual(activity.SuggestedActions.Actions[1].Value, "View Todo");
+            Assert.AreEqual(activity.SuggestedActions.Actions[2].Value, "Remove Todo");
+            Assert.AreEqual(activity.SuggestedActions.Actions[3].Value, "Cancel");
+            Assert.AreEqual(activity.SuggestedActions.Actions[4].Value, "Help");
         }
 
         private void AssertMessageActivityAll(Activity activity)
@@ -189,9 +189,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual($"titleContent", card.Buttons[0].Title, "card buttons should be set");
             Assert.AreEqual($"textContent", card.Buttons[0].Value, "card buttons should be set");
             Assert.AreEqual(activity.SuggestedActions.Actions.Count, 2);
-            Assert.AreEqual(activity.SuggestedActions.Actions[0].DisplayText, "firstItem");
             Assert.AreEqual(activity.SuggestedActions.Actions[0].Title, "firstItem");
-            Assert.AreEqual(activity.SuggestedActions.Actions[0].Text, "firstItem");
+            Assert.AreEqual(activity.SuggestedActions.Actions[0].Value, "firstItem");
             Assert.AreEqual(activity.SuggestedActions.Actions[1].Title, "titleContent");
             Assert.AreEqual(activity.SuggestedActions.Actions[1].Value, "textContent");
         }
@@ -201,9 +200,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
             Assert.AreEqual("textContent", activity.Text);
             Assert.AreEqual(activity.SuggestedActions.Actions.Count, 2);
-            Assert.AreEqual(activity.SuggestedActions.Actions[0].DisplayText, "firstItem");
             Assert.AreEqual(activity.SuggestedActions.Actions[0].Title, "firstItem");
-            Assert.AreEqual(activity.SuggestedActions.Actions[0].Text, "firstItem");
+            Assert.AreEqual(activity.SuggestedActions.Actions[0].Value, "firstItem");
             Assert.AreEqual(activity.SuggestedActions.Actions[1].Title, "titleContent");
             Assert.AreEqual(activity.SuggestedActions.Actions[1].Value, "textContent");
         }
@@ -426,15 +424,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
             Assert.AreEqual("textContent", activity.Text);
             Assert.AreEqual(activity.SuggestedActions.Actions.Count, 3);
-            Assert.AreEqual(activity.SuggestedActions.Actions[0].DisplayText, "first suggestion");
             Assert.AreEqual(activity.SuggestedActions.Actions[0].Title, "first suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[0].Text, "first suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[1].DisplayText, "second suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[0].Value, "first suggestion");
             Assert.AreEqual(activity.SuggestedActions.Actions[1].Title, "second suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[1].Text, "second suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[2].DisplayText, "third suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[1].Value, "second suggestion");
             Assert.AreEqual(activity.SuggestedActions.Actions[2].Title, "third suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[2].Text, "third suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[2].Value, "third suggestion");
         }
 
         private ITurnContext GetTurnContext(ILanguageGenerator lg)
