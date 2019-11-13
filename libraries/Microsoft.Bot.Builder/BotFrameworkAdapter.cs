@@ -57,6 +57,7 @@ namespace Microsoft.Bot.Builder
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private readonly AppCredentials _appCredentials;
         private readonly AuthenticationConfiguration _authConfiguration;
+        private readonly IOAuthCredentialProvider _oauthCredentialProvider;
 
         // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)
         // AppCredentials are cached using appId + skillId (this last parameter is only used if the app credentials are used to call a skill)
@@ -72,6 +73,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="channelProvider">The channel provider.</param>
+        /// <param name="oauthCredentialProvider">The OAuth credential provider.</param>
         /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
         /// <param name="customHttpClient">The HTTP client.</param>
         /// <param name="middleware">The middleware to initially add to the adapter.</param>
@@ -85,12 +87,14 @@ namespace Microsoft.Bot.Builder
         public BotFrameworkAdapter(
             ICredentialProvider credentialProvider,
             IChannelProvider channelProvider = null,
+            IOAuthCredentialProvider oauthCredentialProvider = null,
             RetryPolicy connectorClientRetryPolicy = null,
             HttpClient customHttpClient = null,
             IMiddleware middleware = null,
             ILogger logger = null)
             : this(credentialProvider, new AuthenticationConfiguration(), channelProvider, connectorClientRetryPolicy, customHttpClient, middleware, logger)
         {
+            _oauthCredentialProvider = oauthCredentialProvider;
         }
 
         /// <summary>
@@ -978,7 +982,17 @@ namespace Microsoft.Bot.Builder
                 throw new InvalidOperationException("Unable to get the bot AppId from the audience claim.");
             }
 
-            var appCredentials = await GetAppCredentialsAsync(appId).ConfigureAwait(false);
+            AppCredentials appCredentials;
+
+            if (_oauthCredentialProvider != null)
+            {
+                // use the explicitly specified credential provider for OAuth purpose if it exists
+                appCredentials = new MicrosoftAppCredentials(_oauthCredentialProvider.OAuthMicrosoftAppId, _oauthCredentialProvider.OAuthMicrosoftAppPassword, _httpClient, Logger);
+            }
+            else
+            {
+                appCredentials = await GetAppCredentialsAsync(appId).ConfigureAwait(false);
+            }
 
             if (OAuthClientConfig.EmulateOAuthCards)
             {
