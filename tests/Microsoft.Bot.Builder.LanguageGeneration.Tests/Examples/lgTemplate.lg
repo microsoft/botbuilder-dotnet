@@ -3,8 +3,8 @@
 - Hello
 
 # TemplateB(a)
-- Hi @{a}
-- Hello @{a}
+- @{`Hi @{a}`}
+- @{`Hello @{a}`}
 
 
 # TemplateC

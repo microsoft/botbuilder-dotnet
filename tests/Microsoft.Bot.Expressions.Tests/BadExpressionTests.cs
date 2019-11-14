@@ -22,7 +22,8 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("func(A,b,b,)"),
             Test("\"hello'"),
             Test("'hello'.length()"), // not supported currently
-            Test("user.lists.{dialog.listName}")
+            Test("user.lists.{dialog.listName}"),
+            Test("`hi` world")
         };
 
         public static IEnumerable<object[]> BadExpressions => new[]

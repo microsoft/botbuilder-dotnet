@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class Evaluator : LGFileParserBaseVisitor<object>
     {
-        public static readonly Regex ExpressionRecognizeRegex = new Regex(@"@{(((\'([^'\r\n])*?\')|(\""([^""\r\n])*?\""))|[^\r\n{}'""])*?}", RegexOptions.Compiled);
+        public static readonly Regex ExpressionRecognizeRegex = new Regex(@"@{((\'[^\r\n\']*\')|(\""[^\""\r\n]*\"")|(\`(\\\`|[^\`])*\`)|([^\r\n{}'""`]))*?}", RegexOptions.Compiled);
         public static readonly Regex EscapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 

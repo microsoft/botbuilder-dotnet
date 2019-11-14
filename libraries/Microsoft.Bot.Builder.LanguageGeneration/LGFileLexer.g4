@@ -38,8 +38,9 @@ fragment T: 't' | 'T';
 fragment U: 'u' | 'U';
 fragment W: 'w' | 'W';
 
+fragment STRING_INTERPOLATION : '`' ('\\`' | ~'`')* '`';
 fragment STRING_LITERAL : ('\'' (~['\r\n])* '\'') | ('"' (~["\r\n])* '"');
-fragment EXPRESSION_FRAGMENT : '@' '{' (STRING_LITERAL| ~[\r\n{}'"] )*? '}';
+fragment EXPRESSION_FRAGMENT : '@' '{' (STRING_LITERAL | STRING_INTERPOLATION | ~[\r\n{}'"`] )*? '}';
 fragment ESCAPE_CHARACTER_FRAGMENT : '\\' ~[\r\n]?;
 
 COMMENTS

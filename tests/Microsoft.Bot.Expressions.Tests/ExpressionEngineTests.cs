@@ -224,6 +224,10 @@ namespace Microsoft.Bot.Expressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
+            Test("`hi`", "hi"),
+            Test("`@{world}`", "world"),
+            Test("length(`hello @{world}`)", "hello world".Length),
+
             #region SetPathToProperty test
             Test("setPathToValue(path.simple, 3) + path.simple", 6),
             Test("setPathToValue(path.simple, 5) + path.simple", 10),

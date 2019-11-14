@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using Microsoft.Bot.Expressions.parser;
 
 namespace Microsoft.Bot.Expressions
 {
@@ -57,7 +58,7 @@ namespace Microsoft.Bot.Expressions
             return parser.file()?.expression();
         }
 
-        private class ExpressionTransformer : ExpressionBaseVisitor<Expression>
+        private class ExpressionTransformer : ExpressionParserBaseVisitor<Expression>
         {
             private readonly EvaluatorLookup _lookup;
 
@@ -169,6 +170,28 @@ namespace Microsoft.Bot.Expressions
                     // start with "
                     return Expression.ConstantExpression(Regex.Unescape(text.Trim('"')));
                 }
+            }
+
+            public override Expression VisitStringInterpolationAtom([NotNull] ExpressionParser.StringInterpolationAtomContext context)
+            {
+                var children = new List<Expression>();
+                foreach (ITerminalNode node in context.stringInterpolation().children)
+                {
+                    switch (node.Symbol.Type)
+                    {
+                        case ExpressionParser.TEMPLATE:
+                            var expressionString = node.GetText().TrimStart('@').TrimStart('{').TrimEnd('}');
+                            children.Add(new ExpressionEngine(_lookup).Parse(expressionString));
+                            break;
+                        case ExpressionParser.TEXT_CONTENT:
+                            children.Add(Expression.ConstantExpression(node.GetText()));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                return MakeExpression(ExpressionType.Concat, children.ToArray());
             }
 
             private Expression MakeExpression(string type, params Expression[] children)
