@@ -141,7 +141,12 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>The value of the appId claim if found (null if it can't find a suitable claim).</returns>
         public static string GetAppIdFromClaims(IEnumerable<Claim> claims)
         {
-            var claimsList = claims as List<Claim> ?? claims.ToList();
+            if (claims == null)
+            {
+                throw new ArgumentNullException(nameof(claims));
+            }
+
+            var claimsList = claims as IList<Claim> ?? claims.ToList();
             string appId = null;
 
             // Depending on Version, the is either in the
@@ -173,11 +178,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <exception cref="UnauthorizedAccessException">If the validation returns false.</exception>
         internal static async Task ValidateClaimsAsync(AuthenticationConfiguration authConfig, IEnumerable<Claim> claims)
         {
-            var claimsList = claims as IList<Claim> ?? claims.ToList();
-            if (authConfig.ClaimsValidator != null && !await authConfig.ClaimsValidator.ValidateClaimsAsync(claimsList).ConfigureAwait(false))
+            if (authConfig.ClaimsValidator != null)
             {
-                // Invalid appId
-                throw new UnauthorizedAccessException("Invalid claims.");
+                // Call the validation method if defined (it should throw an exception if the validation fails)
+                var claimsList = claims as IList<Claim> ?? claims.ToList();
+                await authConfig.ClaimsValidator.ValidateClaimsAsync(claimsList).ConfigureAwait(false);
             }
         }
 
