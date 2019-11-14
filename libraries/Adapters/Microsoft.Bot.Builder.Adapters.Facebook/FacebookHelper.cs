@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -38,7 +39,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 facebookMessage = activity.GetChannelData<FacebookMessage>();
 
                 // make sure the quick reply has a type
-                if (activity.GetChannelData<FacebookMessage>().Message.QuickReplies != null)
+                if (activity.GetChannelData<FacebookMessage>().Message.QuickReplies.Any())
                 {
                     foreach (var reply in facebookMessage.Message.QuickReplies)
                     {
@@ -59,7 +60,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                     {
                         NullValueHandling = NullValueHandling.Ignore,
                     }));
-                
+
                 var attach = new FacebookAttachment
                 {
                     Type = activity.Attachments[0].ContentType,
@@ -92,7 +93,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             var activity = new Activity()
             {
                 ChannelId = "facebook",
-                Timestamp = new DateTime(),
+                Timestamp = default,
                 Conversation = new ConversationAccount()
                 {
                     Id = message.Sender?.Id,

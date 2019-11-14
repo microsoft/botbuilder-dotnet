@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -13,6 +14,8 @@ using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
@@ -22,6 +25,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         private const string HubModeSubscribe = "subscribe";
 
         private readonly FacebookClientWrapper _facebookClient;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FacebookAdapter"/> class using configuration settings.
@@ -33,8 +37,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// AppSecret: The secret used to validate incoming webhooks.
         /// AccessToken: An access token for the bot.
         /// </remarks>
-        public FacebookAdapter(IConfiguration configuration)
-            : this(new FacebookClientWrapper(new FacebookAdapterOptions(configuration["FacebookVerifyToken"], configuration["FacebookAppSecret"], configuration["FacebookAccessToken"])))
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        public FacebookAdapter(IConfiguration configuration, ILogger logger = null)
+            : this(new FacebookClientWrapper(new FacebookAdapterOptions(configuration["FacebookVerifyToken"], configuration["FacebookAppSecret"], configuration["FacebookAccessToken"])), logger)
         {
         }
 
@@ -43,9 +48,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// Creates a Facebook adapter.
         /// </summary>
         /// <param name="facebookClient">A Facebook API interface.</param>
-        public FacebookAdapter(FacebookClientWrapper facebookClient)
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        public FacebookAdapter(FacebookClientWrapper facebookClient, ILogger logger = null)
         {
             _facebookClient = facebookClient ?? throw new ArgumentNullException(nameof(facebookClient));
+            _logger = logger ?? NullLogger.Instance;
         }
 
         /// <summary>
@@ -63,25 +70,24 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             {
                 if (activity.Type != ActivityTypes.Message)
                 {
-                    throw new Exception("Only Activities of type Message are supported for sending.");
+                    _logger.LogTrace($"Unsupported Activity Type: '{activity.Type}'. Only Activities of type 'Message' are supported.");
                 }
-
-                var message = FacebookHelper.ActivityToFacebook(activity);
-
-                if (message.Message.Attachment != null)
+                else
                 {
-                    message.Message.Attachments = null;
-                    message.Message.Text = null;
+                    var message = FacebookHelper.ActivityToFacebook(activity);
+
+                    if (message.Message.Attachment != null)
+                    {
+                        message.Message.Text = null;
+                    }
+
+                    var res = await _facebookClient.SendMessageAsync("/me/messages", message, null, cancellationToken)
+                        .ConfigureAwait(false);
+
+                    var response = new ResourceResponse() { Id = res, };
+
+                    responses.Add(response);
                 }
-
-                var res = await _facebookClient.SendMessageAsync("/me/messages", message, null, cancellationToken).ConfigureAwait(false);
-
-                var response = new ResourceResponse()
-                {
-                    Id = res,
-                };
-
-                responses.Add(response);
             }
 
             return responses.ToArray();
@@ -145,7 +151,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <param name="bot">A bot logic function.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken)
+        public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken = default)
         {
             if (request.Query["hub.mode"] == HubModeSubscribe)
             {
@@ -174,7 +180,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             {
                 var payload = new List<FacebookMessage>();
 
-                payload = entry.Changes ?? entry.Messaging;
+                payload = entry.Changes.Any() ? entry.Changes : entry.Messaging;
 
                 foreach (var message in payload)
                 {
@@ -187,7 +193,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 }
 
                 // Handle standby messages (this bot is not the active receiver)
-                if (entry.Standby != null)
+                if (!entry.Standby.Any())
                 {
                     payload = entry.Standby;
 
