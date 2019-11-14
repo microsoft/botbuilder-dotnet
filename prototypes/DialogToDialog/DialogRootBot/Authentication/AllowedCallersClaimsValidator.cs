@@ -14,17 +14,16 @@ namespace DialogRootBot.Authentication
     /// </summary>
     public class AllowedCallersClaimsValidator : ClaimsValidator
     {
-        public override Task<bool> ValidateClaimsAsync(List<Claim> claims)
+        public override Task ValidateClaimsAsync(IList<Claim> claims)
         {
-            var isValid = true;
             if (SkillValidation.IsSkillClaim(claims))
             {
-                // Do allowed list check here
+                // Do allowed list check here and throw an UnauthorizedAccessException if it fails.
                 var appId = JwtTokenValidation.GetAppIdFromClaims(claims);
                 Console.WriteLine(appId);
             }
 
-            return Task.FromResult(isValid);
+            return Task.CompletedTask;
         }
     }
 }

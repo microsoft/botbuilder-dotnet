@@ -25,10 +25,9 @@ namespace DialogRootBot
 
             // Configure credentials
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
-            
+
             // Register AuthConfiguration to enable custom claim validation.
-            services.AddSingleton<AuthenticationConfiguration>();
-            services.AddSingleton<ClaimsValidator, AllowedCallersClaimsValidator>();
+            services.AddSingleton(provider => new AuthenticationConfiguration { ClaimsValidator = new AllowedCallersClaimsValidator() });
 
             // Register the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<BotFrameworkHttpAdapter, AdapterWithErrorHandler>();
