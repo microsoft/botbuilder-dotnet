@@ -63,5 +63,10 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         {
             return IsEcho;
         }
+
+        public bool ShouldSerializeAttachments()
+        {
+            return Attachments.Count > 0;
+        }
     }
 }
