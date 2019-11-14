@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             var activity = new Activity()
             {
                 ChannelId = "facebook",
-                Timestamp = default(DateTime),
+                Timestamp = default,
                 Conversation = new ConversationAccount()
                 {
                     Id = message.Sender?.Id,
