@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         private const string HubModeSubscribe = "subscribe";
 
         private readonly FacebookClientWrapper _facebookClient;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FacebookAdapter"/> class using configuration settings.
