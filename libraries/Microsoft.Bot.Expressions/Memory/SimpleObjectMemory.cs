@@ -42,9 +42,9 @@ namespace Microsoft.Bot.Expressions.Memory
             foreach (string part in parts)
             {
                 string error = null;
-                if (int.TryParse(part, out var idx))
+                if (int.TryParse(part, out var idx) && BuiltInFunctions.TryParseList(curScope, out var li))
                 {
-                    (value, error) = BuiltInFunctions.AccessIndex(curScope, idx);
+                    (value, error) = BuiltInFunctions.AccessIndex(li, idx);
                 }
                 else
                 {
@@ -78,10 +78,10 @@ namespace Microsoft.Bot.Expressions.Memory
             // find the 2nd last value, ie, the container
             for (var i = 0; i < parts.Length - 1; i++)
             {
-                if (int.TryParse(parts[i], out var index))
+                if (int.TryParse(parts[i], out var index) && BuiltInFunctions.TryParseList(curScope, out var li))
                 {
-                    curPath += $"{parts[i]}";
-                    (curScope, error) = BuiltInFunctions.AccessIndex(curScope, index);
+                    curPath += $"[{parts[i]}]";
+                    (curScope, error) = BuiltInFunctions.AccessIndex(li, index);
                 }
                 else
                 {
