@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Expressions.Memory
         /// <param name="memory">the object to wrap.</param>
         public SimpleObjectMemory(object memory)
         {
-            this.memory = memory ?? throw new ArgumentNullException(nameof(memory), "the object to wrap can't be null");
+            this.memory = memory;
         }
 
         public static IMemory Wrap(object obj)
@@ -35,6 +35,11 @@ namespace Microsoft.Bot.Expressions.Memory
 
         public (object value, string error) GetValue(string path)
         {
+            if (memory == null)
+            {
+                return (null, null);
+            }
+
             var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             object value = null;
             var curScope = memory;
@@ -69,6 +74,11 @@ namespace Microsoft.Bot.Expressions.Memory
         // you can implement a customzied Scope that support such behavior
         public (object value, string error) SetValue(string path, object value)
         {
+            if (memory == null)
+            {
+                return (null, "Can't set value with in a null memory");
+            }
+
             var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
             var curScope = memory;
@@ -97,7 +107,7 @@ namespace Microsoft.Bot.Expressions.Memory
                 if (curScope == null)
                 {
                     curPath = curPath.TrimStart('.');
-                    return (null, $"Can set value to path: '{path}', reason: '{curPath}' is null");
+                    return (null, $"Can't set value to path: '{path}', reason: '{curPath}' is null");
                 }
             }
 
