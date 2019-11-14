@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -322,22 +323,24 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsyncShouldFailWithActivityTypeNotMessage()
+        public async void SendActivitiesAsyncShouldSucceedAndNoActivityReturnedWithActivityTypeNotMessage()
         {
-            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Event,
-            };
+            const string expectedResponseId = "Mocked Response Id";
+            var webexApi = new Mock<WebexClientWrapper>(_testOptions);
+            webexApi.Setup(x => x.CreateMessageWithAttachmentsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Attachment>>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
 
-            Activity[] activities = { activity };
+            var webexAdapter = new WebexAdapter(webexApi.Object);
 
-            var turnContext = new TurnContext(webexAdapter, activity);
+            var activity = new Mock<Activity>().SetupAllProperties();
+            activity.Object.Type = ActivityTypes.Trace;
+            activity.Object.Recipient = new ChannelAccount(id: "MockId");
+            activity.Object.Text = "Trace content";
 
-            await Assert.ThrowsAsync<ArgumentException>(async () =>
-            {
-                await webexAdapter.SendActivitiesAsync(turnContext, activities, default);
-            });
+            var turnContext = new TurnContext(webexAdapter, activity.Object);
+
+            var resourceResponse = await webexAdapter.SendActivitiesAsync(turnContext, new Activity[] { activity.Object }, default).ConfigureAwait(false);
+
+            Assert.True(resourceResponse.Length == 0);
         }
 
         [Fact]
