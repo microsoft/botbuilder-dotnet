@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
     public class SlackAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         private readonly SlackClientWrapper _slackClient;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SlackAdapter"/> class using configuration settings.
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             {
                 if (activity.Type != ActivityTypes.Message)
                 {
-                    _logger.LogTrace($"Unsupported Activity Type: '{activity.Type}'. Only Activities of type ‘Message’ are supported.");
+                    _logger.LogTrace($"Unsupported Activity Type: '{activity.Type}'. Only Activities of type 'Message' are supported.");
                 }
                 else
                 {
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="bot">The bot that will handle the incoming activity.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken = default)
+        public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken)
         {
             if (request == null)
             {

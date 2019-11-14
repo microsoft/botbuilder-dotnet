@@ -20,24 +20,21 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
         public long Time { get; set; }
 
         /// <summary>
-        /// Gets or sets the messaging list.
+        /// Gets the messaging list.
         /// </summary>
         /// <value>List containing one messaging object. Note that even though this is an enumerable, it will only contain one object.</value>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "it needs to be set in ActivityToFacebook method")]
-        public List<FacebookMessage> Messaging { get; set; }
+        public List<FacebookMessage> Messaging { get; } = new List<FacebookMessage>();
 
         /// <summary>
-        /// Gets or sets the changes list.
+        /// Gets the changes list.
         /// </summary>
         /// <value>List containing the list of changes.</value>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "it needs to be set in ActivityToFacebook method")]
-        public List<FacebookMessage> Changes { get; set; }
+        public List<FacebookMessage> Changes { get; } = new List<FacebookMessage>();
 
         /// <summary>
-        /// Gets or sets the standby messages list.
+        /// Gets the standby messages list.
         /// </summary>
         /// <value>List containing the messages sent while in standby mode.</value>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "it needs to be set in ActivityToFacebook method")]
-        public List<FacebookMessage> Standby { get; set; }
+        public List<FacebookMessage> Standby { get; } = new List<FacebookMessage>();
     }
 }

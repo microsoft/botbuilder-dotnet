@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
     public class TwilioAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         private readonly TwilioClientWrapper _twilioClient;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TwilioAdapter"/> class using configuration settings.
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             {
                 if (activity.Type != ActivityTypes.Message)
                 {
-                    _logger.LogTrace($"Unsupported Activity Type: '{activity.Type}'. Only Activities of type ‘Message’ are supported.");
+                    _logger.LogTrace($"Unsupported Activity Type: '{activity.Type}'. Only Activities of type 'Message' are supported.");
                 }
                 else
                 {
@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="httpRequest"/>,
         /// <paramref name="httpResponse"/>, or <paramref name="bot"/> is <c>null</c>.</exception>
-        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
+        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken)
         {
             if (httpRequest == null)
             {

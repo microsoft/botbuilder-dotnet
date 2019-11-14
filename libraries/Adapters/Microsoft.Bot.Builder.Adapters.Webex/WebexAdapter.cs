@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 if (activity.Type != ActivityTypes.Message)
                 {
-                    _logger.LogTrace($"Unsupported Activity Type: '{activity.Type}'. Only Activities of type ‘Message’ are supported.");
+                    _logger.LogTrace($"Unsupported Activity Type: '{activity.Type}'. Only Activities of type 'Message' are supported.");
                 }
                 else
                 {
@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="bot">The bot that will handle the incoming activity.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken = default)
+        public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken)
         {
             if (request == null)
             {

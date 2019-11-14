@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -69,7 +70,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             {
                 if (activity.Type != ActivityTypes.Message)
                 {
-                    _logger.LogTrace($"Unsupported Activity Type: '{activity.Type}'. Only Activities of type ‘Message’ are supported.");
+                    _logger.LogTrace($"Unsupported Activity Type: '{activity.Type}'. Only Activities of type 'Message' are supported.");
                 }
                 else
                 {
@@ -77,7 +78,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
                     if (message.Message.Attachment != null)
                     {
-                        message.Message.Attachments = null;
                         message.Message.Text = null;
                     }
 
@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             {
                 var payload = new List<FacebookMessage>();
 
-                payload = entry.Changes ?? entry.Messaging;
+                payload = entry.Changes.Any() ? entry.Changes : entry.Messaging;
 
                 foreach (var message in payload)
                 {
@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 }
 
                 // Handle standby messages (this bot is not the active receiver)
-                if (entry.Standby != null)
+                if (!entry.Standby.Any())
                 {
                     payload = entry.Standby;
 
