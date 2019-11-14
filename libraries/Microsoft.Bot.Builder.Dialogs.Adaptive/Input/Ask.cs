@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,7 +36,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
+            //get number of retries from memory
+            if (!dc.GetState().TryGetValue(DialogPath.Retries, out int retries))
+            {
+                retries = 0;
+            }
+
+            dc.GetState().TryGetValue(TurnPath.DIALOGEVENT, out DialogEvent trigger);
+
+            //repeat Ask: expected properties unchanged && event is triggered by Ask
+            if (dc.GetState().TryGetValue(DialogPath.ExpectedProperties, out List<string> lastExpectedProperties)
+                && (ExpectedProperties.Where(prop => !lastExpectedProperties.Contains(prop)).ToList().Count == 0
+                || lastExpectedProperties.Where(prop => !ExpectedProperties.Contains(prop)).ToList().Count == 0))
+            {
+                if (trigger.Name.ToLower().Equals("ask"))
+                {
+                    retries++;
+                }                    
+            }
+            else
+            {
+                retries = 0;
+            }
+
             dc.GetState().SetValue(DialogPath.ExpectedProperties, ExpectedProperties);
+            dc.GetState().SetValue(DialogPath.Retries, retries);
             var result = await base.BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
             result.Status = DialogTurnStatus.CompleteAndWait;
             return result;

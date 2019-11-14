@@ -33,5 +33,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Currently required properties.
         /// </summary>
         public const string RequiredProperties = "dialog.requiredProperties";
+
+        /// <summary>
+        /// Number of retries for the current Ask.
+        /// </summary>
+        public const string Retries = "dialog.retries";
     }
 }
