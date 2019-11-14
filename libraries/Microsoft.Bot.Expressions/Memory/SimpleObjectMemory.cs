@@ -10,6 +10,7 @@ namespace Microsoft.Bot.Expressions.Memory
     public class SimpleObjectMemory : IMemory
     {
         private object memory = null;
+        private int version = 0;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleObjectMemory"/> class.
@@ -19,6 +20,16 @@ namespace Microsoft.Bot.Expressions.Memory
         public SimpleObjectMemory(object memory)
         {
             this.memory = memory;
+        }
+
+        public static IMemory Wrap(object obj)
+        {
+            if (obj is IMemory)
+            {
+                return (IMemory)obj;
+            }
+
+            return new SimpleObjectMemory(obj);
         }
 
         public (object value, string error) GetValue(string path)
@@ -132,7 +143,15 @@ namespace Microsoft.Bot.Expressions.Memory
                 }
             }
 
+            // Update the version once memory has been updated
+            version++;
+
             return (BuiltInFunctions.ResolveValue(value), null);
+        }
+
+        public string Version()
+        {
+            return version.ToString();
         }
     }
 }

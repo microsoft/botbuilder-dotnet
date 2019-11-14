@@ -12,7 +12,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     internal class CustomizedMemory : IMemory
     {
-        public CustomizedMemory(IMemory globalMemory, IMemory localMemory)
+        public CustomizedMemory(object scope)
+        {
+            this.GlobalMemory = SimpleObjectMemory.Wrap(scope);
+            this.LocalMemory = null;
+        }
+
+        public CustomizedMemory(IMemory globalMemory, IMemory localMemory = null)
         {
             this.GlobalMemory = globalMemory;
             this.LocalMemory = localMemory;
@@ -47,6 +53,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public (object value, string error) SetValue(string path, object value)
         {
             return (null, "LG memory are readonly");
+        }
+
+        public string Version()
+        {
+            // Read-only
+            return "0";
         }
     }
 }

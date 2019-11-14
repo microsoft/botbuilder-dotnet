@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -22,7 +21,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public string GetId()
         {
-            return TemplateName + Scope?.ToString();
+            var id = Scope == null ? string.Empty : Scope.GetHashCode().ToString() + ((CustomizedMemory)Scope).Version();
+            return TemplateName + id;
         }
     }
 }

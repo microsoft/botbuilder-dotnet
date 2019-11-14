@@ -34,5 +34,11 @@ namespace Microsoft.Bot.Expressions.Memory
         {
             throw new NotImplementedException();
         }
+
+        public string Version()
+        {
+            // Read-only
+            return "0";
+        }
     }
 }

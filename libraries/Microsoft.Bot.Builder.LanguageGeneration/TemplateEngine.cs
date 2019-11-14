@@ -100,13 +100,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Evaluate result.</returns>
         public object EvaluateTemplate(string templateName, object scope = null)
         {
-            return this.EvaluateTemplate(templateName, new SimpleObjectMemory(scope));
+            return this.EvaluateTemplate(templateName, new CustomizedMemory(scope));
         }
 
         public object EvaluateTemplate(string templateName, IMemory memory)
         {
             var evaluator = new Evaluator(Templates, this.expressionEngine);
-            return evaluator.EvaluateTemplate(templateName, new CustomizedMemory(memory, null));
+            return evaluator.EvaluateTemplate(templateName, new CustomizedMemory(memory));
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             RunStaticCheck(templates);
 
             var evaluator = new Evaluator(templates, this.expressionEngine);
-            return evaluator.EvaluateTemplate(fakeTemplateId, scope);
+            return evaluator.EvaluateTemplate(fakeTemplateId, new CustomizedMemory(scope));
         }
 
         /// <summary>

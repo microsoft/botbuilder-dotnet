@@ -22,6 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
     public class DialogStateManager : IDictionary<string, object>, IMemory
     {
         private readonly DialogContext dialogContext;
+        private int version = 0;
 
         public DialogStateManager(DialogContext dc)
         {
@@ -91,6 +92,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             return MemoryScopes.FirstOrDefault(ms => string.Compare(ms.Name, name, ignoreCase: true) == 0);
         }
 
+        /// <summary>
+        /// IMemory.GetValue is simple wrapper on 'TryGetValue' now, and swallow error silently.
+        /// </summary>
+        /// <param name="path">The path to get value for.</param>
+        /// <returns>The value get.</returns>
         (object value, string error) IMemory.GetValue(string path)
         {
             if (this.TryGetValue<object>(path, out var result))
@@ -106,6 +112,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
         }
 
+        /// <summary>
+        /// IMemory.SetValue is a simpler wrapper on top of 'SetValue', which is been widely used across
+        /// AdaptiveDialog. We may consider let other part of AdaptiveDialog use IMemory interface instead of
+        /// call `SetValue` directly.
+        /// </summary>
+        /// <param name="path">Path to set value.</param>
+        /// <param name="value">Value to set.</param>
+        /// <returns>Value set.</returns>
         (object value, string error) IMemory.SetValue(string path, object value)
         {
             try
@@ -117,6 +131,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             {
                 return (value, $"Set value to path: '{path}' failed, Reason: {e.Message}");
             }
+        }
+
+        /// <summary>
+        /// Version help caller to identify the updates and decide cache or not.
+        /// </summary>
+        /// <returns>Current version.</returns>
+        string IMemory.Version()
+        {
+            return version.ToString();
         }
 
         /// <summary>
@@ -265,6 +288,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
             path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
             ObjectPath.SetPathValue(this, path, value);
+
+            // Every set will increase version
+            version++;
         }
 
         /// <summary>
