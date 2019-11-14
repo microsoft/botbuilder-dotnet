@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -23,7 +24,7 @@ namespace Microsoft.Bot.Builder.Skills
 
         protected SkillClient(BotAdapter adapter, ILogger logger = null)
         {
-            BotAdapter = adapter;
+            BotAdapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             _logger = logger ?? NullLogger.Instance;
 
             // make sure there is a channel api middleware

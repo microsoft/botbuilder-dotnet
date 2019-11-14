@@ -162,6 +162,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         private readonly ICredentialProvider _credentialProvider;
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
+        private readonly AuthenticationConfiguration _authConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkSkillClient"/> class,
@@ -169,6 +170,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// </summary>
         /// <param name="adapter">adapter that this skillClient is bound to.</param>
         /// <param name="credentialProvider">The credential provider.</param>
+        /// <param name="authConfig">The authentication configuration.</param>
         /// <param name="channelProvider">The channel provider.</param>
         /// <param name="customHttpClient">The HTTP client.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
@@ -180,12 +182,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         public BotFrameworkSkillClient(
             BotAdapter adapter,
             ICredentialProvider credentialProvider,
+            AuthenticationConfiguration authConfig,
             IChannelProvider channelProvider = null,
             HttpClient customHttpClient = null,
             ILogger logger = null)
             : base(adapter, logger)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
+            _authConfiguration = authConfig ?? throw new ArgumentNullException(nameof(authConfig));
             _channelProvider = channelProvider;
             _httpClient = customHttpClient ?? _defaultHttpClient;
             _logger = logger ?? NullLogger.Instance;
@@ -194,7 +198,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             ConnectorClient.AddDefaultRequestHeaders(_httpClient);
         }
 
-                /// <summary>
+        /// <summary>
         /// Forwards an activity to a skill (bot).
         /// </summary>
         /// <remarks>NOTE: Forwarding an activity to a skill will flush UserState and ConversationState changes so that skill has accurate state.</remarks>
@@ -222,6 +226,21 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
                 throw new InvalidOperationException("Unable to get the audience from the current request identity");
             }
 
+            return await ForwardActivityAsync(botAppId, skill, skillHostEndpoint, activity, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Forwards an activity to a skill (bot).
+        /// </summary>
+        /// <remarks>NOTE: Forwarding an activity to a skill will flush UserState and ConversationState changes so that skill has accurate state.</remarks>
+        /// <param name="botAppId">The MicrosoftAppId of the bot forwarding the activity.</param>
+        /// <param name="skill">A <see cref="BotFrameworkSkill"/> instance with the skill information.</param>
+        /// <param name="skillHostEndpoint">The callback Url for the skill host.</param>
+        /// <param name="activity">activity to forward.</param>
+        /// <param name="cancellationToken">cancellation Token.</param>
+        /// <returns>Async task with optional invokeResponse.</returns>
+        public async Task<InvokeResponse> ForwardActivityAsync(string botAppId, BotFrameworkSkill skill, Uri skillHostEndpoint, Activity activity, CancellationToken cancellationToken)
+        {
             var appCredentials = await GetAppCredentialsAsync(botAppId, skill.AppId).ConfigureAwait(false);
             if (appCredentials == null)
             {
@@ -292,7 +311,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             {
                 // grab the auth header from the inbound http request
                 var authHeader = httpRequest.Headers["Authorization"];
-                var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider, "unknown").ConfigureAwait(false);
+                var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider,  "unknown", _authConfiguration).ConfigureAwait(false);
 
                 var route = GetRoute(httpRequest);
                 if (route == null)

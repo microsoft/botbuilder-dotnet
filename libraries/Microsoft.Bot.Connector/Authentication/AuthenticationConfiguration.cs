@@ -12,14 +12,31 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </remarks>
     public class AuthenticationConfiguration
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthenticationConfiguration"/> class.
+        /// </summary>
+        public AuthenticationConfiguration()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthenticationConfiguration"/> class.
+        /// </summary>
+        /// <param name="claimsValidator">A <see cref="ClaimsValidator"/> instance used to validate claims.</param>
+        public AuthenticationConfiguration(ClaimsValidator claimsValidator)
+        {
+            ClaimsValidator = claimsValidator;
+        }
+
         public string[] RequiredEndorsements { get; set; } = { };
 
         /// <summary>
-        /// Gets or sets an <see cref="IClaimsValidator"/> instance used to validate the identity claims.
+        /// Gets an <see cref="ClaimsValidator"/> instance used to validate the identity claims.
         /// </summary>
         /// <value>
-        /// An <see cref="IClaimsValidator"/> instance used to validate the identity claims.
+        /// An <see cref="ClaimsValidator"/> instance used to validate the identity claims.
         /// </value>
-        public IClaimsValidator ClaimsValidator { get; set; } = null;
+        public virtual ClaimsValidator ClaimsValidator { get; }
     }
 }

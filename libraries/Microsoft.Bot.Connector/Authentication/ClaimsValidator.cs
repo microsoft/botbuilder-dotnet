@@ -10,13 +10,13 @@ namespace Microsoft.Bot.Connector.Authentication
     /// <summary>
     /// An interface used to validate identity <see cref="Claim"/>.
     /// </summary>
-    public interface IClaimsValidator
+    public abstract class ClaimsValidator
     {
         /// <summary>
         /// Validates a list of <see cref="Claim"/>.
         /// </summary>
         /// <param name="claims">The list of claims to validate.</param>
         /// <returns>true if the validation is successful, false if not.</returns>
-        Task<bool> ValidateClaimsAsync(IEnumerable<Claim> claims);
+        public abstract Task<bool> ValidateClaimsAsync(List<Claim> claims);
     }
 }

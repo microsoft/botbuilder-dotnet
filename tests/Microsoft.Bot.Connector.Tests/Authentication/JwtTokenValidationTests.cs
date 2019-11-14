@@ -491,22 +491,22 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         public async Task ValidateClaimsTest()
         {
             var claims = new List<Claim>();
-            var authConfig = new AuthenticationConfiguration();
+            var defaultAuthConfig = new AuthenticationConfiguration();
 
             // No validator should pass.
-            await JwtTokenValidation.ValidateClaimsAsync(authConfig, claims);
+            await JwtTokenValidation.ValidateClaimsAsync(defaultAuthConfig, claims);
 
-            var mockValidator = new Mock<IClaimsValidator>();
-            authConfig.ClaimsValidator = mockValidator.Object;
-
-            // Configure IClaimsValidator to fail
-            mockValidator.Setup(x => x.ValidateClaimsAsync(It.IsAny<IEnumerable<Claim>>())).Returns(Task.FromResult(true));
-            await JwtTokenValidation.ValidateClaimsAsync(authConfig, claims);
+            var mockValidator = new Mock<ClaimsValidator>();
+            var authConfigWithClaimsValidator = new AuthenticationConfiguration(mockValidator.Object);
 
             // Configure IClaimsValidator to fail
-            mockValidator.Setup(x => x.ValidateClaimsAsync(It.IsAny<IEnumerable<Claim>>())).Returns(Task.FromResult(false));
+            mockValidator.Setup(x => x.ValidateClaimsAsync(It.IsAny<List<Claim>>())).Returns(Task.FromResult(true));
+            await JwtTokenValidation.ValidateClaimsAsync(authConfigWithClaimsValidator, claims);
+
+            // Configure IClaimsValidator to fail
+            mockValidator.Setup(x => x.ValidateClaimsAsync(It.IsAny<List<Claim>>())).Returns(Task.FromResult(false));
             var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(
-                async () => await JwtTokenValidation.ValidateClaimsAsync(authConfig, claims));
+                async () => await JwtTokenValidation.ValidateClaimsAsync(authConfigWithClaimsValidator, claims));
             Assert.Equal("Invalid claims.", exception.Message);
         }
 

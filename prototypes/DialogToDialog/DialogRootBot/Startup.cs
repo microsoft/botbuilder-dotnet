@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using DialogRootBot.Authentication;
 using DialogRootBot.Bots;
 using DialogRootBot.Dialogs;
 using Microsoft.AspNetCore.Builder;
@@ -24,6 +25,10 @@ namespace DialogRootBot
 
             // Configure credentials
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
+            
+            // Register AuthConfiguration to enable custom claim validation.
+            services.AddSingleton<AuthenticationConfiguration>();
+            services.AddSingleton<ClaimsValidator, AllowedCallersClaimsValidator>();
 
             // Register the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<BotFrameworkHttpAdapter, AdapterWithErrorHandler>();

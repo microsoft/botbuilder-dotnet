@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
         {
             var botAdapter = CreateAdapter("TestSkillAdapterInjectsMiddleware");
 
-            var skillAdapter = new BotFrameworkSkillClient(botAdapter, new Mock<ICredentialProvider>().Object);
+            var skillAdapter = new BotFrameworkSkillClient(botAdapter, new Mock<ICredentialProvider>().Object, new AuthenticationConfiguration());
 
             Assert.Equal(1, botAdapter.MiddlewareSet.Count(s => s is ChannelApiMiddleware));
         }
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
             var middleware = new AssertInvokeMiddleware(botAdapter, activityId);
             botAdapter.Use(middleware);
             var bot = new CallbackBot();
-            var skillAdapter = new BotFrameworkSkillClient(botAdapter, new Mock<ICredentialProvider>().Object);
+            var skillAdapter = new BotFrameworkSkillClient(botAdapter, new Mock<ICredentialProvider>().Object, new AuthenticationConfiguration());
 
             var sc = new SkillConversation()
             {

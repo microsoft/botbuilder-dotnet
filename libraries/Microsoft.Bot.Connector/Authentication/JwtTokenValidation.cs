@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <summary>
-        /// Helper method to get the AppId from a token claims list.
+        /// Gets the AppId from a claims list.
         /// </summary>
         /// <remarks>
         /// In v1 tokens the AppId is in the the <see cref="AuthenticationConstants.AppIdClaim"/> claim.
@@ -165,7 +165,7 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <summary>
-        /// Validates the identity claims against the <see cref="IClaimsValidator"/> in <see cref="AuthenticationConfiguration"/> if present. 
+        /// Validates the identity claims against the <see cref="ClaimsValidator"/> in <see cref="AuthenticationConfiguration"/> if present. 
         /// </summary>
         /// <param name="authConfig">An <see cref="AuthenticationConfiguration"/> instance.</param>
         /// <param name="claims">The list of claims to validate.</param>
@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <exception cref="UnauthorizedAccessException">If the validation returns false.</exception>
         internal static async Task ValidateClaimsAsync(AuthenticationConfiguration authConfig, IEnumerable<Claim> claims)
         {
-            if (authConfig.ClaimsValidator != null && !await authConfig.ClaimsValidator.ValidateClaimsAsync(claims).ConfigureAwait(false))
+            if (authConfig.ClaimsValidator != null && !await authConfig.ClaimsValidator.ValidateClaimsAsync(new List<Claim>(claims)).ConfigureAwait(false))
             {
                 // Invalid appId
                 throw new UnauthorizedAccessException("Invalid claims.");
