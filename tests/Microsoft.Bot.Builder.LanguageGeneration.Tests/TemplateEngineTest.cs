@@ -1,4 +1,7 @@
-﻿#pragma warning disable SA1202 // Elements should be ordered by access
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+#pragma warning disable SA1202 // Elements should be ordered by access
 using System;
 using System.Collections.Generic;
 using System.IO;
