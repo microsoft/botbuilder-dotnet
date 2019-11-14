@@ -227,6 +227,7 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("`hi`", "hi"),
             Test("`@{world}`", "world"),
             Test("length(`hello @{world}`)", "hello world".Length),
+            Test("json(`{'foo': '@{hello}','item': '@{world}'}`).foo", "hello"),
 
             #region SetPathToProperty test
             Test("setPathToValue(path.simple, 3) + path.simple", 6),
