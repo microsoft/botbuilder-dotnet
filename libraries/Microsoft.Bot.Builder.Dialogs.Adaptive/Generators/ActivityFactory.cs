@@ -368,7 +368,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private static Attachment GetNormalAttachment(JObject lgJObj)
         {
-            var attachment = new Attachment();
+            var attachmentJson = new JObject();
 
             foreach (var item in lgJObj)
             {
@@ -382,46 +382,47 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                             var type = value.ToString().ToLowerInvariant();
                             if (GenericCardTypeMapping.ContainsKey(type))
                             {
-                                attachment.ContentType = GenericCardTypeMapping[type];
+                                attachmentJson["ContentType"] = GenericCardTypeMapping[type];
                             }
                             else if (type == "adaptivecard")
                             {
-                                attachment.ContentType = "application/vnd.microsoft.card.adaptive";
+                                attachmentJson["ContentType"] = "application/vnd.microsoft.card.adaptive";
                             }
                             else
                             {
-                                attachment.ContentType = type;
+                                attachmentJson["ContentType"] = type;
                             }
 
                             break;
                         }
 
                     case "contenturl":
-                        attachment.ContentUrl = value.ToString();
+                        attachmentJson["ContentUrl"] = value.ToString();
                         break;
 
                     case "content":
-                        attachment.Content = value;
+                        attachmentJson["Content"] = value;
                         break;
 
                     case "name":
-                        attachment.Name = value.ToString();
+                        attachmentJson["Name"] = value.ToString();
                         break;
 
                     case "thumbnailurl":
-                        attachment.ThumbnailUrl = value.ToString();
+                        attachmentJson["ThumbnailUrl"] = value.ToString();
                         break;
 
                     case "properties":
-                        attachment.Properties = value as JObject;
+                        attachmentJson["Properties"] = value as JObject;
                         break;
 
                     default:
+                        attachmentJson[property] = value;
                         break;
                 }
             }
 
-            return attachment;
+            return attachmentJson.ToObject<Attachment>();
         }
 
         private static Attachment GetCardAtttachment(string type, JObject lgJObj)
