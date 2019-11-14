@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 if (type == nameof(Activity).ToLowerInvariant())
                 {
-                    activity = BuildActivityFromObject(lgJObj);
+                    activity = BuildActivity(lgJObj);
                 }
                 else
                 {
@@ -94,60 +94,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return activity;
         }
 
-        private static Activity BuildActivityFromObject(JObject lgJObj)
-        {
-            Activity activity;
-
-            // Currently Event and Message type are supported.
-            if (lgJObj["type"]?.ToString() == ActivityTypes.Event)
-            {
-                activity = BuildEventActivity(lgJObj) as Activity;
-            }
-            else
-            {
-                activity = BuildMessageActivity(lgJObj) as Activity;
-            }
-
-            return activity;
-        }
-
-        private static IEventActivity BuildEventActivity(JObject lgJObj)
-        {
-            var activity = new JObject
-            {
-                ["Type"] = ActivityTypes.Event
-            };
-
-            foreach (var item in lgJObj)
-            {
-                var property = item.Key.Trim();
-                var value = item.Value;
-
-                switch (property.ToLowerInvariant())
-                {
-                    case "name":
-                        activity["Name"] = value.ToString();
-                        break;
-
-                    case "value":
-                        activity["Value"] = value.ToString();
-                        break;
-
-                    default:
-                        activity[property] = value;
-                        break;
-                }
-            }
-
-            return activity.ToObject<Activity>();
-        }
-
-        private static IMessageActivity BuildMessageActivity(JObject lgJObj)
+        private static Activity BuildActivity(JObject lgJObj)
         {
             var activity = new JObject
             {
                 ["Type"] = ActivityTypes.Message
             };
+
             foreach (var item in lgJObj)
             {
                 var property = item.Key.Trim();
@@ -155,28 +108,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                 switch (property.ToLowerInvariant())
                 {
-                    case "text":
-                        activity["Text"] = value.ToString();
-                        break;
-
-                    case "speak":
-                        activity["Speak"] = value.ToString();
-                        break;
-
-                    case "inputhint":
-                        activity["InputHint"] = value.ToString();
-                        break;
-
                     case "attachments":
-                        activity["Attachments"] = JArray.FromObject(GetAttachments(value));
+                        activity[property] = JArray.FromObject(GetAttachments(value));
                         break;
 
                     case "suggestedactions":
-                        activity["SuggestedActions"] = JObject.FromObject(GetSuggestions(value));
-                        break;
-
-                    case "attachmentlayout":
-                        activity["AttachmentLayout"] = value.ToString();
+                        activity[property] = JObject.FromObject(GetSuggestions(value));
                         break;
 
                     default:
@@ -251,39 +188,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 foreach (var item in cardActionJObj)
                 {
-                    var property = item.Key.Trim();
-                    var value = item.Value;
-
-                    switch (property.ToLowerInvariant())
-                    {
-                        case "type":
-                            cardActionJson["Type"] = value.ToString();
-                            break;
-
-                        case "title":
-                            cardActionJson["Title"] = value.ToString();
-                            break;
-
-                        case "value":
-                            cardActionJson["Value"] = value.ToString();
-                            break;
-
-                        case "displaytext":
-                            cardActionJson["DisplayText"] = value.ToString();
-                            break;
-
-                        case "text":
-                            cardActionJson["Text"] = value.ToString();
-                            break;
-
-                        case "image":
-                            cardActionJson["Image"] = value.ToString();
-                            break;
-
-                        default:
-                            cardActionJson[property] = value;
-                            break;
-                    }
+                    cardActionJson[item.Key.Trim()] = item.Value;
                 }
             }
             else
@@ -378,15 +283,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                 switch (property)
                 {
-                    case "title":
-                    case "subtitle":
-                    case "text":
-                    case "aspect":
-                    case "value":
-                    case "connectionname":
-                        card[property] = value;
-                        break;
-
                     case "image":
                     case "images":
                         if (type == HeroCard.ContentType || type == ThumbnailCard.ContentType)
