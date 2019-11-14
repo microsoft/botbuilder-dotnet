@@ -6,6 +6,7 @@
 # ErrorActivityType
 [Activity
  type = xxx
+ invalidProperty = hi
 ]
 
 # ErrorMessage

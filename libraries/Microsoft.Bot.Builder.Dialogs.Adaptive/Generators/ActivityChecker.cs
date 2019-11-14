@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Bot.Builder.LanguageGeneration;
@@ -74,7 +75,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 }
             }
 
-            if (activityType != ActivityTypes.Event)
+            if (activityType == ActivityTypes.Event)
+            {
+                result.AddRange(CheckPropertiesOfActivity(lgJObj));
+            }
+            else
             {
                 result.AddRange(CheckMessageActivity(lgJObj));
             }
@@ -85,6 +90,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         private static List<Diagnostic> CheckMessageActivity(JObject lgJObj)
         {
             var result = new List<Diagnostic>();
+
+            result.AddRange(CheckPropertiesOfActivity(lgJObj));
+
             foreach (var item in lgJObj)
             {
                 var property = item.Key.Trim();
@@ -95,16 +103,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                     case "attachments":
                         result.AddRange(CheckAttachments(value));
                         break;
-
                     case "suggestedactions":
                         result.AddRange(CheckSuggestions(value));
-                        break;
-
-                    case "attachment":
-                        result.Add(BuildDiagnostic($"'{property}' is not support, do you mean 'attachments'?", false));
-                        break;
-                    case "suggestedaction":
-                        result.Add(BuildDiagnostic($"'{property}' is not support, do you mean 'suggestedactions'?", false));
                         break;
                     default:
                         break;
@@ -164,6 +164,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             else
             {
+                result.AddRange(CheckPropertiesOfCardAction(cardActionJObj));
+
                 foreach (var item in cardActionJObj)
                 {
                     var property = item.Key.Trim();
@@ -240,12 +242,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             if (ActivityFactory.GenericCardTypeMapping.ContainsKey(type))
             {
-                result.AddRange(CheckCardAtttachment(ActivityFactory.GenericCardTypeMapping[type], lgJObj));
+                result.AddRange(CheckCardAtttachment(lgJObj));
             }
             else if (type == "adaptivecard")
             {
                 // TODO
                 // check adaptivecard format
+                // it is hard to check the adaptive card without AdaptiveCards package
             }
             else
             {
@@ -255,7 +258,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return result;
         }
 
-        private static List<Diagnostic> CheckCardAtttachment(string type, JObject lgJObj)
+        private static List<Diagnostic> CheckCardAtttachment(JObject lgJObj)
         {
             var result = new List<Diagnostic>();
 
@@ -282,6 +285,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                     default:
                         break;
                 }
+            }
+
+            return result;
+        }
+
+        private static List<Diagnostic> CheckPropertiesOfActivity(JObject activity)
+        {
+            return CheckProperties(activity, typeof(Activity));
+        }
+
+        private static List<Diagnostic> CheckPropertiesOfCardAction(JObject cardAction)
+        {
+            return CheckProperties(cardAction, typeof(CardAction));
+        }
+
+        private static List<Diagnostic> CheckProperties(JObject value, Type type)
+        {
+            var result = new List<Diagnostic>();
+            if (value == null)
+            {
+                return result;
+            }
+
+            var properties = value.Properties().Select(u => u.Name.ToLowerInvariant()).Where(u => u != "$type");
+
+            var activityProperties = type.GetProperties().Select(u => u.Name.ToLowerInvariant());
+
+            var additionalProperties = properties.Where(u => !activityProperties.Contains(u));
+            if (additionalProperties.Any())
+            {
+                result.Add(BuildDiagnostic($"'{string.Join(",", additionalProperties)}' not support in {type.Name}.", false));
             }
 
             return result;
