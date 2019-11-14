@@ -17,6 +17,6 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="claims">The list of claims to validate.</param>
         /// <returns>true if the validation is successful, false if not.</returns>
-        public abstract Task<bool> ValidateClaimsAsync(List<Claim> claims);
+        public abstract Task<bool> ValidateClaimsAsync(IList<Claim> claims);
     }
 }
