@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new ArgumentNullException(nameof(authConfig));
             }
 
-            httpClient ??= _httpClient;
+            httpClient = httpClient ?? _httpClient;
 
             var identity = await AuthenticateToken(authHeader, credentials, channelProvider, channelId, authConfig, serviceUrl, httpClient);
 
