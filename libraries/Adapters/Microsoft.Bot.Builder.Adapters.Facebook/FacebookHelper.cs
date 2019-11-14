@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                     {
                         NullValueHandling = NullValueHandling.Ignore,
                     }));
-                
+
                 var attach = new FacebookAttachment
                 {
                     Type = activity.Attachments[0].ContentType,
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             var activity = new Activity()
             {
                 ChannelId = "facebook",
-                Timestamp = new DateTime(),
+                Timestamp = default,
                 Conversation = new ConversationAccount()
                 {
                     Id = message.Sender?.Id,
