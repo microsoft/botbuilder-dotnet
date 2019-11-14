@@ -119,39 +119,17 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new ArgumentNullException(nameof(authConfig));
             }
 
-            httpClient = httpClient ?? _httpClient;
+            httpClient ??= _httpClient;
 
-            if (SkillValidation.IsSkillToken(authHeader))
-            {
-                return await SkillValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, httpClient, channelId, authConfig).ConfigureAwait(false);
-            }
+            var identity = await AuthenticateToken(authHeader, credentials, channelProvider, channelId, authConfig, serviceUrl, httpClient);
 
-            if (EmulatorValidation.IsTokenFromEmulator(authHeader))
-            {
-                return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, channelProvider, httpClient, channelId, authConfig).ConfigureAwait(false);
-            }
+            await ValidateClaimsAsync(authConfig, identity.Claims).ConfigureAwait(false);
 
-            if (channelProvider == null || channelProvider.IsPublicAzure())
-            {
-                // No empty or null check. Empty can point to issues. Null checks only.
-                if (serviceUrl != null)
-                {
-                    return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient, channelId, authConfig).ConfigureAwait(false);
-                }
-
-                return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, httpClient, channelId, authConfig).ConfigureAwait(false);
-            }
-
-            if (channelProvider.IsGovernment())
-            {
-                return await GovernmentChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient, channelId, authConfig).ConfigureAwait(false);
-            }
-
-            return await EnterpriseChannelValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, serviceUrl, httpClient, channelId, authConfig).ConfigureAwait(false);
+            return identity;
         }
 
         /// <summary>
-        /// Helper method to get the AppId from a token claims list.
+        /// Gets the AppId from a claims list.
         /// </summary>
         /// <remarks>
         /// In v1 tokens the AppId is in the the <see cref="AuthenticationConstants.AppIdClaim"/> claim.
@@ -187,6 +165,22 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <summary>
+        /// Validates the identity claims against the <see cref="ClaimsValidator"/> in <see cref="AuthenticationConfiguration"/> if present. 
+        /// </summary>
+        /// <param name="authConfig">An <see cref="AuthenticationConfiguration"/> instance.</param>
+        /// <param name="claims">The list of claims to validate.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <exception cref="UnauthorizedAccessException">If the validation returns false.</exception>
+        internal static async Task ValidateClaimsAsync(AuthenticationConfiguration authConfig, IEnumerable<Claim> claims)
+        {
+            if (authConfig.ClaimsValidator != null && !await authConfig.ClaimsValidator.ValidateClaimsAsync(new List<Claim>(claims)).ConfigureAwait(false))
+            {
+                // Invalid appId
+                throw new UnauthorizedAccessException("Invalid claims.");
+            }
+        }
+
+        /// <summary>
         /// Internal helper to check if the token has the shape we expect "Bearer [big long string]".
         /// </summary>
         /// <param name="authHeader">A string containing the token header.</param>
@@ -217,6 +211,40 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Authenticates the auth header token from the request.
+        /// </summary>
+        private static async Task<ClaimsIdentity> AuthenticateToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, string channelId, AuthenticationConfiguration authConfig, string serviceUrl, HttpClient httpClient)
+        {
+            if (SkillValidation.IsSkillToken(authHeader))
+            {
+                return await SkillValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, httpClient, channelId, authConfig).ConfigureAwait(false);
+            }
+
+            if (EmulatorValidation.IsTokenFromEmulator(authHeader))
+            {
+                return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, channelProvider, httpClient, channelId, authConfig).ConfigureAwait(false);
+            }
+
+            if (channelProvider == null || channelProvider.IsPublicAzure())
+            {
+                // No empty or null check. Empty can point to issues. Null checks only.
+                if (serviceUrl != null)
+                {
+                    return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient, channelId, authConfig).ConfigureAwait(false);
+                }
+
+                return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, httpClient, channelId, authConfig).ConfigureAwait(false);
+            }
+
+            if (channelProvider.IsGovernment())
+            {
+                return await GovernmentChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient, channelId, authConfig).ConfigureAwait(false);
+            }
+
+            return await EnterpriseChannelValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, serviceUrl, httpClient, channelId, authConfig).ConfigureAwait(false);
         }
     }
 }

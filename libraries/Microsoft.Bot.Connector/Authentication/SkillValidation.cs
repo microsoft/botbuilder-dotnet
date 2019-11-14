@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// TO SKILL FROM BOT and TO BOT FROM SKILL: Token validation parameters when connecting a bot to a skill.
         /// </summary>
         private static readonly TokenValidationParameters _tokenValidationParameters =
-            new TokenValidationParameters()
+            new TokenValidationParameters
             {
                 ValidateIssuer = true,
                 ValidIssuers = new[]
@@ -31,12 +31,12 @@ namespace Microsoft.Bot.Connector.Authentication
                     "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/", // Auth v3.2, 1.0 token
                     "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0", // Auth v3.2, 2.0 token
                     "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/", // Auth for US Gov, 1.0 token
-                    "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0", // Auth for US Gov, 2.0 token
+                    "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0" // Auth for US Gov, 2.0 token
                 },
                 ValidateAudience = false, // Audience validation takes place manually in code.
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
-                RequireSignedTokens = true,
+                RequireSignedTokens = true
             };
 
         /// <summary>
@@ -141,12 +141,12 @@ namespace Microsoft.Bot.Connector.Authentication
 
             var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfig.RequiredEndorsements).ConfigureAwait(false);
 
-            await ValidateIdentity(identity, credentials).ConfigureAwait(false);
+            await ValidateIdentityAsync(identity, credentials).ConfigureAwait(false);
 
             return identity;
         }
 
-        internal static async Task ValidateIdentity(ClaimsIdentity identity, ICredentialProvider credentials)
+        internal static async Task ValidateIdentityAsync(ClaimsIdentity identity, ICredentialProvider credentials)
         {
             if (identity == null)
             {
@@ -178,20 +178,15 @@ namespace Microsoft.Bot.Connector.Authentication
             if (!await credentials.IsValidAppIdAsync(audienceClaim).ConfigureAwait(false))
             {
                 // The AppId is not valid. Not Authorized.
-                throw new UnauthorizedAccessException($"Invalid audience.");
+                throw new UnauthorizedAccessException("Invalid audience.");
             }
-            
+
             var appId = JwtTokenValidation.GetAppIdFromClaims(identity.Claims);
             if (string.IsNullOrWhiteSpace(appId))
             {
                 // Invalid appId
-                throw new UnauthorizedAccessException($"Invalid appId.");
+                throw new UnauthorizedAccessException("Invalid appId.");
             }
-
-            // TODO: check the appId against the registered skill client IDs.
-            // Check the AppId and ensure that only works against my whitelist authConfig can have info on how to get the
-            // whitelist AuthenticationConfiguration
-            // We may need to add a ClaimsIdentityValidator delegate or class that allows the dev to inject a custom validator.
         }
     }
 }
