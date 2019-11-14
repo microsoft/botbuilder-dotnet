@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public List<string> ExpandTemplate(string templateName, object scope = null)
         {
             var expander = new Expander(Templates, this.expressionEngine);
-            return expander.EvaluateTemplate(templateName, scope);
+            return expander.EvaluateTemplate(templateName, new CustomizedMemory(scope));
         }
 
         public AnalyzerResult AnalyzeTemplate(string templateName)

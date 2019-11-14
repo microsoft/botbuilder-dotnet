@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         public CustomizedMemory(object scope)
         {
-            this.GlobalMemory = SimpleObjectMemory.Wrap(scope);
+            this.GlobalMemory = scope == null ? null : SimpleObjectMemory.Wrap(scope);
             this.LocalMemory = null;
         }
 

@@ -62,9 +62,26 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var templateTarget = new EvaluationTarget(templateName, scope);
 
+            var currentEvaluateId = templateTarget.GetId();
+
+            EvaluationTarget previousEvaluateTarget = null;
+            if (evaluationTargetStack.Count != 0)
+            {
+                previousEvaluateTarget = evaluationTargetStack.Peek();
+
+                if (previousEvaluateTarget.EvaluatedChildren.ContainsKey(currentEvaluateId))
+                {
+                    return previousEvaluateTarget.EvaluatedChildren[currentEvaluateId];
+                }
+            }
+
             // Using a stack to track the evalution trace
             evaluationTargetStack.Push(templateTarget);
             var result = Visit(TemplateMap[templateName].ParseTree);
+            if (previousEvaluateTarget != null)
+            {
+                previousEvaluateTarget.EvaluatedChildren.Add(currentEvaluateId, result);
+            }
 
             evaluationTargetStack.Pop();
 
@@ -364,16 +381,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private (object value, string error) EvalByExpressionEngine(string exp, object scope)
         {
-            var cachedResult = CurrentTarget().ExpressionCacheGet(exp);
-            if (cachedResult != null)
-            {
-                return (cachedResult, null);
-            }
-
             var parse = this.ExpressionEngine.Parse(exp);
-            var result = parse.TryEvaluate(scope);
-            CurrentTarget().ExpressionCacheSet(exp, result.value);
-            return result;
+            return parse.TryEvaluate(scope);
         }
 
         // Genearte a new lookup function based on one lookup function

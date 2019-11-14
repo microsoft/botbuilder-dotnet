@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Expressions.Memory
@@ -19,7 +20,7 @@ namespace Microsoft.Bot.Expressions.Memory
         /// <param name="memory">the object to wrap.</param>
         public SimpleObjectMemory(object memory)
         {
-            this.memory = memory;
+            this.memory = memory ?? throw new ArgumentNullException(nameof(memory), "the object to wrap can't be null");
         }
 
         public static IMemory Wrap(object obj)
@@ -152,6 +153,14 @@ namespace Microsoft.Bot.Expressions.Memory
         public string Version()
         {
             return version.ToString();
+        }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(memory, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
         }
     }
 }
