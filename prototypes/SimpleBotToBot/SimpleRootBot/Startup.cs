@@ -24,6 +24,9 @@ namespace SimpleRootBot
             // Configure credentials
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
 
+            // Register AuthConfiguration to enable custom claim validation.
+            services.AddSingleton<AuthenticationConfiguration>();
+
             // Register the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<BotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
