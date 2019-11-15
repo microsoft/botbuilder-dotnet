@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -22,10 +24,12 @@ namespace DialogRootBot.Dialogs
         private readonly ConversationState _conversationState;
         private readonly SkillsConfiguration _skillsConfig;
         private readonly BotFrameworkSkillClient _skillClient;
+        private readonly string _botId;
 
-        public SkillDialog(ConversationState conversationState, BotFrameworkSkillClient skillClient, SkillsConfiguration skillsConfig, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SkillDialog(ConversationState conversationState, BotFrameworkSkillClient skillClient, SkillsConfiguration skillsConfig, IConfiguration configuration, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(nameof(SkillDialog))
         {
+            _botId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
             _skillClient = skillClient;
             _skillsConfig = skillsConfig;
             _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
@@ -177,8 +181,8 @@ namespace DialogRootBot.Dialogs
             // Always save state before forwarding
             // (the dialog stack won't get updated with the skillDialog and 'things won't work if you don't)
             await _conversationState.SaveChangesAsync(dc.Context, true, cancellationToken);
- 
-            var result = await _skillClient.ForwardActivityAsync(dc.Context, _skillsConfig.Skills[skillId], _skillsConfig.SkillHostEndpoint, activity, cancellationToken);
+
+            var result = await _skillClient.ForwardActivityAsync(_botId, _skillsConfig.Skills[skillId], _skillsConfig.SkillHostEndpoint, activity, cancellationToken);
             return EndOfTurn;
         }
     }

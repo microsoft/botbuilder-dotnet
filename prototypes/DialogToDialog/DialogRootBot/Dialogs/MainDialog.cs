@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace DialogRootBot.Dialogs
@@ -18,11 +20,13 @@ namespace DialogRootBot.Dialogs
         private readonly ConversationState _conversationState;
         private readonly SkillsConfiguration _skillsConfig;
         private readonly BotFrameworkSkillClient _skillClient;
+        private readonly string _botId;
 
         // Dependency injection uses this constructor to instantiate MainDialog
-        public MainDialog(ConversationState conversationState, BotFrameworkSkillClient skillClient, SkillsConfiguration skillsConfig, SkillDialog bookingDialog)
+        public MainDialog(ConversationState conversationState, BotFrameworkSkillClient skillClient, SkillsConfiguration skillsConfig, SkillDialog bookingDialog, IConfiguration configuration)
             : base(nameof(MainDialog))
         {
+            _botId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
             _skillClient = skillClient;
             _skillsConfig = skillsConfig;
             _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
@@ -131,7 +135,7 @@ namespace DialogRootBot.Dialogs
                 invokeActivity.Recipient = stepContext.Context.Activity.Recipient;
 
                 await _conversationState.SaveChangesAsync(stepContext.Context, true, cancellationToken);
-                var response = await _skillClient.ForwardActivityAsync(stepContext.Context, _skillsConfig.Skills["SkillBot"], _skillsConfig.SkillHostEndpoint, (Activity)invokeActivity, cancellationToken);
+                var response = await _skillClient.ForwardActivityAsync(_botId, _skillsConfig.Skills["SkillBot"], _skillsConfig.SkillHostEndpoint, (Activity)invokeActivity, cancellationToken);
                 return await stepContext.NextAsync(response.Body, cancellationToken);
             }
 

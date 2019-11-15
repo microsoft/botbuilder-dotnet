@@ -77,46 +77,15 @@ namespace Microsoft.Bot.Builder.Skills
         /// Forwards an activity to a skill (bot).
         /// </summary>
         /// <remarks>NOTE: Forwarding an activity to a skill will flush UserState and ConversationState changes so that skill has accurate state.</remarks>
-        /// <param name="turnContext">turnContext.</param>
+        /// <param name="botId">The MicrosoftAppId of the bot forwarding the activity.</param>
         /// <param name="skill">A <see cref="BotFrameworkSkill"/> instance with the skill information.</param>
         /// <param name="skillHostEndpoint">The callback Url for the skill host.</param>
         /// <param name="activity">activity to forward.</param>
         /// <param name="cancellationToken">cancellation Token.</param>
         /// <returns>Async task with optional invokeResponse.</returns>
-        public async Task<InvokeResponse> ForwardActivityAsync(ITurnContext turnContext, BotFrameworkSkill skill, Uri skillHostEndpoint, Activity activity, CancellationToken cancellationToken)
+        public async Task<InvokeResponse> ForwardActivityAsync(string botId, BotFrameworkSkill skill, Uri skillHostEndpoint, Activity activity, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Received request to forward activity to skill id {skill.Id}.");
-
-            // Pull the current claims identity from TurnState (it is stored there on the way in).
-            var identity = (ClaimsIdentity)turnContext.TurnState.Get<IIdentity>(BotIdentityKey);
-            if (identity.AuthenticationType.Equals("anonymous", StringComparison.InvariantCultureIgnoreCase))
-            {
-                throw new NotSupportedException("Anonymous calls are not supported for skills, please ensure your bot is configured with a MicrosoftAppId and Password).");
-            }
-
-            // Get current Bot ID from the identity audience claim
-            var botAppId = identity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
-            if (string.IsNullOrWhiteSpace(botAppId))
-            {
-                throw new InvalidOperationException("Unable to get the audience from the current request identity");
-            }
-
-            return await ForwardActivityAsync(botAppId, skill, skillHostEndpoint, activity, cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Forwards an activity to a skill (bot).
-        /// </summary>
-        /// <remarks>NOTE: Forwarding an activity to a skill will flush UserState and ConversationState changes so that skill has accurate state.</remarks>
-        /// <param name="botAppId">The MicrosoftAppId of the bot forwarding the activity.</param>
-        /// <param name="skill">A <see cref="BotFrameworkSkill"/> instance with the skill information.</param>
-        /// <param name="skillHostEndpoint">The callback Url for the skill host.</param>
-        /// <param name="activity">activity to forward.</param>
-        /// <param name="cancellationToken">cancellation Token.</param>
-        /// <returns>Async task with optional invokeResponse.</returns>
-        public async Task<InvokeResponse> ForwardActivityAsync(string botAppId, BotFrameworkSkill skill, Uri skillHostEndpoint, Activity activity, CancellationToken cancellationToken)
-        {
-            var appCredentials = await GetAppCredentialsAsync(botAppId, skill.AppId).ConfigureAwait(false);
+            var appCredentials = await GetAppCredentialsAsync(botId, skill.AppId).ConfigureAwait(false);
             if (appCredentials == null)
             {
                 throw new InvalidOperationException("Unable to get appCredentials to connect to the skill");
