@@ -6,6 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 
 namespace DialogRootBot.Controllers
@@ -14,12 +15,14 @@ namespace DialogRootBot.Controllers
     [Route("/v3/conversations/{*path}")]
     public class SkillHostController : ControllerBase
     {
+        private readonly BotFrameworkHttpAdapter _adapter;
         private readonly IBot _bot;
         private readonly BotFrameworkSkillClient _skillClient;
 
-        public SkillHostController(BotFrameworkSkillClient skillClient, IBot bot)
+        public SkillHostController(BotFrameworkSkillClient skillClient, BotFrameworkHttpAdapter adapter, IBot bot)
         {
             // adapter to use for calling back to channel
+            _adapter = adapter;
             _bot = bot;
             _skillClient = skillClient;
         }
@@ -39,7 +42,7 @@ namespace DialogRootBot.Controllers
             // The adapter will invoke the bot.
             try
             {
-                await _skillClient.ProcessAsync(Request, Response, _bot);
+                await _skillClient.ProcessAsync(Request, Response, _adapter, _bot);
             }
             catch (Exception ex)
             {
