@@ -51,21 +51,22 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsyncShouldFailWithActivityTypeNotMessage()
+        public async void SendActivitiesAsyncShouldSucceedAndNoActivityReturnedWithActivityTypeNotMessage()
         {
-            var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
+            var activity = new Mock<Activity>().SetupAllProperties();
+            activity.Object.Type = ActivityTypes.Trace;
+            activity.Object.Attachments = new List<Attachment> { new Attachment(contentUrl: "http://example.com") };
+            activity.Object.Conversation = new ConversationAccount(id: "MockId");
+            activity.Object.Text = "Trace content";
 
-            var activity = new Activity()
-            {
-                Type = ActivityTypes.Event,
-            };
+            const string resourceIdentifier = "Mocked Resource Identifier";
+            var twilioApi = new Mock<TwilioClientWrapper>(_testOptions);
+            twilioApi.Setup(x => x.SendMessage(It.IsAny<CreateMessageOptions>())).Returns(Task.FromResult(resourceIdentifier));
 
-            Activity[] activities = { activity };
+            var twilioAdapter = new TwilioAdapter(twilioApi.Object);
+            var resourceResponses = await twilioAdapter.SendActivitiesAsync(null, new Activity[] { activity.Object }, default).ConfigureAwait(false);
 
-            await Assert.ThrowsAsync<ArgumentException>(async () =>
-            {
-                await twilioAdapter.SendActivitiesAsync(new TurnContext(twilioAdapter, activity), activities, default);
-            });
+            Assert.True(resourceResponses.Length == 0);
         }
 
         [Fact]

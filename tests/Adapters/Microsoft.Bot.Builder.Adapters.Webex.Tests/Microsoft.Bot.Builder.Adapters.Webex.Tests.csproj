@@ -2,8 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-
     <IsPackable>false</IsPackable>
+    <!-- The Thrzn41.WebexTeams package isn't signed, so supress the warning. There seems to not be a way to supress this for ONLY Thrzn41.WebexTeams. -->
+    <NoWarn>$(NoWarn),CS8002</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
