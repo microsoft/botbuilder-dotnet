@@ -8,6 +8,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleRootBot.Bots;
@@ -30,8 +31,9 @@ namespace SimpleRootBot
             // Register the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<BotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
-            // Register the skills server and skills host adapter.
+            // Register the skills client and skills request handler.
             services.AddSingleton<BotFrameworkSkillClient>();
+            services.AddSingleton<BotFrameworkSkillRequestHandler>();
 
             // Register the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
             services.AddSingleton<IStorage, MemoryStorage>();
