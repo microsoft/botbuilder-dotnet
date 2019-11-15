@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
@@ -41,11 +42,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             var result = new List<Diagnostic>();
             var type = GetStructureType(lgJObj);
-            if (string.IsNullOrWhiteSpace(type))
-            {
-                result.Add(BuildDiagnostic("'type' or '$type' is not exist in lg output json object."));
-            }
-            else if (ActivityFactory.GenericCardTypeMapping.ContainsKey(type))
+            
+            if (ActivityFactory.GenericCardTypeMapping.ContainsKey(type))
             {
                 result.AddRange(CheckAttachment(lgJObj));
             }
@@ -55,7 +53,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             else
             {
-                result.Add(BuildDiagnostic($"Type '{type}' is not support currently."));
+                var diagnosticMessage = string.IsNullOrWhiteSpace(type) ? 
+                    "'type' or '$type' is not exist in lg output json object."
+                    : $"Type '{type}' is not support currently.";
+                result.Add(BuildDiagnostic(diagnosticMessage));
             }
 
             return result;
@@ -65,33 +66,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             var result = new List<Diagnostic>();
 
-            var activityType = lgJObj["type"]?.ToString();
+            var activityType = lgJObj["type"]?.ToString()?.Trim();
+
+            result.AddRange(CheckActivityType(activityType));
+            result.AddRange(CheckPropertyName(lgJObj, typeof(Activity)));
+            result.AddRange(CheckActivityProperities(lgJObj));
+
+            return result;
+        }
+
+        private static List<Diagnostic> CheckActivityType(string activityType)
+        {
+            var result = new List<Diagnostic>();
+
             if (!string.IsNullOrEmpty(activityType))
             {
-                // Currently Event and Message type are supported.
-                if (activityType != ActivityTypes.Event && activityType != ActivityTypes.Message)
-                {
-                    result.Add(BuildDiagnostic($"'{activityType}' is not support currently. It will fallback to message activity.", false));
-                }
-            }
+                var types = GetAllPublicConstantValues<string>(typeof(ActivityTypes));
 
-            if (activityType == ActivityTypes.Event)
-            {
-                result.AddRange(CheckPropertiesOfActivity(lgJObj));
-            }
-            else
-            {
-                result.AddRange(CheckMessageActivity(lgJObj));
+                if (types.All(u => u.ToLowerInvariant() != activityType.ToLowerInvariant()))
+                {
+                    result.Add(BuildDiagnostic($"'{activityType}' is not a valid activity type."));
+                }
             }
 
             return result;
         }
 
-        private static List<Diagnostic> CheckMessageActivity(JObject lgJObj)
+        private static List<Diagnostic> CheckActivityProperities(JObject lgJObj)
         {
             var result = new List<Diagnostic>();
-
-            result.AddRange(CheckPropertiesOfActivity(lgJObj));
 
             foreach (var item in lgJObj)
             {
@@ -120,6 +123,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return CheckCardActions(actions);
         }
 
+        private static List<Diagnostic> CheckButtons(JToken value)
+        {
+            var actions = NormalizedToList(value);
+            return CheckCardActions(actions);
+        }
+
         private static List<Diagnostic> CheckCardActions(List<JToken> actions)
         {
             var result = new List<Diagnostic>();
@@ -142,18 +151,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return result;
         }
 
-        private static List<Diagnostic> CheckButtons(JToken value)
-        {
-            var actions = NormalizedToList(value);
-
-            return CheckCardActions(actions);
-        }
-        
-        private static bool IsStringValue(JToken value)
-        {
-            return value is JValue jValue && jValue.Type == JTokenType.String;
-        }
-
         private static List<Diagnostic> CheckCardAction(JObject cardActionJObj)
         {
             var result = new List<Diagnostic>();
@@ -164,36 +161,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             else
             {
-                result.AddRange(CheckPropertiesOfCardAction(cardActionJObj));
+                result.AddRange(CheckPropertyName(cardActionJObj, typeof(CardAction)));
+                var cardActionType = cardActionJObj["type"]?.ToString()?.Trim();
 
-                foreach (var item in cardActionJObj)
+                result.AddRange(CheckCardActionType(cardActionType));
+            }
+
+            return result;
+        }
+
+        private static List<Diagnostic> CheckCardActionType(string cardActionType)
+        {
+            var result = new List<Diagnostic>();
+
+            if (!string.IsNullOrEmpty(cardActionType))
+            {
+                var types = GetAllPublicConstantValues<string>(typeof(ActionTypes));
+
+                if (types.All(u => u.ToLowerInvariant() != cardActionType.ToLowerInvariant()))
                 {
-                    var property = item.Key.Trim();
-                    var value = item.Value.ToString().ToLowerInvariant();
-
-                    switch (property.ToLowerInvariant())
-                    {
-                        case "type":
-                            if (value != ActionTypes.ImBack.ToLowerInvariant()
-                                && value != ActionTypes.Call.ToLowerInvariant()
-                                && value != ActionTypes.DownloadFile.ToLowerInvariant()
-                                && value != ActionTypes.MessageBack.ToLowerInvariant()
-                                && value != ActionTypes.openApp.ToLowerInvariant()
-                                && value != ActionTypes.OpenUrl.ToLowerInvariant()
-                                && value != ActionTypes.Payment.ToLowerInvariant()
-                                && value != ActionTypes.PlayAudio.ToLowerInvariant()
-                                && value != ActionTypes.PlayVideo.ToLowerInvariant()
-                                && value != ActionTypes.PostBack.ToLowerInvariant()
-                                && value != ActionTypes.ShowImage.ToLowerInvariant()
-                                && value != ActionTypes.Signin.ToLowerInvariant())
-                            {
-                                result.Add(BuildDiagnostic($"'{value}' is not a valid action type"));
-                            }
-
-                            break;
-                        default:
-                            break;
-                    }
+                    result.Add(BuildDiagnostic($"'{cardActionType}' is not a valid card action type."));
                 }
             }
 
@@ -290,17 +277,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return result;
         }
 
-        private static List<Diagnostic> CheckPropertiesOfActivity(JObject activity)
-        {
-            return CheckProperties(activity, typeof(Activity));
-        }
-
-        private static List<Diagnostic> CheckPropertiesOfCardAction(JObject cardAction)
-        {
-            return CheckProperties(cardAction, typeof(CardAction));
-        }
-
-        private static List<Diagnostic> CheckProperties(JObject value, Type type)
+        private static List<Diagnostic> CheckPropertyName(JObject value, Type type)
         {
             var result = new List<Diagnostic>();
             if (value == null)
@@ -319,6 +296,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
 
             return result;
+        }
+
+        private static bool IsStringValue(JToken value)
+        {
+            return value is JValue jValue && jValue.Type == JTokenType.String;
         }
 
         private static bool IsValidBooleanValue(string boolStr)
@@ -345,6 +327,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             return isError ? new Diagnostic(emptyRange, message, DiagnosticSeverity.Error)
                 : new Diagnostic(emptyRange, message, DiagnosticSeverity.Warning);
+        }
+
+        private static List<T> GetAllPublicConstantValues<T>(Type type)
+        {
+            return type
+                .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                .Where(fi => fi.IsLiteral && !fi.IsInitOnly && fi.FieldType == typeof(T))
+                .Select(x => (T)x.GetRawConstantValue())
+                .ToList();
         }
     }
 }

@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests
         }
 
         [TestMethod]
-        public async Task CheckStructuredLGErrors()
+        public async Task CheckStructuredLGDiagnostics()
         {
             var context = await GetTurnContext("DignosticStructuredLG.lg");
             var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
@@ -63,8 +63,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests
             lgStringResult = await languageGenerator.Generate(context, "@{ErrorActivityType()}", null);
             diagnostics = ActivityChecker.Check(lgStringResult);
             Assert.AreEqual(diagnostics.Count, 2);
-            Assert.IsTrue(diagnostics[0].Severity == DiagnosticSeverity.Warning);
-            Assert.AreEqual(diagnostics[0].Message, "'xxx' is not support currently. It will fallback to message activity.");
+            Assert.IsTrue(diagnostics[0].Severity == DiagnosticSeverity.Error);
+            Assert.AreEqual(diagnostics[0].Message, "'xxx' is not a valid activity type.");
             Assert.IsTrue(diagnostics[1].Severity == DiagnosticSeverity.Warning);
             Assert.AreEqual(diagnostics[1].Message, "'invalidproperty' not support in Activity.");
 
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests
             Assert.IsTrue(diagnostics[1].Severity == DiagnosticSeverity.Warning);
             Assert.AreEqual(diagnostics[1].Message, "'mystruct' is not card action type.");
             Assert.IsTrue(diagnostics[2].Severity == DiagnosticSeverity.Error);
-            Assert.AreEqual(diagnostics[2].Message, "'yyy' is not a valid action type");
+            Assert.AreEqual(diagnostics[2].Message, "'yyy' is not a valid card action type.");
             Assert.IsTrue(diagnostics[3].Severity == DiagnosticSeverity.Error);
             Assert.AreEqual(diagnostics[3].Message, "'notsure' is not a boolean value.");
             Assert.IsTrue(diagnostics[4].Severity == DiagnosticSeverity.Warning);
