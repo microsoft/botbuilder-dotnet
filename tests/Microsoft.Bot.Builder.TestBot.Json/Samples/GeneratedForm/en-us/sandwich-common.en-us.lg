@@ -79,10 +79,44 @@
 - "@{property.entity.text}" as @{name(property.property)}
 
 # readForm
-- @{join(foreach(dialog.requiredProperties, property, readingProperty(property)), ', ')}
+[Activity
+    Attachments=@{json(formCard())}
+]
 
-# readingProperty(property)
+>>> To generate text instead of card, use this
+# formText
+- @{join(foreach(dialog.requiredProperties, property, textProperty(property)), ', ')}
+
+# textProperty(property)
 - @{toLower(property)}=@{value(property, dialog[property])}
+
+# formCard
+-```
+{
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "sandwich",
+            "size": "large"
+        },
+        {
+            "type": "FactSet",
+            "facts": [@{requiredFacts()}]
+        }
+    ],
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+}
+```
+
+>>> TODO: It would be nice to able to include bound optional properties as well.  
+>>> Once we have support in foreach for objects we can expand this.
+# requiredFacts
+- @{join(foreach(dialog.requiredProperties, property, fact(property)), ', ')}
+
+# fact(property)
+- {"title": "@{name(property)}", "value": "@{value(property, dialog[property])}"}
 
 # confirmChange
 - Is there any property you want to change? (yes/no)
