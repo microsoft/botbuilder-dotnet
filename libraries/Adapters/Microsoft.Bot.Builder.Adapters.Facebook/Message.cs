@@ -24,12 +24,12 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         public string StickerId { get; set; }
 
         /// <summary>
-        /// Gets or sets a list of attachments.
+        /// Gets a list of attachments.
         /// </summary>
         /// <value>Attachments that could come with a Facebook message.</value>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "it needs to be set to null in SendActivitiesAsync")]
         [JsonProperty(PropertyName = "attachments")]
-        public List<FacebookAttachment> Attachments { get; set; }
+        public List<FacebookAttachment> Attachments { get; } = new List<FacebookAttachment>();
 
         /// <summary>
         /// Gets or sets the attachment.
@@ -46,12 +46,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         public string Metadata { get; set; }
 
         /// <summary>
-        /// Gets or sets the quick replies.
+        /// Gets the quick replies.
         /// </summary>
         /// <value>The quick replies array.</value>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "it needs to be set in ActivityToFacebook method")]
         [JsonProperty(PropertyName = "quick_replies")]
-        public List<FacebookQuickReply> QuickReplies { get; set; } = new List<FacebookQuickReply>();
+        public List<FacebookQuickReply> QuickReplies { get; } = new List<FacebookQuickReply>();
 
         /// <summary>
         /// Gets or sets a value indicating whether the message was sent from the page itself.
@@ -83,6 +82,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         public bool ShouldSerializeIsEcho()
         {
             return IsEcho;
+        }
+
+        public bool ShouldSerializeAttachments()
+        {
+            return Attachments.Count > 0;
         }
     }
 }

@@ -36,5 +36,20 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
         /// </summary>
         /// <value>List containing the messages sent while in standby mode.</value>
         public List<FacebookMessage> Standby { get; } = new List<FacebookMessage>();
+
+        public bool ShouldSerializeMessaging()
+        {
+            return Messaging.Count > 0;
+        }
+
+        public bool ShouldSerializeStandby()
+        {
+            return Messaging.Count > 0;
+        }
+
+        public bool ShouldSerializeChanges()
+        {
+            return Messaging.Count > 0;
+        }
     }
 }

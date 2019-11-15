@@ -227,6 +227,38 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
+        public async void SendActivitiesAsyncShouldSucceedAndNoActivityReturnedWithActivityTypeNotMessage()
+        {
+            const string testResponse = "Test Response";
+            var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
+            var attachments = new List<Attachment>();
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Trace,
+                Text = "Test text",
+                Conversation = new ConversationAccount()
+                {
+                    Id = "Test id",
+                },
+                ChannelData = new FacebookMessage("recipientId", new Message(), "messagingtype"),
+                Attachments = attachments,
+            };
+            Activity[] activities = { activity };
+            ResourceResponse[] responses = null;
+
+            attachments.Add(new Attachment("text/html", "http://contoso.com"));
+            facebookClientWrapper.Setup(api => api.SendMessageAsync(It.IsAny<string>(), It.IsAny<FacebookMessage>(), It.IsAny<HttpMethod>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(testResponse));
+
+            using (var turnContext = new TurnContext(facebookAdapter, activity))
+            {
+                responses = await facebookAdapter.SendActivitiesAsync(turnContext, activities, default);
+            }
+
+            Assert.True(responses.Length == 0);
+        }
+
+        [Fact]
         public async void SendActivitiesAsyncShouldPostToFacebookOnPassThreadControl()
         {
             const string testResponse = "Test Response";

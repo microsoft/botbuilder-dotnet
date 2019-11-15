@@ -20,5 +20,10 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
         /// </summary>
         /// <value>Array containing event data.</value>
         public List<FacebookEntry> Entry { get; } = new List<FacebookEntry>();
+
+        public bool ShouldSerializeEntry()
+        {
+            return Entry.Count > 0;
+        }
     }
 }

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Security.Authentication;
 using System.Text;
@@ -15,6 +16,8 @@ using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Handover;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
@@ -27,6 +30,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// An instance of the FacebookClientWrapper class.
         /// </summary>
         private readonly FacebookClientWrapper _facebookClient;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FacebookAdapter"/> class using configuration settings.
@@ -38,8 +42,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// AppSecret: The secret used to validate incoming webhooks.
         /// AccessToken: An access token for the bot.
         /// </remarks>
-        public FacebookAdapter(IConfiguration configuration)
-            : this(new FacebookClientWrapper(new FacebookAdapterOptions(configuration["FacebookVerifyToken"], configuration["FacebookAppSecret"], configuration["FacebookAccessToken"])))
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        public FacebookAdapter(IConfiguration configuration, ILogger logger = null)
+            : this(new FacebookClientWrapper(new FacebookAdapterOptions(configuration["FacebookVerifyToken"], configuration["FacebookAppSecret"], configuration["FacebookAccessToken"])), logger)
         {
         }
 
@@ -48,9 +53,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// Creates a Facebook adapter.
         /// </summary>
         /// <param name="facebookClient">A Facebook API interface.</param>
-        public FacebookAdapter(FacebookClientWrapper facebookClient)
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        public FacebookAdapter(FacebookClientWrapper facebookClient, ILogger logger = null)
         {
             _facebookClient = facebookClient ?? throw new ArgumentNullException(nameof(facebookClient));
+            _logger = logger ?? NullLogger.Instance;
         }
 
         /// <summary>
@@ -68,42 +75,44 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             {
                 if (activity.Type != ActivityTypes.Message && activity.Type != ActivityTypes.Event)
                 {
-                    continue;
+                    _logger.LogTrace($"Unsupported Activity Type: '{activity.Type}'. Only Activities of type 'Message' or 'Event' are supported.");
                 }
-
-                var message = FacebookHelper.ActivityToFacebook(activity);
-
-                if (message.Message.Attachment != null)
+                else
                 {
-                    message.Message.Attachments = null;
-                    message.Message.Text = null;
+                    var message = FacebookHelper.ActivityToFacebook(activity);
+
+                    if (message.Message.Attachment != null)
+                    {
+                        message.Message.Text = null;
+                    }
+
+                    var res = await _facebookClient.SendMessageAsync("/me/messages", message, null, cancellationToken)
+                        .ConfigureAwait(false);
+
+                    if (activity.Type == ActivityTypes.Event)
+                    {
+                        if (activity.Name.Equals(HandoverConstants.PassThreadControl, StringComparison.Ordinal))
+                        {
+                            var recipient = (string)activity.Value == "inbox" ? HandoverConstants.PageInboxId : (string)activity.Value;
+                            await _facebookClient.PassThreadControlAsync(recipient, activity.Conversation.Id, HandoverConstants.MetadataPassThreadControl).ConfigureAwait(false);
+                        }
+                        else if (activity.Name.Equals(HandoverConstants.TakeThreadControl, StringComparison.Ordinal))
+                        {
+                            await _facebookClient.TakeThreadControlAsync(activity.Conversation.Id, HandoverConstants.MetadataTakeThreadControl).ConfigureAwait(false);
+                        }
+                        else if (activity.Name.Equals(HandoverConstants.RequestThreadControl, StringComparison.Ordinal))
+                        {
+                            await _facebookClient.RequestThreadControlAsync(activity.Conversation.Id, HandoverConstants.MetadataRequestThreadControl).ConfigureAwait(false);
+                        }
+                    }
+
+                    var response = new ResourceResponse()
+                    {
+                        Id = res,
+                    };
+
+                    responses.Add(response);
                 }
-
-                var res = await _facebookClient.SendMessageAsync("/me/messages", message, null, cancellationToken).ConfigureAwait(false);
-
-                if (activity.Type == ActivityTypes.Event)
-                {
-                    if (activity.Name.Equals(HandoverConstants.PassThreadControl, StringComparison.Ordinal))
-                    {
-                        var recipient = (string)activity.Value == "inbox" ? HandoverConstants.PageInboxId : (string)activity.Value;
-                        await _facebookClient.PassThreadControlAsync(recipient, activity.Conversation.Id, HandoverConstants.MetadataPassThreadControl).ConfigureAwait(false);
-                    }
-                    else if (activity.Name.Equals(HandoverConstants.TakeThreadControl, StringComparison.Ordinal))
-                    {
-                        await _facebookClient.TakeThreadControlAsync(activity.Conversation.Id, HandoverConstants.MetadataTakeThreadControl).ConfigureAwait(false);
-                    }
-                    else if (activity.Name.Equals(HandoverConstants.RequestThreadControl, StringComparison.Ordinal))
-                    {
-                        await _facebookClient.RequestThreadControlAsync(activity.Conversation.Id, HandoverConstants.MetadataRequestThreadControl).ConfigureAwait(false);
-                    }
-                }
-
-                var response = new ResourceResponse()
-                {
-                    Id = res,
-                };
-
-                responses.Add(response);
             }
 
             return responses.ToArray();
@@ -167,7 +176,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <param name="bot">A bot logic function.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken)
+        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
         {
             if (httpRequest.Query["hub.mode"] == HubModeSubscribe)
             {
