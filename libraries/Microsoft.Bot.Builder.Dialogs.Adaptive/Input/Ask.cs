@@ -43,14 +43,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             dc.GetState().TryGetValue(TurnPath.DIALOGEVENT, out DialogEvent trigger);
-
-            //repeat Ask: expected properties unchanged && event is triggered by Ask
+            
             if (dc.GetState().TryGetValue(DialogPath.ExpectedProperties, out List<string> lastExpectedProperties)
-                && (ExpectedProperties.Where(prop => !lastExpectedProperties.Contains(prop)).ToList().Count == 0
-                || lastExpectedProperties.Where(prop => !ExpectedProperties.Contains(prop)).ToList().Count == 0))
+                && ExpectedProperties.Where(prop => !lastExpectedProperties.Contains(prop)).ToList().Count == 0
+                && lastExpectedProperties.Where(prop => !ExpectedProperties.Contains(prop)).ToList().Count == 0)
             {
-                if (trigger.Name.ToLower().Equals("ask"))
+                if (trigger.Name.Equals("ask"))
                 {
+                    //repeat Ask: expected properties unchanged && event is triggered by Ask
                     retries++;
                 }                    
             }
