@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Expressions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
@@ -16,6 +17,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// </summary>
     public class RandomSelector : ITriggerSelector
     {
+        [JsonProperty("$type")]
+        public const string DeclarativeType = "Microsoft.RandomSelector";
+
         private List<OnCondition> _conditionals;
         private bool _evaluate;
         private Random _rand;

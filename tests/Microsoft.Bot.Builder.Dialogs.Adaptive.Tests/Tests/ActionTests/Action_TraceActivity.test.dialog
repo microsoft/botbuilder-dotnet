@@ -1,0 +1,59 @@
+{
+    "$type": "Microsoft.Test.Script",
+    "enableTrace": true,
+    "dialog": {
+        "$type": "Microsoft.AdaptiveDialog",
+        "id": "traceActivity",
+        "triggers": [
+            {
+                "$type": "Microsoft.OnUnknownIntent",
+                "event": "unknownIntent",
+                "actions": [
+                    {
+                        "$type": "Microsoft.SetProperty",
+                        "property": "user.name",
+                        "value": "'frank'"
+                    },
+                    {
+                        "$type": "Microsoft.TraceActivity",
+                        "name": "test",
+                        "valueType": "user",
+                        "value": "user"
+                    },
+                    {
+                        "$type": "Microsoft.TraceActivity",
+                        "name": "test",
+                        "valueType": "memory"
+                    }
+                ]
+            }
+        ],
+        "AutoEndDialog": true,
+        "defaultResultProperty": "dialog.result",
+        "dialogs": {}
+    },
+    "script": [
+        {
+            "$type": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$type": "Microsoft.Test.AssertReplyActivity",
+            "timeout": 3000,
+            "assertions": [
+                "type == 'trace'",
+                "valueType == 'user'",
+                "value.name == 'frank'"
+            ]
+        },
+        {
+            "$type": "Microsoft.Test.AssertReplyActivity",
+            "timeout": 3000,
+            "assertions": [
+                "type == 'trace'",
+                "valueType == 'memory'",
+                "value.user.name == 'frank'"
+            ]
+        }
+    ]
+}

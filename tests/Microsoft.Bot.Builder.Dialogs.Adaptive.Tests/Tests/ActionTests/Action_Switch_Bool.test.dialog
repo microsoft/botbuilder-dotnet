@@ -1,0 +1,65 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "planningTest",
+    "triggers": [
+      {
+        "$type": "Microsoft.OnBeginDialog",
+        "event": "beginDialog",
+        "actions": [
+          {
+            "$type": "Microsoft.SetProperty",
+            "property": "user.isVip",
+            "value": "True"
+          },
+          {
+            "$type": "Microsoft.SwitchCondition",
+            "condition": "user.isVip",
+            "default": [
+              {
+                "$type": "Microsoft.SendActivity",
+                "activity": "Who are you?"
+              }
+            ],
+            "cases": [
+              {
+                "value": "True",
+                "actions": [
+                  {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "User is VIP"
+                  }
+                ]
+              },
+              {
+                "value": "False",
+                "actions": [
+                  {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "User is NOT VIP"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "AutoEndDialog": true,
+    "defaultResultProperty": "dialog.result",
+    "dialogs": {}
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "User is VIP",
+      "exact": true,
+      "timeout": 3000
+    }
+  ]
+}

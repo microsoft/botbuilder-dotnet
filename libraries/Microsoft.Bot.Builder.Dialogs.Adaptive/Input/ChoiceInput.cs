@@ -33,6 +33,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// </summary>
     public class ChoiceInput : InputDialog
     {
+        [JsonProperty("$type")]
+        public const string DeclarativeType = "Microsoft.ChoiceInput";
+
         private static readonly Dictionary<string, ChoiceFactoryOptions> DefaultChoiceOptions = new Dictionary<string, ChoiceFactoryOptions>(StringComparer.OrdinalIgnoreCase)
         {
             { Spanish, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " o ", InlineOrMore = ", o ", IncludeNumbers = true } },
@@ -56,6 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <value>
         /// Value Expression or List of choices (string or Choice objects) to present to user.
         /// </value>
+        [JsonProperty("choices")]
         public ChoiceSet Choices { get; set; }
 
         /// <summary>
@@ -64,6 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <value>
         /// ListStyle to use to render the choices.
         /// </value>
+        [JsonProperty("styles")]
         public ListStyle Style { get; set; } = ListStyle.Auto;
 
         /// <summary>
@@ -72,6 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <value>
         /// DefaultLocale.
         /// </value>
+        [JsonProperty("defaultLocale")]
         public string DefaultLocale { get; set; } = null;
 
         /// <summary>
@@ -80,6 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <value>
         /// Control the format of the response (value or the index of the choice).
         /// </value>
+        [JsonProperty("outputFormat")]
         public ChoiceOutputFormat OutputFormat { get; set; } = ChoiceOutputFormat.Value;
 
         /// <summary>
@@ -88,6 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <value>
         /// ChoiceOptions controls display options for customizing language.
         /// </value>
+        [JsonProperty("choiceOptions")]
         public ChoiceFactoryOptions ChoiceOptions { get; set; } = null;
 
         /// <summary>
@@ -96,6 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <value>
         /// Customize how to use the choices to recognize the response from the user.
         /// </value>
+        [JsonProperty("recognizerOptions")]
         public FindChoicesOptions RecognizerOptions { get; set; } = null;
 
         public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))

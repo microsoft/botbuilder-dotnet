@@ -1,0 +1,74 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "planningTest",
+    "triggers": [
+      {
+        "$type": "Microsoft.OnBeginDialog",
+        "event": "beginDialog",
+        "actions": [
+          {
+            "$type": "Microsoft.SetProperty",
+            "property": "user.name",
+            "value": "'Zoidberg'"
+          },
+          {
+            "$type": "Microsoft.SwitchCondition",
+            "condition": "user.name",
+            "default": [
+              {
+                "$type": "Microsoft.SendActivity",
+                "activity": "Who are you?"
+              }
+            ],
+            "cases": [
+              {
+                "value": "susan",
+                "actions": [
+                  {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "hi susan"
+                  }
+                ]
+              },
+              {
+                "value": "bob",
+                "actions": [
+                  {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "hi bob"
+                  }
+                ]
+              },
+              {
+                "value": "frank",
+                "actions": [
+                  {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "hi frank"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "AutoEndDialog": true,
+    "defaultResultProperty": "dialog.result",
+    "dialogs": {}
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Who are you?",
+      "exact": true,
+      "timeout": 3000
+    }
+  ]
+}

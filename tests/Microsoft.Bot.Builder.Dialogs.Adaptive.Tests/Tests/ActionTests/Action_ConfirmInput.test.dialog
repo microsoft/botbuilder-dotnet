@@ -1,0 +1,100 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "planningTest",
+    "triggers": [
+      {
+        "$type": "Microsoft.OnBeginDialog",
+        "event": "beginDialog",
+        "actions": [
+          {
+            "$type": "Microsoft.ConfirmInput",
+            "style": 1,
+            "property": "user.confirmed",
+            "prompt": "yes or no",
+            "unrecognizedPrompt": "I need a yes or no."
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "confirmation: @{user.confirmed}"
+          },
+          {
+            "$type": "Microsoft.ConfirmInput",
+            "style": 1,
+            "alwaysPrompt": true,
+            "property": "user.confirmed",
+            "prompt": "yes or no",
+            "unrecognizedPrompt": "I need a yes or no."
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "confirmation: @{user.confirmed}"
+          },
+          {
+            "$type": "Microsoft.ConfirmInput",
+            "style": 1,
+            "alwaysPrompt": true,
+            "property": "user.confirmed",
+            "prompt": "yes or no",
+            "unrecognizedPrompt": "I need a yes or no."
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "confirmation: @{user.confirmed}"
+          }
+        ]
+      }
+    ],
+    "defaultResultProperty": "dialog.result",
+    "dialogs": {}
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "yes or no (1) Yes or (2) No",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "asdasd"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "I need a yes or no. (1) Yes or (2) No",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "yes"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "confirmation: True",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "yes or no (1) Yes or (2) No",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "nope"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "confirmation: False",
+      "exact": true,
+      "timeout": 3000
+    }
+  ]
+}

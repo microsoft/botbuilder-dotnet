@@ -59,31 +59,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await ResourceExplorer.LoadType<TestScript>(resourceId).ExecuteAsync(ResourceExplorer).ConfigureAwait(false);
         }
 
-        public static IEnumerable<object[]> TestAssertReplyScripts => GetTestScripts(@"Tests\TestAssertReply");
+        public static IEnumerable<object[]> AsserplyReplyScripts => GetTestScripts(@"Tests\TestAssertReply");
 
         [DataTestMethod]
-        [DynamicData(nameof(TestAssertReplyScripts))]
-        public async Task TestAssertReply(string resourceId)
+        [DynamicData(nameof(AsserplyReplyScripts))]
+        public async Task TestScript_AssertReply(string resourceId)
         {
             await ResourceExplorer.LoadType<TestScript>(resourceId).ExecuteAsync(ResourceExplorer).ConfigureAwait(false);
         }
 
-        public static IEnumerable<object[]> TestAssertReplyOneScripts => GetTestScripts(@"Tests\TestAssertReplyOneOf");
+        public static IEnumerable<object[]> AssertReplyOneOfScripts => GetTestScripts(@"Tests\TestAssertReplyOneOf");
 
         [DataTestMethod]
-        [DynamicData(nameof(TestAssertReplyOneScripts))]
-        public async Task TestAssertReplyOne(string resourceId)
+        [DynamicData(nameof(AssertReplyOneOfScripts))]
+        public async Task TestScript_AssertReplyOne(string resourceId)
         {
             await ResourceExplorer.LoadType<TestScript>(resourceId).ExecuteAsync(ResourceExplorer).ConfigureAwait(false);
         }
 
-        public static IEnumerable<object[]> TestUserScripts => GetTestScripts(@"Tests\TestUser");
+        public static IEnumerable<object[]> UserActionScripts => GetTestScripts(@"Tests\TestUser");
 
         [DataTestMethod]
-        [DynamicData(nameof(TestUserScripts))]
-        public async Task TestUser(string resourceId)
+        [DynamicData(nameof(UserActionScripts))]
+        public async Task TestScript_UserAction(string resourceId)
         {
             await ResourceExplorer.LoadType<TestScript>(resourceId).ExecuteAsync(ResourceExplorer).ConfigureAwait(false);
+        }
+
+        public static IEnumerable<object[]> ActionTestsScripts => GetTestScripts(@"Tests\ActionTests");
+
+        [DataTestMethod]
+        [DynamicData(nameof(ActionTestsScripts))]
+        public async Task ActionTests(string resourceId)
+        {
+            await ResourceExplorer.LoadType<TestScript>(resourceId).ExecuteAsync(ResourceExplorer).ConfigureAwait(false);
+        }
+
+        [TestMethod]
+        public async Task TestDialog()
+        {
+            await ResourceExplorer.LoadType<TestScript>("Action_EditActionReplaceSequence.test.dialog").ExecuteAsync(ResourceExplorer).ConfigureAwait(false);
         }
     }
 }

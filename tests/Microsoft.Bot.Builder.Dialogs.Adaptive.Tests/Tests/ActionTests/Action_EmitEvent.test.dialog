@@ -1,0 +1,110 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "root",
+    "triggers": [
+      {
+        "$type": "Microsoft.OnBeginDialog",
+        "event": "beginDialog",
+        "actions": [
+          {
+            "$type": "Microsoft.BeginDialog",
+            "options": {},
+            "dialog": {
+              "$type": "Microsoft.AdaptiveDialog",
+              "id": "outer",
+              "recognizer": {
+                "$type": "Microsoft.RegexRecognizer",
+                "intents": [
+                  {
+                    "$type": "Microsoft.IntentPattern",
+                    "intent": "EmitIntent",
+                    "pattern": "emit"
+                  },
+                  {
+                    "$type": "Microsoft.IntentPattern",
+                    "intent": "CowboyIntent",
+                    "pattern": "moo"
+                  }
+                ]
+              },
+              "triggers": [
+                {
+                  "$type": "Microsoft.OnIntent",
+                  "intent": "CowboyIntent",
+                  "event": "recognizedIntent",
+                  "actions": [
+                    {
+                      "$type": "Microsoft.SendActivity",
+                      "activity": "Yippee ki-yay!"
+                    }
+                  ]
+                },
+                {
+                  "$type": "Microsoft.OnIntent",
+                  "intent": "EmitIntent",
+                  "event": "recognizedIntent",
+                  "actions": [
+                    {
+                      "$type": "Microsoft.EmitEvent",
+                      "eventName": "CustomEvent",
+                      "bubbleEvent": true
+                    }
+                  ]
+                }
+              ],
+              "defaultResultProperty": "dialog.result",
+              "dialogs": {}
+            }
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnCustomEvent",
+        "event": "CustomEvent",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "CustomEventFired"
+          }
+        ]
+      }
+    ],
+    "AutoEndDialog": true,
+    "defaultResultProperty": "dialog.result",
+    "dialogs": {}
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "moo"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Yippee ki-yay!",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "emit"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "CustomEventFired",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "moo"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Yippee ki-yay!",
+      "exact": true,
+      "timeout": 3000
+    }
+  ]
+}

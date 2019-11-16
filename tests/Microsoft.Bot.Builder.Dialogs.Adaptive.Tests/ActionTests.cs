@@ -1,20 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+#pragma warning disable SA1118 // Parameter should not span multiple lines
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
@@ -44,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Hello, what is your name?")
             .Send("Carlos")
                 .AssertReply("Hello Carlos, nice to meet you!")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
 #if needsmoq
@@ -114,23 +111,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             await CreateFlow(dialog, sendTrace: true)
             .Send("hi")
-                .AssertReply((activity) =>
+                .AssertReplyActivity(new string[]
                 {
-                    var traceActivity = (ITraceActivity)activity;
-                    Assert.AreEqual(ActivityTypes.Trace, traceActivity.Type, "type doesn't match");
-                    Assert.AreEqual("user", traceActivity.ValueType, "ValueType doesn't match");
-                    dynamic value = traceActivity.Value;
-                    Assert.AreEqual("frank", (string)value["name"], "Value doesn't match");
+                    $"type == '{ActivityTypes.Trace}'",
+                    $"valueType == 'user'",
+                    $"value.name == 'frank'"
                 })
-                .AssertReply((activity) =>
+                .AssertReplyActivity(new string[]
                 {
-                    var traceActivity = (ITraceActivity)activity;
-                    Assert.AreEqual(ActivityTypes.Trace, traceActivity.Type, "type doesn't match");
-                    Assert.AreEqual("memory", traceActivity.ValueType, "ValueType doesn't match");
-                    dynamic value = traceActivity.Value;
-                    Assert.AreEqual("frank", (string)value["user"]["name"], "Value doesn't match");
+                    $"type == '{ActivityTypes.Trace}'",
+                    "valueType == 'memory'",
+                    "value.user.name == 'frank'"
                 })
-                .StartTestAsync();
+                .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -169,7 +162,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Hello Carlos, nice to meet you!")
             .Send("hi")
                 .AssertReply("Hello Carlos, nice to see you again!")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -207,7 +200,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await CreateFlow(testDialog)
             .Send("hi")
                 .AssertReply("hi frank")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -245,7 +238,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await CreateFlow(testDialog)
             .Send("hi")
                 .AssertReply("Who are you?")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -283,7 +276,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await CreateFlow(testDialog)
             .Send("hi")
                 .AssertReply("Age is 22")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -320,7 +313,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await CreateFlow(testDialog)
             .Send("hi")
                 .AssertReply("User is VIP")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -361,7 +354,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("How should I call you?")
             .Send("Carlos")
                 .AssertReply("Hello Carlos, nice to meet you!")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -392,7 +385,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("What is your age?")
             .Send("hi")
                 .AssertReply("You said 10")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -432,7 +425,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await CreateFlow(testDialog)
             .Send("hi, I'm 10")
                 .AssertReply("You said 10")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -485,7 +478,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("yes or no (1) Yes or (2) No")
             .Send("nope")
                 .AssertReply("confirmation: False")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -544,7 +537,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Please select a color: (1) red, (2) green, or (3) blue")
             .Send("red")
                 .AssertReply("red")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -603,7 +596,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Please select a color: (1) red, (2) green, or (3) blue")
             .Send("red")
                 .AssertReply("red")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -667,7 +660,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Please select a color: (1) red, (2) green, or (3) blue")
             .Send("red")
                 .AssertReply("red")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -731,7 +724,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Please select a color: (1) red, (2) green, or (3) blue")
             .Send("red")
                 .AssertReply("red")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -771,7 +764,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("I have your age as 15.")
             .Send("hi")
                 .AssertReply("I have your age as 15.")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -801,7 +794,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Please enter a date.")
             .Send("June 1st 2019")
                 .AssertReply("You entered 2019-06-01")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -843,7 +836,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("That does not soud like a name")
             .Send("Carlos")
                 .AssertReply("Hello Carlos, nice to meet you!")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -905,7 +898,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("I'm going to replace the original actions via EditActions")
                 .AssertReply("New actions...")
                 .AssertReply("What's your name?")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -955,7 +948,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("To get to the other side")
             .Send("hi")
                 .AssertReply("Hello Carlos, nice to meet you!")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -1015,7 +1008,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Actions = new List<Dialog>()
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
-                        new BeginDialog(askNameDialog.Id)
+                        new BeginDialog()
+                        {
+                            Dialog = askNameDialog
+                        }
                     }
                 },
                 new OnIntent(
@@ -1040,7 +1036,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Hello Carlos, nice to meet you!")
             .Send("Cool")
                 .AssertReply("I'm a joke bot. To get started say 'tell me a joke'")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -1095,7 +1091,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Actions = new List<Dialog>()
                 {
                     new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
-                    new ReplaceDialog("AskNameDialog")
+                    new ReplaceDialog() { Dialog = askNameDialog }
                 }
             });
 
@@ -1105,7 +1101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     "JokeIntent",
                     actions: new List<Dialog>()
                     {
-                        new ReplaceDialog("TellJokeDialog")
+                        new ReplaceDialog() { Dialog = tellJokeDialog }
                     }),
             });
 
@@ -1122,7 +1118,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Why did the chicken cross the road?")
             .Send("Why?")
                 .AssertReply("To get to the other side")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -1156,7 +1152,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new OnUnknownIntent(
                     new List<Dialog>()
                     {
-                        new BeginDialog(tellJokeDialog.Id),
+                        new BeginDialog() { Dialog = tellJokeDialog },
                         new SendActivity("You went out from ask name dialog.")
                     })
             });
@@ -1168,7 +1164,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Why did the chicken cross the road?")
             .Send("end")
                 .AssertReply("You went out from ask name dialog.")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -1198,7 +1194,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("Hello Carlos, nice to meet you!")
                 .Send("hi")
                     .AssertReply("Hello Carlos, nice to meet you!")
-                .StartTestAsync();
+                .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -1249,7 +1245,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         Actions = new List<Dialog>()
                         {
-                            new BeginDialog(outer.Id)
+                            new BeginDialog() { Dialog = outer }
                         }
                     },
 
@@ -1272,7 +1268,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("CustomEventFired")
             .Send("moo")
                 .AssertReply("Yippee ki-yay!")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -1334,7 +1330,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("index is: 0 and value is: 1")
                 .AssertReply("index is: 1 and value is: 2")
                 .AssertReply("index is: 2 and value is: 3")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -1431,7 +1427,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("index is: 0 and value is: 4")
                 .AssertReply("index is: 1 and value is: 5")
                 .AssertReply("index is: 2 and value is: 6")
-            .StartTestAsync();
+            .SaveScript("ActionTests");
         }
 
         [TestMethod]
@@ -1453,7 +1449,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             Intent = "cancel",
                             Pattern = "cancel"
                         },
-                        new IntentPattern() 
+                        new IntentPattern()
                         {
                             Intent = "set_name",
                             Pattern = "set name"
@@ -1462,18 +1458,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
                 Triggers = new List<OnCondition>()
                 {
-                    new OnIntent() 
+                    new OnIntent()
                     {
                         Intent = "set_name",
-                        Actions = new List<Dialog>() 
+                        Actions = new List<Dialog>()
                         {
-                            new TextInput() 
+                            new TextInput()
                             {
                                 Prompt = new ActivityTemplate("\\[set name]::What is your name?"),
                                 Property = "$userName",
                                 AlwaysPrompt = true
                             },
-                            new SendActivity() 
+                            new SendActivity()
                             {
                                 Activity = new ActivityTemplate("\\[set name]::I have @{$userName} as your name")
                             }
@@ -1484,34 +1480,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         Intent = "start",
                         Actions = new List<Dialog>()
                         {
-                            new TextInput() 
+                            new TextInput()
                             {
                                 Prompt = new ActivityTemplate("\\[start]::What is your name?"),
                                 Property = "$userName",
                                 AllowInterruptions = "false"
                             },
-                            new SendActivity() 
+                            new SendActivity()
                             {
                                 Activity = new ActivityTemplate("\\[start]::I have @{$userName} as your name")
                             },
-                            new DateTimeInput() 
+                            new DateTimeInput()
                             {
                                 Prompt = new ActivityTemplate("Give me date 1"),
                                 UnrecognizedPrompt = new ActivityTemplate("Unrecognized, give me date 1"),
                                 Property = "$fromDate",
                                 AllowInterruptions = "true"
                             },
-                            new SendActivity() 
+                            new SendActivity()
                             {
                                 Activity = new ActivityTemplate("\\[start]:: I have @{$fromDate} as date 1")
                             },
-                            new DateTimeInput() 
+                            new DateTimeInput()
                             {
                                 Prompt = new ActivityTemplate("Give me date 2"),
                                 Property = "$toDate",
                                 AllowInterruptions = "true"
                             },
-                            new SendActivity() 
+                            new SendActivity()
                             {
                                 Activity = new ActivityTemplate("\\[start]:: I have @{$toDate} as date 2")
                             }
@@ -1539,7 +1535,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .Send("qiong")
                     .AssertReply("[set name]::I have qiong as your name")
                     .AssertReply("Give me date 1")
-                .StartTestAsync();
+                .SaveScript("ActionTests");
         }
 
         private static IActivity BuildMessageActivityWithLocale(string text, string locale)
@@ -1552,27 +1548,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             };
         }
 
-        private TestFlow CreateFlow(AdaptiveDialog testDialog, bool sendTrace = false)
+        private TestScript CreateFlow(AdaptiveDialog testDialog, bool sendTrace = false)
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
-            var storage = new MemoryStorage();
-            var convoState = new ConversationState(storage);
-            var userState = new UserState(storage);
-            var resourceExplorer = new ResourceExplorer();
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace);
-            adapter
-                .UseStorage(storage)
-                .UseState(userState, convoState)
-                .UseResourceExplorer(resourceExplorer)
-                .UseAdaptiveDialogs()
-                .UseLanguageGeneration(resourceExplorer)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
-            DialogManager dm = new DialogManager(testDialog);
-
-            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
-            });
+            return new TestScript() { Dialog = testDialog };
         }
     }
 }

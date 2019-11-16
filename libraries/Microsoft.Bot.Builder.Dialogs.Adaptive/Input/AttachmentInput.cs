@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
@@ -26,11 +27,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
     public class AttachmentInput : InputDialog
     {
+        [JsonProperty("$type")]
+        public const string DeclarativeType = "Microsoft.AttachmentInput";
+
         public AttachmentInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        [JsonProperty("outputFormat")]
         public AttachmentOutputFormat OutputFormat { get; set; } = AttachmentOutputFormat.First;
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)

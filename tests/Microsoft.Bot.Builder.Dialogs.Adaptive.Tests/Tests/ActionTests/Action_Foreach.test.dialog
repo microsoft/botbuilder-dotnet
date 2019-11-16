@@ -1,0 +1,72 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "root",
+    "triggers": [
+      {
+        "$type": "Microsoft.OnBeginDialog",
+        "event": "beginDialog",
+        "actions": [
+          {
+            "$type": "Microsoft.InitProperty",
+            "property": "dialog.todo",
+            "type": "Array"
+          },
+          {
+            "$type": "Microsoft.EditArray",
+            "itemsProperty": "dialog.todo",
+            "value": "1"
+          },
+          {
+            "$type": "Microsoft.EditArray",
+            "itemsProperty": "dialog.todo",
+            "value": "2"
+          },
+          {
+            "$type": "Microsoft.EditArray",
+            "itemsProperty": "dialog.todo",
+            "value": "3"
+          },
+          {
+            "$type": "Microsoft.Foreach",
+            "itemsProperty": "dialog.todo",
+            "actions": [
+              {
+                "$type": "Microsoft.SendActivity",
+                "activity": "index is: @{dialog.foreach.index} and value is: @{dialog.foreach.value}"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "AutoEndDialog": true,
+    "defaultResultProperty": "dialog.result",
+    "dialogs": {}
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "index is: 0 and value is: 1",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "index is: 1 and value is: 2",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "index is: 2 and value is: 3",
+      "exact": true,
+      "timeout": 3000
+    }
+  ]
+}

@@ -15,6 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class SetProperty : Dialog
     {
+        [JsonProperty("$type")]
+        public const string DeclarativeType = "Microsoft.SetProperty";
+
         private Expression value;
 
         [JsonConstructor]

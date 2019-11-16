@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Bot.Expressions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -33,6 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// Configurable options for the dialog. 
         /// </value>
+        [JsonProperty("options")]
         public object Options { get; set; } = new JObject();
 
         /// <summary>
@@ -41,6 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// The dialog to call.
         /// </value>
+        [JsonProperty("dialog")]
         public Dialog Dialog { get; set; }
 
         public virtual IEnumerable<Dialog> GetDependencies()

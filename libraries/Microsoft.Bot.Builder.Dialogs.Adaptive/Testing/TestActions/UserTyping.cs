@@ -1,21 +1,26 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 {
+    [DebuggerDisplay("UserTyping")]
     public class UserTyping : TestAction
-    { 
-        public UserTyping()
-        { 
+    {
+        [JsonProperty("$type")]
+        public const string DeclarativeType = "Microsoft.Test.UserTyping";
+
+        [JsonConstructor]
+        public UserTyping([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
+        {
+            RegisterSourcePath(path, line);
         }
 
         /// <summary>
@@ -24,6 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <value>
         /// If user is set then the channalAccount.Id and channelAccount.Name will be from user.
         /// </value>
+        [JsonProperty("user")]
         public string User { get; set; }
 
         public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)

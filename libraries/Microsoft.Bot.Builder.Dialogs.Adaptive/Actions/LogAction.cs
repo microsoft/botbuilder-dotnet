@@ -15,6 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class LogAction : Dialog
     {
+        [JsonProperty("$type")]
+        public const string DeclarativeType = "Microsoft.LogAction";
+
         [JsonConstructor]
         public LogAction(string text = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {

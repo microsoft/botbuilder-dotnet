@@ -1,0 +1,73 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "planningTest",
+    "triggers": [
+      {
+        "$type": "Microsoft.OnUnknownIntent",
+        "event": "unknownIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.NumberInput",
+            "outputFormat": 1,
+            "property": "user.userProfile.Age",
+            "prompt": "Please enter your age.",
+            "unrecognizedPrompt": "The value entered must be greater than 0 and less than 150.",
+            "validations": [
+              "this.value > 0 && this.value < 150"
+            ]
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "I have your age as @{user.userProfile.Age}."
+          }
+        ]
+      }
+    ],
+    "defaultResultProperty": "dialog.result",
+    "dialogs": {}
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Please enter your age.",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "1000"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "The value entered must be greater than 0 and less than 150.",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "15.3"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "I have your age as 15.",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "I have your age as 15.",
+      "exact": true,
+      "timeout": 3000
+    }
+  ]
+}

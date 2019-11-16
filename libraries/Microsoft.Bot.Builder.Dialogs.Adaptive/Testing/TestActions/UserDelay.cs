@@ -1,24 +1,34 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 {
+    [DebuggerDisplay("UserDelay:{Timespan}")]
     public class UserDelay : TestAction
-    { 
-        public UserDelay()
+    {
+        [JsonProperty("$type")]
+        public const string DeclarativeType = "Microsoft.Test.UserDelay";
+
+        [JsonConstructor]
+        public UserDelay([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
+            RegisterSourcePath(path, line);
         }
 
-        public int Timespan { get; set; }
+        /// <summary>
+        /// Gets or sets the timespan to delay.
+        /// </summary>
+        /// <value>
+        /// The timespan to delay.
+        /// </value>
+        [JsonProperty("timespan")]
+        public uint Timespan { get; set; }
 
         public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
         {

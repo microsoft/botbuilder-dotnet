@@ -20,6 +20,12 @@
             "items": {
                 "$type": "Microsoft.Test.ITestAction"
             }
+        },
+        "enableTrace": {
+            "type": "boolean",
+            "title": "Enable Trace Activity",
+            "description": "Enable trace activities in the unit test (default is false)",
+            "default": false
         }
     },
     "required": [

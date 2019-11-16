@@ -3,22 +3,30 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
 {
     /// <summary>
     /// Send an text to the bot.
     /// </summary>
+    [DebuggerDisplay("UserSays:{Text}")]
     public class UserSays : TestAction
     {
-        public UserSays()
+        [JsonProperty("$type")]
+        public const string DeclarativeType = "Microsoft.Test.UserSays";
+
+        [JsonConstructor]
+        public UserSays([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
+            RegisterSourcePath(path, line);
         }
 
         /// <summary>
@@ -27,6 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         /// <value>
         /// the text to send to the bot.
         /// </value>
+        [JsonProperty("text")]
         public string Text { get; set; }
 
         /// <summary>
@@ -35,6 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         /// <value>
         /// If user is set then the channalAccount.Id and channelAccount.Name will be from user.
         /// </value>
+        [JsonProperty("user")]
         public string User { get; set; }
 
         public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)

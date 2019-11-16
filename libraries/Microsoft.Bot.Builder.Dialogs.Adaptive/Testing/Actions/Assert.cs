@@ -1,15 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Expressions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
 {
     public class Assert : Dialog
     {
+        [JsonConstructor]
+        public Assert([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
+        {
+            RegisterSourceLocation(path, line);
+        }
+
         /// <summary>
         /// Gets or sets condition which must be true.
         /// </summary>

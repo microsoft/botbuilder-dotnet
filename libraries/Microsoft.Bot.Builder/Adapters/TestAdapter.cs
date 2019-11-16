@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Adapters
     /// <seealso cref="TestFlow"/>
     public class TestAdapter : BotAdapter, IUserTokenProvider
     {
-        private readonly bool _sendTraceActivity;
+        private bool _sendTraceActivity;
         private readonly object _conversationLock = new object();
         private readonly object _activeQueueLock = new object();
         private readonly IDictionary<UserTokenKey, string> _userTokens = new Dictionary<UserTokenKey, string>();
@@ -72,6 +72,24 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to send trace activities.
+        /// </summary>
+        /// <value>
+        /// A value indicating whether to send trace activities.
+        /// </value>
+        public bool EnableTrace
+        {
+            get => _sendTraceActivity; 
+            set => this._sendTraceActivity = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the locale for the conversation.
+        /// </summary>
+        /// <value>
+        /// The locale for the conversation.
+        /// </value>
         public string Locale { get; set; } = "en-us";
 
         /// <summary>

@@ -1,0 +1,114 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "planningTest",
+    "triggers": [
+      {
+        "$type": "Microsoft.OnBeginDialog",
+        "event": "beginDialog",
+        "actions": [
+          {
+            "$type": "Microsoft.SetProperty",
+            "property": "user.choices",
+            "value": "json('[\"red\", \"green\", \"blue\"]')"
+          },
+          {
+            "$type": "Microsoft.ChoiceInput",
+            "choices": {
+              "expression": "user.choices"
+            },
+            "styles": 2,
+            "property": "user.color",
+            "prompt": "Please select a color:",
+            "unrecognizedPrompt": "Not a color. Please select a color:"
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "@{user.color}"
+          },
+          {
+            "$type": "Microsoft.ChoiceInput",
+            "choices": {
+              "expression": "user.choices"
+            },
+            "styles": 2,
+            "alwaysPrompt": true,
+            "property": "user.color",
+            "prompt": "Please select a color:",
+            "unrecognizedPrompt": "Please select a color:"
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "@{user.color}"
+          },
+          {
+            "$type": "Microsoft.ChoiceInput",
+            "choices": {
+              "expression": "user.choices"
+            },
+            "styles": 2,
+            "alwaysPrompt": true,
+            "property": "user.color",
+            "prompt": "Please select a color:",
+            "unrecognizedPrompt": "Please select a color:"
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "@{user.color}"
+          }
+        ]
+      }
+    ],
+    "defaultResultProperty": "dialog.result",
+    "dialogs": {}
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Please select a color: (1) red, (2) green, or (3) blue",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "asdasd"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Not a color. Please select a color: (1) red, (2) green, or (3) blue",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "3"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "blue",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Please select a color: (1) red, (2) green, or (3) blue",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "red"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "red",
+      "exact": true,
+      "timeout": 3000
+    }
+  ]
+}

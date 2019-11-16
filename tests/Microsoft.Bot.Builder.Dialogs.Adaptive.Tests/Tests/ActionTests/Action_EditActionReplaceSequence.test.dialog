@@ -1,0 +1,92 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "planningTest",
+    "recognizer": {
+      "$type": "Microsoft.RegexRecognizer",
+      "intents": [
+        {
+          "$type": "Microsoft.IntentPattern",
+          "intent": "Replace",
+          "pattern": "(?i)replace"
+        }
+      ]
+    },
+    "triggers": [
+      {
+        "$type": "Microsoft.OnUnknownIntent",
+        "event": "unknownIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.TextInput",
+            "property": "turn.tempInput",
+            "prompt": "Say replace to replace these actions"
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "You should not see this step if you said replace"
+          },
+          {
+            "$type": "Microsoft.RepeatDialog"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "Replace",
+        "event": "recognizedIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "I'm going to replace the original actions via EditActions"
+          },
+          {
+            "$type": "Microsoft.EditActions",
+            "actions": [
+              {
+                "$type": "Microsoft.SendActivity",
+                "activity": "New actions..."
+              },
+              {
+                "$type": "Microsoft.TextInput",
+                "property": "turn.tempInput",
+                "prompt": "What's your name?"
+              }
+            ],
+            "changeType": 3
+          }
+        ]
+      }
+    ],
+    "AutoEndDialog": true,
+    "defaultResultProperty": "dialog.result",
+    "dialogs": {}
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Say replace to replace these actions"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "replace"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "I'm going to replace the original actions via EditActions"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "New actions..."
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "What's your name?"
+    }
+  ]
+}

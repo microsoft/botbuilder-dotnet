@@ -1,18 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
 {
+    [DebuggerDisplay("AssertReplyOneOf:{GetConditionDescription()}")]
     public class AssertReplyOneOf : AssertReplyActivity
     {
+        [JsonProperty("$type")]
+        public new const string DeclarativeType = "Microsoft.Test.AssertReplyOneOf";
+
+        [JsonConstructor]
+        public AssertReplyOneOf([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
+            : base(path, line)
+        {
+        }
+
+        /// <summary>
+        /// Gets or sets the text variations.
+        /// </summary>
+        /// <value>
+        /// The text variations.
+        /// </value>
+        [JsonProperty("text")]
         public List<string> Text { get; set; } = new List<string>();
 
+        /// <summary>
+        /// Gets or sets a value indicating whether exact match policy should be used.
+        /// </summary>
+        /// <value>
+        /// A bool value for match policy.
+        /// </value>
+        [JsonProperty("exact")]
         public bool Exact { get; set; } = false;
 
         public override void ValidateReply(Activity activity)

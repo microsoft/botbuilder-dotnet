@@ -1,0 +1,105 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "planningTest",
+    "recognizer": {
+      "$type": "Microsoft.RegexRecognizer",
+      "intents": [
+        {
+          "$type": "Microsoft.IntentPattern",
+          "intent": "EndIntent",
+          "pattern": "end"
+        }
+      ]
+    },
+    "triggers": [
+      {
+        "$type": "Microsoft.OnUnknownIntent",
+        "event": "unknownIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.BeginDialog",
+            "options": {},
+            "dialog": {
+              "$type": "Microsoft.AdaptiveDialog",
+              "id": "TellJokeDialog",
+              "recognizer": {
+                "$type": "Microsoft.RegexRecognizer",
+                "intents": [
+                  {
+                    "$type": "Microsoft.IntentPattern",
+                    "intent": "EndIntent",
+                    "pattern": "end"
+                  }
+                ]
+              },
+              "triggers": [
+                {
+                  "$type": "Microsoft.OnIntent",
+                  "intent": "EndIntent",
+                  "event": "recognizedIntent",
+                  "actions": [
+                    {
+                      "$type": "Microsoft.EndDialog"
+                    }
+                  ]
+                },
+                {
+                  "$type": "Microsoft.OnUnknownIntent",
+                  "event": "unknownIntent",
+                  "actions": [
+                    {
+                      "$type": "Microsoft.SendActivity",
+                      "activity": "Why did the chicken cross the road?"
+                    },
+                    {
+                      "$type": "Microsoft.EndTurn",
+                      "id": "EndTurn"
+                    },
+                    {
+                      "$type": "Microsoft.SendActivity",
+                      "activity": "To get to the other side"
+                    }
+                  ]
+                }
+              ],
+              "AutoEndDialog": true,
+              "defaultResultProperty": "dialog.result",
+              "dialogs": {}
+            }
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "You went out from ask name dialog."
+          }
+        ]
+      }
+    ],
+    "AutoEndDialog": true,
+    "defaultResultProperty": "dialog.result",
+    "dialogs": {}
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Why did the chicken cross the road?",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "end"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "You went out from ask name dialog.",
+      "exact": true,
+      "timeout": 3000
+    }
+  ]
+}

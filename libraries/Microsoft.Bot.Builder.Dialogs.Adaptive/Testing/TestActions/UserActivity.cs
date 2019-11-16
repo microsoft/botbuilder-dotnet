@@ -8,7 +8,9 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
 {
@@ -17,10 +19,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     /// </summary>
     public class UserActivity : TestAction
     {
-        public UserActivity()
+        [JsonProperty("$type")]
+        public const string DeclarativeType = "Microsoft.Test.UserActivity";
+
+        [JsonConstructor]
+        public UserActivity([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
+            RegisterSourcePath(path, line);
         }
 
+        /// <summary>
+        /// Gets or sets the activity to compare.
+        /// </summary>
+        /// <value>
+        /// The activity to compare.
+        /// </value>
+        [JsonProperty("activity")]
         public Activity Activity { get; set; }
 
         /// <summary>
@@ -29,6 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         /// <value>
         /// If user is set then the channalAccount.Id and channelAccount.Name will be from user.
         /// </value>
+        [JsonProperty("user")]
         public string User { get; set; }
 
         public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)

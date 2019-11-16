@@ -1,0 +1,55 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "planningTest",
+    "recognizer": {
+      "$type": "Microsoft.RegexRecognizer",
+      "entities": [
+        {
+          "$type": "Microsoft.AgeEntityRecognizer"
+        },
+        {
+          "$type": "Microsoft.NumberEntityRecognizer"
+        },
+        {
+          "$type": "Microsoft.DateTimeEntityRecognizer"
+        }
+      ]
+    },
+    "triggers": [
+      {
+        "$type": "Microsoft.OnUnknownIntent",
+        "event": "unknownIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.NumberInput",
+            "property": "turn.age",
+            "value": "@number",
+            "prompt": "What is your age?",
+            "maxTurnCount": 1
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "You said @{turn.age}"
+          }
+        ]
+      }
+    ],
+    "AutoEndDialog": true,
+    "defaultResultProperty": "dialog.result",
+    "dialogs": {}
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "hi, I'm 10"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "You said 10",
+      "exact": true,
+      "timeout": 3000
+    }
+  ]
+}
