@@ -54,8 +54,7 @@
                   ]
                 }
               ],
-              "defaultResultProperty": "dialog.result",
-              "dialogs": {}
+              "defaultResultProperty": "dialog.result"
             }
           }
         ]
@@ -72,8 +71,7 @@
       }
     ],
     "AutoEndDialog": true,
-    "defaultResultProperty": "dialog.result",
-    "dialogs": {}
+    "defaultResultProperty": "dialog.result"
   },
   "script": [
     {

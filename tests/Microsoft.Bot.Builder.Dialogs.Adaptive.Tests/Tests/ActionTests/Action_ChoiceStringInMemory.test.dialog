@@ -60,8 +60,7 @@
         ]
       }
     ],
-    "defaultResultProperty": "dialog.result",
-    "dialogs": {}
+    "defaultResultProperty": "dialog.result"
   },
   "script": [
     {

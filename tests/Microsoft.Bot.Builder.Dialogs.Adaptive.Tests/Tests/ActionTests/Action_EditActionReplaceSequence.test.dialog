@@ -54,14 +54,13 @@
                 "prompt": "What's your name?"
               }
             ],
-            "changeType": 3
+            "changeType": "ReplaceSequence"
           }
         ]
       }
     ],
     "AutoEndDialog": true,
-    "defaultResultProperty": "dialog.result",
-    "dialogs": {}
+    "defaultResultProperty": "dialog.result"
   },
   "script": [
     {
@@ -70,7 +69,9 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Say replace to replace these actions"
+      "text": "Say replace to replace these actions",
+      "exact": true,
+      "timeout": 3000
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -78,15 +79,21 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "I'm going to replace the original actions via EditActions"
+      "text": "I'm going to replace the original actions via EditActions",
+      "exact": true,
+      "timeout": 3000
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "New actions..."
+      "text": "New actions...",
+      "exact": true,
+      "timeout": 3000
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "What's your name?"
+      "text": "What's your name?",
+      "exact": true,
+      "timeout": 3000
     }
   ]
 }
