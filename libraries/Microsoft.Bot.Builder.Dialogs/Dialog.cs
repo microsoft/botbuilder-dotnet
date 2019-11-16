@@ -50,7 +50,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             get
             {
-                return id ?? OnComputeId();
+                id = id ?? OnComputeId();
+                return id;
             }
 
             set
