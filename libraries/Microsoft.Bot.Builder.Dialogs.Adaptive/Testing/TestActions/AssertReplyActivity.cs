@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -39,6 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
         /// Gets or sets the milliseconds to wait for a reply.
         /// </summary>
         /// <value>the milliseceods to wait.</value>
+        [DefaultValue(3000)]
         [JsonProperty("timeout")]
         public uint Timeout { get; set; } = 3000;
 
@@ -47,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
         /// </summary>
         /// <value>The expressions for assertions.</value>
         [JsonProperty("assertions")]
-        public List<string> Assertions { get; set; } = new List<string>();
+        public List<string> Assertions { get; set; }
 
         public virtual string GetConditionDescription()
         {

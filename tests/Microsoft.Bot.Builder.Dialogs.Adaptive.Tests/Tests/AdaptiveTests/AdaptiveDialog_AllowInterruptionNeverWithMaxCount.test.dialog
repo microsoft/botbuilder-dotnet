@@ -1,0 +1,87 @@
+{
+    "$type": "Microsoft.Test.Script",
+    "dialog": {
+        "$type": "Microsoft.AdaptiveDialog",
+        "id": "AdaptiveDialog",
+        "recognizer": {
+            "$type": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "$type": "Microsoft.IntentPattern",
+                    "intent": "Start",
+                    "pattern": "(?i)start"
+                }
+            ]
+        },
+        "generator": {
+            "$type": "Microsoft.TemplateEngineLanguageGenerator",
+            "id": "",
+            "lgText": ""
+        },
+        "triggers": [
+            {
+                "$type": "Microsoft.OnIntent",
+                "intent": "Start",
+                "event": "recognizedIntent",
+                "actions": [
+                    {
+                        "$type": "Microsoft.NumberInput",
+                        "allowInterruptions": "False",
+                        "property": "user.age",
+                        "prompt": "What is your age?",
+                        "maxTurnCount": 2,
+                        "defaultValue": "30"
+                    },
+                    {
+                        "$type": "Microsoft.SendActivity",
+                        "activity": "I have @{user.age} as your age"
+                    }
+                ]
+            },
+            {
+                "$type": "Microsoft.OnIntent",
+                "intent": "None",
+                "event": "recognizedIntent",
+                "actions": [
+                    {
+                        "$type": "Microsoft.SendActivity",
+                        "activity": "In None..."
+                    },
+                    {
+                        "$type": "Microsoft.SetProperty",
+                        "property": "turn.processInput",
+                        "value": "True"
+                    }
+                ]
+            }
+        ],
+        "AutoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$type": "Microsoft.Test.UserSays",
+            "text": "start"
+        },
+        {
+            "$type": "Microsoft.Test.AssertReply",
+            "text": "What is your age?"
+        },
+        {
+            "$type": "Microsoft.Test.UserSays",
+            "text": "vishwac"
+        },
+        {
+            "$type": "Microsoft.Test.AssertReply",
+            "text": "What is your age?"
+        },
+        {
+            "$type": "Microsoft.Test.UserSays",
+            "text": "carlos"
+        },
+        {
+            "$type": "Microsoft.Test.AssertReply",
+            "text": "I have 30 as your age"
+        }
+    ]
+}

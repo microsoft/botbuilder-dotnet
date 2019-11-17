@@ -1,0 +1,59 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "AdaptiveDialog",
+    "triggers": [
+      {
+        "$type": "Microsoft.OnUnknownIntent",
+        "event": "unknownIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.TextInput",
+            "property": "$name",
+            "prompt": "Hello, what is your name?"
+          },
+          {
+            "$type": "Microsoft.BeginDialog",
+            "resultProperty": "$age",
+            "options": {
+              "userName": "$name"
+            }
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "Hello @{$name}, you are @{$age} years old!"
+          }
+        ]
+      }
+    ],
+    "AutoEndDialog": true,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "Hi"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Hello, what is your name?"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "zoidberg"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Hello zoidberg, how old are you?"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "I'm 77"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Hello zoidberg, you are 77 years old!"
+    }
+  ]
+}

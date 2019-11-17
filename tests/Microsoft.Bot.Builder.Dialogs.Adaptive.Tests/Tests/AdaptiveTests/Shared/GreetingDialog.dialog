@@ -1,0 +1,34 @@
+{
+  "$type": "Microsoft.AdaptiveDialog",
+  "triggers": [
+    {
+      "$type": "Microsoft.OnBeginDialog",
+      "event": "beginDialog",
+      "actions": [
+        {
+          "$type": "Microsoft.IfCondition",
+          "condition": "(user.name == null)",
+          "actions": [
+            {
+              "$type": "Microsoft.TextInput",
+              "property": "user.name",
+              "prompt": "Hello, what is your name?"
+            },
+            {
+              "$type": "Microsoft.SendActivity",
+              "activity": "Hello @{user.name}, nice to meet you!"
+            }
+          ],
+          "elseActions": [
+            {
+              "$type": "Microsoft.SendActivity",
+              "activity": "Hello @{user.name}, nice to see you again!"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "AutoEndDialog": true,
+  "defaultResultProperty": "dialog.result"
+}

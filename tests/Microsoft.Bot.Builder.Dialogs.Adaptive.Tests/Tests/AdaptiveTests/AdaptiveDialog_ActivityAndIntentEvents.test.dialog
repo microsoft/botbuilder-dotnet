@@ -1,0 +1,62 @@
+{
+    "$type": "Microsoft.Test.Script",
+    "dialog": {
+        "$type": "Microsoft.AdaptiveDialog",
+        "id": "test",
+        "autoEndDialog": false,
+        "recognizer": {
+            "$type": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "$type": "Microsoft.IntentPattern",
+                    "intent": "JokeIntent",
+                    "pattern": "joke"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$type": "Microsoft.OnIntent",
+                "intent": "JokeIntent",
+                "event": "recognizedIntent",
+                "actions": [
+                    {
+                        "$type": "Microsoft.SendActivity",
+                        "activity": "chicken joke"
+                    }
+                ]
+            },
+            {
+                "$type": "Microsoft.OnMessageActivity",
+                "type": "message",
+                "event": "activityReceived",
+                "condition": "turn.activity.text == 'magic'",
+                "actions": [
+                    {
+                        "$type": "Microsoft.SendActivity",
+                        "activity": "abracadabra"
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$type": "Microsoft.Test.UserSays",
+            "text": "tell me a joke"
+        },
+        {
+            "$type": "Microsoft.Test.AssertReply",
+            "text": "chicken joke"
+        },
+        {
+            "$type": "Microsoft.Test.UserSays",
+            "text": "magic"
+        },
+        {
+            "$type": "Microsoft.Test.AssertReply",
+            "text": "abracadabra"
+        }
+    ]
+}

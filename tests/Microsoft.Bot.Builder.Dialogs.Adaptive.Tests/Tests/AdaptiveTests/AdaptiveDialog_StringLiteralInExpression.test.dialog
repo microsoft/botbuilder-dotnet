@@ -1,0 +1,79 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "planningTest",
+    "triggers": [
+      {
+        "$type": "Microsoft.OnUnknownIntent",
+        "event": "unknownIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.IfCondition",
+            "condition": "(user.name == null)",
+            "actions": [
+              {
+                "$type": "Microsoft.TextInput",
+                "property": "user.name",
+                "prompt": "Hello, what is your name?"
+              }
+            ]
+          },
+          {
+            "$type": "Microsoft.IfCondition",
+            "condition": "(user.name == 'Carlos')",
+            "actions": [
+              {
+                "$type": "Microsoft.SendActivity",
+                "activity": "Hello carlin"
+              }
+            ]
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "Hello @{user.name}, nice to meet you!"
+          }
+        ]
+      }
+    ],
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserActivity",
+      "activity": {
+        "type": "conversationUpdate",
+        "membersAdded": [
+          {
+            "id": "bot",
+            "name": "Bot"
+          },
+          {
+            "id": "user",
+            "name": "User"
+          }
+        ]
+      }
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Hello, what is your name?"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "Carlos"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Hello carlin"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Hello Carlos, nice to meet you!"
+    }
+  ]
+}

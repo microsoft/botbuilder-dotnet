@@ -1,0 +1,260 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "root",
+    "recognizer": {
+      "$type": "Microsoft.RegexRecognizer",
+      "intents": [
+        {
+          "$type": "Microsoft.IntentPattern",
+          "intent": "StartOuterIntent",
+          "pattern": "start"
+        },
+        {
+          "$type": "Microsoft.IntentPattern",
+          "intent": "RootIntent",
+          "pattern": "root"
+        }
+      ]
+    },
+    "triggers": [
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "StartOuterIntent",
+        "event": "recognizedIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.AdaptiveDialog",
+            "id": "outer",
+            "recognizer": {
+              "$type": "Microsoft.RegexRecognizer",
+              "intents": [
+                {
+                  "$type": "Microsoft.IntentPattern",
+                  "intent": "SideIntent",
+                  "pattern": "side"
+                },
+                {
+                  "$type": "Microsoft.IntentPattern",
+                  "intent": "CancelIntent",
+                  "pattern": "cancel"
+                }
+              ]
+            },
+            "triggers": [
+              {
+                "$type": "Microsoft.OnBeginDialog",
+                "event": "beginDialog",
+                "actions": [
+                  {
+                    "$type": "Microsoft.TextInput",
+                    "property": "user.name",
+                    "prompt": "name?"
+                  },
+                  {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "@{user.name}"
+                  },
+                  {
+                    "$type": "Microsoft.NumberInput",
+                    "allowInterruptions": "False",
+                    "property": "user.age",
+                    "prompt": "age?",
+                    "maxTurnCount": 2
+                  },
+                  {
+                    "$type": "Microsoft.NumberInput",
+                    "allowInterruptions": "True",
+                    "property": "user.age",
+                    "prompt": "age?"
+                  },
+                  {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "@{user.age}"
+                  }
+                ]
+              },
+              {
+                "$type": "Microsoft.OnIntent",
+                "intent": "SideIntent",
+                "event": "recognizedIntent",
+                "actions": [
+                  {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "sideintent"
+                  }
+                ]
+              },
+              {
+                "$type": "Microsoft.OnIntent",
+                "intent": "CancelIntent",
+                "event": "recognizedIntent",
+                "actions": [
+                  {
+                    "$type": "Microsoft.EndDialog"
+                  }
+                ]
+              },
+              {
+                "$type": "Microsoft.OnUnknownIntent",
+                "event": "unknownIntent",
+                "actions": [
+                  {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "outerWhat"
+                  }
+                ]
+              }
+            ],
+            "defaultResultProperty": "dialog.result"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "RootIntent",
+        "event": "recognizedIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "rootintent"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnUnknownIntent",
+        "event": "unknownIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "rootunknown"
+          }
+        ]
+      }
+    ],
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "start"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "name?",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "side"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "sideintent",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "name?",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "root"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "rootintent",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "name?",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "Carlos"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Carlos",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "age?",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "root"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "age?",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "side"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "age?",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "root"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "rootintent",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "age?",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "side"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "sideintent",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "age?",
+      "exact": true,
+      "timeout": 3000
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "10"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "10",
+      "exact": true,
+      "timeout": 3000
+    }
+  ]
+}

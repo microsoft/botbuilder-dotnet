@@ -1,0 +1,22 @@
+{
+  "$type": "Microsoft.AdaptiveDialog",
+  "id": "ageDialog",
+  "triggers": [
+    {
+      "$type": "Microsoft.OnUnknownIntent",
+      "event": "unknownIntent",
+      "actions": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Hello, you are @{dialog.options.userAge} years old!"
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "And your actual age is @{$options.userAge}"
+        }
+      ]
+    }
+  ],
+  "autoEndDialog": true,
+  "defaultResultProperty": "dialog.result"
+}

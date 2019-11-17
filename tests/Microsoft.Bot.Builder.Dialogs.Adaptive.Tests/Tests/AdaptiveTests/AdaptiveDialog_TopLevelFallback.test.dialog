@@ -1,0 +1,31 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "planningTest",
+    "triggers": [
+      {
+        "$type": "Microsoft.OnUnknownIntent",
+        "event": "unknownIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "Hello Planning!"
+          }
+        ]
+      }
+    ],
+    "AutoEndDialog": true,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "start"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Hello Planning!"
+    }
+  ]
+}

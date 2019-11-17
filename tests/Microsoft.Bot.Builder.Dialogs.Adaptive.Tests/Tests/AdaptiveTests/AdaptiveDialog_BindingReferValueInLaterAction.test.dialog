@@ -1,0 +1,62 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "AdaptiveDialog",
+    "generator": {
+      "$type": "Microsoft.TemplateEngineLanguageGenerator",
+      "id": "",
+      "lgText": ""
+    },
+    "triggers": [
+      {
+        "$type": "Microsoft.OnUnknownIntent",
+        "event": "unknownIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.TextInput",
+            "property": "$name",
+            "prompt": "What is your name?"
+          },
+          {
+            "$type": "Microsoft.NumberInput",
+            "property": "$age",
+            "prompt": "Hello @{$name}, how old are you?"
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "Hello @{$name}, I have your age as @{$age}"
+          }
+        ]
+      }
+    ],
+    "AutoEndDialog": true,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "Hi"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "What is your name?"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "zoidberg"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Hello zoidberg, how old are you?"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "22"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Hello zoidberg, I have your age as 22"
+    }
+  ]
+}

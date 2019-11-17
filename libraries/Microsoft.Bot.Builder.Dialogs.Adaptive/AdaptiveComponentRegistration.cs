@@ -6,6 +6,7 @@ using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
@@ -108,6 +109,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<PhoneNumberEntityRecognizer>(PhoneNumberEntityRecognizer.DeclarativeType);
             yield return new TypeRegistration<TemperatureEntityRecognizer>(TemperatureEntityRecognizer.DeclarativeType);
             yield return new TypeRegistration<UrlEntityRecognizer>(UrlEntityRecognizer.DeclarativeType);
+
+            // Generators
+            yield return new TypeRegistration<ResourceMultiLanguageGenerator>(ResourceMultiLanguageGenerator.DeclarativeType);
+            yield return new TypeRegistration<MultiLanguageGenerator>(MultiLanguageGenerator.DeclarativeType);
+            yield return new TypeRegistration<TemplateEngineLanguageGenerator>(TemplateEngineLanguageGenerator.DeclarativeType);
 
             // Dialogs
             yield return new TypeRegistration<AdaptiveDialog>(AdaptiveDialog.DeclarativeType);

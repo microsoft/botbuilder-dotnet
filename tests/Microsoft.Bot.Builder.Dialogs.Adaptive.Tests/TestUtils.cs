@@ -14,7 +14,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    public static class TestUtils
+    [TestClass]
+    public class TestUtils
     {
         private static string rootFolder = PathUtils.NormalizePath(@"..\..\..");
 
@@ -26,7 +27,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             return Directory.EnumerateFiles(testFolder, "*.test.dialog", SearchOption.AllDirectories).Select(s => new object[] { Path.GetFileName(s) }).ToArray();
         }
 
-        public static void AssemblyInit()
+        [AssemblyInitialize]
+        public static void AssemblyInit(TestContext context)
         {
             lock (rootFolder)
             {
@@ -44,7 +46,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         public static async Task RunTestScript(string resourceId)
         {
-            await TestUtils.ResourceExplorer.LoadType<TestScript>(resourceId).ExecuteAsync(TestUtils.ResourceExplorer).ConfigureAwait(false);
+            var script = TestUtils.ResourceExplorer.LoadType<TestScript>(resourceId);
+            script.Description = script.Description ?? resourceId;
+            await script.ExecuteAsync().ConfigureAwait(false);
         }
     }
 }

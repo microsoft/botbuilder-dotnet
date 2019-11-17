@@ -34,6 +34,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         [JsonProperty("$type")]
         public const string DeclarativeType = "Microsoft.Test.Script";
 
+        private static JsonSerializerSettings serializerSettings = new JsonSerializerSettings()
+        {
+            Formatting = Formatting.Indented,
+            NullValueHandling = NullValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.Ignore,
+            ContractResolver = new IgnoreEmptyEnumerablesResolver
+            {
+                NamingStrategy = new CamelCaseNamingStrategy()
+            }
+        };
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TestScript"/> class.
         /// </summary>
@@ -87,8 +98,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <param name="callback">bot logic.</param>
         /// <param name="adapter">optional test adapter.</param>
         /// <returns>Runs the exchange between the user and the bot.</returns>
-        public async Task ExecuteAsync(ResourceExplorer resourceExplorer, BotCallbackHandler callback = null, TestAdapter adapter = null)
+        public async Task ExecuteAsync(ResourceExplorer resourceExplorer = null, BotCallbackHandler callback = null, TestAdapter adapter = null)
         {
+            if (resourceExplorer == null)
+            {
+                resourceExplorer = new ResourceExplorer()
+                    .AddFolder(GetProjectPath());
+            }
+
             if (adapter == null)
             {
                 TypeFactory.Configuration = new ConfigurationBuilder().Build();
@@ -284,18 +301,54 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 
         public Task SaveScript(string folder, [CallerMemberName] string testName = null)
         {
-            string filePath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($"..\\..\\..\\tests\\{folder}\\{testName}.test.dialog")));
-            File.WriteAllText(filePath, JsonConvert.SerializeObject(this, new JsonSerializerSettings()
+            folder = Path.Combine(GetProjectPath(), PathUtils.NormalizePath($"tests\\{folder}"));
+
+            if (this.Dialog is DialogContainer container && container.Dialogs.GetDialogs().Any())
             {
-                Formatting = Formatting.Indented,
-                NullValueHandling = NullValueHandling.Ignore,
-                DefaultValueHandling = DefaultValueHandling.Ignore,
-                ContractResolver = new IgnoreEmptyEnumerablesResolver
+                folder = Path.Combine(folder, testName);
+
+                if (!Directory.Exists(folder))
                 {
-                    NamingStrategy = new CamelCaseNamingStrategy()
+                    Directory.CreateDirectory(folder);
                 }
-            }));
+
+                SaveContainerDialogs(container, folder);
+            }
+
+            File.WriteAllText(Path.Combine(folder, $"{testName}.test.dialog"), JsonConvert.SerializeObject(this, serializerSettings));
             return Task.CompletedTask;
+        }
+
+        private void SaveContainerDialogs(DialogContainer container, string folder)
+        {
+            foreach (var dialog in container.Dialogs.GetDialogs())
+            {
+                var filePath = Path.GetFullPath(Path.Combine(folder, $"{dialog.Id}.dialog"));
+                File.WriteAllText(filePath, JsonConvert.SerializeObject(dialog, serializerSettings));
+
+                if (dialog is DialogContainer container2)
+                {
+                    SaveContainerDialogs(container2, folder);
+                }
+            }
+        }
+
+        private string GetProjectPath()
+        {
+            var parent = Environment.CurrentDirectory;
+            while (!string.IsNullOrEmpty(parent))
+            {
+                if (Directory.EnumerateFiles(parent, "*proj").Any())
+                {
+                    break;
+                }
+                else
+                {
+                    parent = Path.GetDirectoryName(parent);
+                }
+            }
+
+            return parent;
         }
 
         internal class IgnoreEmptyEnumerablesResolver : DefaultContractResolver

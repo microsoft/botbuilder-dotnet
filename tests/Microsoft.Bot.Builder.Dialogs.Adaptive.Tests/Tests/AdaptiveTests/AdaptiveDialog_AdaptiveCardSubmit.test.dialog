@@ -1,0 +1,47 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "planningTest",
+    "recognizer": {
+      "$type": "Microsoft.RegexRecognizer",
+      "intents": [
+        {
+          "$type": "Microsoft.IntentPattern",
+          "intent": "SubmitIntent",
+          "pattern": "123123123"
+        }
+      ]
+    },
+    "triggers": [
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "SubmitIntent",
+        "event": "recognizedIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "The city is @{@city}!"
+          }
+        ]
+      }
+    ],
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserActivity",
+      "activity": {
+        "type": "message",
+        "value": {
+          "intent": "SubmitIntent",
+          "city": "Seattle"
+        }
+      }
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "The city is Seattle!"
+    }
+  ]
+}

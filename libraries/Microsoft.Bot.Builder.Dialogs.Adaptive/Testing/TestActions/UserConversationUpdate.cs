@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
 {
-    [DebuggerDisplay("UserConversationUpdate: Added:{string.Join(\",\", MembersAdded)} Removed:{string.Join(\",\", MembersRemoved)}")]
+    [DebuggerDisplay("UserConversationUpdate")]
     public class UserConversationUpdate : TestAction
     {
         [JsonProperty("$type")]
@@ -32,29 +32,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         /// </summary>
         /// <value>The members names.</value>
         [JsonProperty("membersAdded")]
-        public List<string> MembersAdded { get; set; } = new List<string>();
+        public List<string> MembersAdded { get; set; }
 
         /// <summary>
         /// Gets or sets the members removed names.
         /// </summary>
         /// <value>The members names.</value>
         [JsonProperty("membersRemoved")]
-        public List<string> MembersRemoved { get; set; } = new List<string>();
+        public List<string> MembersRemoved { get; set; }
 
         public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
         {
             var activity = adapter.MakeActivity();
             activity.Type = ActivityTypes.ConversationUpdate;
-            activity.MembersAdded = new List<ChannelAccount>();
-            activity.MembersRemoved = new List<ChannelAccount>();
-            foreach (var member in MembersAdded)
+            if (this.MembersAdded != null)
             {
-                activity.MembersAdded.Add(new ChannelAccount(id: member, name: member, role: RoleTypes.User));
+                activity.MembersAdded = new List<ChannelAccount>();
+                foreach (var member in MembersAdded)
+                {
+                    activity.MembersAdded.Add(new ChannelAccount(id: member, name: member, role: RoleTypes.User));
+                }
             }
 
-            foreach (var member in MembersRemoved)
+            if (this.MembersRemoved != null)
             {
-                activity.MembersRemoved.Add(new ChannelAccount(id: member, name: member, role: RoleTypes.User));
+                activity.MembersRemoved = new List<ChannelAccount>();
+
+                foreach (var member in MembersRemoved)
+                {
+                    activity.MembersRemoved.Add(new ChannelAccount(id: member, name: member, role: RoleTypes.User));
+                }
             }
 
             await adapter.ProcessActivityAsync(activity, callback, default(CancellationToken)).ConfigureAwait(false);

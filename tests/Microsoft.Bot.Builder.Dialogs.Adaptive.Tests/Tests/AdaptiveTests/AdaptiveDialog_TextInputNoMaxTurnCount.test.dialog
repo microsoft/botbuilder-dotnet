@@ -1,0 +1,61 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "planningTest",
+    "triggers": [
+      {
+        "$type": "Microsoft.OnBeginDialog",
+        "event": "beginDialog",
+        "actions": [
+          {
+            "$type": "Microsoft.NumberInput",
+            "property": "user.age",
+            "prompt": "Hello, what is your age?",
+            "defaultValueResponse": "I am going to say you are 10.",
+            "defaultValue": "10"
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "Your age is @{user.age}."
+          }
+        ]
+      }
+    ],
+    "AutoEndDialog": true,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserConversationUpdate"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Hello, what is your age?"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "Why do you want to know"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Hello, what is your age?"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "Why do you want to know"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Hello, what is your age?"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "Why do you want to know"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Hello, what is your age?"
+    }
+  ]
+}

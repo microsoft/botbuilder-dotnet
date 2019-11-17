@@ -19,23 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         
         public static IEnumerable<object[]> UserActionScripts => TestUtils.GetTestScripts(@"Tests\TestUser");
         
-        public static IEnumerable<object[]> ActionTestsScripts => TestUtils.GetTestScripts(@"Tests\ActionTests");
-
-        //public static IEnumerable<object[]> AllTestScripts => TestUtils.GetTestScripts(@".");
-        //[DataTestMethod]
-        //[DynamicData(nameof(AllTestScripts))]
-        //public async Task RunAllTestScripts(string resourceId)
-        //{
-        //    await TestUtils.RunTestScript(resourceId);
-        //}
-        
         public TestContext TestContext { get; set; }
-
-        [AssemblyInitialize]
-        public static void AssemblyInit(TestContext context)
-        {
-            TestUtils.AssemblyInit();
-        }
 
         [DataTestMethod]
         [DynamicData(nameof(AssertReplyScripts))]
@@ -58,17 +42,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await TestUtils.RunTestScript(resourceId);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(ActionTestsScripts))]
-        public async Task ActionTests(string resourceId)
-        {
-            await TestUtils.RunTestScript(resourceId);
-        }
-
-        [TestMethod]
-        public async Task TestDialog()
-        {
-            await TestUtils.RunTestScript("Action_EditActionReplaceSequence.test.dialog");
-        }
+        //[TestMethod]
+        //public async Task TestDialog()
+        //{
+        //    await TestUtils.RunTestScript("Action_EditActionReplaceSequence.test.dialog");
+        //}
     }
 }

@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
@@ -12,6 +13,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// </summary>
     public class TemplateEngineLanguageGenerator : ILanguageGenerator
     {
+        [JsonProperty("$type")]
+        public const string DeclarativeType = "Microsoft.TemplateEngineLanguageGenerator";
+
         private const string DEFAULTLABEL = "Unknown";
 
         // lazy loading
@@ -53,6 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <value>
         /// Id of the source of this template (used for labeling errors).
         /// </value>
+        [JsonProperty("id")]
         public string Id { get; set; } = string.Empty;
 
         /// <summary>
@@ -61,6 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <value>
         /// Text content of the LG file.
         /// </value>
+        [JsonProperty("lgText")]
         public string LGText { get; set; } = string.Empty;
 
         /// <summary>

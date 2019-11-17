@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -82,7 +83,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <value>
         /// Whether to end the dialog when there are no actions to execute.
         /// </value>
-        [JsonProperty("AutoEndDialog")]
+        [DefaultValue(true)]
+        [JsonProperty("autoEndDialog")]
         public bool AutoEndDialog { get; set; } = true;
 
         /// <summary>
@@ -102,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </value>
         [JsonProperty("defaultResultProperty")]
         public string DefaultResultProperty { get; set; } = "dialog.result";
-        
+
         [JsonIgnore]
         public override IBotTelemetryClient TelemetryClient
         {

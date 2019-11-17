@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -40,8 +41,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
         /// <value>
         /// A bool value for match policy.
         /// </value>
+        [DefaultValue(true)]
         [JsonProperty("exact")]
-        public bool Exact { get; set; } = false;
+        public bool Exact { get; set; } = true;
 
         public override void ValidateReply(Activity activity)
         {
