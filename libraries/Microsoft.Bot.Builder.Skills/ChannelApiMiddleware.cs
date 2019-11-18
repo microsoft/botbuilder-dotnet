@@ -5,6 +5,7 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Skills
@@ -14,16 +15,9 @@ namespace Microsoft.Bot.Builder.Skills
     /// </summary>
     internal class ChannelApiMiddleware : IMiddleware
     {
-        private readonly BotFrameworkSkillClient _skillAdapter;
-
-        internal ChannelApiMiddleware(BotFrameworkSkillClient skillAdapter)
-        {
-            _skillAdapter = skillAdapter;
-        }
-
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
         {
-            if (turnContext.Activity.Type == ActivityTypes.Invoke && turnContext.Activity.Name == BotFrameworkSkillClient.InvokeActivityName)
+            if (turnContext.Activity.Type == ActivityTypes.Invoke && turnContext.Activity.Name == BotFrameworkSkillHandler.InvokeActivityName)
             {
                 // process Invoke Activity 
                 var invokeActivity = turnContext.Activity.AsInvokeActivity();
@@ -125,7 +119,7 @@ namespace Microsoft.Bot.Builder.Skills
 
                     //if (adapter != null)
                     //{
-                    //    invokeArgs.Result = await adapter.GetConversationsAsync((int)invokeArgs.Args[0], (string)invokeArgs.Args[1], cancellationToken).ConfigureAwait(false);
+                    //    invokeArgs.Result = await adapter.OnGetConversationsAsync((int)invokeArgs.Args[0], (string)invokeArgs.Args[1], cancellationToken).ConfigureAwait(false);
                     //}
 
                     // DeleteConversationMember(memberId)

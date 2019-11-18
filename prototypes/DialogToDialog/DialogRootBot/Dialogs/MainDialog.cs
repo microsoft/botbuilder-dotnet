@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -19,11 +19,11 @@ namespace DialogRootBot.Dialogs
     {
         private readonly ConversationState _conversationState;
         private readonly SkillsConfiguration _skillsConfig;
-        private readonly BotFrameworkSkillClient _skillClient;
+        private readonly BotFrameworkClient _skillClient;
         private readonly string _botId;
 
         // Dependency injection uses this constructor to instantiate MainDialog
-        public MainDialog(ConversationState conversationState, BotFrameworkSkillClient skillClient, SkillsConfiguration skillsConfig, SkillDialog bookingDialog, IConfiguration configuration)
+        public MainDialog(ConversationState conversationState, BotFrameworkClient skillClient, SkillsConfiguration skillsConfig, SkillDialog bookingDialog, IConfiguration configuration)
             : base(nameof(MainDialog))
         {
             _botId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
@@ -135,12 +135,12 @@ namespace DialogRootBot.Dialogs
                 invokeActivity.Recipient = stepContext.Context.Activity.Recipient;
 
                 await _conversationState.SaveChangesAsync(stepContext.Context, true, cancellationToken);
-                var response = await _skillClient.ForwardActivityAsync(_botId, _skillsConfig.Skills["SkillBot"], _skillsConfig.SkillHostEndpoint, (Activity)invokeActivity, cancellationToken);
+                var response = await _skillClient.PostActivityAsync(_botId, _skillsConfig.Skills["SkillBot"].AppId, _skillsConfig.Skills["SkillBot"].SkillEndpoint, _skillsConfig.SkillHostEndpoint, stepContext.Context.Activity.Conversation.Id, (Activity)invokeActivity, cancellationToken);
                 return await stepContext.NextAsync(response.Body, cancellationToken);
             }
 
             // Catch all for unhandled intents
-            var didntUnderstandMessageText = $"Sorry, I didn't get that. Please try asking in a different way.";
+            var didntUnderstandMessageText = "Sorry, I didn't get that. Please try asking in a different way.";
             var didntUnderstandMessage = MessageFactory.Text(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
             await stepContext.Context.SendActivityAsync(didntUnderstandMessage, cancellationToken);
 

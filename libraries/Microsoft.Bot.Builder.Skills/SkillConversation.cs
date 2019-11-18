@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#pragma warning disable CA2208 // Instantiate argument exceptions correctly
-
 using System;
 using System.Text;
 using Newtonsoft.Json;
@@ -42,20 +40,20 @@ namespace Microsoft.Bot.Builder.Skills
         /// <returns>packed conversationId.</returns>
         public string GetSkillConversationId()
         {
-            if (string.IsNullOrEmpty(ConversationId))
+            if (string.IsNullOrWhiteSpace(ConversationId))
             {
-                throw new ArgumentNullException(nameof(ConversationId));
+                throw new NullReferenceException($"Property {nameof(ConversationId)} is not set");
             }
 
-            if (string.IsNullOrEmpty(ServiceUrl))
+            if (string.IsNullOrWhiteSpace(ServiceUrl))
             {
-                throw new ArgumentNullException(nameof(ServiceUrl));
+                throw new NullReferenceException($"Property {nameof(ServiceUrl)} is not set");
             }
-             
+
             return Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new[]
             {
                 ConversationId,
-                ServiceUrl,
+                ServiceUrl
             })));
         }
     }
