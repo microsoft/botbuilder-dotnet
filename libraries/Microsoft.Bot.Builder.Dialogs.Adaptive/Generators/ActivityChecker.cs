@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </summary>
         /// <param name="lgStringResult">string result from languageGenerator.</param>
         /// <returns>Diagnostic list.</returns>
-        public static List<Diagnostic> Check(string lgStringResult)
+        public static IList<Diagnostic> Check(string lgStringResult)
         {
             if (string.IsNullOrWhiteSpace(lgStringResult))
             {
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return CheckStructuredResult(lgStructuredResult);
         }
 
-        private static List<Diagnostic> CheckStructuredResult(JObject lgJObj)
+        private static IList<Diagnostic> CheckStructuredResult(JObject lgJObj)
         {
             var result = new List<Diagnostic>();
             var type = GetStructureType(lgJObj);
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return result;
         }
 
-        private static List<Diagnostic> CheckActivity(JObject lgJObj)
+        private static IList<Diagnostic> CheckActivity(JObject lgJObj)
         {
             var result = new List<Diagnostic>();
 
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return result;
         }
 
-        private static List<Diagnostic> CheckActivityType(string activityType)
+        private static IList<Diagnostic> CheckActivityType(string activityType)
         {
             var result = new List<Diagnostic>();
 
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return result;
         }
 
-        private static List<Diagnostic> CheckActivityProperities(JObject lgJObj)
+        private static IList<Diagnostic> CheckActivityProperities(JObject lgJObj)
         {
             var result = new List<Diagnostic>();
 
@@ -122,19 +122,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return result;
         }
 
-        private static List<Diagnostic> CheckSuggestions(JToken value)
+        private static IList<Diagnostic> CheckSuggestions(JToken value)
         {
             var actions = NormalizedToList(value);
             return CheckCardActions(actions);
         }
 
-        private static List<Diagnostic> CheckButtons(JToken value)
+        private static IList<Diagnostic> CheckButtons(JToken value)
         {
             var actions = NormalizedToList(value);
             return CheckCardActions(actions);
         }
 
-        private static List<Diagnostic> CheckCardActions(List<JToken> actions)
+        private static IList<Diagnostic> CheckCardActions(IList<JToken> actions)
         {
             var result = new List<Diagnostic>();
 
@@ -156,7 +156,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return result;
         }
 
-        private static List<Diagnostic> CheckCardAction(JObject cardActionJObj)
+        private static IList<Diagnostic> CheckCardAction(JObject cardActionJObj)
         {
             var result = new List<Diagnostic>();
             var type = GetStructureType(cardActionJObj);
@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return result;
         }
 
-        private static List<Diagnostic> CheckCardActionType(string cardActionType)
+        private static IList<Diagnostic> CheckCardActionType(string cardActionType)
         {
             var result = new List<Diagnostic>();
 
@@ -209,7 +209,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return type?.ToLowerInvariant() ?? string.Empty;
         }
 
-        private static List<Diagnostic> CheckAttachments(JToken value)
+        private static IList<Diagnostic> CheckAttachments(JToken value)
         {
             var result = new List<Diagnostic>();
 
@@ -226,7 +226,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return result;
         }
 
-        private static List<Diagnostic> CheckAttachment(JObject lgJObj)
+        private static IList<Diagnostic> CheckAttachment(JObject lgJObj)
         {
             var result = new List<Diagnostic>();
 
@@ -250,7 +250,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return result;
         }
 
-        private static List<Diagnostic> CheckCardAtttachment(JObject lgJObj)
+        private static IList<Diagnostic> CheckCardAtttachment(JObject lgJObj)
         {
             var result = new List<Diagnostic>();
 
@@ -282,7 +282,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return result;
         }
 
-        private static List<Diagnostic> CheckPropertyName(JObject value, Type type)
+        private static IList<Diagnostic> CheckPropertyName(JObject value, Type type)
         {
             var result = new List<Diagnostic>();
             if (value == null)
@@ -318,7 +318,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return boolStr.ToLowerInvariant() == "true" || boolStr.ToLowerInvariant() == "false";
         }
 
-        private static List<JToken> NormalizedToList(JToken item)
+        private static IList<JToken> NormalizedToList(JToken item)
         {
             return item == null ?
                 new List<JToken>() :
@@ -334,7 +334,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 : new Diagnostic(emptyRange, message, DiagnosticSeverity.Warning);
         }
 
-        private static List<T> GetAllPublicConstantValues<T>(Type type)
+        private static IList<T> GetAllPublicConstantValues<T>(Type type)
         {
             return type
                 .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)

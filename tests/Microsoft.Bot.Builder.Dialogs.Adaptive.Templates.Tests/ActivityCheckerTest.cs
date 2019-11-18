@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
@@ -92,7 +90,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests
         {
             var context = new TurnContext(new TestAdapter(), new Activity());
             var lgText = await resourceExplorer.GetResource(lgFile).ReadTextAsync();
-            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgText, "test", LanguageGeneratorManager.MultiLanguageResolverDelegate(resourceExplorer)));
+            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgText, "test", MultiLanguageResourceLoader.Load(resourceExplorer)));
             return context;
         }
     }

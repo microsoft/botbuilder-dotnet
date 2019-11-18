@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
         }
 
-        private static List<CardAction> GetCardActions(List<JToken> actions)
+        private static IList<CardAction> GetCardActions(IList<JToken> actions)
         {
             var cardActions = new List<CardAction>();
             foreach (var action in actions)
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return cardActions;
         }
 
-        private static List<CardAction> GetButtons(JToken value)
+        private static IList<CardAction> GetButtons(JToken value)
         {
             var actions = NormalizedToList(value);
             return GetCardActions(actions);
@@ -203,7 +203,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return type.ToLowerInvariant() ?? string.Empty;
         }
 
-        private static List<Attachment> GetAttachments(JToken value)
+        private static IList<Attachment> GetAttachments(JToken value)
         {
             var attachments = new List<Attachment>();
             var attachmentsJsonList = NormalizedToList(value);
@@ -295,7 +295,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                             card[property] = new JArray();
                         }
 
-                        GetButtons(value).ForEach(u => ((JArray)card[property]).Add(JObject.FromObject(u)));
+                        GetButtons(value).ToList().ForEach(u => ((JArray)card[property]).Add(JObject.FromObject(u)));
                         break;
 
                     case "autostart":
@@ -338,7 +338,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return false;
         }
 
-        private static List<JToken> NormalizedToList(JToken item)
+        private static IList<JToken> NormalizedToList(JToken item)
         {
             return item == null ? 
                 new List<JToken>() :
