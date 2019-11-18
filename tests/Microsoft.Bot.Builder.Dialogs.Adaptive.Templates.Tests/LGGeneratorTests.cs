@@ -56,34 +56,65 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
-        public async Task TestImport()
-        {
-            var languageGeneratorManager = new LanguageGeneratorManager(resourceExplorer);
-            var generator = languageGeneratorManager.LanguageGenerators["import.lg"];
-            var result = await generator.Generate(GetTurnContext(string.Empty), "@{test2()}", null);
-            Assert.AreEqual("default2", result);
-        }
-
-        [TestMethod]
         public async Task TestMultiLangImport()
         {
             var languageGeneratorManager = new LanguageGeneratorManager(resourceExplorer);
-            var generator = languageGeneratorManager.LanguageGenerators["import.lg"];
+            var generator = languageGeneratorManager.LanguageGenerators["common.lg"];
+            var templateContent = "@{templateb()}";
 
-            var result = await generator.Generate(GetTurnContext(string.Empty), "@{test3()}", null);
-            Assert.AreEqual("default3", result);
+            var result = await generator.Generate(GetTurnContext(string.Empty), templateContent, null);
+            Assert.AreEqual("from b.lg", result);
 
-            result = await generator.Generate(GetTurnContext(locale: "en-us"), "@{test3()}", null);
-            Assert.AreEqual("default3-en", result);
+            // fallback to default
+            result = await generator.Generate(GetTurnContext(locale: "foo"), templateContent, null);
+            Assert.AreEqual("from b.lg", result);
 
-            result = await generator.Generate(GetTurnContext(locale: "fr"), "@{test3()}", null);
-            Assert.AreEqual("default3-fr", result);
+            result = await generator.Generate(GetTurnContext(locale: "en-us"), templateContent, null);
+            Assert.AreEqual("from b.en-us.lg", result);
 
-            result = await generator.Generate(GetTurnContext(locale: "foo"), "@{test3()}", null);
-            Assert.AreEqual("default3", result);
+            // fallback to en
+            result = await generator.Generate(GetTurnContext(locale: "en-gb"), templateContent, null);
+            Assert.AreEqual("from b.en.lg", result);
 
-            result = await generator.Generate(GetTurnContext(locale: "zh-cn"), "@{test3()}", null);
-            Assert.AreEqual("default3-cn", result);
+            result = await generator.Generate(GetTurnContext(locale: "en"), templateContent, null);
+            Assert.AreEqual("from b.en.lg", result);
+        }
+
+        [TestMethod]
+        public async Task TestMultiLanguageE2E()
+        {
+            await CreateMultiLanguageFlow(async (turnContext, cancellationToken) =>
+            {
+                var lg = turnContext.TurnState.Get<ILanguageGenerator>();
+                Assert.IsNotNull(lg, "ILanguageGenerator should not be null");
+                Assert.IsNotNull(turnContext.TurnState.Get<ResourceExplorer>(), "ResourceExplorer should not be null");
+
+                turnContext.Activity.Locale = string.Empty;
+                var text = await lg.Generate(turnContext, "@{templatea()}", null);
+                Assert.AreEqual("from a.lg", text, "template should be there");
+                text = await lg.Generate(turnContext, "@{templateb()}", null);
+                Assert.AreEqual("from b.lg", text, "template should be there");
+
+                turnContext.Activity.Locale = "en-us";
+                text = await lg.Generate(turnContext, "@{templatea()}", null);
+                Assert.AreEqual("from a.en-US.lg", text, "template should be there");
+                text = await lg.Generate(turnContext, "@{templateb()}", null);
+                Assert.AreEqual("from b.en-us.lg", text, "template should be there");
+
+                turnContext.Activity.Locale = "en";
+                text = await lg.Generate(turnContext, "@{templatea()}", null);
+                Assert.AreEqual("from a.lg", text, "template should be there");
+                text = await lg.Generate(turnContext, "@{templateb()}", null);
+                Assert.AreEqual("from b.en.lg", text, "template should be there");
+
+                turnContext.Activity.Locale = "foo";
+                text = await lg.Generate(turnContext, "@{templatea()}", null);
+                Assert.AreEqual("from a.lg", text, "template should be there");
+                text = await lg.Generate(turnContext, "@{templateb()}", null);
+                Assert.AreEqual("from b.lg", text, "template should be there");
+            })
+            .Send("hello")
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -302,6 +333,25 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 .UseResourceExplorer(resourceExplorer)
                 .UseAdaptiveDialogs()
                 .UseLanguageGeneration(resourceExplorer, "test.lg")
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            return new TestFlow(adapter, handler);
+        }
+
+        private TestFlow CreateMultiLanguageFlow(BotCallbackHandler handler)
+        {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            adapter
+                .UseStorage(storage)
+                .UseState(userState, convoState)
+                .UseResourceExplorer(resourceExplorer)
+                .UseAdaptiveDialogs()
+                .UseLanguageGeneration(resourceExplorer, "a.lg")
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             return new TestFlow(adapter, handler);

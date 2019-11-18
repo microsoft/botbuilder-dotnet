@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </summary>
         /// <param name="lgText">lg template text.</param>
         /// <param name="id">optional label for the source of the templates (used for labeling source of template errors).</param>
-        /// <param name="resourceMapping">template resource loader delegate (local) -> <see cref="ImportResolverDelegate"/>.</param>
+        /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
         public TemplateEngineLanguageGenerator(string lgText, string id, Dictionary<string, IList<IResource>> resourceMapping)
         {
             this.Id = id ?? DEFAULTLABEL;
@@ -90,11 +90,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private TemplateEngine InitTemplateEngine(ITurnContext turnContext)
         {
-            var local = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
+            var locale = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
             if (multiLangEngines.Count > 0)
             {
-                var fallbackLocal = MultiLanguageResourceLoader.FallbackLocal(local, multiLangEngines.Keys.ToList());
-                engine = multiLangEngines[fallbackLocal];
+                var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, multiLangEngines.Keys.ToList());
+                engine = multiLangEngines[fallbackLocale];
             }
             else
             {

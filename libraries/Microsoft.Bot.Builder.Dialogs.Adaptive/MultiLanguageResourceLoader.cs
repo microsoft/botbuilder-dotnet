@@ -20,12 +20,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             var languagePolicy = new LanguagePolicy();
             foreach (var item in languagePolicy)
             {
-                var local = item.Key;
+                var locale = item.Key;
                 var suffixs = item.Value;
                 var existNames = new HashSet<string>();
                 foreach (var suffix in suffixs)
                 {
-                    if (string.IsNullOrEmpty(local) || !string.IsNullOrEmpty(suffix))
+                    if (string.IsNullOrEmpty(locale) || !string.IsNullOrEmpty(suffix))
                     {
                         var resourcesWithSuchSuffix = allResources.Where(u => ParseLGFileName(u.Id).language == suffix);
                         foreach (var resourceWithSuchSuffix in resourcesWithSuchSuffix)
@@ -36,20 +36,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                             if (!existNames.Contains(prefixName))
                             {
                                 existNames.Add(prefixName);
-                                if (!resourceMapping.ContainsKey(local))
+                                if (!resourceMapping.ContainsKey(locale))
                                 {
-                                    resourceMapping.Add(local, new List<IResource> { resourceWithSuchSuffix });
+                                    resourceMapping.Add(locale, new List<IResource> { resourceWithSuchSuffix });
                                 }
                                 else
                                 {
-                                    resourceMapping[local].Add(resourceWithSuchSuffix);
+                                    resourceMapping[locale].Add(resourceWithSuchSuffix);
                                 }
                             }
                         }
                     }
                     else
                     {
-                        if (resourceMapping.ContainsKey(local))
+                        if (resourceMapping.ContainsKey(locale))
                         {
                             var resourcesWithEmptySuffix = allResources.Where(u => ParseLGFileName(u.Id).language == string.Empty);
                             foreach (var resourceWithEmptySuffix in resourcesWithEmptySuffix)
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                                 if (!existNames.Contains(prefixName))
                                 {
                                     existNames.Add(prefixName);
-                                    resourceMapping[local].Add(resourceWithEmptySuffix);
+                                    resourceMapping[locale].Add(resourceWithEmptySuffix);
                                 }
                             }
                         }
@@ -96,44 +96,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         }
 
         /// <summary>
-        /// Get the fall back local from the optional locals. for example
-        /// en-us, is a local from English. But the option locals has [en, ''],
+        /// Get the fall back locale from the optional locales. for example
+        /// en-us, is a locale from English. But the option locales has [en, ''],
         /// So,en would be picked.
         /// </summary>
-        /// <param name="local">current local.</param>
-        /// <param name="optionalLocals">option locals.</param>
-        /// <returns>the final local.</returns>
-        public static string FallbackLocal(string local, IList<string> optionalLocals)
+        /// <param name="locale">current locale.</param>
+        /// <param name="optionalLocales">option locales.</param>
+        /// <returns>the final locale.</returns>
+        public static string FallbackLocale(string locale, IList<string> optionalLocales)
         {
-            if (optionalLocals == null)
+            if (optionalLocales == null)
             {
                 throw new ArgumentNullException();
             }
 
-            if (optionalLocals.Contains(local))
+            if (optionalLocales.Contains(locale))
             {
-                return local;
+                return locale;
             }
 
             var languagePolicy = new LanguagePolicy();
 
-            if (languagePolicy.ContainsKey(local))
+            if (languagePolicy.ContainsKey(locale))
             {
-                var fallbackLocals = languagePolicy[local];
+                var fallbackLocals = languagePolicy[locale];
                 foreach (var fallbackLocal in fallbackLocals)
                 {
-                    if (optionalLocals.Contains(fallbackLocal))
+                    if (optionalLocales.Contains(fallbackLocal))
                     {
                         return fallbackLocal;
                     }
                 }
             }
-            else if (optionalLocals.Contains(string.Empty))
+            else if (optionalLocales.Contains(string.Empty))
             {
                 return string.Empty;
             }
 
-            throw new Exception($"there is no local fallback for {local}");
+            throw new Exception($"there is no locale fallback for {locale}");
         }
 
         /// <summary>
@@ -148,22 +148,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             var resourcePoolDict = new Dictionary<string, IList<IResource>>();
             foreach (var languageItem in resourceMapping)
             {
-                var currentLocal = languageItem.Key;
+                var currentLocale = languageItem.Key;
                 var currentResourcePool = languageItem.Value;
                 var sameResourcePool = resourcePoolDict.FirstOrDefault(u => HasSameResourcePool(u.Value, languageItem.Value));
-                var existLocal = sameResourcePool.Key;
+                var existLocale = sameResourcePool.Key;
 
-                if (existLocal == null)
+                if (existLocale == null)
                 {
-                    resourcePoolDict.Add(currentLocal, currentResourcePool);
+                    resourcePoolDict.Add(currentLocale, currentResourcePool);
                 }
                 else
                 {
-                    var newLocal = FindCommonAncestorLocal(existLocal, currentLocal);
-                    if (!string.IsNullOrWhiteSpace(newLocal) && newLocal != existLocal)
+                    var newLocale = FindCommonAncestorLocale(existLocale, currentLocale);
+                    if (!string.IsNullOrWhiteSpace(newLocale) && newLocale != existLocale)
                     {
-                        resourcePoolDict.Remove(existLocal);
-                        resourcePoolDict.Add(newLocal, currentResourcePool);
+                        resourcePoolDict.Remove(existLocale);
+                        resourcePoolDict.Add(newLocale, currentResourcePool);
                     }
                 }
             }
@@ -172,23 +172,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         }
 
         /// <summary>
-        /// find the common parent local, for example
-        /// en-us, en-gb, has the same parent local: en.
-        /// and en-us, fr, has the no same parent local.
+        /// find the common parent locale, for example
+        /// en-us, en-gb, has the same parent locale: en.
+        /// and en-us, fr, has the no same parent locale.
         /// </summary>
-        /// <param name="local1">first local.</param>
-        /// <param name="local2">second local.</param>
+        /// <param name="locale1">first locale.</param>
+        /// <param name="locale2">second locale.</param>
         /// <returns>the most closest common ancestor local.</returns>
-        private static string FindCommonAncestorLocal(string local1, string local2)
+        private static string FindCommonAncestorLocale(string locale1, string locale2)
         {
             var policy = new LanguagePolicy();
-            if (!policy.ContainsKey(local1) || !policy.ContainsKey(local2))
+            if (!policy.ContainsKey(locale1) || !policy.ContainsKey(locale2))
             {
                 return string.Empty;
             }
 
-            var key1Policy = policy[local1];
-            var key2Policy = policy[local2];
+            var key1Policy = policy[locale1];
+            var key2Policy = policy[locale2];
             foreach (var key1Language in key1Policy)
             {
                 foreach (var key2Language in key2Policy)
