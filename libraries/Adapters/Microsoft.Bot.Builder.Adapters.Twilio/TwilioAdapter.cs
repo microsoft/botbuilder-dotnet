@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
@@ -22,6 +24,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
     public class TwilioAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         private readonly TwilioClientWrapper _twilioClient;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TwilioAdapter"/> class using configuration settings.
@@ -34,8 +37,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// TwilioAuthToken: The authentication token for the account.
         /// TwilioValidationUrl: The validation URL for incoming requests.
         /// </remarks>
-        public TwilioAdapter(IConfiguration configuration)
-            : this(new TwilioClientWrapper(new TwilioAdapterOptions(configuration["TwilioNumber"], configuration["TwilioAccountSid"], configuration["TwilioAuthToken"], new Uri(configuration["TwilioValidationUrl"]))))
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        public TwilioAdapter(IConfiguration configuration, ILogger logger)
+            : this(new TwilioClientWrapper(new TwilioAdapterOptions(configuration["TwilioNumber"], configuration["TwilioAccountSid"], configuration["TwilioAuthToken"], new Uri(configuration["TwilioValidationUrl"]))), logger)
         {
         }
 
@@ -43,9 +47,11 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// Initializes a new instance of the <see cref="TwilioAdapter"/> class.
         /// </summary>
         /// <param name="twilioClient">The Twilio client to connect to.</param>
-        public TwilioAdapter(TwilioClientWrapper twilioClient)
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        public TwilioAdapter(TwilioClientWrapper twilioClient, ILogger logger = null)
         {
             _twilioClient = twilioClient ?? throw new ArgumentNullException(nameof(twilioClient));
+            _logger = logger ?? NullLogger.Instance;
         }
 
         /// <summary>
@@ -67,19 +73,18 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             {
                 if (activity.Type != ActivityTypes.Message)
                 {
-                    throw new ArgumentException("Unsupported Activity Type. Only Activities of type ‘Message’ are supported.", nameof(activities));
+                    _logger.LogTrace($"Unsupported Activity Type: '{activity.Type}'. Only Activities of type 'Message' are supported.");
                 }
-
-                var messageOptions = TwilioHelper.ActivityToTwilio(activity, _twilioClient.Options.TwilioNumber);
-
-                var res = await _twilioClient.SendMessage(messageOptions).ConfigureAwait(false);
-
-                var response = new ResourceResponse()
+                else
                 {
-                    Id = res,
-                };
+                    var messageOptions = TwilioHelper.ActivityToTwilio(activity, _twilioClient.Options.TwilioNumber);
 
-                responses.Add(response);
+                    var res = await _twilioClient.SendMessage(messageOptions).ConfigureAwait(false);
+
+                    var response = new ResourceResponse() { Id = res, };
+
+                    responses.Add(response);
+                }
             }
 
             return responses.ToArray();
@@ -96,7 +101,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="httpRequest"/>,
         /// <paramref name="httpResponse"/>, or <paramref name="bot"/> is <c>null</c>.</exception>
-        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
+        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken)
         {
             if (httpRequest == null)
             {

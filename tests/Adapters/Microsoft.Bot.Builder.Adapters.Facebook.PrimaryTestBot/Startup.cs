@@ -1,12 +1,7 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-//
-// Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.3.0
-
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Bot.Builder.Adapters.Facebook.TestBot.Bots;
+using Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.Bots;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,7 +18,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot
             services.AddSingleton<IBotFrameworkHttpAdapter, FacebookAdapter>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            services.AddTransient<IBot, EchoBot>();
+            services.AddTransient<IBot, PrimaryBot>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

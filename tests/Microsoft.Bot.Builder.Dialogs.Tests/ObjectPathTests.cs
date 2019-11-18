@@ -494,6 +494,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             ObjectPath.SetPathValue(test, "foo", new { Bar = 15, Blat = "yo" });
             ObjectPath.SetPathValue(test, "x.a[1]", "yabba");
             ObjectPath.SetPathValue(test, "x.a[0]", "dabba");
+            ObjectPath.SetPathValue(test, "null", null);
+            ObjectPath.SetPathValue(test, "enum", TypeCode.Empty);
 
             Assert.AreEqual(15, ObjectPath.GetPathValue<int>(test, "x.y.z"));
             Assert.AreEqual("hello", ObjectPath.GetPathValue<string>(test, "x.p"));
@@ -504,6 +506,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("yabba", value2);
             Assert.IsTrue(ObjectPath.TryGetPathValue<string>(test, "x.a[0]", out value2));
             Assert.AreEqual("dabba", value2);
+            Assert.IsFalse(ObjectPath.TryGetPathValue<object>(test, "null", out var nullValue));
+            Assert.AreEqual(TypeCode.Empty, ObjectPath.GetPathValue<TypeCode>(test, "enum"));
 
             // value type tests
 #pragma warning disable SA1121 // Use built-in type alias

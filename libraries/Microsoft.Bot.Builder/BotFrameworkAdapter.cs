@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder
             ILogger logger = null)
         {
             CredentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
-            this.ChannelProvider = channelProvider;
+            ChannelProvider = channelProvider;
             _httpClient = customHttpClient ?? _defaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
             Logger = logger ?? NullLogger.Instance;

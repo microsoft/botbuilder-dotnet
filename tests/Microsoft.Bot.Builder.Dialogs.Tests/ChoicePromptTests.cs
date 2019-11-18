@@ -655,6 +655,57 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow("not-supported")]
+        public async Task ShouldDefaultToEnglishLocale(string activityLocale)
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: activityLocale));
+
+            var helloLocale = MessageFactory.Text("hello");
+            helloLocale.Locale = activityLocale;
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync(
+                        "ChoicePrompt",
+                        new PromptOptions
+                        {
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?", Locale = activityLocale },
+                            Choices = _colorChoices,
+                        },
+                        cancellationToken);
+                }
+            })
+                .Send(helloLocale)
+                .AssertReply((activity) =>
+                {
+                    // Use ChoiceFactory to build the expected answer, manually
+                    var expectedChoices = ChoiceFactory.Inline(_colorChoices, null, null, new ChoiceFactoryOptions()
+                    {
+                        InlineOr = English.InlineOr,
+                        InlineOrMore = English.InlineOrMore,
+                        InlineSeparator = English.Separator,
+                    }).Text;
+                    Assert.AreEqual($"favorite color?{expectedChoices}", activity.AsMessageActivity().Text);
+                })
+                .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task ShouldAcceptAndRecognizeCustomLocaleDict()
         {
             var convoState = new ConversationState(new MemoryStorage());

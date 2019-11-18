@@ -1,6 +1,7 @@
 # Microsoft Bot Framework Facebook Adapter for .NET
 
-This package contains an adapter that communicates directly with the Facebook API, and translates messages to and from a standard format used by your bot.
+This package contains an adapter that communicates directly with the Facebook API, and translates messages to and from a standard format used by your bot. 
+<br>Includes support for Facebook Handover Protocol.
 
 ## How to Install
 

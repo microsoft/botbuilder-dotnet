@@ -79,47 +79,47 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             var appId = Guid.NewGuid().ToString();
             var mockIdentity = new Mock<ClaimsIdentity>();
             var claims = new List<Claim>();
-
+            
             // Null identity
             var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(
-                async () => await SkillValidation.ValidateIdentity(null, mockCredentials.Object));
+                async () => await SkillValidation.ValidateIdentityAsync(null, mockCredentials.Object));
             Assert.Equal("Invalid Identity", exception.Message);
 
             // not authenticated identity
             mockIdentity.Setup(x => x.IsAuthenticated).Returns(false);
             exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(
-                async () => await SkillValidation.ValidateIdentity(mockIdentity.Object, mockCredentials.Object));
+                async () => await SkillValidation.ValidateIdentityAsync(mockIdentity.Object, mockCredentials.Object));
             Assert.Equal("Token Not Authenticated", exception.Message);
 
             // No version claims
             mockIdentity.Setup(x => x.IsAuthenticated).Returns(true);
             mockIdentity.Setup(x => x.Claims).Returns(claims);
             exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(
-                async () => await SkillValidation.ValidateIdentity(mockIdentity.Object, mockCredentials.Object));
+                async () => await SkillValidation.ValidateIdentityAsync(mockIdentity.Object, mockCredentials.Object));
             Assert.Equal($"'{AuthenticationConstants.VersionClaim}' claim is required on skill Tokens.", exception.Message);
 
             // No audience claim
             claims.Add(new Claim(AuthenticationConstants.VersionClaim, "1.0"));
             exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(
-                async () => await SkillValidation.ValidateIdentity(mockIdentity.Object, mockCredentials.Object));
+                async () => await SkillValidation.ValidateIdentityAsync(mockIdentity.Object, mockCredentials.Object));
             Assert.Equal($"'{AuthenticationConstants.AudienceClaim}' claim is required on skill Tokens.", exception.Message);
 
             // Invalid AppId in audience
             claims.Add(new Claim(AuthenticationConstants.AudienceClaim, audience));
             mockCredentials.Setup(x => x.IsValidAppIdAsync(It.IsAny<string>())).Returns(Task.FromResult(false));
             exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(
-                async () => await SkillValidation.ValidateIdentity(mockIdentity.Object, mockCredentials.Object));
+                async () => await SkillValidation.ValidateIdentityAsync(mockIdentity.Object, mockCredentials.Object));
             Assert.Equal("Invalid audience.", exception.Message);
 
             // Invalid AppId in in appId or azp
             mockCredentials.Setup(x => x.IsValidAppIdAsync(It.IsAny<string>())).Returns(Task.FromResult(true));
             exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(
-                async () => await SkillValidation.ValidateIdentity(mockIdentity.Object, mockCredentials.Object));
+                async () => await SkillValidation.ValidateIdentityAsync(mockIdentity.Object, mockCredentials.Object));
             Assert.Equal("Invalid appId.", exception.Message);
 
-            // All checks pass (no exception)
+            // All checks pass (no exception thrown)
             claims.Add(new Claim(AuthenticationConstants.AppIdClaim, appId));
-            await SkillValidation.ValidateIdentity(mockIdentity.Object, mockCredentials.Object);
+            await SkillValidation.ValidateIdentityAsync(mockIdentity.Object, mockCredentials.Object);
         }
     }
 }
