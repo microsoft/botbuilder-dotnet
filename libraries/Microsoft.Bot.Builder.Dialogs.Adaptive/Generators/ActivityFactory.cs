@@ -41,17 +41,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 throw new Exception(string.Join("\n", errors));
             }
 
-            JObject lgStructuredResult;
-            try
-            {
-                lgStructuredResult = JObject.Parse(lgStringResult);
-            }
-            catch
-            {
-                return BuildActivityFromText(lgStringResult?.ToString()?.Trim());
-            }
-
-            return BuildActivityFromLGStructuredResult(lgStructuredResult);
+            var isStructuredLG = ParseStructuredLGResult(lgStringResult, out var lgStructuredResult);
+            return isStructuredLG ? BuildActivityFromLGStructuredResult(lgStructuredResult)
+                : BuildActivityFromText(lgStringResult?.Trim());
         }
 
         /// <summary>
@@ -351,6 +343,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return item == null ? 
                 new List<JToken>() :
                 item is JArray array ? array.ToList() : new List<JToken>() { item };
+        }
+
+        private static bool ParseStructuredLGResult(string lgStringResult, out JObject lgStructuredResult)
+        {
+            lgStructuredResult = new JObject();
+            if (string.IsNullOrWhiteSpace(lgStringResult))
+            {
+                return false;
+            }
+
+            lgStringResult = lgStringResult.Trim();
+
+            if (!lgStringResult.StartsWith("{") || !lgStringResult.EndsWith("}"))
+            {
+                return false;
+            }
+
+            try
+            {
+                lgStructuredResult = JObject.Parse(lgStringResult);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

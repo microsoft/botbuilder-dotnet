@@ -25,6 +25,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 return new List<Diagnostic> { BuildDiagnostic("LG output is empty", false) };
             }
 
+            if (!lgStringResult.StartsWith("{") || !lgStringResult.EndsWith("}"))
+            {
+                return new List<Diagnostic> { BuildDiagnostic("LG output is not a json object, and will fallback to string format.", false) };
+            }
+
             JObject lgStructuredResult;
             try
             {
