@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -19,13 +20,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         private ResourceExplorer resourceExplorer;
 
         /// <summary>
+        /// multi language lg resources. en -> [resourcelist].
+        /// </summary>
+        private readonly Dictionary<string, IList<IResource>> multilanguageResources;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="LanguageGeneratorManager"/> class.
         /// </summary>
         /// <param name="resourceExplorer">resourceExplorer to manage LG files from.</param>
         public LanguageGeneratorManager(ResourceExplorer resourceExplorer)
         {
             this.resourceExplorer = resourceExplorer;
-            
+            multilanguageResources = MultiLanguageResourceLoader.Load(resourceExplorer);
+
             // load all LG resources
             foreach (var resource in this.resourceExplorer.GetResources("lg"))
             {
@@ -44,37 +51,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </value>
         public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 
-        public static Func<string, ImportResolverDelegate> MultiLanguageResolverDelegate(ResourceExplorer resourceExplorer) =>
-            (string targetLocale) =>
-               (string source, string id) =>
-               {
-                   var languagePolicy = new LanguagePolicy();
+        public static ImportResolverDelegate ResourceExplorerResolver(string locale, Dictionary<string, IList<IResource>> resourceMapping)
+        {
+            return (string source, string id) =>
+            {
+                var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, resourceMapping.Keys.ToList());
+                var resources = resourceMapping[fallbackLocale];
 
-                   var locales = new string[] { string.Empty };
-                   if (!languagePolicy.TryGetValue(targetLocale, out locales))
-                   {
-                       if (!languagePolicy.TryGetValue(string.Empty, out locales))
-                       {
-                           throw new Exception($"No supported language found for {targetLocale}");
-                       }
-                   }
+                var resourceName = Path.GetFileName(PathUtils.NormalizePath(id));
 
-                   var resourceName = Path.GetFileName(PathUtils.NormalizePath(id));
-
-                   foreach (var locale in locales)
-                   {
-                       var resourceId = string.IsNullOrEmpty(locale) ? resourceName : resourceName.Replace(".lg", $".{locale}.lg");
-
-                       if (resourceExplorer.TryGetResource(resourceId, out var resource))
-                       {
-                           var content = resource.ReadTextAsync().GetAwaiter().GetResult();
-
-                           return (content, resourceName);
-                       }
-                   }
-
-                   return (string.Empty, resourceName);
-               };
+                var resource = resources.FirstOrDefault(u => MultiLanguageResourceLoader.ParseLGFileName(u.Id).prefix == MultiLanguageResourceLoader.ParseLGFileName(resourceName).prefix);
+                if (resource == null)
+                {
+                    return (string.Empty, resourceName);
+                }
+                else
+                {
+                    var content = resource.ReadTextAsync().GetAwaiter().GetResult();
+                    return (content, resourceName);
+                }
+            };
+        }
 
         private void ResourceExplorer_Changed(IResource[] resources)
         {
@@ -87,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(IResource resource)
         {
-            return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, MultiLanguageResolverDelegate(resourceExplorer));
+            return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, multilanguageResources);
         }
     }
 }
