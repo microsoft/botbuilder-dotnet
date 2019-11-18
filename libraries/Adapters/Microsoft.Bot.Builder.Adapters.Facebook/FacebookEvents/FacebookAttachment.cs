@@ -19,6 +19,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
         /// </summary>
         /// <value>Payload of the attachment.</value>
         [JsonProperty(PropertyName = "payload")]
-        public MessagePayload Payload { get; set; }
+        public AttachmentPayload Payload { get; set; }
     }
 }

@@ -161,9 +161,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Facebook.Tests", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.Tests\Microsoft.Bot.Builder.Adapters.Facebook.Tests.csproj", "{9F7B2BDF-973B-4639-B890-357EB967B2ED}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Facebook.TestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.TestBot\Microsoft.Bot.Builder.Adapters.Facebook.TestBot.csproj", "{E372D54C-73AA-41DB-A471-81348AC37F36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.csproj", "{E372D54C-73AA-41DB-A471-81348AC37F36}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Facebook", "libraries\Adapters\Microsoft.Bot.Builder.Adapters.Facebook\Microsoft.Bot.Builder.Adapters.Facebook.csproj", "{C8E31CD2-89D4-4659-9557-43EC9C99D984}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot\Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.csproj", "{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -796,6 +798,16 @@ Global
 		{C8E31CD2-89D4-4659-9557-43EC9C99D984}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C8E31CD2-89D4-4659-9557-43EC9C99D984}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{C8E31CD2-89D4-4659-9557-43EC9C99D984}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -869,6 +881,7 @@ Global
 		{9F7B2BDF-973B-4639-B890-357EB967B2ED} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
 		{E372D54C-73AA-41DB-A471-81348AC37F36} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
 		{C8E31CD2-89D4-4659-9557-43EC9C99D984} = {6230B915-B238-4E57-AAC4-06B4498F540F}
+		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
