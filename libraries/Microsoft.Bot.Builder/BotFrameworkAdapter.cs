@@ -72,7 +72,6 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="channelProvider">The channel provider.</param>
-        /// <param name="oauthCredentialProvider">The OAuth credential provider.</param>
         /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
         /// <param name="customHttpClient">The HTTP client.</param>
         /// <param name="middleware">The middleware to initially add to the adapter.</param>
@@ -146,7 +145,6 @@ namespace Microsoft.Bot.Builder
         /// using a credential provider.
         /// </summary>
         /// <param name="credentials">The credentials to be used for token acquisition.</param>
-        /// <param name="oauthCredentials">The credentials to be used for oauth.</param>
         /// <param name="authConfig">The authentication configuration.</param>
         /// <param name="channelProvider">The channel provider.</param>
         /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
