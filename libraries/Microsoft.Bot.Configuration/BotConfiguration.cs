@@ -7,6 +7,7 @@ namespace Microsoft.Bot.Configuration
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
     using System.Threading.Tasks;
     using Microsoft.Bot.Configuration.Encryption;
     using Newtonsoft.Json;
@@ -160,6 +161,36 @@ namespace Microsoft.Bot.Configuration
             return BotConfiguration.LoadAsync(file, secret).GetAwaiter().GetResult();
         }
 
+        public static async Task<BotConfiguration> Load(Assembly assembly, string resourceName, string secret = null)
+        {
+            if (string.IsNullOrEmpty(resourceName))
+            {
+                throw new ArgumentNullException(nameof(resourceName));
+            }
+
+            var json = string.Empty;
+
+            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    json = await reader.ReadToEndAsync();
+                }
+            }
+
+            var bot = JsonConvert.DeserializeObject<BotConfiguration>(json);
+            bot.Location = "Resource: " + resourceName;
+            bot.MigrateData();
+
+            var hasSecret = bot.Padlock?.Length > 0;
+            if (hasSecret)
+            {
+                bot.Decrypt(secret);
+            }
+
+            return bot;
+        }
+        
         /// <summary>
         /// Generate a new key suitable for encrypting.
         /// </summary>
