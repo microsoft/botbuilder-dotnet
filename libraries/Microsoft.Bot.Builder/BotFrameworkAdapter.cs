@@ -57,7 +57,6 @@ namespace Microsoft.Bot.Builder
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private readonly AppCredentials _appCredentials;
         private readonly AuthenticationConfiguration _authConfiguration;
-        private readonly AppCredentials _oauthCredentials;
 
         // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)
         // AppCredentials are cached using appId + skillId (this last parameter is only used if the app credentials are used to call a skill)
@@ -161,7 +160,6 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public BotFrameworkAdapter(
             AppCredentials credentials,
-            AppCredentials oauthCredentials,
             AuthenticationConfiguration authConfig,
             IChannelProvider channelProvider = null,
             RetryPolicy connectorClientRetryPolicy = null,
@@ -170,7 +168,6 @@ namespace Microsoft.Bot.Builder
             ILogger logger = null)
         {
             _appCredentials = credentials ?? throw new ArgumentNullException(nameof(credentials));
-            _oauthCredentials = oauthCredentials;
             CredentialProvider = new SimpleCredentialProvider(credentials.MicrosoftAppId, string.Empty);
             this.ChannelProvider = channelProvider;
             _httpClient = customHttpClient ?? _defaultHttpClient;
@@ -983,12 +980,7 @@ namespace Microsoft.Bot.Builder
                 throw new InvalidOperationException("Unable to get the bot AppId from the audience claim.");
             }
 
-            var appCredentials = _oauthCredentials;
-
-            if (appCredentials == null)
-            {
-                appCredentials = await GetAppCredentialsAsync(appId).ConfigureAwait(false);
-            }
+            var appCredentials = await GetAppCredentialsAsync(appId).ConfigureAwait(false);
 
             if (OAuthClientConfig.EmulateOAuthCards)
             {
