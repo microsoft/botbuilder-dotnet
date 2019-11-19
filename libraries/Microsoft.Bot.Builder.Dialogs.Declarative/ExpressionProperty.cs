@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Threading.Tasks;
 using Microsoft.Bot.Expressions;
-using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -64,13 +62,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         /// <param name="value">value to set.</param>
         public virtual void SetValue(object value)
         {
-            dynamic jobj = value as JObject;
             if (value is string expression)
             {
                 this.Expression = expression;
             }
-            else if (jobj != null)
+            else if (value is JObject job)
             {
+                dynamic jobj = job;
                 if (jobj.value != null)
                 {
                     this.Value = ConvertObject(jobj.value);
@@ -79,6 +77,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                 {
                     this.Expression = jobj.expression.ToString();
                 }
+            }
+            else if (value is JArray jar)
+            {
+                this.Value = ConvertObject(jar);
             }
         }
 
