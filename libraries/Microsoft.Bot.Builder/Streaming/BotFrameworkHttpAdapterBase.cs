@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Streaming
         {
             BotAssert.ActivityNotNull(activity);
 
-            Logger.LogInformation($"Received an incoming straming activity. ActivityId: {activity.Id}");
+            Logger.LogInformation($"Received an incoming streaming activity. ActivityId: {activity.Id}");
 
             // If a conversation has moved from one connection to another for the same Channel or Skill and
             // hasn't been forgotten by the previous StreamingRequestHandler. The last requestHandler
