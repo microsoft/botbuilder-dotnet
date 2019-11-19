@@ -1,0 +1,52 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "AdaptiveDialog",
+    "recognizer": {
+      "$type": "Microsoft.RegexRecognizer",
+      "intents": [
+        {
+          "$type": "Microsoft.IntentPattern",
+          "intent": "Test",
+          "pattern": "test"
+        }
+      ]
+    },
+    "triggers": [
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "Test",
+        "event": "recognizedIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.SetProperty",
+            "property": "dialog.name",
+            "value": "'foo'"
+          },
+          {
+            "$type": "Microsoft.TextInput",
+            "property": "dialog.name",
+            "prompt": "what is your name?"
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "@{turn.recognized.intent}"
+          }
+        ]
+      }
+    ],
+    "defaultResultProperty": "dialog.result"
+  },
+  "locale": "en-us",
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "test"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Test"
+    }
+  ]
+}

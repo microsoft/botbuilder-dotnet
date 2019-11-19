@@ -2,10 +2,7 @@
 // Licensed under the MIT License.
 #pragma warning disable SA1201 // Elements should appear in the correct order
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
@@ -13,13 +10,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     [TestClass]
     public class TestScriptTests
     {
-        public static IEnumerable<object[]> AssertReplyScripts => TestUtils.GetTestScripts(@"Tests\TestAssertReply");
-        
-        public static IEnumerable<object[]> AssertReplyOneOfScripts => TestUtils.GetTestScripts(@"Tests\TestAssertReplyOneOf");
-        
-        public static IEnumerable<object[]> UserActionScripts => TestUtils.GetTestScripts(@"Tests\TestUser");
-        
         public TestContext TestContext { get; set; }
+
+#if AUTO
+        public static IEnumerable<object[]> AssertReplyScripts => TestUtils.GetTestScripts(@"Tests\TestAssertReply");
 
         [DataTestMethod]
         [DynamicData(nameof(AssertReplyScripts))]
@@ -27,25 +21,60 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             await TestUtils.RunTestScript(resourceId);
         }
+#endif
 
-        [DataTestMethod]
-        [DynamicData(nameof(AssertReplyOneOfScripts))]
-        public async Task TestScript_AssertReplyOne(string resourceId)
+        [TestMethod]
+        public async Task TestScriptTests_AssertReplyOneOf()
         {
-            await TestUtils.RunTestScript(resourceId);
+            await TestUtils.RunTestScript("TestScriptTests_AssertReplyOneOf.test.dialog");
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(UserActionScripts))]
-        public async Task TestScript_UserAction(string resourceId)
+        [TestMethod]
+        public async Task TestScriptTests_AssertReplyOneOf_Assertions()
         {
-            await TestUtils.RunTestScript(resourceId);
+            await TestUtils.RunTestScript("TestScriptTests_AssertReplyOneOf_Assertions.test.dialog");
         }
 
-        //[TestMethod]
-        //public async Task TestDialog()
-        //{
-        //    await TestUtils.RunTestScript("Action_EditActionReplaceSequence.test.dialog");
-        //}
+        [TestMethod]
+        public async Task TestScriptTests_AssertReplyOneOf_exact()
+        {
+            await TestUtils.RunTestScript("TestScriptTests_AssertReplyOneOf_exact.test.dialog");
+        }
+
+        [TestMethod]
+        public async Task TestScriptTests_AssertReplyOneOf_User()
+        {
+            await TestUtils.RunTestScript("TestScriptTests_AssertReplyOneOf_User.test.dialog");
+        }
+
+        [TestMethod]
+        public async Task TestScriptTests_AssertReply_Assertions()
+        {
+            await TestUtils.RunTestScript("TestScriptTests_AssertReply_Assertions.test.dialog");
+        }
+
+        [TestMethod]
+        public async Task TestScriptTests_AssertReply_Exact()
+        {
+            await TestUtils.RunTestScript("TestScriptTests_AssertReply_Exact.test.dialog");
+        }
+
+        [TestMethod]
+        public async Task TestScriptTests_AssertReply_User()
+        {
+            await TestUtils.RunTestScript("TestScriptTests_AssertReply_User.test.dialog");
+        }
+
+        [TestMethod]
+        public async Task TestScriptTests_UserConversationUpdate()
+        {
+            await TestUtils.RunTestScript("TestScriptTests_UserConversationUpdate.test.dialog");
+        }
+
+        [TestMethod]
+        public async Task TestScriptTests_UserTyping()
+        {
+            await TestUtils.RunTestScript("TestScriptTests_UserTyping.test.dialog");
+        }
     }
 }

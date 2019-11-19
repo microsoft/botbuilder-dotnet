@@ -11,11 +11,8 @@ using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -23,11 +20,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     public class AdaptiveDialogTests
     {
         public TestContext TestContext { get; set; }
-
-        private TestScript CreateFlow(Dialog rootDialog)
-        {
-            return new TestScript() { Dialog = rootDialog };
-        }
 
         [TestMethod]
         public async Task AdaptiveDialog_ActivityEvents()
@@ -158,7 +150,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task AdaptiveDialog_ReplacePlan()
         {
-             await TestUtils.RunTestScript("AdaptiveDialog_ReplacePlan.test.dialog");
+            await TestUtils.RunTestScript("AdaptiveDialog_ReplacePlan.test.dialog");
         }
 
         [TestMethod]
@@ -213,6 +205,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task TestBindingTwoWayAcrossAdaptiveDialogs()
         {
             await TestUtils.RunTestScript("TestBindingTwoWayAcrossAdaptiveDialogs.test.dialog");
+
+            //await TestBindingTwoWayAcrossAdaptiveDialogs(new { userName = "$name" });
         }
 
         [TestMethod]
@@ -221,78 +215,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await TestUtils.RunTestScript("TestForeachWithPrompt.test.dialog");
         }
 
+#if foo
         [TestMethod]
         public async Task TestBindingTwoWayAcrossAdaptiveDialogsDefaultResultProperty()
         {
             await TestUtils.RunTestScript("TestBindingTwoWayAcrossAdaptiveDialogsDefaultResultProperty.test.dialog");
-#if FALSE
-            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
-            {
-                Triggers = new List<OnCondition>
-                {
-                    new OnUnknownIntent
-                    {
-                        Actions = new List<Dialog>
-                        {
-                            new TextInput
-                            {
-                                Property = "$userName",
-                                Prompt = new ActivityTemplate("Hello, what is your name?")
-                            },
-                            new BeginDialog("ageDialog")
-                            {
-                                Options = new { name = "$userName" },
-                                ResultProperty = "$userAge"
-                            },
-                            new SendActivity("Hello @{$userName}, you are @{$userAge} years old!")
-                        }
-                    }
-                }
-            };
-
-            var ageDialog = new AdaptiveDialog("ageDialog")
-            {
-                DefaultResultProperty = "$age",
-                Triggers = new List<OnCondition>
-                {
-                    new OnUnknownIntent
-                    {
-                        Actions = new List<Dialog>
-                        {
-                            new NumberInput
-                            {
-                                Prompt = new ActivityTemplate("Hello @{$options.name}, how old are you?"),
-                                Property = "$age"
-                            }
-                        }
-                    }
-                }
-            };
-
-            rootDialog.Dialogs.Add(ageDialog);
-
-            await CreateFlow(rootDialog)
-                .Send("Hi")
-                .AssertReply("Hello, what is your name?")
-                .Send("zoidberg")
-                .AssertReply("Hello zoidberg, how old are you?")
-                .Send("I'm 77")
-                .AssertReply("Hello zoidberg, you are 77 years old!")
-                .SaveScript("AdaptiveTests");
-#endif
+            await TestBindingTwoWayAcrossAdaptiveDialogs(new Dictionary<string, object> { { "userName", "$name" } });
         }
 
-#if foo
         [TestMethod]
         public async Task AdaptiveDialog_BindingTwoWayAcrossAdaptiveDialogs_AnonymousOptions()
         {
-            await TestBindingTwoWayAcrossAdaptiveDialogs(new { userName = "$name" });
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_BindingTwoWayAcrossAdaptiveDialogs_ObjectDictionaryOptions()
         {
-            await TestBindingTwoWayAcrossAdaptiveDialogs(new Dictionary<string, object> { { "userName", "$name" } });
         }
 
         [TestMethod]
@@ -373,15 +311,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             public string UserName { get; set; }
         }
-
-
-
 #endif
         [TestMethod]
         public async Task TestForeachWithLargeItems()
         {
-            var testFlow = CreateFlow(new ForeachItemsDialog())
-                .SendConversationUpdate();
+            var testFlow = new TestScript()
+            {
+                Dialog = new ForeachItemsDialog()
+            }
+            .SendConversationUpdate();
+
             for (var i = 0; i < 1000; i++)
             {
                 testFlow = testFlow.AssertReply(i.ToString());
@@ -389,7 +328,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             await testFlow.ExecuteAsync();
         }
-
 
         private class ForeachItemsDialog : ComponentDialog
         {

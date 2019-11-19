@@ -1,0 +1,188 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+      "$type": "Microsoft.RegexRecognizer",
+      "intents": [
+        {
+          "$type": "Microsoft.IntentPattern",
+          "intent": "a",
+          "pattern": "a"
+        },
+        {
+          "$type": "Microsoft.IntentPattern",
+          "intent": "b",
+          "pattern": "b"
+        },
+        {
+          "$type": "Microsoft.IntentPattern",
+          "intent": "trigger",
+          "pattern": "trigger"
+        }
+      ]
+    },
+    "triggers": [
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "a",
+        "event": "recognizedIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.SetProperty",
+            "property": "user.a",
+            "value": "1"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "b",
+        "event": "recognizedIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.SetProperty",
+            "property": "user.b",
+            "value": "1"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "trigger",
+        "event": "recognizedIntent",
+        "condition": "user.a == 1",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "ruleA1"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "trigger",
+        "event": "recognizedIntent",
+        "condition": "user.a == 1",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "ruleA2"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "trigger",
+        "event": "recognizedIntent",
+        "condition": "user.b == 1 || user.c == 1",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "ruleBorC"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "trigger",
+        "event": "recognizedIntent",
+        "condition": "user.a == 1 && user.b == 1",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "ruleAandB"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "trigger",
+        "event": "recognizedIntent",
+        "condition": "user.a == 1 && user.c == 1",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "ruleAandC"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "trigger",
+        "event": "recognizedIntent",
+        "condition": "",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "default"
+          }
+        ]
+      }
+    ],
+    "autoEndDialog": false,
+    "selector": {
+      "$type": "Microsoft.MostSpecificSelector",
+      "selector": {
+        "$type": "Microsoft.RandomSelector",
+        "seed": -1
+      }
+    },
+    "defaultResultProperty": "dialog.result"
+  },
+  "locale": "en-us",
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "trigger"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "default"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "a"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "trigger"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReplyOneOf",
+      "text": [
+        "ruleA1",
+        "ruleA2"
+      ]
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "b"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "trigger"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReplyOneOf",
+      "text": [
+        "ruleAandB"
+      ]
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "c"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "trigger"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReplyOneOf",
+      "text": [
+        "ruleAandB",
+        "ruleAandC"
+      ]
+    }
+  ]
+}

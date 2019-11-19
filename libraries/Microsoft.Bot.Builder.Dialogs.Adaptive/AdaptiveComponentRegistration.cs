@@ -9,6 +9,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
@@ -109,6 +110,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<PhoneNumberEntityRecognizer>(PhoneNumberEntityRecognizer.DeclarativeType);
             yield return new TypeRegistration<TemperatureEntityRecognizer>(TemperatureEntityRecognizer.DeclarativeType);
             yield return new TypeRegistration<UrlEntityRecognizer>(UrlEntityRecognizer.DeclarativeType);
+
+            // selectors
+            yield return new TypeRegistration<ConditionalSelector>(ConditionalSelector.DeclarativeType);
+            yield return new TypeRegistration<FirstSelector>(FirstSelector.DeclarativeType);
+            yield return new TypeRegistration<MostSpecificSelector>(MostSpecificSelector.DeclarativeType);
+            yield return new TypeRegistration<RandomSelector>(RandomSelector.DeclarativeType);
+            yield return new TypeRegistration<TrueSelector>(TrueSelector.DeclarativeType);
 
             // Generators
             yield return new TypeRegistration<ResourceMultiLanguageGenerator>(ResourceMultiLanguageGenerator.DeclarativeType);

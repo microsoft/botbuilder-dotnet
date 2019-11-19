@@ -1,0 +1,71 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "planningTest",
+    "recognizer": {
+      "$type": "Microsoft.RegexRecognizer",
+      "intents": [
+        {
+          "$type": "Microsoft.IntentPattern",
+          "intent": "addColor",
+          "pattern": "I want (?<color>(red|green|blue|yellow))*"
+        }
+      ]
+    },
+    "triggers": [
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "addColor",
+        "entities": [
+          "color"
+        ],
+        "event": "recognizedIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "You picked @{@color}"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnUnknownIntent",
+        "event": "unknownIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "pbtpbtpbt!"
+          }
+        ]
+      }
+    ],
+    "autoEndDialog": false,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "I want red"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "You picked red"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "I want"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "pbtpbtpbt!"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "fooo"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "pbtpbtpbt!"
+    }
+  ]
+}

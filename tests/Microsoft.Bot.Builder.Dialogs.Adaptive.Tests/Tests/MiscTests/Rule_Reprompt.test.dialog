@@ -1,0 +1,107 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "testDialog",
+    "recognizer": {
+      "$type": "Microsoft.RegexRecognizer",
+      "intents": [
+        {
+          "$type": "Microsoft.IntentPattern",
+          "intent": "SetName",
+          "pattern": "my name is (?<name>.*)"
+        }
+      ]
+    },
+    "triggers": [
+      {
+        "$type": "Microsoft.OnBeginDialog",
+        "event": "beginDialog",
+        "actions": [
+          {
+            "$type": "Microsoft.TextInput",
+            "allowInterruptions": "True",
+            "property": "user.name",
+            "prompt": "Hello, what is your name?"
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "Hello @{user.name}, nice to meet you!"
+          },
+          {
+            "$type": "Microsoft.NumberInput",
+            "property": "user.age",
+            "prompt": "What is your age?"
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "@{user.age} is a good age to be!"
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "your name is @{user.name}!"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "SetName",
+        "entities": [
+          "name"
+        ],
+        "event": "recognizedIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.SetProperty",
+            "property": "user.name",
+            "value": "@name"
+          }
+        ]
+      }
+    ],
+    "autoEndDialog": false,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Hello, what is your name?"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "my name is Carlos"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Hello Carlos, nice to meet you!"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "What is your age?"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "my name is Joe"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "What is your age?"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "15"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "15 is a good age to be!"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "your name is Joe!"
+    }
+  ]
+}

@@ -3,6 +3,7 @@
   "dialog": {
     "$type": "Microsoft.AdaptiveDialog",
     "id": "planningTest",
+    "autoEndDialog": false,
     "recognizer": {
       "$type": "Microsoft.RegexRecognizer",
       "intents": [

@@ -1,0 +1,222 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "planningTest",
+    "triggers": [
+      {
+        "$type": "Microsoft.OnMessageActivity",
+        "type": "message",
+        "event": "activityReceived",
+        "condition": "turn.activity.text == 'OnMessageActivity'",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "OnMessageActivity"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnEventActivity",
+        "type": "event",
+        "event": "activityReceived",
+        "condition": "turn.activity.text == 'OnEventActivity'",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "OnEventActivity"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnConversationUpdateActivity",
+        "type": "conversationUpdate",
+        "event": "activityReceived",
+        "condition": "turn.activity.text == 'OnConversationUpdateActivity'",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "OnConversationUpdateActivity"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnTypingActivity",
+        "type": "typing",
+        "event": "activityReceived",
+        "condition": "turn.activity.text == 'OnTypingActivity'",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "OnTypingActivity"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnEndOfConversationActivity",
+        "type": "endOfConversation",
+        "event": "activityReceived",
+        "condition": "turn.activity.text == 'OnEndOfConversationActivity'",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "OnEndOfConversationActivity"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnEventActivity",
+        "type": "event",
+        "event": "activityReceived",
+        "condition": "turn.activity.text == 'OnEventActivity'",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "OnEventActivity"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnHandoffActivity",
+        "type": "handoff",
+        "event": "activityReceived",
+        "condition": "turn.activity.text == 'OnHandoffActivity'",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "OnHandoffActivity"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnMessageReactionActivity",
+        "type": "messageReaction",
+        "event": "activityReceived",
+        "condition": "turn.activity.text == 'OnMessageReactionActivity'",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "OnMessageReactionActivity"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnMessageUpdateActivity",
+        "type": "messageUpdate",
+        "event": "activityReceived",
+        "condition": "turn.activity.text == 'OnMessageUpdateActivity'",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "OnMessageUpdateActivity"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnMessageDeleteActivity",
+        "type": "messageDelete",
+        "event": "activityReceived",
+        "condition": "turn.activity.text == 'OnMessageDeleteActivity'",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "OnMessageDeleteActivity"
+          }
+        ]
+      }
+    ],
+    "autoEndDialog": false,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserActivity",
+      "activity": {
+        "type": "message",
+        "text": "OnMessageActivity"
+      }
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "OnMessageActivity"
+    },
+    {
+      "$type": "Microsoft.Test.UserActivity",
+      "activity": {
+        "type": "messageReaction",
+        "text": "OnMessageReactionActivity"
+      }
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "OnMessageReactionActivity"
+    },
+    {
+      "$type": "Microsoft.Test.UserActivity",
+      "activity": {
+        "type": "messageDelete",
+        "text": "OnMessageDeleteActivity"
+      }
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "OnMessageDeleteActivity"
+    },
+    {
+      "$type": "Microsoft.Test.UserActivity",
+      "activity": {
+        "type": "messageUpdate",
+        "text": "OnMessageUpdateActivity"
+      }
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "OnMessageUpdateActivity"
+    },
+    {
+      "$type": "Microsoft.Test.UserActivity",
+      "activity": {
+        "type": "typing",
+        "text": "OnTypingActivity"
+      }
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "OnTypingActivity"
+    },
+    {
+      "$type": "Microsoft.Test.UserActivity",
+      "activity": {
+        "type": "conversationUpdate",
+        "text": "OnConversationUpdateActivity"
+      }
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "OnConversationUpdateActivity"
+    },
+    {
+      "$type": "Microsoft.Test.UserActivity",
+      "activity": {
+        "type": "endOfConversation",
+        "text": "OnEndOfConversationActivity"
+      }
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "OnEndOfConversationActivity"
+    },
+    {
+      "$type": "Microsoft.Test.UserActivity",
+      "activity": {
+        "type": "event",
+        "text": "OnEventActivity",
+        "name": "OnEventActivity"
+      }
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "OnEventActivity"
+    }
+  ]
+}

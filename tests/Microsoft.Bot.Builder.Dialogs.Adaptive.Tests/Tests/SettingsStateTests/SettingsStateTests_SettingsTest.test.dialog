@@ -1,0 +1,46 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "triggers": [
+      {
+        "$type": "Microsoft.OnUnknownIntent",
+        "event": "unknownIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "@{settings.ApplicationInsights.InstrumentationKey}"
+          }
+        ]
+      }
+    ],
+    "defaultResultProperty": "dialog.result"
+  },
+  "locale": "en-us",
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "howdy"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "howdy"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "howdy"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "00000000-0000-0000-0000-000000000000"
+    }
+  ]
+}

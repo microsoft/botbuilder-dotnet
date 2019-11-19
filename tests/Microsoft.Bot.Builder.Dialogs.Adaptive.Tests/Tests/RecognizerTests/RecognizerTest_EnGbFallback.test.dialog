@@ -1,0 +1,133 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+      "$type": "Microsoft.MultiLanguageRecognizer",
+      "recognizers": {
+        "en-us": {
+          "$type": "Microsoft.RegexRecognizer",
+          "intents": [
+            {
+              "$type": "Microsoft.IntentPattern",
+              "intent": "Greeting",
+              "pattern": "(?i)howdy"
+            },
+            {
+              "$type": "Microsoft.IntentPattern",
+              "intent": "Goodbye",
+              "pattern": "(?i)bye"
+            }
+          ]
+        },
+        "en-gb": {
+          "$type": "Microsoft.RegexRecognizer",
+          "intents": [
+            {
+              "$type": "Microsoft.IntentPattern",
+              "intent": "Greeting",
+              "pattern": "(?i)hiya"
+            },
+            {
+              "$type": "Microsoft.IntentPattern",
+              "intent": "Goodbye",
+              "pattern": "(?i)cheerio"
+            }
+          ]
+        },
+        "en": {
+          "$type": "Microsoft.RegexRecognizer",
+          "intents": [
+            {
+              "$type": "Microsoft.IntentPattern",
+              "intent": "Greeting",
+              "pattern": "(?i)hello"
+            },
+            {
+              "$type": "Microsoft.IntentPattern",
+              "intent": "Goodbye",
+              "pattern": "(?i)goodbye"
+            }
+          ]
+        },
+        "": {
+          "$type": "Microsoft.RegexRecognizer",
+          "intents": [
+            {
+              "$type": "Microsoft.IntentPattern",
+              "intent": "Greeting",
+              "pattern": "(?i)salve"
+            },
+            {
+              "$type": "Microsoft.IntentPattern",
+              "intent": "Goodbye",
+              "pattern": "(?i)vale dicere"
+            }
+          ]
+        }
+      }
+    },
+    "triggers": [
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "Greeting",
+        "event": "recognizedIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "greeting intent"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "Goodbye",
+        "event": "recognizedIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "goodbye intent"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnUnknownIntent",
+        "event": "unknownIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "default rule"
+          }
+        ]
+      }
+    ],
+    "defaultResultProperty": "dialog.result"
+  },
+  "locale": "en-gb",
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "hiya"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "greeting intent"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "howdy"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "default rule"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "cheerio"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "goodbye intent"
+    }
+  ]
+}

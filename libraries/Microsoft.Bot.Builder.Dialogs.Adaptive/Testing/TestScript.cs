@@ -74,6 +74,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public Dialog Dialog { get; set; }
 
         /// <summary>
+        /// Gets or sets the locale.
+        /// </summary>
+        /// <value>the locale (Default:en-us).</value>
+        [JsonProperty("locale")]
+        public string Locale { get; set; } = "en-us";
+
+        /// <summary>
         /// Gets or sets the test script actions.
         /// </summary>
         /// <value>
@@ -94,25 +101,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// </summary>
         /// <remarks>This methods sends the activities from the user to the bot and
         /// checks the responses from the bot based on the TestActions.</remarks>
+        /// <param name="testName">testName.</param>
         /// <param name="resourceExplorer">resource explorer.</param>
         /// <param name="callback">bot logic.</param>
         /// <param name="adapter">optional test adapter.</param>
+        /// <param name="configuration">configuration.</param>
         /// <returns>Runs the exchange between the user and the bot.</returns>
-        public async Task ExecuteAsync(ResourceExplorer resourceExplorer = null, BotCallbackHandler callback = null, TestAdapter adapter = null)
+        public async Task ExecuteAsync([CallerMemberName] string testName = null, ResourceExplorer resourceExplorer = null, BotCallbackHandler callback = null, TestAdapter adapter = null, IConfiguration configuration = null)
         {
             if (resourceExplorer == null)
             {
                 resourceExplorer = new ResourceExplorer()
                     .AddFolder(GetProjectPath());
             }
-
+            
             if (adapter == null)
             {
-                TypeFactory.Configuration = new ConfigurationBuilder().Build();
+                TypeFactory.Configuration = configuration ?? new ConfigurationBuilder().Build();
                 var storage = new MemoryStorage();
                 var convoState = new ConversationState(storage);
                 var userState = new UserState(storage);
-                adapter = (TestAdapter)new TestAdapter()
+                adapter = (TestAdapter)new TestAdapter(TestAdapter.CreateConversation(testName))
+                    .Use(new RegisterClassMiddleware<IConfiguration>(TypeFactory.Configuration))
                     .UseStorage(storage)
                     .UseState(userState, convoState)
                     .UseResourceExplorer(resourceExplorer)
@@ -122,6 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             }
 
             adapter.EnableTrace = this.EnableTrace;
+            adapter.Locale = this.Locale;
 
             DialogManager dm = new DialogManager(this.Dialog);
             foreach (var testAction in this.Script)
@@ -302,6 +313,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public Task SaveScript(string folder, [CallerMemberName] string testName = null)
         {
             folder = Path.Combine(GetProjectPath(), PathUtils.NormalizePath($"tests\\{folder}"));
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
 
             if (this.Dialog is DialogContainer container && container.Dialogs.GetDialogs().Any())
             {

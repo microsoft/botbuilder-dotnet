@@ -1,0 +1,75 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "planningTest",
+    "recognizer": {
+      "$type": "Microsoft.RegexRecognizer",
+      "intents": [
+        {
+          "$type": "Microsoft.IntentPattern",
+          "intent": "JokeIntent",
+          "pattern": "joke"
+        }
+      ]
+    },
+    "triggers": [
+      {
+        "$type": "Microsoft.OnBeginDialog",
+        "event": "beginDialog",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "I'm a joke bot. To get started say 'tell me a joke'"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "JokeIntent",
+        "event": "recognizedIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "Why did the chicken cross the road?"
+          },
+          {
+            "$type": "Microsoft.EndTurn",
+            "id": "EndTurn"
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "To get to the other side"
+          }
+        ]
+      }
+    ],
+    "autoEndDialog": false,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserConversationUpdate"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "I'm a joke bot. To get started say 'tell me a joke'"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "Do you know a joke?"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "Why did the chicken cross the road?"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "Why?"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "To get to the other side"
+    }
+  ]
+}

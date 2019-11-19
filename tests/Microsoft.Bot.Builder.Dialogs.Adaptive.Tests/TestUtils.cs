@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.QnA;
@@ -44,11 +45,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             }
         }
 
-        public static async Task RunTestScript(string resourceId)
+        public static async Task RunTestScript(string resourceId, [CallerMemberName] string testName = null, IConfiguration configuration = null)
         {
             var script = TestUtils.ResourceExplorer.LoadType<TestScript>(resourceId);
             script.Description = script.Description ?? resourceId;
-            await script.ExecuteAsync().ConfigureAwait(false);
+            await script.ExecuteAsync(testName: testName, configuration: configuration).ConfigureAwait(false);
         }
     }
 }

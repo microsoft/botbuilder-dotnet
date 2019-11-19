@@ -1,0 +1,98 @@
+{
+  "$type": "Microsoft.Test.Script",
+  "dialog": {
+    "$type": "Microsoft.AdaptiveDialog",
+    "id": "AdaptiveDialog",
+    "recognizer": {
+      "$type": "Microsoft.RegexRecognizer",
+      "intents": [
+        {
+          "$type": "Microsoft.IntentPattern",
+          "intent": "HelpIntent",
+          "pattern": "(?i)help"
+        },
+        {
+          "$type": "Microsoft.IntentPattern",
+          "intent": "CancelIntent",
+          "pattern": "(?i)cancel"
+        }
+      ]
+    },
+    "triggers": [
+      {
+        "$type": "Microsoft.OnBeginDialog",
+        "event": "beginDialog",
+        "actions": [
+          {
+            "$type": "Microsoft.TextInput",
+            "property": "user.name",
+            "prompt": "name?"
+          },
+          {
+            "$type": "Microsoft.SendActivity",
+            "activity": "Hello, {user.name}"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.OnIntent",
+        "intent": "CancelIntent",
+        "event": "recognizedIntent",
+        "actions": [
+          {
+            "$type": "Microsoft.ConfirmInput",
+            "style": 1,
+            "property": "conversation.addTodo.cancelConfirmation",
+            "prompt": "cancel?"
+          },
+          {
+            "$type": "Microsoft.IfCondition",
+            "condition": "(conversation.addTodo.cancelConfirmation == True)",
+            "actions": [
+              {
+                "$type": "Microsoft.SendActivity",
+                "activity": "canceling"
+              },
+              {
+                "$type": "Microsoft.EndDialog"
+              }
+            ],
+            "elseActions": [
+              {
+                "$type": "Microsoft.SendActivity",
+                "activity": "notcanceling"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "name?"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "cancel"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "cancel? (1) Yes or (2) No"
+    },
+    {
+      "$type": "Microsoft.Test.UserSays",
+      "text": "yes"
+    },
+    {
+      "$type": "Microsoft.Test.AssertReply",
+      "text": "canceling"
+    }
+  ]
+}
