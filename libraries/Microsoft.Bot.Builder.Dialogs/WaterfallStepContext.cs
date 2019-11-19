@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Trigger next step
             _nextCalled = true;
-            return await _parentWaterfall.ResumeDialogAsync(this, DialogReason.NextCalled, result).ConfigureAwait(false);
+            return await _parentWaterfall.ResumeDialogAsync(this, DialogReason.NextCalled, result, cancellationToken).ConfigureAwait(false);
         }
     }
 }

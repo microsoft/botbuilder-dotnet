@@ -67,7 +67,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Generators\" />
     <Folder Include="Schemas\Generators\" />
     <Folder Include="Schemas\Templates\" />
     <Folder Include="Templates\" />
