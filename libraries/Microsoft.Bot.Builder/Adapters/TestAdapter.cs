@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </value>
         public bool EnableTrace
         {
-            get => _sendTraceActivity; 
+            get => _sendTraceActivity;
             set => this._sendTraceActivity = value;
         }
 
@@ -156,11 +156,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
 
                 activity.ChannelId = Conversation.ChannelId;
-                if (activity.From == null)
-                {
-                    activity.From = Conversation.User;
-                }
-
+                activity.From = Conversation.User;
                 activity.Recipient = Conversation.Bot;
                 activity.Conversation = Conversation.Conversation;
                 activity.ServiceUrl = Conversation.ServiceUrl;
