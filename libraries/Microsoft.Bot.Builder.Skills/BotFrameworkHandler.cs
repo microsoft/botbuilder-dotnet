@@ -17,6 +17,105 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     public abstract class BotFrameworkHandler
     {
         /// <summary>
+        /// ReplyToActivity() API for Skill.
+        /// </summary>
+        /// <remarks>
+        /// This method allows you to reply to an activity.
+        ///
+        /// This is slightly different from SendToConversation().
+        /// * SendToConversation(conversationId) - will append the activity to the end
+        /// of the conversation according to the timestamp or semantics of the channel.
+        /// * ReplyToActivity(conversationId,ActivityId) - adds the activity as a reply
+        /// to another activity, if the channel supports it. If the channel does not
+        /// support nested replies, ReplyToActivity falls back to SendToConversation.
+        ///
+        /// Use ReplyToActivity when replying to a specific activity in the
+        /// conversation.
+        ///
+        /// Use SendToConversation in all other cases.
+        /// </remarks>
+        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim.</param>
+        /// <param name='conversationId'>Conversation ID.</param>
+        /// <param name='activityId'>activityId the reply is to (OPTIONAL).</param>
+        /// <param name='activity'>Activity to send.</param>
+        /// <param name='cancellationToken'>The cancellation token.</param>
+        /// <returns>task for a resource response.</returns>
+        public virtual Task<ResourceResponse> OnReplyToActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// SendToConversation() API for Skill.
+        /// </summary>
+        /// <remarks>
+        /// This method allows you to send an activity to the end of a conversation.
+        ///
+        /// This is slightly different from ReplyToActivity().
+        /// * SendToConversation(conversationId) - will append the activity to the end
+        /// of the conversation according to the timestamp or semantics of the channel.
+        /// * ReplyToActivity(conversationId,ActivityId) - adds the activity as a reply
+        /// to another activity, if the channel supports it. If the channel does not
+        /// support nested replies, ReplyToActivity falls back to SendToConversation.
+        ///
+        /// Use ReplyToActivity when replying to a specific activity in the
+        /// conversation.
+        ///
+        /// Use SendToConversation in all other cases.
+        /// </remarks>
+        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim.</param>
+        /// <param name='conversationId'>conversationId.</param> 
+        /// <param name='activity'>Activity to send.</param>
+        /// <param name='cancellationToken'>The cancellation token.</param>
+        /// <returns>task for a resource response.</returns>
+        public virtual Task<ResourceResponse> OnSendToConversationAsync(ClaimsIdentity claimsIdentity, string conversationId, Activity activity, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// UpdateActivity() API for Skill.
+        /// </summary>
+        /// <remarks>
+        /// Edit an existing activity.
+        ///
+        /// Some channels allow you to edit an existing activity to reflect the new
+        /// state of a bot conversation.
+        ///
+        /// For example, you can remove buttons after someone has clicked "Approve"
+        /// button.
+        /// </remarks>
+        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim.</param>
+        /// <param name='conversationId'>Conversation ID.</param>
+        /// <param name='activityId'>activityId to update.</param>
+        /// <param name='activity'>replacement Activity.</param>
+        /// <param name='cancellationToken'>The cancellation token.</param>
+        /// <returns>task for a resource response.</returns>
+        public virtual Task<ResourceResponse> OnUpdateActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// DeleteActivity() API for Skill.
+        /// </summary>
+        /// <remarks>
+        /// Delete an existing activity.
+        ///
+        /// Some channels allow you to delete an existing activity, and if successful
+        /// this method will remove the specified activity.
+        /// </remarks>
+        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim.</param>
+        /// <param name='conversationId'>Conversation ID.</param>
+        /// <param name='activityId'>activityId to delete.</param>
+        /// <param name='cancellationToken'>The cancellation token.</param>
+        /// <returns>task for a resource response.</returns>
+        public virtual Task OnDeleteActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// OnGetConversationsAsync() API for Skill.
         /// </summary>
         /// <remarks>
@@ -79,34 +178,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         /// <summary>
-        /// SendToConversation() API for Skill.
-        /// </summary>
-        /// <remarks>
-        /// This method allows you to send an activity to the end of a conversation.
-        ///
-        /// This is slightly different from ReplyToActivity().
-        /// * SendToConversation(conversationId) - will append the activity to the end
-        /// of the conversation according to the timestamp or semantics of the channel.
-        /// * ReplyToActivity(conversationId,ActivityId) - adds the activity as a reply
-        /// to another activity, if the channel supports it. If the channel does not
-        /// support nested replies, ReplyToActivity falls back to SendToConversation.
-        ///
-        /// Use ReplyToActivity when replying to a specific activity in the
-        /// conversation.
-        ///
-        /// Use SendToConversation in all other cases.
-        /// </remarks>
-        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim.</param>
-        /// <param name='conversationId'>conversationId.</param> 
-        /// <param name='activity'>Activity to send.</param>
-        /// <param name='cancellationToken'>The cancellation token.</param>
-        /// <returns>task for a resource response.</returns>
-        public virtual Task<ResourceResponse> OnSendToConversationAsync(ClaimsIdentity claimsIdentity, string conversationId, Activity activity, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// SendConversationHistory() API for Skill.
         /// </summary>
         /// <remarks>
@@ -124,77 +195,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task for a resource response.</returns>
         public virtual Task<ResourceResponse> OnSendConversationHistoryAsync(ClaimsIdentity claimsIdentity, string conversationId, Transcript transcript, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// UpdateActivity() API for Skill.
-        /// </summary>
-        /// <remarks>
-        /// Edit an existing activity.
-        ///
-        /// Some channels allow you to edit an existing activity to reflect the new
-        /// state of a bot conversation.
-        ///
-        /// For example, you can remove buttons after someone has clicked "Approve"
-        /// button.
-        /// </remarks>
-        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim.</param>
-        /// <param name='conversationId'>Conversation ID.</param>
-        /// <param name='activityId'>activityId to update.</param>
-        /// <param name='activity'>replacement Activity.</param>
-        /// <param name='cancellationToken'>The cancellation token.</param>
-        /// <returns>task for a resource response.</returns>
-        public virtual Task<ResourceResponse> OnUpdateActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// ReplyToActivity() API for Skill.
-        /// </summary>
-        /// <remarks>
-        /// This method allows you to reply to an activity.
-        ///
-        /// This is slightly different from SendToConversation().
-        /// * SendToConversation(conversationId) - will append the activity to the end
-        /// of the conversation according to the timestamp or semantics of the channel.
-        /// * ReplyToActivity(conversationId,ActivityId) - adds the activity as a reply
-        /// to another activity, if the channel supports it. If the channel does not
-        /// support nested replies, ReplyToActivity falls back to SendToConversation.
-        ///
-        /// Use ReplyToActivity when replying to a specific activity in the
-        /// conversation.
-        ///
-        /// Use SendToConversation in all other cases.
-        /// </remarks>
-        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim.</param>
-        /// <param name='conversationId'>Conversation ID.</param>
-        /// <param name='activityId'>activityId the reply is to (OPTIONAL).</param>
-        /// <param name='activity'>Activity to send.</param>
-        /// <param name='cancellationToken'>The cancellation token.</param>
-        /// <returns>task for a resource response.</returns>
-        public virtual Task<ResourceResponse> OnReplyToActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// DeleteActivity() API for Skill.
-        /// </summary>
-        /// <remarks>
-        /// Delete an existing activity.
-        ///
-        /// Some channels allow you to delete an existing activity, and if successful
-        /// this method will remove the specified activity.
-        /// </remarks>
-        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim.</param>
-        /// <param name='conversationId'>Conversation ID.</param>
-        /// <param name='activityId'>activityId to delete.</param>
-        /// <param name='cancellationToken'>The cancellation token.</param>
-        /// <returns>task for a resource response.</returns>
-        public virtual Task OnDeleteActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
