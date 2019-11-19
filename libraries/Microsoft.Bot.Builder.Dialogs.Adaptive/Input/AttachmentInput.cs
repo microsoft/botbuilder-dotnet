@@ -6,12 +6,14 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
     /// <summary>
     /// Format specifier for outputs.
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum AttachmentOutputFormat
     {
         /// <summary>

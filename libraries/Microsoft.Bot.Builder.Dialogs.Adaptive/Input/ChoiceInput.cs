@@ -11,6 +11,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input

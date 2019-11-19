@@ -41,6 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// <value>
         /// Selector if <see cref="Condition"/> is true.
         /// </value>
+        [JsonProperty("ifTrue")]
         public ITriggerSelector IfTrue { get; set; }
 
         /// <summary>
@@ -49,6 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// <value>
         /// Selector if <see cref="Condition"/> is false.
         /// </value>
+        [JsonProperty("ifFalse")]
         public ITriggerSelector IfFalse { get; set; }
 
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate = true)

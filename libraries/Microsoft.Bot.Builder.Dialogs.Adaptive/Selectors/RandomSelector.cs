@@ -33,6 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// <value>
         /// Optional seed for random number generator.
         /// </value>
+        [JsonProperty("seed")]
         public int Seed
         {
             get => _seed;

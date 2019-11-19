@@ -44,31 +44,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // support JArray to => choice
             if (result is JArray array)
             {
-                return ArrayToChoices(array);
+                var choices = new List<Choice>();
+                if (array.HasValues)
+                {
+                    foreach (var element in array)
+                    {
+                        if (element is JValue jval)
+                        {
+                            choices.Add(new Choice(element.ToString()));
+                        }
+                        else if (element is JObject jobj)
+                        {
+                            choices.Add(jobj.ToObject<Choice>());
+                        }
+                    }
+                }
+
+                return choices;
             }
 
             return JArray.FromObject(result).ToObject<List<Choice>>();
-        }
-
-        private static List<Choice> ArrayToChoices(JArray array)
-        {
-            var choices = new List<Choice>();
-            if (array.HasValues)
-            {
-                foreach (var element in array)
-                {
-                    if (element is JValue jval)
-                    {
-                        choices.Add(new Choice(element.ToString()));
-                    }
-                    else if (element is JObject jobj)
-                    {
-                        choices.Add(jobj.ToObject<Choice>());
-                    }
-                }
-            }
-
-            return choices;
         }
     }
 }

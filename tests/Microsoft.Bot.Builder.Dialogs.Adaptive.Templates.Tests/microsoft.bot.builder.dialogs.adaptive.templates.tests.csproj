@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
 
@@ -32,10 +32,7 @@
     <None Remove="lg\NormalStructuredLG.lg" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="adaptiveCard.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="lg\herocard.json">
+    <None Update="lg\adaptiveCard.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="lg\turtle.jpg">
