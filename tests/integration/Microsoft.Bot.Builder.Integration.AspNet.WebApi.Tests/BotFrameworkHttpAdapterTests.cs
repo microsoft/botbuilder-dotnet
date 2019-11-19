@@ -22,6 +22,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
         {
             // Arrange
             var httpRequest = new HttpRequestMessage();
+            httpRequest.Method = HttpMethod.Post;
             httpRequest.Content = CreateMessageActivityContent();
 
             var httpResponse = new HttpResponseMessage();
@@ -43,6 +44,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
         {
             // Arrange
             var httpRequest = new HttpRequestMessage();
+            httpRequest.Method = HttpMethod.Post;
             httpRequest.Content = CreateInvokeActivityContent();
 
             var httpResponse = new HttpResponseMessage();
@@ -64,6 +66,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
         {
             // Arrange
             var httpRequest = new HttpRequestMessage();
+            httpRequest.Method = HttpMethod.Post;
             httpRequest.Content = CreateMessageActivityContent();
 
             var httpResponse = new HttpResponseMessage();
@@ -90,6 +93,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
         {
             // Arrange
             var httpRequest = new HttpRequestMessage();
+            httpRequest.Method = HttpMethod.Post;
             httpRequest.Content = new StringContent("this.is.not.json", Encoding.UTF8, "application/json");
 
             var httpResponse = new HttpResponseMessage();

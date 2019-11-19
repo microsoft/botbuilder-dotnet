@@ -101,6 +101,16 @@
     Type = event
 ]
 
+# externalAdaptiveCardActivity
+[Activity
+    attachments = @{ActivityAttachment(json(fromFile('../adaptiveCard.json')), 'adaptiveCard')}
+]
+
+# externalHeroCardActivity
+[Activity
+    attachments = @{ActivityAttachment(json(fromFile('.\\herocard.json')), 'herocard')}
+]
+
 # activityWithHeroCardAttachment(title, text)
 [Activity
     Attachments = @{HerocardWithCardAction(title, text)}
@@ -138,6 +148,28 @@
 # adaptivecardActivity
 [Activity
     Attachments = @{json(adaptivecardjson())}
+]
+
+# adaptivecardActivityWithAttachmentStructure
+[Activity
+    Attachments = @{adaptiveAttachment()}
+]
+
+# adaptiveAttachment
+[Attachment
+    contenttype = adaptivecard
+    content = @{json(adaptivecardjson())}
+]
+
+# herocardActivityWithAttachmentStructure
+[Activity
+    attachments = @{herocardAttachment()}
+]
+
+# herocardAttachment
+[Attachment
+    contenttype = herocard
+    content = @{json(fromFile('.\\herocard.json'))}
 ]
 
 # messageActivityAll(title, text)

@@ -56,6 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var result = ActivityFactory.CreateActivity(lgStringResult);
         }
 
+        [Ignore]
         [TestMethod]
         public async Task ActivityFactoryTest()
         {
@@ -73,11 +74,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertAdaptiveCardActivity(activity);
 
+            lgStringResult = await languageGenerator.Generate(context, "@{externalAdaptiveCardActivity()}", data: data).ConfigureAwait(false);
+            activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertAdaptiveCardActivity(activity);
+
+            lgStringResult = await languageGenerator.Generate(context, "@{externalHeroCardActivity()}", data: data).ConfigureAwait(false);
+            activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertCardActionActivity(activity);
+
+            lgStringResult = await languageGenerator.Generate(context, "@{adaptivecardActivityWithAttachmentStructure()}", data: data).ConfigureAwait(false);
+            activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertAdaptiveCardActivity(activity);
+
             lgStringResult = await languageGenerator.Generate(context, "@{eventActivity()}", data: data).ConfigureAwait(false);
             activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertEventActivity(activity);
 
             lgStringResult = await languageGenerator.Generate(context, "@{activityWithHeroCardAttachment()}", data: data).ConfigureAwait(false);
+            activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertActivityWithHeroCardAttachment(activity);
+
+            lgStringResult = await languageGenerator.Generate(context, "@{herocardAttachment()}", data: data).ConfigureAwait(false);
+            activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertActivityWithHeroCardAttachment(activity);
+
+            lgStringResult = await languageGenerator.Generate(context, "@{herocardActivityWithAttachmentStructure()}", data: data).ConfigureAwait(false);
             activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertActivityWithHeroCardAttachment(activity);
 
@@ -426,8 +447,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private async Task<ITurnContext> GetTurnContext(string lgFile)
         {
             var context = new TurnContext(new TestAdapter(), new Activity());
-            var lgText = await resourceExplorer.GetResource(lgFile).ReadTextAsync();
-            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgText, "test", MultiLanguageResourceLoader.Load(resourceExplorer)));
+            var lgresource = resourceExplorer.GetResource(lgFile) as FileResource;
+            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgresource.FullName, MultiLanguageResourceLoader.Load(resourceExplorer)));
+
             return context;
         }
 
