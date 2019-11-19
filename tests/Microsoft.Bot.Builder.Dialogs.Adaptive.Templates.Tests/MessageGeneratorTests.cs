@@ -93,6 +93,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertActivityWithHeroCardAttachment(activity);
 
+            lgStringResult = await languageGenerator.Generate(context, "@{herocardAttachment()}", data: data).ConfigureAwait(false);
+            activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertActivityWithHeroCardAttachment(activity);
+
             lgStringResult = await languageGenerator.Generate(context, "@{herocardActivityWithAttachmentStructure()}", data: data).ConfigureAwait(false);
             activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertActivityWithHeroCardAttachment(activity);

@@ -53,7 +53,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             var result = new List<Diagnostic>();
             var type = GetStructureType(lgJObj);
             
-            if (ActivityFactory.GenericCardTypeMapping.ContainsKey(type))
+            if (ActivityFactory.GenericCardTypeMapping.ContainsKey(type)
+                || type == nameof(Attachment).ToLowerInvariant())
             {
                 result.AddRange(CheckAttachment(lgJObj));
             }

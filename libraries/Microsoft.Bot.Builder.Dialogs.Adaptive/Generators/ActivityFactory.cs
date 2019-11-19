@@ -70,7 +70,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             var activity = new Activity();
             var type = GetStructureType(lgJObj);
 
-            if (GenericCardTypeMapping.ContainsKey(type))
+            if (GenericCardTypeMapping.ContainsKey(type)
+                || type == nameof(Attachment).ToLowerInvariant())
             {
                 if (GetAttachment(lgJObj, out var attachment))
                 {
