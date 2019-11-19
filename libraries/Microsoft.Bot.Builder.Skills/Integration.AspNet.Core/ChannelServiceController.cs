@@ -14,16 +14,9 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.Skills.Integration.AspNet.Core
 {
     /// <summary>
-    /// EXPERIMENTAL: This class is just to check if we can provide a ControllerBase instead of manually processing HttpRequests.
+    /// A base class for a skill controller.
     /// </summary>
-    // For full .NetCore adoption we would need to add an
-    // [Authorize]
-    // attribute to this class and 
-    // services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme).AddAzureADBearer(options => Configuration.Bind("AzureAd", options));\
-    // to startup (aligned with .NetCore)
-    [ApiController]
-    [Route("/v3/conversations/")]
-    public class BotFrameworkHandlerController : ControllerBase
+    public class ChannelServiceController : ControllerBase
     {
         private readonly AuthenticationConfiguration _authConfiguration;
         private readonly IChannelProvider _channelProvider;
@@ -31,7 +24,7 @@ namespace Microsoft.Bot.Builder.Skills.Integration.AspNet.Core
         private readonly ChannelServiceHandler _handler;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BotFrameworkHandlerController"/> class,
+        /// Initializes a new instance of the <see cref="ChannelServiceController"/> class,
         /// using a credential provider.
         /// </summary>
         /// <param name="handler">A <see cref="ChannelServiceHandler"/> that will handle the incoming request.</param>
@@ -43,7 +36,7 @@ namespace Microsoft.Bot.Builder.Skills.Integration.AspNet.Core
         /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
-        public BotFrameworkHandlerController(
+        public ChannelServiceController(
             ChannelServiceHandler handler,
             ICredentialProvider credentialProvider,
             AuthenticationConfiguration authConfig,
