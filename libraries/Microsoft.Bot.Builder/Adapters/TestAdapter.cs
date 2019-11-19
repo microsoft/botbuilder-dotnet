@@ -440,10 +440,10 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        /// <summary>Attempts to retrieve the token for a user that's in a login flow.
+        /// <summary>Attempts to retrieve the token for a user that's in a login flow, using customized AppCredentials.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
-        /// <param name="oAuthAppCredentials">AppCredentials for Oauth.</param>
+        /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
         /// <param name="connectionName">Name of the auth connection to use.</param>
         /// <param name="magicCode">(Optional) Optional user entered code to validate.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
@@ -484,7 +484,7 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        /// <summary>Attempts to retrieve the token for a user that's in a login flow.
+        /// <summary>Attempts to retrieve the token for a user that's in a login flow, using the bot's AppCredentials.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="connectionName">Name of the auth connection to use.</param>
@@ -497,20 +497,20 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Returns a fake link for a sign-in.
+        /// Returns a fake link for a sign-in, using customized AppCredentials.
         /// </summary>
         /// <param name="turnContext">The turn context (must have a valid Activity).</param>
-        /// <param name="oauthAppCredentials">AppCredentials for Oauth.</param>
+        /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
         /// <param name="connectionName">The connectionName.</param>
         /// <param name="cancellationToken">A Task cancellationToken.</param>
         /// <returns>The signin link.</returns>
-        public virtual Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, AppCredentials oauthAppCredentials, string connectionName, CancellationToken cancellationToken)
+        public virtual Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, CancellationToken cancellationToken)
         {
-            return GetOauthSignInLinkAsync(turnContext, oauthAppCredentials, connectionName, turnContext.Activity.From.Id, null, cancellationToken);
+            return GetOauthSignInLinkAsync(turnContext, oAuthAppCredentials, connectionName, turnContext.Activity.From.Id, null, cancellationToken);
         }
 
         /// <summary>
-        /// Returns a fake link for a sign-in.
+        /// Returns a fake link for a sign-in, using the bot's AppCredentials.
         /// </summary>
         /// <param name="turnContext">The turn context (must have a valid Activity).</param>
         /// <param name="connectionName">The connectionName.</param>
@@ -522,22 +522,22 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Returns a fake link for a sign-in.
+        /// Returns a fake link for a sign-in, using customized AppCredentials.
         /// </summary>
         /// <param name="turnContext">The turn context (must have a valid Activity).</param>
-        /// <param name="oauthAppCredentials">AppCredentials for Oauth.</param>
+        /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
         /// <param name="connectionName">The connectionName.</param>
         /// <param name="userId">The user id.</param>
         /// <param name="finalRedirect">The final redirect value, which is ignored here.</param>
         /// <param name="cancellationToken">A Task cancellationToken.</param>
         /// <returns>The signin link.</returns>
-        public virtual Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, AppCredentials oauthAppCredentials, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult($"https://fake.com/oauthsignin/{connectionName}/{turnContext.Activity.ChannelId}/{userId}");
         }
 
         /// <summary>
-        /// Returns a fake link for a sign-in.
+        /// Returns a fake link for a sign-in, using the bot's AppCredentials.
         /// </summary>
         /// <param name="turnContext">The turn context (must have a valid Activity).</param>
         /// <param name="connectionName">The connectionName.</param>
@@ -551,15 +551,15 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Signs a user out by remove the user's token(s) from mock storage.
+        /// Signs a user out by remove the user's token(s) from mock storage, using customized AppCredentials.
         /// </summary>
         /// <param name="turnContext">The turnContext (with a valid Activity).</param>
-        /// <param name="oauthAppCredentials">AppCredentials for Oauth.</param>
+        /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
         /// <param name="connectionName">The conectionName.</param>
         /// <param name="userId">The userId.</param>
         /// <param name="cancellationToken">The Task cancellation token.</param>
         /// <returns>None.</returns>
-        public virtual Task SignOutUserAsync(ITurnContext turnContext, AppCredentials oauthAppCredentials, string connectionName = null, string userId = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SignOutUserAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName = null, string userId = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var channelId = turnContext.Activity.ChannelId;
             userId = userId ?? turnContext.Activity.From.Id;
@@ -579,7 +579,7 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Signs a user out by remove the user's token(s) from mock storage.
+        /// Signs a user out by remove the user's token(s) from mock storage, using the bot's AppCredentials.
         /// </summary>
         /// <param name="turnContext">The turnContext (with a valid Activity).</param>
         /// <param name="connectionName">The conectionName.</param>
@@ -592,15 +592,15 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Gets the token statuses.
+        /// Gets the token statuses, using customized AppCredentials.
         /// </summary>
         /// <param name="context">The turnContext (with a valid Activity).</param>
-        /// <param name="oauthAppCredentials">AppCredentials for Oauth.</param>
+        /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
         /// <param name="userId">The user id.</param>
         /// <param name="includeFilter">Optional comma separated list of connection's to include. Blank will return token status for all configured connections.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Array of TokenStatus.</returns>
-        public virtual Task<TokenStatus[]> GetTokenStatusAsync(ITurnContext context, AppCredentials oauthAppCredentials, string userId, string includeFilter = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<TokenStatus[]> GetTokenStatusAsync(ITurnContext context, AppCredentials oAuthAppCredentials, string userId, string includeFilter = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var filter = includeFilter == null ? null : includeFilter.Split(',');
             var records = _userTokens.
@@ -619,7 +619,7 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Gets the token statuses.
+        /// Gets the token statuses, using the bot's AppCredentials.
         /// </summary>
         /// <param name="context">The turnContext (with a valid Activity).</param>
         /// <param name="userId">The user id.</param>
@@ -632,22 +632,22 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Returns a dictionary of TokenResponses for the resource URLs.
+        /// Returns a dictionary of TokenResponses for the resource URLs, using customized AppCredentials.
         /// </summary>
         /// <param name="context">The TurnContext.</param>
-        /// <param name="oauthAppCredentials">AppCredentials for Oauth.</param>
+        /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
         /// <param name="connectionName">The connectionName.</param>
         /// <param name="resourceUrls">The list of AAD resource URLs.</param>
         /// <param name="userId">The user ID.</param>
         /// <param name="cancellationToken">The cancellationToken.</param>
         /// <returns>The dictionary of TokenResponses for each resource URL.</returns>
-        public virtual Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, AppCredentials oauthAppCredentials, string connectionName, string[] resourceUrls, string userId = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, AppCredentials oAuthAppCredentials, string connectionName, string[] resourceUrls, string userId = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(new Dictionary<string, TokenResponse>());
         }
 
         /// <summary>
-        /// Returns a dictionary of TokenResponses for the resource URLs.
+        /// Returns a dictionary of TokenResponses for the resource URLs, using the bot's AppCredentials.
         /// </summary>
         /// <param name="context">The TurnContext.</param>
         /// <param name="connectionName">The connectionName.</param>
