@@ -38,9 +38,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// </remarks>
         public BotFrameworkSkillHandler(BotAdapter adapter, IBot bot, ILogger logger = null)
         {
-            _logger = logger ?? NullLogger.Instance;
             _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
+            _logger = logger ?? NullLogger.Instance;
         }
 
         /// <summary>

@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
         [Fact]
         public void TestSkillConversationTestNullId()
         {
-            Assert.Throws<ArgumentNullException>(() =>
+            Assert.Throws<NullReferenceException>(() =>
             {
                 var sc = new SkillConversation()
                 {
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
         [Fact]
         public void TestSkillConversationNullUrl()
         {
-            Assert.Throws<ArgumentNullException>(() =>
+            Assert.Throws<NullReferenceException>(() =>
             {
                 var sc = new SkillConversation()
                 {

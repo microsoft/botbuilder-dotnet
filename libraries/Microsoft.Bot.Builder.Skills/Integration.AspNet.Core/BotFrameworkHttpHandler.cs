@@ -15,9 +15,9 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 {
-    internal delegate Task<object> RouteAction(BotAdapter adapter, BotFrameworkHandler handler, IBot bot, ClaimsIdentity claimsIdentity, HttpRequest httpRequest, GroupCollection parameters, CancellationToken cancellationToken);
+    internal delegate Task<object> RouteAction(BotFrameworkHandler handler, ClaimsIdentity claimsIdentity, HttpRequest httpRequest, GroupCollection parameters, CancellationToken cancellationToken);
 
-    public class BotFrameworkSkillRequestHandler
+    public class BotFrameworkHttpHandler
     {
         private static readonly ChannelRoute[] _routes =
         {
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             {
                 Method = ChannelApiMethods.GetActivityMembers,
                 Pattern = new Regex(@"/GET:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>.*)/members", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-                Action = async (adapter, handler, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                Action = async (handler, claimsIdentity, httpRequest, parameters, cancellationToken) =>
                 {
                     return await handler.OnGetActivityMembersAsync(claimsIdentity, parameters["conversationId"].Value, parameters["activityId"].Value, cancellationToken).ConfigureAwait(false);
                 }
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             {
                 Method = ChannelApiMethods.SendConversationHistory,
                 Pattern = new Regex(@"/POST:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities/history", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-                Action = async (adapter, handler, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                Action = async (handler, claimsIdentity, httpRequest, parameters, cancellationToken) =>
                 {
                     var history = HttpHelper.ReadRequest<Transcript>(httpRequest);
                     return await handler.OnSendConversationHistoryAsync(claimsIdentity, parameters["conversationId"].Value, history, cancellationToken).ConfigureAwait(false);
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             {
                 Method = ChannelApiMethods.ReplyToActivity,
                 Pattern = new Regex(@"/POST:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>[^\s/]*)?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-                Action = async (adapter, handler, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                Action = async (handler, claimsIdentity, httpRequest, parameters, cancellationToken) =>
                 {
                     var replyToActivity = HttpHelper.ReadRequest<Activity>(httpRequest);
                     return await handler.OnReplyToActivityAsync(claimsIdentity, replyToActivity.Conversation.Id, parameters["activityId"].Value, replyToActivity, cancellationToken).ConfigureAwait(false);
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             {
                 Method = ChannelApiMethods.UpdateActivity,
                 Pattern = new Regex(@"/PUT:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>[^\s/]*)?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-                Action = async (adapter, handler, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                Action = async (handler, claimsIdentity, httpRequest, parameters, cancellationToken) =>
                 {
                     var updateActivity = HttpHelper.ReadRequest<Activity>(httpRequest);
                     return await handler.OnUpdateActivityAsync(claimsIdentity, parameters["conversationId"].Value, parameters["activityId"].Value, updateActivity, cancellationToken).ConfigureAwait(false);
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             {
                 Method = ChannelApiMethods.DeleteActivity,
                 Pattern = new Regex(@"/DELETE:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities/(?<activityId>[^\s/]*)?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-                Action = async (adapter, handler, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                Action = async (handler, claimsIdentity, httpRequest, parameters, cancellationToken) =>
                 {
                     await handler.OnDeleteActivityAsync(claimsIdentity, parameters["conversationId"].Value, parameters["activityId"].Value, cancellationToken).ConfigureAwait(false);
                     return null;
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             {
                 Method = ChannelApiMethods.SendToConversation,
                 Pattern = new Regex(@"/POST:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/activities", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-                Action = async (adapter, handler, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                Action = async (handler, claimsIdentity, httpRequest, parameters, cancellationToken) =>
                 {
                     var sendToConversationActivity = HttpHelper.ReadRequest<Activity>(httpRequest);
                     return await handler.OnSendToConversationAsync(claimsIdentity, parameters["conversationId"].Value, sendToConversationActivity, cancellationToken).ConfigureAwait(false);
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             {
                 Method = ChannelApiMethods.DeleteConversationMember,
                 Pattern = new Regex(@"/DELETE:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/members/(?<memberId>.*)", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-                Action = async (adapter, handler, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                Action = async (handler, claimsIdentity, httpRequest, parameters, cancellationToken) =>
                 {
                     await handler.OnDeleteConversationMemberAsync(claimsIdentity, parameters["conversationId"].Value, parameters["memberId"].Value, cancellationToken).ConfigureAwait(false);
                     return null;
@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             {
                 Method = ChannelApiMethods.UploadAttachment,
                 Pattern = new Regex(@"/POST:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/attachments", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-                Action = async (adapter, handler, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                Action = async (handler, claimsIdentity, httpRequest, parameters, cancellationToken) =>
                 {
                     var uploadAttachment = HttpHelper.ReadRequest<AttachmentData>(httpRequest);
                     return await handler.OnUploadAttachmentAsync(claimsIdentity, parameters["conversationId"].Value, uploadAttachment, cancellationToken).ConfigureAwait(false);
@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             {
                 Method = ChannelApiMethods.GetConversationMembers,
                 Pattern = new Regex(@"/GET:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/members", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-                Action = async (adapter, handler, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                Action = async (handler, claimsIdentity, httpRequest, parameters, cancellationToken) =>
                 {
                     return await handler.OnGetConversationMembersAsync(claimsIdentity, parameters["conversationId"].Value, cancellationToken).ConfigureAwait(false);
                 }
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             {
                 Method = ChannelApiMethods.GetConversationPagedMembers,
                 Pattern = new Regex(@"/GET:(?<path>.*)/v3/conversations/(?<conversationId>[^\s/]*)/pagedmember", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-                Action = async (adapter, handler, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                Action = async (handler, claimsIdentity, httpRequest, parameters, cancellationToken) =>
                 {
                     var pageSize = string.IsNullOrWhiteSpace(parameters["pageSize"].Value) ? -1 : int.Parse(parameters["pageSize"].Value, CultureInfo.InvariantCulture);
                     return await handler.OnGetConversationPagedMembersAsync(claimsIdentity, parameters["conversationId"].Value, pageSize, parameters["continuationToken"].Value, cancellationToken).ConfigureAwait(false);
@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             {
                 Method = ChannelApiMethods.GetConversations,
                 Pattern = new Regex(@"/GET:(?<path>.*)/v3/conversations/", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-                Action = async (adapter, handler, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                Action = async (handler, claimsIdentity, httpRequest, parameters, cancellationToken) =>
                 {
                     return await handler.OnGetConversationsAsync(claimsIdentity, parameters["conversationId"].Value, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             {
                 Method = ChannelApiMethods.CreateConversation,
                 Pattern = new Regex(@"/POST:(?<path>.*)/v3/conversations/", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-                Action = async (adapter, handler, bot, claimsIdentity, httpRequest, parameters, cancellationToken) =>
+                Action = async (handler, claimsIdentity, httpRequest, parameters, cancellationToken) =>
                 {
                     var conversationParameters = HttpHelper.ReadRequest<ConversationParameters>(httpRequest);
                     return await handler.OnCreateConversationAsync(claimsIdentity, parameters["conversationId"].Value, conversationParameters, cancellationToken).ConfigureAwait(false);
@@ -143,11 +143,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         private readonly AuthenticationConfiguration _authConfiguration;
         private readonly IChannelProvider _channelProvider;
         private readonly ICredentialProvider _credentialProvider;
-
         private readonly BotFrameworkHandler _handler;
-
+        
         /// <summary>
-        /// Initializes a new instance of the <see cref="BotFrameworkSkillRequestHandler"/> class,
+        /// Initializes a new instance of the <see cref="BotFrameworkHttpHandler"/> class,
         /// using a credential provider.
         /// </summary>
         /// <param name="handler">A <see cref="BotFrameworkHandler"/> that will handle the incoming request.</param>
@@ -159,7 +158,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
-        public BotFrameworkSkillRequestHandler(
+        public BotFrameworkHttpHandler(
             BotFrameworkHandler handler,
             ICredentialProvider credentialProvider,
             AuthenticationConfiguration authConfig,
@@ -171,7 +170,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             _channelProvider = channelProvider;
         }
 
-        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, BotAdapter adapter, IBot bot, CancellationToken cancellationToken = default)
+        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, CancellationToken cancellationToken = default)
         {
             if (httpRequest == null)
             {
@@ -181,11 +180,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             if (httpResponse == null)
             {
                 throw new ArgumentNullException(nameof(httpResponse));
-            }
-
-            if (bot == null)
-            {
-                throw new ArgumentNullException(nameof(bot));
             }
 
             object result = null;
@@ -204,7 +198,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
                 }
 
                 // Execute the route action
-                result = await route.Action.Invoke(adapter, _handler, bot, claimsIdentity, httpRequest, route.Parameters, cancellationToken).ConfigureAwait(false);
+                result = await route.Action.Invoke(_handler, claimsIdentity, httpRequest, route.Parameters, cancellationToken).ConfigureAwait(false);
             }
             catch (UnauthorizedAccessException)
             {

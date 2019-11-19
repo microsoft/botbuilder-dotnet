@@ -17,14 +17,14 @@ namespace SimpleRootBot.Controllers
     {
         private readonly BotFrameworkHttpAdapter _adapter;
         private readonly IBot _bot;
-        private readonly BotFrameworkSkillRequestHandler _skillRequestHandler;
+        private readonly BotFrameworkHttpHandler _httpHandler;
 
-        public SkillHostController(BotFrameworkSkillRequestHandler skillRequestHandler, BotFrameworkHttpAdapter adapter, IBot bot)
+        public SkillHostController(BotFrameworkHttpHandler httpHandler, BotFrameworkHttpAdapter adapter, IBot bot)
         {
             // adapter to use for calling back to channel
             _adapter = adapter;
             _bot = bot;
-            _skillRequestHandler = skillRequestHandler;
+            _httpHandler = httpHandler;
         }
 
         [HttpPost]
@@ -42,7 +42,7 @@ namespace SimpleRootBot.Controllers
 
                 // Delegate the processing of the HTTP POST to the adapter.
                 // The adapter will invoke the bot.
-                await _skillRequestHandler.ProcessAsync(Request, Response, _adapter, _bot);
+                await _httpHandler.ProcessAsync(Request, Response);
             }
             catch (Exception ex)
             {
