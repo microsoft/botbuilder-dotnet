@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 
 namespace DialogRootBot.Middleware
@@ -44,14 +43,6 @@ namespace DialogRootBot.Middleware
             {
                 var message = $"{_label} {activity.Type} {activity.Text}";
                 Console.WriteLine(message);
-
-                var referrerInfo = activity.From.Properties[ReferrerInfo.Key];
-                if (referrerInfo != null)
-                {
-                    var referrer = referrerInfo.ToObject<ReferrerInfo>();
-                    message = referrer.ConversationId;
-                    Console.WriteLine(message);
-                }
             }
 
             return await next();

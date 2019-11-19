@@ -5,7 +5,7 @@ using System;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Skills
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
     /// <summary>
     /// Manages encoding ConversationId and ServiceUrl into packaged string for skill's conversation Id.

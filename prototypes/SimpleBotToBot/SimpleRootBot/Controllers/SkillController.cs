@@ -8,9 +8,6 @@ using Microsoft.Bot.Connector.Authentication;
 
 namespace SimpleRootBot.Controllers
 {
-    /// <summary>
-    /// EXPERIMENTAL: This class is just to check if we can provide a ControllerBase instead of manually processing HttpRequests.
-    /// </summary>
     [ApiController]
     [Route("v3/conversations/")]
     public class SkillController : ChannelServiceController

@@ -84,14 +84,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 // TODO: Review the rest of the code and see if we can remove this. Gabo
                 // TODO: can we use this property back to store the source conversation ID and the ServiceUrl? 
                 activity.Recipient.Properties["skillId"] = toBotId;
-                var referrer = new ReferrerInfo
-                {
-                    ConversationId = originalConversationId,
-                    ServiceUrl = new Uri(originalServiceUrl),
-                    FromBotId = fromBotId,
-                    ToBotId = toBotId
-                };
-                activity.Recipient.Properties[ReferrerInfo.Key] = JObject.FromObject(referrer);
 
                 using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
                 {
