@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <value>
         /// ListStyle to use to render the choices.
         /// </value>
-        [JsonProperty("styles")]
+        [JsonProperty("style")]
         public ListStyle Style { get; set; } = ListStyle.Auto;
 
         /// <summary>

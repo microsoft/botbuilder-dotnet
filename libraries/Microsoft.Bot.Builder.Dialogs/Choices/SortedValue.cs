@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     /// <summary>
@@ -14,6 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <value>
         /// The value that will be sorted.
         /// </value>
+        [JsonProperty("value")]
         public string Value { get; set; }
 
         /// <summary>
@@ -22,6 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <value>
         /// The values original position within its unsorted array.
         /// </value>
+        [JsonProperty("index")]
         public int Index { get; set; }
     }
 }

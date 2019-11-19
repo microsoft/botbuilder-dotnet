@@ -39,8 +39,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
             var (result, error) = new ExpressionEngine().Parse(Condition).TryEvaluate(dc.GetState());
             if ((bool)result == false)
             {
-                var desc = await new TemplateEngineLanguageGenerator(this.Description)
-                    .Generate(dc.Context, this.Description, dc.GetState()).ConfigureAwait(false);
+                var desc = await new TemplateEngineLanguageGenerator()
+                    .Generate(dc.Context, this.Description, dc.GetState())
+                    .ConfigureAwait(false);
                 throw new Exception(desc);
             }
 

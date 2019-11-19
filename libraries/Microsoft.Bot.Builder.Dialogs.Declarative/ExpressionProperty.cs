@@ -77,6 +77,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                 {
                     this.Expression = jobj.expression.ToString();
                 }
+                else
+                {
+                    this.Value = ConvertObject(job);
+                }
             }
             else if (value is JArray jar)
             {
