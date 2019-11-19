@@ -307,7 +307,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             sequenceContext.GetState().SetValue(TurnPath.RECOGNIZED, recognized);
 
                             var (name, score) = recognized.GetTopScoringIntent();
-                            sequenceContext.GetState().SetValue(TurnPath.TOPINTENT, name);
+                            sequenceContext.GetState().SetValue(TurnPath.TOPINTENT, name);                            
+                            sequenceContext.GetState().SetValue(DialogPath.LastIntent, name);
                             sequenceContext.GetState().SetValue(TurnPath.TOPSCORE, score);
 
                             if (Recognizer != null)

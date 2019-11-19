@@ -38,5 +38,15 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Number of retries for the current Ask.
         /// </summary>
         public const string Retries = "dialog.retries";
+
+        /// <summary>
+        /// Last intent.
+        /// </summary>
+        public const string LastIntent = "dialog.lastIntent";
+
+        /// <summary>
+        /// Last trigger event: defined in FormEvent, ask, clarifyEntity etc..
+        /// </summary>
+        public const string LastTriggerEvent = "dialog.lastTriggerEvent";
     }
 }

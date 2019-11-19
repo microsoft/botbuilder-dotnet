@@ -43,24 +43,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             dc.GetState().TryGetValue(TurnPath.DIALOGEVENT, out DialogEvent trigger);
-            
+
             if (dc.GetState().TryGetValue(DialogPath.ExpectedProperties, out List<string> lastExpectedProperties)
-                && ExpectedProperties.Where(prop => !lastExpectedProperties.Contains(prop)).ToList().Count == 0
-                && lastExpectedProperties.Where(prop => !ExpectedProperties.Contains(prop)).ToList().Count == 0)
+                && !ExpectedProperties.Any(prop => !lastExpectedProperties.Contains(prop))
+                && !lastExpectedProperties.Any(prop => !ExpectedProperties.Contains(prop))
+                && dc.GetState().TryGetValue(DialogPath.LastTriggerEvent, out DialogEvent lastTrigger)
+                && lastTrigger.Name.Equals(trigger.Name))
             {
-                if (trigger.Name.Equals("ask"))
+                retries++;
+                if (dc.GetState().TryGetValue(DialogPath.LastIntent, out string lastIntent) 
+                    && lastIntent.ToLower().Equals("help"))
                 {
-                    //repeat Ask: expected properties unchanged && event is triggered by Ask
-                    retries++;
-                }                    
+                    retries = 0;
+                }               
             }
             else
             {
                 retries = 0;
             }
 
-            dc.GetState().SetValue(DialogPath.ExpectedProperties, ExpectedProperties);
             dc.GetState().SetValue(DialogPath.Retries, retries);
+            dc.GetState().SetValue(DialogPath.LastTriggerEvent, trigger);
+            dc.GetState().SetValue(DialogPath.ExpectedProperties, ExpectedProperties);            
             var result = await base.BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
             result.Status = DialogTurnStatus.CompleteAndWait;
             return result;
