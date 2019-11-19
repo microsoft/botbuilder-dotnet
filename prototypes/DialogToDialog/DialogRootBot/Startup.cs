@@ -23,7 +23,6 @@ namespace DialogRootBot
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddHttpClient();
 
             // Configure credentials
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
@@ -37,7 +36,7 @@ namespace DialogRootBot
             services.AddSingleton<BotAdapter>(sp => sp.GetService<BotFrameworkHttpAdapter>());
             
             // Register the skills client and skills request handler.
-            services.AddSingleton<BotFrameworkClient>();
+            services.AddHttpClient<BotFrameworkClient>();
             services.AddSingleton<BotFrameworkHandler, BotFrameworkSkillHandler>();
             services.AddSingleton<BotFrameworkHttpHandler>();
 

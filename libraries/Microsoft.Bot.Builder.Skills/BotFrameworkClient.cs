@@ -25,19 +25,20 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         private readonly ConcurrentDictionary<string, AppCredentials> _appCredentialMap = new ConcurrentDictionary<string, AppCredentials>();
         private readonly IChannelProvider _channelProvider;
         private readonly ICredentialProvider _credentialProvider;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
 
         public BotFrameworkClient(
-            IHttpClientFactory httpClientFactory,
+            HttpClient httpClient,
             ICredentialProvider credentialProvider,
             IChannelProvider channelProvider = null,
             ILogger logger = null)
         {
-            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             _channelProvider = channelProvider;
             _logger = logger ?? NullLogger.Instance;
+            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
         }
 
         /// <summary>
@@ -64,6 +65,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var token = await appCredentials.GetTokenAsync().ConfigureAwait(false);
 
             // Capture current activity settings before changing them.
+            // TODO: DO we need to set the activity ID? (events that are created manually don't have it).
             var originalConversationId = activity.Conversation.Id;
             var originalServiceUrl = activity.ServiceUrl;
             try
@@ -79,6 +81,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 activity.ServiceUrl = serviceUrl.ToString();
 
                 // TODO: Review the rest of the code and see if we can remove this. Gabo
+                // TODO: can we use this property back to store the source conversation ID and the ServiceUrl? 
                 activity.Recipient.Properties["skillId"] = toBotId;
 
                 using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
@@ -90,7 +93,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                         httpRequestMessage.Content = jsonContent;
 
-                        var response = await GetHttpClient().SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
+                        var response = await _httpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
 
                         var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                         return new InvokeResponse
@@ -131,19 +134,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             // NOTE: we can't do async operations inside of a AddOrUpdate, so we split access pattern
             var appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
-            var httpClient = GetHttpClient();
-            appCredentials = _channelProvider != null && _channelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, httpClient, _logger) : new MicrosoftAppCredentials(appId, appPassword, httpClient, _logger, oAuthScope);
+            appCredentials = _channelProvider != null && _channelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient, _logger) : new MicrosoftAppCredentials(appId, appPassword, _httpClient, _logger, oAuthScope);
 
             // Cache the credentials for later use
             _appCredentialMap[cacheKey] = appCredentials;
             return appCredentials;
-        }
-
-        private HttpClient GetHttpClient()
-        {
-            var client = _httpClientFactory.CreateClient(GetType().FullName);
-            ConnectorClient.AddDefaultRequestHeaders(client);
-            return client;
         }
     }
 }
