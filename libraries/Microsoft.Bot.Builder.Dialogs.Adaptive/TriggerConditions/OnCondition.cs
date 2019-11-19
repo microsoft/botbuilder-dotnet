@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                         this.fullConstraint = Expression.AndExpression(
                             this.fullConstraint,
                             new Expression(
-                                TriggerTree.Ignore,
+                                TriggerTree.LookupFunction("ignore"),
                                 new Expression(new ExpressionEvaluator(
                                     "runOnce",
                                     (expression, os) =>
