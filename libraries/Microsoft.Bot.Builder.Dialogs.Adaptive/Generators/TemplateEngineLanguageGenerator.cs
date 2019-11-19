@@ -2,10 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
@@ -51,13 +50,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
         /// <param name="filePath">lg template file absolute path.</param>
-        /// <param name="multiLanguageResolver">template resource loader delegate (local) -> <see cref="ImportResolverDelegate"/>.</param>
-        public TemplateEngineLanguageGenerator(string filePath, Func<string, ImportResolverDelegate> multiLanguageResolver = null)
+        /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
+        public TemplateEngineLanguageGenerator(string filePath, Dictionary<string, IList<IResource>> resourceMapping)
         {
             filePath = PathUtils.NormalizePath(filePath);
             this.Id = Path.GetFileName(filePath);
-            this.MultiLanguageResolver = multiLanguageResolver;
-            this.FilePath = filePath;
+            foreach (var mappingItem in resourceMapping)
+            {
+                var engine = new TemplateEngine().AddFile(filePath, LanguageGeneratorManager.ResourceExplorerResolver(mappingItem.Key, resourceMapping));
+                multiLangEngines.Add(mappingItem.Key, engine);
+            }
         }
 
         /// <summary>
@@ -68,8 +70,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             this.engine = engine;
         }
-
-        public string FilePath { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets id of the source of this template (used for labeling errors).

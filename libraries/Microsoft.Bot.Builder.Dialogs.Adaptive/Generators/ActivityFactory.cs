@@ -279,26 +279,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                             break;
                         }
 
-                    case "contenturl":
-                        attachmentJson["ContentUrl"] = value.ToString();
-                        break;
-
-                    case "content":
-                        attachmentJson["Content"] = value;
-                        break;
-
-                    case "name":
-                        attachmentJson["Name"] = value.ToString();
-                        break;
-
-                    case "thumbnailurl":
-                        attachmentJson["ThumbnailUrl"] = value.ToString();
-                        break;
-
-                    case "properties":
-                        attachmentJson["Properties"] = value as JObject;
-                        break;
-
                     default:
                         attachmentJson[property] = value;
                         break;

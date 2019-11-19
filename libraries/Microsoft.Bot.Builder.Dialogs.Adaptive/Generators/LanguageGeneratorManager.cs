@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             else
             {
-                return new TemplateEngineLanguageGenerator(fileResource.FullName, MultiLanguageResolverDelegate(resourceExplorer));
+                return new TemplateEngineLanguageGenerator(fileResource.FullName, multilanguageResources);
             }
         }
     }

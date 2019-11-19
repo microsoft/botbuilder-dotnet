@@ -226,6 +226,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 // check adaptivecard format
                 // it is hard to check the adaptive card without AdaptiveCards package
             }
+            else if (type == nameof(Attachment).ToLowerInvariant())
+            {
+                // TODO
+            }
             else
             {
                 result.Add(BuildDiagnostic($"'{type}' is not an attachment type.", false));
