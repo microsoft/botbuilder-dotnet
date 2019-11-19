@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     {
         // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)
         // AppCredentials are cached using appId + skillId (this last parameter is only used if the app credentials are used to call a skill)
-        private readonly ConcurrentDictionary<string, AppCredentials> _appCredentialMap = new ConcurrentDictionary<string, AppCredentials>();
+        private static readonly ConcurrentDictionary<string, AppCredentials> _appCredentialMapCache = new ConcurrentDictionary<string, AppCredentials>();
         private readonly IChannelProvider _channelProvider;
         private readonly ICredentialProvider _credentialProvider;
         private readonly HttpClient _httpClient;
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
 
             var cacheKey = $"{appId}{oAuthScope}";
-            if (_appCredentialMap.TryGetValue(cacheKey, out var appCredentials))
+            if (_appCredentialMapCache.TryGetValue(cacheKey, out var appCredentials))
             {
                 return appCredentials;
             }
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             appCredentials = _channelProvider != null && _channelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient, _logger) : new MicrosoftAppCredentials(appId, appPassword, _httpClient, _logger, oAuthScope);
 
             // Cache the credentials for later use
-            _appCredentialMap[cacheKey] = appCredentials;
+            _appCredentialMapCache[cacheKey] = appCredentials;
             return appCredentials;
         }
     }
