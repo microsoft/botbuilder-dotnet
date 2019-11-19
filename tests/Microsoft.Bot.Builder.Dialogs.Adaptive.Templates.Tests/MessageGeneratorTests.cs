@@ -443,7 +443,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var context = new TurnContext(new TestAdapter(), new Activity());
             var lgresource = resourceExplorer.GetResource(lgFile) as FileResource;
-            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgresource.FullName, LanguageGeneratorManager.MultiLanguageResolverDelegate(resourceExplorer)));
+            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgresource.FullName, MultiLanguageResourceLoader.Load(resourceExplorer)));
+
             return context;
         }
 

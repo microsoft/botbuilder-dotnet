@@ -2,7 +2,7 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
     "$role": "unionType(Microsoft.ITriggerCondition)",
     "title": "On RepromptDialog",
-    "description": "Actions to perform when 'ReprmptDialog' event occurs.",
+    "description": "Actions to perform when 'RepromptDialog' event occurs.",
     "type": "object",
     "allOf": [
         {

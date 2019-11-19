@@ -55,9 +55,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 var emulateOAuthCards = configuration.GetSection(AuthenticationConstants.EmulateOAuthCardsKey)?.Value;
 
-                if (!string.IsNullOrEmpty(emulateOAuthCards) && bool.TryParse(emulateOAuthCards, out bool emualteOAuthCardsValue))
+                if (!string.IsNullOrEmpty(emulateOAuthCards) && bool.TryParse(emulateOAuthCards, out bool emulateOAuthCardsValue))
                 {
-                    OAuthClientConfig.EmulateOAuthCards = emualteOAuthCardsValue;
+                    OAuthClientConfig.EmulateOAuthCards = emulateOAuthCardsValue;
                 }
             }
 
