@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Connector.Authentication;
+
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
@@ -8,6 +10,12 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class OAuthPromptSettings
     {
+        /// <summary>
+        /// Gets or sets the AppCredentials instance for OAuthPrompt.
+        /// </summary>
+        /// <value>The AppCredentials for OAuthPrompt.</value>
+        public AppCredentials OAuthAppCredentials { get; set; }
+
         /// <summary>
         /// Gets or sets the name of the OAuth connection.
         /// </summary>

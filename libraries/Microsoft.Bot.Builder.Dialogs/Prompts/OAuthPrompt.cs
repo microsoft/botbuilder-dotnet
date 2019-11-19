@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
             }
 
-            var output = await adapter.GetUserTokenAsync(dc.Context, _settings.ConnectionName, null, cancellationToken).ConfigureAwait(false);
+            var output = await adapter.GetUserTokenAsync(dc.Context, _settings.OAuthAppCredentials, _settings.ConnectionName, null, cancellationToken).ConfigureAwait(false);
             if (output != null)
             {
                 // Return token
@@ -244,7 +244,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new InvalidOperationException("OAuthPrompt.GetUserToken(): not supported by the current adapter");
             }
 
-            return await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, null, cancellationToken).ConfigureAwait(false);
+            return await adapter.GetUserTokenAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, null, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -262,7 +262,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Sign out user
-            await adapter.SignOutUserAsync(turnContext, _settings.ConnectionName, turnContext.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
+            await adapter.SignOutUserAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, turnContext.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
         }
 
         private static bool IsTokenResponseEvent(ITurnContext turnContext)
@@ -316,7 +316,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (!prompt.Attachments.Any(a => a.Content is SigninCard))
                 {
-                    var link = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
+                    var link = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
                     prompt.Attachments.Add(new Attachment
                     {
                         ContentType = SigninCard.ContentType,
@@ -345,12 +345,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Check if the incoming Activity is from a streaming connection, and if it is, fetch the sign-in link.
                 if (turnContext.Activity.IsFromStreamingConnection())
                 {
-                    signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
+                    signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
                 }
                 else if (turnContext.TurnState.Get<ClaimsIdentity>("BotIdentity") is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
                 {
                     // Generate sign in link for Skills (Emulator and WebChat don't' have the skill appId so we need to create the link for it
-                    signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
+                    signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
 
                     // In the skills preview bits, we require magic code (we'll need to update WebChat and emulator to avoid this in the next release.
                     if (turnContext.Activity.ChannelId == Channels.Emulator || turnContext.Activity.ChannelId == Channels.Webchat)
@@ -435,7 +435,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // progress) retry in that case.
                 try
                 {
-                    var token = await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, magicCode, cancellationToken).ConfigureAwait(false);
+                    var token = await adapter.GetUserTokenAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, magicCode, cancellationToken).ConfigureAwait(false);
 
                     if (token != null)
                     {
@@ -464,7 +464,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
                     }
 
-                    var token = await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, matched.Value, cancellationToken).ConfigureAwait(false);
+                    var token = await adapter.GetUserTokenAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, matched.Value, cancellationToken).ConfigureAwait(false);
                     if (token != null)
                     {
                         result.Succeeded = true;
