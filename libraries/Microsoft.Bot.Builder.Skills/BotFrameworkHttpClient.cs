@@ -19,7 +19,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
-    public class BotFrameworkClient
+    public class BotFrameworkHttpClient
     {
         // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)
         // AppCredentials are cached using appId + skillId (this last parameter is only used if the app credentials are used to call a skill)
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
 
-        public BotFrameworkClient(
+        public BotFrameworkHttpClient(
             HttpClient httpClient,
             ICredentialProvider credentialProvider,
             IChannelProvider channelProvider = null,

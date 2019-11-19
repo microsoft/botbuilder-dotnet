@@ -36,7 +36,7 @@ namespace DialogRootBot
             services.AddSingleton<BotAdapter>(sp => sp.GetService<BotFrameworkHttpAdapter>());
             
             // Register the skills client and skills request handler.
-            services.AddHttpClient<BotFrameworkClient>();
+            services.AddHttpClient<BotFrameworkHttpClient>();
             services.AddSingleton<BotFrameworkHandler, BotFrameworkSkillHandler>();
             services.AddSingleton<BotFrameworkHttpHandler>();
 

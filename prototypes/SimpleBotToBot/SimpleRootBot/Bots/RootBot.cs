@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -18,10 +17,10 @@ namespace SimpleRootBot.Bots
         private readonly IStatePropertyAccessor<string> _activeSkillProperty;
         private readonly ConversationState _conversationState;
         private readonly SkillsConfiguration _skillsConfig;
-        private readonly BotFrameworkClient _skillClient;
+        private readonly BotFrameworkHttpClient _skillClient;
         private readonly string _botId;
 
-        public RootBot(ConversationState conversationState, SkillsConfiguration skillsConfig, BotFrameworkClient skillClient, IConfiguration configuration)
+        public RootBot(ConversationState conversationState, SkillsConfiguration skillsConfig, BotFrameworkHttpClient skillClient, IConfiguration configuration)
         {
             _botId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
             _skillClient = skillClient;

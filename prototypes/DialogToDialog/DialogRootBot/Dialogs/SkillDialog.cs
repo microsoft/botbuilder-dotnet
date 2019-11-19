@@ -23,10 +23,10 @@ namespace DialogRootBot.Dialogs
     {
         private readonly ConversationState _conversationState;
         private readonly SkillsConfiguration _skillsConfig;
-        private readonly BotFrameworkClient _skillClient;
+        private readonly BotFrameworkHttpClient _skillClient;
         private readonly string _botId;
 
-        public SkillDialog(ConversationState conversationState, BotFrameworkClient skillClient, SkillsConfiguration skillsConfig, IConfiguration configuration, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SkillDialog(ConversationState conversationState, BotFrameworkHttpClient skillClient, SkillsConfiguration skillsConfig, IConfiguration configuration, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(nameof(SkillDialog))
         {
             _botId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;

@@ -19,11 +19,11 @@ namespace DialogRootBot.Dialogs
     {
         private readonly ConversationState _conversationState;
         private readonly SkillsConfiguration _skillsConfig;
-        private readonly BotFrameworkClient _skillClient;
+        private readonly BotFrameworkHttpClient _skillClient;
         private readonly string _botId;
 
         // Dependency injection uses this constructor to instantiate MainDialog
-        public MainDialog(ConversationState conversationState, BotFrameworkClient skillClient, SkillsConfiguration skillsConfig, SkillDialog bookingDialog, IConfiguration configuration)
+        public MainDialog(ConversationState conversationState, BotFrameworkHttpClient skillClient, SkillsConfiguration skillsConfig, SkillDialog bookingDialog, IConfiguration configuration)
             : base(nameof(MainDialog))
         {
             _botId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
