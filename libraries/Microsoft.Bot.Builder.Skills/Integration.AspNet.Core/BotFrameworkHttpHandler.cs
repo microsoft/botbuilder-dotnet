@@ -15,7 +15,7 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 {
-    internal delegate Task<object> RouteAction(BotFrameworkHandler handler, ClaimsIdentity claimsIdentity, HttpRequest httpRequest, GroupCollection parameters, CancellationToken cancellationToken);
+    internal delegate Task<object> RouteAction(ChannelServiceHandler handler, ClaimsIdentity claimsIdentity, HttpRequest httpRequest, GroupCollection parameters, CancellationToken cancellationToken);
 
     public class BotFrameworkHttpHandler
     {
@@ -143,13 +143,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         private readonly AuthenticationConfiguration _authConfiguration;
         private readonly IChannelProvider _channelProvider;
         private readonly ICredentialProvider _credentialProvider;
-        private readonly BotFrameworkHandler _handler;
+        private readonly ChannelServiceHandler _handler;
         
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkHttpHandler"/> class,
         /// using a credential provider.
         /// </summary>
-        /// <param name="handler">A <see cref="BotFrameworkHandler"/> that will handle the incoming request.</param>
+        /// <param name="handler">A <see cref="ChannelServiceHandler"/> that will handle the incoming request.</param>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="authConfig">The authentication configuration.</param>
         /// <param name="channelProvider">The channel provider.</param>
@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// add additional middleware to the adapter after construction.
         /// </remarks>
         public BotFrameworkHttpHandler(
-            BotFrameworkHandler handler,
+            ChannelServiceHandler handler,
             ICredentialProvider credentialProvider,
             AuthenticationConfiguration authConfig,
             IChannelProvider channelProvider = null)

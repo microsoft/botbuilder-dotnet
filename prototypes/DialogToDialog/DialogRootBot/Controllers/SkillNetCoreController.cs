@@ -16,7 +16,7 @@ namespace DialogRootBot.Controllers
     public class SkillNetCoreController : BotFrameworkHandlerController
     {
         public SkillNetCoreController(
-            BotFrameworkHandler handler,
+            ChannelServiceHandler handler,
             ICredentialProvider credentialProvider,
             AuthenticationConfiguration authConfig,
             IChannelProvider channelProvider = null)

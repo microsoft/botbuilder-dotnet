@@ -28,13 +28,13 @@ namespace Microsoft.Bot.Builder.Skills.Integration.AspNet.Core
         private readonly AuthenticationConfiguration _authConfiguration;
         private readonly IChannelProvider _channelProvider;
         private readonly ICredentialProvider _credentialProvider;
-        private readonly BotFrameworkHandler _handler;
+        private readonly ChannelServiceHandler _handler;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkHandlerController"/> class,
         /// using a credential provider.
         /// </summary>
-        /// <param name="handler">A <see cref="BotFrameworkHandler"/> that will handle the incoming request.</param>
+        /// <param name="handler">A <see cref="ChannelServiceHandler"/> that will handle the incoming request.</param>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="authConfig">The authentication configuration.</param>
         /// <param name="channelProvider">The channel provider.</param>
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Skills.Integration.AspNet.Core
         /// add additional middleware to the adapter after construction.
         /// </remarks>
         public BotFrameworkHandlerController(
-            BotFrameworkHandler handler,
+            ChannelServiceHandler handler,
             ICredentialProvider credentialProvider,
             AuthenticationConfiguration authConfig,
             IChannelProvider channelProvider = null)

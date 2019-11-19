@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Skills
     {
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
         {
-            if (turnContext.Activity.Type == ActivityTypes.Invoke && turnContext.Activity.Name == BotFrameworkSkillHandler.InvokeActivityName)
+            if (turnContext.Activity.Type == ActivityTypes.Invoke && turnContext.Activity.Name == SkillHandler.InvokeActivityName)
             {
                 // process Invoke Activity 
                 var invokeActivity = turnContext.Activity.AsInvokeActivity();

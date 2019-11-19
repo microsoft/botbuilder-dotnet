@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// A skill host adapter implements API to forward activity to a skill and 
     /// implements routing ChannelAPI calls from the Skill up through the bot/adapter.
     /// </summary>
-    public abstract class BotFrameworkHandler
+    public abstract class ChannelServiceHandler
     {
         /// <summary>
         /// ReplyToActivity() API for Skill.

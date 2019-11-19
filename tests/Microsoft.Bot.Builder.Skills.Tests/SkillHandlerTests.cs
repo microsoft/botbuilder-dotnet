@@ -17,14 +17,14 @@ using Xunit.Sdk;
 
 namespace Microsoft.Bot.Builder.Skills.Tests
 {
-    public class BotFrameworkSkillHandlerTests
+    public class SkillHandlerTests
     {
-        [Fact(Skip = "TODO: I moved this logic to BotFrameworkHandler.InvokeChannelApiAsync, rewrite this test once i finish with refactoring. Gabo")]
+        [Fact(Skip = "TODO: I moved this logic to ChannelServiceHandler.InvokeChannelApiAsync, rewrite this test once i finish with refactoring. Gabo")]
         public void TestSkillAdapterInjectsMiddleware()
         {
             var botAdapter = CreateAdapter("TestSkillAdapterInjectsMiddleware");
 
-            var skillClient = new BotFrameworkSkillHandler(botAdapter, new CallbackBot());
+            var skillClient = new SkillHandler(botAdapter, new CallbackBot());
 
             Assert.Equal(1, botAdapter.MiddlewareSet.Count(s => s is ChannelApiMiddleware));
         }
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
             var middleware = new AssertInvokeMiddleware(botAdapter, activityId);
             botAdapter.Use(middleware);
             var bot = new CallbackBot();
-            var skillClient = new BotFrameworkSkillHandler(botAdapter, bot);
+            var skillClient = new SkillHandler(botAdapter, bot);
 
             var sc = new SkillConversation
             {
@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
                 Assert.Equal(_adapter.Conversation.Bot.Id, turnContext.Activity.Recipient.Id);
 
                 var invoke = turnContext.Activity.AsInvokeActivity();
-                Assert.Equal(BotFrameworkSkillHandler.InvokeActivityName, invoke.Name);
+                Assert.Equal(SkillHandler.InvokeActivityName, invoke.Name);
                 var apiArgs = invoke.Value as ChannelApiArgs;
                 Assert.NotNull(apiArgs);
 

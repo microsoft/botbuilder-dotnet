@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// <summary>
     /// A Bot Framework Handler for skills.
     /// </summary>
-    public class BotFrameworkSkillHandler : BotFrameworkHandler
+    public class SkillHandler : ChannelServiceHandler
     {
         public const string InvokeActivityName = "SkillEvents.ChannelApiInvoke";
         private readonly BotAdapter _adapter;
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BotFrameworkSkillHandler"/> class,
+        /// Initializes a new instance of the <see cref="SkillHandler"/> class,
         /// using a credential provider.
         /// </summary>
         /// <param name="adapter">An instance of the <see cref="BotAdapter"/> that will handle the request.</param>
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
-        public BotFrameworkSkillHandler(BotAdapter adapter, IBot bot, ILogger logger = null)
+        public SkillHandler(BotAdapter adapter, IBot bot, ILogger logger = null)
         {
             _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
