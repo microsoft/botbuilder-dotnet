@@ -78,6 +78,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             result = await generator.Generate(GetTurnContext(locale: "en"), templateContent, null);
             Assert.AreEqual("from b.en.lg", result);
+
+            templateContent = "@{templateben()}";
+
+            // imported will not fallback when not found
+            var ex = Assert.ThrowsException<AggregateException>(() => generator.Generate(GetTurnContext(locale: "en-us"), templateContent, null).Wait());
+            Assert.IsTrue(ex.Message.Contains("templateben does not have an evaluator"));
+
+            templateContent = "@{templateben-us()}";
+
+            ex = Assert.ThrowsException<AggregateException>(() => generator.Generate(GetTurnContext(locale: "en"), templateContent, null).Wait());
+            Assert.IsTrue(ex.Message.Contains("templateben-us does not have an evaluator"));
         }
 
         [TestMethod]
