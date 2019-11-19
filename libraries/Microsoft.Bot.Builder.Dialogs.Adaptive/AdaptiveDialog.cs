@@ -32,6 +32,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         private bool installedDependencies;
 
+        private bool needsTracker = false;
+
         public AdaptiveDialog(string dialogId = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(dialogId)
         {
@@ -116,7 +118,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 throw new ArgumentException($"{nameof(options)} should not ever be a cancellation token");
             }
 
-            EnsureDependenciesInstalled(dc);
+            EnsureDependenciesInstalled();
+
+            if (needsTracker)
+            {
+                if (!dc.GetState().ContainsKey(DialogPath.EventCounter))
+                {
+                    dc.GetState().SetValue(DialogPath.EventCounter, 0u);
+                }
+
+                if (!dc.GetState().ContainsKey(DialogPath.ConditionTracker))
+                {
+                    var parser = Selector.Parser;
+                    foreach (var trigger in Triggers)
+                    {
+                        if (trigger.RunOnce)
+                        {
+                            // TODO: Should probably use the full expression, but wrap things like event processing in ignore
+                            var paths = dc.GetState().Track(parser.Parse(trigger.Condition).References());
+                            var triggerPath = DialogPath.ConditionTracker + "." + trigger.Id + ".";
+                            dc.GetState().SetValue(triggerPath + "paths", paths);
+                            dc.GetState().SetValue(triggerPath + "lastRun", 0u);
+                        }
+                    }
+                }
+            }
 
             SetLocalGenerator(dc.Context);
 
@@ -143,7 +169,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
-            EnsureDependenciesInstalled(dc);
+            EnsureDependenciesInstalled();
 
             SetLocalGenerator(dc.Context);
 
@@ -232,7 +258,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Save into turn
             sequenceContext.GetState().SetValue(TurnPath.DIALOGEVENT, dialogEvent);
 
-            EnsureDependenciesInstalled(sequenceContext);
+            EnsureDependenciesInstalled();
 
             // Count of events processed
             var count = sequenceContext.GetState().GetValue<uint>(DialogPath.EventCounter);
@@ -584,7 +610,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return false;
         }
 
-        private void EnsureDependenciesInstalled(DialogContext dc)
+        private void EnsureDependenciesInstalled()
         {
             lock (this)
             {
@@ -592,7 +618,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     installedDependencies = true;
 
-                    var needsTracker = false;
                     var id = 0u;
                     var noActivity = 0;
                     var activity = 1000;
@@ -654,30 +679,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     {
                         // Default to most specific then first
                         Selector = new MostSpecificSelector { Selector = new FirstSelector() };
-                    }
-
-                    if (needsTracker)
-                    {
-                        if (!dc.GetState().ContainsKey(DialogPath.EventCounter))
-                        {
-                            dc.GetState().SetValue(DialogPath.EventCounter, 0u);
-                        }
-
-                        if (!dc.GetState().ContainsKey(DialogPath.ConditionTracker))
-                        {
-                            var parser = Selector.Parser;
-                            foreach (var trigger in Triggers)
-                            {
-                                if (trigger.RunOnce)
-                                {
-                                    // TODO: We should probably use the full expression, but wrap things like event processing in ignore
-                                    var paths = dc.GetState().Track(parser.Parse(trigger.Condition).References());
-                                    var triggerPath = DialogPath.ConditionTracker + "." + trigger.Id + ".";
-                                    dc.GetState().SetValue(triggerPath + "paths", paths);
-                                    dc.GetState().SetValue(triggerPath + "lastRun", 0u);
-                                }
-                            }
-                        }
                     }
 
                     this.Selector.Initialize(Triggers, true);

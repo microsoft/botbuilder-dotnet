@@ -73,6 +73,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReplyOneOf(new string[] { "ruleAandB", "ruleAandC" })
                 .StartTestAsync();
 
+        [TestMethod]
+        public async Task DefaultSelector() =>
+            await CreateFlow(null)
+                .Test("trigger", "default")
+                .Send("a")
+                .Send("trigger")
+                .AssertReplyOneOf(new string[] { "ruleA1", "ruleA2" })
+                .Send("b")
+                .Send("trigger")
+                .AssertReplyOneOf(new string[] { "ruleAandB" })
+                .Send("c")
+                .Send("trigger")
+                .AssertReplyOneOf(new string[] { "ruleAandB", "ruleAandC" })
+                .StartTestAsync();
+
         private TestFlow CreateFlow(ITriggerSelector selector)
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
