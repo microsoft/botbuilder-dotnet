@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             UserState userState, 
             ConversationState conversationState, 
             ResourceExplorer resourceExplorer)
-            : base(credentialProvider)
+            : base(configuration, credentialProvider)
         {
             this.UseStorage(storage);
             this.UseState(userState, conversationState);

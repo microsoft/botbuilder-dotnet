@@ -54,7 +54,9 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("replace(one, 'l', 'k')"), // replace only accept string parameter
             Test("replace('hi', 1, 'k')"), // replace only accept string parameter
             Test("replace('hi', 'l', 1)"), // replace only accept string parameter
+            Test("replace('hi', '', 1)"), // oldValue cannot be null or string.empty
             Test("replaceIgnoreCase(hello)"), // replaceIgnoreCase need three parameters
+            Test("replaceIgnoreCase('hi', '', 1)"), // oldValue cannot be null or string.empty
             Test("replaceIgnoreCase(one, 'l', 'k')"), // replaceIgnoreCase only accept string parameter
             Test("replaceIgnoreCase('hi', 1, 'k')"), // replaceIgnoreCase only accept string parameter
             Test("replaceIgnoreCase('hi', 'l', 1)"), // replaceIgnoreCase only accept string parameter

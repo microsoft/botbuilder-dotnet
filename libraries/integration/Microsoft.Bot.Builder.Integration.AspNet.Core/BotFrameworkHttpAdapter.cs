@@ -14,6 +14,7 @@ using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Rest.TransientFaultHandling;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -25,18 +26,55 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         private const string AuthHeaderName = "authorization";
         private const string ChannelIdHeaderName = "channelid";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkHttpAdapter"/> class,
+        /// using a credential provider.
+        /// </summary>
+        /// <param name="credentialProvider">The credential provider.</param>
+        /// <param name="authConfig">The authentication configuration.</param>
+        /// <param name="channelProvider">The channel provider.</param>
+        /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
+        /// <param name="customHttpClient">The HTTP client.</param>
+        /// <param name="middleware">The middleware to initially add to the adapter.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="credentialProvider"/> is <c>null</c>.</exception>
+        /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
+        /// components in the constructor. Use the <see cref="Use(IMiddleware)"/> method to
+        /// add additional middleware to the adapter after construction.
+        /// </remarks>
+        public BotFrameworkHttpAdapter(
+            ICredentialProvider credentialProvider,
+            AuthenticationConfiguration authConfig = null,
+            IChannelProvider channelProvider = null,
+            RetryPolicy connectorClientRetryPolicy = null,
+            HttpClient customHttpClient = null,
+            IMiddleware middleware = null,
+            ILogger logger = null)
+            : base(credentialProvider, authConfig ?? new AuthenticationConfiguration(), channelProvider, connectorClientRetryPolicy, customHttpClient, middleware, logger)
+        {
+        }
+
         public BotFrameworkHttpAdapter(ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILogger<BotFrameworkHttpAdapter> logger = null)
-            : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, logger)
+            : this(credentialProvider ?? new SimpleCredentialProvider(), new AuthenticationConfiguration(), channelProvider, null, null, null, logger)
         {
         }
 
         public BotFrameworkHttpAdapter(ICredentialProvider credentialProvider, IChannelProvider channelProvider, HttpClient httpClient, ILogger<BotFrameworkHttpAdapter> logger)
-            : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, httpClient, logger)
+            : this(credentialProvider ?? new SimpleCredentialProvider(), new AuthenticationConfiguration(), channelProvider, null, httpClient, null, logger)
         {
         }
 
-        protected BotFrameworkHttpAdapter(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger = null)
-            : base(new ConfigurationCredentialProvider(configuration), new ConfigurationChannelProvider(configuration), logger: logger)
+        protected BotFrameworkHttpAdapter(
+            IConfiguration configuration,
+            ICredentialProvider credentialProvider,
+            AuthenticationConfiguration authConfig = null,
+            IChannelProvider channelProvider = null,
+            RetryPolicy connectorClientRetryPolicy = null,
+            HttpClient customHttpClient = null,
+            IMiddleware middleware = null,
+            ILogger logger = null)
+            : this(credentialProvider ?? new ConfigurationCredentialProvider(configuration), authConfig ?? new AuthenticationConfiguration(), channelProvider ?? new ConfigurationChannelProvider(configuration), connectorClientRetryPolicy, customHttpClient, middleware, logger)
         {
             var openIdEndpoint = configuration.GetSection(AuthenticationConstants.BotOpenIdMetadataKey)?.Value;
 
@@ -46,6 +84,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 ChannelValidation.OpenIdMetadataUrl = openIdEndpoint;
                 GovernmentChannelValidation.OpenIdMetadataUrl = openIdEndpoint;
             }
+        }
+
+        protected BotFrameworkHttpAdapter(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger = null)
+            : this(configuration, new ConfigurationCredentialProvider(configuration), new AuthenticationConfiguration(), new ConfigurationChannelProvider(configuration), logger: logger)
+        {
         }
 
         public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)

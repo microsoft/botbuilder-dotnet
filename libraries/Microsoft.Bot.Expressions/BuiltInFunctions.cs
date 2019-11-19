@@ -377,6 +377,17 @@ namespace Microsoft.Bot.Expressions
             return error;
         }
 
+        public static string VerifyStringOrNull(object value, Expression expression, int number)
+        {
+            string error = null;
+            if (!(value is string) && value != null)
+            {
+                error = $"{expression} is neither a string nor a null object.";
+            }
+
+            return error;
+        }
+
         /// <summary>
         /// Verify value is not null.
         /// </summary>
@@ -431,8 +442,6 @@ namespace Microsoft.Bot.Expressions
             return error;
         }
 
-        // Apply -- these are helpers for adding functions to the expression library.
-
         /// <summary>
         /// Evaluate expression children and return them.
         /// </summary>
@@ -471,6 +480,8 @@ namespace Microsoft.Bot.Expressions
             return (args, error);
         }
 
+        // Apply -- these are helpers for adding functions to the expression library.
+        
         /// <summary>
         /// Generate an expression delegate that applies function after verifying all children.
         /// </summary>
@@ -650,7 +661,7 @@ namespace Microsoft.Bot.Expressions
         /// <param name="function">Function to apply.</param>
         /// <returns>Delegate for evaluating an expression.</returns>
         public static ExpressionEvaluator StringTransform(string type, Func<IReadOnlyList<dynamic>, object> function)
-            => new ExpressionEvaluator(type, Apply(function, VerifyString), ReturnType.String, ValidateUnaryString);
+            => new ExpressionEvaluator(type, Apply(function, VerifyStringOrNull), ReturnType.String, ValidateUnaryString);
 
         /// <summary>
         /// Transform a datetime to another datetime.
@@ -1111,6 +1122,21 @@ namespace Microsoft.Bot.Expressions
             return value;
         }
 
+        private static string ParseStringOrNull(object value)
+        {
+            string result = null;
+            if (value is string str)
+            {
+                result = str;
+            }
+            else
+            {
+                result = string.Empty;
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Return new object list replace jarray.ToArray&lt;object&gt;().
         /// </summary>
@@ -1273,8 +1299,12 @@ namespace Microsoft.Bot.Expressions
             dynamic str;
             (str, error) = expression.Children[0].TryEvaluate(state);
             if (error == null)
-            {
-                if (str is string)
+            {   
+                if (str == null)
+                {
+                    result = string.Empty;
+                }
+                else if (str is string)
                 {
                     dynamic start;
                     var startExpr = expression.Children[1];
@@ -2573,28 +2603,97 @@ namespace Microsoft.Bot.Expressions
                         {
                             var builder = new StringBuilder();
                             foreach (var arg in args)
-                            {
-                                builder.Append(arg);
+                            {   
+                                if (arg is string str)
+                                {
+                                    builder.Append(str);
+                                }
+                                else
+                                {
+                                    builder.Append(string.Empty);
+                                }
                             }
 
                             return builder.ToString();
-                        }, VerifyString),
+                        }, VerifyStringOrNull),
                     ReturnType.String,
                     ValidateString),
-                new ExpressionEvaluator(ExpressionType.Length, Apply(args => args[0].Length, VerifyString), ReturnType.Number, ValidateUnaryString),
+                new ExpressionEvaluator(
+                    ExpressionType.Length, 
+                    Apply(
+                        args => 
+                            {
+                                var result = 0;
+                                if (args[0] is string str)
+                                    {
+                                        result = str.Length;
+                                    }
+                                else
+                                    {
+                                        result = 0;
+                                    }
+
+                                return result;
+                            }, VerifyStringOrNull), 
+                    ReturnType.Number, 
+                    ValidateAtLeastOne),
                 new ExpressionEvaluator(
                     ExpressionType.Replace,
-                    Apply(args => args[0].Replace(args[1], args[2]), VerifyString),
+                    ApplyWithError(
+                        args =>
+                        {
+                            string error = null;
+                            string result = null;
+                            string inputStr = ParseStringOrNull(args[0]);
+                            string oldStr = ParseStringOrNull(args[1]);
+                            if (oldStr.Length == 0)
+                            {
+                                error = $"{args[1]} the oldValue in replace function should be a string with at least length 1.";
+                            }
+
+                            string newStr = ParseStringOrNull(args[2]);
+                            if (error == null)
+                            {
+                                result = inputStr.Replace(oldStr, newStr);
+                            }
+
+                            return (result, error);
+                        }, VerifyStringOrNull),
                     ReturnType.String,
                     (expression) => ValidateArityAndAnyType(expression, 3, 3, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.ReplaceIgnoreCase,
-                    Apply(args => Regex.Replace(args[0], args[1], args[2], RegexOptions.IgnoreCase), VerifyString),
+                    ApplyWithError(
+                        args =>
+                        {
+                            string error = null;
+                            string result = null;
+                            string inputStr = ParseStringOrNull(args[0]);
+                            string oldStr = ParseStringOrNull(args[1]);
+                            if (oldStr.Length == 0)
+                            {
+                                error = $"{args[1]} the oldValue in replace function should be a string with at least length 1.";
+                            }
+
+                            string newStr = ParseStringOrNull(args[2]);
+                            if (error == null)
+                            {
+                                result = Regex.Replace(inputStr, oldStr, newStr, RegexOptions.IgnoreCase);
+                            }
+
+                            return (result, error);
+                        }, VerifyStringOrNull),
                     ReturnType.String,
                     (expression) => ValidateArityAndAnyType(expression, 3, 3, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.Split,
-                    Apply(args => args[0].Split(args[1].ToCharArray()), VerifyString),
+                    Apply(
+                        args =>
+                        {
+                            string inputStr = ParseStringOrNull(args[0]);
+                            string segStr = ParseStringOrNull(args[1]);
+                            return inputStr.Split(segStr.ToCharArray());
+                        }, VerifyStringOrNull),
                     ReturnType.Object,
                     (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
                 new ExpressionEvaluator(
@@ -2602,22 +2701,81 @@ namespace Microsoft.Bot.Expressions
                     Substring,
                     ReturnType.String,
                     (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.String, ReturnType.Number)),
-                StringTransform(ExpressionType.ToLower, args => args[0].ToLower()),
-                StringTransform(ExpressionType.ToUpper, args => args[0].ToUpper()),
-                StringTransform(ExpressionType.Trim, args => args[0].Trim()),
+                StringTransform(
+                                ExpressionType.ToLower, 
+                                args => 
+                                {
+                                    if (args[0] == null)
+                                    {
+                                        return string.Empty;
+                                    } 
+                                    else
+                                    {
+                                        return args[0].ToLower();
+                                    }
+                                }),
+                StringTransform(
+                                ExpressionType.ToUpper,
+                                args =>
+                                {
+                                    if (args[0] == null)
+                                    {
+                                        return string.Empty;
+                                    }
+                                    else
+                                    {
+                                        return args[0].ToUpper();
+                                    }
+                                }),
+                StringTransform(
+                                ExpressionType.Trim,
+                                args =>
+                                {
+                                    if (args[0] == null)
+                                    {
+                                        return string.Empty;
+                                    }
+                                    else
+                                    {
+                                        return args[0].Trim();
+                                    }
+                                }),
                 new ExpressionEvaluator(
                     ExpressionType.StartsWith,
-                    Apply(args => args[0].StartsWith(args[1]), VerifyString),
+                    Apply(
+                        args =>
+                        {
+                            string rawStr = ParseStringOrNull(args[0]);
+                            string seekStr = ParseStringOrNull(args[1]);
+                            return rawStr.StartsWith(seekStr);
+                        }, VerifyStringOrNull),
                     ReturnType.Boolean,
                     (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.EndsWith,
-                    Apply(args => args[0].EndsWith(args[1]), VerifyString),
+                    Apply(
+                        args =>
+                        {
+                            string rawStr = ParseStringOrNull(args[0]);
+                            string seekStr = ParseStringOrNull(args[1]);
+                            return rawStr.EndsWith(seekStr);
+                        }, VerifyStringOrNull),
                     ReturnType.Boolean,
                     (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.CountWord,
-                    Apply(args => Regex.Split(args[0].Trim(), @"\s{1,}").Length, VerifyString),
+                    Apply(
+                        args =>
+                        {
+                            if (args[0] is string)
+                            {
+                                return Regex.Split(args[0].Trim(), @"\s{1,}").Length;
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+                        }, VerifyStringOrNull),
                     ReturnType.Number,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
@@ -2669,12 +2827,24 @@ namespace Microsoft.Bot.Expressions
                     (exprssion) => BuiltInFunctions.ValidateArityAndAnyType(exprssion, 0, 0)),
                 new ExpressionEvaluator(
                     ExpressionType.IndexOf,
-                    Apply(args => args[0].IndexOf(args[1]), VerifyString),
+                    Apply(
+                        args =>
+                        {
+                            string rawStr = ParseStringOrNull(args[0]);
+                            string seekStr = ParseStringOrNull(args[1]);
+                            return rawStr.IndexOf(seekStr);
+                        }, VerifyStringOrNull),
                     ReturnType.Number,
                     (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.LastIndexOf,
-                    Apply(args => args[0].LastIndexOf(args[1]), VerifyString),
+                    Apply(
+                        args =>
+                        {
+                            string rawStr = ParseStringOrNull(args[0]);
+                            string seekStr = ParseStringOrNull(args[1]);
+                            return rawStr.LastIndexOf(seekStr);
+                        }, VerifyStringOrNull),
                     ReturnType.Number,
                     (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
 
@@ -3305,7 +3475,7 @@ namespace Microsoft.Bot.Expressions
                     ValidateUnary),
 
                 // Object manipulation and construction functions
-                new ExpressionEvaluator(ExpressionType.Json, Apply(args => JToken.Parse(args[0])), ReturnType.String, (expr) => ValidateOrder(expr, null, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.Json, Apply(args => JToken.Parse(args[0])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.AddProperty,
                     ApplyWithError(args =>
