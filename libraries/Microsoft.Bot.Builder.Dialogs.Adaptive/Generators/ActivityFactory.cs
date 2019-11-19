@@ -27,6 +27,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             { nameof(OAuthCard).ToLowerInvariant(), OAuthCard.ContentType }
         };
 
+        private static readonly string AdaptiveCardType = "application/vnd.microsoft.card.adaptive";
+
         /// <summary>
         /// Generate the activity.
         /// </summary>
@@ -235,7 +237,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             else if (type == "adaptivecard")
             {
-                attachment = new Attachment("application/vnd.microsoft.card.adaptive", content: lgJObj);
+                attachment = new Attachment(AdaptiveCardType, content: lgJObj);
             }
             else if (type == nameof(Attachment).ToLowerInvariant())
             {
@@ -269,7 +271,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                             }
                             else if (type == "adaptivecard")
                             {
-                                attachmentJson["ContentType"] = "application/vnd.microsoft.card.adaptive";
+                                attachmentJson["ContentType"] = AdaptiveCardType;
                             }
                             else
                             {

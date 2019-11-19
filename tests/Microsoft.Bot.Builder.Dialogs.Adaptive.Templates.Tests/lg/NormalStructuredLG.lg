@@ -103,12 +103,12 @@
 
 # externalAdaptiveCardActivity
 [Activity
-    Attachments = @{ActivityAttachment(json(fromFile('../adaptiveCard.json')), 'adaptiveCard')}
+    attachments = @{ActivityAttachment(json(fromFile('../adaptiveCard.json')), 'adaptiveCard')}
 ]
 
 # externalHeroCardActivity
 [Activity
-    Attachments = @{ActivityAttachment(json(fromFile('.\\herocard.json')), 'herocard')}
+    attachments = @{ActivityAttachment(json(fromFile('.\\herocard.json')), 'herocard')}
 ]
 
 # activityWithHeroCardAttachment(title, text)
@@ -163,7 +163,7 @@
 
 # herocardActivityWithAttachmentStructure
 [Activity
-    Attachments = @{herocardAttachment()}
+    attachments = @{herocardAttachment()}
 ]
 
 # herocardAttachment
