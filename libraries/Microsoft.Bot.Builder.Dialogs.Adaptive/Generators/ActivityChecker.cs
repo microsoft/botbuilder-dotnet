@@ -13,6 +13,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
     public static class ActivityChecker
     {
+        private static readonly IList<string> ActivityTypes = GetAllPublicConstantValues<string>(typeof(ActivityTypes));
+        private static readonly IList<string> ActivityProperities = GetAllProperities(typeof(Activity));
+        private static readonly IList<string> CardActionTypes = GetAllPublicConstantValues<string>(typeof(ActionTypes));
+        private static readonly IList<string> CardActionProperities = GetAllProperities(typeof(CardAction));
+
         /// <summary>
         /// check the LG string result before generate an Activity.
         /// </summary>
@@ -86,9 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             if (!string.IsNullOrEmpty(activityType))
             {
-                var types = GetAllPublicConstantValues<string>(typeof(ActivityTypes));
-
-                if (types.All(u => u.ToLowerInvariant() != activityType.ToLowerInvariant()))
+                if (ActivityTypes.All(u => u.ToLowerInvariant() != activityType.ToLowerInvariant()))
                 {
                     result.Add(BuildDiagnostic($"'{activityType}' is not a valid activity type."));
                 }
@@ -181,32 +184,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             if (!string.IsNullOrEmpty(cardActionType))
             {
-                var types = GetAllPublicConstantValues<string>(typeof(ActionTypes));
-
-                if (types.All(u => u.ToLowerInvariant() != cardActionType.ToLowerInvariant()))
+                if (CardActionTypes.All(u => u.ToLowerInvariant() != cardActionType.ToLowerInvariant()))
                 {
                     result.Add(BuildDiagnostic($"'{cardActionType}' is not a valid card action type."));
                 }
             }
 
             return result;
-        }
-
-        private static string GetStructureType(JObject jObj)
-        {
-            if (jObj == null)
-            {
-                return string.Empty;
-            }
-
-            var type = jObj["$type"]?.ToString()?.Trim();
-            if (string.IsNullOrEmpty(type))
-            {
-                // Adaptive card type
-                type = jObj["type"]?.ToString()?.Trim();
-            }
-
-            return type?.ToLowerInvariant() ?? string.Empty;
         }
 
         private static IList<Diagnostic> CheckAttachments(JToken value)
@@ -291,16 +275,45 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
 
             var properties = value.Properties().Select(u => u.Name.ToLowerInvariant()).Where(u => u != "$type");
+            IList<string> objectProperities;
 
-            var activityProperties = type.GetProperties().Select(u => u.Name.ToLowerInvariant());
+            if (type == typeof(Activity))
+            {
+                objectProperities = ActivityProperities;
+            }
+            else if (type == typeof(CardAction))
+            {
+                objectProperities = CardActionProperities;
+            }
+            else
+            {
+                objectProperities = GetAllProperities(type);
+            }
 
-            var additionalProperties = properties.Where(u => !activityProperties.Contains(u));
+            var additionalProperties = properties.Where(u => !objectProperities.Contains(u));
             if (additionalProperties.Any())
             {
                 result.Add(BuildDiagnostic($"'{string.Join(",", additionalProperties)}' not support in {type.Name}.", false));
             }
 
             return result;
+        }
+
+        private static string GetStructureType(JObject jObj)
+        {
+            if (jObj == null)
+            {
+                return string.Empty;
+            }
+
+            var type = jObj["$type"]?.ToString()?.Trim();
+            if (string.IsNullOrEmpty(type))
+            {
+                // Adaptive card type
+                type = jObj["type"]?.ToString()?.Trim();
+            }
+
+            return type?.ToLowerInvariant() ?? string.Empty;
         }
 
         private static bool IsStringValue(JToken value)
@@ -341,6 +354,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 .Where(fi => fi.IsLiteral && !fi.IsInitOnly && fi.FieldType == typeof(T))
                 .Select(x => (T)x.GetRawConstantValue())
                 .ToList();
+        }
+
+        private static IList<string> GetAllProperities(Type type)
+        {
+            return type.GetProperties().Select(u => u.Name.ToLowerInvariant()).ToList();
         }
     }
 }

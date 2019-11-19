@@ -345,17 +345,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 item is JArray array ? array.ToList() : new List<JToken>() { item };
         }
 
+        /// <summary>
+        /// parse the lg string output. If the output is structured result, get the object result and return true.
+        /// </summary>
+        /// <param name="lgStringResult">lg string output.</param>
+        /// <param name="lgStructuredResult">lg json object result.</param>
+        /// <returns>judge if the lg string output is structured result.</returns>
         private static bool ParseStructuredLGResult(string lgStringResult, out JObject lgStructuredResult)
         {
             lgStructuredResult = new JObject();
-            if (string.IsNullOrWhiteSpace(lgStringResult))
-            {
-                return false;
-            }
+            lgStringResult = lgStringResult?.Trim();
 
-            lgStringResult = lgStringResult.Trim();
-
-            if (!lgStringResult.StartsWith("{") || !lgStringResult.EndsWith("}"))
+            if (string.IsNullOrWhiteSpace(lgStringResult)
+                || !lgStringResult.StartsWith("{") || !lgStringResult.EndsWith("}"))
             {
                 return false;
             }
