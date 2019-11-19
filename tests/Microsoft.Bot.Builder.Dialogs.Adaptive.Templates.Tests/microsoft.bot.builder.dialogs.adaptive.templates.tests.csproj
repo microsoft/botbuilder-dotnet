@@ -32,7 +32,10 @@
     <None Remove="lg\NormalStructuredLG.lg" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="lg\adaptiveCard.json">
+    <None Update="adaptiveCard.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="lg\herocard.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="lg\turtle.jpg">

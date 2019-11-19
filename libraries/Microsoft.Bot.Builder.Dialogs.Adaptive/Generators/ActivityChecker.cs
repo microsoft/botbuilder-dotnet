@@ -14,9 +14,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     public static class ActivityChecker
     {
         private static readonly IList<string> ActivityTypes = GetAllPublicConstantValues<string>(typeof(ActivityTypes));
-        private static readonly IList<string> ActivityProperities = GetAllProperities(typeof(Activity));
+        private static readonly IList<string> ActivityProperties = GetAllProperties(typeof(Activity));
         private static readonly IList<string> CardActionTypes = GetAllPublicConstantValues<string>(typeof(ActionTypes));
-        private static readonly IList<string> CardActionProperities = GetAllProperities(typeof(CardAction));
+        private static readonly IList<string> CardActionProperties = GetAllProperties(typeof(CardAction));
 
         /// <summary>
         /// check the LG string result before generate an Activity.
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             result.AddRange(CheckActivityType(activityType));
             result.AddRange(CheckPropertyName(lgJObj, typeof(Activity)));
-            result.AddRange(CheckActivityProperities(lgJObj));
+            result.AddRange(CheckActivityProperties(lgJObj));
 
             return result;
         }
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return result;
         }
 
-        private static IList<Diagnostic> CheckActivityProperities(JObject lgJObj)
+        private static IList<Diagnostic> CheckActivityProperties(JObject lgJObj)
         {
             var result = new List<Diagnostic>();
 
@@ -226,6 +226,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 // check adaptivecard format
                 // it is hard to check the adaptive card without AdaptiveCards package
             }
+            else if (type == nameof(Attachment).ToLowerInvariant())
+            {
+                // TODO
+                // Check attachment format
+            }
             else
             {
                 result.Add(BuildDiagnostic($"'{type}' is not an attachment type.", false));
@@ -275,22 +280,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
 
             var properties = value.Properties().Select(u => u.Name.ToLowerInvariant()).Where(u => u != "$type");
-            IList<string> objectProperities;
+            IList<string> objectProperties;
 
             if (type == typeof(Activity))
             {
-                objectProperities = ActivityProperities;
+                objectProperties = ActivityProperties;
             }
             else if (type == typeof(CardAction))
             {
-                objectProperities = CardActionProperities;
+                objectProperties = CardActionProperties;
             }
             else
             {
-                objectProperities = GetAllProperities(type);
+                objectProperties = GetAllProperties(type);
             }
 
-            var additionalProperties = properties.Where(u => !objectProperities.Contains(u));
+            var additionalProperties = properties.Where(u => !objectProperties.Contains(u));
             if (additionalProperties.Any())
             {
                 result.Add(BuildDiagnostic($"'{string.Join(",", additionalProperties)}' not support in {type.Name}.", false));
@@ -356,7 +361,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 .ToList();
         }
 
-        private static IList<string> GetAllProperities(Type type)
+        private static IList<string> GetAllProperties(Type type)
         {
             return type.GetProperties().Select(u => u.Name.ToLowerInvariant()).ToList();
         }

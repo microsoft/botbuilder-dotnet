@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -41,6 +42,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             foreach (var mappingItem in resourceMapping)
             {
                 var engine = new TemplateEngine().AddText(lgText ?? string.Empty, Id, LanguageGeneratorManager.ResourceExplorerResolver(mappingItem.Key, resourceMapping));
+                multiLangEngines.Add(mappingItem.Key, engine);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
+        /// </summary>
+        /// <param name="filePath">lg template file absolute path.</param>
+        /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
+        public TemplateEngineLanguageGenerator(string filePath, Dictionary<string, IList<IResource>> resourceMapping)
+        {
+            filePath = PathUtils.NormalizePath(filePath);
+            this.Id = Path.GetFileName(filePath);
+            foreach (var mappingItem in resourceMapping)
+            {
+                var engine = new TemplateEngine().AddFile(filePath, LanguageGeneratorManager.ResourceExplorerResolver(mappingItem.Key, resourceMapping));
                 multiLangEngines.Add(mappingItem.Key, engine);
             }
         }

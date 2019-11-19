@@ -27,6 +27,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             { nameof(OAuthCard).ToLowerInvariant(), OAuthCard.ContentType }
         };
 
+        private static readonly string AdaptiveCardType = "application/vnd.microsoft.card.adaptive";
+
         /// <summary>
         /// Generate the activity.
         /// </summary>
@@ -235,7 +237,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             else if (type == "adaptivecard")
             {
-                attachment = new Attachment("application/vnd.microsoft.card.adaptive", content: lgJObj);
+                attachment = new Attachment(AdaptiveCardType, content: lgJObj);
+            }
+            else if (type == nameof(Attachment).ToLowerInvariant())
+            {
+                attachment = GetNormalAttachment(lgJObj);
             }
             else
             {
@@ -243,6 +249,45 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
 
             return isAttachment;
+        }
+
+        private static Attachment GetNormalAttachment(JObject lgJObj)
+        {
+            var attachmentJson = new JObject();
+
+            foreach (var item in lgJObj)
+            {
+                var property = item.Key.Trim();
+                var value = item.Value;
+
+                switch (property.ToLowerInvariant())
+                {
+                    case "contenttype":
+                        {
+                            var type = value.ToString().ToLowerInvariant();
+                            if (GenericCardTypeMapping.ContainsKey(type))
+                            {
+                                attachmentJson["ContentType"] = GenericCardTypeMapping[type];
+                            }
+                            else if (type == "adaptivecard")
+                            {
+                                attachmentJson["ContentType"] = AdaptiveCardType;
+                            }
+                            else
+                            {
+                                attachmentJson["ContentType"] = type;
+                            }
+
+                            break;
+                        }
+
+                    default:
+                        attachmentJson[property] = value;
+                        break;
+                }
+            }
+
+            return attachmentJson.ToObject<Attachment>();
         }
 
         private static Attachment GetCardAtttachment(string type, JObject lgJObj)
