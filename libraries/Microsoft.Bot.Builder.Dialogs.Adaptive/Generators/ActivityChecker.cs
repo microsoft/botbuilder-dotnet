@@ -144,36 +144,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             foreach (var action in actions)
             {
-                if (!IsStringValue(action))
-                {
-                    if (action is JObject actionJObj)
-                    {
-                        result.AddRange(CheckCardAction(actionJObj));
-                    }
-                    else
-                    {
-                        result.Add(BuildDiagnostic($"'{action}' is not a valid card action format.", false));
-                    }
-                }
+                result.AddRange(CheckCardAction(action));
             }
 
             return result;
         }
 
-        private static IList<Diagnostic> CheckCardAction(JObject cardActionJObj)
+        private static IList<Diagnostic> CheckCardAction(JToken cardActionJtoken)
         {
             var result = new List<Diagnostic>();
-            var type = GetStructureType(cardActionJObj);
-            if (type != nameof(CardAction).ToLowerInvariant())
-            {
-                result.Add(BuildDiagnostic($"'{type}' is not card action type.", false));
-            }
-            else
-            {
-                result.AddRange(CheckPropertyName(cardActionJObj, typeof(CardAction)));
-                var cardActionType = cardActionJObj["type"]?.ToString()?.Trim();
 
-                result.AddRange(CheckCardActionType(cardActionType));
+            if (!IsStringValue(cardActionJtoken))
+            {
+                if (cardActionJtoken is JObject actionJObj)
+                {
+                    var type = GetStructureType(actionJObj);
+                    if (type != nameof(CardAction).ToLowerInvariant())
+                    {
+                        result.Add(BuildDiagnostic($"'{type}' is not card action type.", false));
+                    }
+                    else
+                    {
+                        result.AddRange(CheckPropertyName(actionJObj, typeof(CardAction)));
+                        var cardActionType = actionJObj["type"]?.ToString()?.Trim();
+
+                        result.AddRange(CheckCardActionType(cardActionType));
+                    }
+                }
+                else
+                {
+                    result.Add(BuildDiagnostic($"'{cardActionJtoken}' is not a valid card action format.", false));
+                }
             }
 
             return result;
