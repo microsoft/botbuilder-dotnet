@@ -351,7 +351,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 };
             }
 
-            return JsonConvert.DeserializeObject<SlackRequestBody>(requestBody, new UnixDateTimeConverter());
+            return JsonConvert.DeserializeObject<SlackRequestBody>(requestBody, new SlackUnixTimeConverter());
         }
     }
 }
