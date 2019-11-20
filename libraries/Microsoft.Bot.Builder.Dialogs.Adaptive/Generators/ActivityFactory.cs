@@ -24,7 +24,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             { nameof(VideoCard).ToLowerInvariant(), VideoCard.ContentType },
             { nameof(AnimationCard).ToLowerInvariant(), AnimationCard.ContentType },
             { nameof(SigninCard).ToLowerInvariant(), SigninCard.ContentType },
-            { nameof(OAuthCard).ToLowerInvariant(), OAuthCard.ContentType }
+            { nameof(OAuthCard).ToLowerInvariant(), OAuthCard.ContentType },
+            { nameof(ReceiptCard).ToLowerInvariant(), ReceiptCard.ContentType },
         };
 
         private static readonly string AdaptiveCardType = "application/vnd.microsoft.card.adaptive";
@@ -73,10 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             if (GenericCardTypeMapping.ContainsKey(type)
                 || type == nameof(Attachment).ToLowerInvariant())
             {
-                if (GetAttachment(lgJObj, out var attachment))
-                {
-                    activity = MessageFactory.Attachment(attachment) as Activity;
-                }
+                activity = MessageFactory.Attachment(GetAttachment(lgJObj)) as Activity;
             }
             else if (type == nameof(Activity).ToLowerInvariant())
             {
@@ -126,67 +124,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return suggestedActions;
         }
 
-        private static bool IsStringValue(JToken value, out string stringValue)
-        {
-            stringValue = string.Empty;
-            if (value is JValue jValue && jValue.Type == JTokenType.String)
-            {
-                stringValue = jValue.ToObject<string>().Trim();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        private static IList<CardAction> GetCardActions(IList<JToken> actions)
-        {
-            var cardActions = new List<CardAction>();
-            foreach (var action in actions)
-            {
-                if (IsStringValue(action, out var actionStr))
-                {
-                    cardActions.Add(new CardAction(type: ActionTypes.ImBack, value: actionStr, title: actionStr));
-                }
-                else if (action is JObject actionJObj && GetCardAction(actionJObj, out var cardAction))
-                {
-                    cardActions.Add(cardAction);
-                }
-            }
-
-            return cardActions;
-        }
-
         private static IList<CardAction> GetButtons(JToken value)
         {
             var actions = NormalizedToList(value);
             return GetCardActions(actions);
         }
 
-        private static bool GetCardAction(JObject cardActionJObj, out CardAction cardAction)
+        private static IList<CardAction> GetCardActions(IList<JToken> actions)
         {
-            var type = GetStructureType(cardActionJObj);
-            var cardActionJson = new JObject()
-            {
-                ["Type"] = ActionTypes.ImBack
-            };
+            return actions.Select(u => GetCardAction(u)).ToList();
+        }
 
-            var isCardAction = true;
-            if (type == nameof(CardAction).ToLowerInvariant())
+        private static CardAction GetCardAction(JToken cardActionJtoken)
+        {
+            var cardAction = new CardAction();
+            if (IsStringValue(cardActionJtoken, out var actionStr))
             {
-                foreach (var item in cardActionJObj)
+                cardAction = new CardAction(type: ActionTypes.ImBack, value: actionStr, title: actionStr);
+            }
+            else if (cardActionJtoken is JObject actionJObj)
+            {
+                var type = GetStructureType(actionJObj);
+                var cardActionJson = new JObject()
                 {
-                    cardActionJson[item.Key.Trim()] = item.Value;
+                    ["Type"] = ActionTypes.ImBack
+                };
+
+                if (type == nameof(CardAction).ToLowerInvariant())
+                {
+                    foreach (var item in actionJObj)
+                    {
+                        cardActionJson[item.Key.Trim()] = item.Value;
+                    }
+
+                    cardAction = cardActionJson.ToObject<CardAction>();
                 }
             }
-            else
-            {
-                isCardAction = false;
-            }
 
-            cardAction = cardActionJson.ToObject<CardAction>();
-            return isCardAction;
+            return cardAction;
         }
 
         private static string GetStructureType(JObject jObj)
@@ -215,20 +190,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 if (attachmentsJson is JObject attachmentsJsonJObj)
                 {
-                    if (GetAttachment(attachmentsJsonJObj, out var attachment))
-                    {
-                        attachments.Add(attachment);
-                    }
+                    attachments.Add(GetAttachment(attachmentsJsonJObj));
                 }
             }
 
             return attachments;
         }
 
-        private static bool GetAttachment(JObject lgJObj, out Attachment attachment)
+        private static Attachment GetAttachment(JObject lgJObj)
         {
-            attachment = new Attachment();
-            var isAttachment = true;
+            Attachment attachment;
 
             var type = GetStructureType(lgJObj);
 
@@ -246,10 +217,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             else
             {
-                isAttachment = false;
+                attachment = new Attachment(type, content: lgJObj);
             }
 
-            return isAttachment;
+            return attachment;
         }
 
         private static Attachment GetNormalAttachment(JObject lgJObj)
@@ -302,6 +273,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                 switch (property)
                 {
+                    case "tap":
+                        card[property] = JObject.FromObject(GetCardAction(value));
+                        break;
+
                     case "image":
                     case "images":
                         if (type == HeroCard.ContentType || type == ThumbnailCard.ContentType)
@@ -389,6 +364,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return item == null ? 
                 new List<JToken>() :
                 item is JArray array ? array.ToList() : new List<JToken>() { item };
+        }
+
+        private static bool IsStringValue(JToken value, out string stringValue)
+        {
+            stringValue = string.Empty;
+            if (value is JValue jValue && jValue.Type == JTokenType.String)
+            {
+                stringValue = jValue.ToObject<string>().Trim();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
