@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,9 @@ namespace Microsoft.Bot.Streaming.UnitTests
             var sock = new FauxSock();
             var writer = new WebSocketServer(sock, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), sock));
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             writer.StartAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             Assert.True(writer.IsConnected);
         }
 

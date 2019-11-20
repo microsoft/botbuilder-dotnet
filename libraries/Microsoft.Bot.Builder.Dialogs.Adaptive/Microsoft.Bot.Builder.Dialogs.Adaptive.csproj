@@ -9,10 +9,6 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Dialogs.Adaptive.xml</DocumentationFile>
-  </PropertyGroup>
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Microsoft.Bot.Builder.Dialogs.Adaptive</PackageId>
@@ -21,8 +17,12 @@
     <ContentTargetFolders>content</ContentTargetFolders>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Dialogs.Adaptive.xml</DocumentationFile>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>portable</DebugType>
+    <DebugType>Full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
@@ -35,11 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Recognizers.Text" Version="1.2.6.1" />
-    <PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.2.6.1" />
-    <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.2.6.1" />
-    <PackageReference Include="Microsoft.Recognizers.Text.Number" Version="1.2.6.1" />
-    <PackageReference Include="Microsoft.Recognizers.Text.Sequence" Version="1.2.6.1" />
     <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
@@ -50,6 +45,11 @@
     <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Condition=" '$(IsBuildServer)' != '' " Version="$(PreviewPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
     <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(IsBuildServer)' != '' " Version="$(PreviewPackageVersion)" />
+    <PackageReference Include="Microsoft.Recognizers.Text" Version="1.2.9" />
+    <PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.2.9" />
+    <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.2.9" />
+    <PackageReference Include="Microsoft.Recognizers.Text.Number" Version="1.2.9" />
+    <PackageReference Include="Microsoft.Recognizers.Text.Sequence" Version="1.2.9" />
   </ItemGroup>
 
   <ItemGroup>

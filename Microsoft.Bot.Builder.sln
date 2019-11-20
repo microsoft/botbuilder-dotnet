@@ -99,6 +99,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		bot.png = bot.png
 		bot_icon.png = bot_icon.png
 		BotBuilder-DotNet.ruleset = BotBuilder-DotNet.ruleset
+		CodeCoverage.runsettings = CodeCoverage.runsettings
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
@@ -169,15 +170,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapt
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Debug-Windows|Any CPU = Debug-Windows|Any CPU
 		Release|Any CPU = Release|Any CPU
 		Release-Windows|Any CPU = Release-Windows|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -186,8 +184,6 @@ Global
 		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -196,8 +192,6 @@ Global
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{E325A0E2-716A-49E0-9767-5087CF05727C}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{E325A0E2-716A-49E0-9767-5087CF05727C}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{E325A0E2-716A-49E0-9767-5087CF05727C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E325A0E2-716A-49E0-9767-5087CF05727C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E325A0E2-716A-49E0-9767-5087CF05727C}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -206,8 +200,6 @@ Global
 		{E325A0E2-716A-49E0-9767-5087CF05727C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E325A0E2-716A-49E0-9767-5087CF05727C}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{E325A0E2-716A-49E0-9767-5087CF05727C}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{6462DA5D-27DC-4CD5-9467-5EFB998FD838}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{6462DA5D-27DC-4CD5-9467-5EFB998FD838}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{6462DA5D-27DC-4CD5-9467-5EFB998FD838}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6462DA5D-27DC-4CD5-9467-5EFB998FD838}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6462DA5D-27DC-4CD5-9467-5EFB998FD838}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -216,8 +208,6 @@ Global
 		{6462DA5D-27DC-4CD5-9467-5EFB998FD838}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6462DA5D-27DC-4CD5-9467-5EFB998FD838}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{6462DA5D-27DC-4CD5-9467-5EFB998FD838}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -226,8 +216,6 @@ Global
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{ADA8AB8B-2066-4193-B8F7-985669B23E00}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{ADA8AB8B-2066-4193-B8F7-985669B23E00}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{ADA8AB8B-2066-4193-B8F7-985669B23E00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ADA8AB8B-2066-4193-B8F7-985669B23E00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADA8AB8B-2066-4193-B8F7-985669B23E00}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -236,8 +224,6 @@ Global
 		{ADA8AB8B-2066-4193-B8F7-985669B23E00}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ADA8AB8B-2066-4193-B8F7-985669B23E00}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{ADA8AB8B-2066-4193-B8F7-985669B23E00}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{BF414C86-DB3B-4022-9B29-DCE8AA954C12}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF414C86-DB3B-4022-9B29-DCE8AA954C12}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{BF414C86-DB3B-4022-9B29-DCE8AA954C12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BF414C86-DB3B-4022-9B29-DCE8AA954C12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF414C86-DB3B-4022-9B29-DCE8AA954C12}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -246,8 +232,6 @@ Global
 		{BF414C86-DB3B-4022-9B29-DCE8AA954C12}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BF414C86-DB3B-4022-9B29-DCE8AA954C12}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{BF414C86-DB3B-4022-9B29-DCE8AA954C12}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -256,8 +240,6 @@ Global
 		{67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{7BCEBDC1-D57F-4717-9B15-4FACD5473489}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{7BCEBDC1-D57F-4717-9B15-4FACD5473489}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{7BCEBDC1-D57F-4717-9B15-4FACD5473489}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7BCEBDC1-D57F-4717-9B15-4FACD5473489}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BCEBDC1-D57F-4717-9B15-4FACD5473489}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -266,8 +248,6 @@ Global
 		{7BCEBDC1-D57F-4717-9B15-4FACD5473489}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7BCEBDC1-D57F-4717-9B15-4FACD5473489}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{7BCEBDC1-D57F-4717-9B15-4FACD5473489}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{053BD8B8-B5C1-4C45-81D4-C9BA8D5B3CE2}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{053BD8B8-B5C1-4C45-81D4-C9BA8D5B3CE2}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{053BD8B8-B5C1-4C45-81D4-C9BA8D5B3CE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{053BD8B8-B5C1-4C45-81D4-C9BA8D5B3CE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{053BD8B8-B5C1-4C45-81D4-C9BA8D5B3CE2}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -276,8 +256,6 @@ Global
 		{053BD8B8-B5C1-4C45-81D4-C9BA8D5B3CE2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{053BD8B8-B5C1-4C45-81D4-C9BA8D5B3CE2}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{053BD8B8-B5C1-4C45-81D4-C9BA8D5B3CE2}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{EED5F0D3-6F00-4ED1-9108-5ADCB10A3734}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{EED5F0D3-6F00-4ED1-9108-5ADCB10A3734}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{EED5F0D3-6F00-4ED1-9108-5ADCB10A3734}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EED5F0D3-6F00-4ED1-9108-5ADCB10A3734}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EED5F0D3-6F00-4ED1-9108-5ADCB10A3734}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -286,8 +264,6 @@ Global
 		{EED5F0D3-6F00-4ED1-9108-5ADCB10A3734}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EED5F0D3-6F00-4ED1-9108-5ADCB10A3734}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{EED5F0D3-6F00-4ED1-9108-5ADCB10A3734}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{C93F6192-0123-4121-AD92-374A71E4B0F3}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{C93F6192-0123-4121-AD92-374A71E4B0F3}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{C93F6192-0123-4121-AD92-374A71E4B0F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C93F6192-0123-4121-AD92-374A71E4B0F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C93F6192-0123-4121-AD92-374A71E4B0F3}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -296,8 +272,6 @@ Global
 		{C93F6192-0123-4121-AD92-374A71E4B0F3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C93F6192-0123-4121-AD92-374A71E4B0F3}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{C93F6192-0123-4121-AD92-374A71E4B0F3}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{A4184239-F13F-4A09-B2D3-0B9532609248}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{A4184239-F13F-4A09-B2D3-0B9532609248}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{A4184239-F13F-4A09-B2D3-0B9532609248}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A4184239-F13F-4A09-B2D3-0B9532609248}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4184239-F13F-4A09-B2D3-0B9532609248}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -306,8 +280,6 @@ Global
 		{A4184239-F13F-4A09-B2D3-0B9532609248}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A4184239-F13F-4A09-B2D3-0B9532609248}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{A4184239-F13F-4A09-B2D3-0B9532609248}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{D9B2EF5D-0515-460F-948A-2BB70C8DCF62}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{D9B2EF5D-0515-460F-948A-2BB70C8DCF62}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{D9B2EF5D-0515-460F-948A-2BB70C8DCF62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D9B2EF5D-0515-460F-948A-2BB70C8DCF62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9B2EF5D-0515-460F-948A-2BB70C8DCF62}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -316,8 +288,6 @@ Global
 		{D9B2EF5D-0515-460F-948A-2BB70C8DCF62}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D9B2EF5D-0515-460F-948A-2BB70C8DCF62}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{D9B2EF5D-0515-460F-948A-2BB70C8DCF62}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -326,8 +296,6 @@ Global
 		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{2F77CA1D-E6F0-4DEA-96BB-8A039F4D0FF8}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{2F77CA1D-E6F0-4DEA-96BB-8A039F4D0FF8}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{2F77CA1D-E6F0-4DEA-96BB-8A039F4D0FF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2F77CA1D-E6F0-4DEA-96BB-8A039F4D0FF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F77CA1D-E6F0-4DEA-96BB-8A039F4D0FF8}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -336,8 +304,6 @@ Global
 		{2F77CA1D-E6F0-4DEA-96BB-8A039F4D0FF8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2F77CA1D-E6F0-4DEA-96BB-8A039F4D0FF8}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{2F77CA1D-E6F0-4DEA-96BB-8A039F4D0FF8}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{62C4DC83-3B07-45D7-856E-224FFB368E5F}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{62C4DC83-3B07-45D7-856E-224FFB368E5F}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{62C4DC83-3B07-45D7-856E-224FFB368E5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{62C4DC83-3B07-45D7-856E-224FFB368E5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62C4DC83-3B07-45D7-856E-224FFB368E5F}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -346,8 +312,6 @@ Global
 		{62C4DC83-3B07-45D7-856E-224FFB368E5F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{62C4DC83-3B07-45D7-856E-224FFB368E5F}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{62C4DC83-3B07-45D7-856E-224FFB368E5F}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -356,8 +320,6 @@ Global
 		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -366,8 +328,6 @@ Global
 		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -376,8 +336,6 @@ Global
 		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{1B7920E6-5262-4054-B72D-3A8DBBA057D2}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{1B7920E6-5262-4054-B72D-3A8DBBA057D2}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{1B7920E6-5262-4054-B72D-3A8DBBA057D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1B7920E6-5262-4054-B72D-3A8DBBA057D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B7920E6-5262-4054-B72D-3A8DBBA057D2}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -386,8 +344,6 @@ Global
 		{1B7920E6-5262-4054-B72D-3A8DBBA057D2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1B7920E6-5262-4054-B72D-3A8DBBA057D2}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{1B7920E6-5262-4054-B72D-3A8DBBA057D2}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -396,8 +352,6 @@ Global
 		{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -406,8 +360,6 @@ Global
 		{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -416,8 +368,6 @@ Global
 		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -426,8 +376,6 @@ Global
 		{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{C113E0AE-5564-4389-BA39-183A8D574210}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{C113E0AE-5564-4389-BA39-183A8D574210}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{C113E0AE-5564-4389-BA39-183A8D574210}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C113E0AE-5564-4389-BA39-183A8D574210}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C113E0AE-5564-4389-BA39-183A8D574210}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -436,8 +384,6 @@ Global
 		{C113E0AE-5564-4389-BA39-183A8D574210}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C113E0AE-5564-4389-BA39-183A8D574210}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{C113E0AE-5564-4389-BA39-183A8D574210}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{B9DDC8CB-8EDF-4D98-913A-22F19E642223}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{B9DDC8CB-8EDF-4D98-913A-22F19E642223}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{B9DDC8CB-8EDF-4D98-913A-22F19E642223}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B9DDC8CB-8EDF-4D98-913A-22F19E642223}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9DDC8CB-8EDF-4D98-913A-22F19E642223}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -446,8 +392,6 @@ Global
 		{B9DDC8CB-8EDF-4D98-913A-22F19E642223}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B9DDC8CB-8EDF-4D98-913A-22F19E642223}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{B9DDC8CB-8EDF-4D98-913A-22F19E642223}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{060F070A-BBFA-490E-BE89-3844C857B771}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{060F070A-BBFA-490E-BE89-3844C857B771}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{060F070A-BBFA-490E-BE89-3844C857B771}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{060F070A-BBFA-490E-BE89-3844C857B771}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{060F070A-BBFA-490E-BE89-3844C857B771}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -456,8 +400,6 @@ Global
 		{060F070A-BBFA-490E-BE89-3844C857B771}.Release|Any CPU.Build.0 = Release|Any CPU
 		{060F070A-BBFA-490E-BE89-3844C857B771}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{060F070A-BBFA-490E-BE89-3844C857B771}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{E4E13301-9193-4106-B0E3-41276B478E7C}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{E4E13301-9193-4106-B0E3-41276B478E7C}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{E4E13301-9193-4106-B0E3-41276B478E7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E4E13301-9193-4106-B0E3-41276B478E7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4E13301-9193-4106-B0E3-41276B478E7C}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -466,8 +408,6 @@ Global
 		{E4E13301-9193-4106-B0E3-41276B478E7C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E4E13301-9193-4106-B0E3-41276B478E7C}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{E4E13301-9193-4106-B0E3-41276B478E7C}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -476,8 +416,6 @@ Global
 		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Release|Any CPU.Build.0 = Release|Any CPU
 		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -486,8 +424,6 @@ Global
 		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -496,8 +432,6 @@ Global
 		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -506,8 +440,6 @@ Global
 		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{AE3FC7F6-B212-4438-B1D7-C121BB4C15ED}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{AE3FC7F6-B212-4438-B1D7-C121BB4C15ED}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{AE3FC7F6-B212-4438-B1D7-C121BB4C15ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AE3FC7F6-B212-4438-B1D7-C121BB4C15ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE3FC7F6-B212-4438-B1D7-C121BB4C15ED}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -516,8 +448,6 @@ Global
 		{AE3FC7F6-B212-4438-B1D7-C121BB4C15ED}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AE3FC7F6-B212-4438-B1D7-C121BB4C15ED}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{AE3FC7F6-B212-4438-B1D7-C121BB4C15ED}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -526,8 +456,6 @@ Global
 		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{D5E70443-4BA2-42ED-992A-010268440B08}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{D5E70443-4BA2-42ED-992A-010268440B08}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{D5E70443-4BA2-42ED-992A-010268440B08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D5E70443-4BA2-42ED-992A-010268440B08}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5E70443-4BA2-42ED-992A-010268440B08}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -536,8 +464,6 @@ Global
 		{D5E70443-4BA2-42ED-992A-010268440B08}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D5E70443-4BA2-42ED-992A-010268440B08}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{D5E70443-4BA2-42ED-992A-010268440B08}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{84E3B6A2-42D9-498A-9CD2-1C5F5BE0D526}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{84E3B6A2-42D9-498A-9CD2-1C5F5BE0D526}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{84E3B6A2-42D9-498A-9CD2-1C5F5BE0D526}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{84E3B6A2-42D9-498A-9CD2-1C5F5BE0D526}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84E3B6A2-42D9-498A-9CD2-1C5F5BE0D526}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -546,8 +472,6 @@ Global
 		{84E3B6A2-42D9-498A-9CD2-1C5F5BE0D526}.Release|Any CPU.Build.0 = Release|Any CPU
 		{84E3B6A2-42D9-498A-9CD2-1C5F5BE0D526}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{84E3B6A2-42D9-498A-9CD2-1C5F5BE0D526}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -556,8 +480,6 @@ Global
 		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Release|Any CPU.Build.0 = Release|Any CPU
 		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{F59673EA-2D0D-441A-BB85-CD343DE6BE45}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{F59673EA-2D0D-441A-BB85-CD343DE6BE45}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{F59673EA-2D0D-441A-BB85-CD343DE6BE45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F59673EA-2D0D-441A-BB85-CD343DE6BE45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F59673EA-2D0D-441A-BB85-CD343DE6BE45}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -566,8 +488,6 @@ Global
 		{F59673EA-2D0D-441A-BB85-CD343DE6BE45}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F59673EA-2D0D-441A-BB85-CD343DE6BE45}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{F59673EA-2D0D-441A-BB85-CD343DE6BE45}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{72EE26E2-E8BE-4169-82AD-93E021539C34}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{72EE26E2-E8BE-4169-82AD-93E021539C34}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{72EE26E2-E8BE-4169-82AD-93E021539C34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{72EE26E2-E8BE-4169-82AD-93E021539C34}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72EE26E2-E8BE-4169-82AD-93E021539C34}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -576,8 +496,6 @@ Global
 		{72EE26E2-E8BE-4169-82AD-93E021539C34}.Release|Any CPU.Build.0 = Release|Any CPU
 		{72EE26E2-E8BE-4169-82AD-93E021539C34}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{72EE26E2-E8BE-4169-82AD-93E021539C34}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -586,8 +504,6 @@ Global
 		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{685271A8-6C69-46E4-9B11-89AF9761CE0A}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{685271A8-6C69-46E4-9B11-89AF9761CE0A}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{685271A8-6C69-46E4-9B11-89AF9761CE0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{685271A8-6C69-46E4-9B11-89AF9761CE0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{685271A8-6C69-46E4-9B11-89AF9761CE0A}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -596,8 +512,6 @@ Global
 		{685271A8-6C69-46E4-9B11-89AF9761CE0A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{685271A8-6C69-46E4-9B11-89AF9761CE0A}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{685271A8-6C69-46E4-9B11-89AF9761CE0A}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{474C57B1-C9FC-4B71-A92B-B25BA27FAFA7}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{474C57B1-C9FC-4B71-A92B-B25BA27FAFA7}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{474C57B1-C9FC-4B71-A92B-B25BA27FAFA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{474C57B1-C9FC-4B71-A92B-B25BA27FAFA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{474C57B1-C9FC-4B71-A92B-B25BA27FAFA7}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -606,8 +520,6 @@ Global
 		{474C57B1-C9FC-4B71-A92B-B25BA27FAFA7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{474C57B1-C9FC-4B71-A92B-B25BA27FAFA7}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{474C57B1-C9FC-4B71-A92B-B25BA27FAFA7}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{1D1AD39B-EBCF-4960-930E-84246DEF6AAE}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{1D1AD39B-EBCF-4960-930E-84246DEF6AAE}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{1D1AD39B-EBCF-4960-930E-84246DEF6AAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1D1AD39B-EBCF-4960-930E-84246DEF6AAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D1AD39B-EBCF-4960-930E-84246DEF6AAE}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -616,8 +528,6 @@ Global
 		{1D1AD39B-EBCF-4960-930E-84246DEF6AAE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1D1AD39B-EBCF-4960-930E-84246DEF6AAE}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{1D1AD39B-EBCF-4960-930E-84246DEF6AAE}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{6B51F54F-86E8-4FBC-8FDD-3C386E97D0E1}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{6B51F54F-86E8-4FBC-8FDD-3C386E97D0E1}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{6B51F54F-86E8-4FBC-8FDD-3C386E97D0E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6B51F54F-86E8-4FBC-8FDD-3C386E97D0E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B51F54F-86E8-4FBC-8FDD-3C386E97D0E1}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -626,40 +536,30 @@ Global
 		{6B51F54F-86E8-4FBC-8FDD-3C386E97D0E1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6B51F54F-86E8-4FBC-8FDD-3C386E97D0E1}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{6B51F54F-86E8-4FBC-8FDD-3C386E97D0E1}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{E0223463-97C6-4108-B5A9-AFBA16B9D5CC}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{E0223463-97C6-4108-B5A9-AFBA16B9D5CC}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{E0223463-97C6-4108-B5A9-AFBA16B9D5CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E0223463-97C6-4108-B5A9-AFBA16B9D5CC}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
 		{E0223463-97C6-4108-B5A9-AFBA16B9D5CC}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
 		{E0223463-97C6-4108-B5A9-AFBA16B9D5CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0223463-97C6-4108-B5A9-AFBA16B9D5CC}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{E0223463-97C6-4108-B5A9-AFBA16B9D5CC}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{EE76BD65-FB01-498F-B053-4E1B2693D85F}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{EE76BD65-FB01-498F-B053-4E1B2693D85F}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{EE76BD65-FB01-498F-B053-4E1B2693D85F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EE76BD65-FB01-498F-B053-4E1B2693D85F}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
 		{EE76BD65-FB01-498F-B053-4E1B2693D85F}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
 		{EE76BD65-FB01-498F-B053-4E1B2693D85F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE76BD65-FB01-498F-B053-4E1B2693D85F}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{EE76BD65-FB01-498F-B053-4E1B2693D85F}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{873BCC1F-ED12-424E-93FA-D76F4BA022C2}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug-Windows|Any CPU
-		{873BCC1F-ED12-424E-93FA-D76F4BA022C2}.Debug - NuGet Packages|Any CPU.Build.0 = Debug-Windows|Any CPU
 		{873BCC1F-ED12-424E-93FA-D76F4BA022C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{873BCC1F-ED12-424E-93FA-D76F4BA022C2}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
 		{873BCC1F-ED12-424E-93FA-D76F4BA022C2}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
 		{873BCC1F-ED12-424E-93FA-D76F4BA022C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{873BCC1F-ED12-424E-93FA-D76F4BA022C2}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{873BCC1F-ED12-424E-93FA-D76F4BA022C2}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{2614D290-1345-4A41-BE90-F85F817CEADE}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug-Windows|Any CPU
-		{2614D290-1345-4A41-BE90-F85F817CEADE}.Debug - NuGet Packages|Any CPU.Build.0 = Debug-Windows|Any CPU
 		{2614D290-1345-4A41-BE90-F85F817CEADE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2614D290-1345-4A41-BE90-F85F817CEADE}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
 		{2614D290-1345-4A41-BE90-F85F817CEADE}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
 		{2614D290-1345-4A41-BE90-F85F817CEADE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2614D290-1345-4A41-BE90-F85F817CEADE}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{2614D290-1345-4A41-BE90-F85F817CEADE}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{F3669415-319E-4C4C-A398-89321589B3A9}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{F3669415-319E-4C4C-A398-89321589B3A9}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{F3669415-319E-4C4C-A398-89321589B3A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F3669415-319E-4C4C-A398-89321589B3A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3669415-319E-4C4C-A398-89321589B3A9}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -668,8 +568,6 @@ Global
 		{F3669415-319E-4C4C-A398-89321589B3A9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F3669415-319E-4C4C-A398-89321589B3A9}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{F3669415-319E-4C4C-A398-89321589B3A9}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{9878B523-BD1E-4285-A875-3CAB4127F7E6}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{9878B523-BD1E-4285-A875-3CAB4127F7E6}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{9878B523-BD1E-4285-A875-3CAB4127F7E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9878B523-BD1E-4285-A875-3CAB4127F7E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9878B523-BD1E-4285-A875-3CAB4127F7E6}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -678,8 +576,6 @@ Global
 		{9878B523-BD1E-4285-A875-3CAB4127F7E6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9878B523-BD1E-4285-A875-3CAB4127F7E6}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{9878B523-BD1E-4285-A875-3CAB4127F7E6}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{6E39C647-902F-4CFF-A4E4-194B295E3AF4}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{6E39C647-902F-4CFF-A4E4-194B295E3AF4}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{6E39C647-902F-4CFF-A4E4-194B295E3AF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6E39C647-902F-4CFF-A4E4-194B295E3AF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E39C647-902F-4CFF-A4E4-194B295E3AF4}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -688,8 +584,6 @@ Global
 		{6E39C647-902F-4CFF-A4E4-194B295E3AF4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6E39C647-902F-4CFF-A4E4-194B295E3AF4}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{6E39C647-902F-4CFF-A4E4-194B295E3AF4}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{EFAA1D3D-3102-4307-A5DD-EAB4DB9B0386}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{EFAA1D3D-3102-4307-A5DD-EAB4DB9B0386}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{EFAA1D3D-3102-4307-A5DD-EAB4DB9B0386}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EFAA1D3D-3102-4307-A5DD-EAB4DB9B0386}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFAA1D3D-3102-4307-A5DD-EAB4DB9B0386}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -698,8 +592,6 @@ Global
 		{EFAA1D3D-3102-4307-A5DD-EAB4DB9B0386}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EFAA1D3D-3102-4307-A5DD-EAB4DB9B0386}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{EFAA1D3D-3102-4307-A5DD-EAB4DB9B0386}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{4C82FD14-418F-43E4-AC59-3D926B55CEA3}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{4C82FD14-418F-43E4-AC59-3D926B55CEA3}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{4C82FD14-418F-43E4-AC59-3D926B55CEA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4C82FD14-418F-43E4-AC59-3D926B55CEA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C82FD14-418F-43E4-AC59-3D926B55CEA3}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -708,8 +600,6 @@ Global
 		{4C82FD14-418F-43E4-AC59-3D926B55CEA3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4C82FD14-418F-43E4-AC59-3D926B55CEA3}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{4C82FD14-418F-43E4-AC59-3D926B55CEA3}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{D243AC2D-7823-4177-9D8A-23FDFDA274D2}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{D243AC2D-7823-4177-9D8A-23FDFDA274D2}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{D243AC2D-7823-4177-9D8A-23FDFDA274D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D243AC2D-7823-4177-9D8A-23FDFDA274D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D243AC2D-7823-4177-9D8A-23FDFDA274D2}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -718,8 +608,6 @@ Global
 		{D243AC2D-7823-4177-9D8A-23FDFDA274D2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D243AC2D-7823-4177-9D8A-23FDFDA274D2}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{D243AC2D-7823-4177-9D8A-23FDFDA274D2}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -728,8 +616,6 @@ Global
 		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{96167FDC-8D49-4767-AE58-22933C246C67}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{96167FDC-8D49-4767-AE58-22933C246C67}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{96167FDC-8D49-4767-AE58-22933C246C67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{96167FDC-8D49-4767-AE58-22933C246C67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96167FDC-8D49-4767-AE58-22933C246C67}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -738,8 +624,6 @@ Global
 		{96167FDC-8D49-4767-AE58-22933C246C67}.Release|Any CPU.Build.0 = Release|Any CPU
 		{96167FDC-8D49-4767-AE58-22933C246C67}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{96167FDC-8D49-4767-AE58-22933C246C67}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -748,8 +632,6 @@ Global
 		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{170EA6A3-26A6-4A1A-A6F9-44BE5208FA06}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{170EA6A3-26A6-4A1A-A6F9-44BE5208FA06}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{170EA6A3-26A6-4A1A-A6F9-44BE5208FA06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{170EA6A3-26A6-4A1A-A6F9-44BE5208FA06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{170EA6A3-26A6-4A1A-A6F9-44BE5208FA06}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -758,8 +640,6 @@ Global
 		{170EA6A3-26A6-4A1A-A6F9-44BE5208FA06}.Release|Any CPU.Build.0 = Release|Any CPU
 		{170EA6A3-26A6-4A1A-A6F9-44BE5208FA06}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{170EA6A3-26A6-4A1A-A6F9-44BE5208FA06}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -768,8 +648,6 @@ Global
 		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{9F7B2BDF-973B-4639-B890-357EB967B2ED}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{9F7B2BDF-973B-4639-B890-357EB967B2ED}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{9F7B2BDF-973B-4639-B890-357EB967B2ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9F7B2BDF-973B-4639-B890-357EB967B2ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F7B2BDF-973B-4639-B890-357EB967B2ED}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -778,8 +656,6 @@ Global
 		{9F7B2BDF-973B-4639-B890-357EB967B2ED}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9F7B2BDF-973B-4639-B890-357EB967B2ED}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{9F7B2BDF-973B-4639-B890-357EB967B2ED}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{E372D54C-73AA-41DB-A471-81348AC37F36}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{E372D54C-73AA-41DB-A471-81348AC37F36}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{E372D54C-73AA-41DB-A471-81348AC37F36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E372D54C-73AA-41DB-A471-81348AC37F36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E372D54C-73AA-41DB-A471-81348AC37F36}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -788,8 +664,6 @@ Global
 		{E372D54C-73AA-41DB-A471-81348AC37F36}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E372D54C-73AA-41DB-A471-81348AC37F36}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{E372D54C-73AA-41DB-A471-81348AC37F36}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{C8E31CD2-89D4-4659-9557-43EC9C99D984}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{C8E31CD2-89D4-4659-9557-43EC9C99D984}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{C8E31CD2-89D4-4659-9557-43EC9C99D984}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C8E31CD2-89D4-4659-9557-43EC9C99D984}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8E31CD2-89D4-4659-9557-43EC9C99D984}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -798,8 +672,6 @@ Global
 		{C8E31CD2-89D4-4659-9557-43EC9C99D984}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C8E31CD2-89D4-4659-9557-43EC9C99D984}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{C8E31CD2-89D4-4659-9557-43EC9C99D984}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU

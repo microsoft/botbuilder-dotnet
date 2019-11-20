@@ -40,8 +40,6 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>portable</DebugType>
-    <DebugSymbols>true</DebugSymbols>
     <!-- For debug builds, we don't generate documentation. Supress the StyleCop rule that warns about this. -->
     <NoWarn>$(NoWarn);SA0001</NoWarn>
   </PropertyGroup>
