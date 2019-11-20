@@ -1,14 +1,24 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
+
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// Additional items to include on PromptRecognizerResult, as necessary.
+    /// Represents a result from adaptive card input.
     /// </summary>
     /// <typeparam name="T">Type returned by recognizer.</typeparam>
-    public class AdaptiveCardPromptRecognizerResult<T> : PromptRecognizerResult<T>
+    public class AdaptiveCardPromptResult
     {
+        /// <summary>
+        /// Gets or sets the Value of the Adaptive Card input.
+        /// </summary>
+        /// <value>
+        /// The value of the user's input from the Adaptive Card.
+        /// </value>
+        public object Data { get; set; }
+
         /// <summary>
         /// Gets or sets Error enum.
         /// </summary>

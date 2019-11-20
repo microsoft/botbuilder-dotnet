@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -13,6 +14,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public enum AdaptiveCardPromptErrors
     {
+        /// <summary>
+        /// No known user errors.
+        /// </summary>
+        None,
+
         /// <summary>
         /// Error presented if developer specifies AdaptiveCardPromptSettings.promptId,
         /// but user submits adaptive card input on a card where the ID does not match.
@@ -48,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
 
-        private readonly PromptValidator<object> _validator;
+        private readonly PromptValidator<AdaptiveCardPromptResult> _validator;
         private readonly string[] _requiredInputIds;
         private readonly string _promptId;
         private readonly Attachment _card;
@@ -59,12 +65,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogId">Unique ID of the dialog within its parent `DialogSet` or `ComponentDialog`.</param>
         /// <param name="validator">(optional) Validator that will be called each time a new activity is received.</param>
         /// <param name="settings">(optional) Additional settings for AdaptiveCardPrompt behavior.</param>
-        public AdaptiveCardPrompt(string dialogId, AdaptiveCardPromptSettings settings, PromptValidator<object> validator = null)
+        public AdaptiveCardPrompt(string dialogId, AdaptiveCardPromptSettings settings, PromptValidator<AdaptiveCardPromptResult> validator = null)
             : base(dialogId)
         {
             if (settings == null || settings.Card == null)
             {
-                throw new ArgumentException("AdaptiveCardPrompt requires a card in `AdaptiveCardPromptSettings.card`");
+                throw new ArgumentNullException("AdaptiveCardPrompt requires a card in `AdaptiveCardPromptSettings.card`");
             }
 
             this._validator = validator;
@@ -109,7 +115,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var isValid = false;
             if (_validator != null)
             {
-                var promptContext = new PromptValidatorContext<object>(dc.Context, recognized, state, options);
+                var promptContext = new PromptValidatorContext<AdaptiveCardPromptResult>(dc.Context, recognized, state, options);
                 isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
             } 
             else if (recognized.Succeeded)
@@ -141,33 +147,50 @@ namespace Microsoft.Bot.Builder.Dialogs
             var prompt = isRetry && options.RetryPrompt != null ? options.RetryPrompt : options.Prompt;
 
             // Clone the correct prompt so that we don't affect the one saved in state
-            var jsonSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
-            var clonedPrompt = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(prompt, jsonSettings));
+            if (prompt == null)
+            {
+                prompt = new Activity() { Text = string.Empty };
+            }
+
+            var clonedPrompt = JObject.FromObject(prompt).ToObject<Activity>();
 
             // Add Adaptive Card as last attachment (user input should go last), keeping any others
+            if (clonedPrompt.Attachments == null)
+            {
+                clonedPrompt.Attachments = new List<Attachment>();
+            }
+
             clonedPrompt.Attachments.Add(_card);
 
-            await context.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
+            await context.SendActivityAsync(clonedPrompt, cancellationToken).ConfigureAwait(false);
         }
 
-        protected virtual async Task<AdaptiveCardPromptRecognizerResult<object>> OnRecognizeAsync(ITurnContext context, CancellationToken cancellationToken)
+        protected virtual Task<PromptRecognizerResult<AdaptiveCardPromptResult>> OnRecognizeAsync(ITurnContext context, CancellationToken cancellationToken)
         {
             // Ignore user input that doesn't come from adaptive card
             if (string.IsNullOrWhiteSpace(context.Activity.Text) && context.Activity.Value != null)
             {
-                var value = JObject.FromObject(context.Activity.Value);
+                var data = JObject.FromObject(context.Activity.Value);
 
                 // Validate it comes from the correct card - This is only a worry while the prompt/dialog has not ended
-                if (value["promptId"].ToString() != _promptId)
+                if (!string.IsNullOrEmpty(_promptId) && data["promptId"].ToString() != _promptId)
                 {
-                    return new AdaptiveCardPromptRecognizerResult<object>() { Succeeded = false, Value = value, Error = AdaptiveCardPromptErrors.UserInputDoesNotMatchCardId };
+                    return Task.FromResult(new PromptRecognizerResult<AdaptiveCardPromptResult>() 
+                    { 
+                        Succeeded = false, 
+                        Value = new AdaptiveCardPromptResult()
+                        {
+                            Data = data,
+                            Error = AdaptiveCardPromptErrors.UserInputDoesNotMatchCardId
+                        }
+                    });
                 }
 
                 // Check for required input data, if specified in AdaptiveCardPromptSettings
                 var missingIds = new List<string>();
-                foreach (var id in _requiredInputIds)
+                foreach (var id in _requiredInputIds ?? Enumerable.Empty<string>())
                 {
-                    if (value[id] == null || string.IsNullOrWhiteSpace(value[id].ToString()))
+                    if (data[id] == null || string.IsNullOrWhiteSpace(data[id].ToString()))
                     {
                         missingIds.Add(id);
                     }
@@ -176,21 +199,32 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // User did not submit inputs that were required
                 if (missingIds.Count > 0)
                 {
-                    return new AdaptiveCardPromptRecognizerResult<object>()
+                    return Task.FromResult(new PromptRecognizerResult<AdaptiveCardPromptResult>()
                     { 
                         Succeeded = false,
-                        Value = value,
-                        Error = AdaptiveCardPromptErrors.MissingRequiredIds,
-                        MissingIds = missingIds
-                    };
+                        Value = new AdaptiveCardPromptResult()
+                        {
+                            Data = data,
+                            Error = AdaptiveCardPromptErrors.MissingRequiredIds,
+                            MissingIds = missingIds
+                        }
+                    });
                 }
 
-                return new AdaptiveCardPromptRecognizerResult<object>() { Succeeded = true, Value = context.Activity.Value };
+                return Task.FromResult(new PromptRecognizerResult<AdaptiveCardPromptResult>()
+                {
+                    Succeeded = true,
+                    Value = new AdaptiveCardPromptResult() { Data = data }
+                });
             }
             else
             {
                 // User used text input instead of card input
-                return new AdaptiveCardPromptRecognizerResult<object>() { Succeeded = false, Error = AdaptiveCardPromptErrors.UserUsedTextInput };
+                return Task.FromResult(new PromptRecognizerResult<AdaptiveCardPromptResult>() 
+                { 
+                    Succeeded = false, 
+                    Value = new AdaptiveCardPromptResult() { Error = AdaptiveCardPromptErrors.UserUsedTextInput }
+                });
             }
         }
 
@@ -200,13 +234,13 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (cardAttachment == null || cardAttachment.Content == null)
             {
-                throw new NullReferenceException($"No Adaptive Card provided. Include in the constructor or PromptOptions.Prompt.Attachments[0]");
+                throw new NullReferenceException($"No Adaptive Card provided. Include in the constructor or PromptOptions.Prompt.Attachments");
             }
             else if (string.IsNullOrEmpty(cardAttachment.ContentType) || cardAttachment.ContentType != adaptiveCardType)
             {
                 throw new ArgumentException($"Attachment is not a valid Adaptive Card.\n" +
-                                    "Ensure card.contentType is '${ adaptiveCardType }'\n" +
-                                    "and card.content contains the card json");
+                                    $"Ensure Card.ContentType is '${adaptiveCardType}'\n" +
+                                    "and Card.Content contains the card json");
             }
         }
     }

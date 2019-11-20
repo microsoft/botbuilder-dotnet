@@ -4,8 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -18,372 +16,62 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class AdaptiveCardPromptTests
     {
+        private readonly string customPromptId = "custom";
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void AdaptiveCardPromptWithEmptyIdShouldFail()
+        public void AdaptiveCardPromptWithoutSettingsShouldFail()
         {
-            var emptyId = string.Empty;
-            var textPrompt = new AdaptiveCardPrompt(emptyId);
+            new AdaptiveCardPrompt("prompt", null);
+        }
+        
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void AdaptiveCardPromptWithoutCardShouldFail()
+        {
+            new AdaptiveCardPrompt("prompt", new AdaptiveCardPromptSettings());
         }
 
         [TestMethod]
-        public async Task ShouldCallAdaptiveCardPromptUsingDcPrompt()
+        [ExpectedException(typeof(NullReferenceException), "No Adaptive Card provided. Include in the constructor or PromptOptions.Prompt.Attachments")]
+        public void AdaptiveCardPromptWithBlankCardShouldFail()
         {
-            var prompt = new AdaptiveCardPrompt("prompt");
-            var simulatedInput = GetSimulatedInput();
-
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-
-            // Create and add custom activity prompt to DialogSet.
-            dialogs.Add(prompt);
-
-            // Create mock Activity for testing.
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    var options = new PromptOptions { Prompt = new Activity { Attachments = GetAttachmentsWithCard() } };
-                    await dc.PromptAsync("prompt", options, cancellationToken);
-                }
-                else if (results.Status == DialogTurnStatus.Complete)
-                {
-                    var content = results.Result;
-                    await turnContext.SendActivityAsync($"You said: {content.ToString()}");
-                }
-            })
-            .Send("hello")
-            .AssertReply(
-                (activity) =>
-                {
-                    AssertActivityHasCard(activity);
-                    UpdateSimulatedInputWithPromptId(simulatedInput, prompt);
-                })
-            .Send(simulatedInput)
-
-            // MUST use lambda because test is async and simulatedInput changes after prompt displayed. Ref won't work because async.
-            .AssertReply((activity) =>
-            {
-                Assert.AreEqual($"You said: {simulatedInput.Value.ToString()}", (activity as Activity).Text);
-            })
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldCallAdaptiveCardPromptUsingDcBeginDialog()
-        {
-            var prompt = new AdaptiveCardPrompt("prompt");
-            var simulatedInput = GetSimulatedInput();
-
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-
-            // Create and add custom activity prompt to DialogSet.
-            dialogs.Add(prompt);
-
-            // Create mock Activity for testing.
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    var options = new PromptOptions { Prompt = new Activity { Attachments = GetAttachmentsWithCard() } };
-                    await dc.BeginDialogAsync("prompt", options, cancellationToken);
-                }
-                else if (results.Status == DialogTurnStatus.Complete)
-                {
-                    var content = results.Result;
-                    await turnContext.SendActivityAsync($"You said: {content.ToString()}");
-                }
-            })
-            .Send("hello")
-            .AssertReply(
-                (activity) =>
-                {
-                    AssertActivityHasCard(activity);
-                    UpdateSimulatedInputWithPromptId(simulatedInput, prompt);
-                })
-            .Send(simulatedInput)
-
-            // MUST use lambda because test is async and simulatedInput changes after prompt displayed. Ref won't work because async.
-            .AssertReply((activity) =>
-            {
-                Assert.AreEqual($"You said: {simulatedInput.Value.ToString()}", (activity as Activity).Text);
-            })
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldCreateANewPromptIdForEachOnPromptCall()
-        {
-            var prompt = new AdaptiveCardPrompt("prompt");
-            var simulatedInput = GetSimulatedInput();
-            var usedIds = new HashSet<string>();
-
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-
-            // Create and add custom activity prompt to DialogSet.
-            dialogs.Add(prompt);
-
-            // Create mock Activity for testing.
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    var options = new PromptOptions { Prompt = new Activity { Attachments = GetAttachmentsWithCard() } };
-                    await dc.PromptAsync("prompt", options, cancellationToken);
-                }
-                else if (results.Status == DialogTurnStatus.Complete)
-                {
-                    var content = results.Result;
-                    await turnContext.SendActivityAsync(GetPromptIdFromObject(content));
-                }
-            })
-            .Send("hello")
-            .AssertReply(
-                (activity) =>
-                {
-                    AssertActivityHasCard(activity);
-                    UpdateSimulatedInputWithPromptId(simulatedInput, prompt);
-                })
-            .Send(simulatedInput)
-
-            // MUST use lambda because test is async and simulatedInput changes after prompt displayed. Ref won't work because async.
-            .AssertReply((activity) =>
-            {
-                var promptId = (activity as Activity).Text;
-                Assert.IsFalse(usedIds.Contains(promptId));
-                usedIds.Add(promptId);
-            })
-            .Send("hello")
-            .AssertReply(
-                (activity) =>
-                {
-                    AssertActivityHasCard(activity);
-                    UpdateSimulatedInputWithPromptId(simulatedInput, prompt);
-                })
-            .Send(simulatedInput)
-
-            // MUST use lambda because test is async and simulatedInput changes after prompt displayed. Ref won't work because async.
-            .AssertReply((activity) =>
-            {
-                var promptId = (activity as Activity).Text;
-                Assert.IsFalse(usedIds.Contains(promptId));
-            })
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldUseRetryPromptIfGivenAndAttemptsBeforeCardRedisplayedAllows()
-        {
-            var prompt = new AdaptiveCardPrompt("prompt", null, new AdaptiveCardPromptSettings() { AttemptsBeforeCardRedisplayed = 1 });
-
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-
-            // Create and add custom activity prompt to DialogSet.
-            dialogs.Add(prompt);
-
-            // Create mock Activity for testing.
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    var options = new PromptOptions
-                    {
-                        Prompt = new Activity { Attachments = GetAttachmentsWithCard() },
-                        RetryPrompt = new Activity { Text = "RETRY", Attachments = GetAttachmentsWithCard() },
-                    };
-                    await dc.PromptAsync("prompt", options, cancellationToken);
-                }
-            })
-            .Send("hello")
-            .AssertReply(
-                (activity) =>
-                {
-                    AssertActivityHasCard(activity);
-                })
-            .Send(GetInvalidSimulatedInput())
-            .AssertReply("Please fill out the Adaptive Card")
-
-            // Must be lambda to avoid type check. RetryPrompt type is null
-            .AssertReply((activity) => Assert.AreEqual("RETRY", (activity as Activity).Text))
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldAllowForCustomPromptIdThatDoesntChangeOnReprompt()
-        {
-            var customId = "custom";
-            var prompt = new AdaptiveCardPrompt("prompt", null, new AdaptiveCardPromptSettings() { AttemptsBeforeCardRedisplayed = 1, PromptId = customId });
-            var simulatedInput = GetSimulatedInput();
-            UpdateSimulatedInputWithPromptId(simulatedInput, null, customId);
-
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-
-            // Create and add custom activity prompt to DialogSet.
-            dialogs.Add(prompt);
-
-            // Create mock Activity for testing.
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    var options = new PromptOptions
-                    {
-                        Prompt = new Activity { Attachments = GetAttachmentsWithCard() },
-                    };
-                    await dc.PromptAsync("prompt", options, cancellationToken);
-                }
-                else if (results.Status == DialogTurnStatus.Complete)
-                {
-                    var content = results.Result;
-                    await turnContext.SendActivityAsync(GetPromptIdFromObject(content));
-                }
-            })
-            .Send("hello")
-            .AssertReply(
-                (activity) =>
-                {
-                    AssertActivityHasCard(activity);
-                })
-            .Send(simulatedInput)
-            .AssertReply(customId)
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task PromptCanBeTextOnlyActivityIfCardPassedInConstructor()
-        {
-            var prompt = new AdaptiveCardPrompt("prompt", null, new AdaptiveCardPromptSettings() { Card = GetCard() });
-
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-
-            // Create and add custom activity prompt to DialogSet.
-            dialogs.Add(prompt);
-
-            // Create mock Activity for testing.
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    var options = new PromptOptions
-                    {
-                        Prompt = MessageFactory.Text("STRING"),
-                    };
-                    await dc.PromptAsync("prompt", options, cancellationToken);
-                }
-                else if (results.Status == DialogTurnStatus.Complete)
-                {
-                    var content = results.Result;
-                    await turnContext.SendActivityAsync(GetPromptIdFromObject(content));
-                }
-            })
-            .Send("hello")
-            .AssertReply("STRING")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(NullReferenceException))]
-        public async Task ShouldThrowIfNoAttachmentPassedInConstructorOrSet()
-        {
-            var prompt = new AdaptiveCardPrompt("prompt");
-
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-
-            // Create and add custom activity prompt to DialogSet.
-            dialogs.Add(prompt);
-
-            // Create mock Activity for testing.
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    var options = new PromptOptions
-                    {
-                        Prompt = MessageFactory.Text("STRING"),
-                    };
-                    await dc.PromptAsync("prompt", options, cancellationToken);
-                }
-            })
-            .Send("hello")
-            .StartTestAsync();
+            new AdaptiveCardPrompt("prompt", new AdaptiveCardPromptSettings() { Card = new Attachment() });
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public async Task ShouldThrowIfCardIsNotAValidAdaptiveCard()
+        public void AdaptiveCardPromptWithoutValidCardShouldFail()
         {
-            var card = GetCard();
-            card.ContentType = "InvalidCard";
-            var prompt = new AdaptiveCardPrompt("prompt", null, new AdaptiveCardPromptSettings() { Card = card });
+            new AdaptiveCardPrompt("prompt", new AdaptiveCardPromptSettings()
+            {
+                Card = new Attachment()
+                {
+                    Content = GetCard().Content,
+                    ContentType = "invalidcard"
+                }
+            });
+        }
+
+        [TestMethod]
+        public async Task RecognizesInputWithCustomPromptIdAndCorrectInput()
+        {
+            var usedValidator = false;
+            var prompt = new AdaptiveCardPrompt(
+                "prompt", 
+                new AdaptiveCardPromptSettings()
+                {
+                    PromptId = customPromptId,
+                    Card = GetCard(),
+                },
+                (context, cancel) =>
+                {
+                    Assert.IsTrue(context.Recognized.Succeeded);
+                    Assert.AreEqual(context.Recognized.Value.Error, AdaptiveCardPromptErrors.None);
+                    usedValidator = true;
+                    return Task.FromResult(context.Recognized.Succeeded);
+                });
+            var simulatedInput = GetSimulatedInput();
 
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
@@ -405,147 +93,519 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    var options = new PromptOptions
+                    await dc.PromptAsync("prompt", new PromptOptions());
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var content = (results.Result as AdaptiveCardPromptResult).Data;
+                    await turnContext.SendActivityAsync($"You said: {content.ToString()}");
+                }
+            })
+            .Send("hello")
+            .AssertReply(
+                (activity) =>
+                {
+                    var card = JObject.FromObject((activity as Activity).Attachments[0].Content);
+                    Assert.AreEqual(card["selectAction"]["data"]["promptId"], customPromptId);
+                })
+            .Send(simulatedInput)
+            .StartTestAsync();
+            Assert.IsTrue(usedValidator);
+        }
+
+        [TestMethod]
+        public async Task PresentsPromptIdErrorWhenInputPromptIdDoesNotMatch()
+        {
+            var usedValidator = false;
+            var prompt = new AdaptiveCardPrompt(
+                "prompt",
+                new AdaptiveCardPromptSettings()
+                {
+                    PromptId = "differentPromptId",
+                    Card = GetCard(),
+                },
+                (context, cancel) =>
+                {
+                    Assert.IsFalse(context.Recognized.Succeeded);
+                    Assert.AreEqual(context.Recognized.Value.Error, AdaptiveCardPromptErrors.UserInputDoesNotMatchCardId);
+                    usedValidator = true;
+                    return Task.FromResult(context.Recognized.Succeeded);
+                });
+            var simulatedInput = GetSimulatedInput();
+
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+
+            // Create and add custom activity prompt to DialogSet.
+            dialogs.Add(prompt);
+
+            // Create mock Activity for testing.
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync("prompt", new PromptOptions());
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var content = (results.Result as AdaptiveCardPromptResult).Data;
+                    await turnContext.SendActivityAsync($"You said: {content.ToString()}");
+                }
+            })
+            .Send("hello")
+            .AssertReply(
+                (activity) =>
+                {
+                    var card = JObject.FromObject((activity as Activity).Attachments[0].Content);
+                    Assert.AreEqual(card["selectAction"]["data"]["promptId"], customPromptId);
+                })
+            .Send(simulatedInput)
+            .AssertReply(
+                (activity) =>
+                {
+                    var card = JObject.FromObject((activity as Activity).Attachments[0].Content);
+                    Assert.AreEqual(card["selectAction"]["data"]["promptId"], customPromptId);
+                })
+            .StartTestAsync();
+            Assert.IsTrue(usedValidator);
+        }
+
+        [TestMethod]
+        public async Task RecognizesIfAllRequiredIdsSupplied()
+        {
+            var usedValidator = false;
+            var prompt = new AdaptiveCardPrompt(
+                "prompt",
+                new AdaptiveCardPromptSettings()
+                {
+                    Card = GetCard(),
+                    RequiredInputIds = new string[]
                     {
-                        Prompt = MessageFactory.Text("STRING"),
+                        "foodChoice",
+                        "steakOther",
+                        "steakTemp",
+                    }
+                },
+                (context, cancel) =>
+                {
+                    Assert.IsTrue(context.Recognized.Succeeded);
+                    Assert.AreEqual(context.Recognized.Value.Error, AdaptiveCardPromptErrors.None);
+                    usedValidator = true;
+                    return Task.FromResult(context.Recognized.Succeeded);
+                });
+            var simulatedInput = GetSimulatedInput();
+
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+
+            // Create and add custom activity prompt to DialogSet.
+            dialogs.Add(prompt);
+
+            // Create mock Activity for testing.
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync("prompt", new PromptOptions());
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var content = (results.Result as AdaptiveCardPromptResult).Data;
+                    await turnContext.SendActivityAsync($"You said: {content.ToString()}");
+                }
+            })
+            .Send("hello")
+            .AssertReply((activity) => { AssertActivityHasCard(activity); })
+            .Send(simulatedInput)
+            .StartTestAsync();
+            Assert.IsTrue(usedValidator);
+        }
+
+        [TestMethod]
+        public async Task PresentsMissingIdsErrorWhenInputIsMissingIds()
+        {
+            var usedValidator = false;
+            var prompt = new AdaptiveCardPrompt(
+                "prompt",
+                new AdaptiveCardPromptSettings()
+                {
+                    Card = GetCard(),
+                    RequiredInputIds = new string[]
+                    {
+                        "test1",
+                        "test2",
+                        "test3",
+                    }
+                },
+                async (context, cancel) =>
+                {
+                    Assert.IsFalse(context.Recognized.Succeeded);
+                    Assert.AreEqual(context.Recognized.Value.Error, AdaptiveCardPromptErrors.MissingRequiredIds);
+                    await context.Context.SendActivityAsync($"test inputs missing: {string.Join(", ", context.Recognized.Value.MissingIds)}");
+                    usedValidator = true;
+                    return context.Recognized.Succeeded;
+                });
+            var simulatedInput = GetSimulatedInput();
+
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+
+            // Create and add custom activity prompt to DialogSet.
+            dialogs.Add(prompt);
+
+            // Create mock Activity for testing.
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync("prompt", new PromptOptions());
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var content = results.Result.GetType().GetProperty("Data");
+                    await turnContext.SendActivityAsync($"You said: {content.ToString()}");
+                }
+            })
+            .Send("hello")
+            .AssertReply((activity) => { AssertActivityHasCard(activity); })
+            .Send(simulatedInput)
+            .AssertReply("test inputs missing: test1, test2, test3")
+            .StartTestAsync();
+            Assert.IsTrue(usedValidator);
+        }
+
+        [TestMethod]
+        public async Task RecognizesValidCardInput()
+        {
+            var usedValidator = false;
+            var prompt = new AdaptiveCardPrompt(
+                "prompt",
+                new AdaptiveCardPromptSettings()
+                {
+                    Card = GetCard(),
+                },
+                (context, cancel) =>
+                {
+                    Assert.IsTrue(context.Recognized.Succeeded);
+                    usedValidator = true;
+                    return Task.FromResult(context.Recognized.Succeeded);
+                });
+            var simulatedInput = GetSimulatedInput();
+
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+
+            // Create and add custom activity prompt to DialogSet.
+            dialogs.Add(prompt);
+
+            // Create mock Activity for testing.
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync("prompt", new PromptOptions());
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var content = (results.Result as AdaptiveCardPromptResult).Data;
+                    await turnContext.SendActivityAsync($"You said: {content.ToString()}");
+                }
+            })
+            .Send("hello")
+            .AssertReply((activity) => { AssertActivityHasCard(activity); })
+            .Send(simulatedInput)
+            .AssertReply($"You said: {simulatedInput.Value.ToString()}")
+            .StartTestAsync();
+            Assert.IsTrue(usedValidator);
+        }
+
+        [TestMethod]
+        public async Task PresentsTextInputErrorWhenUserInputsViaTextNotCard()
+        {
+            var usedValidator = false;
+            var prompt = new AdaptiveCardPrompt(
+                "prompt",
+                new AdaptiveCardPromptSettings()
+                {
+                    Card = GetCard(),
+                },
+                (context, cancel) =>
+                {
+                    Assert.IsFalse(context.Recognized.Succeeded);
+                    Assert.AreEqual(context.Recognized.Value.Error, AdaptiveCardPromptErrors.UserUsedTextInput);
+                    usedValidator = true;
+                    return Task.FromResult(context.Recognized.Succeeded);
+                });
+            var simulatedInput = GetSimulatedInput();
+
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+
+            // Create and add custom activity prompt to DialogSet.
+            dialogs.Add(prompt);
+
+            // Create mock Activity for testing.
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync("prompt", new PromptOptions());
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var content = (results.Result as AdaptiveCardPromptResult).Data;
+                    await turnContext.SendActivityAsync($"You said: {content.ToString()}");
+                }
+            })
+            .Send("hello")
+            .AssertReply((activity) => { AssertActivityHasCard(activity); })
+            .Send("This is not valid card input")
+            .AssertReply((activity) => { AssertActivityHasCard(activity); })
+            .StartTestAsync();
+            Assert.IsTrue(usedValidator);
+        }
+
+        [TestMethod]
+        public async Task CallsUsingBeginDialog()
+        {
+            var prompt = new AdaptiveCardPrompt("prompt", new AdaptiveCardPromptSettings() { Card = GetCard() });
+            var simulatedInput = GetSimulatedInput();
+
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+
+            // Create and add custom activity prompt to DialogSet.
+            dialogs.Add(prompt);
+
+            // Create mock Activity for testing.
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.BeginDialogAsync("prompt", new PromptOptions());
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var content = (results.Result as AdaptiveCardPromptResult).Data;
+                    await turnContext.SendActivityAsync($"You said: {content.ToString()}");
+                }
+            })
+            .Send("hello")
+            .AssertReply((activity) => { AssertActivityHasCard(activity); })
+            .Send(simulatedInput)
+            .AssertReply($"You said: {simulatedInput.Value.ToString()}")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task CallsUsingPrompt()
+        {
+            var prompt = new AdaptiveCardPrompt("prompt", new AdaptiveCardPromptSettings() { Card = GetCard() });
+            var simulatedInput = GetSimulatedInput();
+
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+
+            // Create and add custom activity prompt to DialogSet.
+            dialogs.Add(prompt);
+
+            // Create mock Activity for testing.
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync("prompt", new PromptOptions());
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var content = (results.Result as AdaptiveCardPromptResult).Data;
+                    await turnContext.SendActivityAsync($"You said: {content.ToString()}");
+                }
+            })
+            .Send("hello")
+            .AssertReply((activity) => { AssertActivityHasCard(activity); })
+            .Send(simulatedInput)
+            .AssertReply($"You said: {simulatedInput.Value.ToString()}")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task UsesRetryPromptOnRetries()
+        {
+            var prompt = new AdaptiveCardPrompt("prompt", new AdaptiveCardPromptSettings() { Card = GetCard() });
+            var simulatedInput = GetSimulatedInput();
+
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+
+            // Create and add custom activity prompt to DialogSet.
+            dialogs.Add(prompt);
+
+            // Create mock Activity for testing.
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.BeginDialogAsync("prompt", new PromptOptions()
+                    {
+                        RetryPrompt = MessageFactory.Text("RETRY")
+                    });
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var content = (results.Result as AdaptiveCardPromptResult).Data;
+                    await turnContext.SendActivityAsync($"You said: {content.ToString()}");
+                }
+            })
+            .Send("hello")
+            .AssertReply((activity) => { AssertActivityHasCard(activity); })
+            .Send("This is not a valid response")
+            .AssertReply("RETRY")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task DoesNotOverwriteDevProvidedAttachments()
+        {
+            var prompt = new AdaptiveCardPrompt("prompt", new AdaptiveCardPromptSettings() { Card = GetCard() });
+            var simulatedInput = GetSimulatedInput();
+
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+
+            // Create and add custom activity prompt to DialogSet.
+            dialogs.Add(prompt);
+
+            // Create mock Activity for testing.
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    var promptWithAttachments = MessageFactory.Text(string.Empty);
+                    promptWithAttachments.Attachments = new List<Attachment>
+                    {
+                        new Attachment() { Content = "a" },
+                        new Attachment() { Content = "b" },
+                        new Attachment() { Content = "c" },
                     };
-                    await dc.PromptAsync("prompt", options, cancellationToken);
-                }
-            })
-            .Send("hello")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldAcceptACustomValidatorThatHandlesValidContext()
-        {
-            var usedValidator = false;
-
-            Task<bool> Validator(PromptValidatorContext<object> promptContext, CancellationToken cancellationToken)
-            {
-                usedValidator = true;
-                return Task.FromResult(true);
-            }
-
-            var prompt = new AdaptiveCardPrompt("prompt", Validator);
-            var simulatedInput = GetSimulatedInput();
-
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-
-            // Create and add custom activity prompt to DialogSet.
-            dialogs.Add(prompt);
-
-            // Create mock Activity for testing.
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    var options = new PromptOptions { Prompt = new Activity { Attachments = GetAttachmentsWithCard() } };
-                    await dc.PromptAsync("prompt", options, cancellationToken);
+                    await dc.BeginDialogAsync("prompt", new PromptOptions()
+                    {
+                        Prompt = promptWithAttachments
+                    });
                 }
                 else if (results.Status == DialogTurnStatus.Complete)
                 {
-                    var content = results.Result;
+                    var content = (results.Result as AdaptiveCardPromptResult).Data;
                     await turnContext.SendActivityAsync($"You said: {content.ToString()}");
                 }
             })
             .Send("hello")
-            .AssertReply(
-                (activity) =>
-                {
-                    AssertActivityHasCard(activity);
-                    UpdateSimulatedInputWithPromptId(simulatedInput, prompt);
-                })
-            .Send(simulatedInput)
-
-            // MUST use lambda because test is async and simulatedInput changes after prompt displayed. Ref won't work because async.
-            .AssertReply((activity) =>
+            .AssertReply((activity) => 
             {
-                Assert.AreEqual($"You said: {simulatedInput.Value.ToString()}", (activity as Activity).Text);
+                Assert.AreEqual((activity as Activity).Attachments[0].Content, "a");
+                Assert.AreEqual((activity as Activity).Attachments[1].Content, "b");
+                Assert.AreEqual((activity as Activity).Attachments[2].Content, "c");
+                Assert.AreEqual((activity as Activity).Attachments[3].ContentType, "application/vnd.microsoft.card.adaptive");
             })
             .StartTestAsync();
-            Assert.IsTrue(usedValidator);
         }
 
         [TestMethod]
-        public async Task ShouldAcceptACustomValidatorThatHandlesInalidContext()
-        {
-            var usedValidator = false;
-
-            async Task<bool> Validator(PromptValidatorContext<object> promptContext, CancellationToken cancellationToken)
-            {
-                usedValidator = true;
-                await promptContext.Context.SendActivityAsync("FAILED");
-                return false;
-            }
-
-            var prompt = new AdaptiveCardPrompt("prompt", Validator);
-            var simulatedInput = GetSimulatedInput();
-
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-
-            // Create and add custom activity prompt to DialogSet.
-            dialogs.Add(prompt);
-
-            // Create mock Activity for testing.
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    var options = new PromptOptions { Prompt = new Activity { Attachments = GetAttachmentsWithCard() } };
-                    await dc.PromptAsync("prompt", options, cancellationToken);
-                }
-                else if (results.Status == DialogTurnStatus.Complete)
-                {
-                    var content = results.Result;
-                    await turnContext.SendActivityAsync($"You said: {content.ToString()}");
-                }
-            })
-            .Send("hello")
-            .AssertReply(
-                (activity) =>
-                {
-                    AssertActivityHasCard(activity);
-                    UpdateSimulatedInputWithPromptId(simulatedInput, prompt);
-                })
-            .Send(simulatedInput)
-            .AssertReply("FAILED")
-            .StartTestAsync();
-            Assert.IsTrue(usedValidator);
-        }
-
-        [TestMethod]
-        public async Task ShouldTrackTheNumberOfAttempts()
+        public async Task TracksTheNumberOfAttempts()
         {
             var attempts = 0;
-
-            Task<bool> Validator(PromptValidatorContext<object> promptContext, CancellationToken cancellationToken)
-            {
-                attempts = promptContext.AttemptCount;
-                return Task.FromResult(false);
-            }
-
-            var prompt = new AdaptiveCardPrompt("prompt", Validator, new AdaptiveCardPromptSettings() { AttemptsBeforeCardRedisplayed = 99 });
+            var prompt = new AdaptiveCardPrompt(
+                "prompt",
+                new AdaptiveCardPromptSettings()
+                {
+                    Card = GetCard(),
+                },
+                (context, cancel) =>
+                {
+                    attempts = int.Parse(context.State["AttemptCount"].ToString());
+                    return Task.FromResult(false);
+                });
             var simulatedInput = GetSimulatedInput();
 
             var convoState = new ConversationState(new MemoryStorage());
@@ -568,193 +628,109 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    var options = new PromptOptions { Prompt = new Activity { Attachments = GetAttachmentsWithCard() } };
-                    await dc.PromptAsync("prompt", options, cancellationToken);
-                }
-                else if (results.Status == DialogTurnStatus.Waiting)
-                {
-                    await turnContext.SendActivityAsync("Invalid Response");
-                }
-            })
-            .Send("hello")
-            .AssertReply(
-                (activity) =>
-                {
-                    AssertActivityHasCard(activity);
-                    UpdateSimulatedInputWithPromptId(simulatedInput, prompt);
-                })
-            .Send(simulatedInput)
-            .AssertReply("Invalid Response")
-            .Send(simulatedInput)
-            .AssertReply("Invalid Response")
-            .Send(simulatedInput)
-            .AssertReply("Invalid Response")
-            .StartTestAsync();
-            Assert.AreEqual(3, attempts);
-        }
-
-        [TestMethod]
-        public async Task ShouldRecognizeCardInput()
-        {
-            var usedValidator = false;
-
-            Task<bool> Validator(PromptValidatorContext<object> promptContext, CancellationToken cancellationToken)
-            {
-                usedValidator = true;
-                Assert.IsTrue(promptContext.Recognized.Succeeded);
-                return Task.FromResult(true);
-            }
-
-            var prompt = new AdaptiveCardPrompt("prompt", Validator);
-            var simulatedInput = GetSimulatedInput();
-
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-
-            // Create and add custom activity prompt to DialogSet.
-            dialogs.Add(prompt);
-
-            // Create mock Activity for testing.
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    var options = new PromptOptions { Prompt = new Activity { Attachments = GetAttachmentsWithCard() } };
-                    await dc.PromptAsync("prompt", options, cancellationToken);
+                    await dc.PromptAsync("prompt", new PromptOptions());
                 }
                 else if (results.Status == DialogTurnStatus.Complete)
                 {
-                    var content = results.Result;
+                    var content = (results.Result as AdaptiveCardPromptResult).Data;
                     await turnContext.SendActivityAsync($"You said: {content.ToString()}");
                 }
             })
             .Send("hello")
-            .AssertReply(
-                (activity) =>
-                {
-                    AssertActivityHasCard(activity);
-                    UpdateSimulatedInputWithPromptId(simulatedInput, prompt);
-                    Assert.IsTrue(simulatedInput.Value != null && string.IsNullOrEmpty(simulatedInput.Text));
-                })
+            .AssertReply((activity) => 
+            { 
+                AssertActivityHasCard(activity);
+            })
             .Send(simulatedInput)
             .AssertReply((activity) =>
             {
-                Assert.AreEqual($"You said: {simulatedInput.Value.ToString()}", (activity as Activity).Text);
+                AssertActivityHasCard(activity);
+                Assert.AreEqual(attempts, 1);
             })
+            .Send(simulatedInput)
+            .AssertReply((activity) =>
+            {
+                AssertActivityHasCard(activity);
+                Assert.AreEqual(attempts, 2);
+            })
+            .Send(simulatedInput)
+            .AssertReply((activity) =>
+            {
+                AssertActivityHasCard(activity);
+                Assert.AreEqual(attempts, 3);
+            })
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AcceptsCustomValidatorAndCallsItIfRecognizedSucceeded()
+        {
+            var usedValidator = false;
+            var prompt = new AdaptiveCardPrompt(
+                "prompt",
+                new AdaptiveCardPromptSettings()
+                {
+                    Card = GetCard(),
+                },
+                (context, cancel) =>
+                {
+                    Assert.IsTrue(context.Recognized.Succeeded);
+                    usedValidator = true;
+                    return Task.FromResult(true);
+                });
+            var simulatedInput = GetSimulatedInput();
+
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+
+            // Create and add custom activity prompt to DialogSet.
+            dialogs.Add(prompt);
+
+            // Create mock Activity for testing.
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync("prompt", new PromptOptions());
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var content = (results.Result as AdaptiveCardPromptResult).Data;
+                    await turnContext.SendActivityAsync($"You said: {content.ToString()}");
+                }
+            })
+            .Send("hello")
+            .AssertReply((activity) => { AssertActivityHasCard(activity); })
+            .Send(simulatedInput)
             .StartTestAsync();
             Assert.IsTrue(usedValidator);
         }
 
         [TestMethod]
-        public async Task ShouldNotRecognizeTextInputAndShouldDisplayCustomInputFailMessage()
+        public async Task AcceptsCustomValidatorAndCallsItIfNotRecognizedSucceeded()
         {
-            // Note: Validator isn't used if !recognized.succeeded
-            var failMessage = "Test input fail message";
-            var prompt = new AdaptiveCardPrompt("prompt", null, new AdaptiveCardPromptSettings() { InputFailMessage = failMessage });
-            var invalidSimulatedInput = GetInvalidSimulatedInput();
-
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-
-            // Create and add custom activity prompt to DialogSet.
-            dialogs.Add(prompt);
-
-            // Create mock Activity for testing.
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
+            var usedValidator = false;
+            var prompt = new AdaptiveCardPrompt(
+                "prompt",
+                new AdaptiveCardPromptSettings()
                 {
-                    var options = new PromptOptions { Prompt = new Activity { Attachments = GetAttachmentsWithCard() } };
-                    await dc.PromptAsync("prompt", options, cancellationToken);
-                }
-            })
-            .Send("hello")
-            .AssertReply(
-                (activity) =>
+                    Card = GetCard(),
+                },
+                (context, cancel) =>
                 {
-                    AssertActivityHasCard(activity);
-                    UpdateSimulatedInputWithPromptId(invalidSimulatedInput, prompt);
-                })
-            .Send(invalidSimulatedInput)
-            .AssertReply(failMessage)
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldNotSuccessfullyRecognizeIfInputComesFromCardWithWrongId()
-        {
-            // Note: Validator isn't used if !recognized.succeeded
-            var prompt = new AdaptiveCardPrompt("prompt");
-            var simulatedInput = GetSimulatedInput();
-            UpdateSimulatedInputWithPromptId(simulatedInput, null, "wrongId");
-
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-
-            // Create and add custom activity prompt to DialogSet.
-            dialogs.Add(prompt);
-
-            // Create mock Activity for testing.
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    var options = new PromptOptions { Prompt = new Activity { Attachments = GetAttachmentsWithCard() } };
-                    await dc.PromptAsync("prompt", options, cancellationToken);
-                }
-                else if (results.Status == DialogTurnStatus.Waiting)
-                {
-                    await turnContext.SendActivityAsync("Invalid Response");
-                }
-            })
-            .Send("hello")
-            .AssertReply(
-                (activity) =>
-                {
-                    AssertActivityHasCard(activity);
-                })
-            .Send(simulatedInput)
-            .AssertReply("Invalid Response")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldNotSuccessfullyRecognizeAndShouldUseCustomMissingIdsMessage()
-        {
-            // Note: Validator isn't used if !recognized.succeeded
-            var missingIdsMessage = "Test Missing Ids";
-            var prompt = new AdaptiveCardPrompt("prompt", null, new AdaptiveCardPromptSettings()
-            {
-                MissingRequiredInputsMessage = missingIdsMessage,
-                RequiredInputIds = new List<string>() { "test1", "test2", "test3" },
-            });
+                    Assert.IsFalse(context.Recognized.Succeeded);
+                    usedValidator = true;
+                    return Task.FromResult(false);
+                });
             var simulatedInput = GetSimulatedInput();
 
             var convoState = new ConversationState(new MemoryStorage());
@@ -777,152 +753,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    var options = new PromptOptions { Prompt = new Activity { Attachments = GetAttachmentsWithCard() } };
-                    await dc.PromptAsync("prompt", options, cancellationToken);
-                }
-            })
-            .Send("hello")
-            .AssertReply(
-                (activity) =>
-                {
-                    AssertActivityHasCard(activity);
-                    UpdateSimulatedInputWithPromptId(simulatedInput, prompt);
-                })
-            .Send(simulatedInput)
-            .AssertReply($"{missingIdsMessage}: test1, test2, test3")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldSuccessfullyRecognizeIfAllRequiredIdsSupplied()
-        {
-            // Note: Validator isn't used if !recognized.succeeded
-            var missingIdsMessage = "Test Missing Ids";
-            var simulatedInput = GetSimulatedInput();
-            var prompt = new AdaptiveCardPrompt("prompt", null, new AdaptiveCardPromptSettings()
-            {
-                MissingRequiredInputsMessage = missingIdsMessage,
-                RequiredInputIds = (simulatedInput.Value as JObject).Properties().Select(p => p.Name).ToList(),
-            });
-
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-
-            // Create and add custom activity prompt to DialogSet.
-            dialogs.Add(prompt);
-
-            // Create mock Activity for testing.
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    var options = new PromptOptions { Prompt = new Activity { Attachments = GetAttachmentsWithCard() } };
-                    await dc.PromptAsync("prompt", options, cancellationToken);
+                    await dc.PromptAsync("prompt", new PromptOptions());
                 }
                 else if (results.Status == DialogTurnStatus.Complete)
                 {
-                    var content = results.Result;
+                    var content = (results.Result as AdaptiveCardPromptResult).Data;
                     await turnContext.SendActivityAsync($"You said: {content.ToString()}");
                 }
             })
             .Send("hello")
-            .AssertReply(
-                (activity) =>
-                {
-                    AssertActivityHasCard(activity);
-                    UpdateSimulatedInputWithPromptId(simulatedInput, prompt);
-                })
-            .Send(simulatedInput)
-
-            // MUST use lambda because test is async and simulatedInput changes after prompt displayed. Ref won't work because async.
-            .AssertReply((activity) =>
-            {
-                Assert.AreEqual($"You said: {simulatedInput.Value.ToString()}", (activity as Activity).Text);
-            })
+            .AssertReply((activity) => { AssertActivityHasCard(activity); })
+            .Send("this is not valid input")
             .StartTestAsync();
+            Assert.IsTrue(usedValidator);
         }
 
         [TestMethod]
-        public async Task ShouldRedisplayCardOnlyWhenAttemptCountDivisibleByAttemptsBeforeCardRedisplayed()
+        public async Task DoesNotRepromptIfNotRecognizedSucceededButValidatorTrue()
         {
-            var prompt = new AdaptiveCardPrompt("prompt", null, new AdaptiveCardPromptSettings() { AttemptsBeforeCardRedisplayed = 5 });
-
-            var simulatedInput = GetSimulatedInput();
-            UpdateSimulatedInputWithPromptId(simulatedInput, null, "invalidId");
-
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-
-            // Create and add custom activity prompt to DialogSet.
-            dialogs.Add(prompt);
-
-            // Create mock Activity for testing.
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
+            var usedValidator = false;
+            var prompt = new AdaptiveCardPrompt(
+                "prompt",
+                new AdaptiveCardPromptSettings()
                 {
-                    var options = new PromptOptions { Prompt = new Activity { Attachments = GetAttachmentsWithCard() } };
-                    await dc.PromptAsync("prompt", options, cancellationToken);
-                }
-                else if (results.Status == DialogTurnStatus.Waiting)
+                    Card = GetCard(),
+                },
+                (context, cancel) =>
                 {
-                    await turnContext.SendActivityAsync("Invalid Response");
-                }
-            })
-            .Send("hello")
-            .AssertReply(
-                (activity) =>
-                {
-                    AssertActivityHasCard(activity);
-                })
-            .Send(simulatedInput)
-            .AssertReply("Invalid Response")
-            .Send(simulatedInput)
-            .AssertReply("Invalid Response")
-            .Send(simulatedInput)
-            .AssertReply("Invalid Response")
-            .Send(simulatedInput)
-            .AssertReply("Invalid Response")
-            .Send(simulatedInput)
-            .AssertReply(
-                (activity) =>
-                {
-                    AssertActivityHasCard(activity);
-                })
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldAppropriatelyAddPromptIdToCardInAllNestedJsonOccurrences()
-        {
-            // Assert card doesn't already have promptIds
-            var cardBefore = JObject.FromObject(GetCard().Content);
-            Assert.IsTrue(string.IsNullOrEmpty(cardBefore["selectAction"]["data"]?.ToString()) || string.IsNullOrEmpty(cardBefore["selectAction"]["data"]["promptId"]?.ToString()));
-            Assert.IsTrue(string.IsNullOrEmpty(cardBefore["actions"][0]["data"]?.ToString()) || string.IsNullOrEmpty(cardBefore["actions"][0]["data"]["promptId"]?.ToString()));
-            Assert.IsTrue(string.IsNullOrEmpty(cardBefore["actions"][1]["card"]["actions"][0]["data"]?.ToString()) || string.IsNullOrEmpty(cardBefore["actions"][1]["card"]["actions"][0]["data"]["promptId"]?.ToString()));
-            Assert.IsTrue(string.IsNullOrEmpty(cardBefore["actions"][2]["card"]["actions"][0]["data"]?.ToString()) || string.IsNullOrEmpty(cardBefore["actions"][2]["card"]["actions"][0]["data"]["promptId"]?.ToString()));
-            Assert.IsTrue(string.IsNullOrEmpty(cardBefore["actions"][3]["card"]["actions"][0]["data"]?.ToString()) || string.IsNullOrEmpty(cardBefore["actions"][3]["card"]["actions"][0]["data"]["promptId"]?.ToString()));
-
-            var prompt = new AdaptiveCardPrompt("prompt");
-
+                    Assert.IsFalse(context.Recognized.Succeeded);
+                    usedValidator = true;
+                    return Task.FromResult(true);
+                });
             var simulatedInput = GetSimulatedInput();
 
             var convoState = new ConversationState(new MemoryStorage());
@@ -945,28 +806,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    var options = new PromptOptions { Prompt = new Activity { Attachments = GetAttachmentsWithCard() } };
-                    await dc.PromptAsync("prompt", options, cancellationToken);
+                    await dc.PromptAsync("prompt", new PromptOptions());
                 }
-                else if (results.Status == DialogTurnStatus.Waiting)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
-                    await turnContext.SendActivityAsync("Invalid Response");
+                    var content = (results.Result as AdaptiveCardPromptResult).Data;
+                    await turnContext.SendActivityAsync("Validator passed");
                 }
             })
             .Send("hello")
-            .AssertReply(
-                (activity) =>
-                {
-                    AssertActivityHasCard(activity);
-                    var expectedId = prompt.PromptId;
-                    var cardAfter = (activity as Activity).Attachments[0].Content as JObject;
-                    Assert.AreEqual(expectedId, cardAfter["selectAction"]["data"]["promptId"].ToString());
-                    Assert.AreEqual(expectedId, cardAfter["actions"][0]["data"]["promptId"].ToString());
-                    Assert.AreEqual(expectedId, cardAfter["actions"][1]["card"]["actions"][0]["data"]["promptId"].ToString());
-                    Assert.AreEqual(expectedId, cardAfter["actions"][2]["card"]["actions"][0]["data"]["promptId"].ToString());
-                    Assert.AreEqual(expectedId, cardAfter["actions"][3]["card"]["actions"][0]["data"]["promptId"].ToString());
-                })
+            .AssertReply((activity) => { AssertActivityHasCard(activity); })
+            .Send("this is not valid input")
+            .AssertReply("Validator passed")
             .StartTestAsync();
+            Assert.IsTrue(usedValidator);
         }
 
         private Attachment GetCard()
@@ -991,33 +844,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 foodChoice = "Steak",
                 steakOther = "some details",
                 steakTemp = "rare",
+                promptId = customPromptId,
             }),
         };
-
-        private Activity GetInvalidSimulatedInput() => new Activity()
-        {
-            Type = ActivityTypes.Message,
-            Text = "Invalid Adaptive Card Input",
-        };
-
-        private void UpdateSimulatedInputWithPromptId(Activity simulatedInput, AdaptiveCardPrompt prompt = null, string promptId = null)
-        {
-            var jsonValue = JObject.FromObject(simulatedInput.Value ?? new { });
-
-            if (prompt != null)
-            {
-                jsonValue["promptId"] = prompt.PromptId;
-            }
-            else if (promptId != null)
-            {
-                jsonValue["promptId"] = promptId;
-            }
-            else { throw new Exception("Must provide either prompt or promptId"); }
-
-            simulatedInput.Value = JsonConvert.DeserializeObject(jsonValue.ToString());
-        }
-
-        private string GetPromptIdFromObject(object obj) => JObject.FromObject(obj)["promptId"].ToString();
 
         private void AssertActivityHasCard(IActivity activity) => Assert.AreEqual("application/vnd.microsoft.card.adaptive", (activity as Activity).Attachments[0].ContentType);
     }
