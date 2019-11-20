@@ -12,12 +12,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack
 {
     public class SlackAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         private readonly SlackClientWrapper _slackClient;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SlackAdapter"/> class using configuration settings.
@@ -29,8 +32,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// SlackBotToken: A token for a bot to work on a single workspace.
         /// SlackClientSigningSecret: The token used to validate that incoming webhooks are originated from Slack.
         /// </remarks>
-        public SlackAdapter(IConfiguration configuration)
-            : this(new SlackClientWrapper(new SlackAdapterOptions(configuration["SlackVerificationToken"], configuration["SlackBotToken"], configuration["SlackClientSigningSecret"])))
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        public SlackAdapter(IConfiguration configuration, ILogger logger = null)
+            : this(new SlackClientWrapper(new SlackAdapterOptions(configuration["SlackVerificationToken"], configuration["SlackBotToken"], configuration["SlackClientSigningSecret"])), logger)
         {
         }
 
@@ -39,9 +43,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Creates a Slack adapter.
         /// </summary>
         /// <param name="slackClient">An initialized instance of the SlackClientWrapper class to connect to.</param>
-        public SlackAdapter(SlackClientWrapper slackClient)
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        public SlackAdapter(SlackClientWrapper slackClient, ILogger logger = null)
         {
             _slackClient = slackClient ?? throw new ArgumentNullException(nameof(slackClient));
+            _logger = logger ?? NullLogger.Instance;
         }
 
         /// <summary>
@@ -69,25 +75,25 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             {
                 if (activity.Type != ActivityTypes.Message)
                 {
-                    throw new ArgumentException("Unsupported Activity Type. Only Activities of type ‘Message’ are supported.", nameof(activities));
+                    _logger.LogTrace($"Unsupported Activity Type: '{activity.Type}'. Only Activities of type 'Message' are supported.");
                 }
-
-                var message = SlackHelper.ActivityToSlack(activity);
-
-                var slackResponse = await _slackClient.PostMessageAsync(message, cancellationToken).ConfigureAwait(false);
-
-                if (slackResponse != null && slackResponse.Ok)
+                else
                 {
-                    var resourceResponse = new ActivityResourceResponse()
+                    var message = SlackHelper.ActivityToSlack(activity);
+
+                    var slackResponse = await _slackClient.PostMessageAsync(message, cancellationToken)
+                        .ConfigureAwait(false);
+
+                    if (slackResponse != null && slackResponse.Ok)
                     {
-                        Id = slackResponse.Ts,
-                        ActivityId = slackResponse.Ts,
-                        Conversation = new ConversationAccount()
+                        var resourceResponse = new ActivityResourceResponse()
                         {
-                            Id = slackResponse.Channel,
-                        },
-                    };
-                    responses.Add(resourceResponse);
+                            Id = slackResponse.Ts,
+                            ActivityId = slackResponse.Ts,
+                            Conversation = new ConversationAccount() { Id = slackResponse.Channel, },
+                        };
+                        responses.Add(resourceResponse);
+                    }
                 }
             }
 

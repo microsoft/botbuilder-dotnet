@@ -13,20 +13,16 @@
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Expressions.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>Full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Microsoft.Bot.Expressions</PackageId>
     <Description>This library implements Microsoft Bot Builder Expression evaluator for .NET</Description>
     <Summary>This library implements Microsoft Bot Builder Expression evaluator for .NET</Summary>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Expressions.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>portable</DebugType>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
@@ -48,7 +44,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageReference Include="Microsoft.Recognizers.Text.DataTypes.TimexExpression" Version="1.2.3" />
+    <PackageReference Include="Microsoft.Recognizers.Text.DataTypes.TimexExpression" Version="1.2.9" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3">
       <PrivateAssets>all</PrivateAssets>

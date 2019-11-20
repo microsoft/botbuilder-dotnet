@@ -9,25 +9,25 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\$(Configuration)\net461\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.xml</DocumentationFile>
-  </PropertyGroup>
-
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
     <PackageId>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</PackageId>
     <Description>This library integrates the Microsoft Bot Builder SDK with Application Insights WebAPI.</Description>
     <Summary>This library provides integration between the Microsoft Bot Builder SDK and Application Insights.</Summary>
   </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\$(Configuration)\net461\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>Full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
 
   <PropertyGroup>
     <AssemblyName>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</AssemblyName>
     <RootNamespace>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</RootNamespace>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>portable</DebugType>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>

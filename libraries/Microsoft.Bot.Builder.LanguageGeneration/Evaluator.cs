@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -406,8 +407,100 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(template, BuiltInFunctions.Apply(this.TemplateFunction()), ReturnType.Object, this.ValidateTemplateFunction);
             }
 
+            const string fromFile = "fromFile";
+
+            if (name.Equals(fromFile))
+            {
+                return new ExpressionEvaluator(fromFile, BuiltInFunctions.Apply(this.FromFile()), ReturnType.String, this.ValidateFromFile);
+            }
+
+            const string activityAttachment = "ActivityAttachment";
+
+            if (name.Equals(activityAttachment))
+            {
+                return new ExpressionEvaluator(activityAttachment, BuiltInFunctions.Apply(this.ActivityAttachment()), ReturnType.Object, this.ValidateActivityAttachment);
+            }
+
             return baseLookup(name);
         };
+
+        private Func<IReadOnlyList<object>, object> ActivityAttachment()
+        => (IReadOnlyList<object> args) =>
+        {
+            return new JObject
+            {
+                ["$type"] = "attachment",
+                ["contenttype"] = args[1].ToString(),
+                ["content"] = args[0] as JObject
+            };
+        };
+
+        private void ValidateActivityAttachment(Expression expression)
+        {
+            if (expression.Children.Length != 2)
+            {
+                throw new Exception("ActivityAttachment should have two parameters");
+            }
+
+            var children0 = expression.Children[0];
+            if (children0.ReturnType != ReturnType.Object)
+            {
+                throw new Exception($"{children0} can't be used as a json file");
+            }
+
+            var children1 = expression.Children[1];
+            if (children1.ReturnType != ReturnType.Object && children1.ReturnType != ReturnType.String)
+            {
+                throw new Exception($"{children0} can't be used as an attachment format, must be a string value");
+            }
+        }
+
+        private Func<IReadOnlyList<object>, object> FromFile()
+       => (IReadOnlyList<object> args) =>
+       {
+           var filePath = ImportResolver.NormalizePath(args[0].ToString());
+
+           var resourcePath = GetResourcePath(filePath);
+           return EvalText(File.ReadAllText(resourcePath));
+       };
+
+        private void ValidateFromFile(Expression expression)
+        {
+            if (expression.Children.Length != 1)
+            {
+                throw new Exception("fromFile should have one parameter");
+            }
+
+            var children0 = expression.Children[0];
+            if (children0.ReturnType != ReturnType.Object && children0.ReturnType != ReturnType.String)
+            {
+                throw new Exception($"{children0} can't be used as a file path, must be a string value");
+            }
+        }
+
+        private string GetResourcePath(string filePath)
+        {
+            string resourcePath;
+
+            if (Path.IsPathRooted(filePath))
+            {
+                resourcePath = filePath;
+            }
+            else
+            {
+                var template = TemplateMap[CurrentTarget().TemplateName];
+                var sourcePath = ImportResolver.NormalizePath(template.Source);
+                var baseFolder = Environment.CurrentDirectory;
+                if (Path.IsPathRooted(sourcePath))
+                {
+                    baseFolder = Path.GetDirectoryName(sourcePath);
+                }
+
+                resourcePath = Path.GetFullPath(Path.Combine(baseFolder, filePath));
+            }
+
+            return resourcePath;
+        }
 
         // Evaluator for template(templateName, ...args) 
         // normal case we can just use templateName(...args), but template function is particularly useful when the template name is not pre-known
