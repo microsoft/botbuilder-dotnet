@@ -24,6 +24,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         private readonly BotAdapter _adapter;
         private readonly IBot _bot;
         private readonly ILogger _logger;
+        private readonly ISkillConversationIdFactory _conversationIdIdFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SkillHandler"/> class,
@@ -31,6 +32,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// </summary>
         /// <param name="adapter">An instance of the <see cref="BotAdapter"/> that will handle the request.</param>
         /// <param name="bot">The <see cref="IBot"/> instance.</param>
+        /// <param name="conversationIdFactory">A <see cref="ISkillConversationIdFactory"/> to unpack the conversation ID and map it to the calling bot.</param>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="authConfig">The authentication configuration.</param>
         /// <param name="channelProvider">The channel provider.</param>
@@ -43,6 +45,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         public SkillHandler(
             BotAdapter adapter,
             IBot bot,
+            ISkillConversationIdFactory conversationIdFactory, 
             ICredentialProvider credentialProvider,
             AuthenticationConfiguration authConfig,
             IChannelProvider channelProvider = null,
@@ -51,6 +54,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         {
             _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
+            _conversationIdIdFactory = conversationIdFactory ?? throw new ArgumentNullException(nameof(conversationIdFactory));
             _logger = logger ?? NullLogger.Instance;
         }
 
@@ -366,13 +370,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             _logger.LogInformation($"InvokeChannelApiAsync(). Invoking method \"{method}\"");
 
-            var skillConversation = new SkillConversation(conversationId);
+            var (callerConversationId, callerServiceUrl) = _conversationIdIdFactory.GetConversationInfo(conversationId);
 
             var channelApiInvokeActivity = Activity.CreateInvokeActivity();
             channelApiInvokeActivity.Name = InvokeActivityName;
             channelApiInvokeActivity.ChannelId = "unknown";
-            channelApiInvokeActivity.ServiceUrl = skillConversation.ServiceUrl;
-            channelApiInvokeActivity.Conversation = new ConversationAccount(id: skillConversation.ConversationId);
+            channelApiInvokeActivity.ServiceUrl = callerServiceUrl;
+            channelApiInvokeActivity.Conversation = new ConversationAccount(id: callerConversationId);
             channelApiInvokeActivity.From = new ChannelAccount(id: "unknown");
             channelApiInvokeActivity.Recipient = new ChannelAccount(id: "unknown", role: RoleTypes.Bot);
 
@@ -380,8 +384,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             if (activityPayload != null)
             {
                 // fix up activityPayload with original conversation.Id and id
-                activityPayload.Conversation.Id = skillConversation.ConversationId;
-                activityPayload.ServiceUrl = skillConversation.ServiceUrl;
+                activityPayload.Conversation.Id = callerConversationId;
+                activityPayload.ServiceUrl = callerServiceUrl;
 
                 // use the activityPayload for channel accounts, it will be in From=Bot/Skill Recipient=User, 
                 // We want to send it to the bot as From=User, Recipient=Bot so we have correct state context.

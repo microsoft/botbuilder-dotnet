@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,6 +36,7 @@ namespace DialogRootBot
             services.AddSingleton<BotAdapter>(sp => sp.GetService<BotFrameworkHttpAdapter>());
             
             // Register the skills client and skills request handler.
+            services.AddSingleton<ISkillConversationIdFactory, SkillConversationIdFactory>();
             services.AddHttpClient<BotFrameworkHttpClient>();
             services.AddSingleton<ChannelServiceHandler, SkillHandler>();
 

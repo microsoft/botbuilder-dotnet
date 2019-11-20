@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -25,14 +26,16 @@ namespace DialogRootBot.Dialogs
         private readonly SkillsConfiguration _skillsConfig;
         private readonly BotFrameworkHttpClient _skillClient;
         private readonly string _botId;
+        private readonly ISkillConversationIdFactory _conversationIdFactory;
 
-        public SkillDialog(ConversationState conversationState, BotFrameworkHttpClient skillClient, SkillsConfiguration skillsConfig, IConfiguration configuration, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SkillDialog(ConversationState conversationState, BotFrameworkHttpClient skillClient, ISkillConversationIdFactory conversationIdFactory, SkillsConfiguration skillsConfig, IConfiguration configuration, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(nameof(SkillDialog))
         {
             _botId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
             _skillClient = skillClient;
             _skillsConfig = skillsConfig;
             _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
+            _conversationIdFactory = conversationIdFactory ?? throw new ArgumentNullException(nameof(conversationIdFactory));
             RegisterSourceLocation(callerPath, callerLine);
         }
 
@@ -181,7 +184,8 @@ namespace DialogRootBot.Dialogs
             // Always save state before forwarding
             // (the dialog stack won't get updated with the skillDialog and 'things won't work if you don't)
             await _conversationState.SaveChangesAsync(dc.Context, true, cancellationToken);
-            var response = await _skillClient.PostActivityAsync(_botId, _skillsConfig.Skills[skillId].AppId, _skillsConfig.Skills[skillId].SkillEndpoint, _skillsConfig.SkillHostEndpoint, dc.Context.Activity.Conversation.Id, activity, cancellationToken);
+            var skillConversationId = _conversationIdFactory.CreateSkillConversationId(dc.Context.Activity.Conversation.Id, dc.Context.Activity.ServiceUrl);
+            var response = await _skillClient.PostActivityAsync(_botId, _skillsConfig.Skills[skillId].AppId, _skillsConfig.Skills[skillId].SkillEndpoint, _skillsConfig.SkillHostEndpoint, skillConversationId, activity, cancellationToken);
             return EndOfTurn;
         }
     }

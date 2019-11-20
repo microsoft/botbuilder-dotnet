@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -14,6 +15,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Newtonsoft.Json;
 using Xunit;
 using Xunit.Sdk;
 
@@ -27,7 +29,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
         {
             var botAdapter = CreateAdapter("TestSkillAdapterInjectsMiddleware");
 
-            var skillClient = new SkillHandler(botAdapter, new CallbackBot(), new Mock<ICredentialProvider>().Object, new AuthenticationConfiguration());
+            var skillClient = new SkillHandler(botAdapter, new CallbackBot(), new TestConversationIdFactory(),  new Mock<ICredentialProvider>().Object, new AuthenticationConfiguration());
 
             Assert.Equal(1, botAdapter.MiddlewareSet.Count(s => s is ChannelApiMiddleware));
         }
@@ -47,12 +49,9 @@ namespace Microsoft.Bot.Builder.Skills.Tests
             var bot = new CallbackBot();
             var skillClient = new SkillHandlerInstanceForTests(botAdapter, bot, new Mock<ICredentialProvider>().Object, new AuthenticationConfiguration());
 
-            var sc = new SkillConversation
-            {
-                ServiceUrl = botAdapter.Conversation.ServiceUrl,
-                ConversationId = botAdapter.Conversation.Conversation.Id
-            };
-            var skillConversationId = sc.GetSkillConversationId();
+            var sc = new TestConversationIdFactory();
+
+            var skillConversationId = sc.CreateSkillConversationId(botAdapter.Conversation.Conversation.Id, botAdapter.Conversation.ServiceUrl);
             var claimsIdentity = new ClaimsIdentity();
             claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, botId));
             claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, botId));
@@ -291,13 +290,35 @@ namespace Microsoft.Bot.Builder.Skills.Tests
             }
         }
 
+        private class TestConversationIdFactory
+            : ISkillConversationIdFactory
+        {
+            public string CreateSkillConversationId(string conversationId, string serviceUrl)
+            {
+                var jsonString = JsonConvert.SerializeObject(new[]
+                {
+                    conversationId,
+                    serviceUrl
+                });
+
+                return Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonString));
+            }
+
+            public (string, string) GetConversationInfo(string conversationId)
+            {
+                var jsonString = Encoding.UTF8.GetString(Convert.FromBase64String(conversationId));
+                var parts = JsonConvert.DeserializeObject<string[]>(jsonString);
+                return (parts[0], parts[1]);
+            }
+        }
+
         /// <summary>
         /// A helper class that provides public methods that allow us to test protected methods in <see cref="SkillHandler"/>.
         /// </summary>
         private class SkillHandlerInstanceForTests : SkillHandler
         {
             public SkillHandlerInstanceForTests(BotAdapter adapter, IBot bot, ICredentialProvider credentialProvider, AuthenticationConfiguration authConfig, IChannelProvider channelProvider = null, ILogger logger = null)
-                : base(adapter, bot, credentialProvider, authConfig, channelProvider, logger)
+                : base(adapter, bot, new TestConversationIdFactory(),  credentialProvider, authConfig, channelProvider, logger)
             {
             }
 

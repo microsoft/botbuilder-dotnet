@@ -8,14 +8,12 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -71,19 +69,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var originalServiceUrl = activity.ServiceUrl;
             try
             {
-                // TODO: figure out a better way of passing the original ServiceUrl when calling the skill so we don't have to encode it in the conversation ID.
-                // Encode original bot service URL and ConversationId in the new conversation ID so we can unpack it later.
-                var skillConversation = new SkillConversation
-                {
-                    ServiceUrl = activity.ServiceUrl,
-                    ConversationId = conversationId
-                };
-                activity.Conversation.Id = skillConversation.GetSkillConversationId();
+                activity.Conversation.Id = conversationId;
                 activity.ServiceUrl = serviceUrl.ToString();
-
-                // TODO: Review the rest of the code and see if we can remove this. Gabo
-                // TODO: can we use this property back to store the source conversation ID and the ServiceUrl? 
-                activity.Recipient.Properties["skillId"] = toBotId;
 
                 using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
                 {
