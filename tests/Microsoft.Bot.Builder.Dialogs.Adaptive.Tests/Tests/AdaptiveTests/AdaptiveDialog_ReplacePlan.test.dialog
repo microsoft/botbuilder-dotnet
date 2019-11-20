@@ -21,7 +21,7 @@
     "triggers": [
       {
         "$type": "Microsoft.OnBeginDialog",
-        "event": "beginDialog",
+        
         "actions": [
           {
             "$type": "Microsoft.IfCondition",
@@ -43,7 +43,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "GreetingIntent",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SendActivity",
@@ -54,7 +54,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "JokeIntent",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SendActivity",
@@ -72,7 +72,7 @@
       },
       {
         "$type": "Microsoft.OnUnknownIntent",
-        "event": "unknownIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SendActivity",

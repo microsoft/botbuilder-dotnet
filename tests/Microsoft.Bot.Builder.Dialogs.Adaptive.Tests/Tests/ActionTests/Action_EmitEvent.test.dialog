@@ -6,7 +6,6 @@
     "triggers": [
       {
         "$type": "Microsoft.OnBeginDialog",
-        "event": "beginDialog",
         "actions": [
           {
             "$type": "Microsoft.BeginDialog",
@@ -33,7 +32,6 @@
                 {
                   "$type": "Microsoft.OnIntent",
                   "intent": "CowboyIntent",
-                  "event": "recognizedIntent",
                   "actions": [
                     {
                       "$type": "Microsoft.SendActivity",
@@ -44,7 +42,6 @@
                 {
                   "$type": "Microsoft.OnIntent",
                   "intent": "EmitIntent",
-                  "event": "recognizedIntent",
                   "actions": [
                     {
                       "$type": "Microsoft.EmitEvent",
@@ -80,9 +77,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Yippee ki-yay!",
-      "exact": true,
-      "timeout": 3000
+      "text": "Yippee ki-yay!"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -90,9 +85,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "CustomEventFired",
-      "exact": true,
-      "timeout": 3000
+      "text": "CustomEventFired"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -100,9 +93,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Yippee ki-yay!",
-      "exact": true,
-      "timeout": 3000
+      "text": "Yippee ki-yay!"
     }
   ]
 }

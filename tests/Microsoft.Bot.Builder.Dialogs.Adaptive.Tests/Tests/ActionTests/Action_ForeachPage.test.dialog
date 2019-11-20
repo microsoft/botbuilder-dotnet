@@ -6,7 +6,6 @@
     "triggers": [
       {
         "$type": "Microsoft.OnBeginDialog",
-        "event": "beginDialog",
         "actions": [
           {
             "$type": "Microsoft.InitProperty",
@@ -77,51 +76,35 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "This page have 3 items",
-      "exact": true,
-      "timeout": 3000
+      "text": "This page have 3 items"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "index is: 0 and value is: 1",
-      "exact": true,
-      "timeout": 3000
+      "text": "index is: 0 and value is: 1"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "index is: 1 and value is: 2",
-      "exact": true,
-      "timeout": 3000
+      "text": "index is: 1 and value is: 2"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "index is: 2 and value is: 3",
-      "exact": true,
-      "timeout": 3000
+      "text": "index is: 2 and value is: 3"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "This page have 3 items",
-      "exact": true,
-      "timeout": 3000
+      "text": "This page have 3 items"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "index is: 0 and value is: 4",
-      "exact": true,
-      "timeout": 3000
+      "text": "index is: 0 and value is: 4"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "index is: 1 and value is: 5",
-      "exact": true,
-      "timeout": 3000
+      "text": "index is: 1 and value is: 5"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "index is: 2 and value is: 6",
-      "exact": true,
-      "timeout": 3000
+      "text": "index is: 2 and value is: 6"
     }
   ]
 }

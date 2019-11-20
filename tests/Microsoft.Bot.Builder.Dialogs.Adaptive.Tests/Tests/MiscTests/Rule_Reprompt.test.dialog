@@ -16,7 +16,7 @@
     "triggers": [
       {
         "$type": "Microsoft.OnBeginDialog",
-        "event": "beginDialog",
+        
         "actions": [
           {
             "$type": "Microsoft.TextInput",
@@ -49,7 +49,7 @@
         "entities": [
           "name"
         ],
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SetProperty",

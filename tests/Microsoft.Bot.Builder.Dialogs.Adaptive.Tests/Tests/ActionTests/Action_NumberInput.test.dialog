@@ -6,7 +6,7 @@
     "triggers": [
       {
         "$type": "Microsoft.OnUnknownIntent",
-        "event": "unknownIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.NumberInput",
@@ -34,9 +34,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Please enter your age.",
-      "exact": true,
-      "timeout": 3000
+      "text": "Please enter your age."
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -44,9 +42,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "The value entered must be greater than 0 and less than 150.",
-      "exact": true,
-      "timeout": 3000
+      "text": "The value entered must be greater than 0 and less than 150."
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -54,9 +50,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "I have your age as 15.",
-      "exact": true,
-      "timeout": 3000
+      "text": "I have your age as 15."
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -64,9 +58,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "I have your age as 15.",
-      "exact": true,
-      "timeout": 3000
+      "text": "I have your age as 15."
     }
   ]
 }

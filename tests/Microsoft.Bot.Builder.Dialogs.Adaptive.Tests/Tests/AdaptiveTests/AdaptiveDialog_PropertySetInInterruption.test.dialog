@@ -46,7 +46,7 @@
     "triggers": [
       {
         "$type": "Microsoft.OnUnknownIntent",
-        "event": "unknownIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SendActivity",
@@ -57,7 +57,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "reset",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.DeleteProperty",
@@ -72,7 +72,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "Start",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.TextInput",
@@ -89,7 +89,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "Interruption",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SendActivity",
@@ -105,7 +105,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "Greeting",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SendActivity",
@@ -116,7 +116,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "noage",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SendActivity",
@@ -132,7 +132,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "why",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SendActivity",

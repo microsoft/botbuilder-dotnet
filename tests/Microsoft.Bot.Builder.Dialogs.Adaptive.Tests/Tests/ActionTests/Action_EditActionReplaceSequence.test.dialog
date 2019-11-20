@@ -16,7 +16,6 @@
     "triggers": [
       {
         "$type": "Microsoft.OnUnknownIntent",
-        "event": "unknownIntent",
         "actions": [
           {
             "$type": "Microsoft.TextInput",
@@ -35,7 +34,6 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "Replace",
-        "event": "recognizedIntent",
         "actions": [
           {
             "$type": "Microsoft.SendActivity",
@@ -69,9 +67,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Say replace to replace these actions",
-      "exact": true,
-      "timeout": 3000
+      "text": "Say replace to replace these actions"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -79,21 +75,15 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "I'm going to replace the original actions via EditActions",
-      "exact": true,
-      "timeout": 3000
+      "text": "I'm going to replace the original actions via EditActions"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "New actions...",
-      "exact": true,
-      "timeout": 3000
+      "text": "New actions..."
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "What's your name?",
-      "exact": true,
-      "timeout": 3000
+      "text": "What's your name?"
     }
   ]
 }

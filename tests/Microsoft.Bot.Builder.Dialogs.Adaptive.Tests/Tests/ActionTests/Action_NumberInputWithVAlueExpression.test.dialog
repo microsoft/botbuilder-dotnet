@@ -20,7 +20,6 @@
     "triggers": [
       {
         "$type": "Microsoft.OnUnknownIntent",
-        "event": "unknownIntent",
         "actions": [
           {
             "$type": "Microsoft.NumberInput",
@@ -46,9 +45,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "You said 10",
-      "exact": true,
-      "timeout": 3000
+      "text": "You said 10"
     }
   ]
 }

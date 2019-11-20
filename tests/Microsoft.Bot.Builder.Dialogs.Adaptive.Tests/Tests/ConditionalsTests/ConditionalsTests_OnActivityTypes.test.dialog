@@ -7,7 +7,6 @@
       {
         "$type": "Microsoft.OnMessageActivity",
         "type": "message",
-        "event": "activityReceived",
         "condition": "turn.activity.text == 'OnMessageActivity'",
         "actions": [
           {
@@ -19,7 +18,6 @@
       {
         "$type": "Microsoft.OnEventActivity",
         "type": "event",
-        "event": "activityReceived",
         "condition": "turn.activity.text == 'OnEventActivity'",
         "actions": [
           {
@@ -31,7 +29,6 @@
       {
         "$type": "Microsoft.OnConversationUpdateActivity",
         "type": "conversationUpdate",
-        "event": "activityReceived",
         "condition": "turn.activity.text == 'OnConversationUpdateActivity'",
         "actions": [
           {
@@ -43,7 +40,6 @@
       {
         "$type": "Microsoft.OnTypingActivity",
         "type": "typing",
-        "event": "activityReceived",
         "condition": "turn.activity.text == 'OnTypingActivity'",
         "actions": [
           {
@@ -55,7 +51,6 @@
       {
         "$type": "Microsoft.OnEndOfConversationActivity",
         "type": "endOfConversation",
-        "event": "activityReceived",
         "condition": "turn.activity.text == 'OnEndOfConversationActivity'",
         "actions": [
           {
@@ -67,7 +62,6 @@
       {
         "$type": "Microsoft.OnEventActivity",
         "type": "event",
-        "event": "activityReceived",
         "condition": "turn.activity.text == 'OnEventActivity'",
         "actions": [
           {
@@ -79,7 +73,6 @@
       {
         "$type": "Microsoft.OnHandoffActivity",
         "type": "handoff",
-        "event": "activityReceived",
         "condition": "turn.activity.text == 'OnHandoffActivity'",
         "actions": [
           {
@@ -91,7 +84,6 @@
       {
         "$type": "Microsoft.OnMessageReactionActivity",
         "type": "messageReaction",
-        "event": "activityReceived",
         "condition": "turn.activity.text == 'OnMessageReactionActivity'",
         "actions": [
           {
@@ -103,7 +95,6 @@
       {
         "$type": "Microsoft.OnMessageUpdateActivity",
         "type": "messageUpdate",
-        "event": "activityReceived",
         "condition": "turn.activity.text == 'OnMessageUpdateActivity'",
         "actions": [
           {
@@ -115,7 +106,6 @@
       {
         "$type": "Microsoft.OnMessageDeleteActivity",
         "type": "messageDelete",
-        "event": "activityReceived",
         "condition": "turn.activity.text == 'OnMessageDeleteActivity'",
         "actions": [
           {

@@ -6,7 +6,6 @@
     "triggers": [
       {
         "$type": "Microsoft.OnBeginDialog",
-        "event": "beginDialog",
         "actions": [
           {
             "$type": "Microsoft.SetProperty",
@@ -56,9 +55,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "User is VIP",
-      "exact": true,
-      "timeout": 3000
+      "text": "User is VIP"
     }
   ]
 }

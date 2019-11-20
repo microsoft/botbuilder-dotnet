@@ -16,7 +16,7 @@
     "triggers": [
       {
         "$type": "Microsoft.OnUnknownIntent",
-        "event": "unknownIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.BeginDialog",
@@ -38,7 +38,6 @@
                 {
                   "$type": "Microsoft.OnIntent",
                   "intent": "EndIntent",
-                  "event": "recognizedIntent",
                   "actions": [
                     {
                       "$type": "Microsoft.EndDialog"
@@ -47,7 +46,6 @@
                 },
                 {
                   "$type": "Microsoft.OnUnknownIntent",
-                  "event": "unknownIntent",
                   "actions": [
                     {
                       "$type": "Microsoft.SendActivity",
@@ -85,9 +83,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Why did the chicken cross the road?",
-      "exact": true,
-      "timeout": 3000
+      "text": "Why did the chicken cross the road?"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -95,9 +91,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "You went out from ask name dialog.",
-      "exact": true,
-      "timeout": 3000
+      "text": "You went out from ask name dialog."
     }
   ]
 }

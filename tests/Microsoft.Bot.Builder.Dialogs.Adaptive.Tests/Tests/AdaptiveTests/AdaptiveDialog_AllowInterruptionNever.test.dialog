@@ -22,7 +22,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "Start",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.NumberInput",
@@ -39,7 +39,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "None",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SendActivity",

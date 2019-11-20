@@ -20,7 +20,7 @@
         "entities": [
           "color"
         ],
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SendActivity",
@@ -30,7 +30,7 @@
       },
       {
         "$type": "Microsoft.OnUnknownIntent",
-        "event": "unknownIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SendActivity",

@@ -26,7 +26,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "a",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SetProperty",
@@ -38,7 +38,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "b",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SetProperty",
@@ -50,7 +50,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "trigger",
-        "event": "recognizedIntent",
+        
         "condition": "user.a == 1",
         "actions": [
           {
@@ -62,7 +62,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "trigger",
-        "event": "recognizedIntent",
+        
         "condition": "user.a == 1",
         "actions": [
           {
@@ -74,7 +74,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "trigger",
-        "event": "recognizedIntent",
+        
         "condition": "user.b == 1 || user.c == 1",
         "actions": [
           {
@@ -86,7 +86,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "trigger",
-        "event": "recognizedIntent",
+        
         "condition": "user.a == 1 && user.b == 1",
         "actions": [
           {
@@ -98,7 +98,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "trigger",
-        "event": "recognizedIntent",
+        
         "condition": "user.a == 1 && user.c == 1",
         "actions": [
           {
@@ -110,7 +110,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "trigger",
-        "event": "recognizedIntent",
+        
         "condition": "",
         "actions": [
           {

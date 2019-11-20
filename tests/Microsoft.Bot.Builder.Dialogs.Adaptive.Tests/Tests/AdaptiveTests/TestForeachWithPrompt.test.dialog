@@ -11,7 +11,7 @@
     "triggers": [
       {
         "$type": "Microsoft.OnBeginDialog",
-        "event": "beginDialog",
+        
         "actions": [
           {
             "$type": "Microsoft.SetProperty",

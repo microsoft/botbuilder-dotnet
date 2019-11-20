@@ -27,7 +27,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "Start",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.TextInput",
@@ -44,7 +44,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "Interruption",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SendActivity",

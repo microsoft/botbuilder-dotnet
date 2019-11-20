@@ -27,7 +27,6 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "set_name",
-        "event": "recognizedIntent",
         "actions": [
           {
             "$type": "Microsoft.TextInput",
@@ -44,7 +43,6 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "start",
-        "event": "recognizedIntent",
         "actions": [
           {
             "$type": "Microsoft.TextInput",
@@ -82,7 +80,6 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "cancel",
-        "event": "recognizedIntent",
         "actions": [
           {
             "$type": "Microsoft.SendActivity",
@@ -101,9 +98,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "[start]::What is your name?",
-      "exact": true,
-      "timeout": 3000
+      "text": "[start]::What is your name?"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -111,15 +106,11 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "[start]::I have luhan as your name",
-      "exact": true,
-      "timeout": 3000
+      "text": "[start]::I have luhan as your name"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Give me date 1",
-      "exact": true,
-      "timeout": 3000
+      "text": "Give me date 1"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -127,9 +118,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "[set name]::What is your name?",
-      "exact": true,
-      "timeout": 3000
+      "text": "[set name]::What is your name?"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -137,15 +126,11 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "[set name]::I have qiong as your name",
-      "exact": true,
-      "timeout": 3000
+      "text": "[set name]::I have qiong as your name"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Give me date 1",
-      "exact": true,
-      "timeout": 3000
+      "text": "Give me date 1"
     }
   ]
 }

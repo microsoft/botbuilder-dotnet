@@ -4,7 +4,7 @@
   "triggers": [
     {
       "$type": "Microsoft.OnUnknownIntent",
-      "event": "unknownIntent",
+      
       "actions": [
         {
           "$type": "Microsoft.SendActivity",

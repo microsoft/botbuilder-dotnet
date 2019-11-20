@@ -6,7 +6,6 @@
     "triggers": [
       {
         "$type": "Microsoft.OnBeginDialog",
-        "event": "beginDialog",
         "actions": [
           {
             "$type": "Microsoft.ChoiceInput",
@@ -94,9 +93,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Please select a color: (1) red, (2) green, or (3) blue",
-      "exact": true,
-      "timeout": 3000
+      "text": "Please select a color: (1) red, (2) green, or (3) blue"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -104,9 +101,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Not a color. Please select a color: (1) red, (2) green, or (3) blue",
-      "exact": true,
-      "timeout": 3000
+      "text": "Not a color. Please select a color: (1) red, (2) green, or (3) blue"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -114,15 +109,11 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "blue",
-      "exact": true,
-      "timeout": 3000
+      "text": "blue"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Please select a color: (1) red, (2) green, or (3) blue",
-      "exact": true,
-      "timeout": 3000
+      "text": "Please select a color: (1) red, (2) green, or (3) blue"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -130,9 +121,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "red",
-      "exact": true,
-      "timeout": 3000
+      "text": "red"
     }
   ]
 }

@@ -17,7 +17,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "Test",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SetProperty",

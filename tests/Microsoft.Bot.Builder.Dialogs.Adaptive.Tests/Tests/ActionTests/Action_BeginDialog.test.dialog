@@ -16,7 +16,6 @@
     "triggers": [
       {
         "$type": "Microsoft.OnBeginDialog",
-        "event": "beginDialog",
         "actions": [
           {
             "$type": "Microsoft.SendActivity",
@@ -32,7 +31,6 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "JokeIntent",
-        "event": "recognizedIntent",
         "actions": [
           {
             "$type": "Microsoft.BeginDialog",
@@ -43,7 +41,6 @@
       },
       {
         "$type": "Microsoft.OnUnknownIntent",
-        "event": "unknownIntent",
         "actions": [
           {
             "$type": "Microsoft.SendActivity",
@@ -61,15 +58,11 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "I'm a joke bot. To get started say 'tell me a joke'",
-      "exact": true,
-      "timeout": 3000
+      "text": "I'm a joke bot. To get started say 'tell me a joke'"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Hello, what is your name?",
-      "exact": true,
-      "timeout": 3000
+      "text": "Hello, what is your name?"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -77,9 +70,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Hello Carlos, nice to meet you!",
-      "exact": true,
-      "timeout": 3000
+      "text": "Hello Carlos, nice to meet you!"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -87,9 +78,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "I'm a joke bot. To get started say 'tell me a joke'",
-      "exact": true,
-      "timeout": 3000
+      "text": "I'm a joke bot. To get started say 'tell me a joke'"
     }
   ]
 }

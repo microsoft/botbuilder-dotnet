@@ -22,7 +22,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "StartOuterIntent",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.AdaptiveDialog",
@@ -45,7 +45,7 @@
             "triggers": [
               {
                 "$type": "Microsoft.OnBeginDialog",
-                "event": "beginDialog",
+                
                 "actions": [
                   {
                     "$type": "Microsoft.TextInput",
@@ -78,7 +78,7 @@
               {
                 "$type": "Microsoft.OnIntent",
                 "intent": "SideIntent",
-                "event": "recognizedIntent",
+                
                 "actions": [
                   {
                     "$type": "Microsoft.SendActivity",
@@ -89,7 +89,7 @@
               {
                 "$type": "Microsoft.OnIntent",
                 "intent": "CancelIntent",
-                "event": "recognizedIntent",
+                
                 "actions": [
                   {
                     "$type": "Microsoft.EndDialog"
@@ -98,7 +98,7 @@
               },
               {
                 "$type": "Microsoft.OnUnknownIntent",
-                "event": "unknownIntent",
+                
                 "actions": [
                   {
                     "$type": "Microsoft.SendActivity",
@@ -114,7 +114,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "RootIntent",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SendActivity",
@@ -124,7 +124,7 @@
       },
       {
         "$type": "Microsoft.OnUnknownIntent",
-        "event": "unknownIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SendActivity",
@@ -142,9 +142,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "name?",
-      "exact": true,
-      "timeout": 3000
+      "text": "name?"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -152,15 +150,11 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "sideintent",
-      "exact": true,
-      "timeout": 3000
+      "text": "sideintent"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "name?",
-      "exact": true,
-      "timeout": 3000
+      "text": "name?"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -168,15 +162,11 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "rootintent",
-      "exact": true,
-      "timeout": 3000
+      "text": "rootintent"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "name?",
-      "exact": true,
-      "timeout": 3000
+      "text": "name?"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -184,15 +174,11 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Carlos",
-      "exact": true,
-      "timeout": 3000
+      "text": "Carlos"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "age?",
-      "exact": true,
-      "timeout": 3000
+      "text": "age?"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -200,9 +186,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "age?",
-      "exact": true,
-      "timeout": 3000
+      "text": "age?"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -210,9 +194,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "age?",
-      "exact": true,
-      "timeout": 3000
+      "text": "age?"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -220,15 +202,11 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "rootintent",
-      "exact": true,
-      "timeout": 3000
+      "text": "rootintent"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "age?",
-      "exact": true,
-      "timeout": 3000
+      "text": "age?"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -236,15 +214,11 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "sideintent",
-      "exact": true,
-      "timeout": 3000
+      "text": "sideintent"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "age?",
-      "exact": true,
-      "timeout": 3000
+      "text": "age?"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -252,9 +226,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "10",
-      "exact": true,
-      "timeout": 3000
+      "text": "10"
     }
   ]
 }

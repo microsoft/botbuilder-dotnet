@@ -6,7 +6,6 @@
     "triggers": [
       {
         "$type": "Microsoft.OnBeginDialog",
-        "event": "beginDialog",
         "actions": [
           {
             "$type": "Microsoft.SetProperty",
@@ -65,9 +64,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Age is 22",
-      "exact": true,
-      "timeout": 3000
+      "text": "Age is 22"
     }
   ]
 }

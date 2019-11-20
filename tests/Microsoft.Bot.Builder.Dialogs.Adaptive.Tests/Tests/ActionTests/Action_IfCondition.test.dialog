@@ -6,7 +6,6 @@
     "triggers": [
       {
         "$type": "Microsoft.OnUnknownIntent",
-        "event": "unknownIntent",
         "actions": [
           {
             "$type": "Microsoft.IfCondition",
@@ -42,9 +41,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Hello, what is your name?",
-      "exact": true,
-      "timeout": 3000
+      "text": "Hello, what is your name?"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -52,9 +49,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Hello Carlos, nice to meet you!",
-      "exact": true,
-      "timeout": 3000
+      "text": "Hello Carlos, nice to meet you!"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -62,9 +57,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Hello Carlos, nice to see you again!",
-      "exact": true,
-      "timeout": 3000
+      "text": "Hello Carlos, nice to see you again!"
     }
   ]
 }

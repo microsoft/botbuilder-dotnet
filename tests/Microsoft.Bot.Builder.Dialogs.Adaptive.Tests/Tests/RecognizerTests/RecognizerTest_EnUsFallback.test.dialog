@@ -71,7 +71,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "Greeting",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SendActivity",
@@ -82,7 +82,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "Goodbye",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SendActivity",
@@ -92,7 +92,7 @@
       },
       {
         "$type": "Microsoft.OnUnknownIntent",
-        "event": "unknownIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.SendActivity",

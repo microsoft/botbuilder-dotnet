@@ -21,7 +21,7 @@
     "triggers": [
       {
         "$type": "Microsoft.OnBeginDialog",
-        "event": "beginDialog",
+        
         "actions": [
           {
             "$type": "Microsoft.TextInput",
@@ -37,7 +37,7 @@
       {
         "$type": "Microsoft.OnIntent",
         "intent": "CancelIntent",
-        "event": "recognizedIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.ConfirmInput",

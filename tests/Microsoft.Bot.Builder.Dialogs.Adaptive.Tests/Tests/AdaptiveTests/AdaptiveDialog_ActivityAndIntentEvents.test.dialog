@@ -18,7 +18,6 @@
             {
                 "$type": "Microsoft.OnIntent",
                 "intent": "JokeIntent",
-                "event": "recognizedIntent",
                 "actions": [
                     {
                         "$type": "Microsoft.SendActivity",
@@ -29,7 +28,6 @@
             {
                 "$type": "Microsoft.OnMessageActivity",
                 "type": "message",
-                "event": "activityReceived",
                 "condition": "turn.activity.text == 'magic'",
                 "actions": [
                     {

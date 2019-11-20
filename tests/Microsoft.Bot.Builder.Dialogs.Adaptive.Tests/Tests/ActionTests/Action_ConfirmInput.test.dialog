@@ -6,7 +6,6 @@
     "triggers": [
       {
         "$type": "Microsoft.OnBeginDialog",
-        "event": "beginDialog",
         "actions": [
           {
             "$type": "Microsoft.ConfirmInput",
@@ -55,9 +54,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "yes or no (1) Yes or (2) No",
-      "exact": true,
-      "timeout": 3000
+      "text": "yes or no (1) Yes or (2) No"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -65,9 +62,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "I need a yes or no. (1) Yes or (2) No",
-      "exact": true,
-      "timeout": 3000
+      "text": "I need a yes or no. (1) Yes or (2) No"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -75,15 +70,11 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "confirmation: True",
-      "exact": true,
-      "timeout": 3000
+      "text": "confirmation: True"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "yes or no (1) Yes or (2) No",
-      "exact": true,
-      "timeout": 3000
+      "text": "yes or no (1) Yes or (2) No"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -91,9 +82,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "confirmation: False",
-      "exact": true,
-      "timeout": 3000
+      "text": "confirmation: False"
     }
   ]
 }

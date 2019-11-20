@@ -6,7 +6,7 @@
     "triggers": [
       {
         "$type": "Microsoft.OnUnknownIntent",
-        "event": "unknownIntent",
+        
         "actions": [
           {
             "$type": "Microsoft.NumberInput",
@@ -33,9 +33,7 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Hello, how old are you?",
-      "exact": true,
-      "timeout": 3000
+      "text": "Hello, how old are you?"
     },
     {
       "$type": "Microsoft.Test.UserSays",
@@ -43,15 +41,11 @@
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "Hello, you are 44 years old!",
-      "exact": true,
-      "timeout": 3000
+      "text": "Hello, you are 44 years old!"
     },
     {
       "$type": "Microsoft.Test.AssertReply",
-      "text": "And your actual age is 44",
-      "exact": true,
-      "timeout": 3000
+      "text": "And your actual age is 44"
     }
   ]
 }

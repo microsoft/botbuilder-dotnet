@@ -7,7 +7,7 @@
         "triggers": [
             {
                 "$type": "Microsoft.OnUnknownIntent",
-                "event": "unknownIntent",
+                
                 "actions": [
                     {
                         "$type": "Microsoft.SetProperty",
@@ -39,7 +39,6 @@
         },
         {
             "$type": "Microsoft.Test.AssertReplyActivity",
-            "timeout": 3000,
             "assertions": [
                 "type == 'trace'",
                 "valueType == 'user'",
@@ -48,7 +47,6 @@
         },
         {
             "$type": "Microsoft.Test.AssertReplyActivity",
-            "timeout": 3000,
             "assertions": [
                 "type == 'trace'",
                 "valueType == 'memory'",
