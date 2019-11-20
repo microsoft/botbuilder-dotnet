@@ -221,6 +221,8 @@ namespace Microsoft.Bot.Builder
 
         private string GetAttachId(Activity activity)
         {
+            // If we are running in a Microsoft Teams Team the conversation Id will reflect a particular thread the bot is in.
+            // So if we are in a Team then we will associate the "attach" with the Team Id rather than the more restrictive conversation Id.
             return activity.TeamsGetTeamInfo()?.Id ?? activity.Conversation.Id;
         }
     }
