@@ -4,7 +4,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Skills.Integration.AspNet.Core;
-using Microsoft.Bot.Connector.Authentication;
 
 namespace SimpleRootBot.Controllers
 {
@@ -12,12 +11,8 @@ namespace SimpleRootBot.Controllers
     [Route("v3/conversations/")]
     public class SkillController : ChannelServiceController
     {
-        public SkillController(
-            ChannelServiceHandler handler,
-            ICredentialProvider credentialProvider,
-            AuthenticationConfiguration authConfig,
-            IChannelProvider channelProvider = null)
-            : base(handler, credentialProvider, authConfig, channelProvider)
+        public SkillController(ChannelServiceHandler handler)
+            : base(handler)
         {
         }
     }

@@ -3,12 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Skills.Integration.AspNet.Core
@@ -18,9 +15,6 @@ namespace Microsoft.Bot.Builder.Skills.Integration.AspNet.Core
     /// </summary>
     public class ChannelServiceController : ControllerBase
     {
-        private readonly AuthenticationConfiguration _authConfiguration;
-        private readonly IChannelProvider _channelProvider;
-        private readonly ICredentialProvider _credentialProvider;
         private readonly ChannelServiceHandler _handler;
 
         /// <summary>
@@ -28,24 +22,26 @@ namespace Microsoft.Bot.Builder.Skills.Integration.AspNet.Core
         /// using a credential provider.
         /// </summary>
         /// <param name="handler">A <see cref="ChannelServiceHandler"/> that will handle the incoming request.</param>
-        /// <param name="credentialProvider">The credential provider.</param>
-        /// <param name="authConfig">The authentication configuration.</param>
-        /// <param name="channelProvider">The channel provider.</param>
         /// <exception cref="ArgumentNullException">throw ArgumentNullException.</exception>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
         /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
-        public ChannelServiceController(
-            ChannelServiceHandler handler,
-            ICredentialProvider credentialProvider,
-            AuthenticationConfiguration authConfig,
-            IChannelProvider channelProvider = null)
+        public ChannelServiceController(ChannelServiceHandler handler)
         {
             _handler = handler ?? throw new ArgumentNullException(nameof(handler));
-            _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
-            _authConfiguration = authConfig ?? throw new ArgumentNullException(nameof(authConfig));
-            _channelProvider = channelProvider;
+        }
+
+        /// <summary>
+        /// SendToConversation.
+        /// </summary>
+        /// <param name="conversationId">Conversation ID.</param>
+        /// <param name="activity">Activity to send.</param>
+        /// <returns>TODO Document.</returns>
+        [HttpPost("{conversationId}/activities")]
+        public virtual async Task<ActionResult<ResourceResponse>> SendToConversationAsync(string conversationId, [FromBody] Activity activity)
+        {
+            return await _handler.HandleSendToConversationAsync(HttpContext.Request.Headers["Authorization"], conversationId, activity).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -58,21 +54,7 @@ namespace Microsoft.Bot.Builder.Skills.Integration.AspNet.Core
         [HttpPost("{conversationId}/activities/{activityId}")]
         public virtual async Task<ActionResult<ResourceResponse>> ReplyToActivityAsync(string conversationId, string activityId, [FromBody] Activity activity)
         {
-            var claimsIdentity = await Authenticate(HttpContext.Request).ConfigureAwait(false);
-            return await _handler.OnReplyToActivityAsync(claimsIdentity, conversationId, activityId, activity).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// SendToConversation.
-        /// </summary>
-        /// <param name="conversationId">Conversation ID.</param>
-        /// <param name="activity">Activity to send.</param>
-        /// <returns>TODO Document.</returns>
-        [HttpPost("{conversationId}/activities")]
-        public virtual async Task<ActionResult<ResourceResponse>> SendToConversationAsync(string conversationId, [FromBody] Activity activity)
-        {
-            var claimsIdentity = await Authenticate(HttpContext.Request).ConfigureAwait(false);
-            return await _handler.OnSendToConversationAsync(claimsIdentity, conversationId, activity).ConfigureAwait(false);
+            return await _handler.HandleReplyToActivityAsync(HttpContext.Request.Headers["Authorization"], conversationId, activityId, activity).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -85,8 +67,7 @@ namespace Microsoft.Bot.Builder.Skills.Integration.AspNet.Core
         [HttpPut("{conversationId}/activities/{activityId}")]
         public virtual async Task<ActionResult<ResourceResponse>> UpdateActivityAsync(string conversationId, string activityId, [FromBody] Activity activity)
         {
-            var claimsIdentity = await Authenticate(HttpContext.Request).ConfigureAwait(false);
-            return await _handler.OnUpdateActivityAsync(claimsIdentity, conversationId, activityId, activity).ConfigureAwait(false);
+            return await _handler.HandleUpdateActivityAsync(HttpContext.Request.Headers["Authorization"], conversationId, activityId, activity).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -98,8 +79,33 @@ namespace Microsoft.Bot.Builder.Skills.Integration.AspNet.Core
         [HttpDelete("{conversationId}/activities/{activityId}")]
         public virtual async Task DeleteActivityAsync(string conversationId, string activityId)
         {
-            var claimsIdentity = await Authenticate(HttpContext.Request).ConfigureAwait(false);
-            await _handler.OnDeleteActivityAsync(claimsIdentity, conversationId, activityId).ConfigureAwait(false);
+            await _handler.HandleDeleteActivityAsync(HttpContext.Request.Headers["Authorization"], conversationId, activityId).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// GetActivityMembers.
+        /// </summary>
+        /// <remarks>
+        /// Markdown=Content\Methods\GetActivityMembers.md.
+        /// </remarks>
+        /// <param name="conversationId">Conversation ID.</param>
+        /// <param name="activityId">Activity ID.</param>
+        /// <returns>TODO Document.</returns>
+        [HttpGet("{conversationId}/activities/{activityId}/members")]
+        public virtual Task<ActionResult<ChannelAccount[]>> GetActivityMembersAsync(string conversationId, string activityId)
+        {
+            throw new NotSupportedException("GetActivityMembersAsync is not supported");
+        }
+
+        /// <summary>
+        /// CreateConversation.
+        /// </summary>
+        /// <param name="parameters">Parameters to create the conversation from.</param>
+        /// <returns>TODO Document.</returns>
+        [HttpPost]
+        public virtual Task<ActionResult<ConversationResourceResponse>> CreateConversationAsync([FromBody] ConversationParameters parameters)
+        {
+            throw new NotSupportedException("CreateConversationAsync is not supported");
         }
 
         /// <summary>
@@ -122,29 +128,6 @@ namespace Microsoft.Bot.Builder.Skills.Integration.AspNet.Core
         public virtual Task<ActionResult<IList<ChannelAccount>>> GetConversationMembersAsync(string conversationId)
         {
             throw new NotSupportedException("GetConversationMembersAsync is not supported");
-        }
-
-        /// <summary>
-        /// CreateConversation.
-        /// </summary>
-        /// <param name="parameters">Parameters to create the conversation from.</param>
-        /// <returns>TODO Document.</returns>
-        [HttpPost]
-        public virtual Task<ActionResult<ConversationResourceResponse>> CreateConversationAsync([FromBody] ConversationParameters parameters)
-        {
-            throw new NotSupportedException("CreateConversationAsync is not supported");
-        }
-
-        /// <summary>
-        /// SendConversationHistory.
-        /// </summary>
-        /// <param name="conversationId">Conversation ID.</param>
-        /// <param name="history">Historic activities.</param>
-        /// <returns>TODO Document.</returns>
-        [HttpPost("{conversationId}/activities/history")]
-        public virtual Task<ActionResult<ResourceResponse>> SendConversationHistoryAsync(string conversationId, [FromBody] Transcript history)
-        {
-            throw new NotSupportedException("SendConversationHistoryAsync is not supported");
         }
 
         /// <summary>
@@ -173,18 +156,15 @@ namespace Microsoft.Bot.Builder.Skills.Integration.AspNet.Core
         }
 
         /// <summary>
-        /// GetActivityMembers.
+        /// SendConversationHistory.
         /// </summary>
-        /// <remarks>
-        /// Markdown=Content\Methods\GetActivityMembers.md.
-        /// </remarks>
         /// <param name="conversationId">Conversation ID.</param>
-        /// <param name="activityId">Activity ID.</param>
+        /// <param name="history">Historic activities.</param>
         /// <returns>TODO Document.</returns>
-        [HttpGet("{conversationId}/activities/{activityId}/members")]
-        public virtual Task<ActionResult<ChannelAccount[]>> GetActivityMembersAsync(string conversationId, string activityId)
+        [HttpPost("{conversationId}/activities/history")]
+        public virtual Task<ActionResult<ResourceResponse>> SendConversationHistoryAsync(string conversationId, [FromBody] Transcript history)
         {
-            throw new NotSupportedException("GetActivityMembersAsync is not supported");
+            throw new NotSupportedException("SendConversationHistoryAsync is not supported");
         }
 
         /// <summary>
@@ -197,13 +177,6 @@ namespace Microsoft.Bot.Builder.Skills.Integration.AspNet.Core
         public virtual Task<ActionResult<ResourceResponse>> UploadAttachmentAsync(string conversationId, [FromBody] AttachmentData attachmentUpload)
         {
             throw new NotSupportedException("UploadAttachmentAsync is not supported");
-        }
-
-        private async Task<ClaimsIdentity> Authenticate(HttpRequest httpRequest)
-        {
-            // grab the auth header from the inbound http request
-            var authHeader = httpRequest.Headers["Authorization"];
-            return await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider, "unknown", _authConfiguration).ConfigureAwait(false);
         }
     }
 }
