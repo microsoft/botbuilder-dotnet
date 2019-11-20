@@ -8,5 +8,11 @@
       "Value": "textContent",
       "Text": "textContent"
     }
-  ]
+  ],
+  "tap": {
+    "type": "@{type}",
+    "title": "@{title}",
+    "text": "@{title}",
+    "value": "@{value}"
+  }
 }
