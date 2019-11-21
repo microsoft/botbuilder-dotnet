@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
     "$id": "sdk.schema",
     "type": "object",
     "title": "Component types",
@@ -339,11 +339,6 @@
             "title": "Microsoft.OnTypingActivity",
             "description": "Actions to perform on receipt of an activity with type 'Typing'.",
             "$ref": "#/definitions/Microsoft.OnTypingActivity"
-        },
-        {
-            "title": "Microsoft.OnUnknownEntity",
-            "description": "This defines the actions to take when a UnknownEntity event is raised",
-            "$ref": "#/definitions/Microsoft.OnUnknownEntity"
         },
         {
             "title": "Microsoft.OnUnknownIntent",
@@ -3546,11 +3541,6 @@
                     "$ref": "#/definitions/Microsoft.OnTypingActivity"
                 },
                 {
-                    "title": "Microsoft.OnUnknownEntity",
-                    "description": "This defines the actions to take when a UnknownEntity event is raised",
-                    "$ref": "#/definitions/Microsoft.OnUnknownEntity"
-                },
-                {
                     "title": "Microsoft.OnUnknownIntent",
                     "description": "Action to perform when user input is unrecognized and if none of the 'on intent recognition' triggers match recognized intent.",
                     "$ref": "#/definitions/Microsoft.OnUnknownIntent"
@@ -6464,89 +6454,6 @@
                 "runOnce": {
                     "type": "boolean",
                     "description": "True if rule should run once per unique conditions"
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "actions",
-                        "$type"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.OnUnknownEntity": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
-            "title": "Form UnknownEntity Event",
-            "description": "This defines the actions to take when a UnknownEntity event is raised",
-            "type": "object",
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnUnknownEntity"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "condition": {
-                    "$role": "expression",
-                    "title": "Condition",
-                    "description": "Condition (expression).",
-                    "examples": [
-                        "user.vip == true"
-                    ],
-                    "type": "string"
-                },
-                "actions": {
-                    "type": "array",
-                    "description": "Sequence of actions to execute.",
-                    "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                },
-                "priority": {
-                    "type": "integer",
-                    "description": "Priority of rule with 0 being the most important"
-                },
-                "runOnce": {
-                    "type": "boolean",
-                    "description": "True if rule should run once per unique conditions"
-                },
-                "entity": {
-                    "type": "string",
-                    "title": "Entity",
-                    "description": "Unknown entity"
                 }
             },
             "additionalProperties": false,

@@ -4,5 +4,5 @@
     - yes  
 - CASE: @{'no'}
     -  no
--  DEFAULT:
+- DEFAULT:
     -  Unknown Confirmation value

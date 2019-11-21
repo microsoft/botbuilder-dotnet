@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 }
                 else
                 {
-                    throw new Exception($"type {type} is not support currently.");
+                    throw new Exception($"type {type} is not supported currently.");
                 }
             }
 

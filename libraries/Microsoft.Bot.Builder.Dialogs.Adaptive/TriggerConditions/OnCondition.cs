@@ -11,6 +11,7 @@ using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Expressions;
+using Microsoft.Bot.Expressions.TriggerTrees;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
@@ -116,19 +117,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                     {
                         this.fullConstraint = Expression.AndExpression(
                             this.fullConstraint,
-                            new Expression(new ExpressionEvaluator(
-                                "runOnce",
-                                (expression, os) =>
-                                {
-                                    var state = os as DialogStateManager;
-                                    var basePath = DialogPath.ConditionTracker + "." + Id.ToString() + ".";
-                                    var lastRun = state.GetValue<uint>(basePath + "lastRun");
-                                    var paths = state.GetValue<string[]>(basePath + "paths");
-                                    var changed = state.AnyChanged(lastRun, paths);
-                                    return (changed, null);
-                                },
-                                ReturnType.Boolean,
-                                BuiltInFunctions.ValidateUnary)));
+                            new Expression(
+                                TriggerTree.LookupFunction("ignore"),
+                                new Expression(new ExpressionEvaluator(
+                                    "runOnce",
+                                    (expression, os) =>
+                                    {
+                                        var state = os as DialogStateManager;
+                                        var basePath = DialogPath.ConditionTracker + "." + Id.ToString() + ".";
+                                        var lastRun = state.GetValue<uint>(basePath + "lastRun");
+                                        var paths = state.GetValue<string[]>(basePath + "paths");
+                                        var changed = state.AnyChanged(lastRun, paths);
+                                        return (changed, null);
+                                    },
+                                    ReturnType.Boolean,
+                                    BuiltInFunctions.ValidateUnary))));
                     }
                 }
             }
