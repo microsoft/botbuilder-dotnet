@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <UserSecretsId>ade3d9c2-1633-4922-89e5-a4a50ccb3bc8</UserSecretsId>
     <Configurations>Debug;Release</Configurations>
     <!-- The Jurrasic package isn't signed, so supress the warning. -->
