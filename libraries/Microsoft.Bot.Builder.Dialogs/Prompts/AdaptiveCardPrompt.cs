@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException("AdaptiveCardPrompt requires a card in `AdaptiveCardPromptSettings.card`");
             }
 
-            this._validator = validator;
+            _validator = validator;
 
             _requiredInputIds = settings.RequiredInputIds ?? null;
 
