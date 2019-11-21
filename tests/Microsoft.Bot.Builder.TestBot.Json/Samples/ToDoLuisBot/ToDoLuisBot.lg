@@ -15,7 +15,7 @@
 - * @{x}
 
 # ShowItems
-- IF: {listName == "shopping"}
+- IF: @{listName == "shopping"}
     - ```
     You most recent @{count(user.lists.shopping)} shopping items are
     

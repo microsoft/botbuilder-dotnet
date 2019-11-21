@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
 {
-    public class MessagePayload
+    public class AttachmentPayload
     {
         /// <summary>
         /// Gets or sets the url of the attachment.
@@ -59,16 +59,28 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
         [JsonProperty(PropertyName = "elements")]
         public List<Element> Elements { get; } = new List<Element>();
 
+        /// <summary>
+        /// Newtonsoft Json method for conditionally serializing IsReusable property.
+        /// </summary>
+        /// <returns>A boolean with the value.</returns>
         public bool ShouldSerializeIsReusable()
         {
             return IsReusable;
         }
 
+        /// <summary>
+        /// Newtonsoft Json method for conditionally serializing Buttons property.
+        /// </summary>
+        /// <returns>A boolean with the value.</returns>
         public bool ShouldSerializeButtons()
         {
             return Buttons.Count > 0;
         }
 
+        /// <summary>
+        /// Newtonsoft Json method for conditionally serializing Elements property.
+        /// </summary>
+        /// <returns>A boolean with the value.</returns>
         public bool ShouldSerializeElements()
         {
             return Elements.Count > 0;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -8,7 +9,6 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -56,8 +56,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var result = ActivityFactory.CreateActivity(lgStringResult);
         }
 
+        [Ignore]
         [TestMethod]
-        public async Task ActivityFactoryTest()
+        public async Task TestHerocardWithCardAction()
         {
             var context = await GetTurnContext("NormalStructuredLG.lg");
             var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
@@ -67,73 +68,284 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var lgStringResult = await languageGenerator.Generate(context, "@{HerocardWithCardAction()}", data: data).ConfigureAwait(false);
             var activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertCardActionActivity(activity);
+        }
 
+        [TestMethod]
+        public async Task TestAdaptivecardActivity()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
             data.adaptiveCardTitle = "test";
-            lgStringResult = await languageGenerator.Generate(context, "@{adaptivecardActivity()}", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult);
+            var lgStringResult = await languageGenerator.Generate(context, "@{adaptivecardActivity()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertAdaptiveCardActivity(activity);
+        }
 
-            lgStringResult = await languageGenerator.Generate(context, "@{eventActivity()}", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult);
-            AssertEventActivity(activity);
+        [TestMethod]
+        public async Task TestExternalAdaptiveCardActivity()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
+            data.adaptiveCardTitle = "test";
+            var lgStringResult = await languageGenerator.Generate(context, "@{externalAdaptiveCardActivity()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertAdaptiveCardActivity(activity);
+        }
 
-            lgStringResult = await languageGenerator.Generate(context, "@{activityWithHeroCardAttachment()}", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult);
+        [TestMethod]
+        public async Task TestAdaptivecardActivityWithAttachmentStructure()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
+            data.adaptiveCardTitle = "test";
+            var lgStringResult = await languageGenerator.Generate(context, "@{adaptivecardActivityWithAttachmentStructure()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertAdaptiveCardActivity(activity);
+        }
+
+        [TestMethod]
+        public async Task TestExternalHeroCardActivity()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
+            data.type = "imBack";
+            data.title = "taptitle";
+            data.value = "tapvalue";
+            var lgStringResult = await languageGenerator.Generate(context, "@{externalHeroCardActivity()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertActivityWithHeroCardAttachment(activity);
+        }
 
-            lgStringResult = await languageGenerator.Generate(context, "@{activityWithMultiAttachments()}", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult);
+        [TestMethod]
+        public async Task TestEventActivity()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
+            data.text = "textContent";
+            var lgStringResult = await languageGenerator.Generate(context, "@{eventActivity()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertEventActivity(activity);
+        }
+
+        [TestMethod]
+        public async Task TestHandoffActivity()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
+            data.text = "textContent";
+            var lgStringResult = await languageGenerator.Generate(context, "@{handoffActivity()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertHandoffActivity(activity);
+        }
+
+        [TestMethod]
+        public async Task TestActivityWithHeroCardAttachment()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
+            data.title = "titleContent";
+            data.text = "textContent";
+            var lgStringResult = await languageGenerator.Generate(context, "@{activityWithHeroCardAttachment()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertActivityWithHeroCardAttachment(activity);
+        }
+
+        [TestMethod]
+        public async Task TestHerocardAttachment()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
+            data.type = "imBack";
+            data.title = "taptitle";
+            data.value = "tapvalue";
+            var lgStringResult = await languageGenerator.Generate(context, "@{herocardAttachment()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertActivityWithHeroCardAttachment(activity);
+        }
+
+        [TestMethod]
+        public async Task TestHerocardActivityWithAttachmentStructure()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
+            data.title = "titleContent";
+            data.text = "textContent";
+            var lgStringResult = await languageGenerator.Generate(context, "@{activityWithMultiAttachments()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertActivityWithMultiAttachments(activity);
+        }
 
-            lgStringResult = await languageGenerator.Generate(context, "@{activityWithSuggestionActions()}", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult);
+        [TestMethod]
+        public async Task TestActivityWithSuggestionActions()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
+            data.title = "titleContent";
+            data.text = "textContent";
+            var lgStringResult = await languageGenerator.Generate(context, "@{activityWithSuggestionActions()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertActivityWithSuggestionActions(activity);
+        }
 
-            lgStringResult = await languageGenerator.Generate(context, "@{messageActivityAll()}", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult);
+        [TestMethod]
+        public async Task TestMessageActivityAll()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
+            data.title = "titleContent";
+            data.text = "textContent";
+
+            var lgStringResult = await languageGenerator.Generate(context, "@{messageActivityAll()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertMessageActivityAll(activity);
+        }
 
-            lgStringResult = await languageGenerator.Generate(context, "@{activityWithMultiStructuredSuggestionActions()}", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult);
+        [TestMethod]
+        public async Task TestActivityWithMultiStructuredSuggestionActions()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
+            data.text = "textContent";
+            var lgStringResult = await languageGenerator.Generate(context, "@{activityWithMultiStructuredSuggestionActions()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertActivityWithMultiStructuredSuggestionActions(activity);
+        }
 
-            lgStringResult = await languageGenerator.Generate(context, "@{activityWithMultiStringSuggestionActions()}", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult);
+        [TestMethod]
+        public async Task TestActivityWithMultiStringSuggestionActions()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
+            data.text = "textContent";
+            var lgStringResult = await languageGenerator.Generate(context, "@{activityWithMultiStringSuggestionActions()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertActivityWithMultiStringSuggestionActions(activity);
+        }
 
+        [TestMethod]
+        public async Task TestHeroCardTemplate()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
             data.type = "herocard";
-            lgStringResult = await languageGenerator.Generate(context, "@{HeroCardTemplate()}", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult);
+            var lgStringResult = await languageGenerator.Generate(context, "@{HeroCardTemplate()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertHeroCardActivity(activity);
+        }
 
+        [TestMethod]
+        public async Task TestThumbnailCardTemplate()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
             data.type = "thumbnailcard";
-            lgStringResult = await languageGenerator.Generate(context, "@{ThumbnailCardTemplate()}", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult);
+            var lgStringResult = await languageGenerator.Generate(context, "@{ThumbnailCardTemplate()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertThumbnailCardActivity(activity);
+        }
 
+        [TestMethod]
+        public async Task TestAudioCardTemplate()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
             data.type = "audiocard";
-            lgStringResult = await languageGenerator.Generate(context, "@{AudioCardTemplate()}", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult);
+            var lgStringResult = await languageGenerator.Generate(context, "@{AudioCardTemplate()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertAudioCardActivity(activity);
+        }
 
+        [TestMethod]
+        public async Task TestVideoCardTemplate()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
             data.type = "videocard";
-            lgStringResult = await languageGenerator.Generate(context, "@{VideoCardTemplate()}", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult);
+            var lgStringResult = await languageGenerator.Generate(context, "@{VideoCardTemplate()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertVideoCardActivity(activity);
+        }
 
+        [TestMethod]
+        public async Task TestSigninCardTemplate()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
             data.signinlabel = "Sign in";
             data.url = "https://login.microsoftonline.com/";
-            lgStringResult = await languageGenerator.Generate(context, "@{SigninCardTemplate()}", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult);
+            var lgStringResult = await languageGenerator.Generate(context, "@{SigninCardTemplate()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertSigninCardActivity(activity);
+        }
 
+        [TestMethod]
+        public async Task TestOAuthCardTemplate()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
+            data.signinlabel = "Sign in";
+            data.url = "https://login.microsoftonline.com/";
             data.connectionName = "MyConnection";
-            lgStringResult = await languageGenerator.Generate(context, "@{OAuthCardTemplate()}", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult);
+            var lgStringResult = await languageGenerator.Generate(context, "@{OAuthCardTemplate()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertOAuthCardActivity(activity);
+        }
 
-            lgStringResult = await languageGenerator.Generate(context, "@{SuggestedActionsReference()}", data: data).ConfigureAwait(false);
-            activity = ActivityFactory.CreateActivity(lgStringResult);
+        [TestMethod]
+        public async Task TestReceiptCardTemplate()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            var data = new JObject
+            {
+                ["receiptItems"] = JToken.FromObject(new List<ReceiptItem>
+                {
+                    new ReceiptItem(
+                        "Data Transfer",
+                        price: "$ 38.45",
+                        quantity: "368",
+                        image: new CardImage(url: "https://github.com/amido/azure-vector-icons/raw/master/renders/traffic-manager.png")),
+                    new ReceiptItem(
+                        "App Service",
+                        price: "$ 45.00",
+                        quantity: "720",
+                        image: new CardImage(url: "https://github.com/amido/azure-vector-icons/raw/master/renders/cloud-service.png")),
+                }),
+                ["type"] = "ReceiptCard"
+            };
+            var lgStringResult = await languageGenerator.Generate(context, "@{ReceiptCardTemplate()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertReceiptCardActivity(activity);
+        }
+
+        [TestMethod]
+        public async Task TestSuggestedActionsReference()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
+            data.text = "textContent";
+            var lgStringResult = await languageGenerator.Generate(context, "@{SuggestedActionsReference()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
             AssertSuggestedActionsReferenceActivity(activity);
         }
 
@@ -142,17 +354,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
         }
 
-        private void AssertSuggestedActionsReferenceActivity(dynamic activity)
+        private void AssertSuggestedActionsReferenceActivity(Activity activity)
         {
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
-            Assert.AreEqual("textContent", activity.Text);
+            Assert.AreEqual("textContent", activity.Text, "should have right text");
            
-            Assert.AreEqual(activity.SuggestedActions.Actions.Count, 5);
-            Assert.AreEqual(activity.SuggestedActions.Actions[0].Value, "Add todo");
-            Assert.AreEqual(activity.SuggestedActions.Actions[1].Value, "View Todo");
-            Assert.AreEqual(activity.SuggestedActions.Actions[2].Value, "Remove Todo");
-            Assert.AreEqual(activity.SuggestedActions.Actions[3].Value, "Cancel");
-            Assert.AreEqual(activity.SuggestedActions.Actions[4].Value, "Help");
+            Assert.AreEqual(5, activity.SuggestedActions.Actions.Count, "should have 5 actions in suggestedAction");
+            Assert.AreEqual("Add todo", activity.SuggestedActions.Actions[0].Value);
+            Assert.AreEqual("View Todo", activity.SuggestedActions.Actions[1].Value);
+            Assert.AreEqual("Remove Todo", activity.SuggestedActions.Actions[2].Value);
+            Assert.AreEqual("Cancel", activity.SuggestedActions.Actions[3].Value);
+            Assert.AreEqual("Help", activity.SuggestedActions.Actions[4].Value);
         }
 
         private void AssertMessageActivityAll(Activity activity)
@@ -161,33 +373,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("textContent", activity.Text);
             Assert.AreEqual("textContent", activity.Speak);
             Assert.AreEqual("accepting", activity.InputHint);
+            var semanticAction = activity.SemanticAction;
+            Assert.AreEqual("actionId", semanticAction.Id);
+            Assert.AreEqual(1, semanticAction.Entities.Count);
+            Assert.AreEqual(true, semanticAction.Entities.ContainsKey("key1"));
+            Assert.AreEqual("entityType", semanticAction.Entities["key1"].Type);
+
             Assert.AreEqual(1, activity.Attachments.Count);
             Assert.AreEqual(AttachmentLayoutTypes.List, activity.AttachmentLayout);
             Assert.AreEqual(HeroCard.ContentType, activity.Attachments[0].ContentType);
             var card = ((JObject)activity.Attachments[0].Content).ToObject<HeroCard>();
             Assert.IsNotNull(card, "should have herocard");
-            Assert.AreEqual("titleContent", card.Title, "card title should be set");
+            var tap = card.Tap;
+            Assert.AreEqual("taptitle", tap.Title, "tap title should be set");
+            Assert.AreEqual("tapvalue", tap.Value, "tap value should be set");
+            Assert.AreEqual("imBack", tap.Type, "tap type should be set");
             Assert.AreEqual("textContent", card.Text, "card text should be set");
             Assert.AreEqual(1, card.Buttons.Count, "card buttons should be set");
             Assert.AreEqual($"imBack", card.Buttons[0].Type, "card buttons should be set");
             Assert.AreEqual($"titleContent", card.Buttons[0].Title, "card buttons should be set");
             Assert.AreEqual($"textContent", card.Buttons[0].Value, "card buttons should be set");
-            Assert.AreEqual(activity.SuggestedActions.Actions.Count, 2);
-            Assert.AreEqual(activity.SuggestedActions.Actions[0].Title, "firstItem");
-            Assert.AreEqual(activity.SuggestedActions.Actions[0].Value, "firstItem");
-            Assert.AreEqual(activity.SuggestedActions.Actions[1].Title, "titleContent");
-            Assert.AreEqual(activity.SuggestedActions.Actions[1].Value, "textContent");
+            Assert.AreEqual(2, activity.SuggestedActions.Actions.Count);
+            Assert.AreEqual("firstItem", activity.SuggestedActions.Actions[0].Title);
+            Assert.AreEqual("firstItem", activity.SuggestedActions.Actions[0].Value);
+            Assert.AreEqual("titleContent", activity.SuggestedActions.Actions[1].Title);
+            Assert.AreEqual("textContent", activity.SuggestedActions.Actions[1].Value);
         }
 
         private void AssertActivityWithSuggestionActions(Activity activity)
         {
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
             Assert.AreEqual("textContent", activity.Text);
-            Assert.AreEqual(activity.SuggestedActions.Actions.Count, 2);
-            Assert.AreEqual(activity.SuggestedActions.Actions[0].Title, "firstItem");
-            Assert.AreEqual(activity.SuggestedActions.Actions[0].Value, "firstItem");
-            Assert.AreEqual(activity.SuggestedActions.Actions[1].Title, "titleContent");
-            Assert.AreEqual(activity.SuggestedActions.Actions[1].Value, "textContent");
+            Assert.AreEqual(2, activity.SuggestedActions.Actions.Count);
+            Assert.AreEqual("firstItem", activity.SuggestedActions.Actions[0].Title);
+            Assert.AreEqual("firstItem", activity.SuggestedActions.Actions[0].Value);
+            Assert.AreEqual("titleContent", activity.SuggestedActions.Actions[1].Title);
+            Assert.AreEqual("textContent", activity.SuggestedActions.Actions[1].Value);
         }
 
         private void AssertActivityWithMultiAttachments(Activity activity)
@@ -219,6 +440,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(1, activity.Attachments.Count);
             Assert.AreEqual(HeroCard.ContentType, activity.Attachments[0].ContentType);
             var card = ((JObject)activity.Attachments[0].Content).ToObject<HeroCard>();
+            var tap = card.Tap;
+            Assert.AreEqual("taptitle", tap.Title, "tap title should be set");
+            Assert.AreEqual("tapvalue", tap.Value, "tap value should be set");
+            Assert.AreEqual("imBack", tap.Type, "tap type should be set");
             Assert.IsNotNull(card, "should have herocard");
             Assert.AreEqual("titleContent", card.Title, "card title should be set");
             Assert.AreEqual("textContent", card.Text, "card text should be set");
@@ -226,6 +451,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual($"imBack", card.Buttons[0].Type, "card buttons should be set");
             Assert.AreEqual($"titleContent", card.Buttons[0].Title, "card buttons should be set");
             Assert.AreEqual($"textContent", card.Buttons[0].Value, "card buttons should be set");
+        }
+
+        private void AssertHandoffActivity(Activity activity)
+        {
+            Assert.AreEqual(ActivityTypes.Handoff, activity.Type);
+            Assert.AreEqual("textContent", activity.Name, "card name should be set");
+            Assert.AreEqual("textContent", activity.Value, "card value should be set");
         }
 
         private void AssertEventActivity(Activity activity)
@@ -391,29 +623,66 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
             Assert.AreEqual("textContent", activity.Text);
-            Assert.AreEqual(activity.SuggestedActions.Actions.Count, 3);
-            Assert.AreEqual(activity.SuggestedActions.Actions[0].Value, "first suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[0].Title, "first suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[0].Text, "first suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[1].Value, "second suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[1].Title, "second suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[1].Text, "second suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[2].Value, "third suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[2].Title, "third suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[2].Text, "third suggestion");
+            Assert.AreEqual(3, activity.SuggestedActions.Actions.Count);
+            Assert.AreEqual("first suggestion", activity.SuggestedActions.Actions[0].Value);
+            Assert.AreEqual("first suggestion", activity.SuggestedActions.Actions[0].Title);
+            Assert.AreEqual("first suggestion", activity.SuggestedActions.Actions[0].Text);
+            Assert.AreEqual("second suggestion", activity.SuggestedActions.Actions[1].Value);
+            Assert.AreEqual("second suggestion", activity.SuggestedActions.Actions[1].Title);
+            Assert.AreEqual("second suggestion", activity.SuggestedActions.Actions[1].Text);
+            Assert.AreEqual("third suggestion", activity.SuggestedActions.Actions[2].Value);
+            Assert.AreEqual("third suggestion", activity.SuggestedActions.Actions[2].Title);
+            Assert.AreEqual("third suggestion", activity.SuggestedActions.Actions[2].Text);
         }
 
         private void AssertActivityWithMultiStringSuggestionActions(Activity activity)
         {
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
             Assert.AreEqual("textContent", activity.Text);
-            Assert.AreEqual(activity.SuggestedActions.Actions.Count, 3);
-            Assert.AreEqual(activity.SuggestedActions.Actions[0].Title, "first suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[0].Value, "first suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[1].Title, "second suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[1].Value, "second suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[2].Title, "third suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[2].Value, "third suggestion");
+            Assert.AreEqual(3, activity.SuggestedActions.Actions.Count);
+            Assert.AreEqual("first suggestion", activity.SuggestedActions.Actions[0].Value);
+            Assert.AreEqual("first suggestion", activity.SuggestedActions.Actions[0].Title);
+            Assert.AreEqual("second suggestion", activity.SuggestedActions.Actions[1].Value);
+            Assert.AreEqual("second suggestion", activity.SuggestedActions.Actions[1].Title);
+            Assert.AreEqual("third suggestion", activity.SuggestedActions.Actions[2].Value);
+            Assert.AreEqual("third suggestion", activity.SuggestedActions.Actions[2].Title);
+        }
+
+        private void AssertReceiptCardActivity(Activity activity)
+        {
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.AreEqual(1, activity.Attachments.Count);
+            Assert.AreEqual(ReceiptCard.ContentType, activity.Attachments[0].ContentType);
+            var card = ((JObject)activity.Attachments[0].Content).ToObject<ReceiptCard>();
+            Assert.IsNotNull(card, "should have ReceiptCard");
+            Assert.AreEqual("John Doe", card.Title);
+            Assert.AreEqual("$ 7.50", card.Tax);
+            Assert.AreEqual("$ 90.95", card.Total);
+            var buttons = card.Buttons;
+
+            Assert.AreEqual(1, buttons.Count, "should have a button");
+            Assert.AreEqual(ActionTypes.OpenUrl, buttons[0].Type);
+            Assert.AreEqual("More information", buttons[0].Title);
+            Assert.AreEqual("https://account.windowsazure.com/content/6.10.1.38-.8225.160809-1618/aux-pre/images/offer-icon-freetrial.png", buttons[0].Image);
+            Assert.AreEqual("https://azure.microsoft.com/en-us/pricing/", buttons[0].Value);
+
+            var facts = card.Facts;
+            Assert.AreEqual(2, facts.Count, "should have 2 facts");
+            Assert.AreEqual("Order Number", facts[0].Key);
+            Assert.AreEqual("1234", facts[0].Value);
+            Assert.AreEqual("Payment Method", facts[1].Key);
+            Assert.AreEqual("VISA 5555-****", facts[1].Value);
+
+            var items = card.Items;
+            Assert.AreEqual(2, items.Count, "should have 2 items");
+            Assert.AreEqual("Data Transfer", items[0].Title);
+            Assert.AreEqual("https://github.com/amido/azure-vector-icons/raw/master/renders/traffic-manager.png", items[0].Image.Url);
+            Assert.AreEqual("$ 38.45", items[0].Price);
+            Assert.AreEqual("368", items[0].Quantity);
+            Assert.AreEqual("App Service", items[1].Title);
+            Assert.AreEqual("https://github.com/amido/azure-vector-icons/raw/master/renders/cloud-service.png", items[1].Image.Url);
+            Assert.AreEqual("$ 45.00", items[1].Price);
+            Assert.AreEqual("720", items[1].Quantity);
         }
 
         private ITurnContext GetTurnContext(ILanguageGenerator lg)
@@ -426,8 +695,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private async Task<ITurnContext> GetTurnContext(string lgFile)
         {
             var context = new TurnContext(new TestAdapter(), new Activity());
-            var lgText = await resourceExplorer.GetResource(lgFile).ReadTextAsync();
-            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgText, "test", LanguageGeneratorManager.MultiLanguageResolverDelegate(resourceExplorer)));
+            var lgresource = resourceExplorer.GetResource(lgFile) as FileResource;
+            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgresource.FullName, MultiLanguageResourceLoader.Load(resourceExplorer)));
+
             return context;
         }
 

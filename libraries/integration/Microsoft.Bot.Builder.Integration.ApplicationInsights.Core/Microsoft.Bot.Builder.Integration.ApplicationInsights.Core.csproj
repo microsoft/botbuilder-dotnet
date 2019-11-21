@@ -19,9 +19,14 @@
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>Full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.5.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.0" />
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />

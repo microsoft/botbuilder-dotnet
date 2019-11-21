@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming.Payloads;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Streaming.UnitTests
 {
@@ -177,7 +178,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
             Assert.AreEqual(1, r.Streams.Count);
             Assert.AreEqual(typeof(StringContent), r.Streams[0].Content.GetType());
 
-            var s = await r.Streams[0].Content.ReadAsAsync<Activity>().ConfigureAwait(false);
+            var s = JsonConvert.DeserializeObject<Activity>(await r.Streams[0].Content.ReadAsStringAsync().ConfigureAwait(false));
             Assert.AreEqual(a.Text, s.Text);
             Assert.AreEqual(a.Type, s.Type);
         }

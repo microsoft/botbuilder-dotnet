@@ -4,7 +4,6 @@
 using System;
 using System.IO;
 using System.Net.Http;
-using System.Net.Http.Formatting;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Streaming.Payloads;
@@ -142,7 +141,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             var content = new ResponseMessageStream(Guid.NewGuid())
             {
-                Content = new ObjectContent(typeof(string), "{'a': 55}", new JsonMediaTypeFormatter()),
+                Content = new StringContent("{'a': 55}", Encoding.UTF8, "application/json"),
             };
 
             var disassembler = new ResponseMessageStreamDisassembler(sender, content);

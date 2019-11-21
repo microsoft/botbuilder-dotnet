@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -15,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// </summary>
     public class ActivityFactory
     {
-        private static readonly Dictionary<string, string> GenericCardTypeMapping = new Dictionary<string, string>
+        public static readonly Dictionary<string, string> GenericCardTypeMapping = new Dictionary<string, string>
         {
             { nameof(HeroCard).ToLowerInvariant(), HeroCard.ContentType },
             { nameof(ThumbnailCard).ToLowerInvariant(), ThumbnailCard.ContentType },
@@ -23,8 +24,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             { nameof(VideoCard).ToLowerInvariant(), VideoCard.ContentType },
             { nameof(AnimationCard).ToLowerInvariant(), AnimationCard.ContentType },
             { nameof(SigninCard).ToLowerInvariant(), SigninCard.ContentType },
-            { nameof(OAuthCard).ToLowerInvariant(), OAuthCard.ContentType }
+            { nameof(OAuthCard).ToLowerInvariant(), OAuthCard.ContentType },
+            { nameof(ReceiptCard).ToLowerInvariant(), ReceiptCard.ContentType },
         };
+
+        private static readonly string AdaptiveCardType = "application/vnd.microsoft.card.adaptive";
 
         /// <summary>
         /// Generate the activity.
@@ -33,17 +37,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>activity.</returns>
         public static Activity CreateActivity(string lgStringResult)
         {
-            JObject lgStructuredResult;
-            try
+            var diagnostics = ActivityChecker.Check(lgStringResult);
+            var errors = diagnostics.Where(u => u.Severity == DiagnosticSeverity.Error);
+            if (errors.Any())
             {
-                lgStructuredResult = JObject.Parse(lgStringResult);
-            }
-            catch
-            {
-                return BuildActivityFromText(lgStringResult?.ToString()?.Trim());
+                throw new Exception(string.Join("\n", errors));
             }
 
-            return BuildActivityFromLGStructuredResult(lgStructuredResult);
+            var isStructuredLG = ParseStructuredLGResult(lgStringResult, out var lgStructuredResult);
+            return isStructuredLG ? BuildActivityFromLGStructuredResult(lgStructuredResult)
+                : BuildActivityFromText(lgStringResult?.Trim());
         }
 
         /// <summary>
@@ -65,84 +68,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>Activity for it.</returns>
         private static Activity BuildActivityFromLGStructuredResult(JObject lgJObj)
         {
-            Activity activity;
+            var activity = new Activity();
             var type = GetStructureType(lgJObj);
 
-            if (GenericCardTypeMapping.ContainsKey(type))
+            if (GenericCardTypeMapping.ContainsKey(type)
+                || type == nameof(Attachment).ToLowerInvariant())
             {
-                if (GetAttachment(lgJObj, out var attachment))
-                {
-                    activity = MessageFactory.Attachment(attachment) as Activity;
-                }
-                else
-                {
-                    throw new Exception($"'{lgJObj}' is not an attachment format.");
-                }
+                activity = MessageFactory.Attachment(GetAttachment(lgJObj)) as Activity;
             }
-            else
+            else if (type == nameof(Activity).ToLowerInvariant())
             {
-                if (type == nameof(Activity).ToLowerInvariant())
-                {
-                    activity = BuildActivityFromObject(lgJObj);
-                }
-                else
-                {
-                    throw new Exception($"type {type} is not support currently.");
-                }
+                activity = BuildActivity(lgJObj);
             }
 
             return activity;
         }
 
-        private static Activity BuildActivityFromObject(JObject lgJObj)
-        {
-            Activity activity;
-
-            // Currently Event and Message type are supported.
-            if (lgJObj["type"]?.ToString() == ActivityTypes.Event)
-            {
-                activity = BuildEventActivity(lgJObj) as Activity;
-            }
-            else
-            {
-                activity = BuildMessageActivity(lgJObj) as Activity;
-            }
-
-            return activity;
-        }
-
-        private static IEventActivity BuildEventActivity(JObject lgJObj)
-        {
-            var activity = new JObject
-            {
-                ["Type"] = ActivityTypes.Event
-            };
-
-            foreach (var item in lgJObj)
-            {
-                var property = item.Key.Trim();
-                var value = item.Value;
-
-                switch (property.ToLowerInvariant())
-                {
-                    case "name":
-                        activity["Name"] = value.ToString();
-                        break;
-
-                    case "value":
-                        activity["Value"] = value.ToString();
-                        break;
-
-                    default:
-                        activity[property] = value;
-                        break;
-                }
-            }
-
-            return activity.ToObject<Activity>();
-        }
-
-        private static IMessageActivity BuildMessageActivity(JObject lgJObj)
+        private static Activity BuildActivity(JObject lgJObj)
         {
             var activity = new JObject
             {
@@ -155,30 +97,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                 switch (property.ToLowerInvariant())
                 {
-                    case "text":
-                        activity["Text"] = value.ToString();
-                        break;
-
-                    case "speak":
-                        activity["Speak"] = value.ToString();
-                        break;
-
-                    case "inputhint":
-                        activity["InputHint"] = value.ToString();
-                        break;
-
                     case "attachments":
                         activity["Attachments"] = JArray.FromObject(GetAttachments(value));
                         break;
-
                     case "suggestedactions":
                         activity["SuggestedActions"] = JObject.FromObject(GetSuggestions(value));
                         break;
-
-                    case "attachmentlayout":
-                        activity["AttachmentLayout"] = value.ToString();
-                        break;
-
                     default:
                         activity[property] = value;
                         break;
@@ -200,99 +124,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return suggestedActions;
         }
 
-        private static bool IsStringValue(JToken value, out string stringValue)
-        {
-            stringValue = string.Empty;
-            if (value is JValue jValue && jValue.Type == JTokenType.String)
-            {
-                stringValue = jValue.ToObject<string>().Trim();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        private static List<CardAction> GetCardActions(List<JToken> actions)
-        {
-            var cardActions = new List<CardAction>();
-            foreach (var action in actions)
-            {
-                if (IsStringValue(action, out var actionStr))
-                {
-                    cardActions.Add(new CardAction(type: ActionTypes.ImBack, value: actionStr, title: actionStr));
-                }
-                else if (action is JObject actionJObj && GetCardAction(actionJObj, out var cardAction))
-                {
-                    cardActions.Add(cardAction);
-                }
-            }
-
-            return cardActions;
-        }
-
-        private static List<CardAction> GetButtons(JToken value)
+        private static IList<CardAction> GetButtons(JToken value)
         {
             var actions = NormalizedToList(value);
             return GetCardActions(actions);
         }
 
-        private static bool GetCardAction(JObject cardActionJObj, out CardAction cardAction)
+        private static IList<CardAction> GetCardActions(IList<JToken> actions)
         {
-            var type = GetStructureType(cardActionJObj);
-            var cardActionJson = new JObject()
-            {
-                ["Type"] = ActionTypes.ImBack
-            };
+            return actions.Select(u => GetCardAction(u)).ToList();
+        }
 
-            var isCardAction = true;
-            if (type == nameof(CardAction).ToLowerInvariant())
+        private static CardAction GetCardAction(JToken cardActionJtoken)
+        {
+            var cardAction = new CardAction();
+            if (IsStringValue(cardActionJtoken, out var actionStr))
             {
-                foreach (var item in cardActionJObj)
+                cardAction = new CardAction(type: ActionTypes.ImBack, value: actionStr, title: actionStr);
+            }
+            else if (cardActionJtoken is JObject actionJObj)
+            {
+                var type = GetStructureType(actionJObj);
+                var cardActionJson = new JObject()
                 {
-                    var property = item.Key.Trim();
-                    var value = item.Value;
+                    ["Type"] = ActionTypes.ImBack
+                };
 
-                    switch (property.ToLowerInvariant())
+                if (type == nameof(CardAction).ToLowerInvariant())
+                {
+                    foreach (var item in actionJObj)
                     {
-                        case "type":
-                            cardActionJson["Type"] = value.ToString();
-                            break;
-
-                        case "title":
-                            cardActionJson["Title"] = value.ToString();
-                            break;
-
-                        case "value":
-                            cardActionJson["Value"] = value.ToString();
-                            break;
-
-                        case "displaytext":
-                            cardActionJson["DisplayText"] = value.ToString();
-                            break;
-
-                        case "text":
-                            cardActionJson["Text"] = value.ToString();
-                            break;
-
-                        case "image":
-                            cardActionJson["Image"] = value.ToString();
-                            break;
-
-                        default:
-                            cardActionJson[property] = value;
-                            break;
+                        cardActionJson[item.Key.Trim()] = item.Value;
                     }
+
+                    cardAction = cardActionJson.ToObject<CardAction>();
                 }
             }
-            else
-            {
-                isCardAction = false;
-            }
 
-            cardAction = cardActionJson.ToObject<CardAction>();
-            return isCardAction;
+            return cardAction;
         }
 
         private static string GetStructureType(JObject jObj)
@@ -312,7 +181,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return type.ToLowerInvariant() ?? string.Empty;
         }
 
-        private static List<Attachment> GetAttachments(JToken value)
+        private static IList<Attachment> GetAttachments(JToken value)
         {
             var attachments = new List<Attachment>();
             var attachmentsJsonList = NormalizedToList(value);
@@ -321,28 +190,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 if (attachmentsJson is JObject attachmentsJsonJObj)
                 {
-                    if (GetAttachment(attachmentsJsonJObj, out var attachment))
-                    {
-                        attachments.Add(attachment);
-                    }
-                    else
-                    {
-                        throw new Exception($"'{attachmentsJsonJObj}' is not an attachment format.");
-                    }
-                }
-                else
-                {
-                    throw new Exception($"'{attachmentsJson}' is not an attachment format.");
+                    attachments.Add(GetAttachment(attachmentsJsonJObj));
                 }
             }
 
             return attachments;
         }
 
-        private static bool GetAttachment(JObject lgJObj, out Attachment attachment)
+        private static Attachment GetAttachment(JObject lgJObj)
         {
-            attachment = new Attachment();
-            var isAttachment = true;
+            Attachment attachment;
 
             var type = GetStructureType(lgJObj);
 
@@ -352,25 +209,63 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             else if (type == "adaptivecard")
             {
-                attachment = new Attachment("application/vnd.microsoft.card.adaptive", content: lgJObj);
+                attachment = new Attachment(AdaptiveCardType, content: lgJObj);
+            }
+            else if (type == nameof(Attachment).ToLowerInvariant())
+            {
+                attachment = GetNormalAttachment(lgJObj);
             }
             else
             {
-                isAttachment = false;
+                attachment = new Attachment(type, content: lgJObj);
             }
 
-            return isAttachment;
+            return attachment;
+        }
+
+        private static Attachment GetNormalAttachment(JObject lgJObj)
+        {
+            var attachmentJson = new JObject();
+
+            foreach (var item in lgJObj)
+            {
+                var property = item.Key.Trim();
+                var value = item.Value;
+
+                switch (property.ToLowerInvariant())
+                {
+                    case "contenttype":
+                        {
+                            var type = value.ToString().ToLowerInvariant();
+                            if (GenericCardTypeMapping.ContainsKey(type))
+                            {
+                                attachmentJson["ContentType"] = GenericCardTypeMapping[type];
+                            }
+                            else if (type == "adaptivecard")
+                            {
+                                attachmentJson["ContentType"] = AdaptiveCardType;
+                            }
+                            else
+                            {
+                                attachmentJson["ContentType"] = type;
+                            }
+
+                            break;
+                        }
+
+                    default:
+                        attachmentJson[property] = value;
+                        break;
+                }
+            }
+
+            return attachmentJson.ToObject<Attachment>();
         }
 
         private static Attachment GetCardAtttachment(string type, JObject lgJObj)
         {
-            var attachment = new Attachment(type, content: new JObject());
-            BuildGenericCard(attachment.Content, type, lgJObj);
-            return attachment;
-        }
+            var card = new JObject();
 
-        private static void BuildGenericCard(dynamic card, string type, JObject lgJObj)
-        {
             foreach (var item in lgJObj)
             {
                 var property = item.Key.Trim().ToLowerInvariant();
@@ -378,13 +273,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                 switch (property)
                 {
-                    case "title":
-                    case "subtitle":
-                    case "text":
-                    case "aspect":
-                    case "value":
-                    case "connectionname":
-                        card[property] = value;
+                    case "tap":
+                        card[property] = JObject.FromObject(GetCardAction(value));
                         break;
 
                     case "image":
@@ -426,7 +316,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                             card[property] = new JArray();
                         }
 
-                        GetButtons(value).ForEach(u => ((JArray)card[property]).Add(JObject.FromObject(u)));
+                        GetButtons(value).ToList().ForEach(u => ((JArray)card[property]).Add(JObject.FromObject(u)));
                         break;
 
                     case "autostart":
@@ -443,6 +333,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                         break;
                 }
             }
+
+            return new Attachment(type, content: card);
         }
 
         private static bool IsValidBooleanValue(string boolValue, out bool boolResult)
@@ -467,11 +359,54 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return false;
         }
 
-        private static List<JToken> NormalizedToList(JToken item)
+        private static IList<JToken> NormalizedToList(JToken item)
         {
             return item == null ? 
                 new List<JToken>() :
                 item is JArray array ? array.ToList() : new List<JToken>() { item };
+        }
+
+        private static bool IsStringValue(JToken value, out string stringValue)
+        {
+            stringValue = string.Empty;
+            if (value is JValue jValue && jValue.Type == JTokenType.String)
+            {
+                stringValue = jValue.ToObject<string>().Trim();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// parse the lg string output. If the output is structured result, get the object result and return true.
+        /// </summary>
+        /// <param name="lgStringResult">lg string output.</param>
+        /// <param name="lgStructuredResult">lg json object result.</param>
+        /// <returns>judge if the lg string output is structured result.</returns>
+        private static bool ParseStructuredLGResult(string lgStringResult, out JObject lgStructuredResult)
+        {
+            lgStructuredResult = new JObject();
+            lgStringResult = lgStringResult?.Trim();
+
+            if (string.IsNullOrWhiteSpace(lgStringResult)
+                || !lgStringResult.StartsWith("{") || !lgStringResult.EndsWith("}"))
+            {
+                return false;
+            }
+
+            try
+            {
+                lgStructuredResult = JObject.Parse(lgStringResult);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
