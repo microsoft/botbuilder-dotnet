@@ -5,10 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Skills.Integration.AspNet.Core
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
     /// <summary>
     /// A base class for a skill controller.

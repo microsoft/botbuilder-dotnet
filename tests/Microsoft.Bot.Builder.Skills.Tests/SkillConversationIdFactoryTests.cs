@@ -6,7 +6,7 @@ using System.Text;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Skills.Tests
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 {
     public class SkillConversationIdFactoryTests
     {

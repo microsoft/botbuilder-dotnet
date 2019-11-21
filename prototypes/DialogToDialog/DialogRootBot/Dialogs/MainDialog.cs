@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -18,11 +17,11 @@ namespace DialogRootBot.Dialogs
 {
     public class MainDialog : ComponentDialog
     {
-        private readonly ConversationState _conversationState;
-        private readonly SkillsConfiguration _skillsConfig;
-        private readonly BotFrameworkHttpClient _skillClient;
         private readonly string _botId;
         private readonly ISkillConversationIdFactory _conversationIdFactory;
+        private readonly ConversationState _conversationState;
+        private readonly BotFrameworkHttpClient _skillClient;
+        private readonly SkillsConfiguration _skillsConfig;
 
         // Dependency injection uses this constructor to instantiate MainDialog
         public MainDialog(ConversationState conversationState, BotFrameworkHttpClient skillClient, ISkillConversationIdFactory conversationIdFactory, SkillsConfiguration skillsConfig, SkillDialog bookingDialog, IConfiguration configuration)

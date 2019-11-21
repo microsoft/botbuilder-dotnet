@@ -3,8 +3,7 @@
 
 using System;
 using System.Text;
-using System.Web;
-using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Newtonsoft.Json;
 
 namespace SimpleRootBot
