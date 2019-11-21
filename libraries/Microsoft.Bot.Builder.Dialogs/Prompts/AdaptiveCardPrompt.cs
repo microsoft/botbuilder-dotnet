@@ -145,13 +145,22 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Ensure we're working with RetryPrompt, as applicable
             var prompt = isRetry && options.RetryPrompt != null ? options.RetryPrompt : options.Prompt;
 
-            // Clone the correct prompt so that we don't affect the one saved in state
-            if (prompt == null)
-            {
-                prompt = new Activity() { Text = string.Empty };
-            }
+            // Clone the correct prompt (or new Activity, if null) so that we don't affect the one saved in state
+            var clonedPrompt = JObject.FromObject(prompt ?? new Activity()).ToObject<Activity>();
 
-            var clonedPrompt = JObject.FromObject(prompt).ToObject<Activity>();
+            // The actual AdaptiveCard should be tightly-coupled to its AdaptiveCardPromptSettings, which means it would be instantiated in
+            //   a Dialog's constructor and passed in when using AddDialog(AdaptiveCardPrompt) as opposed to passing into Activity.Attachments.
+            //   The actual prompt is typically called by using stepContext.PromptAsync() in a WaterfallDialog step, where PromptOptions is
+            //   required by DialogContext. However, PromptOptions isn't really required (or useful) for AdaptiveCardPrompt.
+            // This next code block allows a user to simply call by setting Activity.Type to ActivityTypes.Message
+            // "PromptAsync(nameof(AdaptiveCardPrompt), new PromptOptions())", instead of the uglier
+            // "PromptAsync(nameof(AdaptiveCardPrompt), new PromptOptions(){ Prompt = MessageFactory.Text(string.Empty) })"
+            // Note: PromptOptions does not need to be set in Node, since it compiles to JavaScript
+            //   and the card gets sent without setting Activity.Type
+            if (clonedPrompt.Type == null)
+            {
+                clonedPrompt.Type = ActivityTypes.Message;
+            }
 
             // Add Adaptive Card as last attachment (user input should go last), keeping any others
             if (clonedPrompt.Attachments == null)
