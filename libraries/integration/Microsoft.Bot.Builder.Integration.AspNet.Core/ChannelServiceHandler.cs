@@ -45,73 +45,73 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
         public async Task<ResourceResponse> HandleSendToConversationAsync(string authHeader, string conversationId, Activity activity, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await Authenticate(authHeader).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnSendToConversationAsync(claimsIdentity, conversationId, activity, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<ResourceResponse> HandleReplyToActivityAsync(string authHeader, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await Authenticate(authHeader).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnReplyToActivityAsync(claimsIdentity, conversationId, activityId, activity, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<ResourceResponse> HandleUpdateActivityAsync(string authHeader, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await Authenticate(authHeader).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnUpdateActivityAsync(claimsIdentity, conversationId, activityId, activity, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task HandleDeleteActivityAsync(string authHeader, string conversationId, string activityId, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await Authenticate(authHeader).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             await OnDeleteActivityAsync(claimsIdentity, conversationId, activityId, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<IList<ChannelAccount>> HandleGetActivityMembersAsync(string authHeader, string conversationId, string activityId, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await Authenticate(authHeader).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnGetActivityMembersAsync(claimsIdentity, conversationId, activityId, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<ConversationResourceResponse> HandleCreateConversationAsync(string authHeader, string conversationId, ConversationParameters parameters, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await Authenticate(authHeader).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnCreateConversationAsync(claimsIdentity, conversationId, parameters, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<ConversationsResult> HandleGetConversationsAsync(string authHeader, string conversationId, string continuationToken = default, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await Authenticate(authHeader).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnGetConversationsAsync(claimsIdentity, conversationId, continuationToken, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<IList<ChannelAccount>> HandleGetConversationMembersAsync(string authHeader, string conversationId, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await Authenticate(authHeader).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnGetConversationMembersAsync(claimsIdentity, conversationId, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<PagedMembersResult> HandleGetConversationPagedMembersAsync(string authHeader, string conversationId, int? pageSize = default, string continuationToken = default, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await Authenticate(authHeader).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnGetConversationPagedMembersAsync(claimsIdentity, conversationId, pageSize, continuationToken, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task HandleDeleteConversationMemberAsync(string authHeader, string conversationId, string memberId, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await Authenticate(authHeader).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             await OnDeleteConversationMemberAsync(claimsIdentity, conversationId, memberId, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<ResourceResponse> HandleSendConversationHistoryAsync(string authHeader, string conversationId, Transcript transcript, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await Authenticate(authHeader).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnSendConversationHistoryAsync(claimsIdentity, conversationId, transcript, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<ResourceResponse> HandleUploadAttachmentAsync(string authHeader, string conversationId, AttachmentData attachmentUpload, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await Authenticate(authHeader).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnUploadAttachmentAsync(claimsIdentity, conversationId, attachmentUpload, cancellationToken).ConfigureAwait(false);
         }
 
@@ -412,7 +412,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             throw new NotImplementedException();
         }
 
-        private async Task<ClaimsIdentity> Authenticate(string authHeader)
+        private async Task<ClaimsIdentity> AuthenticateAsync(string authHeader)
         {
             return await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider, "unknown", _authConfiguration).ConfigureAwait(false);
         }
