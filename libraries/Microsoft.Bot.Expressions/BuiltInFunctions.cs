@@ -1360,21 +1360,55 @@ namespace Microsoft.Bot.Expressions
             object result = null;
             string error;
 
-            dynamic collection;
-            (collection, error) = expression.Children[0].TryEvaluate(state);
+            dynamic instance;
+            (instance, error) = expression.Children[0].TryEvaluate(state);
             if (error == null)
             {
                 // 2nd parameter has been rewrite to $local.item
                 var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
+                IList list = null;
+                if (TryParseList(instance, out IList ilist))
+                {
+                    list = ilist;
+                }
+                else if (instance is JObject jobj)
+                {
+                    var tempList = new List<object>();
+                    
+                    foreach (var item in jobj)
+                    {
+                        tempList.Add(new { key = item.Key, value = item.Value });
+                    }
 
-                if (TryParseList(collection, out IList ilist))
+                    list = tempList;
+                }
+                else
+                {
+                    var jToken = JToken.FromObject(instance);
+                    if (jToken is JObject jobject)
+                    {
+                        var tempList = new List<object>();
+                        foreach (var item in jobject)
+                        {
+                            tempList.Add(new { key = item.Key, value = item.Value });
+                        }
+
+                        list = tempList;
+                    }
+                    else
+                    {
+                        error = $"{expression.Children[0]} is not a collection or structure object to run foreach";
+                    }
+                }
+
+                if (error == null)
                 {
                     result = new List<object>();
-                    for (var idx = 0; idx < ilist.Count; idx++)
+                    for (var idx = 0; idx < list.Count; idx++)
                     {
                         var local = new Dictionary<string, object>
                         {
-                            { iteratorName, AccessIndex(ilist, idx).value },
+                            { iteratorName, AccessIndex(list, idx).value },
                         };
                         var newScope = new Dictionary<string, object>
                         {
@@ -1390,10 +1424,6 @@ namespace Microsoft.Bot.Expressions
 
                         ((List<object>)result).Add(r);
                     }
-                }
-                else
-                {
-                    error = $"{expression.Children[0]} is not a collection to run foreach";
                 }
             }
 
