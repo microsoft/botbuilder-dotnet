@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             var skillConversationId = sc.CreateSkillConversationId(conversationId, serviceUrl);
             var (returnedConversationId, returnedServerUrl) = sc.GetConversationInfo(skillConversationId);
 
-            Assert.Equal(skillConversationId, returnedConversationId);
+            Assert.Equal(conversationId, returnedConversationId);
             Assert.Equal(serviceUrl, returnedServerUrl);
         }
 
