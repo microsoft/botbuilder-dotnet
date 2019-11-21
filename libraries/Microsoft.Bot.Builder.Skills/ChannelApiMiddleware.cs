@@ -7,33 +7,23 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Skills
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
     /// <summary>
     /// Handles InvokeActivity for ChannelAPI methods calls coming from the skill adapter.
     /// </summary>
     internal class ChannelApiMiddleware : IMiddleware
     {
-        private readonly SkillHostAdapter _skillAdapter;
-
-        internal ChannelApiMiddleware(SkillHostAdapter skillAdapter)
-        {
-            _skillAdapter = skillAdapter;
-        }
-
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
         {
-            // register the skill adapter so people can get it to do .ForwardActivityAsync()
-            turnContext.TurnState.Add(_skillAdapter);
-
-            if (turnContext.Activity.Type == ActivityTypes.Invoke && turnContext.Activity.Name == SkillHostAdapter.InvokeActivityName)
+            if (turnContext.Activity.Type == ActivityTypes.Invoke && turnContext.Activity.Name == SkillHandler.InvokeActivityName)
             {
                 // process Invoke Activity 
                 var invokeActivity = turnContext.Activity.AsInvokeActivity();
                 var invokeArgs = invokeActivity.Value as ChannelApiArgs;
 
                 // TODO This needs to be more robust to get bot id
-                await CallChannelApiAsync(turnContext, next, invokeArgs, cancellationToken).ConfigureAwait(false);
+                await ProcessSkillActivityAsync(turnContext, next, invokeArgs, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -58,10 +48,11 @@ namespace Microsoft.Bot.Builder.Skills
             await next(cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task CallChannelApiAsync(ITurnContext turnContext, NextDelegate next, ChannelApiArgs invokeArgs, CancellationToken cancellationToken)
+        private async Task ProcessSkillActivityAsync(ITurnContext turnContext, NextDelegate next, ChannelApiArgs invokeArgs, CancellationToken cancellationToken)
         {
             try
             {
+                // TODO: this cast won't work for custom adapters
                 var adapter = turnContext.Adapter as BotFrameworkAdapter;
 
                 switch (invokeArgs.Method)
@@ -127,7 +118,7 @@ namespace Microsoft.Bot.Builder.Skills
 
                     //if (adapter != null)
                     //{
-                    //    invokeArgs.Result = await adapter.GetConversationsAsync((int)invokeArgs.Args[0], (string)invokeArgs.Args[1], cancellationToken).ConfigureAwait(false);
+                    //    invokeArgs.Result = await adapter.OnGetConversationsAsync((int)invokeArgs.Args[0], (string)invokeArgs.Args[1], cancellationToken).ConfigureAwait(false);
                     //}
 
                     // DeleteConversationMember(memberId)
