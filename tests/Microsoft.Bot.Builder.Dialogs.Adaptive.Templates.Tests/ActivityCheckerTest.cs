@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests
             diagnostics = ActivityChecker.Check("{}");
             Assert.AreEqual(diagnostics.Count, 1);
             Assert.IsTrue(diagnostics[0].Severity == DiagnosticSeverity.Error);
-            Assert.AreEqual(diagnostics[0].Message, "'type' or '$type' is not exist in lg output json object.");
+            Assert.AreEqual(diagnostics[0].Message, "'type' or '$kind' is not exist in lg output json object.");
         }
 
         [TestMethod]

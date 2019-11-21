@@ -1,20 +1,20 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "AdaptiveDialog",
     "triggers": [
       {
-        "$type": "Microsoft.OnUnknownIntent",
+        "$kind": "Microsoft.OnUnknownIntent",
         
         "actions": [
           {
-            "$type": "Microsoft.NumberInput",
+            "$kind": "Microsoft.NumberInput",
             "property": "$age",
             "prompt": "Hello, how old are you?"
           },
             {
-                "$type": "Microsoft.BeginDialog",
+                "$kind": "Microsoft.BeginDialog",
                 "options": {
                     "userAge": "$age"
                 },
@@ -28,23 +28,23 @@
   },
   "script": [
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "Hi"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Hello, how old are you?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "44"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Hello, you are 44 years old!"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "And your actual age is 44"
     }
   ]

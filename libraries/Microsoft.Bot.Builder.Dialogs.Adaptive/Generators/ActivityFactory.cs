@@ -196,7 +196,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 return string.Empty;
             }
 
-            var type = jObj["$type"]?.ToString()?.Trim();
+            var type = jObj["$kind"]?.ToString()?.Trim() ?? jObj["$type"]?.ToString()?.Trim();
             if (string.IsNullOrEmpty(type))
             {
                 // Adaptive card type

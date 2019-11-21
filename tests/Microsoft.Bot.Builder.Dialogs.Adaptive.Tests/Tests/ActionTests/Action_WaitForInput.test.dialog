@@ -1,20 +1,20 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "planningTest",
     "triggers": [
       {
-        "$type": "Microsoft.OnUnknownIntent",
+        "$kind": "Microsoft.OnUnknownIntent",
         
         "actions": [
           {
-            "$type": "Microsoft.TextInput",
+            "$kind": "Microsoft.TextInput",
             "property": "user.name",
             "prompt": "Hello, what is your name?"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "Hello @{user.name}, nice to meet you!"
           }
         ]
@@ -25,19 +25,19 @@
   },
   "script": [
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "hi"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Hello, what is your name?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "Carlos"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Hello Carlos, nice to meet you!"
     }
   ]

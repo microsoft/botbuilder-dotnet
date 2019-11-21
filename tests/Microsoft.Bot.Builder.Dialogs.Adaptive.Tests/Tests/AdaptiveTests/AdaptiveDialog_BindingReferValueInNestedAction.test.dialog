@@ -1,35 +1,35 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "AdaptiveDialog",
     "generator": {
-      "$type": "Microsoft.TemplateEngineLanguageGenerator",
+      "$kind": "Microsoft.TemplateEngineLanguageGenerator",
       "id": "",
       "lgText": ""
     },
     "triggers": [
       {
-        "$type": "Microsoft.OnUnknownIntent",
+        "$kind": "Microsoft.OnUnknownIntent",
         
         "actions": [
           {
-            "$type": "Microsoft.NumberInput",
+            "$kind": "Microsoft.NumberInput",
             "property": "$age",
             "prompt": "Hello, how old are you?"
           },
           {
-            "$type": "Microsoft.IfCondition",
+            "$kind": "Microsoft.IfCondition",
             "condition": "($age > 80)",
             "actions": [
               {
-                "$type": "Microsoft.SendActivity",
+                "$kind": "Microsoft.SendActivity",
                 "activity": "Thanks, you are quite young!"
               }
             ],
             "elseActions": [
               {
-                "$type": "Microsoft.SendActivity",
+                "$kind": "Microsoft.SendActivity",
                 "activity": "Thanks, you are awesome!"
               }
             ]
@@ -42,19 +42,19 @@
   },
   "script": [
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "Hi"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Hello, how old are you?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "94"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Thanks, you are quite young!"
     }
   ]

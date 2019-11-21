@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
     [DebuggerDisplay("UserTyping")]
     public class UserTyping : TestAction
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.Test.UserTyping";
 
         [JsonConstructor]

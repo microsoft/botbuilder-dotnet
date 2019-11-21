@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
     [DebuggerDisplay("AssertReplyActivity:{GetConditionDescription()}")]
     public class AssertReplyActivity : TestAction
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.Test.AssertReplyActivity";
 
         [JsonConstructor]

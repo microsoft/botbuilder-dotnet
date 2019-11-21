@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
     /// <seealso cref="TestAdapter"/>
     public class TestScript
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.Test.Script";
 
         private static JsonSerializerSettings serializerSettings = new JsonSerializerSettings()

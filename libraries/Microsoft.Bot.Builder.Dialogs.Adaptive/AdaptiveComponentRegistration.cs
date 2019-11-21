@@ -142,7 +142,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)
         {
             yield return new InterfaceConverter<OnCondition>(refResolver, sourceMap, paths);
+            yield return new InterfaceConverter<TestAction>(refResolver, sourceMap, paths);
+            yield return new InterfaceConverter<EntityRecognizer>(refResolver, sourceMap, paths);
+            yield return new InterfaceConverter<ITriggerSelector>(refResolver, sourceMap, paths);
             yield return new ExpressionPropertyConverter<ChoiceSet>();
+            yield return new ActivityTemplateConverter();
         }
     }
 }

@@ -1,19 +1,19 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "planningTest",
     "triggers": [
       {
-        "$type": "Microsoft.OnBeginDialog",
+        "$kind": "Microsoft.OnBeginDialog",
         "actions": [
           {
-            "$type": "Microsoft.SetProperty",
+            "$kind": "Microsoft.SetProperty",
             "property": "user.choices",
             "value": "json('[{\"value\": \"red\"}, {\"value\": \"green\"}, {\"value\": \"blue\"}]')"
           },
           {
-            "$type": "Microsoft.ChoiceInput",
+            "$kind": "Microsoft.ChoiceInput",
             "choices": {
               "expression": "user.choices"
             },
@@ -23,11 +23,11 @@
             "unrecognizedPrompt": "Not a color. Please select a color:"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "@{user.color}"
           },
           {
-            "$type": "Microsoft.ChoiceInput",
+            "$kind": "Microsoft.ChoiceInput",
             "choices": {
               "expression": "user.choices"
             },
@@ -38,11 +38,11 @@
             "unrecognizedPrompt": "Please select a color:"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "@{user.color}"
           },
           {
-            "$type": "Microsoft.ChoiceInput",
+            "$kind": "Microsoft.ChoiceInput",
             "choices": {
               "expression": "user.choices"
             },
@@ -53,7 +53,7 @@
             "unrecognizedPrompt": "Please select a color:"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "@{user.color}"
           }
         ]
@@ -63,39 +63,39 @@
   },
   "script": [
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "hi"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Please select a color: (1) red, (2) green, or (3) blue"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "asdasd"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Not a color. Please select a color: (1) red, (2) green, or (3) blue"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "3"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "blue"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Please select a color: (1) red, (2) green, or (3) blue"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "red"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "red"
     }
   ]

@@ -1,36 +1,36 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "AdaptiveDialog",
     "recognizer": {
-      "$type": "Microsoft.RegexRecognizer",
+      "$kind": "Microsoft.RegexRecognizer",
       "intents": [
         {
-          "$type": "Microsoft.IntentPattern",
+          "$kind": "Microsoft.IntentPattern",
           "intent": "Start",
           "pattern": "(?i)start"
         },
         {
-          "$type": "Microsoft.IntentPattern",
+          "$kind": "Microsoft.IntentPattern",
           "intent": "None",
           "pattern": "200"
         }
       ]
     },
     "generator": {
-      "$type": "Microsoft.TemplateEngineLanguageGenerator",
+      "$kind": "Microsoft.TemplateEngineLanguageGenerator",
       "id": "",
       "lgText": ""
     },
     "triggers": [
       {
-        "$type": "Microsoft.OnIntent",
+        "$kind": "Microsoft.OnIntent",
         "intent": "Start",
         
         "actions": [
           {
-            "$type": "Microsoft.NumberInput",
+            "$kind": "Microsoft.NumberInput",
             "allowInterruptions": "True",
             "property": "user.age",
             "prompt": "What is your age?",
@@ -41,22 +41,22 @@
             ]
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "I have @{user.age} as your age"
           }
         ]
       },
       {
-        "$type": "Microsoft.OnIntent",
+        "$kind": "Microsoft.OnIntent",
         "intent": "None",
         
         "actions": [
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "In None..."
           },
           {
-            "$type": "Microsoft.SetProperty",
+            "$kind": "Microsoft.SetProperty",
             "property": "turn.interrupted",
             "value": "False"
           }
@@ -68,47 +68,47 @@
   },
   "script": [
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "start"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "What is your age?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "200"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "In None..."
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Sorry. 200 does not work. I'm looking for a value between 1-150. What is your age?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "500"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "In None..."
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Sorry. 500 does not work. I'm looking for a value between 1-150. What is your age?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "36"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "In None..."
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "I have 36 as your age"
     }
   ]

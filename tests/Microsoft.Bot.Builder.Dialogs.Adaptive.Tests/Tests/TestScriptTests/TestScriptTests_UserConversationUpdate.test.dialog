@@ -1,29 +1,29 @@
 ﻿{
     "$schema": "../../../schemas/sdk.schema",
-    "$type": "Microsoft.Test.Script",
+    "$kind": "Microsoft.Test.Script",
     "description": "Test AssertReply",
     "dialog": {
-        "$type": "Microsoft.AdaptiveDialog",
+        "$kind": "Microsoft.AdaptiveDialog",
         "triggers": [
             {
-                "$type": "Microsoft.OnConversationUpdateActivity",
+                "$kind": "Microsoft.OnConversationUpdateActivity",
                 "actions": [
                     {
-                        "$type": "Microsoft.Foreach",
+                        "$kind": "Microsoft.Foreach",
                         "itemsProperty": "turn.activity.membersAdded",
                         "actions": [
                             {
-                                "$type": "Microsoft.SendActivity",
+                                "$kind": "Microsoft.SendActivity",
                                 "activity": "Hello @{dialog.foreach.value.name}"
                             }
                         ]
                     },
                     {
-                        "$type": "Microsoft.Foreach",
+                        "$kind": "Microsoft.Foreach",
                         "itemsProperty": "turn.activity.membersRemoved",
                         "actions": [
                             {
-                                "$type": "Microsoft.SendActivity",
+                                "$kind": "Microsoft.SendActivity",
                                 "activity": "Goodbye @{dialog.foreach.value.name}"
                             }
                         ]
@@ -34,7 +34,7 @@
     },
     "script": [
         {
-            "$type": "Microsoft.Test.UserConversationUpdate",
+            "$kind": "Microsoft.Test.UserConversationUpdate",
             "membersAdded": [
                 "john",
                 "sue"
@@ -45,19 +45,19 @@
             ]
         },
         {
-            "$type": "Microsoft.Test.AssertReply",
+            "$kind": "Microsoft.Test.AssertReply",
             "text": "Hello john"
         },
         {
-            "$type": "Microsoft.Test.AssertReply",
+            "$kind": "Microsoft.Test.AssertReply",
             "text": "Hello sue"
         },
         {
-            "$type": "Microsoft.Test.AssertReply",
+            "$kind": "Microsoft.Test.AssertReply",
             "text": "Goodbye fred"
         },
         {
-            "$type": "Microsoft.Test.AssertReply",
+            "$kind": "Microsoft.Test.AssertReply",
             "text": "Goodbye joe"
         }
     ]

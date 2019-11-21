@@ -1,22 +1,22 @@
 {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "innerDialog",
     "autoEndDialog": false,
     "recognizer": {
-        "$type": "Microsoft.RegexRecognizer",
+        "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "JokeIntent",
                 "pattern": "(?i)joke"
             },
             {
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "GreetingIntent",
                 "pattern": "(?i)hi|hello"
             },
             {
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "GoodbyeIntent",
                 "pattern": "(?i)bye|goodbye|seeya|see ya"
             }
@@ -24,47 +24,47 @@
     },
     "triggers": [
         {
-            "$type": "Microsoft.OnBeginDialog",
+            "$kind": "Microsoft.OnBeginDialog",
             "actions": [
                 "GreetingDialog",
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "I'm a joke bot. To get started say 'tell me a joke'"
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "JokeIntent",
             "actions": [
                 "TellJokeDialog"
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "GreetingIntent",
             "actions": [
                 "GreetingDialog"
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "GoodbyeIntent",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "See you later aligator!"
                 },
                 {
-                    "$type": "Microsoft.EndDialog"
+                    "$kind": "Microsoft.EndDialog"
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnUnknownIntent",
+            "$kind": "Microsoft.OnUnknownIntent",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Like I said, I'm a joke bot. To get started say 'tell me a joke'"
                 }
             ]

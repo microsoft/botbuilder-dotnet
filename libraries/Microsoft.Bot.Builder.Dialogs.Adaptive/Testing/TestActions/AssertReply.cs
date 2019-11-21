@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
     [DebuggerDisplay("AssertReply{Exact ? \"[Exact]\" : string.Empty}:{GetConditionDescription()}")]
     public class AssertReply : AssertReplyActivity
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public new const string DeclarativeType = "Microsoft.Test.AssertReply";
 
         [JsonConstructor]

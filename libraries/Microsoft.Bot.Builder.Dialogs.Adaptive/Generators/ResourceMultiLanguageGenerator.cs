@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// </remarks>
     public class ResourceMultiLanguageGenerator : MultiLanguageGeneratorBase
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.ResourceMultiLanguageGenerator";
 
         /// <summary>

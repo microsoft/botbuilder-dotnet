@@ -1,15 +1,15 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "planningTest",
     "triggers": [
       {
-        "$type": "Microsoft.OnUnknownIntent",
+        "$kind": "Microsoft.OnUnknownIntent",
         
         "actions": [
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "Hello Planning!"
           }
         ]
@@ -20,11 +20,11 @@
   },
   "script": [
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "start"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Hello Planning!"
     }
   ]

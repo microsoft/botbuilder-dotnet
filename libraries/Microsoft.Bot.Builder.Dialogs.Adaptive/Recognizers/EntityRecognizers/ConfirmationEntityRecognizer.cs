@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </summary>
     public class ConfirmationEntityRecognizer : EntityRecognizer
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.ConfirmationEntityRecognizer";
 
         public ConfirmationEntityRecognizer()

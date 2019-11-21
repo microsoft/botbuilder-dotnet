@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
     [JsonConverter(typeof(ActivityTemplateConverter))]
     public class ActivityTemplate : ITemplate<Activity>
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.ActivityTemplate";
 
         // Fixed text constructor for inline template

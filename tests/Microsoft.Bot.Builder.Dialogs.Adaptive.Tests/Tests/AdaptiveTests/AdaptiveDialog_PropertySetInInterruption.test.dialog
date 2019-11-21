@@ -1,141 +1,141 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "AdaptiveDialog",
     "recognizer": {
-      "$type": "Microsoft.RegexRecognizer",
+      "$kind": "Microsoft.RegexRecognizer",
       "intents": [
         {
-          "$type": "Microsoft.IntentPattern",
+          "$kind": "Microsoft.IntentPattern",
           "intent": "Interruption",
           "pattern": "(?i)interrupt"
         },
         {
-          "$type": "Microsoft.IntentPattern",
+          "$kind": "Microsoft.IntentPattern",
           "intent": "Greeting",
           "pattern": "(?i)hi"
         },
         {
-          "$type": "Microsoft.IntentPattern",
+          "$kind": "Microsoft.IntentPattern",
           "intent": "Start",
           "pattern": "(?i)start"
         },
         {
-          "$type": "Microsoft.IntentPattern",
+          "$kind": "Microsoft.IntentPattern",
           "intent": "noage",
           "pattern": "(?i)no"
         },
         {
-          "$type": "Microsoft.IntentPattern",
+          "$kind": "Microsoft.IntentPattern",
           "intent": "why",
           "pattern": "(?i)why"
         },
         {
-          "$type": "Microsoft.IntentPattern",
+          "$kind": "Microsoft.IntentPattern",
           "intent": "reset",
           "pattern": "(?i)reset"
         }
       ]
     },
     "generator": {
-      "$type": "Microsoft.TemplateEngineLanguageGenerator",
+      "$kind": "Microsoft.TemplateEngineLanguageGenerator",
       "id": "",
       "lgText": ""
     },
     "triggers": [
       {
-        "$type": "Microsoft.OnUnknownIntent",
+        "$kind": "Microsoft.OnUnknownIntent",
         
         "actions": [
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "Hello, I'm the demo bot."
           }
         ]
       },
       {
-        "$type": "Microsoft.OnIntent",
+        "$kind": "Microsoft.OnIntent",
         "intent": "reset",
         
         "actions": [
           {
-            "$type": "Microsoft.DeleteProperty",
+            "$kind": "Microsoft.DeleteProperty",
             "property": "user.name"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "Sure. I've reset your profile."
           }
         ]
       },
       {
-        "$type": "Microsoft.OnIntent",
+        "$kind": "Microsoft.OnIntent",
         "intent": "Start",
         
         "actions": [
           {
-            "$type": "Microsoft.TextInput",
+            "$kind": "Microsoft.TextInput",
             "allowInterruptions": "True",
             "property": "user.name",
             "prompt": "What is your name?"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "I have @{user.name} as your name"
           }
         ]
       },
       {
-        "$type": "Microsoft.OnIntent",
+        "$kind": "Microsoft.OnIntent",
         "intent": "Interruption",
         
         "actions": [
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "In Interruption..."
           },
           {
-            "$type": "Microsoft.SetProperty",
+            "$kind": "Microsoft.SetProperty",
             "property": "turn.interrupted",
             "value": "False"
           }
         ]
       },
       {
-        "$type": "Microsoft.OnIntent",
+        "$kind": "Microsoft.OnIntent",
         "intent": "Greeting",
         
         "actions": [
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "Hi, I'm the test bot!"
           }
         ]
       },
       {
-        "$type": "Microsoft.OnIntent",
+        "$kind": "Microsoft.OnIntent",
         "intent": "noage",
         
         "actions": [
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "Sure, no problem. I'll set your name to 'Human'. you can say reset to start over"
           },
           {
-            "$type": "Microsoft.SetProperty",
+            "$kind": "Microsoft.SetProperty",
             "property": "user.name",
             "value": "'Human'"
           }
         ]
       },
       {
-        "$type": "Microsoft.OnIntent",
+        "$kind": "Microsoft.OnIntent",
         "intent": "why",
         
         "actions": [
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "I need your name to be able to address you correctly"
           }
         ]
@@ -146,59 +146,59 @@
   },
   "script": [
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "start"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "What is your name?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "why"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "I need your name to be able to address you correctly"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "What is your name?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "hi"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Hi, I'm the test bot!"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "What is your name?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "reset"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Sure. I've reset your profile."
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "What is your name?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "no"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Sure, no problem. I'll set your name to 'Human'. you can say reset to start over"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "I have Human as your name"
     }
   ]

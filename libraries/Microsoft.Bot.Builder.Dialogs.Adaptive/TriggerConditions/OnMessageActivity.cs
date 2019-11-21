@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     /// </remarks>
     public class OnMessageActivity : OnActivity
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.OnMessageActivity";
 
         [JsonConstructor]

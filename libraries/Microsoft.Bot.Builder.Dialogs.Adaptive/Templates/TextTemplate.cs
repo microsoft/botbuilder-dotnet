@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
     [DebuggerDisplay("{Template}")]
     public class TextTemplate : ITemplate<string>
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.TextTemplate";
 
         // Fixed text constructor for inline template

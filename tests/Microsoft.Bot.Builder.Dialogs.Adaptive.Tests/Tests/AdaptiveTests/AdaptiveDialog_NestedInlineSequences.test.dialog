@@ -1,24 +1,24 @@
 {
-    "$type": "Microsoft.Test.Script",
+    "$kind": "Microsoft.Test.Script",
     "dialog": {
-        "$type": "Microsoft.AdaptiveDialog",
+        "$kind": "Microsoft.AdaptiveDialog",
         "id": "planningTest",
         "autoEndDialog": false,
         "recognizer": {
-            "$type": "Microsoft.RegexRecognizer",
+            "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    "$type": "Microsoft.IntentPattern",
+                    "$kind": "Microsoft.IntentPattern",
                     "intent": "JokeIntent",
                     "pattern": "joke"
                 },
                 {
-                    "$type": "Microsoft.IntentPattern",
+                    "$kind": "Microsoft.IntentPattern",
                     "intent": "GreetingIntemt",
                     "pattern": "hi|hello"
                 },
                 {
-                    "$type": "Microsoft.IntentPattern",
+                    "$kind": "Microsoft.IntentPattern",
                     "intent": "GoodbyeIntent",
                     "pattern": "bye|goodbye|seeya|see ya"
                 }
@@ -26,76 +26,76 @@
         },
         "triggers": [
             {
-                "$type": "Microsoft.OnBeginDialog",
+                "$kind": "Microsoft.OnBeginDialog",
                 
                 "actions": [
                     {
-                        "$type": "Microsoft.IfCondition",
+                        "$kind": "Microsoft.IfCondition",
                         "condition": "(user.name == null)",
                         "actions": [
                             {
-                                "$type": "Microsoft.TextInput",
+                                "$kind": "Microsoft.TextInput",
                                 "property": "user.name",
                                 "prompt": "Hello, what is your name?"
                             }
                         ]
                     },
                     {
-                        "$type": "Microsoft.SendActivity",
+                        "$kind": "Microsoft.SendActivity",
                         "activity": "Hello @{user.name}, nice to meet you!"
                     }
                 ]
             },
             {
-                "$type": "Microsoft.OnIntent",
+                "$kind": "Microsoft.OnIntent",
                 "intent": "GreetingIntemt",
                 
                 "actions": [
                     {
-                        "$type": "Microsoft.SendActivity",
+                        "$kind": "Microsoft.SendActivity",
                         "activity": "Hello @{user.name}, nice to meet you!"
                     }
                 ]
             },
             {
-                "$type": "Microsoft.OnIntent",
+                "$kind": "Microsoft.OnIntent",
                 "intent": "JokeIntent",
                 
                 "actions": [
                     {
-                        "$type": "Microsoft.SendActivity",
+                        "$kind": "Microsoft.SendActivity",
                         "activity": "Why did the chicken cross the road?"
                     },
                     {
-                        "$type": "Microsoft.EndTurn",
+                        "$kind": "Microsoft.EndTurn",
                         "id": "EndTurn"
                     },
                     {
-                        "$type": "Microsoft.SendActivity",
+                        "$kind": "Microsoft.SendActivity",
                         "activity": "To get to the other side"
                     }
                 ]
             },
             {
-                "$type": "Microsoft.OnIntent",
+                "$kind": "Microsoft.OnIntent",
                 "intent": "GoodbyeIntent",
                 
                 "actions": [
                     {
-                        "$type": "Microsoft.SendActivity",
+                        "$kind": "Microsoft.SendActivity",
                         "activity": "See you later aligator!"
                     },
                     {
-                        "$type": "Microsoft.EndDialog"
+                        "$kind": "Microsoft.EndDialog"
                     }
                 ]
             },
             {
-                "$type": "Microsoft.OnUnknownIntent",
+                "$kind": "Microsoft.OnUnknownIntent",
                 
                 "actions": [
                     {
-                        "$type": "Microsoft.SendActivity",
+                        "$kind": "Microsoft.SendActivity",
                         "activity": "I'm a joke bot. To get started say 'tell me a joke'"
                     }
                 ]
@@ -105,59 +105,59 @@
     },
     "script": [
         {
-            "$type": "Microsoft.Test.UserSays",
+            "$kind": "Microsoft.Test.UserSays",
             "text": "hi"
         },
         {
-            "$type": "Microsoft.Test.AssertReply",
+            "$kind": "Microsoft.Test.AssertReply",
             "text": "Hello, what is your name?"
         },
         {
-            "$type": "Microsoft.Test.UserSays",
+            "$kind": "Microsoft.Test.UserSays",
             "text": "Carlos"
         },
         {
-            "$type": "Microsoft.Test.AssertReply",
+            "$kind": "Microsoft.Test.AssertReply",
             "text": "Hello Carlos, nice to meet you!"
         },
         {
-            "$type": "Microsoft.Test.UserSays",
+            "$kind": "Microsoft.Test.UserSays",
             "text": "Do you know a joke?"
         },
         {
-            "$type": "Microsoft.Test.AssertReply",
+            "$kind": "Microsoft.Test.AssertReply",
             "text": "Why did the chicken cross the road?"
         },
         {
-            "$type": "Microsoft.Test.UserSays",
+            "$kind": "Microsoft.Test.UserSays",
             "text": "Why?"
         },
         {
-            "$type": "Microsoft.Test.AssertReply",
+            "$kind": "Microsoft.Test.AssertReply",
             "text": "To get to the other side"
         },
         {
-            "$type": "Microsoft.Test.UserSays",
+            "$kind": "Microsoft.Test.UserSays",
             "text": "hi"
         },
         {
-            "$type": "Microsoft.Test.AssertReply",
+            "$kind": "Microsoft.Test.AssertReply",
             "text": "Hello Carlos, nice to meet you!"
         },
         {
-            "$type": "Microsoft.Test.UserSays",
+            "$kind": "Microsoft.Test.UserSays",
             "text": "ummm"
         },
         {
-            "$type": "Microsoft.Test.AssertReply",
+            "$kind": "Microsoft.Test.AssertReply",
             "text": "I'm a joke bot. To get started say 'tell me a joke'"
         },
         {
-            "$type": "Microsoft.Test.UserSays",
+            "$kind": "Microsoft.Test.UserSays",
             "text": "Goodbye"
         },
         {
-            "$type": "Microsoft.Test.AssertReply",
+            "$kind": "Microsoft.Test.AssertReply",
             "text": "See you later aligator!"
         }
     ]

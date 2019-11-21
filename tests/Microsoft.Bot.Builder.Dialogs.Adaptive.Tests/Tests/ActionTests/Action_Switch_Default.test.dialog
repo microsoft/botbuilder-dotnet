@@ -1,23 +1,23 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "planningTest",
     "triggers": [
       {
-        "$type": "Microsoft.OnBeginDialog",
+        "$kind": "Microsoft.OnBeginDialog",
         "actions": [
           {
-            "$type": "Microsoft.SetProperty",
+            "$kind": "Microsoft.SetProperty",
             "property": "user.name",
             "value": "'Zoidberg'"
           },
           {
-            "$type": "Microsoft.SwitchCondition",
+            "$kind": "Microsoft.SwitchCondition",
             "condition": "user.name",
             "default": [
               {
-                "$type": "Microsoft.SendActivity",
+                "$kind": "Microsoft.SendActivity",
                 "activity": "Who are you?"
               }
             ],
@@ -26,7 +26,7 @@
                 "value": "susan",
                 "actions": [
                   {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "hi susan"
                   }
                 ]
@@ -35,7 +35,7 @@
                 "value": "bob",
                 "actions": [
                   {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "hi bob"
                   }
                 ]
@@ -44,7 +44,7 @@
                 "value": "frank",
                 "actions": [
                   {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "hi frank"
                   }
                 ]
@@ -59,11 +59,11 @@
   },
   "script": [
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "hi"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Who are you?"
     }
   ]

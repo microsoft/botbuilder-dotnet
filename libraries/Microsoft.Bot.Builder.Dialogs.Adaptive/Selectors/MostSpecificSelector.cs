@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// </summary>
     public class MostSpecificSelector : ITriggerSelector
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.MostSpecificSelector";
 
         private readonly TriggerTree _tree = new TriggerTree();

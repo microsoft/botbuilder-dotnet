@@ -15,7 +15,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 
         protected void RegisterSourcePath(string path, int line)
         {
-            DebugSupport.SourceMap.Add(this, new SourceRange() { Path = path, StartPoint = new SourcePoint() { LineIndex = line, CharIndex = 0 }, EndPoint = new SourcePoint() { LineIndex = line + 1, CharIndex = 0 }, });
+            if (!string.IsNullOrEmpty(path))
+            {
+                DebugSupport.SourceMap.Add(this, new SourceRange() { Path = path, StartPoint = new SourcePoint() { LineIndex = line, CharIndex = 0 }, EndPoint = new SourcePoint() { LineIndex = line + 1, CharIndex = 0 }, });
+            }
         }
     }
 }

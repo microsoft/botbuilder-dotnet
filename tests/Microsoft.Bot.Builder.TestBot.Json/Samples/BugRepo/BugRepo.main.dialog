@@ -1,26 +1,26 @@
 {
     "$schema": "../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "$id": "root",
     "autoEndDialog": false,
     "recognizer": {
-        "$type": "Microsoft.RegexRecognizer",
+        "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "Test",
                 "pattern": "test" 
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "TextInput",
                 "pattern": "textinput" 
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "End",
                 "pattern": "end"
             }
@@ -28,32 +28,32 @@
     },
     "triggers": [
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "End",
             "actions": [
                 {
-                    "$type": "Microsoft.EndDialog"
+                    "$kind": "Microsoft.EndDialog"
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "Test",
             "actions": [
                 {
-                    "$type": "Microsoft.BeginDialog",
+                    "$kind": "Microsoft.BeginDialog",
                     "dialog": "AskForName"
                 },
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Hello @{dialog.name}, nice to meet you!"
                 },
                 {
-                    "$type": "Microsoft.BeginDialog",
+                    "$kind": "Microsoft.BeginDialog",
                     "dialog": "AskForName"
                 },
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Hello @{dialog.name}, nice to meet you!"
                 }
             ]

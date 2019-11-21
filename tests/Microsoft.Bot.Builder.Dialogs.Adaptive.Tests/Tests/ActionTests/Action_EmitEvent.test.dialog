@@ -1,28 +1,28 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "root",
     "triggers": [
       {
-        "$type": "Microsoft.OnBeginDialog",
+        "$kind": "Microsoft.OnBeginDialog",
         "actions": [
           {
-            "$type": "Microsoft.BeginDialog",
+            "$kind": "Microsoft.BeginDialog",
             "options": {},
             "dialog": {
-              "$type": "Microsoft.AdaptiveDialog",
+              "$kind": "Microsoft.AdaptiveDialog",
               "id": "outer",
               "recognizer": {
-                "$type": "Microsoft.RegexRecognizer",
+                "$kind": "Microsoft.RegexRecognizer",
                 "intents": [
                   {
-                    "$type": "Microsoft.IntentPattern",
+                    "$kind": "Microsoft.IntentPattern",
                     "intent": "EmitIntent",
                     "pattern": "emit"
                   },
                   {
-                    "$type": "Microsoft.IntentPattern",
+                    "$kind": "Microsoft.IntentPattern",
                     "intent": "CowboyIntent",
                     "pattern": "moo"
                   }
@@ -30,21 +30,21 @@
               },
               "triggers": [
                 {
-                  "$type": "Microsoft.OnIntent",
+                  "$kind": "Microsoft.OnIntent",
                   "intent": "CowboyIntent",
                   "actions": [
                     {
-                      "$type": "Microsoft.SendActivity",
+                      "$kind": "Microsoft.SendActivity",
                       "activity": "Yippee ki-yay!"
                     }
                   ]
                 },
                 {
-                  "$type": "Microsoft.OnIntent",
+                  "$kind": "Microsoft.OnIntent",
                   "intent": "EmitIntent",
                   "actions": [
                     {
-                      "$type": "Microsoft.EmitEvent",
+                      "$kind": "Microsoft.EmitEvent",
                       "eventName": "CustomEvent",
                       "bubbleEvent": true
                     }
@@ -57,11 +57,11 @@
         ]
       },
       {
-        "$type": "Microsoft.OnCustomEvent",
+        "$kind": "Microsoft.OnCustomEvent",
         "event": "CustomEvent",
         "actions": [
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "CustomEventFired"
           }
         ]
@@ -72,27 +72,27 @@
   },
   "script": [
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "moo"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Yippee ki-yay!"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "emit"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "CustomEventFired"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "moo"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Yippee ki-yay!"
     }
   ]

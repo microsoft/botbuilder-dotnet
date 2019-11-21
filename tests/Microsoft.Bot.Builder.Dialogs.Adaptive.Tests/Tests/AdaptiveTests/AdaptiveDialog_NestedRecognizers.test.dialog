@@ -1,18 +1,18 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "root",
     "recognizer": {
-      "$type": "Microsoft.RegexRecognizer",
+      "$kind": "Microsoft.RegexRecognizer",
       "intents": [
         {
-          "$type": "Microsoft.IntentPattern",
+          "$kind": "Microsoft.IntentPattern",
           "intent": "StartOuterIntent",
           "pattern": "start"
         },
         {
-          "$type": "Microsoft.IntentPattern",
+          "$kind": "Microsoft.IntentPattern",
           "intent": "RootIntent",
           "pattern": "root"
         }
@@ -20,23 +20,23 @@
     },
     "triggers": [
       {
-        "$type": "Microsoft.OnIntent",
+        "$kind": "Microsoft.OnIntent",
         "intent": "StartOuterIntent",
         
         "actions": [
           {
-            "$type": "Microsoft.AdaptiveDialog",
+            "$kind": "Microsoft.AdaptiveDialog",
             "id": "outer",
             "recognizer": {
-              "$type": "Microsoft.RegexRecognizer",
+              "$kind": "Microsoft.RegexRecognizer",
               "intents": [
                 {
-                  "$type": "Microsoft.IntentPattern",
+                  "$kind": "Microsoft.IntentPattern",
                   "intent": "SideIntent",
                   "pattern": "side"
                 },
                 {
-                  "$type": "Microsoft.IntentPattern",
+                  "$kind": "Microsoft.IntentPattern",
                   "intent": "CancelIntent",
                   "pattern": "cancel"
                 }
@@ -44,64 +44,64 @@
             },
             "triggers": [
               {
-                "$type": "Microsoft.OnBeginDialog",
+                "$kind": "Microsoft.OnBeginDialog",
                 
                 "actions": [
                   {
-                    "$type": "Microsoft.TextInput",
+                    "$kind": "Microsoft.TextInput",
                     "property": "user.name",
                     "prompt": "name?"
                   },
                   {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "@{user.name}"
                   },
                   {
-                    "$type": "Microsoft.NumberInput",
+                    "$kind": "Microsoft.NumberInput",
                     "allowInterruptions": "False",
                     "property": "user.age",
                     "prompt": "age?",
                     "maxTurnCount": 2
                   },
                   {
-                    "$type": "Microsoft.NumberInput",
+                    "$kind": "Microsoft.NumberInput",
                     "allowInterruptions": "True",
                     "property": "user.age",
                     "prompt": "age?"
                   },
                   {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "@{user.age}"
                   }
                 ]
               },
               {
-                "$type": "Microsoft.OnIntent",
+                "$kind": "Microsoft.OnIntent",
                 "intent": "SideIntent",
                 
                 "actions": [
                   {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "sideintent"
                   }
                 ]
               },
               {
-                "$type": "Microsoft.OnIntent",
+                "$kind": "Microsoft.OnIntent",
                 "intent": "CancelIntent",
                 
                 "actions": [
                   {
-                    "$type": "Microsoft.EndDialog"
+                    "$kind": "Microsoft.EndDialog"
                   }
                 ]
               },
               {
-                "$type": "Microsoft.OnUnknownIntent",
+                "$kind": "Microsoft.OnUnknownIntent",
                 
                 "actions": [
                   {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "outerWhat"
                   }
                 ]
@@ -112,22 +112,22 @@
         ]
       },
       {
-        "$type": "Microsoft.OnIntent",
+        "$kind": "Microsoft.OnIntent",
         "intent": "RootIntent",
         
         "actions": [
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "rootintent"
           }
         ]
       },
       {
-        "$type": "Microsoft.OnUnknownIntent",
+        "$kind": "Microsoft.OnUnknownIntent",
         
         "actions": [
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "rootunknown"
           }
         ]
@@ -137,95 +137,95 @@
   },
   "script": [
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "start"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "name?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "side"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "sideintent"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "name?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "root"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "rootintent"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "name?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "Carlos"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Carlos"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "age?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "root"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "age?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "side"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "age?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "root"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "rootintent"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "age?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "side"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "sideintent"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "age?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "10"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "10"
     }
   ]

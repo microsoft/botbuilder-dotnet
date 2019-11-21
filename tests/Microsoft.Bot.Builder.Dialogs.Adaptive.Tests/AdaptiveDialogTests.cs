@@ -215,12 +215,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await TestUtils.RunTestScript("TestForeachWithPrompt.test.dialog");
         }
 
-#if foo
         [TestMethod]
         public async Task TestBindingTwoWayAcrossAdaptiveDialogsDefaultResultProperty()
         {
             await TestUtils.RunTestScript("TestBindingTwoWayAcrossAdaptiveDialogsDefaultResultProperty.test.dialog");
-            await TestBindingTwoWayAcrossAdaptiveDialogs(new Dictionary<string, object> { { "userName", "$name" } });
+        }
+
+#if foo
         }
 
         [TestMethod]

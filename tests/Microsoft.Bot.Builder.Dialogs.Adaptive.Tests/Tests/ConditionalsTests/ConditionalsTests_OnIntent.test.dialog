@@ -1,13 +1,13 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "planningTest",
     "recognizer": {
-      "$type": "Microsoft.RegexRecognizer",
+      "$kind": "Microsoft.RegexRecognizer",
       "intents": [
         {
-          "$type": "Microsoft.IntentPattern",
+          "$kind": "Microsoft.IntentPattern",
           "intent": "JokeIntent",
           "pattern": "joke"
         }
@@ -15,30 +15,30 @@
     },
     "triggers": [
       {
-        "$type": "Microsoft.OnBeginDialog",
+        "$kind": "Microsoft.OnBeginDialog",
         
         "actions": [
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "I'm a joke bot. To get started say 'tell me a joke'"
           }
         ]
       },
       {
-        "$type": "Microsoft.OnIntent",
+        "$kind": "Microsoft.OnIntent",
         "intent": "JokeIntent",
         
         "actions": [
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "Why did the chicken cross the road?"
           },
           {
-            "$type": "Microsoft.EndTurn",
+            "$kind": "Microsoft.EndTurn",
             "id": "EndTurn"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "To get to the other side"
           }
         ]
@@ -49,26 +49,26 @@
   },
   "script": [
     {
-      "$type": "Microsoft.Test.UserConversationUpdate"
+      "$kind": "Microsoft.Test.UserConversationUpdate"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "I'm a joke bot. To get started say 'tell me a joke'"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "Do you know a joke?"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Why did the chicken cross the road?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "Why?"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "To get to the other side"
     }
   ]

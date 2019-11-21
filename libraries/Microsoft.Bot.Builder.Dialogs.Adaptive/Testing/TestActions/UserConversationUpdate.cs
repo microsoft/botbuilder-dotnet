@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     [DebuggerDisplay("UserConversationUpdate")]
     public class UserConversationUpdate : TestAction
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.Test.UserConversationUpdate";
 
         [JsonConstructor]

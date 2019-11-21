@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
     /// </summary>
     public class LuisRecognizer : ITelemetryRecognizer
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.LuisRecognizer";
 
         /// <summary>

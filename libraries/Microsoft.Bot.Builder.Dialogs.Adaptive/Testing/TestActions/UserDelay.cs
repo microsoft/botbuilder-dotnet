@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
     [DebuggerDisplay("UserDelay:{Timespan}")]
     public class UserDelay : TestAction
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.Test.UserDelay";
 
         [JsonConstructor]

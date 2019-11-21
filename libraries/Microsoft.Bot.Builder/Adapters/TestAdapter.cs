@@ -156,7 +156,8 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
 
                 activity.ChannelId = Conversation.ChannelId;
-                if (activity.From == null || activity.From.Id == "unknown")
+                
+                if (activity.From == null || activity.From.Id == "unknown" || activity.From.Role == RoleTypes.Bot)
                 {
                     activity.From = Conversation.User;
                 }

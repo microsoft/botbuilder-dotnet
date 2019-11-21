@@ -88,23 +88,22 @@ namespace Microsoft.Bot.Builder.Skills.Tests
 
             var msgActivity = Activity.CreateMessageActivity();
             msgActivity.Conversation = botAdapter.Conversation.Conversation;
-            msgActivity.From = skillAccount;
-            msgActivity.Recipient = botAdapter.Conversation.User;
             msgActivity.Text = "yo";
 
             result = await skillAdapter.SendToConversationAsync(bot, claimsIdentity, skillConversationId, (Activity)msgActivity);
             Assert.IsType<ResourceResponse>(result);
             Assert.Equal(middleware.NewResourceId, ((ResourceResponse)result).Id);
             msgActivity.Id = ((ResourceResponse)result).Id;
-
+            
             result = await skillAdapter.ReplyToActivityAsync(bot, claimsIdentity, skillConversationId, activityId, (Activity)msgActivity);
             Assert.IsType<ResourceResponse>(result);
             Assert.Equal(middleware.NewResourceId, ((ResourceResponse)result).Id);
+            msgActivity.Id = ((ResourceResponse)result).Id;
 
             result = await skillAdapter.SendConversationHistoryAsync(bot, claimsIdentity, skillConversationId, new Transcript());
             Assert.IsType<ResourceResponse>(result);
             Assert.Equal(middleware.NewResourceId, ((ResourceResponse)result).Id);
-
+            
             result = await skillAdapter.UpdateActivityAsync(bot, claimsIdentity, skillConversationId, activityId, (Activity)msgActivity);
             Assert.IsType<ResourceResponse>(result);
             Assert.Equal(middleware.NewResourceId, ((ResourceResponse)result).Id);

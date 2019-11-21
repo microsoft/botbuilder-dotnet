@@ -1,13 +1,13 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "planningTest",
     "recognizer": {
-      "$type": "Microsoft.RegexRecognizer",
+      "$kind": "Microsoft.RegexRecognizer",
       "intents": [
         {
-          "$type": "Microsoft.IntentPattern",
+          "$kind": "Microsoft.IntentPattern",
           "intent": "Replace",
           "pattern": "(?i)replace"
         }
@@ -15,39 +15,39 @@
     },
     "triggers": [
       {
-        "$type": "Microsoft.OnUnknownIntent",
+        "$kind": "Microsoft.OnUnknownIntent",
         "actions": [
           {
-            "$type": "Microsoft.TextInput",
+            "$kind": "Microsoft.TextInput",
             "property": "turn.tempInput",
             "prompt": "Say replace to replace these actions"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "You should not see this step if you said replace"
           },
           {
-            "$type": "Microsoft.RepeatDialog"
+            "$kind": "Microsoft.RepeatDialog"
           }
         ]
       },
       {
-        "$type": "Microsoft.OnIntent",
+        "$kind": "Microsoft.OnIntent",
         "intent": "Replace",
         "actions": [
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "I'm going to replace the original actions via EditActions"
           },
           {
-            "$type": "Microsoft.EditActions",
+            "$kind": "Microsoft.EditActions",
             "actions": [
               {
-                "$type": "Microsoft.SendActivity",
+                "$kind": "Microsoft.SendActivity",
                 "activity": "New actions..."
               },
               {
-                "$type": "Microsoft.TextInput",
+                "$kind": "Microsoft.TextInput",
                 "property": "turn.tempInput",
                 "prompt": "What's your name?"
               }
@@ -62,27 +62,27 @@
   },
   "script": [
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "hi"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Say replace to replace these actions"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "replace"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "I'm going to replace the original actions via EditActions"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "New actions..."
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "What's your name?"
     }
   ]

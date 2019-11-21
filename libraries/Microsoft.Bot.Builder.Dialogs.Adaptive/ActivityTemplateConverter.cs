@@ -13,7 +13,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         public override bool CanRead => true;
 
-        public override bool CanWrite => true;
+        // if this is false, don't custom serialize activitytemplate as a string
+        public override bool CanWrite => false;
 
         public override bool CanConvert(Type objectType)
         {
@@ -31,7 +32,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             else
             {
                 JObject obj = JObject.Load(reader);
-                if ((string)obj["$type"] == "Microsoft.ActivityTemplate")
+                string kind = (string)obj["$kind"] ?? (string)obj["$type"]; 
+                if (kind == "Microsoft.ActivityTemplate")
                 {
                     return obj.ToObject<ActivityTemplate>();
                 }

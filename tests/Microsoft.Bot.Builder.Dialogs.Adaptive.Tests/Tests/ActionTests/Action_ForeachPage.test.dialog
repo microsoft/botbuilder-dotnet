@@ -1,62 +1,62 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "root",
     "triggers": [
       {
-        "$type": "Microsoft.OnBeginDialog",
+        "$kind": "Microsoft.OnBeginDialog",
         "actions": [
           {
-            "$type": "Microsoft.InitProperty",
+            "$kind": "Microsoft.InitProperty",
             "property": "dialog.todo",
             "type": "Array"
           },
           {
-            "$type": "Microsoft.EditArray",
+            "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
             "value": "1"
           },
           {
-            "$type": "Microsoft.EditArray",
+            "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
             "value": "2"
           },
           {
-            "$type": "Microsoft.EditArray",
+            "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
             "value": "3"
           },
           {
-            "$type": "Microsoft.EditArray",
+            "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
             "value": "4"
           },
           {
-            "$type": "Microsoft.EditArray",
+            "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
             "value": "5"
           },
           {
-            "$type": "Microsoft.EditArray",
+            "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
             "value": "6"
           },
           {
-            "$type": "Microsoft.ForeachPage",
+            "$kind": "Microsoft.ForeachPage",
             "itemsProperty": "dialog.todo",
             "pageSize": 3,
             "actions": [
               {
-                "$type": "Microsoft.SendActivity",
+                "$kind": "Microsoft.SendActivity",
                 "activity": "This page have 3 items"
               },
               {
-                "$type": "Microsoft.Foreach",
+                "$kind": "Microsoft.Foreach",
                 "itemsProperty": "dialog.foreach.page",
                 "actions": [
                   {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "index is: @{dialog.foreach.index} and value is: @{dialog.foreach.value}"
                   }
                 ]
@@ -71,39 +71,39 @@
   },
   "script": [
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "hi"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "This page have 3 items"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "index is: 0 and value is: 1"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "index is: 1 and value is: 2"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "index is: 2 and value is: 3"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "This page have 3 items"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "index is: 0 and value is: 4"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "index is: 1 and value is: 5"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "index is: 2 and value is: 6"
     }
   ]

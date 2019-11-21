@@ -1,23 +1,23 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "AdaptiveDialog",
     "recognizer": {
-      "$type": "Microsoft.RegexRecognizer",
+      "$kind": "Microsoft.RegexRecognizer",
       "intents": [
         {
-          "$type": "Microsoft.IntentPattern",
+          "$kind": "Microsoft.IntentPattern",
           "intent": "start",
           "pattern": "start"
         },
         {
-          "$type": "Microsoft.IntentPattern",
+          "$kind": "Microsoft.IntentPattern",
           "intent": "cancel",
           "pattern": "cancel"
         },
         {
-          "$type": "Microsoft.IntentPattern",
+          "$kind": "Microsoft.IntentPattern",
           "intent": "set_name",
           "pattern": "set name"
         }
@@ -25,64 +25,64 @@
     },
     "triggers": [
       {
-        "$type": "Microsoft.OnIntent",
+        "$kind": "Microsoft.OnIntent",
         "intent": "set_name",
         "actions": [
           {
-            "$type": "Microsoft.TextInput",
+            "$kind": "Microsoft.TextInput",
             "alwaysPrompt": true,
             "property": "$userName",
             "prompt": "\\[set name]::What is your name?"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "\\[set name]::I have @{$userName} as your name"
           }
         ]
       },
       {
-        "$type": "Microsoft.OnIntent",
+        "$kind": "Microsoft.OnIntent",
         "intent": "start",
         "actions": [
           {
-            "$type": "Microsoft.TextInput",
+            "$kind": "Microsoft.TextInput",
             "allowInterruptions": "False",
             "property": "$userName",
             "prompt": "\\[start]::What is your name?"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "\\[start]::I have @{$userName} as your name"
           },
           {
-            "$type": "Microsoft.DateTimeInput",
+            "$kind": "Microsoft.DateTimeInput",
             "allowInterruptions": "True",
             "property": "$fromDate",
             "prompt": "Give me date 1",
             "unrecognizedPrompt": "Unrecognized, give me date 1"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "\\[start]:: I have @{$fromDate} as date 1"
           },
           {
-            "$type": "Microsoft.DateTimeInput",
+            "$kind": "Microsoft.DateTimeInput",
             "allowInterruptions": "True",
             "property": "$toDate",
             "prompt": "Give me date 2"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "\\[start]:: I have @{$toDate} as date 2"
           }
         ]
       },
       {
-        "$type": "Microsoft.OnIntent",
+        "$kind": "Microsoft.OnIntent",
         "intent": "cancel",
         "actions": [
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "@{WelcomeUser()}"
           }
         ]
@@ -93,43 +93,43 @@
   },
   "script": [
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "start"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "[start]::What is your name?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "luhan"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "[start]::I have luhan as your name"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Give me date 1"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "set name"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "[set name]::What is your name?"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "qiong"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "[set name]::I have qiong as your name"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Give me date 1"
     }
   ]

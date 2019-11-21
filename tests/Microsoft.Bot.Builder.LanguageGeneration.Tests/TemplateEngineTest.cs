@@ -780,58 +780,58 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled = engine.EvaluateTemplate("AskForAge.prompt");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"how old are you?\"}"), evaled as JObject)
-                || JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"what's your age?\"}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$kind\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"how old are you?\"}"), evaled as JObject)
+                || JToken.DeepEquals(JObject.Parse("{\"$kind\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"what's your age?\"}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("AskForAge.prompt2");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"suggestedactions\":[\"10\",\"20\",\"30\"]}"), evaled as JObject)
-                || JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"suggestedactions\":[\"10\",\"20\",\"30\"]}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$kind\":\"Activity\",\"text\":\"how old are you?\",\"suggestedactions\":[\"10\",\"20\",\"30\"]}"), evaled as JObject)
+                || JToken.DeepEquals(JObject.Parse("{\"$kind\":\"Activity\",\"text\":\"what's your age?\",\"suggestedactions\":[\"10\",\"20\",\"30\"]}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("AskForAge.prompt3");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject)
-                || JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$kind\":\"Activity\",\"text\":\"how old are you?\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject)
+                || JToken.DeepEquals(JObject.Parse("{\"$kind\":\"Activity\",\"text\":\"what's your age?\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("T1");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"This is awesome\",\"speak\":\"foo bar I can also speak!\"}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$kind\":\"Activity\",\"text\":\"This is awesome\",\"speak\":\"foo bar I can also speak!\"}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("ST1");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"MyStruct\",\"text\":\"foo\",\"speak\":\"bar\"}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$kind\":\"MyStruct\",\"text\":\"foo\",\"speak\":\"bar\"}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("AskForColor");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"suggestedactions\":[{\"$type\":\"MyStruct\",\"speak\":\"bar\",\"text\":\"zoo\"},{\"$type\":\"Activity\",\"speak\":\"I can also speak!\"}]}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$kind\":\"Activity\",\"suggestedactions\":[{\"$kind\":\"MyStruct\",\"speak\":\"bar\",\"text\":\"zoo\"},{\"$kind\":\"Activity\",\"speak\":\"I can also speak!\"}]}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("MultiExpression");
             var options = new string[]
             {
-                "{\r\n  \"$type\": \"Activity\",\r\n  \"speak\": \"I can also speak!\"\r\n} {\r\n  \"$type\": \"MyStruct\",\r\n  \"text\": \"hi\"\r\n}",
-                "{\n  \"$type\": \"Activity\",\n  \"speak\": \"I can also speak!\"\n} {\n  \"$type\": \"MyStruct\",\n  \"text\": \"hi\"\n}"
+                "{\r\n  \"$kind\": \"Activity\",\r\n  \"speak\": \"I can also speak!\"\r\n} {\r\n  \"$kind\": \"MyStruct\",\r\n  \"text\": \"hi\"\r\n}",
+                "{\n  \"$kind\": \"Activity\",\n  \"speak\": \"I can also speak!\"\n} {\n  \"$kind\": \"MyStruct\",\n  \"text\": \"hi\"\n}"
             };
             Assert.IsTrue(options.Contains(evaled.ToString()));
 
             evaled = engine.EvaluateTemplate("StructuredTemplateRef");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"MyStruct\",\"text\":\"hi\"}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$kind\":\"MyStruct\",\"text\":\"hi\"}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("MultiStructuredRef");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"MyStruct\",\"list\":[{\"$type\":\"SubStruct\",\"text\":\"hello\"},{\"$type\":\"SubStruct\",\"text\":\"world\"}]}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$kind\":\"MyStruct\",\"list\":[{\"$kind\":\"SubStruct\",\"text\":\"hello\"},{\"$kind\":\"SubStruct\",\"text\":\"world\"}]}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("templateWithSquareBrackets", new { manufacturer = new { Name = "Acme Co" } });
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Struct\",\"text\":\"Acme Co\"}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$kind\":\"Struct\",\"text\":\"Acme Co\"}"), evaled as JObject));
         }
 
         [TestMethod]
@@ -899,10 +899,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(4, evaled.Count);
             var expectedResults = new List<string>()
             {
-                "{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"how old are you?\"}",
-                "{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"what's your age?\"}",
-                "{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"how old are you?\"}",
-                "{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"what's your age?\"}"
+                "{\"$kind\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"how old are you?\"}",
+                "{\"$kind\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"what's your age?\"}",
+                "{\"$kind\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"how old are you?\"}",
+                "{\"$kind\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"what's your age?\"}"
             };
 
             expectedResults.ForEach(x => Assert.AreEqual(true, evaled.Contains(x)));
@@ -911,10 +911,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(4, evaled.Count);
             expectedResults = new List<string>()
             {
-                "{\"$type\":\"MyStruct\",\"text\":\"Hi\",\"speak\":\"how old are you?\"}",
-                "{\"$type\":\"MyStruct\",\"text\":\"Hi\",\"speak\":\"what's your age?\"}",
-                "{\"$type\":\"MyStruct\",\"text\":\"Hello\",\"speak\":\"how old are you?\"}",
-                "{\"$type\":\"MyStruct\",\"text\":\"Hello\",\"speak\":\"what's your age?\"}"
+                "{\"$kind\":\"MyStruct\",\"text\":\"Hi\",\"speak\":\"how old are you?\"}",
+                "{\"$kind\":\"MyStruct\",\"text\":\"Hi\",\"speak\":\"what's your age?\"}",
+                "{\"$kind\":\"MyStruct\",\"text\":\"Hello\",\"speak\":\"how old are you?\"}",
+                "{\"$kind\":\"MyStruct\",\"text\":\"Hello\",\"speak\":\"what's your age?\"}"
             };
 
             expectedResults.ForEach(x => Assert.AreEqual(true, evaled.Contains(x)));

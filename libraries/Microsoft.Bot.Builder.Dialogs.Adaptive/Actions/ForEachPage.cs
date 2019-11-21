@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class ForeachPage : Dialog, IDialogDependencies
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.ForeachPage";
 
         private const string ForEachPage = "dialog.foreach.page";

@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// </summary>
     public class TextInput : InputDialog
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.TextInput";
 
         public TextInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

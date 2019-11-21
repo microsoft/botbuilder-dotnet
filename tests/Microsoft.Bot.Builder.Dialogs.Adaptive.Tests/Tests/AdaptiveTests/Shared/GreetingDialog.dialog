@@ -1,27 +1,27 @@
 {
-  "$type": "Microsoft.AdaptiveDialog",
+  "$kind": "Microsoft.AdaptiveDialog",
   "triggers": [
     {
-      "$type": "Microsoft.OnBeginDialog",
+      "$kind": "Microsoft.OnBeginDialog",
       
       "actions": [
         {
-          "$type": "Microsoft.IfCondition",
+          "$kind": "Microsoft.IfCondition",
           "condition": "(user.name == null)",
           "actions": [
             {
-              "$type": "Microsoft.TextInput",
+              "$kind": "Microsoft.TextInput",
               "property": "user.name",
               "prompt": "Hello, what is your name?"
             },
             {
-              "$type": "Microsoft.SendActivity",
+              "$kind": "Microsoft.SendActivity",
               "activity": "Hello @{user.name}, nice to meet you!"
             }
           ],
           "elseActions": [
             {
-              "$type": "Microsoft.SendActivity",
+              "$kind": "Microsoft.SendActivity",
               "activity": "Hello @{user.name}, nice to see you again!"
             }
           ]

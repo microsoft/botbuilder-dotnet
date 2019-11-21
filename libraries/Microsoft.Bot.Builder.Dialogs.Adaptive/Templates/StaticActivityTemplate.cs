@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
     /// </summary>
     public class StaticActivityTemplate : ITemplate<Activity>
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.StaticActivityTemplate";
 
         public StaticActivityTemplate()

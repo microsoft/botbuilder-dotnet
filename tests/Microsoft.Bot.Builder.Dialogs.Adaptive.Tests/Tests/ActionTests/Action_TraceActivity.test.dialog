@@ -1,27 +1,27 @@
 {
-    "$type": "Microsoft.Test.Script",
+    "$kind": "Microsoft.Test.Script",
     "enableTrace": true,
     "dialog": {
-        "$type": "Microsoft.AdaptiveDialog",
+        "$kind": "Microsoft.AdaptiveDialog",
         "id": "traceActivity",
         "triggers": [
             {
-                "$type": "Microsoft.OnUnknownIntent",
+                "$kind": "Microsoft.OnUnknownIntent",
                 
                 "actions": [
                     {
-                        "$type": "Microsoft.SetProperty",
+                        "$kind": "Microsoft.SetProperty",
                         "property": "user.name",
                         "value": "'frank'"
                     },
                     {
-                        "$type": "Microsoft.TraceActivity",
+                        "$kind": "Microsoft.TraceActivity",
                         "name": "test",
                         "valueType": "user",
                         "value": "user"
                     },
                     {
-                        "$type": "Microsoft.TraceActivity",
+                        "$kind": "Microsoft.TraceActivity",
                         "name": "test",
                         "valueType": "memory"
                     }
@@ -34,11 +34,11 @@
     },
     "script": [
         {
-            "$type": "Microsoft.Test.UserSays",
+            "$kind": "Microsoft.Test.UserSays",
             "text": "hi"
         },
         {
-            "$type": "Microsoft.Test.AssertReplyActivity",
+            "$kind": "Microsoft.Test.AssertReplyActivity",
             "assertions": [
                 "type == 'trace'",
                 "valueType == 'user'",
@@ -46,7 +46,7 @@
             ]
         },
         {
-            "$type": "Microsoft.Test.AssertReplyActivity",
+            "$kind": "Microsoft.Test.AssertReplyActivity",
             "assertions": [
                 "type == 'trace'",
                 "valueType == 'memory'",

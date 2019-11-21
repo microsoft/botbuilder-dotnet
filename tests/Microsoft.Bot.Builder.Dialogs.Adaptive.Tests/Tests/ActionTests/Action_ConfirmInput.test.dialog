@@ -1,25 +1,25 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "planningTest",
     "triggers": [
       {
-        "$type": "Microsoft.OnBeginDialog",
+        "$kind": "Microsoft.OnBeginDialog",
         "actions": [
           {
-            "$type": "Microsoft.ConfirmInput",
+            "$kind": "Microsoft.ConfirmInput",
             "style": 1,
             "property": "user.confirmed",
             "prompt": "yes or no",
             "unrecognizedPrompt": "I need a yes or no."
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "confirmation: @{user.confirmed}"
           },
           {
-            "$type": "Microsoft.ConfirmInput",
+            "$kind": "Microsoft.ConfirmInput",
             "style": 1,
             "alwaysPrompt": true,
             "property": "user.confirmed",
@@ -27,11 +27,11 @@
             "unrecognizedPrompt": "I need a yes or no."
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "confirmation: @{user.confirmed}"
           },
           {
-            "$type": "Microsoft.ConfirmInput",
+            "$kind": "Microsoft.ConfirmInput",
             "style": 1,
             "alwaysPrompt": true,
             "property": "user.confirmed",
@@ -39,7 +39,7 @@
             "unrecognizedPrompt": "I need a yes or no."
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "confirmation: @{user.confirmed}"
           }
         ]
@@ -49,39 +49,39 @@
   },
   "script": [
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "hi"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "yes or no (1) Yes or (2) No"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "asdasd"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "I need a yes or no. (1) Yes or (2) No"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "yes"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "confirmation: True"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "yes or no (1) Yes or (2) No"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "nope"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "confirmation: False"
     }
   ]

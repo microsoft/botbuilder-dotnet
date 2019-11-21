@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             else
             {
                 var diagnosticMessage = string.IsNullOrWhiteSpace(type) ? 
-                    "'type' or '$type' is not exist in lg output json object."
+                    "'type' or '$kind' is not exist in lg output json object."
                     : $"Type '{type}' is not support currently.";
                 result.Add(BuildDiagnostic(diagnosticMessage));
             }
@@ -280,7 +280,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 return result;
             }
 
-            var properties = value.Properties().Select(u => u.Name.ToLowerInvariant()).Where(u => u != "$type");
+            var properties = value.Properties().Select(u => u.Name.ToLowerInvariant()).Where(u => u != "$kind" && u != "$type");
             IList<string> objectProperties;
 
             if (type == typeof(Activity))
@@ -312,7 +312,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 return string.Empty;
             }
 
-            var type = jObj["$type"]?.ToString()?.Trim();
+            var type = jObj["$kind"]?.ToString()?.Trim() ?? jObj["$type"]?.ToString()?.Trim();
             if (string.IsNullOrEmpty(type))
             {
                 // Adaptive card type

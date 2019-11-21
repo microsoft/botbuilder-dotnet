@@ -1,59 +1,77 @@
 {
-  "$type": "Microsoft.Test.Script",
-  "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
-    "id": "AdaptiveDialog",
-    "triggers": [
-      {
-        "$type": "Microsoft.OnUnknownIntent",
-        
-        "actions": [
-          {
-            "$type": "Microsoft.TextInput",
-            "property": "$name",
-            "prompt": "Hello, what is your name?"
-          },
-          {
-            "$type": "Microsoft.BeginDialog",
-            "resultProperty": "$age",
-            "options": {
-              "userName": "$name"
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "AdaptiveDialog",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.TextInput",
+                        "property": "$name",
+                        "prompt": "Hello, what is your name?"
+                    },
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "resultProperty": "$age",
+                        "options": {
+                            "userName": "$name"
+                        },
+                        "dialog": {
+                            "$kind": "Microsoft.AdaptiveDialog",
+                            "triggers": [
+                                {
+                                    "$kind": "Microsoft.OnUnknownIntent",
+                                    "actions": [
+                                        {
+                                            "$kind": "Microsoft.NumberInput",
+                                            "prompt": "Hello @{$options.userName}, how old are you?",
+                                            "property": "$age"
+                                        },
+                                        {
+                                            "$kind": "Microsoft.EndDialog",
+                                            "value": "$age"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Hello @{$name}, you are @{$age} years old!"
+                    }
+                ]
             }
-          },
-          {
-            "$type": "Microsoft.SendActivity",
-            "activity": "Hello @{$name}, you are @{$age} years old!"
-          }
-        ]
-      }
-    ],
-    "AutoEndDialog": true,
-    "defaultResultProperty": "dialog.result"
-  },
-  "script": [
-    {
-      "$type": "Microsoft.Test.UserSays",
-      "text": "Hi"
+        ],
+        "AutoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
     },
-    {
-      "$type": "Microsoft.Test.AssertReply",
-      "text": "Hello, what is your name?"
-    },
-    {
-      "$type": "Microsoft.Test.UserSays",
-      "text": "zoidberg"
-    },
-    {
-      "$type": "Microsoft.Test.AssertReply",
-      "text": "Hello zoidberg, how old are you?"
-    },
-    {
-      "$type": "Microsoft.Test.UserSays",
-      "text": "I'm 77"
-    },
-    {
-      "$type": "Microsoft.Test.AssertReply",
-      "text": "Hello zoidberg, you are 77 years old!"
-    }
-  ]
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, what is your name?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "zoidberg"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello zoidberg, how old are you?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "I'm 77"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello zoidberg, you are 77 years old!"
+        }
+    ]
 }

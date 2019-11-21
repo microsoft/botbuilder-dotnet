@@ -1,15 +1,15 @@
 ﻿{
     "$schema": "../../../schemas/sdk.schema",
-    "$type": "Microsoft.Test.Script",
+    "$kind": "Microsoft.Test.Script",
     "description": "Test AssertReply",
     "dialog": {
-        "$type": "Microsoft.AdaptiveDialog",
+        "$kind": "Microsoft.AdaptiveDialog",
         "triggers": [
             {
-                "$type": "Microsoft.OnTypingActivity",
+                "$kind": "Microsoft.OnTypingActivity",
                 "actions": [
                     {
-                        "$type": "Microsoft.SendActivity",
+                        "$kind": "Microsoft.SendActivity",
                         "activity": "[received typing]"
                     }
                 ]
@@ -18,14 +18,14 @@
     },
     "script": [
         {
-            "$type": "Microsoft.Test.UserSays",
+            "$kind": "Microsoft.Test.UserSays",
             "text": "hello"
         },
         {
-            "$type": "Microsoft.Test.UserTyping"
+            "$kind": "Microsoft.Test.UserTyping"
         },
         {
-            "$type": "Microsoft.Test.AssertReply",
+            "$kind": "Microsoft.Test.AssertReply",
             "text": "[received typing]"
         }
     ]

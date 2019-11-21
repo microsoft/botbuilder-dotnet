@@ -1,14 +1,14 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "planningTest",
     "triggers": [
       {
-        "$type": "Microsoft.OnBeginDialog",
+        "$kind": "Microsoft.OnBeginDialog",
         "actions": [
           {
-            "$type": "Microsoft.ChoiceInput",
+            "$kind": "Microsoft.ChoiceInput",
             "choices": {
               "value": [
                 {
@@ -28,11 +28,11 @@
             "unrecognizedPrompt": "Not a color. Please select a color:"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "@{user.color}"
           },
           {
-            "$type": "Microsoft.ChoiceInput",
+            "$kind": "Microsoft.ChoiceInput",
             "choices": {
               "value": [
                 {
@@ -53,11 +53,11 @@
             "unrecognizedPrompt": "Please select a color:"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "@{user.color}"
           },
           {
-            "$type": "Microsoft.ChoiceInput",
+            "$kind": "Microsoft.ChoiceInput",
             "choices": {
               "value": [
                 {
@@ -78,7 +78,7 @@
             "unrecognizedPrompt": "Please select a color:"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "@{user.color}"
           }
         ]
@@ -88,39 +88,39 @@
   },
   "script": [
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "hi"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Please select a color: (1) red, (2) green, or (3) blue"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "asdasd"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Not a color. Please select a color: (1) red, (2) green, or (3) blue"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "blue"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "blue"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Please select a color: (1) red, (2) green, or (3) blue"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "red"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "red"
     }
   ]

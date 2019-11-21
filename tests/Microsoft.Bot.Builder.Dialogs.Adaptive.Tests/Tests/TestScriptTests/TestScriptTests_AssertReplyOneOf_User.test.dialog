@@ -1,15 +1,15 @@
 ﻿{
     "$schema": "../../../schemas/sdk.schema",
-    "$type": "Microsoft.Test.Script",
+    "$kind": "Microsoft.Test.Script",
     "description": "Test AssertReplyOneOf",
     "dialog": "simpleHello",
     "script": [
         {
-            "$type": "Microsoft.Test.UserSays",
+            "$kind": "Microsoft.Test.UserSays",
             "text": "hello"
         },
         {
-            "$type": "Microsoft.Test.AssertReplyOneOf",
+            "$kind": "Microsoft.Test.AssertReplyOneOf",
             "text": [
                 "Hi",
                 "hello",
@@ -18,12 +18,12 @@
             ]
         },
         {
-            "$type": "Microsoft.Test.UserSays",
+            "$kind": "Microsoft.Test.UserSays",
             "text": "hello",
             "user": "John"
         },
         {
-            "$type": "Microsoft.Test.AssertReplyOneOf",
+            "$kind": "Microsoft.Test.AssertReplyOneOf",
             "text": [
                 "Hi",
                 "hello",

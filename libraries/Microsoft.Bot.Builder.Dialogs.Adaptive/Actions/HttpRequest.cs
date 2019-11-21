@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class HttpRequest : Dialog
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.HttpRequest";
 
         private static readonly HttpClient Client = new HttpClient();

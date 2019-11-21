@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// </summary>
     public class ConditionalSelector : ITriggerSelector
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.ConditionalSelector";
 
         private IReadOnlyList<OnCondition> _conditionals;

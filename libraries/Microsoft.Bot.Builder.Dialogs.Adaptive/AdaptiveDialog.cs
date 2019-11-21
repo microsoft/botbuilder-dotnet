@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// </summary>
     public class AdaptiveDialog : DialogContainer
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.AdaptiveDialog";
 
         private const string AdaptiveKey = "adaptiveDialogState";

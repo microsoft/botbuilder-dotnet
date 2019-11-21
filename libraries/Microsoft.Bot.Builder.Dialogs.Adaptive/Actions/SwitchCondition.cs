@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class SwitchCondition : Dialog, IDialogDependencies
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.SwitchCondition";
 
         private Dictionary<string, Expression> caseExpressions = null;

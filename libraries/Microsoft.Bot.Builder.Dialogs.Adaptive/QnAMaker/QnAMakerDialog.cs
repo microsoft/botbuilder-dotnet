@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     public class QnAMakerDialog : Dialog
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.QnAMakerDialog";
 
         private readonly HttpClient httpClient;

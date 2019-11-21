@@ -1,115 +1,115 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "id": "planningTest",
     "triggers": [
       {
-        "$type": "Microsoft.OnBeginDialog",
+        "$kind": "Microsoft.OnBeginDialog",
         
         "actions": [
           {
-            "$type": "Microsoft.TextInput",
+            "$kind": "Microsoft.TextInput",
             "alwaysPrompt": true,
             "property": "dialog.todo",
             "prompt": "Please add an item to todos."
           },
           {
-            "$type": "Microsoft.InitProperty",
+            "$kind": "Microsoft.InitProperty",
             "property": "user.todos",
             "type": "array"
           },
           {
-            "$type": "Microsoft.EditArray",
+            "$kind": "Microsoft.EditArray",
             "itemsProperty": "user.todos",
             "value": "dialog.todo"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "Your todos: @{join(user.todos, ',')}"
           },
           {
-            "$type": "Microsoft.TextInput",
+            "$kind": "Microsoft.TextInput",
             "alwaysPrompt": true,
             "property": "dialog.todo",
             "prompt": "Please add an item to todos."
           },
           {
-            "$type": "Microsoft.EditArray",
+            "$kind": "Microsoft.EditArray",
             "itemsProperty": "user.todos",
             "value": "dialog.todo"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "Your todos: @{join(user.todos, ',')}"
           },
           {
-            "$type": "Microsoft.TextInput",
+            "$kind": "Microsoft.TextInput",
             "alwaysPrompt": true,
             "property": "dialog.todo",
             "prompt": "Enter a item to remove."
           },
           {
-            "$type": "Microsoft.EditArray",
+            "$kind": "Microsoft.EditArray",
             "changeType": "Remove",
             "itemsProperty": "user.todos",
             "value": "dialog.todo"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "Your todos: @{join(user.todos, ',')}"
           },
           {
-            "$type": "Microsoft.TextInput",
+            "$kind": "Microsoft.TextInput",
             "alwaysPrompt": true,
             "property": "dialog.todo",
             "prompt": "Please add an item to todos."
           },
           {
-            "$type": "Microsoft.EditArray",
+            "$kind": "Microsoft.EditArray",
             "itemsProperty": "user.todos",
             "value": "dialog.todo"
           },
           {
-            "$type": "Microsoft.TextInput",
+            "$kind": "Microsoft.TextInput",
             "alwaysPrompt": true,
             "property": "dialog.todo",
             "prompt": "Please add an item to todos."
           },
           {
-            "$type": "Microsoft.EditArray",
+            "$kind": "Microsoft.EditArray",
             "itemsProperty": "user.todos",
             "value": "dialog.todo"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "Your todos: @{join(user.todos, ',')}"
           },
           {
-            "$type": "Microsoft.EditArray",
+            "$kind": "Microsoft.EditArray",
             "changeType": "Pop",
             "itemsProperty": "user.todos"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "Your todos: @{join(user.todos, ',')}"
           },
           {
-            "$type": "Microsoft.EditArray",
+            "$kind": "Microsoft.EditArray",
             "changeType": "Take",
             "itemsProperty": "user.todos"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "Your todos: @{join(user.todos, ',')}"
           },
           {
-            "$type": "Microsoft.EditArray",
+            "$kind": "Microsoft.EditArray",
             "changeType": "Clear",
             "itemsProperty": "user.todos"
           },
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "Your todos: @{join(user.todos, ',')}"
           }
         ]
@@ -120,71 +120,71 @@
   },
   "script": [
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "hi"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Please add an item to todos."
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "todo1"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Your todos: todo1"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Please add an item to todos."
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "todo2"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Your todos: todo1,todo2"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Enter a item to remove."
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "todo2"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Your todos: todo1"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Please add an item to todos."
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "todo3"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Please add an item to todos."
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "todo4"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Your todos: todo1,todo3,todo4"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Your todos: todo1,todo3"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Your todos: todo3"
     }
   ]

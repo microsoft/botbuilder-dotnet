@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
     [DebuggerDisplay("AssertReplyOneOf:{GetConditionDescription()}")]
     public class AssertReplyOneOf : AssertReplyActivity
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public new const string DeclarativeType = "Microsoft.Test.AssertReplyOneOf";
 
         [JsonConstructor]

@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     public class DebugBreak : Dialog
     {
-        [JsonProperty("$type")]
+        [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.DebugBreak";
 
         public DebugBreak([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

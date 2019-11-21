@@ -1,65 +1,65 @@
 {
-  "$type": "Microsoft.Test.Script",
+  "$kind": "Microsoft.Test.Script",
   "dialog": {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "recognizer": {
-      "$type": "Microsoft.MultiLanguageRecognizer",
+      "$kind": "Microsoft.MultiLanguageRecognizer",
       "recognizers": {
         "en-us": {
-          "$type": "Microsoft.RegexRecognizer",
+          "$kind": "Microsoft.RegexRecognizer",
           "intents": [
             {
-              "$type": "Microsoft.IntentPattern",
+              "$kind": "Microsoft.IntentPattern",
               "intent": "Greeting",
               "pattern": "(?i)howdy"
             },
             {
-              "$type": "Microsoft.IntentPattern",
+              "$kind": "Microsoft.IntentPattern",
               "intent": "Goodbye",
               "pattern": "(?i)bye"
             }
           ]
         },
         "en-gb": {
-          "$type": "Microsoft.RegexRecognizer",
+          "$kind": "Microsoft.RegexRecognizer",
           "intents": [
             {
-              "$type": "Microsoft.IntentPattern",
+              "$kind": "Microsoft.IntentPattern",
               "intent": "Greeting",
               "pattern": "(?i)hiya"
             },
             {
-              "$type": "Microsoft.IntentPattern",
+              "$kind": "Microsoft.IntentPattern",
               "intent": "Goodbye",
               "pattern": "(?i)cheerio"
             }
           ]
         },
         "en": {
-          "$type": "Microsoft.RegexRecognizer",
+          "$kind": "Microsoft.RegexRecognizer",
           "intents": [
             {
-              "$type": "Microsoft.IntentPattern",
+              "$kind": "Microsoft.IntentPattern",
               "intent": "Greeting",
               "pattern": "(?i)hello"
             },
             {
-              "$type": "Microsoft.IntentPattern",
+              "$kind": "Microsoft.IntentPattern",
               "intent": "Goodbye",
               "pattern": "(?i)goodbye"
             }
           ]
         },
         "": {
-          "$type": "Microsoft.RegexRecognizer",
+          "$kind": "Microsoft.RegexRecognizer",
           "intents": [
             {
-              "$type": "Microsoft.IntentPattern",
+              "$kind": "Microsoft.IntentPattern",
               "intent": "Greeting",
               "pattern": "(?i)salve"
             },
             {
-              "$type": "Microsoft.IntentPattern",
+              "$kind": "Microsoft.IntentPattern",
               "intent": "Goodbye",
               "pattern": "(?i)vale dicere"
             }
@@ -69,33 +69,33 @@
     },
     "triggers": [
       {
-        "$type": "Microsoft.OnIntent",
+        "$kind": "Microsoft.OnIntent",
         "intent": "Greeting",
         
         "actions": [
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "greeting intent"
           }
         ]
       },
       {
-        "$type": "Microsoft.OnIntent",
+        "$kind": "Microsoft.OnIntent",
         "intent": "Goodbye",
         
         "actions": [
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "goodbye intent"
           }
         ]
       },
       {
-        "$type": "Microsoft.OnUnknownIntent",
+        "$kind": "Microsoft.OnUnknownIntent",
         
         "actions": [
           {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "default rule"
           }
         ]
@@ -106,27 +106,27 @@
   "locale": "",
   "script": [
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "salve"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "greeting intent"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "hello"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "default rule"
     },
     {
-      "$type": "Microsoft.Test.UserSays",
+      "$kind": "Microsoft.Test.UserSays",
       "text": "vale dicere"
     },
     {
-      "$type": "Microsoft.Test.AssertReply",
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "goodbye intent"
     }
   ]
