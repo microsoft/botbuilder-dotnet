@@ -186,6 +186,9 @@ namespace Microsoft.Bot.Expressions
                         case ExpressionParser.TEXT_CONTENT:
                             children.Add(Expression.ConstantExpression(node.GetText()));
                             break;
+                        case ExpressionParser.ESCAPE_CHARACTER:
+                            children.Add(Expression.ConstantExpression(EvalEscape(node.GetText())));
+                            break;
                         default:
                             break;
                     }
@@ -206,6 +209,17 @@ namespace Microsoft.Bot.Expressions
                         yield return Visit(expression);
                     }
                 }
+            }
+
+            private string EvalEscape(string exp)
+            {
+                var commonEscapes = new List<string>() { "\\r", "\\n", "\\t" };
+                if (commonEscapes.Contains(exp))
+                {
+                    return Regex.Unescape(exp);
+                }
+
+                return exp.Substring(1);
             }
         }
     }
