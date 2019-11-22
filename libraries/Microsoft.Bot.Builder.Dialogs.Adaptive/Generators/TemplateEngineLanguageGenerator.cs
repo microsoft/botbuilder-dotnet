@@ -40,12 +40,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             this.Id = id ?? DEFAULTLABEL;
             var (_, locale) = MultiLanguageResourceLoader.ParseLGFileName(id);
-                
+            var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, resourceMapping.Keys.ToList());
+
             foreach (var mapping in resourceMapping)    
             {
                 // if no locale present in id, enumarate every locale found
                 // if locale is present, use that one
-                if (string.Equals(locale, string.Empty) || string.Equals(locale, mapping.Key))
+                if (string.Equals(fallbackLocale, string.Empty) || string.Equals(fallbackLocale, mapping.Key))
                 {
                     var engine = new TemplateEngine().AddText(lgText ?? string.Empty, Id, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
                     multiLangEngines.Add(mapping.Key, engine);
@@ -62,10 +63,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             filePath = PathUtils.NormalizePath(filePath);
             this.Id = Path.GetFileName(filePath);
-            foreach (var mappingItem in resourceMapping)
+
+            var (_, locale) = MultiLanguageResourceLoader.ParseLGFileName(Id);
+            var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, resourceMapping.Keys.ToList());
+
+            foreach (var mapping in resourceMapping)
             {
-                var engine = new TemplateEngine().AddFile(filePath, LanguageGeneratorManager.ResourceExplorerResolver(mappingItem.Key, resourceMapping));
-                multiLangEngines.Add(mappingItem.Key, engine);
+                // if no locale present in id, enumarate every locale found
+                // if locale is present, use that one
+                if (string.Equals(fallbackLocale, string.Empty) || string.Equals(fallbackLocale, mapping.Key))
+                {
+                    var engine = new TemplateEngine().AddFile(filePath, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
+                    multiLangEngines.Add(mapping.Key, engine);
+                }
             }
         }
 
