@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Last surfaced event from a form dialog.
         /// </summary>
-        public const string LastEvent = "dialog.LastEvent";
+        public const string LastEvent = "dialog.lastEvent";
 
         /// <summary>
         /// Currently required properties.
