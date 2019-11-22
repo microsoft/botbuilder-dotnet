@@ -137,4 +137,7 @@
 - property
 
 # PropertyToChange(value)
-- @{PROPERTYName(value)}[sandwich-PropertyNAME.en-us.lg](sandwich-PropertyNAME.en-us.lg)
+- @{PROPERTYName(value)}
+
+[sandwich-PropertyNAME.en-us.lg](sandwich-PropertyNAME.en-us.lg)
+[import without sepecific locael](sandwich-confirmation.lg)
