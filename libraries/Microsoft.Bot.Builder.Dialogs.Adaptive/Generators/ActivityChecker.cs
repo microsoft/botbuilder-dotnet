@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 var diagnosticMessage = string.IsNullOrWhiteSpace(type) ? 
                     "'lgType' does not exist in lg output json object."
-                    : $"Type '{type}' is not support currently.";
+                    : $"Type '{type}' is not supported currently.";
                 result.Add(BuildDiagnostic(diagnosticMessage));
             }
 
