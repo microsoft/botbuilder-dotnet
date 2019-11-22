@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private readonly Dictionary<string, TemplateEngine> multiLangEngines = new Dictionary<string, TemplateEngine>();
 
-        private TemplateEngine engine;
+        private TemplateEngine engine;      
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
@@ -39,12 +39,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         public TemplateEngineLanguageGenerator(string lgText, string id, Dictionary<string, IList<IResource>> resourceMapping)
         {
             this.Id = id ?? DEFAULTLABEL;
-            foreach (var mappingItem in resourceMapping)
+            var (_, locale) = MultiLanguageResourceLoader.ParseLGFileName(id);
+                
+            foreach (var mapping in resourceMapping)    
             {
-                var engine = new TemplateEngine().AddText(lgText ?? string.Empty, Id, LanguageGeneratorManager.ResourceExplorerResolver(mappingItem.Key, resourceMapping));
-                multiLangEngines.Add(mappingItem.Key, engine);
+                // if no locale present in id, enumarate every locale found
+                // if locale is present, use that one
+                if (string.Equals(locale, string.Empty) || string.Equals(locale, mapping.Key))
+                {
+                    var engine = new TemplateEngine().AddText(lgText ?? string.Empty, Id, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
+                    multiLangEngines.Add(mapping.Key, engine);
+                }
             }
-        }
+        }   
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
