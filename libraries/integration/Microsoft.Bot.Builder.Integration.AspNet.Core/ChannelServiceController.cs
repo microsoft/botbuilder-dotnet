@@ -175,9 +175,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="attachmentUpload">Attachment data.</param>
         /// <returns>TODO Document.</returns>
         [HttpPost("{conversationId}/attachments")]
-        public virtual async Task<ActionResult<ResourceResponse>> UploadAttachmentAsync(string conversationId, [FromBody] AttachmentData attachmentUpload)
+        public virtual async Task<IActionResult> UploadAttachmentAsync(string conversationId, [FromBody] AttachmentData attachmentUpload)
         {
-            return await _handler.HandleUploadAttachmentAsync(HttpContext.Request.Headers["Authorization"], conversationId, attachmentUpload).ConfigureAwait(false);
+            var result = await _handler.HandleUploadAttachmentAsync(HttpContext.Request.Headers["Authorization"], conversationId, attachmentUpload).ConfigureAwait(false);
+
+            return new JsonResult(result, HttpHelper.BotMessageSerializerSettings);
         }
     }
 }
