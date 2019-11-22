@@ -144,8 +144,8 @@
       "discriminator": {
         "propertyName": "type",
         "mapping": {
-          "event": "#/definitions/eventActivity"
-          "invoke": "#/definitions/invokeActivity"
+          "event": "#/definitions/eventActivity",
+          "invoke": "#/definitions/invokeActivity",
           "message": "#/definitions/messageActivity"
         }
       },
