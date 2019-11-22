@@ -405,13 +405,17 @@ namespace Microsoft.Bot.Builder
             for (var index = 0; index < activities.Length; index++)
             {
                 var activity = activities[index];
+
+                // Clients and bots SHOULD NOT include an id field in activities they generate.
+                // ref: https://github.com/microsoft/botframework-sdk/blob/master/specs/botframework-activity/botframework-activity.md#id
+                activity.Id = null;
                 var response = default(ResourceResponse);
 
                 Logger.LogInformation($"Sending activity.  ReplyToId: {activity.ReplyToId}");
 
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
-                    // The Activity Schema doesn't have a delay type build in, so it's simulated
+                    // The Activity Schema doesn't have a delay type built in, so it's simulated
                     // here in the Bot. This matches the behavior in the Node connector.
                     int delayMs = (int)activity.Value;
                     await Task.Delay(delayMs, cancellationToken).ConfigureAwait(false);
