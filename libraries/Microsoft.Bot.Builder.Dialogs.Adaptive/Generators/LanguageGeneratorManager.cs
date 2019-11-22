@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             // load all LG resources
             foreach (var resource in this.resourceExplorer.GetResources("lg"))
-            {
+            {   
                 LanguageGenerators[resource.Id] = GetTemplateEngineLanguageGenerator(resource);
             }
 
@@ -60,15 +60,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                 var resourceName = Path.GetFileName(PathUtils.NormalizePath(id));
 
-                var resource = resources.FirstOrDefault(u => MultiLanguageResourceLoader.ParseLGFileName(u.Id).prefix == MultiLanguageResourceLoader.ParseLGFileName(resourceName).prefix);
+                var resource = resources.FirstOrDefault(u => MultiLanguageResourceLoader.ParseLGFileName(u.Id).prefix.ToLower() == MultiLanguageResourceLoader.ParseLGFileName(resourceName).prefix.ToLower());
                 if (resource == null)
                 {
-                    return (string.Empty, resourceName);
+                    return (string.Empty, resource.Id);
                 }
                 else
                 {
                     var content = resource.ReadTextAsync().GetAwaiter().GetResult();
-                    return (content, resourceName);
+                    return (content, resource.Id);
                 }
             };
         }
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(IResource resource)
         {
             var fileResource = resource as FileResource;
-            if (fileResource != null)
+            if (fileResource == null)
             {
                 return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, multilanguageResources);
             }

@@ -68,6 +68,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             result = await generator.Generate(GetTurnContext(locale: "en-us"), templateContent, null);
             Assert.AreEqual("from b.en-us.lg", result);
+            result = await generator.Generate(GetTurnContext(locale: "en-us"), "@{templatec()}", null);
+            Assert.AreEqual("from c.en.lg", result);
 
             // fallback to en
             result = await generator.Generate(GetTurnContext(locale: "en-gb"), templateContent, null);
@@ -75,11 +77,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             result = await generator.Generate(GetTurnContext(locale: "en"), templateContent, null);
             Assert.AreEqual("from b.en.lg", result);
+            var ex = Assert.ThrowsException<AggregateException>(() => generator.Generate(GetTurnContext(locale: "en"), "@{templatec()}", null).Wait());
+            Assert.IsTrue(ex.Message.Contains("templatec does not have an evaluator"));
 
             templateContent = "@{templateben()}";
 
             // imported will not fallback when not found
-            var ex = Assert.ThrowsException<AggregateException>(() => generator.Generate(GetTurnContext(locale: "en-us"), templateContent, null).Wait());
+            ex = Assert.ThrowsException<AggregateException>(() => generator.Generate(GetTurnContext(locale: "en-us"), templateContent, null).Wait());
             Assert.IsTrue(ex.Message.Contains("templateben does not have an evaluator"));
 
             templateContent = "@{templateben-us()}";
@@ -102,24 +106,32 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 Assert.AreEqual("from a.lg", text, "template should be there");
                 text = await lg.Generate(turnContext, "@{templateb()}", null);
                 Assert.AreEqual("from b.lg", text, "template should be there");
+                var ex = Assert.ThrowsException<AggregateException>(() => lg.Generate(turnContext, "@{templatec()}", null).Wait());
+                Assert.IsTrue(ex.Message.Contains("templatec does not have an evaluator"));
 
                 turnContext.Activity.Locale = "en-us";
                 text = await lg.Generate(turnContext, "@{templatea()}", null);
                 Assert.AreEqual("from a.en-US.lg", text, "template should be there");
                 text = await lg.Generate(turnContext, "@{templateb()}", null);
                 Assert.AreEqual("from b.en-us.lg", text, "template should be there");
+                text = await lg.Generate(turnContext, "@{templatec()}", null);
+                Assert.AreEqual("from c.en.lg", text, "template should be there");
 
                 turnContext.Activity.Locale = "en";
                 text = await lg.Generate(turnContext, "@{templatea()}", null);
                 Assert.AreEqual("from a.lg", text, "template should be there");
                 text = await lg.Generate(turnContext, "@{templateb()}", null);
                 Assert.AreEqual("from b.en.lg", text, "template should be there");
+                ex = Assert.ThrowsException<AggregateException>(() => lg.Generate(turnContext, "@{templatec()}", null).Wait());
+                Assert.IsTrue(ex.Message.Contains("templatec does not have an evaluator"));
 
                 turnContext.Activity.Locale = "foo";
                 text = await lg.Generate(turnContext, "@{templatea()}", null);
                 Assert.AreEqual("from a.lg", text, "template should be there");
                 text = await lg.Generate(turnContext, "@{templateb()}", null);
                 Assert.AreEqual("from b.lg", text, "template should be there");
+                ex = Assert.ThrowsException<AggregateException>(() => lg.Generate(turnContext, "@{templatec()}", null).Wait());
+                Assert.IsTrue(ex.Message.Contains("templatec does not have an evaluator"));
             })
             .Send("hello")
             .StartTestAsync();
