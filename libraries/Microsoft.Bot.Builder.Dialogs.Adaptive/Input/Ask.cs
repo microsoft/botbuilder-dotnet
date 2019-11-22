@@ -50,12 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 && dc.GetState().TryGetValue(DialogPath.LastTriggerEvent, out DialogEvent lastTrigger)
                 && lastTrigger.Name.Equals(trigger.Name))
             {
-                retries++;
-                if (dc.GetState().TryGetValue(DialogPath.LastIntent, out string lastIntent) 
-                    && lastIntent.ToLower().Equals("help"))
-                {
-                    retries = 0;
-                }               
+                retries++;                            
             }
             else
             {
