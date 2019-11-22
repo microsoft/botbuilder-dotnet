@@ -95,6 +95,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public async Task TestMultiExternalAdaptiveCardActivity()
+        {
+            var context = await GetTurnContext("NormalStructuredLG.lg");
+            var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            dynamic data = new JObject();
+            data.titles = new JArray() { "test0", "test1", "test2" };
+            var lgStringResult = await languageGenerator.Generate(context, "@{multiExternalAdaptiveCardActivity()}", data: data).ConfigureAwait(false);
+            var activity = ActivityFactory.CreateActivity(lgStringResult);
+            AssertMultiAdaptiveCardActivity(activity);
+        }
+
+        [TestMethod]
         public async Task TestAdaptivecardActivityWithAttachmentStructure()
         {
             var context = await GetTurnContext("NormalStructuredLG.lg");
@@ -475,6 +487,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(1, activity.Attachments.Count);
             Assert.AreEqual("application/vnd.microsoft.card.adaptive", activity.Attachments[0].ContentType);
             Assert.AreEqual("test", (string)((dynamic)activity.Attachments[0].Content).body[0].text);
+        }
+
+        private void AssertMultiAdaptiveCardActivity(Activity activity)
+        {
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
+            Assert.AreEqual(3, activity.Attachments.Count);
+            for (int i = 0; i < 3; ++i)
+            {
+                Assert.AreEqual("application/vnd.microsoft.card.adaptive", activity.Attachments[i].ContentType);
+                Assert.AreEqual($"test{i}", (string)((dynamic)activity.Attachments[i].Content).body[0].text);
+            }
         }
 
         private void AssertCardActionActivity(Activity activity)
