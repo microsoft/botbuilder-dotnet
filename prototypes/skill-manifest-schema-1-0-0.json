@@ -1,5 +1,5 @@
-{
-  "$id": "https://schema.botframework.com/schemas/skill-manifest-1-0-0.json",
+﻿{
+  "$id": "https://microsoft.com/botframework/schemas/skill-manifest-1-0-0.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Skill Manifest",
   "description": "A schema for Bot Framework skill manifests",
@@ -24,19 +24,23 @@
     },
     "name": {
       "type": "string",
-      "description": "Name of the skill"
+      "description": "Name of the skill",
+      "maxLength": 100
     },
     "version": {
       "type": "string",
-      "description": "Skill version"
+      "description": "Skill version",
+      "maxLength": 10
     },
     "description": {
       "type": "string",
-      "description": "A human readable description for the skill"
+      "description": "A human readable description for the skill",
+      "maxLength": 100
     },
     "publisherName": {
       "type": "string",
-      "description": "The name of the skill publisher"
+      "description": "The name of the skill publisher",
+      "maxLength": 100
     },
     "privacyUrl": {
       "type": "string",
@@ -45,11 +49,13 @@
     },
     "copyright": {
       "type": "string",
-      "description": "The copyright for the skill"
+      "description": "The copyright for the skill",
+      "maxLength": 100
     },
     "license": {
       "type": "string",
-      "description": "The license agreement for the skill"
+      "description": "The license agreement for the skill",
+      "maxLength": 100
     },
     "iconUrl": {
       "type": "string",
@@ -72,17 +78,7 @@
       "type": "object",
       "description": "Definition for the activies accepted by the skill",
       "additionalProperties": {
-        "anyOf": [
-          {
-            "$ref": "#/definitions/eventActivity"
-          },
-          {
-            "$ref": "#/definitions/invokeActivity"
-          },
-          {
-            "$ref": "#/definitions/messageActivity"
-          }
-        ]
+        "$ref": "#/definitions/activityBase"
       }
     },
     "definitions": {
@@ -107,12 +103,14 @@
         "name": {
           "type": "string",
           "description": "Unique name for the endpoint",
-          "default": "BotFrameworkV3"
+          "default": "BotFrameworkV3",
+          "maxLength": 100
         },
         "protocol": {
           "type": "string",
           "description": "Supported protocol",
-          "default": "BotFrameworkV3"
+          "default": "BotFrameworkV3",
+          "maxLength": 40
         },
         "description": {
           "type": "string",
@@ -120,7 +118,8 @@
           "description": "Description of the endpoint",
           "examples": [
             "Production bot"
-          ]
+          ],
+          "maxLength": 100
         },
         "endpointUrl": {
           "type": "string",
@@ -139,33 +138,53 @@
         }
       }
     },
-    "eventActivity": {
+    "activityBase": {
       "type": "object",
-      "description": "An activity with Type=Event where the Name property indicates the task that the skill will execute",
+      "description": "An activity with a type",
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "event": "#/definitions/eventActivity"
+          "invoke": "#/definitions/invokeActivity"
+          "message": "#/definitions/messageActivity"
+        }
+      },
       "required": [
-        "type",
-        "name"
+        "type"
       ],
-      "additionalProperties": false,
       "properties": {
         "type": {
           "type": "string",
           "description": "The activity type",
-          "enum": [
-            "event"
-          ]
-        },
+          "maxLength": 100
+        }
+      }
+    },
+    "eventActivity": {
+      "type": "object",
+      "description": "An activity with Type=Event where the Name property indicates the task that the skill will execute",
+      "required": [
+        "name"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/definitions/activityBase"
+        }
+      ],
+      "properties": {
         "name": {
           "type": "string",
           "description": "The name for the event",
           "examples": [
             "BookFlight"
-          ]
+          ],
+          "maxLength": 100
         },
         "description": {
           "type": "string",
           "title": "Description",
-          "description": "Description for the activity"
+          "description": "Description for the activity",
+          "maxLength": 100
         },
         "value": {
           "type": "object",
@@ -183,29 +202,27 @@
       "type": "object",
       "description": "An activity with Type=Invoke where the Name property indicates the task that the skill will execute",
       "required": [
-        "type",
         "name"
       ],
-      "additionalProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/definitions/activityBase"
+        }
+      ],
       "properties": {
-        "type": {
-          "type": "string",
-          "description": "The activity type",
-          "enum": [
-            "invoke"
-          ]
-        },
         "name": {
           "type": "string",
           "description": "The name property for the invoke activity",
           "examples": [
             "GetWeather"
-          ]
+          ],
+          "maxLength": 100
         },
         "description": {
           "type": "string",
           "title": "Description",
-          "description": "Description for the activity"
+          "description": "Description for the activity",
+          "maxLength": 100
         },
         "value": {
           "type": "object",
@@ -222,23 +239,17 @@
     "messageActivity": {
       "type": "object",
       "description": "An activity with Type=Message where the utterance is passed to the skill in the Text property",
-      "required": [
-        "type"
+      "allOf": [
+        {
+          "$ref": "#/definitions/activityBase"
+        }
       ],
-      "additionalProperties": false,
       "properties": {
-        "type": {
-          "type": "string",
-          "description": "The activity type",
-          "enum": [
-            "message"
-          ],
-          "default": "message"
-        },
         "description": {
           "type": "string",
           "title": "Description",
-          "description": "Description for the activity"
+          "description": "Description for the activity",
+          "maxLength": 100
         },
         "value": {
           "type": "object",
