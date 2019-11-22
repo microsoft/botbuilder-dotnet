@@ -21,9 +21,10 @@
 
 
 > You can use '\' as an escape character
+> \@{GetAge()} would not be evaluated as expression, would be parsed as '@{getAge()}' string
 # AskForAge.prompt3
 [Activity
-        Text = @{GetAge()}
+        Text = \@{GetAge()}
         Suggestions = 10 \| cards | 20 \| cards
 ]
 

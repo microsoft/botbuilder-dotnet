@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     public class BotFrameworkHttpClient
     {
         // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)
-        // AppCredentials are cached using appId + skillId (this last parameter is only used if the app credentials are used to call a skill)
+        // AppCredentials are cached using appId + scope (this last parameter is only used if the app credentials are used to call a skill)
         private static readonly ConcurrentDictionary<string, AppCredentials> _appCredentialMapCache = new ConcurrentDictionary<string, AppCredentials>();
         private readonly IChannelProvider _channelProvider;
         private readonly ICredentialProvider _credentialProvider;
