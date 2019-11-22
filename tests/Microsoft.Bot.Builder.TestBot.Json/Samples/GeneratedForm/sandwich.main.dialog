@@ -1,7 +1,7 @@
 
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
-    "$type": "Microsoft.FormDialog",
+    "$type": "Microsoft.AdaptiveDialog",
     "recognizer": "sandwich.lu",
     "generator": "sandwich.lg",
     "schema": "sandwich.schema",

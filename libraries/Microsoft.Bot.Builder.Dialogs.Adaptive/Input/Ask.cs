@@ -44,7 +44,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             dc.GetState().TryGetValue(TurnPath.DIALOGEVENT, out DialogEvent trigger);
 
-            if (dc.GetState().TryGetValue(DialogPath.ExpectedProperties, out List<string> lastExpectedProperties)
+            if (ExpectedProperties != null
+                && dc.GetState().TryGetValue(DialogPath.ExpectedProperties, out List<string> lastExpectedProperties)
                 && !ExpectedProperties.Any(prop => !lastExpectedProperties.Contains(prop))
                 && !lastExpectedProperties.Any(prop => !ExpectedProperties.Contains(prop))
                 && dc.GetState().TryGetValue(DialogPath.LastTriggerEvent, out DialogEvent lastTrigger)

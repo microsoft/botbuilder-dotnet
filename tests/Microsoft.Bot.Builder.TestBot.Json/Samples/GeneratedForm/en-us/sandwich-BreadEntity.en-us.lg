@@ -13,4 +13,5 @@
 
 # clarifyBreadEntity
 - @{clarifyEnumEntity('Bread')}
+
 [sandwich-common.lg](sandwich-common.lg)

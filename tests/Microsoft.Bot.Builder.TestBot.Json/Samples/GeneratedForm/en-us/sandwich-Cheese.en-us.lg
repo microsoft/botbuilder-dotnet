@@ -6,5 +6,7 @@
 
 # Cheese(val)
 - @{CheeseEntity(val)}
+
 [sandwich-CheeseEntity.lg](sandwich-CheeseEntity.lg)
+
 [sandwich-common.lg](sandwich-common.lg)
