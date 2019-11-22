@@ -792,8 +792,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             evaled = engine.EvaluateTemplate("AskForAge.prompt3");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$kind\":\"Activity\",\"text\":\"how old are you?\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject)
-                || JToken.DeepEquals(JObject.Parse("{\"$kind\":\"Activity\",\"text\":\"what's your age?\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"$kind\":\"Activity\",\"text\":\"@{GetAge()}\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("T1");
 
