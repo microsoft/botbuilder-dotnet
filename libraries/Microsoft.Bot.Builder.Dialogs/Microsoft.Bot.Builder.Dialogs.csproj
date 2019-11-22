@@ -49,8 +49,8 @@
     <PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
-    <PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.2.6.1" />
-    <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.2.6.1" />
+    <PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.2.9" />
+    <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.2.9" />
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
   </ItemGroup>
 

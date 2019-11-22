@@ -3,8 +3,6 @@
 #pragma warning disable SA1402
 using System;
 using System.Collections.Generic;
-using System.Net.Http.Headers;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -17,7 +15,6 @@ using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -78,6 +75,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             result = await generator.Generate(GetTurnContext(locale: "en"), templateContent, null);
             Assert.AreEqual("from b.en.lg", result);
+
+            templateContent = "@{templateben()}";
+
+            // imported will not fallback when not found
+            var ex = Assert.ThrowsException<AggregateException>(() => generator.Generate(GetTurnContext(locale: "en-us"), templateContent, null).Wait());
+            Assert.IsTrue(ex.Message.Contains("templateben does not have an evaluator"));
+
+            templateContent = "@{templateben-us()}";
+
+            ex = Assert.ThrowsException<AggregateException>(() => generator.Generate(GetTurnContext(locale: "en"), templateContent, null).Wait());
+            Assert.IsTrue(ex.Message.Contains("templateben-us does not have an evaluator"));
         }
 
         [TestMethod]
