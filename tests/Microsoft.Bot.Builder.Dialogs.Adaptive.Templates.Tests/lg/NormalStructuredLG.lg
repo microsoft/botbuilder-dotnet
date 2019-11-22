@@ -128,6 +128,14 @@
     attachments = @{ActivityAttachment(json(fromFile('../adaptiveCard.json')), 'adaptiveCard')}
 ]
 
+# multiExternalAdaptiveCardActivity
+[Activity
+    attachments = @{foreach(titles, x, ActivityAttachment(externalAdaptiveCard(x), 'adaptiveCard'))}
+]
+
+# externalAdaptiveCard(adaptiveCardTitle)
+- @{json(fromFile('../adaptiveCard.json'))}
+
 # externalHeroCardActivity(type, title, value)
 [Activity
     attachments = @{ActivityAttachment(json(fromFile('.\\herocard.json')), 'herocard')}
