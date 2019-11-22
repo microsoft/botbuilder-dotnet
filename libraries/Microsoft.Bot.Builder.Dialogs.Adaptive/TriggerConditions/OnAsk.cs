@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Form.Events
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
     /// Triggered when a form needs to ask a prompt.
@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
         [JsonConstructor]
         public OnAsk(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
-                @event: FormEvents.Ask,
+                @event: AdaptiveEvents.Ask,
                 actions: actions,
                 condition: condition,
                 callerPath: callerPath,

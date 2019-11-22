@@ -48,6 +48,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<OnTypingActivity>("Microsoft.OnTypingActivity");
             yield return new TypeRegistration<OnHandoffActivity>("Microsoft.OnHandoffActivity");
 
+            yield return new TypeRegistration<OnAsk>("Microsoft.OnAsk");
+            yield return new TypeRegistration<OnChooseProperty>("Microsoft.OnChooseProperty");
+            yield return new TypeRegistration<OnClarifyEntity>("Microsoft.OnClarifyEntity");
+            yield return new TypeRegistration<OnClearProperty>("Microsoft.OnClearProperty");
+            yield return new TypeRegistration<OnSetProperty>("Microsoft.OnSetProperty");
+
             // Actions
             yield return new TypeRegistration<BeginDialog>("Microsoft.BeginDialog");
             yield return new TypeRegistration<CancelAllDialogs>("Microsoft.CancelAllDialogs");
@@ -117,6 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             yield return new InterfaceConverter<OnCondition>(refResolver, sourceMap, paths);
             yield return new ExpressionPropertyConverter<ChoiceSet>();
+            yield return new DialogSchemaConverter(refResolver);
         }
     }
 }

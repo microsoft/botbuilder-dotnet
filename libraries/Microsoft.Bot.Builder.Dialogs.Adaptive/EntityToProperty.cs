@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Form.Events
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public class EntityToProperty
     {

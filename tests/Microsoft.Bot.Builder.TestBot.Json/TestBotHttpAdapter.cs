@@ -34,7 +34,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             this.UseResourceExplorer(resourceExplorer, registrations);
             this.UseAdaptiveDialogs();
-            this.UseFormDialogs();
             this.UseLanguageGeneration(resourceExplorer);
             this.UseDebugger(configuration.GetValue<int>("debugport", 4712), events: new Events<AdaptiveEvents>());
 

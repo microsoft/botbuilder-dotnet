@@ -7,22 +7,20 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Builder.MockLuis;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
+namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 {
     public class GeneratorTests : IClassFixture<GeneratorTests.FormFixture>
     {
         private FormFixture _form;
 
-        private readonly string resourcesDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Form.Tests\Resources\");
+        private readonly string resourcesDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Declarative.Tests\generated\");
 
         public GeneratorTests(FormFixture form)
         {
@@ -87,7 +85,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
                 .UseState(userState, convoState)
                 .UseResourceExplorer(_form.Resources)
                 .UseAdaptiveDialogs()
-                .UseFormDialogs()
                 .UseLanguageGeneration(_form.Resources)
                 .UseMockLuis()
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
@@ -112,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
             public FormFixture()
             {
                 TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-                var projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Form.Tests\Microsoft.Bot.Builder.Dialogs.Form.Tests.csproj")));
+                var projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.csproj")));
                 Resources = ResourceExplorer.LoadProject(projPath);
             }
 

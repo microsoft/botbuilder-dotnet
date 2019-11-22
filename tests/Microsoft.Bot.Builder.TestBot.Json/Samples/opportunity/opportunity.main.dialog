@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
-    "$type": "Microsoft.FormDialog",
+    "$type": "Microsoft.AdaptiveDialog",
     "recognizer": "opportunity.lu",
     "generator": "opportunity.lg",
     "schema": "opportunity.form",

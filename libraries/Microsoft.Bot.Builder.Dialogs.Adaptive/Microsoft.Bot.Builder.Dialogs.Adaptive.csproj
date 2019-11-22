@@ -35,6 +35,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Schemas\TriggerConditions\Microsoft.OnAsk.schema" />
+    <Content Remove="Schemas\TriggerConditions\Microsoft.OnChooseProperty.schema" />
+    <Content Remove="Schemas\TriggerConditions\Microsoft.OnClarifyEntity.schema" />
+    <Content Remove="Schemas\TriggerConditions\Microsoft.OnClearProperty.schema" />
+    <Content Remove="Schemas\TriggerConditions\Microsoft.OnSetProperty.schema" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Recognizers.Text" Version="1.2.6.1" />
     <PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.2.6.1" />
     <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.2.6.1" />

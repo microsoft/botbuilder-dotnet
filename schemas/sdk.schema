@@ -136,11 +136,6 @@
             "$ref": "#/definitions/Microsoft.ForeachPage"
         },
         {
-            "title": "Microsoft.FormDialog",
-            "description": "Configures a data driven dialog via a schema and a collection of mapping rules.",
-            "$ref": "#/definitions/Microsoft.FormDialog"
-        },
-        {
             "title": "Microsoft.GuidEntityRecognizer",
             "description": "Recognizer which recognizes guids.",
             "$ref": "#/definitions/Microsoft.GuidEntityRecognizer"
@@ -572,6 +567,20 @@
                         "$type": "Microsoft.ITriggerCondition",
                         "$ref": "#/definitions/Microsoft.ITriggerCondition"
                     }
+                },
+                "schema": {
+                    "anyOf": [
+                        {
+                            "$comment": "Eventually we should allow at least some subset of JSON schema here.",
+                            "title": "The form schema to be filled in.",
+                            "type": "object",
+                            "additionalProperties": true
+                        },
+                        {
+                            "type": "string",
+                            "title": "String pointing to schema file."
+                        }
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -2845,116 +2854,6 @@
                 }
             ]
         },
-        "Microsoft.FormDialog": {
-            "$role": "unionType(Microsoft.IDialog)",
-            "title": "Form Dialog",
-            "description": "Configures a data driven dialog via a schema and a collection of mapping rules.",
-            "type": "object",
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.FormDialog"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "Optional dialog ID."
-                },
-                "autoEndDialog": {
-                    "type": "boolean",
-                    "title": "Auto end dialog",
-                    "description": "If set to true the dialog will automatically end when there are no further actions.  If set to false, remember to manually end the dialog using EndDialog action.",
-                    "default": "true"
-                },
-                "defaultResultProperty": {
-                    "type": "string",
-                    "title": "Default result property",
-                    "description": "Value that will be passed back to the parent dialog.",
-                    "default": "dialog.result"
-                },
-                "recognizer": {
-                    "$type": "Microsoft.IRecognizer",
-                    "title": "Recognizer",
-                    "description": "Language Understanding recognizer that interprets user input into intent and entities.",
-                    "$ref": "#/definitions/Microsoft.IRecognizer"
-                },
-                "generator": {
-                    "$type": "Microsoft.ILanguageGenerator",
-                    "title": "Language Generator",
-                    "description": "Language generator that generates bot responses.",
-                    "$ref": "#/definitions/Microsoft.ILanguageGenerator"
-                },
-                "selector": {
-                    "$type": "Microsoft.ITriggerSelector",
-                    "title": "Selector",
-                    "description": "Policy to determine which trigger is executed. Defaults to a 'best match' selector (optional).",
-                    "$ref": "#/definitions/Microsoft.ITriggerSelector"
-                },
-                "triggers": {
-                    "type": "array",
-                    "description": "List of triggers defined for this dialog.",
-                    "title": "Triggers",
-                    "items": {
-                        "$type": "Microsoft.ITriggerCondition",
-                        "$ref": "#/definitions/Microsoft.ITriggerCondition"
-                    }
-                },
-                "schema": {
-                    "anyOf": [
-                        {
-                            "$comment": "Eventually we should allow at least some subset of JSON schema here.",
-                            "title": "The form schema to be filled in.",
-                            "type": "object",
-                            "additionalProperties": true
-                        },
-                        {
-                            "type": "string",
-                            "title": "String pointing to schema file."
-                        }
-                    ]
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "$type"
-                    ]
-                }
-            ]
-        },
         "Microsoft.GuidEntityRecognizer": {
             "$role": "unionType(Microsoft.EntityRecognizers)",
             "title": "Guid Entity Recognizer",
@@ -3280,11 +3179,6 @@
                     "title": "Microsoft.ForeachPage",
                     "description": "Execute actions on each page (collection of items) in an array.",
                     "$ref": "#/definitions/Microsoft.ForeachPage"
-                },
-                {
-                    "title": "Microsoft.FormDialog",
-                    "description": "Configures a data driven dialog via a schema and a collection of mapping rules.",
-                    "$ref": "#/definitions/Microsoft.FormDialog"
                 },
                 {
                     "title": "Microsoft.HttpRequest",

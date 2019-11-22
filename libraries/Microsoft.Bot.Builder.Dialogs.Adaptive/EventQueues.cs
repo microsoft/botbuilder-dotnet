@@ -1,9 +1,8 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
 
-namespace Microsoft.Bot.Builder.Dialogs.Form.Events
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public class EventQueues
     {
@@ -77,11 +76,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
             var changed = true;
             switch (eventName)
             {
-                case FormEvents.ChooseProperty: ChooseProperty.Dequeue(); break;
-                case FormEvents.ClarifyEntity: ClarifyEntity.Dequeue(); break;
-                case FormEvents.ClearProperty: ClearProperty.Dequeue(); break;
-                case FormEvents.SetProperty: SetProperty.Dequeue(); break;
-                case FormEvents.Ask:
+                case AdaptiveEvents.ChooseProperty: ChooseProperty.Dequeue(); break;
+                case AdaptiveEvents.ClarifyEntity: ClarifyEntity.Dequeue(); break;
+                case AdaptiveEvents.ClearProperty: ClearProperty.Dequeue(); break;
+                case AdaptiveEvents.SetProperty: SetProperty.Dequeue(); break;
+                case AdaptiveEvents.Ask:
                 default:
                     changed = false;
                     break;

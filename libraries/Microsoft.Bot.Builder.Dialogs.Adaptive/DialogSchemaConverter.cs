@@ -2,14 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Form.Converters
+namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 {
     public class DialogSchemaConverter : JsonConverter
     {

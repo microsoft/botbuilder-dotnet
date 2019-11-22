@@ -7,7 +7,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Form
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public class DialogSchema
     {

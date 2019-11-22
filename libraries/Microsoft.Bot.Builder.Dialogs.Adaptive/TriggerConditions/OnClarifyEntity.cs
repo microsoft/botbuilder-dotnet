@@ -1,22 +1,23 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Form.Events
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Triggered when a form needs to set a slot to an entity.
+    /// Triggered when a form needs to clarify an ambiguous entity.
     /// </summary>
-    public class OnSetProperty : OnDialogEvent
+    public class OnClarifyEntity : OnDialogEvent
     {
         [JsonConstructor]
-        public OnSetProperty(string property = null, string entity = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnClarifyEntity(string property = null, string entity = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
-                @event: FormEvents.SetProperty,
+                @event: AdaptiveEvents.ClarifyEntity,
                 actions: actions,
                 condition: condition,
                 callerPath: callerPath,

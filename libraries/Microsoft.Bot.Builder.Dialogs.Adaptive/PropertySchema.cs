@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Form
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     /// <summary>
     /// Represents a property found in a JSON schema.

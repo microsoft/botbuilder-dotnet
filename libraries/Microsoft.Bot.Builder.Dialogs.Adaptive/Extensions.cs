@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Form
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public static class Extensions
     {

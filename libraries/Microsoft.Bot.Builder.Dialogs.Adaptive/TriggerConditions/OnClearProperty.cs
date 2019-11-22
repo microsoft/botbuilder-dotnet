@@ -6,7 +6,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Form.Events
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
     /// Triggered when a form needs to clear a slot.
@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
         [JsonConstructor]
         public OnClearProperty(string property = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
-                @event: FormEvents.ClearProperty,
+                @event: AdaptiveEvents.ClearProperty,
                 actions: actions,
                 condition: condition,
                 callerPath: callerPath,

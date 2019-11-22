@@ -1,8 +1,8 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/form/schemas/component.schema",
     "$role": "unionType(Microsoft.ITriggerCondition)",
-    "title": "Form SetSlot Event",
-    "description": "This defines the actions to take when a SetSlot event is raised",
+    "title": "Form ClarifyEntity Event",
+    "description": "This defines the actions to take when a ClarifyEntity event is raised",
     "allOf": [
         {
             "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/TriggerConditions/Microsoft.OnCondition.schema#"
@@ -17,8 +17,8 @@
                 },
                 "entity": {
                     "type": "string",
-                    "title": "Entity",
-                    "description": "Entity being put into property"
+                    "title": "Ambiguous entity",
+                    "description": "Ambiguous entity"
                 }
             }
         }
