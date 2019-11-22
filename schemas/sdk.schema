@@ -322,7 +322,7 @@
         },
         {
             "title": "Microsoft.OnRepromptDialog",
-            "description": "Actions to perform when 'ReprmptDialog' event occurs.",
+            "description": "Actions to perform when 'RepromptDialog' event occurs.",
             "$ref": "#/definitions/Microsoft.OnRepromptDialog"
         },
         {
@@ -397,7 +397,7 @@
         },
         {
             "title": "Microsoft.StaticActivityTemplate",
-            "description": "This allows you to defina static Activity object",
+            "description": "This allows you to define a static Activity object",
             "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
         },
         {
@@ -2408,10 +2408,10 @@
                     ]
                 },
                 "eventValue": {
-                    "type": "object",
+                    "$role": "expression",
                     "title": "Event value",
                     "description": "Value to emit with the event (optional).",
-                    "additionalProperties": true
+                    "type": "string"
                 },
                 "bubbleEvent": {
                     "type": "boolean",
@@ -3081,7 +3081,7 @@
                 },
                 {
                     "title": "Microsoft.StaticActivityTemplate",
-                    "description": "This allows you to defina static Activity object",
+                    "description": "This allows you to define a static Activity object",
                     "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
                 },
                 {
@@ -3421,7 +3421,7 @@
                 },
                 {
                     "title": "Microsoft.OnRepromptDialog",
-                    "description": "Actions to perform when 'ReprmptDialog' event occurs.",
+                    "description": "Actions to perform when 'RepromptDialog' event occurs.",
                     "$ref": "#/definitions/Microsoft.OnRepromptDialog"
                 },
                 {
@@ -6131,7 +6131,7 @@
         "Microsoft.OnRepromptDialog": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "On RepromptDialog",
-            "description": "Actions to perform when 'ReprmptDialog' event occurs.",
+            "description": "Actions to perform when 'RepromptDialog' event occurs.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -7180,7 +7180,7 @@
         "Microsoft.StaticActivityTemplate": {
             "$role": "unionType(Microsoft.IActivityTemplate)",
             "title": "Microsoft Static Activity Template",
-            "description": "This allows you to defina static Activity object",
+            "description": "This allows you to define a static Activity object",
             "type": "object",
             "properties": {
                 "$type": {

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
 
@@ -9,149 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="generated\en-us\sandwich-Bread.en-us.lg" />
-    <None Remove="generated\en-us\sandwich-BreadEntity.en-us.lg" />
-    <None Remove="generated\en-us\sandwich-BreadEntity.en-us.lu" />
-    <None Remove="generated\en-us\sandwich-cancel.en-us.lu" />
-    <None Remove="generated\en-us\sandwich-cancelIntent.en-us.lu" />
-    <None Remove="generated\en-us\sandwich-Cheese.en-us.lg" />
-    <None Remove="generated\en-us\sandwich-CheeseEntity.en-us.lg" />
-    <None Remove="generated\en-us\sandwich-CheeseEntity.en-us.lu" />
-    <None Remove="generated\en-us\sandwich-common.en-us.lg" />
-    <None Remove="generated\en-us\sandwich-Confirmation.en-us.lg" />
-    <None Remove="generated\en-us\sandwich-Confirmation.en-us.lu" />
-    <None Remove="generated\en-us\sandwich-dimension.en-us.lu" />
-    <None Remove="generated\en-us\sandwich-Directions.en-us.lg" />
-    <None Remove="generated\en-us\sandwich-DirectionsEntity.en-us.lg" />
-    <None Remove="generated\en-us\sandwich-DirectionsEntity.en-us.lu" />
-    <None Remove="generated\en-us\sandwich-help.en-us.lu" />
-    <None Remove="generated\en-us\sandwich-helpIntent.en-us.lu" />
-    <None Remove="generated\en-us\sandwich-Meat.en-us.lg" />
-    <None Remove="generated\en-us\sandwich-MeatEntity.en-us.lg" />
-    <None Remove="generated\en-us\sandwich-MeatEntity.en-us.lu" />
-    <None Remove="generated\en-us\sandwich-Name.en-us.lg" />
-    <None Remove="generated\en-us\sandwich-NameEntity.en-us.lg" />
-    <None Remove="generated\en-us\sandwich-NameEntity.en-us.lu" />
-    <None Remove="generated\en-us\sandwich-noneIntent.en-us.lu" />
-    <None Remove="generated\en-us\sandwich-number.en-us.lu" />
-    <None Remove="generated\en-us\sandwich-PROPERTYName.en-us.lg" />
-    <None Remove="generated\en-us\sandwich-PROPERTYName.en-us.lu" />
-    <None Remove="generated\en-us\sandwich-Quantity.en-us.lu" />
-    <None Remove="generated\en-us\sandwich-sandwich.lu" />
-    <None Remove="generated\en-us\sandwich.en-us.lg" />
-    <None Remove="generated\en-us\sandwich.en-us.lu" />
-    <None Remove="generated\en-us\sandwich.en-us.lu.dialog" />
-    <None Remove="generated\luconfig.json" />
-    <None Remove="generated\luis.settings.chrimc.westus.json" />
-    <None Remove="generated\sandwich-BeginDialog.dialog" />
-    <None Remove="generated\sandwich-BreadAsk.dialog" />
-    <None Remove="generated\sandwich-BreadEntityClarify.dialog" />
-    <None Remove="generated\sandwich-BreadSetBreadEntity.dialog" />
-    <None Remove="generated\sandwich-CancelConfirmation.dialog" />
-    <None Remove="generated\sandwich-CancelConfirmationSet.dialog" />
-    <None Remove="generated\sandwich-CheeseAsk.dialog" />
-    <None Remove="generated\sandwich-CheeseEntityClarify.dialog" />
-    <None Remove="generated\sandwich-CheeseSetCheeseEntity.dialog" />
-    <None Remove="generated\sandwich-ChooseProperty.dialog" />
-    <None Remove="generated\sandwich-CompleteConfirmation.dialog" />
-    <None Remove="generated\sandwich-CompleteConfirmationSet.dialog" />
-    <None Remove="generated\sandwich-DirectionsAsk.dialog" />
-    <None Remove="generated\sandwich-DirectionsSetDirectionsEntity.dialog" />
-    <None Remove="generated\sandwich-Help.dialog" />
-    <None Remove="generated\sandwich-HelpIntent.dialog" />
-    <None Remove="generated\sandwich-MeatAsk.dialog" />
-    <None Remove="generated\sandwich-MeatEntityClarify.dialog" />
-    <None Remove="generated\sandwich-MeatSetMeatEntity.dialog" />
-    <None Remove="generated\sandwich-NameAsk.dialog" />
-    <None Remove="generated\sandwich-NameSetNameEntity.dialog" />
-    <None Remove="generated\sandwich-NotUnderstood.dialog" />
-    <None Remove="generated\sandwich-PropertyToChangeSet.dialog" />
-    <None Remove="generated\sandwich-sandwichIntent.dialog" />
-    <None Remove="generated\sandwich-sandwichTrigger.dialog" />
-    <None Remove="generated\sandwich.form.dialog" />
-    <None Remove="generated\sandwich.lu.dialog" />
-    <None Remove="generated\sandwich.main.dialog" />
-    <None Remove="generated\sandwich.schema.dialog" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="generated\en-us\sandwich-Bread.en-us.lg" />
-    <Content Include="generated\en-us\sandwich-BreadEntity.en-us.lg" />
-    <Content Include="generated\en-us\sandwich-BreadEntity.en-us.lu" />
-    <Content Include="generated\en-us\sandwich-cancel.en-us.lu" />
-    <Content Include="generated\en-us\sandwich-cancelIntent.en-us.lu" />
-    <Content Include="generated\en-us\sandwich-Cheese.en-us.lg" />
-    <Content Include="generated\en-us\sandwich-CheeseEntity.en-us.lg" />
-    <Content Include="generated\en-us\sandwich-CheeseEntity.en-us.lu" />
-    <Content Include="generated\en-us\sandwich-common.en-us.lg" />
-    <Content Include="generated\en-us\sandwich-Confirmation.en-us.lg" />
-    <Content Include="generated\en-us\sandwich-Confirmation.en-us.lu" />
-    <Content Include="generated\en-us\sandwich-dimension.en-us.lu" />
-    <Content Include="generated\en-us\sandwich-Directions.en-us.lg" />
-    <Content Include="generated\en-us\sandwich-DirectionsEntity.en-us.lg" />
-    <Content Include="generated\en-us\sandwich-DirectionsEntity.en-us.lu" />
-    <Content Include="generated\en-us\sandwich-help.en-us.lu" />
-    <Content Include="generated\en-us\sandwich-helpIntent.en-us.lu" />
-    <Content Include="generated\en-us\sandwich-Meat.en-us.lg" />
-    <Content Include="generated\en-us\sandwich-MeatEntity.en-us.lg" />
-    <Content Include="generated\en-us\sandwich-MeatEntity.en-us.lu" />
-    <Content Include="generated\en-us\sandwich-Name.en-us.lg" />
-    <Content Include="generated\en-us\sandwich-NameEntity.en-us.lg" />
-    <Content Include="generated\en-us\sandwich-NameEntity.en-us.lu" />
-    <Content Include="generated\en-us\sandwich-noneIntent.en-us.lu" />
-    <Content Include="generated\en-us\sandwich-number.en-us.lu" />
-    <Content Include="generated\en-us\sandwich-PROPERTYName.en-us.lg" />
-    <Content Include="generated\en-us\sandwich-PROPERTYName.en-us.lu" />
-    <Content Include="generated\en-us\sandwich-Quantity.en-us.lu" />
-    <Content Include="generated\en-us\sandwich-sandwich.lu" />
-    <Content Include="generated\en-us\sandwich.en-us.lg" />
-    <Content Include="generated\en-us\sandwich.en-us.lu" />
-    <Content Include="generated\en-us\sandwich.en-us.lu.dialog" />
-    <Content Include="generated\luconfig.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="generated\luis.settings.chrimc.westus.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="generated\sandwich-BeginDialog.dialog" />
-    <Content Include="generated\sandwich-BreadAsk.dialog" />
-    <Content Include="generated\sandwich-BreadEntityClarify.dialog" />
-    <Content Include="generated\sandwich-BreadSetBreadEntity.dialog" />
-    <Content Include="generated\sandwich-CancelConfirmation.dialog" />
-    <Content Include="generated\sandwich-CancelConfirmationSet.dialog" />
-    <Content Include="generated\sandwich-CheeseAsk.dialog" />
-    <Content Include="generated\sandwich-CheeseEntityClarify.dialog" />
-    <Content Include="generated\sandwich-CheeseSetCheeseEntity.dialog" />
-    <Content Include="generated\sandwich-ChooseProperty.dialog" />
-    <Content Include="generated\sandwich-CompleteConfirmation.dialog" />
-    <Content Include="generated\sandwich-CompleteConfirmationSet.dialog" />
-    <Content Include="generated\sandwich-DirectionsAsk.dialog" />
-    <Content Include="generated\sandwich-DirectionsSetDirectionsEntity.dialog" />
-    <Content Include="generated\sandwich-Help.dialog" />
-    <Content Include="generated\sandwich-HelpIntent.dialog" />
-    <Content Include="generated\sandwich-MeatAsk.dialog" />
-    <Content Include="generated\sandwich-MeatEntityClarify.dialog" />
-    <Content Include="generated\sandwich-MeatSetMeatEntity.dialog" />
-    <Content Include="generated\sandwich-NameAsk.dialog" />
-    <Content Include="generated\sandwich-NameSetNameEntity.dialog" />
-    <Content Include="generated\sandwich-NotUnderstood.dialog" />
-    <Content Include="generated\sandwich-PropertyToChangeSet.dialog" />
-    <Content Include="generated\sandwich-sandwichIntent.dialog" />
-    <Content Include="generated\sandwich-sandwichTrigger.dialog" />
-    <Content Include="generated\sandwich.form.dialog" />
-    <Content Include="generated\sandwich.lu.dialog" />
-    <Content Include="generated\sandwich.main.dialog" />
-    <Content Include="generated\sandwich.schema.dialog" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
   </ItemGroup>
 

@@ -60,7 +60,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                     {
                         var newAttachment = new SlackAPI.Attachment()
                         {
-                            author_name = att.Name, thumb_url = att.ThumbnailUrl,
+                            author_name = att.Name,
+                            thumb_url = att.ThumbnailUrl,
                         };
                         attachments.Add(newAttachment);
                     }
@@ -147,7 +148,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             var activity = new Activity()
             {
-                Timestamp = default(DateTime),
+                Timestamp = default,
                 ChannelId = "slack",
                 Conversation = new ConversationAccount()
                 {
@@ -197,7 +198,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             var activity = new Activity()
             {
                 Id = slackEvent.EventTs,
-                Timestamp = default(DateTime),
+                Timestamp = default,
                 ChannelId = "slack",
                 Conversation = new ConversationAccount()
                 {
@@ -262,7 +263,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             var activity = new Activity()
             {
                 Id = slackBody.TriggerId,
-                Timestamp = default(DateTime),
+                Timestamp = default,
                 ChannelId = "slack",
                 Conversation = new ConversationAccount()
                 {

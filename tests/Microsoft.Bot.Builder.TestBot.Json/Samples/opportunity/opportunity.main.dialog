@@ -1,8 +1,0 @@
-{
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
-    "$type": "Microsoft.AdaptiveDialog",
-    "recognizer": "opportunity.lu",
-    "generator": "opportunity.lg",
-    "schema": "opportunity.form",
-    "triggers": [ "opportunity-AccountAsk", "opportunity-AccountHelp", "opportunity-AccountSet", "opportunity-TopicAsk", "opportunity-TopicHelp", "opportunity-TopicSet", "opportunity-TerritoryAsk", "opportunity-TerritoryHelp", "opportunity-TerritorySet", "opportunity-DescriptionAsk", "opportunity-DescriptionHelp", "opportunity-DescriptionSet", "opportunity-ContactPhoneAsk", "opportunity-ContactPhoneHelp", "opportunity-ContactPhoneSet", "opportunity-ContactEmailAsk", "opportunity-ContactEmailHelp", "opportunity-ContactEmailSet", "opportunity-EstimatedCloseDateAsk", "opportunity-EstimatedCloseDateHelp", "opportunity-EstimatedCloseDateSet", "opportunity-PurchaseTimeframeAsk", "opportunity-PurchaseTimeframeHelp", "opportunity-PurchaseTimeframeSet", "opportunity-begindialog", "opportunity-cancelconfirmation", "opportunity-cancelconfirmationset", "opportunity-chooseproperty", "opportunity-complete", "opportunity-completeconfirmationset", "opportunity-help", "opportunity-propertytochangeset" ]
-}

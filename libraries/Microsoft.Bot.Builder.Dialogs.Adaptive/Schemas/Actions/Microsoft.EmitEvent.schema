@@ -34,10 +34,9 @@
             ]
         },
         "eventValue": {
-            "type": "object",
+            "$role": "expression",
             "title": "Event value",
-            "description": "Value to emit with the event (optional).",
-            "additionalProperties": true
+            "description": "Value to emit with the event (optional)."
         },
         "bubbleEvent": {
             "type": "boolean",

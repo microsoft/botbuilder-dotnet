@@ -1,7 +1,0 @@
-{
-    "name": "opportunity",
-    "defaultLanguage": "en-us",
-    "models": [
-        "en-us/opportunity.en-us.lu"
-    ]
-  }

@@ -112,9 +112,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
             var emulateOAuthCards = ConfigurationManager.AppSettings[AuthenticationConstants.EmulateOAuthCardsKey];
 
-            if (!string.IsNullOrEmpty(emulateOAuthCards) && bool.TryParse(emulateOAuthCards, out bool emualteOAuthCardsValue))
+            if (!string.IsNullOrEmpty(emulateOAuthCards) && bool.TryParse(emulateOAuthCards, out bool emulateOAuthCardsValue))
             {
-                OAuthClientConfig.EmulateOAuthCards = emualteOAuthCardsValue;
+                OAuthClientConfig.EmulateOAuthCards = emulateOAuthCardsValue;
             }
         }
     }
