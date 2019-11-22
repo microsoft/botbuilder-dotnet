@@ -76,20 +76,13 @@ namespace Microsoft.BotBuilderSamples.CognitiveModels
 
         public void Convert(dynamic result)
         {
-            try {
-                var serializedResult = JsonConvert.SerializeObject(result);
-                var app = JsonConvert.DeserializeObject<FlightBooking>(serializedResult);
-                Text = app.Text;
-                AlteredText = app.AlteredText;
-                Intents = app.Intents;
-                Entities = app.Entities;
-                Properties = app.Properties;
-            }
-            catch (Exception e) 
-            {
-                Console.WriteLine(e.Message);
-            }
-
+            var serializedResult = JsonConvert.SerializeObject(result);
+            var app = JsonConvert.DeserializeObject<FlightBooking>(serializedResult);
+            Text = app.Text;
+            AlteredText = app.AlteredText;
+            Intents = app.Intents;
+            Entities = app.Entities;
+            Properties = app.Properties;
         }
 
         public (Intent intent, double score) TopIntent()
