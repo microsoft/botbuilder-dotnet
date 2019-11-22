@@ -106,7 +106,27 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 throw new ArgumentException(nameof(applicationEndpoint));
             }
 
-            var applicationId = uri.Segments.Last();
+            string applicationId = null;
+            var foundApps = false;
+            foreach (var segment in uri.Segments)
+            {
+                if (foundApps)
+                {
+                    applicationId = segment.TrimEnd('/');
+                    break;
+                }
+
+                if (segment == "apps/")
+                {
+                    foundApps = true;
+                }
+            }
+
+            if (applicationId == null)
+            {
+                throw new ArgumentException($"Could not find application Id in {applicationEndpoint}");
+            }
+
             var endpointKey = HttpUtility.ParseQueryString(uri.Query).Get("subscription-key");
             var endpoint = uri.GetLeftPart(UriPartial.Authority);
             return (applicationId, endpointKey, endpoint);

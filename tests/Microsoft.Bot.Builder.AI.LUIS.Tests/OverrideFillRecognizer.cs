@@ -16,6 +16,11 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             LogPersonalInformation = logPersonalInformation;
         }
 
+        public OverrideFillRecognizer(LuisRecognizerOptions recognizerOptions, HttpClientHandler clientHandler = null)
+        : base(recognizerOptions, clientHandler)
+        {
+        }
+
         protected override async Task OnRecognizerResultAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default)
         {
             var properties = await FillLuisEventPropertiesAsync(recognizerResult, turnContext, telemetryProperties, cancellationToken).ConfigureAwait(false);

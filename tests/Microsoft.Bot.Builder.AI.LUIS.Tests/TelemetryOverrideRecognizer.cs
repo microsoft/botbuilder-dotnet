@@ -16,6 +16,11 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             LogPersonalInformation = logPersonalInformation;
         }
 
+        public TelemetryOverrideRecognizer(LuisRecognizerOptions recognizerOptions, HttpClientHandler clientHandler = null)
+        : base(recognizerOptions, clientHandler)
+        {
+        }
+
         protected override Task OnRecognizerResultAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> properties = null, Dictionary<string, double> metrics = null, CancellationToken cancellationToken = default)
         {
             properties.TryAdd("MyImportantProperty", "myImportantValue");
