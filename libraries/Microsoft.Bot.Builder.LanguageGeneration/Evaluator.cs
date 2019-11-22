@@ -148,7 +148,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var propertyObject = JObject.FromObject(EvalExpression(line));
 
                     // Full reference to another structured template is limited to the structured template with same type 
-                    if (propertyObject["$kind"] != null && propertyObject["$kind"].ToString() == typeName)
+                    if (propertyObject["lgType"] != null && propertyObject["lgType"].ToString() == typeName)
                     {
                         foreach (var item in propertyObject)
                         {
