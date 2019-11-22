@@ -12,6 +12,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// <summary>
     /// A base class for a skill controller.
     /// </summary>
+    [ChannelServiceExceptionFilter]
     public class ChannelServiceController : ControllerBase
     {
         private readonly ChannelServiceHandler _handler;
@@ -91,9 +92,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="activityId">Activity ID.</param>
         /// <returns>TODO Document.</returns>
         [HttpGet("{conversationId}/activities/{activityId}/members")]
-        public virtual Task<ActionResult<ChannelAccount[]>> GetActivityMembersAsync(string conversationId, string activityId)
+        public virtual async Task<ActionResult<ChannelAccount[]>> GetActivityMembersAsync(string conversationId, string activityId)
         {
-            throw new NotSupportedException("GetActivityMembersAsync is not supported");
+            return await _handler.HandleGetActivityMembersAsync(HttpContext.Request.Headers["Authorization"], conversationId, activityId).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -102,9 +103,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="parameters">Parameters to create the conversation from.</param>
         /// <returns>TODO Document.</returns>
         [HttpPost]
-        public virtual Task<ActionResult<ConversationResourceResponse>> CreateConversationAsync([FromBody] ConversationParameters parameters)
+        public virtual async Task<ActionResult<ConversationResourceResponse>> CreateConversationAsync([FromBody] ConversationParameters parameters)
         {
-            throw new NotSupportedException("CreateConversationAsync is not supported");
+            return await _handler.HandleCreateConversationAsync(HttpContext.Request.Headers["Authorization"], parameters).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -113,9 +114,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="continuationToken">skip or continuation token.</param>
         /// <returns>TODO Document.</returns>
         [HttpGet]
-        public virtual Task<ActionResult<ConversationsResult>> GetConversationsAsync(string continuationToken = null)
+        public virtual async Task<ActionResult<ConversationsResult>> GetConversationsAsync(string continuationToken = null)
         {
-            throw new NotSupportedException("GetConversationsAsync is not supported");
+            return await _handler.HandleGetConversationsAsync(HttpContext.Request.Headers["Authorization"], continuationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -124,9 +125,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="conversationId">Conversation ID.</param>
         /// <returns>TODO Document.</returns>
         [HttpGet("{conversationId}/members")]
-        public virtual Task<ActionResult<IList<ChannelAccount>>> GetConversationMembersAsync(string conversationId)
+        public virtual async Task<ActionResult<IList<ChannelAccount>>> GetConversationMembersAsync(string conversationId)
         {
-            throw new NotSupportedException("GetConversationMembersAsync is not supported");
+            var result = await _handler.HandleGetConversationMembersAsync(HttpContext.Request.Headers["Authorization"], conversationId).ConfigureAwait(false);
+            return new ActionResult<IList<ChannelAccount>>(result);
         }
 
         /// <summary>
@@ -137,9 +139,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="continuationToken">Continuation Token.</param>
         /// <returns>TODO Document.</returns>
         [HttpGet("{conversationId}/pagedmembers")]
-        public virtual Task<PagedMembersResult> GetConversationPagedMembersAsync(string conversationId, int pageSize = -1, string continuationToken = null)
+        public virtual async Task<PagedMembersResult> GetConversationPagedMembersAsync(string conversationId, int pageSize = -1, string continuationToken = null)
         {
-            throw new NotSupportedException("GetConversationPagedMembersAsync is not supported");
+            return await _handler.HandleGetConversationPagedMembersAsync(HttpContext.Request.Headers["Authorization"], conversationId, pageSize, continuationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -149,9 +151,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="memberId">ID of the member to delete from this conversation.</param>
         /// <returns>TODO Document.</returns>
         [HttpDelete("{conversationId}/members/{memberId}")]
-        public virtual Task DeleteConversationMemberAsync(string conversationId, string memberId)
+        public virtual async Task DeleteConversationMemberAsync(string conversationId, string memberId)
         {
-            throw new NotSupportedException("DeleteConversationMemberAsync is not supported");
+            await _handler.HandleDeleteConversationMemberAsync(HttpContext.Request.Headers["Authorization"], conversationId, memberId).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -161,9 +163,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="history">Historic activities.</param>
         /// <returns>TODO Document.</returns>
         [HttpPost("{conversationId}/activities/history")]
-        public virtual Task<ActionResult<ResourceResponse>> SendConversationHistoryAsync(string conversationId, [FromBody] Transcript history)
+        public virtual async Task<ActionResult<ResourceResponse>> SendConversationHistoryAsync(string conversationId, [FromBody] Transcript history)
         {
-            throw new NotSupportedException("SendConversationHistoryAsync is not supported");
+            return await _handler.HandleSendConversationHistoryAsync(HttpContext.Request.Headers["Authorization"], conversationId, history).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -173,9 +175,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="attachmentUpload">Attachment data.</param>
         /// <returns>TODO Document.</returns>
         [HttpPost("{conversationId}/attachments")]
-        public virtual Task<ActionResult<ResourceResponse>> UploadAttachmentAsync(string conversationId, [FromBody] AttachmentData attachmentUpload)
+        public virtual async Task<ActionResult<ResourceResponse>> UploadAttachmentAsync(string conversationId, [FromBody] AttachmentData attachmentUpload)
         {
-            throw new NotSupportedException("UploadAttachmentAsync is not supported");
+            return await _handler.HandleUploadAttachmentAsync(HttpContext.Request.Headers["Authorization"], conversationId, attachmentUpload).ConfigureAwait(false);
         }
     }
 }

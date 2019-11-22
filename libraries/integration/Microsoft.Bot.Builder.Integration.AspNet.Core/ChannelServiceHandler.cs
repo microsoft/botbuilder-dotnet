@@ -67,16 +67,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             await OnDeleteActivityAsync(claimsIdentity, conversationId, activityId, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<IList<ChannelAccount>> HandleGetActivityMembersAsync(string authHeader, string conversationId, string activityId, CancellationToken cancellationToken = default)
+        public async Task<ChannelAccount[]> HandleGetActivityMembersAsync(string authHeader, string conversationId, string activityId, CancellationToken cancellationToken = default)
         {
             var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnGetActivityMembersAsync(claimsIdentity, conversationId, activityId, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<ConversationResourceResponse> HandleCreateConversationAsync(string authHeader, string conversationId, ConversationParameters parameters, CancellationToken cancellationToken = default)
+        public async Task<ConversationResourceResponse> HandleCreateConversationAsync(string authHeader, ConversationParameters parameters, CancellationToken cancellationToken = default)
         {
             var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
-            return await OnCreateConversationAsync(claimsIdentity, conversationId, parameters, cancellationToken).ConfigureAwait(false);
+            return await OnCreateConversationAsync(claimsIdentity, parameters, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<ConversationsResult> HandleGetConversationsAsync(string authHeader, string conversationId, string continuationToken = default, CancellationToken cancellationToken = default)
@@ -229,7 +229,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name='activityId'>Activity ID.</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task with result.</returns>
-        protected virtual Task<IList<ChannelAccount>> OnGetActivityMembersAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, CancellationToken cancellationToken = default)
+        protected virtual Task<ChannelAccount[]> OnGetActivityMembersAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -261,11 +261,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// end. 
         /// </remarks>
         /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim.</param>
-        /// <param name='conversationId'>conversationId.</param> 
         /// <param name='parameters'>Parameters to create the conversation from.</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task for a conversation resource response.</returns>
-        protected virtual Task<ConversationResourceResponse> OnCreateConversationAsync(ClaimsIdentity claimsIdentity, string conversationId, ConversationParameters parameters, CancellationToken cancellationToken = default)
+        protected virtual Task<ConversationResourceResponse> OnCreateConversationAsync(ClaimsIdentity claimsIdentity, ConversationParameters parameters, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
