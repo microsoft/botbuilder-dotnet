@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.AI.Luis;
-using System;
 
 namespace Microsoft.BotBuilderSamples.CognitiveModels
 {
@@ -76,8 +75,7 @@ namespace Microsoft.BotBuilderSamples.CognitiveModels
 
         public void Convert(dynamic result)
         {
-            var serializedResult = JsonConvert.SerializeObject(result);
-            var app = JsonConvert.DeserializeObject<FlightBooking>(serializedResult);
+            var app = JsonConvert.DeserializeObject<FlightBooking>(JsonConvert.SerializeObject(result));
             Text = app.Text;
             AlteredText = app.AlteredText;
             Intents = app.Intents;
