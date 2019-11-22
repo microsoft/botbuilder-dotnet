@@ -29,22 +29,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="lg\NormalStructuredLG.lg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="adaptiveCard.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="lg\herocard.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="lg\turtle.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="lg\NormalStructuredLG.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 </Project>

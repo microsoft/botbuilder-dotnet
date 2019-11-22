@@ -281,7 +281,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 return result;
             }
 
-            var properties = value.Properties().Select(u => u.Name.ToLowerInvariant()).Where(u => u != "$kind" && u != "$type");
+            var properties = value.Properties().Select(u => u.Name.ToLowerInvariant()).Where(u => u != "lgType");
             IList<string> objectProperties;
 
             if (type == typeof(Activity))
@@ -313,7 +313,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 return string.Empty;
             }
 
-            var type = jObj["$kind"]?.ToString()?.Trim() ?? jObj["$type"]?.ToString()?.Trim();
+            var type = jObj["lgType"]?.ToString()?.Trim();
             if (string.IsNullOrEmpty(type))
             {
                 // Adaptive card type

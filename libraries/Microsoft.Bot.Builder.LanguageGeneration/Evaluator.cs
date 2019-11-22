@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var result = new JObject();
             var typeName = context.structuredBodyNameLine().STRUCTURED_CONTENT().GetText().Trim();
-            result["$kind"] = typeName;
+            result["lgType"] = typeName;
 
             var bodys = context.structuredBodyContentLine().STRUCTURED_CONTENT();
             foreach (var body in bodys)
@@ -429,6 +429,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             return new JObject
             {
+                ["lgType"] = "attachment",
                 ["contenttype"] = args[1].ToString(),
                 ["content"] = args[0] as JObject
             };
