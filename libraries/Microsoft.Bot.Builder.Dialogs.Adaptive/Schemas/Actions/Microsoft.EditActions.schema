@@ -24,7 +24,7 @@
         "actions": {
             "type": "array",
             "items": {
-                "$type": "Microsoft.IDialog"
+                "$kind": "Microsoft.IDialog"
             },
             "title": "Actions",
             "description": "Actions to apply."
