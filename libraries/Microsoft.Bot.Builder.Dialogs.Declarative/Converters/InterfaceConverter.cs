@@ -57,7 +57,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             }
 
             T result = TypeFactory.Build<T>(kind, jsonObject, serializer);
-            System.Diagnostics.Trace.TraceInformation($"{this.GetType().FullName}:{result.GetType().Name}");
             
             // DeclarativeTypeLoader.LoadAsync only adds FileResource to the paths stack
             if (paths.Count > 0)
