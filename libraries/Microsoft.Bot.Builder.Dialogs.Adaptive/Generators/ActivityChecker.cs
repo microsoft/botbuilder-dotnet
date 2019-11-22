@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             else
             {
                 var diagnosticMessage = string.IsNullOrWhiteSpace(type) ? 
-                    "'type' or '$kind' is not exist in lg output json object."
+                    "'lgType' does not exist in lg output json object."
                     : $"Type '{type}' is not support currently.";
                 result.Add(BuildDiagnostic(diagnosticMessage));
             }
@@ -281,7 +281,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 return result;
             }
 
-            var properties = value.Properties().Select(u => u.Name.ToLowerInvariant()).Where(u => u != "lgType");
+            var properties = value.Properties().Select(u => u.Name.ToLowerInvariant()).Where(u => u != "lgtype");
             IList<string> objectProperties;
 
             if (type == typeof(Activity))
