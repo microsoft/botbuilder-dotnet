@@ -6,7 +6,7 @@
     "description": "Replace current dialog with another dialog.",
     "properties": {
         "dialog": {
-            "$type": "Microsoft.IDialog",
+            "$kind": "Microsoft.IDialog",
             "title": "Dialog name",
             "description": "Current dialog will be replaced by this dialog."
         },

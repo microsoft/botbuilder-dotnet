@@ -1,0 +1,136 @@
+{
+  "$kind": "Microsoft.Test.Script",
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "AdaptiveDialog",
+    "recognizer": {
+      "$kind": "Microsoft.RegexRecognizer",
+      "intents": [
+        {
+          "$kind": "Microsoft.IntentPattern",
+          "intent": "start",
+          "pattern": "start"
+        },
+        {
+          "$kind": "Microsoft.IntentPattern",
+          "intent": "cancel",
+          "pattern": "cancel"
+        },
+        {
+          "$kind": "Microsoft.IntentPattern",
+          "intent": "set_name",
+          "pattern": "set name"
+        }
+      ]
+    },
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnIntent",
+        "intent": "set_name",
+        "actions": [
+          {
+            "$kind": "Microsoft.TextInput",
+            "alwaysPrompt": true,
+            "property": "$userName",
+            "prompt": "\\[set name]::What is your name?"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "\\[set name]::I have @{$userName} as your name"
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnIntent",
+        "intent": "start",
+        "actions": [
+          {
+            "$kind": "Microsoft.TextInput",
+            "allowInterruptions": "False",
+            "property": "$userName",
+            "prompt": "\\[start]::What is your name?"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "\\[start]::I have @{$userName} as your name"
+          },
+          {
+            "$kind": "Microsoft.DateTimeInput",
+            "allowInterruptions": "True",
+            "property": "$fromDate",
+            "prompt": "Give me date 1",
+            "unrecognizedPrompt": "Unrecognized, give me date 1"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "\\[start]:: I have @{$fromDate} as date 1"
+          },
+          {
+            "$kind": "Microsoft.DateTimeInput",
+            "allowInterruptions": "True",
+            "property": "$toDate",
+            "prompt": "Give me date 2"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "\\[start]:: I have @{$toDate} as date 2"
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnIntent",
+        "intent": "cancel",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "@{WelcomeUser()}"
+          }
+        ]
+      }
+    ],
+    "AutoEndDialog": true,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "start"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "[start]::What is your name?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "luhan"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "[start]::I have luhan as your name"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Give me date 1"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "set name"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "[set name]::What is your name?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "qiong"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "[set name]::I have qiong as your name"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Give me date 1"
+    }
+  ]
+}

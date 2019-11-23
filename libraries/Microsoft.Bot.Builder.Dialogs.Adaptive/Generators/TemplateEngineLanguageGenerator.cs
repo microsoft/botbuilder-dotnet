@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
@@ -16,6 +17,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// </summary>
     public class TemplateEngineLanguageGenerator : ILanguageGenerator
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.TemplateEngineLanguageGenerator";
+
         private const string DEFAULTLABEL = "Unknown";
 
         private readonly Dictionary<string, TemplateEngine> multiLangEngines = new Dictionary<string, TemplateEngine>();
@@ -94,6 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <value>
         /// Id of the source of this template (used for labeling errors).
         /// </value>
+        [JsonProperty("id")]
         public string Id { get; set; } = string.Empty;
 
         /// <summary>

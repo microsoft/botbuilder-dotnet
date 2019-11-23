@@ -3,6 +3,7 @@
 
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
@@ -37,11 +38,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// </summary>
     public class TextInput : InputDialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.TextInput";
+
         public TextInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        [JsonProperty("outputFormat")]
         public TextOutputFormat OutputFormat { get; set; } = TextOutputFormat.None;
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)

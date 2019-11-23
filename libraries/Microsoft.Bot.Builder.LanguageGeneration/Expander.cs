@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var stb = context.structuredTemplateBody();
             var result = new JObject();
             var typeName = stb.structuredBodyNameLine().STRUCTURED_CONTENT().GetText().Trim();
-            result["$type"] = typeName;
+            result["lgType"] = typeName;
             var expandedResult = new List<JObject>();
             expandedResult.Add(result);
             var bodys = stb.structuredBodyContentLine().STRUCTURED_CONTENT();
@@ -199,7 +199,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                             var tempRes = JObject.FromObject(res);
 
                             // Full reference to another structured template is limited to the structured template with same type 
-                            if (propertyObject["$type"] != null && propertyObject["$type"].ToString() == typeName)
+                            if (propertyObject["lgType"] != null && propertyObject["lgType"].ToString() == typeName)
                             {
                                 foreach (var item in propertyObject)
                                 {

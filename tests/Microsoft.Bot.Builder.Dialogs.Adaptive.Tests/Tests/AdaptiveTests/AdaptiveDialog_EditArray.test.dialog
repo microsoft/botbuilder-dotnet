@@ -1,0 +1,191 @@
+{
+  "$kind": "Microsoft.Test.Script",
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "planningTest",
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnBeginDialog",
+        
+        "actions": [
+          {
+            "$kind": "Microsoft.TextInput",
+            "alwaysPrompt": true,
+            "property": "dialog.todo",
+            "prompt": "Please add an item to todos."
+          },
+          {
+            "$kind": "Microsoft.InitProperty",
+            "property": "user.todos",
+            "type": "array"
+          },
+          {
+            "$kind": "Microsoft.EditArray",
+            "itemsProperty": "user.todos",
+            "value": "dialog.todo"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "Your todos: @{join(user.todos, ',')}"
+          },
+          {
+            "$kind": "Microsoft.TextInput",
+            "alwaysPrompt": true,
+            "property": "dialog.todo",
+            "prompt": "Please add an item to todos."
+          },
+          {
+            "$kind": "Microsoft.EditArray",
+            "itemsProperty": "user.todos",
+            "value": "dialog.todo"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "Your todos: @{join(user.todos, ',')}"
+          },
+          {
+            "$kind": "Microsoft.TextInput",
+            "alwaysPrompt": true,
+            "property": "dialog.todo",
+            "prompt": "Enter a item to remove."
+          },
+          {
+            "$kind": "Microsoft.EditArray",
+            "changeType": "Remove",
+            "itemsProperty": "user.todos",
+            "value": "dialog.todo"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "Your todos: @{join(user.todos, ',')}"
+          },
+          {
+            "$kind": "Microsoft.TextInput",
+            "alwaysPrompt": true,
+            "property": "dialog.todo",
+            "prompt": "Please add an item to todos."
+          },
+          {
+            "$kind": "Microsoft.EditArray",
+            "itemsProperty": "user.todos",
+            "value": "dialog.todo"
+          },
+          {
+            "$kind": "Microsoft.TextInput",
+            "alwaysPrompt": true,
+            "property": "dialog.todo",
+            "prompt": "Please add an item to todos."
+          },
+          {
+            "$kind": "Microsoft.EditArray",
+            "itemsProperty": "user.todos",
+            "value": "dialog.todo"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "Your todos: @{join(user.todos, ',')}"
+          },
+          {
+            "$kind": "Microsoft.EditArray",
+            "changeType": "Pop",
+            "itemsProperty": "user.todos"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "Your todos: @{join(user.todos, ',')}"
+          },
+          {
+            "$kind": "Microsoft.EditArray",
+            "changeType": "Take",
+            "itemsProperty": "user.todos"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "Your todos: @{join(user.todos, ',')}"
+          },
+          {
+            "$kind": "Microsoft.EditArray",
+            "changeType": "Clear",
+            "itemsProperty": "user.todos"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "Your todos: @{join(user.todos, ',')}"
+          }
+        ]
+      }
+    ],
+    "AutoEndDialog": true,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Please add an item to todos."
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "todo1"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Your todos: todo1"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Please add an item to todos."
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "todo2"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Your todos: todo1,todo2"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Enter a item to remove."
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "todo2"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Your todos: todo1"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Please add an item to todos."
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "todo3"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Please add an item to todos."
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "todo4"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Your todos: todo1,todo3,todo4"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Your todos: todo1,todo3"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Your todos: todo3"
+    }
+  ]
+}

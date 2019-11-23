@@ -1,0 +1,22 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "unionType(Microsoft.Test.ITestAction)",
+    "title": "User Text",
+    "description": "Sends text to the bot from the user.",
+    "type": "object",
+    "required": [
+        "text"
+    ],
+    "properties": {
+        "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Text to send to the bot."
+        },
+        "user": {
+            "type": "string",
+            "title": "User Name",
+            "description": "The activity.from.id and activity.from.name will be this if specified."
+        }
+    }
+}

@@ -8,11 +8,15 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     public class DebugBreak : Dialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.DebugBreak";
+
         public DebugBreak([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);

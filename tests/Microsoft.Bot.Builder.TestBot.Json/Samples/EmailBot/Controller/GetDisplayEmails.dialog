@@ -1,67 +1,67 @@
 {
   "$schema": "../../app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
+  "$kind": "Microsoft.AdaptiveDialog",
   "actions": [
     "GetEmails",
     {
-      "$type": "Microsoft.EditArray",
+      "$kind": "Microsoft.EditArray",
       "changeType": "Clear",
       "itemsProperty": "user.emails"
     },
     {
-      "$type": "Microsoft.SetProperty",
+      "$kind": "Microsoft.SetProperty",
       "property": "user.emailCount",
       "value": "count(user.getGraphEmails.value)"
     },
     // *** Translate from graph model to view model. Map the same entity from graph/google to the same attribute. ***
     {
-      "$type": "Microsoft.IfCondition",
+      "$kind": "Microsoft.IfCondition",
       "condition": "user.mailType=='msgraph'",
       "actions": [
         // Need subarray. Hack for now.
         //{
-        //  "$type": "Microsoft.SetProperty",
+        //  "$kind": "Microsoft.SetProperty",
         //  "property": "user.emails",
         //  "value": "user.getGraphEmails.value"
         //},
 
         //{
-        //  "$type": "Microsoft.EditArray",
+        //  "$kind": "Microsoft.EditArray",
         //  "changeType": "Push",
         //  "itemsProperty": "user.emails",
         //  "itemProperty": "user.getGraphEmails.value[user.showIndex*user.pageSize+0]"
         //},
         //{
-        //  "$type": "Microsoft.EditArray",
+        //  "$kind": "Microsoft.EditArray",
         //  "changeType": "Push",
         //  "itemsProperty": "user.emails",
         //  "itemProperty": "user.getGraphEmails.value[user.showIndex*user.pageSize+1]"
         //},
         //{
-        //  "$type": "Microsoft.EditArray",
+        //  "$kind": "Microsoft.EditArray",
         //  "changeType": "Push",
         //  "itemsProperty": "user.emails",
         //  "itemProperty": "user.getGraphEmails.value[user.showIndex*user.pageSize+2]"
         //}
 
         {
-          "$type": "Microsoft.IfCondition",
+          "$kind": "Microsoft.IfCondition",
           "condition": "user.showIndex==0",
           "actions": [
             {
-              "$type": "Microsoft.EditArray",
+              "$kind": "Microsoft.EditArray",
               "changeType": "Push",
               "itemsProperty": "user.emails",
               "itemProperty": "user.getGraphEmails.value[0]"
             },
             {
-              "$type": "Microsoft.EditArray",
+              "$kind": "Microsoft.EditArray",
               "changeType": "Push",
               "itemsProperty": "user.emails",
               "itemProperty": "user.getGraphEmails.value[1]"
             },
             {
-              "$type": "Microsoft.EditArray",
+              "$kind": "Microsoft.EditArray",
               "changeType": "Push",
               "itemsProperty": "user.emails",
               "itemProperty": "user.getGraphEmails.value[2]"
@@ -69,19 +69,19 @@
           ],
           "elseActions": [
             {
-              "$type": "Microsoft.EditArray",
+              "$kind": "Microsoft.EditArray",
               "changeType": "Push",
               "itemsProperty": "user.emails",
               "itemProperty": "user.getGraphEmails.value[3]"
             },
             {
-              "$type": "Microsoft.EditArray",
+              "$kind": "Microsoft.EditArray",
               "changeType": "Push",
               "itemsProperty": "user.emails",
               "itemProperty": "user.getGraphEmails.value[4]"
             },
             {
-              "$type": "Microsoft.EditArray",
+              "$kind": "Microsoft.EditArray",
               "changeType": "Push",
               "itemsProperty": "user.emails",
               "itemProperty": "user.getGraphEmails.value[5]"
@@ -91,7 +91,7 @@
       ]
     }
     //{
-    //  "$type": "Microsoft.SendActivity",
+    //  "$kind": "Microsoft.SendActivity",
     //  "activity": "Get email model done"
     //}
   ]

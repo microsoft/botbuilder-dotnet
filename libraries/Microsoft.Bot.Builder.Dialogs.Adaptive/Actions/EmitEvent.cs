@@ -15,6 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class EmitEvent : Dialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.EmitEvent";
+
         private Expression eventValue;
 
         [JsonConstructor]
@@ -33,6 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// The name of the event to emit.
         /// </value>
+        [JsonProperty("eventName")]
         public string EventName { get; set; }
 
         /// <summary>
@@ -41,6 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// The memory property path to use to get the value to send as part of the event.
         /// </value>
+        [JsonProperty("eventValue")]
         public string EventValue
         {
             get { return eventValue?.ToString(); }
@@ -53,6 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// A value indicating whether gets or sets whether the event should bubble or not.
         /// </value>
+        [JsonProperty("bubbleEvent")]
         public bool BubbleEvent { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))

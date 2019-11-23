@@ -1,16 +1,16 @@
 {
     "$schema": "../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "triggers": [
         {
-            "$type": "Microsoft.OnBeginDialog",
+            "$kind": "Microsoft.OnBeginDialog",
             "actions": [
                 {
-                    "$type": "Microsoft.TextInput",
+                    "$kind": "Microsoft.TextInput",
                     "prompt": "Hello, I'm Zoidberg. What is your name?"
                 },
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Hello, nice to talk to you!"
                 }
             ]

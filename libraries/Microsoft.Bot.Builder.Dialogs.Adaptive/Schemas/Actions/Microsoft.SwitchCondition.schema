@@ -35,7 +35,7 @@
                     "actions": {
                         "type": "array",
                         "items": {
-                            "$type": "Microsoft.IDialog"
+                            "$kind": "Microsoft.IDialog"
                         },
                         "title": "Actions",
                         "description": "Actions to execute."
@@ -50,7 +50,7 @@
         "default": {
             "type": "array",
             "items": {
-                "$type": "Microsoft.IDialog"
+                "$kind": "Microsoft.IDialog"
             },
             "title": "Default",
             "description": "Actions to execute if none of the cases meet the condition."

@@ -5,6 +5,8 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Recognizers.Text.Number;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
@@ -12,6 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// <summary>
     /// What format to output the number in.
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum NumberOutputFormat
     {
         /// <summary>
@@ -27,13 +30,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
     public class NumberInput : InputDialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.NumberInput";
+
         public NumberInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        [JsonProperty("defaultLocale")]
         public string DefaultLocale { get; set; } = null;
 
+        [JsonProperty("outputFormat")]
         public NumberOutputFormat OutputFormat { get; set; } = NumberOutputFormat.Float;
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)

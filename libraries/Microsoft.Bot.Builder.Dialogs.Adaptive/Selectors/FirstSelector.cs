@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Expressions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
@@ -15,6 +16,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// </summary>
     public class FirstSelector : ITriggerSelector
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.FirstSelector";
+
         private List<OnCondition> _conditionals;
         private bool _evaluate;
         private readonly IExpressionParser _parser = new ExpressionEngine();

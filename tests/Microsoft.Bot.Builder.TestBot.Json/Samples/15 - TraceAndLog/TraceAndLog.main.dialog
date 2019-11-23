@@ -1,23 +1,23 @@
 {
     "$schema": "../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "$id": "root",
     "triggers": [
         {
-            "$type": "Microsoft.OnBeginDialog",
+            "$kind": "Microsoft.OnBeginDialog",
             "actions": [
                 {
-                    "$type": "Microsoft.TextInput",
+                    "$kind": "Microsoft.TextInput",
                     "prompt": "Hello, what is your name?",
                     "property": "user.name"
                 },
                 {
-                    "$type": "Microsoft.TraceActivity",
+                    "$kind": "Microsoft.TraceActivity",
                     "valueType": "memory",
                     "value": "user"
                 },
                 {
-                    "$type": "Microsoft.LogAction",
+                    "$kind": "Microsoft.LogAction",
                     "text": "@{user.name}"
                 }
             ]

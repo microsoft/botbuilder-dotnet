@@ -1,56 +1,56 @@
 {
     "$schema": "../../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "autoEndDialog": false,
     "generator": "calendarBot.lg",
     "recognizer": {
-        "$type": "Microsoft.RegexRecognizer",
+        "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "ShowMeetingIntent",
                 "pattern": "(?i)show meeting"
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "CreateMeetingIntent",
                 "pattern": "(?i)create meeting"
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "HelpIntent",
                 "pattern": "(?i)help"
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "ShowNextPageIntent",
                 "pattern": "(?i)next page meeting"
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "UpdateMeetingIntent",
                 "pattern": "(?i)update meeting"
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "AcceptMeetingIntent",
                 "pattern": "(?i)accept meeting"
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "DeclineMeetingIntent",
                 "pattern": "(?i)decline meeting"
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel"
             }
@@ -58,16 +58,16 @@
     },
     "triggers": [
         {
-            "$type": "Microsoft.OnUnknownIntent",
+            "$kind": "Microsoft.OnUnknownIntent",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Hi! I'm a Calendar bot. Say \"show meeting\" to get started."
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "ShowMeetingIntent",
             "actions": [
                 // should be initialize
@@ -77,7 +77,7 @@
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "CreateMeetingIntent",
             "actions": [
                 // should be initialize
@@ -87,7 +87,7 @@
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "UpdateMeetingIntent",
             "actions": [
                 // should be initialize
@@ -97,7 +97,7 @@
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "AcceptMeetingIntent",
             "actions": [
                 // should be initialize
@@ -107,7 +107,7 @@
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "DeclineMeetingIntent",
             "actions": [
                 // should be initialize
@@ -117,26 +117,26 @@
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "HelpIntent",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "This is help"
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "CancelIntent",
             "actions": [
                 {
-                    "$type": "Microsoft.EndDialog"
+                    "$kind": "Microsoft.EndDialog"
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "ShowNextPageIntent",
             "actions": [
                 "CalendarNextPage",

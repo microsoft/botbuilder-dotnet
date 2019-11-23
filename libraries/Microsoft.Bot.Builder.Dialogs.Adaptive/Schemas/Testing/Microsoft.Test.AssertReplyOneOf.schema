@@ -1,0 +1,48 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "unionType(Microsoft.Test.ITestAction)",
+    "title": "Assert Reply OneOf",
+    "description": "Asserts that a reply text is one of multiple optional responses.",
+    "type": "object",
+    "required": [
+        "replies"
+    ],
+    "properties": {
+        "text": {
+            "type": "array",
+            "title": "Replies",
+            "description": "Expected replies (one of which must match",
+            "items": {
+                "type": "string"
+            }
+        },
+        "exact": {
+            "type": "boolean",
+            "title": "Exact Match",
+            "description": "If true then an exact match must happen, if false then the reply activity.text must contain the reply text. [Default:false]"
+        },
+        "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "The description of what the assertion is testing"
+        },
+        "timeout": {
+            "type": "number",
+            "title": "Timeout",
+            "description": "The amount of time in milliseconds to wait for a reply (default is 3000)"
+        },
+        "assertions": {
+            "type": "array",
+            "title": "Assertions to perform to validate Activity that is sent by the dialog",
+            "description": "Sequence of expressions which must evaluate to true.",
+            "items": {
+                "$role": "expression",
+                "title": "Assertion",
+                "description": "Assertion as an expression, which must evaluate to true or it will fail the test script.",
+                "examples": [
+                    "user.vip == true"
+                ]
+            }
+        }
+    }
+}

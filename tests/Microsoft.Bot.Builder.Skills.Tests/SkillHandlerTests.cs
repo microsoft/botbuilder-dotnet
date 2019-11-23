@@ -90,8 +90,6 @@ namespace Microsoft.Bot.Builder.Skills.Tests
 
             var msgActivity = Activity.CreateMessageActivity();
             msgActivity.Conversation = botAdapter.Conversation.Conversation;
-            msgActivity.From = skillAccount;
-            msgActivity.Recipient = botAdapter.Conversation.User;
             msgActivity.Text = "yo";
 
             result = await skillClient.TestOnSendToConversationAsync(claimsIdentity, skillConversationId, (Activity)msgActivity);
@@ -102,6 +100,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
             result = await skillClient.TestOnReplyToActivityAsync(claimsIdentity, skillConversationId, activityId, (Activity)msgActivity);
             Assert.IsType<ResourceResponse>(result);
             Assert.Equal(middleware.NewResourceId, ((ResourceResponse)result).Id);
+            msgActivity.Id = ((ResourceResponse)result).Id;
 
             result = await skillClient.TestOnSendConversationHistoryAsync(claimsIdentity, skillConversationId, new Transcript());
             Assert.IsType<ResourceResponse>(result);

@@ -3,16 +3,9 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using dbg = System.Diagnostics;
 
@@ -28,125 +21,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task OnIntent()
         {
-            var planningDialog = new AdaptiveDialog("planningTest")
-            {
-                AutoEndDialog = false,
-                Recognizer = new RegexRecognizer()
-                {
-                    Intents = new List<IntentPattern>()
-                    {
-                        new IntentPattern("JokeIntent", "joke"),
-                    }
-                },
-                Triggers = new List<OnCondition>()
-                {
-                    new OnBeginDialog()
-                    {
-                        Actions = new List<Dialog>()
-                        {
-                            new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
-                        },
-                    },
-                    new OnIntent(
-                        "JokeIntent",
-                        actions: new List<Dialog>()
-                        {
-                            new SendActivity("Why did the chicken cross the road?"),
-                            new EndTurn(),
-                            new SendActivity("To get to the other side")
-                        }),
-                }
-            };
-
-            await CreateFlow(planningDialog)
-            .SendConversationUpdate()
-                .AssertReply("I'm a joke bot. To get started say 'tell me a joke'")
-            .Send("Do you know a joke?")
-                .AssertReply("Why did the chicken cross the road?")
-            .Send("Why?")
-                .AssertReply("To get to the other side")
-            .StartTestAsync();
+            await TestUtils.RunTestScript("ConditionalsTests_OnIntent.test.dialog");
         }
 
         [TestMethod]
         public async Task OnIntentWithEntities()
         {
-            var planningDialog = new AdaptiveDialog("planningTest")
-            {
-                AutoEndDialog = false,
-                Recognizer = new RegexRecognizer()
-                {
-                    Intents = new List<IntentPattern>()
-                    {
-                        new IntentPattern("addColor", "I want (?<color>(red|green|blue|yellow))*"),
-                    }
-                },
-                Triggers = new List<OnCondition>()
-                {
-                    new OnIntent(
-                        intent: "addColor",
-                        entities: new List<string>() { "color" },
-                        actions: new List<Dialog>() { new SendActivity("You picked @{@color}") }),
-                    new OnUnknownIntent(actions: new List<Dialog>() { new SendActivity("pbtpbtpbt!") })
-                }
-            };
-
-            await CreateFlow(planningDialog)
-            .Send("I want red")
-                .AssertReply("You picked red")
-            .Send("I want")
-                .AssertReply("pbtpbtpbt!")
-            .Send("fooo")
-                .AssertReply("pbtpbtpbt!")
-            .StartTestAsync();
-        }
-
-        public OnCondition TestCondition(OnCondition conditional)
-        {
-            conditional.Condition = $"turn.activity.text == '{conditional.GetType().Name}'";
-            conditional.Actions.Add(new SendActivity(conditional.GetType().Name));
-            return conditional;
+            await TestUtils.RunTestScript("ConditionalsTests_OnIntentWithEntities.test.dialog");
         }
 
         [TestMethod]
         public async Task OnActivityTypes()
         {
-            var planningDialog = new AdaptiveDialog("planningTest")
-            {
-                AutoEndDialog = false,
-                Triggers = new List<OnCondition>()
-                {
-                    TestCondition(new OnMessageActivity()),
-                    TestCondition(new OnEventActivity()),
-                    TestCondition(new OnConversationUpdateActivity()),
-                    TestCondition(new OnTypingActivity()),
-                    TestCondition(new OnEndOfConversationActivity()),
-                    TestCondition(new OnEventActivity()),
-                    TestCondition(new OnHandoffActivity()),
-                    TestCondition(new OnMessageReactionActivity()),
-                    TestCondition(new OnMessageUpdateActivity()),
-                    TestCondition(new OnMessageDeleteActivity()),
-                }
-            };
-
-            await CreateFlow(planningDialog)
-            .Send(new Activity(ActivityTypes.Message, text: nameof(OnMessageActivity)))
-                .AssertReply(nameof(OnMessageActivity))
-            .Send(new Activity(ActivityTypes.MessageReaction, text: nameof(OnMessageReactionActivity)))
-                .AssertReply(nameof(OnMessageReactionActivity))
-            .Send(new Activity(ActivityTypes.MessageDelete, text: nameof(OnMessageDeleteActivity)))
-                .AssertReply(nameof(OnMessageDeleteActivity))
-            .Send(new Activity(ActivityTypes.MessageUpdate, text: nameof(OnMessageUpdateActivity)))
-                .AssertReply(nameof(OnMessageUpdateActivity))
-            .Send(new Activity(ActivityTypes.Typing, text: nameof(OnTypingActivity)))
-                .AssertReply(nameof(OnTypingActivity))
-            .Send(new Activity(ActivityTypes.ConversationUpdate, text: nameof(OnConversationUpdateActivity)))
-                .AssertReply(nameof(OnConversationUpdateActivity))
-            .Send(new Activity(ActivityTypes.EndOfConversation, text: nameof(OnEndOfConversationActivity)))
-                .AssertReply(nameof(OnEndOfConversationActivity))
-            .Send(new Activity(ActivityTypes.Event, text: nameof(OnEventActivity)) { Name = nameof(OnEventActivity) })
-                .AssertReply(nameof(OnEventActivity))
-            .StartTestAsync();
+            await TestUtils.RunTestScript("ConditionalsTests_OnActivityTypes.test.dialog");
         }
 
         public void AssertExpression(OnCondition condition, string expectedExpression)
@@ -295,31 +182,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Condition = "turn.test == 1"
                 },
                 "(turn.test == 1)");
-        }
-
-        private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
-        {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
-
-            var explorer = new ResourceExplorer();
-            var storage = new MemoryStorage();
-            var convoState = new ConversationState(storage);
-            var userState = new UserState(storage);
-
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
-            adapter
-                .UseStorage(storage)
-                .UseState(userState, convoState)
-                .Use(new RegisterClassMiddleware<ResourceExplorer>(explorer))
-                .UseAdaptiveDialogs()
-                .UseLanguageGeneration(explorer)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
-
-            DialogManager dm = new DialogManager(ruleDialog);
-            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
-            });
         }
     }
 }

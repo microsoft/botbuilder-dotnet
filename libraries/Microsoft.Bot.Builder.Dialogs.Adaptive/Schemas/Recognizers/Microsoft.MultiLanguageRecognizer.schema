@@ -6,7 +6,7 @@
     "type": "object",
     "properties": {
         "languagePolicy": {
-            "$type": "Microsoft.LanguagePolicy",
+            "$kind": "Microsoft.LanguagePolicy",
             "type": "object",
             "title": "Language policy",
             "description": "Defines fall back languages to try per user input language."
@@ -16,7 +16,7 @@
             "title": "Recognizers",
             "description": "Map of language -> IRecognizer",
             "additionalProperties": {
-                "$type": "Microsoft.IRecognizer"
+                "$kind": "Microsoft.IRecognizer"
             }
         }
     },

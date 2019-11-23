@@ -23,17 +23,17 @@
             "default": "dialog.result"
         },
         "recognizer": {
-            "$type": "Microsoft.IRecognizer",
+            "$kind": "Microsoft.IRecognizer",
             "title": "Recognizer",
             "description": "Language Understanding recognizer that interprets user input into intent and entities."
         },
         "generator": {
-            "$type": "Microsoft.ILanguageGenerator",
+            "$kind": "Microsoft.ILanguageGenerator",
             "title": "Language Generator",
             "description": "Language generator that generates bot responses."
         },
         "selector": {
-            "$type": "Microsoft.ITriggerSelector",
+            "$kind": "Microsoft.ITriggerSelector",
             "title": "Selector",
             "description": "Policy to determine which trigger is executed. Defaults to a 'best match' selector (optional)."
         },
@@ -42,7 +42,7 @@
             "description": "List of triggers defined for this dialog.",
             "title": "Triggers",
             "items": {
-                "$type": "Microsoft.ITriggerCondition"
+                "$kind": "Microsoft.ITriggerCondition"
             }
         }
     }

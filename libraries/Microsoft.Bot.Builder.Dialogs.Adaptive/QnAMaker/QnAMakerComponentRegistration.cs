@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public override IEnumerable<TypeRegistration> GetTypes()
         {
             // Dialogs
-            yield return new TypeRegistration<QnAMakerDialog>("Microsoft.QnAMakerDialog");
+            yield return new TypeRegistration<QnAMakerDialog>(QnAMakerDialog.DeclarativeType);
         }
 
         public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)

@@ -1,33 +1,33 @@
 {
     "$schema": "../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "generator": "ToDoLuisBot.lg",
     "triggers": [
         {
-            "$type": "Microsoft.OnBeginDialog",
+            "$kind": "Microsoft.OnBeginDialog",
             "actions": [
                 {
-                    "$type": "Microsoft.SetProperty",
+                    "$kind": "Microsoft.SetProperty",
                     "value": "@ListType",
                     "property": "dialog.listName"
                 },
                 {
-                    "$type": "Microsoft.IfCondition",
+                    "$kind": "Microsoft.IfCondition",
                     "condition": "user.lists == null",
                     "actions": [
                         {
-                            "$type": "Microsoft.InitProperty",
+                            "$kind": "Microsoft.InitProperty",
                             "property": "user.lists",
                             "type": "object"
                         }
                     ]
                 },
                 {
-                    "$type": "Microsoft.IfCondition",
+                    "$kind": "Microsoft.IfCondition",
                     "condition": "dialog.listName == null",
                     "actions": [
                         {
-                            "$type": "Microsoft.ChoiceInput",
+                            "$kind": "Microsoft.ChoiceInput",
                             "property": "dialog.listName",
                             "choices": [
                                 {
@@ -66,17 +66,17 @@
                     ]
                 },
                 {
-                    "$type": "Microsoft.IfCondition",
+                    "$kind": "Microsoft.IfCondition",
                     "condition": "(dialog.listName == \"shopping\" && user.lists.shopping == null) || (dialog.listName == \"grocery\" && user.lists.grocery == null) || (dialog.listName == \"todo\" && user.lists.todo == null)",
                     "actions": [
                         {
-                            "$type": "Microsoft.SendActivity",
+                            "$kind": "Microsoft.SendActivity",
                             "activity": "Your have no items in your @{dialog.listName} list."
                         }
                     ],
                     "elseActions": [
                         {
-                            "$type": "Microsoft.SendActivity",
+                            "$kind": "Microsoft.SendActivity",
                             "activity": "@{ShowItems(user, dialog.listName)}"
                         }
                     ]

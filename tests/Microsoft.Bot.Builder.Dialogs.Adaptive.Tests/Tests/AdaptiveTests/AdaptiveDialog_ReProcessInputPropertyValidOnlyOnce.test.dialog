@@ -1,0 +1,128 @@
+{
+  "$kind": "Microsoft.Test.Script",
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "AdaptiveDialog",
+    "recognizer": {
+      "$kind": "Microsoft.RegexRecognizer",
+      "intents": [
+        {
+          "$kind": "Microsoft.IntentPattern",
+          "intent": "Interruption",
+          "pattern": "(?i)interrupt"
+        },
+        {
+          "$kind": "Microsoft.IntentPattern",
+          "intent": "Start",
+          "pattern": "(?i)start"
+        }
+      ]
+    },
+    "generator": {
+      "$kind": "Microsoft.TemplateEngineLanguageGenerator",
+      "id": "",
+      "lgText": ""
+    },
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnIntent",
+        "intent": "Start",
+        
+        "actions": [
+          {
+            "$kind": "Microsoft.TextInput",
+            "allowInterruptions": "True",
+            "property": "user.name",
+            "prompt": "What is your name?"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "I have @{user.name} as your name"
+          },
+          {
+            "$kind": "Microsoft.NumberInput",
+            "allowInterruptions": "True",
+            "property": "user.age",
+            "prompt": "What is your age?"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "I have @{user.age} as your age"
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnIntent",
+        "intent": "Interruption",
+        
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "In Interruption..."
+          },
+          {
+            "$kind": "Microsoft.SetProperty",
+            "property": "turn.interrupted",
+            "value": "False"
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnIntent",
+        "intent": "None",
+        
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "You said @{turn.activity.text}"
+          },
+          {
+            "$kind": "Microsoft.SetProperty",
+            "property": "turn.interrupted",
+            "value": "False"
+          }
+        ]
+      }
+    ],
+    "AutoEndDialog": true,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "start"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "What is your name?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "interrupt"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "In Interruption..."
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "I have interrupt as your name"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "What is your age?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "36"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "You said 36"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "I have 36 as your age"
+    }
+  ]
+}

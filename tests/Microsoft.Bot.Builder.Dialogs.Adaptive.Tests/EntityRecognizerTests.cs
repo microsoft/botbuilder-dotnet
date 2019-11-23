@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 

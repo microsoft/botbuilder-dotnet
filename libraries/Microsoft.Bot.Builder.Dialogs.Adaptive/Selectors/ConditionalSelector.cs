@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Expressions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
@@ -15,6 +16,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// </summary>
     public class ConditionalSelector : ITriggerSelector
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.ConditionalSelector";
+
         private IReadOnlyList<OnCondition> _conditionals;
         private bool _evaluate;
         private Expression condition;
@@ -37,6 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// <value>
         /// Selector if <see cref="Condition"/> is true.
         /// </value>
+        [JsonProperty("ifTrue")]
         public ITriggerSelector IfTrue { get; set; }
 
         /// <summary>
@@ -45,6 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// <value>
         /// Selector if <see cref="Condition"/> is false.
         /// </value>
+        [JsonProperty("ifFalse")]
         public ITriggerSelector IfFalse { get; set; }
 
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate = true)

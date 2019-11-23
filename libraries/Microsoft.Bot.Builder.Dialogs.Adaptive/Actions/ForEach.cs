@@ -17,6 +17,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class Foreach : Dialog, IDialogDependencies
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.Foreach";
+
         private const string INDEX = "dialog.foreach.index";
         private const string VALUE = "dialog.foreach.value";
 

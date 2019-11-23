@@ -1,0 +1,17 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "unionType(Microsoft.Test.ITestAction)",
+    "title": "Delay Execution",
+    "description": "Delays text script for time period.",
+    "type": "object",
+    "required": [
+        "timespan"
+    ],
+    "properties": {
+        "timespan": {
+            "type": "number",
+            "title": "Timespan",
+            "description": "The amount of time in milliseconds to delay the execution of the test script"
+        }
+    }
+}

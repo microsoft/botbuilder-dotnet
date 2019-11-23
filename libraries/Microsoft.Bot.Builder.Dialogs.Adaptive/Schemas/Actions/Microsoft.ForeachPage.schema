@@ -16,7 +16,7 @@
         "actions": {
             "type": "array",
             "items": {
-                "$type": "Microsoft.IDialog"
+                "$kind": "Microsoft.IDialog"
             },
             "title": "Actions",
             "description": "Actions to execute for each page. Use '$foreach.page' to access each page."

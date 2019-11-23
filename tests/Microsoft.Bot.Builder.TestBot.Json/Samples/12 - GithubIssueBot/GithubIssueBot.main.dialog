@@ -1,17 +1,17 @@
 {
     "$schema": "../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "generator": "GithubIssueBot.main.lg",
     "triggers": [
         {
-            "$type": "Microsoft.OnBeginDialog",
+            "$kind": "Microsoft.OnBeginDialog",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Getting issues..."
                 },
                 {
-                    "$type": "Microsoft.HttpRequest",
+                    "$kind": "Microsoft.HttpRequest",
                     "url": "https://api.github.com/repos/Microsoft/botbuilder-dotnet/issues",
                     "method": "GET",
                     "headers": {
@@ -20,7 +20,7 @@
                     "resultProperty": "dialog.getResponse"
                 },
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "@{Show()}"
                 }
             ]
