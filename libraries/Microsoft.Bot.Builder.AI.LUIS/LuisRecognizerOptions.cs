@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
 {
     public abstract class LuisRecognizerOptions
     {
-        public LuisRecognizerOptions(LuisApplication application)
+        protected LuisRecognizerOptions(LuisApplication application)
         {
             Application = application ?? throw new ArgumentNullException(nameof(application));
         }
