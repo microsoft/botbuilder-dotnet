@@ -16,7 +16,10 @@
 
 > TODO: We should look at the schema and if a few items list them or do cards or..
 # askEnum(property)
-- Which value do you want for @{name(property)}?
+- ```
+@{askHelp()}
+Which value do you want for @{name(property)}?
+```
 
 # askNumber(property)
 - IF: @{turn.schema.properties[property].minimum && turn.schema.properties[property].maximum}
@@ -26,6 +29,12 @@
 
 # askString(property)
 - Enter a value for @{name(property)}
+
+# askHelp
+- IF: @{and($retries, $retries > 0, toLower($lastIntent)!='help')}
+- @{join(foreach($expectedProperties, expected, help1(expected)), '\n')}
+- ELSE:
+- 
 
 # help(property)
 - IF: @{property}
@@ -63,10 +72,25 @@
 - @{foreach(turn.schema.properties[property].enum, enum, value(property, enum))}
 
 # clarifyEnumEntity(property)
-- Please choose a value for @{name(property)} from \[@{join(foreach(turn.dialogEvent.value.entity.value, val, enumEntityValue(property, val)), ', ')}\]
+- ```
+@{askHelp()}
+Please choose a value for @{name(property)} from \[@{join(foreach(turn.dialogEvent.value.entity.value, val, enumEntityValue(property, val)), ', ')}\]
+```
 
 # cancel
 - Do you want to end the conversation? (yes/no)
+
+# setPropertyMessage(property, val)
+- IF: @{contains($expectedProperties, property)}
+- 
+- ELSE:
+- @{setUnexpectedPropertyMessage(property, val)}
+
+# setUnexpectedPropertyMessage(property, val)
+- IF:@{dialog[property]}
+- @{unexpectedPropertyChange(property, val, dialog[property])}
+- ELSE:
+- @{unexpectedPropertySet(property, val)}
 
 # unexpectedPropertySet(property, val)
 - @{name(property)} is set as @{value(property, val)}.
@@ -127,7 +151,7 @@
 - Which property do you want to change?
 
 # notUnderstood
-- Sorry, I do not understand @{join(foreach(turn.unrecognizedtext, chunk, concat("'", chunk, "'")), ' or ')}\n\n@{help(null)}
+- Sorry, I do not understand @{join(foreach(turn.unrecognizedtext, chunk, concat("'", chunk, "'")), ' or ')}\n
 
 # CompleteConfirmationName
 - confirmation

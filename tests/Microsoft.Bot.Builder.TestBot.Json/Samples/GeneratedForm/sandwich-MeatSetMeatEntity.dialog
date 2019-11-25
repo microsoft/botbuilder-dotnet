@@ -6,27 +6,9 @@
     "entity": "MeatEntity",
     "actions": [
         {
-            "$type": "Microsoft.IfCondition",
-            "condition": "!turn.dialogevent.value.expected",
-            "actions":[               
-                {
-                    "$type": "Microsoft.IfCondition",
-                    "condition": "!$Meat",
-                    "actions":[
-                        {
-                            "$type": "Microsoft.SendActivity",
-                            "activity": "@{unexpectedPropertySet('Meat', @MeatEntity)}"
-                        }
-                    ],
-                    "elseActions":[
-                        {
-                            "$type": "Microsoft.SendActivity",
-                            "activity": "@{unexpectedPropertyChange('Meat', @MeatEntity, $Meat)}"
-                        }
-                    ]
-                }                
-            ]           
-        },
+            "$type": "Microsoft.SendActivity",
+            "activity": "@{setPropertyMessage('Meat', @MeatEntity)}"
+        },    
         {
             "$type": "Microsoft.SetProperty",
             "property": "$Meat",

@@ -6,27 +6,9 @@
     "entity": "BreadEntity",
     "actions": [
         {
-            "$type": "Microsoft.IfCondition",
-            "condition": "!turn.dialogevent.value.expected",
-            "actions":[               
-                {
-                    "$type": "Microsoft.IfCondition",
-                    "condition": "!$Bread",
-                    "actions":[
-                        {
-                            "$type": "Microsoft.SendActivity",
-                            "activity": "@{unexpectedPropertySet('Bread', @BreadEntity)}"
-                        }
-                    ],
-                    "elseActions":[
-                        {
-                            "$type": "Microsoft.SendActivity",
-                            "activity": "@{unexpectedPropertyChange('Bread', @BreadEntity, $Bread)}"
-                        }
-                    ]
-                }                
-            ]           
-        },
+            "$type": "Microsoft.SendActivity",
+            "activity": "@{setPropertyMessage('Bread', @BreadEntity)}"
+        },    
         {
             "$type": "Microsoft.SetProperty",
             "property": "$Bread",

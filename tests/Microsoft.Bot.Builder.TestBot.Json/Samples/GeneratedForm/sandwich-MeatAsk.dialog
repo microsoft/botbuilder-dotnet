@@ -3,17 +3,11 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
     "$type": "Microsoft.OnAsk",
     "condition":"and(!$Meat, contains(dialog.requiredProperties, 'Meat'))",
-    "actions": [
+    "actions": [        
         {
-            "$type": "Microsoft.IfCondition",
-            "condition":"$lastExpectedProperty == 'Meat'",
-            "actions":[
-                {
-                    "$type": "Microsoft.SendActivity",
-                    "activity": "@{help(@PropertyName)}"
-                }
-                    
-            ]
+            "$type": "Microsoft.SetProperty",
+            "property": "$lastExpectedProperty",
+            "value": "'Meat'"
         },
         {
             "$type": "Microsoft.Ask",

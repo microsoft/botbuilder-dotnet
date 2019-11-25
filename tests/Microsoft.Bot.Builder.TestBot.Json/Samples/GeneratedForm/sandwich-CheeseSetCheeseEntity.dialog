@@ -6,27 +6,9 @@
     "entity": "CheeseEntity",
     "actions": [
         {
-            "$type": "Microsoft.IfCondition",
-            "condition": "!turn.dialogevent.value.expected",
-            "actions":[               
-                {
-                    "$type": "Microsoft.IfCondition",
-                    "condition": "!$Cheese",
-                    "actions":[
-                        {
-                            "$type": "Microsoft.SendActivity",
-                            "activity": "@{unexpectedPropertySet('Cheese', @CheeseEntity)}"
-                        }
-                    ],
-                    "elseActions":[
-                        {
-                            "$type": "Microsoft.SendActivity",
-                            "activity": "@{unexpectedPropertyChange('Cheese', @CheeseEntity, $Cheese)}"
-                        }
-                    ]
-                }                
-            ]           
-        },
+            "$type": "Microsoft.SendActivity",
+            "activity": "@{setPropertyMessage('Cheese', @CheeseEntity)}"
+        },    
         {
             "$type": "Microsoft.SetProperty",
             "property": "$Cheese",
