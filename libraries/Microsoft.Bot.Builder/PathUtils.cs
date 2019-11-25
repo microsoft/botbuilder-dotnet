@@ -14,17 +14,17 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         /// <param name="ambiguousPath">authoredPath.</param>
         /// <returns>path expressed as OS path.</returns>
-        public static string NormalizePath(string ambiguousPath)
+        public static string NormalizePath(string ambigiousPath)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 // map linux/mac sep -> windows
-                return ambiguousPath.Replace("/", "\\");
+                return ambigiousPath.Replace("/", "\\");
             }
             else
             {
                 // map windows sep -> linux/mac
-                return ambiguousPath.Replace("\\", "/");
+                return ambigiousPath.Replace("\\", "/");
             }
         }
     }
