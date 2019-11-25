@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "unionType(Microsoft.IDialog)",
+    "$role": "union(Microsoft.IDialog)",
     "title": "For each page",
     "description": "Execute actions on each page (collection of items) in an array.",
     "type": "object",

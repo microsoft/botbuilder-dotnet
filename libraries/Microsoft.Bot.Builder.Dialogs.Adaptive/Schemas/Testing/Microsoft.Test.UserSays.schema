@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "unionType(Microsoft.Test.ITestAction)",
+    "$role": "union(Microsoft.Test.ITestAction)",
     "title": "User Text",
     "description": "Sends text to the bot from the user.",
     "type": "object",
