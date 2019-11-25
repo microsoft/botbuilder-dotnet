@@ -29,10 +29,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="authConfig">The authentication configuration.</param>
         /// <param name="channelProvider">The channel provider.</param>
         /// <exception cref="ArgumentNullException">throw ArgumentNullException.</exception>
-        /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
-        /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
-        /// add additional middleware to the adapter after construction.
-        /// </remarks>
         public ChannelServiceHandler(
             ICredentialProvider credentialProvider,
             AuthenticationConfiguration authConfig,

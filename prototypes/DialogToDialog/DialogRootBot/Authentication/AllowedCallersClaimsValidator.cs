@@ -18,8 +18,9 @@ namespace DialogRootBot.Authentication
         {
             if (SkillValidation.IsSkillClaim(claims))
             {
-                // Do allowed list check here and throw an UnauthorizedAccessException if it fails.
                 var appId = JwtTokenValidation.GetAppIdFromClaims(claims);
+
+                // TODO: check the app Id against the allowed list throw an UnauthorizedAccessException if it fails.
                 Console.WriteLine(appId);
             }
 
