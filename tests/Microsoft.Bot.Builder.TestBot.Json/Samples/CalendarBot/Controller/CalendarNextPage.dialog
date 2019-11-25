@@ -1,12 +1,12 @@
 {
   "$schema": "../../app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
+  "$kind": "Microsoft.AdaptiveDialog",
   "triggers": [
     {
-      "$type": "Microsoft.OnBeginDialog",
+      "$kind": "Microsoft.OnBeginDialog",
       "actions": [
         {
-          "$type": "Microsoft.SetProperty",
+          "$kind": "Microsoft.SetProperty",
           "value": "user.showIndex + 1",
           "property": "user.showIndex"
         }

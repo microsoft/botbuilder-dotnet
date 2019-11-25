@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var result = new JObject();
             var typeName = context.structuredBodyNameLine().STRUCTURED_CONTENT().GetText().Trim();
-            result["$type"] = typeName;
+            result["lgType"] = typeName;
 
             var bodys = context.structuredBodyContentLine().STRUCTURED_CONTENT();
             foreach (var body in bodys)
@@ -148,7 +148,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var propertyObject = JObject.FromObject(EvalExpression(line));
 
                     // Full reference to another structured template is limited to the structured template with same type 
-                    if (propertyObject["$type"] != null && propertyObject["$type"].ToString() == typeName)
+                    if (propertyObject["lgType"] != null && propertyObject["lgType"].ToString() == typeName)
                     {
                         foreach (var item in propertyObject)
                         {
@@ -429,7 +429,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             return new JObject
             {
-                ["$type"] = "attachment",
+                ["lgType"] = "attachment",
                 ["contenttype"] = args[1].ToString(),
                 ["content"] = args[0] as JObject
             };

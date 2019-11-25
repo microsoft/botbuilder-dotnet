@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
@@ -16,11 +17,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// </summary>
     public class TemplateEngineLanguageGenerator : ILanguageGenerator
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.TemplateEngineLanguageGenerator";
+
         private const string DEFAULTLABEL = "Unknown";
 
         private readonly Dictionary<string, TemplateEngine> multiLangEngines = new Dictionary<string, TemplateEngine>();
 
-        private TemplateEngine engine;
+        private TemplateEngine engine;      
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
@@ -39,12 +43,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         public TemplateEngineLanguageGenerator(string lgText, string id, Dictionary<string, IList<IResource>> resourceMapping)
         {
             this.Id = id ?? DEFAULTLABEL;
-            foreach (var mappingItem in resourceMapping)
+            var (_, locale) = MultiLanguageResourceLoader.ParseLGFileName(id);
+            var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, resourceMapping.Keys.ToList());
+
+            foreach (var mapping in resourceMapping)    
             {
-                var engine = new TemplateEngine().AddText(lgText ?? string.Empty, Id, LanguageGeneratorManager.ResourceExplorerResolver(mappingItem.Key, resourceMapping));
-                multiLangEngines.Add(mappingItem.Key, engine);
+                // if no locale present in id, enumarate every locale found
+                // if locale is present, use that one
+                if (string.Equals(fallbackLocale, string.Empty) || string.Equals(fallbackLocale, mapping.Key))
+                {
+                    var engine = new TemplateEngine().AddText(lgText ?? string.Empty, Id, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
+                    multiLangEngines.Add(mapping.Key, engine);
+                }
             }
-        }
+        }   
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
@@ -55,10 +67,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             filePath = PathUtils.NormalizePath(filePath);
             this.Id = Path.GetFileName(filePath);
-            foreach (var mappingItem in resourceMapping)
+
+            var (_, locale) = MultiLanguageResourceLoader.ParseLGFileName(Id);
+            var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, resourceMapping.Keys.ToList());
+
+            foreach (var mapping in resourceMapping)
             {
-                var engine = new TemplateEngine().AddFile(filePath, LanguageGeneratorManager.ResourceExplorerResolver(mappingItem.Key, resourceMapping));
-                multiLangEngines.Add(mappingItem.Key, engine);
+                // if no locale present in id, enumarate every locale found
+                // if locale is present, use that one
+                if (string.Equals(fallbackLocale, string.Empty) || string.Equals(fallbackLocale, mapping.Key))
+                {
+                    var engine = new TemplateEngine().AddFile(filePath, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
+                    multiLangEngines.Add(mapping.Key, engine);
+                }
             }
         }
 
@@ -77,6 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <value>
         /// Id of the source of this template (used for labeling errors).
         /// </value>
+        [JsonProperty("id")]
         public string Id { get; set; } = string.Empty;
 
         /// <summary>

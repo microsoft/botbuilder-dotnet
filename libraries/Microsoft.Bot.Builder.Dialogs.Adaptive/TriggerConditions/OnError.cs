@@ -12,6 +12,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     /// </summary>
     public class OnError : OnDialogEvent
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.OnError";
+
         [JsonConstructor]
         public OnError(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(@event: AdaptiveEvents.Error, actions: actions, condition: condition, callerPath: callerPath, callerLine: callerLine)

@@ -1,18 +1,18 @@
 {
   "$schema": "../../app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
+  "$kind": "Microsoft.AdaptiveDialog",
   "triggers": [
     {
-      "$type": "Microsoft.OnBeginDialog",
+      "$kind": "Microsoft.OnBeginDialog",
       "actions": [
         // todo: need a subtract expression of two timestamp
         //{
-        //  "$type": "Microsoft.SetProperty",
+        //  "$kind": "Microsoft.SetProperty",
         //  "property": "user.duration",
         //  "value": ""
         //},
         {
-          "$type": "Microsoft.SetProperty",
+          "$kind": "Microsoft.SetProperty",
           "property": "user.endDateTime",
           "value": "addSeconds(user.startDateTime[0].Value, user.duration)"
         }

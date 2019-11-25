@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder
 {
@@ -38,6 +39,7 @@ namespace Microsoft.Bot.Builder
         /// <value>
         /// The <see cref="IBotTelemetryClient"/> being used to log events.
         /// </value>
+        [JsonIgnore]
         public IBotTelemetryClient TelemetryClient { get; }
 
         /// <summary>

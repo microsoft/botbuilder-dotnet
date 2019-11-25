@@ -9,10 +9,10 @@
             "$role": "expression"
         },
         "ifTrue": {
-            "$type": "Microsoft.ITriggerSelector"
+            "$kind": "Microsoft.ITriggerSelector"
         },
         "ifFalse": {
-            "$type": "Microsoft.ITriggerSelector"
+            "$kind": "Microsoft.ITriggerSelector"
         }
     },
     "required": [

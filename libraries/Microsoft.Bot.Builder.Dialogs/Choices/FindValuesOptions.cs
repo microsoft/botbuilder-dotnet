@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     /// <summary>
@@ -15,6 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <value>
         /// A <c>true</c> if only some of the tokens in a value need to exist to be considered; otherwise <c>false</c>.
         /// </value>
+        [JsonProperty("allowPartialMatches")]
         public bool AllowPartialMatches { get; set; }
 
         /// <summary>
@@ -23,6 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <value>
         /// The locale/culture code of the utterance.
         /// </value>
+        [JsonProperty("locale")]
         public string Locale { get; set; }
 
         /// <summary>
@@ -34,6 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <value>
         /// The maximum tokens allowed between two matched tokens in the utterance.
         /// </value>
+        [JsonProperty("maxTokenDistance")]
         public int? MaxTokenDistance { get; set; }
 
         /// <summary>
@@ -42,6 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <value>
         /// The tokenizer to use when parsing the utterance and values being recognized.
         /// </value>
+        [JsonProperty("tokenizer")]
         public TokenizerFunction Tokenizer { get; set; }
     }
 }

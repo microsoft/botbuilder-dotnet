@@ -13,6 +13,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         public override bool CanRead => true;
 
+        // if this is false, don't custom serialize activitytemplate as a string
+        public override bool CanWrite => false;
+
         public override bool CanConvert(Type objectType)
         {
             return typeof(ITemplate<Activity>) == objectType;
@@ -28,14 +31,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
             else
             {
-                var activity = JToken.Load(reader).ToObject<Activity>();
+                JObject obj = JObject.Load(reader);
+                string kind = (string)obj["$kind"] ?? (string)obj["$type"]; 
+                if (kind == "Microsoft.ActivityTemplate")
+                {
+                    return obj.ToObject<ActivityTemplate>();
+                }
+
+                var activity = obj.ToObject<Activity>();
                 return new StaticActivityTemplate((Activity)activity);
             }
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            serializer.Serialize(writer, value);
+            // save template as string
+            if (value is ActivityTemplate activityTemplate)
+            {
+                serializer.Serialize(writer, activityTemplate.Template);
+            }
+            else
+            {
+                serializer.Serialize(writer, value);
+            }
         }
     }
 }

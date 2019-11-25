@@ -6,7 +6,7 @@
     "type": "object",
     "properties": {
         "selector": {
-            "$type": "Microsoft.ITriggerSelector"
+            "$kind": "Microsoft.ITriggerSelector"
         }
     }
 }

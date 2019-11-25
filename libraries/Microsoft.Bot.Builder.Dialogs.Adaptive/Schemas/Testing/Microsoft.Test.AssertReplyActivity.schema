@@ -1,0 +1,35 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "unionType(Microsoft.Test.ITestAction)",
+    "title": "Assert Reply Activity",
+    "description": "Asserts that a reply activity is valid.",
+    "type": "object",
+    "required": [
+        "assertions"
+    ],
+    "properties": {
+        "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "The description of what the assertion is testing"
+        },
+        "timeout": {
+            "type": "number",
+            "title": "Timeout",
+            "description": "The amount of time in milliseconds to wait for a reply (default is 3000)"
+        },
+        "assertions": {
+            "type": "array",
+            "title": "Assertions to perform to validate Activity that is sent by the dialog",
+            "description": "Sequence of expressions which must evaluate to true.",
+            "items": {
+                "$role": "expression",
+                "title": "Assertion",
+                "description": "Assertion as an expression, which must evaluate to true or it will fail the test script.",
+                "examples": [
+                    "user.vip == true"
+                ]
+            }
+        }
+    }
+}

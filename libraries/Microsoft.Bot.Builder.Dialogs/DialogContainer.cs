@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -12,6 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
         }
 
+        [JsonIgnore]
         public DialogSet Dialogs { get; set; } = new DialogSet();
 
         public abstract DialogContext CreateChildContext(DialogContext dc);

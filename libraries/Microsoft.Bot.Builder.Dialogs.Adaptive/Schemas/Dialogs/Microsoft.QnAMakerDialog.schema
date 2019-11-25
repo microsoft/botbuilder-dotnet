@@ -28,7 +28,7 @@
             ]
         },
         "noAnswer": {
-            "$type": "Microsoft.IActivityTemplate",
+            "$kind": "Microsoft.IActivityTemplate",
             "title": "Fallback answer",
             "description": "Default answer to return when none found in KB.",
             "default": "Sorry, I did not find an answer."
@@ -52,7 +52,7 @@
             "default": "None of the above."
         },
         "cardNoMatchResponse ": {
-            "$type": "Microsoft.IActivityTemplate",
+            "$kind": "Microsoft.IActivityTemplate",
             "title": "Card no match response",
             "description": "Custom response when no match option was selected.",
             "default": "Thanks for the feedback."

@@ -61,8 +61,8 @@
             "type": "string",
             "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
         },
-        "type": {
-            "title": "$type",
+        "kind": {
+            "title": "$kind",
             "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
             "type": "string",
             "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
@@ -291,8 +291,8 @@
                 }
             ]
         },
-        "$type": {
-            "$ref": "#/definitions/type"
+        "$kind": {
+            "$ref": "#/definitions/kind"
         }
     },
     "default": true,

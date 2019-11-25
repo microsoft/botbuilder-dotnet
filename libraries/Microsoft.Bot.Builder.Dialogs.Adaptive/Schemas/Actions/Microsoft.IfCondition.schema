@@ -20,7 +20,7 @@
         "actions": {
             "type": "array",
             "items": {
-                "$type": "Microsoft.IDialog"
+                "$kind": "Microsoft.IDialog"
             },
             "title": "Actions",
             "description": "Actions to execute if condition is true."
@@ -28,7 +28,7 @@
         "elseActions": {
             "type": "array",
             "items": {
-                "$type": "Microsoft.IDialog"
+                "$kind": "Microsoft.IDialog"
             },
             "title": "Else",
             "description": "Actions to execute if condition is false."

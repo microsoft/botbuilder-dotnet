@@ -6,7 +6,7 @@
     "type": "object",
     "properties": {
         "activity": {
-            "$type": "Microsoft.IActivityTemplate",
+            "$kind": "Microsoft.IActivityTemplate",
             "title": "Activity",
             "description": "Activity to send."
         }

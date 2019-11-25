@@ -13,6 +13,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     /// </summary>
     public class OnInvokeActivity : OnActivity
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.OnInvokeActivity";
+
         [JsonConstructor]
         public OnInvokeActivity(List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(type: ActivityTypes.Invoke, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine)
