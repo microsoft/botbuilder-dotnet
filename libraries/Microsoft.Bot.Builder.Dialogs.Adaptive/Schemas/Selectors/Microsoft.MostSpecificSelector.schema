@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "unionType(Microsoft.ITriggerSelector)",
+    "$role": "union(Microsoft.ITriggerSelector)",
     "title": "Most Specific Trigger Selector",
     "description": "Select most specific true events with optional additional selector",
     "type": "object",
