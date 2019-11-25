@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder
         /// This method treats / and \ both as separators regardless of OS, for windows that means / -> \ and for linux/mac \ -> /.
         /// This allows author to use ../foo.lg or ..\foo.lg as equivalents for importing.
         /// </remarks>
-        /// <param name="ambiguousPath">authoredPath.</param>
+        /// <param name="ambigiousPath">authoredPath.</param>
         /// <returns>path expressed as OS path.</returns>
         public static string NormalizePath(string ambigiousPath)
         {
