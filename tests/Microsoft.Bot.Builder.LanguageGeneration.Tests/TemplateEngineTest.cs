@@ -1,10 +1,13 @@
-﻿#pragma warning disable SA1202 // Elements should be ordered by access
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+#pragma warning disable SA1202 // Elements should be ordered by access
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Expressions.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
@@ -749,7 +752,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled = engine.EvaluateTemplate("T1", new { turn = new { name = "Dong", count = 3 } });
             Assert.AreEqual(evaled, "Hi Dong, welcome to Seattle, Seattle is a beautiful place, how many burgers do you want, 3?");
 
-            evaled = engine.EvaluateTemplate("AskBread", new
+            var scope = new SimpleObjectMemory(new
             {
                 schema = new Dictionary<string, object>()
                 {
@@ -763,6 +766,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     }
                 }
             });
+
+            evaled = engine.EvaluateTemplate("AskBread", scope);
 
             Assert.AreEqual(evaled, "Which Bread, A or B do you want?");
         }
