@@ -31,14 +31,17 @@ namespace DialogChildBot.Bots
 
             var dialogContext = await dialogSet.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
 
-            if (turnContext.Activity.Type == ActivityTypes.EndOfConversation && dialogContext.Stack.Any())
+            if (turnContext.Activity.Type == ActivityTypes.EndOfConversation)
             {
-                // Handle remote cancellation request if we have something in the stack.
-                var activeDialogContext = GetActiveDialogContext(dialogContext);
-                
-                // Send cancellation message to the top dialog in the stack to ensure all the parents are cancelled in the right order. 
-                await activeDialogContext.CancelAllDialogsAsync(true, cancellationToken: cancellationToken);
-                await turnContext.SendActivityAsync(MessageFactory.Text("**SkillBot.** The current dialog in the skill was **cancelled** by a request **from the host**, do some cleanup if needed here"), cancellationToken);
+                if (dialogContext.Stack.Any())
+                {
+                    // Handle remote cancellation request if we have something in the stack.
+                    var activeDialogContext = GetActiveDialogContext(dialogContext);
+
+                    // Send cancellation message to the top dialog in the stack to ensure all the parents are cancelled in the right order. 
+                    await activeDialogContext.CancelAllDialogsAsync(true, cancellationToken: cancellationToken);
+                    await turnContext.SendActivityAsync(MessageFactory.Text("**SkillBot.** The current dialog in the skill was **cancelled** by a request **from the host**, do some cleanup if needed here"), cancellationToken);
+                }
             }
             else
             {
