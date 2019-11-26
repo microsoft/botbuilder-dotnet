@@ -26,7 +26,7 @@ or you can browse the functions based on [alphabetical order](#alphabetical-list
 ### Collection functions
 |Function	|Explanation|
 |-----------|-----------|
-|[contains](#contains)	|Works to find an item in a string or to find an item in an array or to find a parameter in a complex object. E.g. contains(‘hello world, ‘hello); contains([‘1’, ‘2’], ‘1’); contains({“foo”:”bar”}, “foo”)	|
+|[contains](#contains)	|Works to find an item in a string or to find an item in an array or to find a parameter in a complex object. E.g. contains(‘hello world’, ‘hello’); contains(createArray(‘1’, ‘2’), ‘1’); contains(json(‘{“foo”:”bar”}’), “foo”)	|
 |[empty](#empty)	|Check if the collection is empty	|
 |[first](#first)	|Returns the first item from the collection	|
 |[join](#join) 	|Return a string that has all the items from an array and has each character separated by a delimiter. Join(collection, delimiter). Join(createArray(‘a’,’b’), ‘.’) = “a.b”	|
