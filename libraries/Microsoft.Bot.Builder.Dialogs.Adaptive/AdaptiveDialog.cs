@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.AdaptiveDialog";
 
-        private const string AdaptiveKey = "adaptiveDialogState";
+        private const string AdaptiveKey = "_adaptive";
 
         private readonly string changeKey = Guid.NewGuid().ToString();
 
