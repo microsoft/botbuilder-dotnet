@@ -133,7 +133,7 @@
         "msAppId": {
           "type": "string",
           "title": "Microsoft App Id",
-          "pattern": "[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$",
+          "pattern": "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$",
           "description": "The Microsoft AppId for the skill. This app ID is used to authenticate requests"
         }
       }
