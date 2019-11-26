@@ -2,8 +2,8 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
     "$id": "sdk.schema",
     "type": "object",
-    "title": "Component types",
-    "description": "These are all of the types that can be created by the loader.",
+    "title": "Component kinds",
+    "description": "These are all of the kinds that can be created by the loader.",
     "oneOf": [
         {
             "title": "Microsoft.ActivityTemplate",
