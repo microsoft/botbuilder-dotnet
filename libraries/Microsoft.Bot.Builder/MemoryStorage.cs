@@ -21,6 +21,8 @@ namespace Microsoft.Bot.Builder
             ReferenceLoopHandling = ReferenceLoopHandling.Error,
         };
 
+        // If a JsonSerializer is not provided during construction, this will be the default static JsonSerializer.
+        private readonly JsonSerializer _stateJsonSerializer;
         private readonly Dictionary<string, JObject> _memory;
         private readonly object _syncroot = new object();
         private int _eTag = 0;
@@ -28,10 +30,25 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Initializes a new instance of the <see cref="MemoryStorage"/> class.
         /// </summary>
+        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.All.</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
+        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
+        /// </param>
+        /// <param name="dictionary">A pre-existing dictionary to use; or null to use a new one.</param>
+        public MemoryStorage(JsonSerializer jsonSerializer, Dictionary<string, JObject> dictionary = null)
+        {
+            _stateJsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
+            _memory = dictionary ?? new Dictionary<string, JObject>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MemoryStorage"/> class.
+        /// </summary>
         /// <param name="dictionary">A pre-existing dictionary to use; or null to use a new one.</param>
         public MemoryStorage(Dictionary<string, JObject> dictionary = null)
+            : this(StateJsonSerializer, dictionary)
         {
-            _memory = dictionary ?? new Dictionary<string, JObject>();
         }
 
         /// <summary>
@@ -88,9 +105,7 @@ namespace Microsoft.Bot.Builder
                     {
                         if (state != null)
                         {
-                            var str = state.ToString();
-                            var deserialized = state.ToObject<object>(StateJsonSerializer);
-                            storeItems.Add(key, deserialized);
+                            storeItems.Add(key, state.ToObject<object>(_stateJsonSerializer));
                         }
                     }
                 }
@@ -131,7 +146,7 @@ namespace Microsoft.Bot.Builder
                         }
                     }
 
-                    var newState = newValue != null ? JObject.FromObject(newValue, StateJsonSerializer) : null;
+                    var newState = newValue != null ? JObject.FromObject(newValue, _stateJsonSerializer) : null;
 
                     // Set ETag if applicable
                     if (newValue is IStoreItem newStoreItem)

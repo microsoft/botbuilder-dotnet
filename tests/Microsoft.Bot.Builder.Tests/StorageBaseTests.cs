@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Tests
@@ -222,9 +223,9 @@ namespace Microsoft.Bot.Builder.Tests
 
             var storeItemsList = new List<Dictionary<string, object>>(new[]
                 {
-                    new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 0, ExtraBytes = stringArray } },
-                    new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 1, ExtraBytes = stringArray } },
-                    new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 2, ExtraBytes = stringArray } },
+                new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 0, ExtraBytes = stringArray } },
+                new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 1, ExtraBytes = stringArray } },
+                new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 2, ExtraBytes = stringArray } },
                 });
 
             // TODO: this code as a generic test doesn't make much sense - for now just eliminating the custom exception
@@ -244,6 +245,35 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsInstanceOfType(readStoreItems["createPoco"], typeof(PocoItem));
             var createPoco = readStoreItems["createPoco"] as PocoItem;
             Assert.AreEqual(createPoco.Id, "1", "createPoco.id should be 1");
+        }
+
+        protected async Task StatePersistsThroughMultiTurn(IStorage storage)
+        {
+            var userState = new UserState(storage);
+            var testProperty = userState.CreateProperty<TestPocoState>("test");
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(userState));
+
+            await new TestFlow(
+                adapter,
+                async (context, cancellationToken) =>
+                {
+                    var state = await testProperty.GetAsync(context, () => new TestPocoState());
+                    Assert.IsNotNull(state, "user state should exist");
+                    switch (context.Activity.Text)
+                    {
+                        case "set value":
+                            state.Value = "test";
+                            await context.SendActivityAsync("value saved");
+                            break;
+                        case "get value":
+                            await context.SendActivityAsync(state.Value);
+                            break;
+                    }
+                })
+                .Test("set value", "value saved")
+                .Test("get value", "test")
+                .StartTestAsync();
         }
     }
 }

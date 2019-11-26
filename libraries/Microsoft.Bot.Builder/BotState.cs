@@ -91,7 +91,27 @@ namespace Microsoft.Bot.Builder
             {
                 var items = await _storage.ReadAsync(new[] { storageKey }, cancellationToken).ConfigureAwait(false);
                 items.TryGetValue(storageKey, out object val);
-                turnContext.TurnState[_contextServiceKey] = new CachedBotState((IDictionary<string, object>)val);
+
+                if (val is IDictionary<string, object> asDictionary)
+                {
+                    turnContext.TurnState[_contextServiceKey] = new CachedBotState(asDictionary);
+                }
+                else if (val is JObject asJobject)
+                {
+                    // If types are not used by storage serialization, and Newtonsoft is the serializer
+                    // the item found will be a JObject.
+                    turnContext.TurnState[_contextServiceKey] = new CachedBotState(asJobject.ToObject<IDictionary<string, object>>());
+                }
+                else if (val == null)
+                {
+                    // This is the case where the dictionary did not exist in the store.
+                    turnContext.TurnState[_contextServiceKey] = new CachedBotState();
+                }
+                else
+                {
+                    // This should never happen
+                    throw new InvalidOperationException("Data is not in the correct format for BotState.");
+                }
             }
         }
 
@@ -226,6 +246,17 @@ namespace Microsoft.Bot.Builder
             }
 
             var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+
+            // If types are not used by storage serialization, and Newtonsoft is the serializer,
+            // use Newtonsoft to convert the object to the type expected.
+            if (cachedState.State[propertyName] is JObject obj)
+            {
+                return Task.FromResult(obj.ToObject<T>());
+            }
+            else if (cachedState.State[propertyName] is JArray jarray)
+            {
+                return Task.FromResult(jarray.ToObject<T>());
+            }
 
             // if there is no value, this will throw, to signal to IPropertyAccesor that a default value should be computed
             // This allows this to work with value types

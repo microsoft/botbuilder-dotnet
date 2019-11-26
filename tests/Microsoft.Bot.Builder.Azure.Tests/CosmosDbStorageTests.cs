@@ -577,6 +577,19 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone()
+        {
+            if (CheckEmulator())
+            {
+                var storage = new CosmosDbStorage(
+                                   CreateCosmosDbStorageOptions(),
+                                   new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
+                await StatePersistsThroughMultiTurn(storage);
+            }
+        }
+
         public bool CheckEmulator()
         {
             if (!_hasEmulator.Value)
