@@ -1,0 +1,25 @@
+﻿{
+    "$schema": "../../../schemas/sdk.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+        "$kind": "Microsoft.RegexRecognizer",
+        "intents": [
+            {
+                "intent": "greeting",
+                "pattern": "hello"
+            }
+        ]
+    },
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "greeting",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "hi @{turn.activity.from.name}"
+                }
+            ]
+        }
+    ]
+}

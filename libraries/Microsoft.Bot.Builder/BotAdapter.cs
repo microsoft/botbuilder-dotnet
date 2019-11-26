@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -47,7 +48,7 @@ namespace Microsoft.Bot.Builder
         /// Gets the collection of middleware in the adapter's pipeline.
         /// </summary>
         /// <value>The middleware collection for the pipeline.</value>
-        protected MiddlewareSet MiddlewareSet { get; } = new MiddlewareSet();
+        public MiddlewareSet MiddlewareSet { get; } = new MiddlewareSet();
 
         /// <summary>
         /// Adds middleware to the adapter's pipeline.
@@ -129,6 +130,20 @@ namespace Microsoft.Bot.Builder
             {
                 return RunPipelineAsync(context, callback, cancellationToken);
             }
+        }
+
+        /// <summary>
+        /// Creates a turn context and runs the middleware pipeline for an incoming TRUSTED activity.
+        /// </summary>
+        /// <param name="identity">A <see cref="ClaimsIdentity"/> for the request.</param>
+        /// <param name="activity">The incoming activity.</param>
+        /// <param name="callback">The code to run at the end of the adapter's middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public virtual Task<InvokeResponse> ProcessActivityAsync(ClaimsIdentity identity, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

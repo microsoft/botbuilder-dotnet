@@ -1,0 +1,23 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
+    "type": "object",
+    "title": "Replace dialog",
+    "description": "Replace current dialog with another dialog.",
+    "properties": {
+        "dialog": {
+            "$kind": "Microsoft.IDialog",
+            "title": "Dialog name",
+            "description": "Current dialog will be replaced by this dialog."
+        },
+        "options": {
+            "type": "object",
+            "title": "Options",
+            "description": "One or more options that are passed to the dialog that is called.",
+            "additionalProperties": {
+                "type": "string",
+                "title": "Options"
+            }
+        }
+    }
+}

@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Configuration
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Bot.Configuration.Encryption;

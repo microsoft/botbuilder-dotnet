@@ -1,0 +1,47 @@
+> Welcome Phrase template
+> LG runtime will pick a text value from the one-of collection list at random.
+# wPhrase
+- Hi
+- Hello
+- Hey
+ 
+> Using a template in another template
+> Sometimes the bot will say 'Hi' and other times it will say 'Hi :)'
+# welcome-user(userName)
+- @{wPhrase()} @{userName} :)
+ 
+> Using entity references
+# welcome
+- IF: @{userName}
+    - @{welcome-user(userName)}
+- ELSE:
+    - @{welcome-user('DongLei')}
+
+
+
+# ShowAlarm(alarm)
+- @{alarm.time} at @{alarm.date}
+
+# ShowAlarmsWithForeach
+- IF: @{count(alarms) == 1}
+   - You have one alarm @{ShowAlarm(alarms[0])}
+- ELSEIF: @{count(alarms) == 2}
+  - You have @{count(alarms)} alarms, @{join(foreach(alarms, x, ShowAlarm(x)), ', ', ' and ')}
+- ELSE:
+  - You don't have any alarms
+
+# ShowAlarmsWithLgTemplate
+- IF: @{count(alarms) == 1}
+   - You have one alarm @{ShowAlarm(alarms[0])}
+- ELSEIF: @{count(alarms) == 2}
+  - You have @{count(alarms)} alarms, @{join(foreach(alarms, x, template('ShowAlarm', x)), ', ', ' and ')}
+- ELSE:
+  - You don't have any alarms
+
+# ShowAlarmsWithDynamicLgTemplate(templateName)
+- IF: @{count(alarms) == 1}
+   - You have one alarm @{ShowAlarm(alarms[0])}
+- ELSEIF: @{count(alarms) == 2}
+  - You have @{count(alarms)} alarms, @{join(foreach(alarms, x, template(templateName, x)), ', ', ' and ')}
+- ELSE:
+  - You don't have any alarms

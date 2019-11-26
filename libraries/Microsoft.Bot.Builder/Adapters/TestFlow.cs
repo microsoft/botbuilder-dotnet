@@ -45,12 +45,25 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Initializes a new instance of the <see cref="TestFlow"/> class from an existing flow.
         /// </summary>
-        /// <param name="testTask">The exchange to add to the exchanges in the existing flow.</param>
+        /// <param name="task">The exchange to add to the exchanges in the existing flow.</param>
         /// <param name="flow">The flow to build up from. This provides the test adapter to use,
         /// the bot turn processing locig to test, and a set of exchanges to model and test.</param>
-        public TestFlow(Task testTask, TestFlow flow)
+        public TestFlow(Task task, TestFlow flow)
         {
-            _testTask = testTask ?? Task.CompletedTask;
+            _testTask = task ?? Task.CompletedTask;
+            _callback = flow._callback;
+            _adapter = flow._adapter;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestFlow"/> class from an existing flow.
+        /// </summary>
+        /// <param name="getTask">The exchange to add to the exchanges in the existing flow.</param>
+        /// <param name="flow">The flow to build up from. This provides the test adapter to use,
+        /// the bot turn processing locig to test, and a set of exchanges to model and test.</param>
+        public TestFlow(Func<Task> getTask, TestFlow flow)
+        {
+            _testTask = getTask != null ? getTask() : Task.CompletedTask;
             _callback = flow._callback;
             _adapter = flow._adapter;
         }
@@ -88,7 +101,19 @@ namespace Microsoft.Bot.Builder.Adapters
             }
 
             return new TestFlow(
-                _testTask.ContinueWith((task) =>
+                async () =>
+                {
+                    await this._testTask.ConfigureAwait(false);
+
+                    await _adapter.SendTextToBotAsync(userSays, _callback, default(CancellationToken)).ConfigureAwait(false);
+                },
+                this);
+        }
+
+        public TestFlow SendConversationUpdate()
+        {
+            return new TestFlow(
+                async () =>
                 {
                     // NOTE: we need to .Wait() on the original Task to properly observe any exceptions that might have occurred
                     // and to have them propagate correctly up through the chain to whomever is waiting on the parent task
@@ -101,10 +126,12 @@ namespace Microsoft.Bot.Builder.Adapters
                     //  methods, and you handle them by enclosing the call in a try/catch statement. If a task is the
                     //  parent of attached child tasks, or if you are waiting on multiple tasks, multiple exceptions
                     //  could be thrown.
-                    task.Wait();
+                    await this._testTask.ConfigureAwait(false);
 
-                    return _adapter.SendTextToBotAsync(userSays, _callback, default(CancellationToken));
-                }).Unwrap(),
+                    var cu = Activity.CreateConversationUpdateActivity();
+                    cu.MembersAdded.Add(this._adapter.Conversation.User);
+                    await _adapter.ProcessActivityAsync((Activity)cu, _callback, default(CancellationToken)).ConfigureAwait(false);
+                },
                 this);
         }
 
@@ -122,13 +149,13 @@ namespace Microsoft.Bot.Builder.Adapters
             }
 
             return new TestFlow(
-                _testTask.ContinueWith((task) =>
+                async () =>
                 {
                     // NOTE: See details code in above method.
-                    task.Wait();
+                    await this._testTask.ConfigureAwait(false);
 
-                    return _adapter.ProcessActivityAsync((Activity)userActivity, _callback, default(CancellationToken));
-                }).Unwrap(),
+                    await _adapter.ProcessActivityAsync((Activity)userActivity, _callback, default(CancellationToken)).ConfigureAwait(false);
+                },
                 this);
         }
 
@@ -141,13 +168,32 @@ namespace Microsoft.Bot.Builder.Adapters
         public TestFlow Delay(uint ms)
         {
             return new TestFlow(
-                _testTask.ContinueWith((task) =>
+                async () =>
                 {
                     // NOTE: See details code in above method.
-                    task.Wait();
+                    await this._testTask.ConfigureAwait(false);
 
-                    return Task.Delay((int)ms);
-                }),
+                    await Task.Delay((int)ms).ConfigureAwait(false);
+                },
+                this);
+        }
+
+        /// <summary>
+        /// Adds a delay in the conversation.
+        /// </summary>
+        /// <param name="timespan">The delay length in TimeSpan.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends a delay to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
+        public TestFlow Delay(TimeSpan timespan)
+        {
+            return new TestFlow(
+                async () =>
+                {
+                    // NOTE: See details code in above method.
+                    await this._testTask.ConfigureAwait(false);
+
+                    await Task.Delay(timespan).ConfigureAwait(false);
+                },
                 this);
         }
 
@@ -162,7 +208,40 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
         public TestFlow AssertReply(string expected, string description = null, uint timeout = 3000)
         {
-            return AssertReply(_adapter.MakeActivity(expected), description, timeout);
+            return AssertReply(_adapter.MakeActivity(expected), description ?? expected, timeout);
+        }
+
+        /// <summary>
+        /// Adds an assertion that the turn processing logic responds as expected.
+        /// </summary>
+        /// <param name="expected">The part of the expected text of a message from the bot.</param>
+        /// <param name="description">A message to send if the actual response is not as expected.</param>
+        /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
+        /// <exception cref="Exception">The bot did not respond as expected.</exception>
+        public TestFlow AssertReplyContains(string expected, string description = null, uint timeout = 3000)
+        {
+            return AssertReply(
+                (reply) =>
+                {
+                    var replyAsMessageActivity = reply.AsMessageActivity();
+                    if (replyAsMessageActivity == null || !replyAsMessageActivity.Text.Contains(expected))
+                    {
+                        if (description == null)
+                        {
+                            throw new Exception(
+                                $"Expected:{expected}\nReceived:{replyAsMessageActivity?.Text ?? "Not a Message Activity"}");
+                        }
+                        else
+                        {
+                            throw new Exception(
+                                $"{description}:\nExpected:{expected}\nReceived:{replyAsMessageActivity?.Text ?? "Not a Message Activity"}");
+                        }
+                    }
+                },
+                description,
+                timeout);
         }
 
         /// <summary>
@@ -176,23 +255,49 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
         public TestFlow AssertReply(IActivity expected, [CallerMemberName] string description = null, uint timeout = 3000)
         {
+            return this.AssertReply(expected, equalityComparer: null, description, timeout);
+        }
+
+        /// <summary>
+        /// Adds an assertion that the turn processing logic responds as expected.
+        /// </summary>
+        /// <param name="expected">The expected activity from the bot.</param>
+        /// <param name="equalityComparer">The equality parameter which compares two activities.</param>
+        /// <param name="description">A message to send if the actual response is not as expected.</param>
+        /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
+        /// <exception cref="Exception">The bot did not respond as expected.</exception>
+        public TestFlow AssertReply(IActivity expected, IEqualityComparer<IActivity> equalityComparer, [CallerMemberName] string description = null, uint timeout = 3000)
+        {
             return AssertReply(
                 (reply) =>
                 {
+                    description = description ?? expected.AsMessageActivity()?.Text.Trim();
                     if (expected.Type != reply.Type)
                     {
                         throw new Exception($"{description}: Type should match");
                     }
 
-                    if (expected.AsMessageActivity().Text != reply.AsMessageActivity().Text)
+                    if (equalityComparer != null)
                     {
-                        if (description == null)
+                        if (!equalityComparer.Equals(expected, reply))
                         {
-                            throw new Exception($"Expected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
+                            throw new Exception($"Expected:{expected}\nReceived:{reply}");
                         }
-                        else
+                    }
+                    else
+                    {
+                        if (expected.AsMessageActivity().Text.Trim() != reply.AsMessageActivity().Text.Trim())
                         {
-                            throw new Exception($"{description}:\nExpected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
+                            if (description == null)
+                            {
+                                throw new Exception($"Expected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
+                            }
+                            else
+                            {
+                                throw new Exception($"{description}:\nExpected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
+                            }
                         }
                     }
                 },
@@ -204,7 +309,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// Adds an assertion that the turn processing logic responds as expected.
         /// </summary>
         /// <param name="validateActivity">A validation method to apply to an activity from the bot.
-        /// This activity should throw an exception if validation fails.</param>
+        /// This activity should throw an exception if validation wfails.</param>
         /// <param name="description">A message to send if the actual response is not as expected.</param>
         /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
         /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
@@ -212,10 +317,10 @@ namespace Microsoft.Bot.Builder.Adapters
         public TestFlow AssertReply(Action<IActivity> validateActivity, [CallerMemberName] string description = null, uint timeout = 3000)
         {
             return new TestFlow(
-                _testTask.ContinueWith((task) =>
+                async () =>
                 {
                     // NOTE: See details code in above method.
-                    task.Wait();
+                    await this._testTask.ConfigureAwait(false);
 
                     if (System.Diagnostics.Debugger.IsAttached)
                     {
@@ -239,8 +344,10 @@ namespace Microsoft.Bot.Builder.Adapters
                             validateActivity(replyActivity);
                             return;
                         }
+
+                        await Task.Delay(100).ConfigureAwait(false);
                     }
-                }),
+                },
                 this);
         }
 
@@ -389,6 +496,8 @@ namespace Microsoft.Bot.Builder.Adapters
             return AssertReply(
                 (reply) =>
                 {
+                    var text = reply.AsMessageActivity().Text;
+
                     foreach (var candidate in candidates)
                     {
                         if (reply.AsMessageActivity().Text == candidate)
@@ -397,7 +506,7 @@ namespace Microsoft.Bot.Builder.Adapters
                         }
                     }
 
-                    throw new Exception(description ?? $"Not one of candidates: {string.Join("\n", candidates)}");
+                    throw new Exception(description ?? $"Text \"{text}\" does not match one of candidates: {string.Join("\n", candidates)}");
                 },
                 description,
                 timeout);

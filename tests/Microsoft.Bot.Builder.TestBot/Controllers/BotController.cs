@@ -28,6 +28,7 @@ namespace Microsoft.BotBuilderSamples
 
         [Route("{*botname}")]
         [HttpPost]
+        [HttpGet]
         public async Task PostAsync(string botname)
         {
             // Delegate the processing of the HTTP POST to the adapter.

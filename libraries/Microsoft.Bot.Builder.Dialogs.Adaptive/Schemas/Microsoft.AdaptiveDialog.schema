@@ -1,0 +1,49 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
+    "title": "Adaptive Dialog",
+    "description": "Flexible, data driven dialog that can adapt to the conversation.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional dialog ID."
+        },
+        "autoEndDialog": {
+            "type": "boolean",
+            "title": "Auto end dialog",
+            "description": "If set to true the dialog will automatically end when there are no further actions.  If set to false, remember to manually end the dialog using EndDialog action.",
+            "default": "true"
+        },
+        "defaultResultProperty": {
+            "type": "string",
+            "title": "Default result property",
+            "description": "Value that will be passed back to the parent dialog.",
+            "default": "dialog.result"
+        },
+        "recognizer": {
+            "$kind": "Microsoft.IRecognizer",
+            "title": "Recognizer",
+            "description": "Language Understanding recognizer that interprets user input into intent and entities."
+        },
+        "generator": {
+            "$kind": "Microsoft.ILanguageGenerator",
+            "title": "Language Generator",
+            "description": "Language generator that generates bot responses."
+        },
+        "selector": {
+            "$kind": "Microsoft.ITriggerSelector",
+            "title": "Selector",
+            "description": "Policy to determine which trigger is executed. Defaults to a 'best match' selector (optional)."
+        },
+        "triggers": {
+            "type": "array",
+            "description": "List of triggers defined for this dialog.",
+            "title": "Triggers",
+            "items": {
+                "$kind": "Microsoft.ITriggerCondition"
+            }
+        }
+    }
+}

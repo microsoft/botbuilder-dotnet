@@ -1,0 +1,140 @@
+{
+    "$schema": "../../../app.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "autoEndDialog": false,
+    "recognizer": {
+        "$kind": "Microsoft.RegexRecognizer",
+        "intents": [
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "ShowEmailIntent",
+                "pattern": "(?i)show email" 
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "SendEmailIntent",
+                "pattern": "(?i)send email" 
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "HelpIntent",
+                "pattern": "(?i)help" 
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "FindContactIntent",
+                "pattern": "(?i)find email contact" 
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "ShowNextPageIntent",
+                "pattern": "(?i)next page email" 
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "ForwardEmailIntent",
+                "pattern": "(?i)forward email" 
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "ReplyEmailIntent",
+                "pattern": "(?i)reply email" 
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "CancelIntent",
+                "pattern": "(?i)cancel|never mind"
+            }
+        ]
+    },
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnUnknownIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Hi! I'm a Email bot. Say \"show email\" to get started."
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "CancelIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "ok, see you next time."
+                },
+                {
+                    "$kind": "Microsoft.EndDialog"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "ShowEmailIntent",
+            "actions": [
+                "ClearUserData",
+                "ShowEmail"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "ShowNextPageIntent",
+            "actions": [
+                "NextPage",
+                "ShowEmail"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "SendEmailIntent",
+            "actions": [
+                "ClearUserData",
+                "SendEmail"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "FindContactIntent",
+            "actions": [
+                "ClearUserData",
+                "FindContact"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "ForwardEmailIntent",
+            "actions": [
+                "ClearUserData",
+                "ForwardEmail"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "ReplyEmailIntent",
+            "actions": [
+                "ClearUserData",
+                "ReplyEmail"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "HelpIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "I am an email bot, Please try show email to get started."
+                }
+            ]
+        }
+    ]
+}

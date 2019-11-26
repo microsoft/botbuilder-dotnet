@@ -1,0 +1,105 @@
+{
+    "$schema": "../../app.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "autoEndDialog": false,
+    "generator": "ExternalLanguage.main.lg",
+    "recognizer": {
+        "$kind": "Microsoft.RegexRecognizer",
+        "intents": [
+            {
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "HelpIntent",
+                "pattern": "(?i)help" 
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "GreetingIntent",
+                "pattern": "(?i)hi|hello|hiya|greetings" 
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "JokeIntent",
+                "pattern": "(?i)joke" 
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "FortuneTellerIntent",
+                "pattern": "(?i)fortune|future" 
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "CancelIntent",
+                "pattern": "(?i)cancel"
+            }
+        ]
+    },
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "@{welcome()}"
+                },
+                "ExternalLanguage.Greeting"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "JokeIntent",
+            "actions": [
+                "ExternalLanguage.TellJoke"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "FortuneTellerIntent",
+            "actions": [
+                "ExternalLanguage.FortuneTeller"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "GreetingIntent",
+            "actions": [
+                "ExternalLanguage.Greeting"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "HelpIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "@{help()}"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "CancelIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "OK, see ya"
+                },
+                {
+                    "$kind": "Microsoft.EndDialog"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnUnknownIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "@{help()}"
+                }
+            ]
+        }
+    ]
+}

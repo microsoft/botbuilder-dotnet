@@ -1,0 +1,59 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
+    "title": "Switch condition",
+    "description": "Execute different actions based on the value of a property.",
+    "type": "object",
+    "required": [
+        "condition"
+    ],
+    "properties": {
+        "condition": {
+            "$role": "expression",
+            "title": "Condition",
+            "description": "Property to evaluate.",
+            "examples": [
+                "user.favColor"
+            ]
+        },
+        "cases": {
+            "type": "array",
+            "title": "Cases",
+            "desc": "Actions for each possible condition.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "$role": "expression",
+                        "title": "Value",
+                        "description": "Value.",
+                        "examples": [
+                            "'red'",
+                            "dialog.colors.red"
+                        ]
+                    },
+                    "actions": {
+                        "type": "array",
+                        "items": {
+                            "$kind": "Microsoft.IDialog"
+                        },
+                        "title": "Actions",
+                        "description": "Actions to execute."
+                    }
+                },
+                "required": [
+                    "value",
+                    "case"
+                ]
+            }
+        },
+        "default": {
+            "type": "array",
+            "items": {
+                "$kind": "Microsoft.IDialog"
+            },
+            "title": "Default",
+            "description": "Actions to execute if none of the cases meet the condition."
+        }
+    }
+}

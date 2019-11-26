@@ -1,0 +1,25 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.ITriggerCondition)",
+    "title": "On dialog event",
+    "description": "Actions to perform when a specific dialog event occurs.",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./Microsoft.OnCondition.schema#"
+        },
+        {
+            "properties": {
+                "event": {
+                    "type": "string",
+                    "title": "Dialog event name",
+                    "description": "Name of dialog event."
+                }
+            }
+        }
+    ],
+    "required": [
+        "actions",
+        "event"
+    ]
+}

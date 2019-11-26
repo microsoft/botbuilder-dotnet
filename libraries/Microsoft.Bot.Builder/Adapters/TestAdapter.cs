@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
@@ -17,7 +18,7 @@ namespace Microsoft.Bot.Builder.Adapters
     /// <seealso cref="TestFlow"/>
     public class TestAdapter : BotAdapter, IUserTokenProvider
     {
-        private readonly bool _sendTraceActivity;
+        private bool _sendTraceActivity;
         private readonly object _conversationLock = new object();
         private readonly object _activeQueueLock = new object();
         private readonly IDictionary<UserTokenKey, string> _userTokens = new Dictionary<UserTokenKey, string>();
@@ -72,6 +73,26 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to send trace activities.
+        /// </summary>
+        /// <value>
+        /// A value indicating whether to send trace activities.
+        /// </value>
+        public bool EnableTrace
+        {
+            get => _sendTraceActivity;
+            set => this._sendTraceActivity = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the locale for the conversation.
+        /// </summary>
+        /// <value>
+        /// The locale for the conversation.
+        /// </value>
+        public string Locale { get; set; } = "en-us";
+
+        /// <summary>
         /// Gets the queue of responses from the bot.
         /// </summary>
         /// <value>The queue of responses from the bot.</value>
@@ -82,6 +103,25 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </summary>
         /// <value>A reference to the current conversation.</value>
         public ConversationReference Conversation { get; set; }
+
+        /// <summary>
+        /// Create a ConversationReference. 
+        /// </summary>
+        /// <param name="name">name of the conversation (also id).</param>
+        /// <param name="user">name of the user (also id) default:User1.</param>
+        /// <param name="bot">name of the bot (also id) default:Bot.</param>
+        /// <returns>ConversationReference.</returns>
+        public static ConversationReference CreateConversation(string name, string user = "User1", string bot = "Bot")
+        {
+            return new ConversationReference
+            {
+                ChannelId = "test",
+                ServiceUrl = "https://test.com",
+                Conversation = new ConversationAccount(false, name, name),
+                User = new ChannelAccount(id: user.ToLower(), name: user),
+                Bot = new ChannelAccount(id: bot.ToLower(), name: bot),
+            };
+        }
 
         /// <summary>
         /// Adds middleware to the adapter's pipeline.
@@ -116,7 +156,12 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
 
                 activity.ChannelId = Conversation.ChannelId;
-                activity.From = Conversation.User;
+                
+                if (activity.From == null || activity.From.Id == "unknown" || activity.From.Role == RoleTypes.Bot)
+                {
+                    activity.From = Conversation.User;
+                }
+
                 activity.Recipient = Conversation.Bot;
                 activity.Conversation = Conversation.Conversation;
                 activity.ServiceUrl = Conversation.ServiceUrl;
@@ -136,9 +181,24 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
+        /// Creates a turn context and runs the middleware pipeline for an incoming activity.
+        /// </summary>
+        /// <param name="identity">A <see cref="ClaimsIdentity"/> for the request.</param>
+        /// <param name="activity">The incoming activity.</param>
+        /// <param name="callback">The code to run at the end of the adapter's middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public override async Task<InvokeResponse> ProcessActivityAsync(ClaimsIdentity identity, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            await ProcessActivityAsync(activity, callback, cancellationToken).ConfigureAwait(false);
+            return null;
+        }
+
+        /// <summary>
         /// Sends activities to the conversation.
         /// </summary>
-        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="activities">The activities to send.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -220,7 +280,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Replaces an existing activity in the <see cref="ActiveQueue"/>.
         /// </summary>
-        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="activity">New replacement activity.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -258,7 +318,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Deletes an existing activity in the <see cref="ActiveQueue"/>.
         /// </summary>
-        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="reference">Conversation reference for the activity to delete.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -338,6 +398,7 @@ namespace Microsoft.Bot.Builder.Adapters
             Activity activity = new Activity
             {
                 Type = ActivityTypes.Message,
+                Locale = this.Locale,
                 From = Conversation.User,
                 Recipient = Conversation.Bot,
                 Conversation = Conversation.Conversation,

@@ -1,0 +1,30 @@
+﻿{
+    "$schema": "../../app.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "generator": "ExternalLanguage.main.lg",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "user.name == null",
+                    "actions": [
+                        {
+                            "$kind": "Microsoft.TextInput",
+                            "pattern": "\\w{3,50}",
+                            "property": "user.name",
+                            "prompt": "@{Greeting.Name.initialPrompt()}",
+                            "retryPrompt": "@{Greeting.Name.retryPrompt()}",
+                            "invalidPrompt": "@{Greeting.Name.notMatched()}"
+                        }
+                    ]
+                },
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "@{Greeting.GreetUser()}"
+                }
+            ]
+        }
+    ]
+}

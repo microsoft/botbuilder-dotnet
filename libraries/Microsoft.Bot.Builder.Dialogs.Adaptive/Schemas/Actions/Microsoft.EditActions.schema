@@ -1,0 +1,33 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
+    "title": "Edit actions.",
+    "description": "Edit the current list of actions.",
+    "type": "object",
+    "required": [
+        "changeType",
+        "actions"
+    ],
+    "properties": {
+        "changeType": {
+            "type": "string",
+            "title": "Type of change",
+            "description": "Type of change to apply to the current actions.",
+            "enum": [
+                "InsertActions",
+                "InsertActionsBeforeTags",
+                "AppendActions",
+                "EndSequence",
+                "ReplaceSequence"
+            ]
+        },
+        "actions": {
+            "type": "array",
+            "items": {
+                "$kind": "Microsoft.IDialog"
+            },
+            "title": "Actions",
+            "description": "Actions to apply."
+        }
+    }
+}

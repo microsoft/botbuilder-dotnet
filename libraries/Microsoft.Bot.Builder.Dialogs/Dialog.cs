@@ -2,14 +2,19 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
     /// Base class for all dialogs.
     /// </summary>
+    [DebuggerDisplay("{Id}")]
     public abstract class Dialog
     {
         /// <summary>
@@ -17,36 +22,51 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// active and waiting for input from the user next turn.
         /// </summary>
         public static readonly DialogTurnResult EndOfTurn = new DialogTurnResult(DialogTurnStatus.Waiting);
+
         private IBotTelemetryClient _telemetryClient;
+
+        [JsonProperty("id")]
+        private string id;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Dialog"/> class.
         /// Called from constructors in derived classes to initialize the <see cref="Dialog"/> class.
         /// </summary>
-        /// <param name="dialogId">The ID to assign to the new dialog.</param>
-        public Dialog(string dialogId)
+        /// <param name="dialogId">The ID to assign to this dialog.</param>
+        public Dialog(string dialogId = null)
         {
-            if (string.IsNullOrWhiteSpace(dialogId))
-            {
-                throw new ArgumentNullException(nameof(dialogId));
-            }
-
-            _telemetryClient = NullBotTelemetryClient.Instance;
             Id = dialogId;
+            _telemetryClient = NullBotTelemetryClient.Instance;
         }
 
         /// <summary>
-        /// Gets the ID assigned to this dialog.
+        /// Gets or sets id for the dialog.
         /// </summary>
-        /// <value>The ID assigned to this dialog.</value>
-        public string Id { get; }
+        /// <value>
+        /// Id for the dialog.
+        /// </value>
+        [JsonIgnore]
+        public string Id
+        {
+            get
+            {
+                id = id ?? OnComputeId();
+                return id;
+            }
+
+            set
+            {
+                id = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the <see cref="IBotTelemetryClient"/> to use for logging.
         /// </summary>
         /// <value>The <see cref="IBotTelemetryClient"/> to use for logging.</value>
         /// <seealso cref="DialogSet.TelemetryClient"/>
-        public IBotTelemetryClient TelemetryClient
+        [JsonIgnore]
+        public virtual IBotTelemetryClient TelemetryClient
         {
             get
             {
@@ -116,6 +136,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <seealso cref="DialogContext.EndDialogAsync(object, CancellationToken)"/>
         public virtual async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (result is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
+            }
+
             // By default just end the current dialog and return result to parent.
             return await dc.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
         }
@@ -148,6 +173,84 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             // No-op by default
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Called when an event has been raised, using `DialogContext.emitEvent()`, by either the current dialog or a dialog that the current dialog started.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="e">The event being raised.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>True if the event is handled by the current dialog and bubbling should stop.</returns>
+        public virtual async Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        {
+            // Before bubble
+            var handled = await this.OnPreBubbleEventAsync(dc, e, cancellationToken).ConfigureAwait(false);
+
+            // Bubble as needed
+            if (!handled && e.Bubble && dc.Parent != null)
+            {
+                handled = await dc.Parent.EmitEventAsync(e.Name, e.Value, true, false, cancellationToken).ConfigureAwait(false);
+            }
+
+            // Post bubble
+            if (!handled)
+            {
+                handled = await this.OnPostBubbleEventAsync(dc, e, cancellationToken).ConfigureAwait(false);
+            }
+
+            return handled;
+        }
+
+        /// <summary>
+        /// Called before an event is bubbled to its parent.
+        /// </summary>
+        /// <remarks>
+        /// This is a good place to perform interception of an event as returning `true` will prevent
+        /// any further bubbling of the event to the dialogs parents and will also prevent any child
+        /// dialogs from performing their default processing.
+        /// </remarks>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="e">The event being raised.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
+        protected virtual Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(false);
+        }
+
+        /// <summary>
+        /// Called after an event was bubbled to all parents and wasn't handled.
+        /// </summary>
+        /// <remarks>
+        /// This is a good place to perform default processing logic for an event. Returning `true` will
+        /// prevent any processing of the event by child dialogs.
+        /// </remarks>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="e">The event being raised.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
+        protected virtual Task<bool> OnPostBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(false);
+        }
+
+        protected virtual string OnComputeId()
+        {
+            return this.GetType().Name;
+        }
+
+        protected void RegisterSourceLocation(string path, int lineNumber)
+        {
+            if (!string.IsNullOrEmpty(path))
+            {
+                DebugSupport.SourceMap.Add(this, new SourceRange()
+                {
+                    Path = path,
+                    StartPoint = new SourcePoint() { LineIndex = lineNumber, CharIndex = 0 },
+                    EndPoint = new SourcePoint() { LineIndex = lineNumber + 1, CharIndex = 0 },
+                });
+            }
         }
     }
 }

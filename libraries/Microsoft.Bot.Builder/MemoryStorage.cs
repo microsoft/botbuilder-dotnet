@@ -15,7 +15,11 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class MemoryStorage : IStorage
     {
-        private static readonly JsonSerializer StateJsonSerializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.All };
+        private static readonly JsonSerializer StateJsonSerializer = new JsonSerializer()
+        {
+            TypeNameHandling = TypeNameHandling.All,
+            ReferenceLoopHandling = ReferenceLoopHandling.Error,
+        };
 
         // If a JsonSerializer is not provided during construction, this will be the default static JsonSerializer.
         private readonly JsonSerializer _stateJsonSerializer;
@@ -136,13 +140,13 @@ namespace Microsoft.Bot.Builder
 
                     if (_memory.TryGetValue(change.Key, out var oldState))
                     {
-                        if (oldState.TryGetValue("eTag", out var etag))
+                        if (oldState != null && oldState.TryGetValue("eTag", out var etag))
                         {
                             oldStateETag = etag.Value<string>();
                         }
                     }
 
-                    var newState = JObject.FromObject(newValue, _stateJsonSerializer);
+                    var newState = newValue != null ? JObject.FromObject(newValue, _stateJsonSerializer) : null;
 
                     // Set ETag if applicable
                     if (newValue is IStoreItem newStoreItem)

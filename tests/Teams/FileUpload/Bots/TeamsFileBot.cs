@@ -18,6 +18,11 @@ namespace Microsoft.BotBuilderSamples.Bots
 {
     public class TeamsFileBot : TeamsActivityHandler
     {
+        /*
+         * You can install this bot at any scope. You can @mention the bot and it will present you with the file prompt. You can accept and 
+         * the file will be uploaded, or you can decline and it won't.
+         */
+
         private readonly IHttpClientFactory _clientFactory;
 
         public TeamsFileBot(IHttpClientFactory clientFactory)
@@ -71,11 +76,15 @@ namespace Microsoft.BotBuilderSamples.Bots
                 DeclineContext = consentContext,
             };
 
-            var replyActivity = turnContext.Activity.CreateReply();
-            replyActivity.Attachments = new List<Attachment>()
+            var asAttachment = new Attachment
             {
-                fileCard.ToAttachment(filename),
+                Content = fileCard,
+                ContentType = FileConsentCard.ContentType,
+                Name = filename,
             };
+
+            var replyActivity = turnContext.Activity.CreateReply();
+            replyActivity.Attachments = new List<Attachment>() { asAttachment };
 
             await turnContext.SendActivityAsync(replyActivity, cancellationToken);
         }
@@ -123,13 +132,18 @@ namespace Microsoft.BotBuilderSamples.Bots
                 FileType = fileConsentCardResponse.UploadInfo.FileType,
             };
 
+            var asAttachment = new Attachment
+            {
+                Content = downloadCard,
+                ContentType = FileInfoCard.ContentType,
+                Name = fileConsentCardResponse.UploadInfo.Name,
+                ContentUrl = fileConsentCardResponse.UploadInfo.ContentUrl,
+            };
+
             var reply = turnContext.Activity.CreateReply();
             reply.TextFormat = "xml";
             reply.Text = $"<b>File uploaded.</b> Your file <b>{fileConsentCardResponse.UploadInfo.Name}</b> is ready to download";
-            reply.Attachments = new List<Attachment>
-            {
-                downloadCard.ToAttachment(fileConsentCardResponse.UploadInfo.Name, fileConsentCardResponse.UploadInfo.ContentUrl),
-            };
+            reply.Attachments = new List<Attachment> { asAttachment };
 
             await turnContext.SendActivityAsync(reply, cancellationToken);
         }

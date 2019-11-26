@@ -1,6 +1,8 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -9,9 +11,9 @@ namespace Microsoft.Bot.Connector.Authentication
     {
         public static async Task<TResult> Run<TResult>(Func<Task<TResult>> task, Func<Exception, int, RetryParams> retryExceptionHandler)
         {
-            RetryParams retry = RetryParams.StopRetrying;
-            List<Exception> exceptions = new List<Exception>();
-            int currentRetryCount = 0;
+            RetryParams retry;
+            var exceptions = new List<Exception>();
+            var currentRetryCount = 0;
 
             do
             {

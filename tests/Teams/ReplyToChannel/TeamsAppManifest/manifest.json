@@ -1,11 +1,11 @@
 {
-  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.3/MicrosoftTeams.schema.json",
-  "manifestVersion": "1.3",
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.5",
   "version": "1.0.0",
-  "id": "",
-  "packageName": "com.teams.sample.activityupdateanddelete",
+  "id": "00000000-0000-0000-0000-000000000000",
+  "packageName": "com.teams.sample.replyToChannel",
   "developer": {
-    "name": "Reply To Channel",
+    "name": "ReplyToChannelBot",
     "websiteUrl": "https://www.microsoft.com",
     "privacyUrl": "https://www.teams.com/privacy",
     "termsOfUseUrl": "https://www.teams.com/termsofuser"
@@ -15,17 +15,17 @@
     "outline": "outline.png"
   },
   "name": {
-    "short": "Reply To Channel",
-    "full": "Reply To Channel"
+    "short": "ReplyToChannelBot",
+    "full": "ReplyToChannelBot"
   },
   "description": {
-    "short": "Reply To Channel",
-    "full": "Reply To Channel"
+    "short": "ReplyToChannelBot",
+    "full": "ReplyToChannelBot"
   },
   "accentColor": "#FFFFFF",
   "bots": [
     {
-      "botId": "",
+      "botId": "00000000-0000-0000-0000-000000000000",
       "scopes": [
         "team"
       ],

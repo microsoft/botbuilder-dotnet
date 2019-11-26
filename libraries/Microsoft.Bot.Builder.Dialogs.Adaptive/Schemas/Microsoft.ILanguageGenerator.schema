@@ -1,0 +1,11 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "title": "Microsoft ILanguageGenerator",
+    "description": "Union of components which implement the ILanguageGenerator interface",
+    "$role": "union",
+    "oneOf": [
+        {
+            "type": "string"
+        }
+    ]
+}

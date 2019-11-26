@@ -155,7 +155,10 @@ namespace Microsoft.Bot.Builder.Tests
             // write with empty etag should not work
             try
             {
-                var reloadedStoreItem4 = (await storage.ReadAsync(new[] { "pocoStoreItem" })).OfType<PocoStoreItem>().First();
+                var reloadedStoreItems4 = await storage.ReadAsync(new[] { "pocoStoreItem" });
+                var reloadedStoreItem4 = reloadedStoreItems4["pocoStoreItem"] as PocoStoreItem;
+
+                Assert.IsNotNull(reloadedStoreItem4);
 
                 reloadedStoreItem4.ETag = string.Empty;
                 var dict2 = new Dictionary<string, object>()

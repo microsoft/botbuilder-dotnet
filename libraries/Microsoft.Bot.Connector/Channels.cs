@@ -24,6 +24,11 @@ namespace Microsoft.Bot.Connector
         public const string Directline = "directline";
 
         /// <summary>
+        /// Direct Line Speech channel.
+        /// </summary>
+        public const string DirectlineSpeech = "directlinespeech";
+
+        /// <summary>
         /// Email channel.
         /// </summary>
         public const string Email = "email";

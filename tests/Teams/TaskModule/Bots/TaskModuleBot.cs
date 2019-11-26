@@ -9,29 +9,34 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
+using Newtonsoft.Json;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
+    /*
+     * This bot can be installed at any scope. If you @mention the bot you will get the task module. You can interact with the task module to
+     * hit the other functions.
+     */
     public class TaskModuleBot : TeamsActivityHandler
     {
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            var reply = MessageFactory.Attachment(this.GetHeroCard());
+            var reply = MessageFactory.Attachment(this.GetTaskModuleHeroCard());
             await turnContext.SendActivityAsync(reply);
         }
 
-        protected override async Task<TaskModuleResponse> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected override async Task<TaskModuleResponse> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
-            var reply = MessageFactory.Text("OnTeamsTaskModuleFetchAsync Value: " + turnContext.Activity.Value.ToString());
+            var reply = MessageFactory.Text("OnTeamsTaskModuleFetchAsync TaskModuleRequest: " + JsonConvert.SerializeObject(taskModuleRequest));
             await turnContext.SendActivityAsync(reply);
 
             return new TaskModuleResponse
             {
-                Task = new TaskModuleContinueResponse()
+                Task = new TaskModuleContinueResponse
                 {
                     Value = new TaskModuleTaskInfo()
                     {
-                        Card = this.GetAdaptiveCard(),
+                        Card = this.GetTaskModuleAdaptiveCard(),
                         Height = 200,
                         Width = 400,
                         Title = "Adaptive Card: Inputs",
@@ -40,10 +45,9 @@ namespace Microsoft.BotBuilderSamples.Bots
             };
         }
 
-        protected override async Task<TaskModuleResponse> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected override async Task<TaskModuleResponse> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
-            var value = turnContext.Activity.Value.ToString();
-            var reply = MessageFactory.Text("OnTeamsTaskModuleFetchAsync Value: " + value);
+            var reply = MessageFactory.Text("OnTeamsTaskModuleFetchAsync Value: " + JsonConvert.SerializeObject(taskModuleRequest));
             await turnContext.SendActivityAsync(reply);
 
             return new TaskModuleResponse
@@ -55,7 +59,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             };
         }
 
-        private Attachment GetHeroCard()
+        private Attachment GetTaskModuleHeroCard()
         {
             return new HeroCard()
             {
@@ -68,9 +72,9 @@ namespace Microsoft.BotBuilderSamples.Bots
             }.ToAttachment();
         }
 
-        private Attachment GetAdaptiveCard()
+        private Attachment GetTaskModuleAdaptiveCard()
         {
-            return new AdaptiveCard(new AdaptiveSchemaVersion("1.0"))
+            var card = new AdaptiveCard(new AdaptiveSchemaVersion("1.0"))
             {
                 Body = new List<AdaptiveElement>()
                 {
@@ -87,7 +91,13 @@ namespace Microsoft.BotBuilderSamples.Bots
                 {
                     new AdaptiveSubmitAction() { Title = "Submit" },
                 },
-            }.ToAttachment();
+            };
+
+            return new Attachment
+            {
+                Content = card,
+                ContentType = AdaptiveCards.AdaptiveCard.ContentType,
+            };
         }
     }
 }

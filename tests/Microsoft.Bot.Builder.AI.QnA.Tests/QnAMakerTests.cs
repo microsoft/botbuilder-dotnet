@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+#pragma warning disable SA1201 // Elements should appear in the correct order
 
 using System;
 using System.Collections.Generic;
@@ -9,8 +10,15 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
@@ -22,9 +30,124 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
     [TestClass]
     public class QnAMakerTests
     {
-        private const string _knowlegeBaseId = "dummy-id";
+        private const string _knowledgeBaseId = "dummy-id";
         private const string _endpointKey = "dummy-key";
         private const string _hostname = "https://dummy-hostname.azurewebsites.net/qnamaker";
+
+        public TestContext TestContext { get; set; }
+
+        public AdaptiveDialog QnAMakerAction_ActiveLearningDialogBase()
+        {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
+                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
+            mockHttp.When(HttpMethod.Post, GetTrainRequestUrl())
+                .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
+               .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
+
+            return CreateQnAMakerActionDialog(mockHttp);
+        }
+
+        [TestMethod]
+        public async Task QnAMakerAction_ActiveLearningDialog_WithProperResponse()
+        {
+            var rootDialog = QnAMakerAction_ActiveLearningDialogBase();
+
+            var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
+            var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog)
+            .Send("Q11")
+                .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("Q1")
+                .AssertReply("A1")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task QnAMakerAction_ActiveLearningDialog_WithNoResponse()
+        {
+            var rootDialog = QnAMakerAction_ActiveLearningDialogBase();
+
+            var noAnswerActivity = "No match found, please as another question.";
+
+            var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
+            var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog)
+            .Send("Q11")
+                .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("Q12")
+                .AssertReply(noAnswerActivity)
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task QnAMakerAction_ActiveLearningDialog_WithNoneOfAboveQuery()
+        {
+            var rootDialog = QnAMakerAction_ActiveLearningDialogBase();
+
+            var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
+            var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog)
+            .Send("Q11")
+                .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("None of the above.")
+                .AssertReply("Thanks for the feedback.")
+            .StartTestAsync();
+        }
+
+        public AdaptiveDialog QnAMakerAction_MultiTurnDialogBase()
+        {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
+                .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_withPrompts.json"));
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1}")
+               .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_MultiTurnLevel1.json"));
+
+            return CreateQnAMakerActionDialog(mockHttp);
+        }
+
+        [TestMethod]
+        public async Task QnAMakerAction_MultiTurnDialogBase_WithAnswer()
+        {
+            var rootDialog = QnAMakerAction_MultiTurnDialogBase();
+
+            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnAnswer_withPrompts.json")));
+            var promptsActivity = QnACardBuilder.GetQnAPromptsCard(response.Answers[0], "None of the above.");
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog)
+            .Send("I have issues related to KB")
+                .AssertReply(promptsActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("Accidently deleted KB")
+                .AssertReply("All deletes are permanent, including question and answer pairs, files, URLs, custom questions and answers, knowledge bases, or Azure resources. Make sure you export your knowledge base from the Settings**page before deleting any part of your knowledge base.")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task QnAMakerAction_MultiTurnDialogBase_WithNoAnswer()
+        {
+            var rootDialog = QnAMakerAction_MultiTurnDialogBase();
+
+            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnAnswer_withPrompts.json")));
+            var promptsActivity = QnACardBuilder.GetQnAPromptsCard(response.Answers[0], "None of the above.");
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog)
+            .Send("I have issues related to KB")
+                .AssertReply(promptsActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("None of the above.")
+                .AssertReply("Thanks for the feedback.")
+            .StartTestAsync();
+        }
 
         [TestMethod]
         [TestCategory("AI")]
@@ -39,7 +162,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },
@@ -50,7 +173,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             // Invoke flow which uses mock
             var transcriptStore = new MemoryTranscriptStore();
-            var adapter = new TestAdapter()
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
 
@@ -112,7 +235,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -136,7 +259,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -172,7 +295,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             var activity = new Activity
             {
                 Type = ActivityTypes.Trace,
@@ -196,7 +319,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             var context = new MyTurnContext(adapter, null);
 
             var results = await qna.GetAnswersAsync(context);
@@ -215,7 +338,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },
@@ -233,6 +356,37 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
+        public async Task QnaMaker_ReturnsAnswerRaw()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var options = new QnAMakerOptions
+            {
+                Top = 1,
+            };
+
+            var qna = GetQnAMaker(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowledgeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
+                },
+                options);
+
+            var results = await qna.GetAnswersRawAsync(GetContext("how do I clean the stove?"), options);
+            Assert.IsNotNull(results.Answers);
+            Assert.IsTrue(results.ActiveLearningEnabled);
+            Assert.AreEqual(results.Answers.Length, 1, "should get one result");
+            StringAssert.StartsWith(results.Answers[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
         public async Task QnaMaker_LowScoreVariation()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -243,7 +397,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },
@@ -274,7 +428,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
@@ -311,7 +465,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var service = new QnAMakerService
             {
-                KbId = _knowlegeBaseId,
+                KbId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Hostname = _hostname,
             };
@@ -345,7 +499,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 interceptHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
@@ -386,7 +540,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },
@@ -415,7 +569,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },
@@ -438,7 +592,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         {
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -460,7 +614,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         {
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -487,7 +641,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
@@ -522,7 +676,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
@@ -551,7 +705,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
@@ -578,7 +732,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = new QnAMaker(
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },
@@ -613,7 +767,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qnaNullEndpoint = new QnAMaker(
                 new QnAMakerEndpoint()
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = string.Empty,
                     Host = _hostname,
                 });
@@ -628,7 +782,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qnaNullEndpoint = new QnAMaker(
                 new QnAMakerEndpoint()
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = string.Empty,
                 });
@@ -649,7 +803,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 interceptHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },
@@ -671,6 +825,56 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
+        [ExpectedException(typeof(NotSupportedException))]
+        public async Task QnaMaker_V2LegacyEndpoint_ConvertsToHaveIdPropertyInResult()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetV2LegacyRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_LegacyEndpointAnswer.json"));
+
+            var v2LegacyEndpoint = new QnAMakerEndpoint
+            {
+                KnowledgeBaseId = _knowledgeBaseId,
+                EndpointKey = _endpointKey,
+                Host = $"{_hostname}/v2.0"
+            };
+
+            var v2Qna = GetQnAMaker(mockHttp, v2LegacyEndpoint);
+
+            var v2legacyResult = await v2Qna.GetAnswersAsync(GetContext("How do I be the best?"));
+
+            Assert.IsNotNull(v2legacyResult);
+            Assert.IsTrue(v2legacyResult[0]?.Id != null);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [ExpectedException(typeof(NotSupportedException))]
+        public async Task QnaMaker_V3LegacyEndpoint_ConvertsToHaveIdPropertyInResult()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetV3LegacyRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_LegacyEndpointAnswer.json"));
+
+            var v3LegacyEndpoint = new QnAMakerEndpoint
+            {
+                KnowledgeBaseId = _knowledgeBaseId,
+                EndpointKey = _endpointKey,
+                Host = $"{_hostname}/v3.0"
+            };
+
+            var v3Qna = GetQnAMaker(mockHttp, v3LegacyEndpoint);
+
+            var v3legacyResult = await v3Qna.GetAnswersAsync(GetContext("How do I be the best?"));
+
+            Assert.IsNotNull(v3legacyResult);
+            Assert.IsTrue(v3legacyResult[0]?.Id != null);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
         public async Task QnaMaker_ReturnsAnswerWithMetadataBoost()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -683,7 +887,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 interceptHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
@@ -719,7 +923,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 interceptHttp,
                 new QnAMakerEndpoint()
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
@@ -755,7 +959,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint()
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
@@ -783,7 +987,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 interceptHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },
@@ -884,7 +1088,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -920,7 +1124,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -970,7 +1174,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -1018,7 +1222,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -1068,7 +1272,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -1122,7 +1326,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -1185,7 +1389,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -1244,7 +1448,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowlegeBaseId,
+                KnowledgeBaseId = _knowledgeBaseId,
                 EndpointKey = _endpointKey,
                 Host = _hostname,
             };
@@ -1310,14 +1514,138 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             return new TurnContext(b, a);
         }
 
-        private string GetRequestUrl() => $"{_hostname}/knowledgebases/{_knowlegeBaseId}/generateanswer";
+        private TestFlow CreateFlow(Dialog rootDialog)
+        {
+            var storage = new MemoryStorage();
+            var userState = new UserState(storage);
+            var conversationState = new ConversationState(storage);
 
-        private string GetTrainRequestUrl() => $"{_hostname}/knowledgebases/{_knowlegeBaseId}/train";
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            adapter
+                .UseStorage(storage)
+                .UseState(userState, conversationState)
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            DialogManager dm = new DialogManager(rootDialog);
+
+            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            });
+        }
+
+        public class QnaMakerTestDialog : ComponentDialog, IDialogDependencies
+        {
+            public QnaMakerTestDialog(string knowledgeBaseId, string endpointKey, string hostName, HttpClient httpClient)
+                : base(nameof(QnaMakerTestDialog))
+            {
+                AddDialog(new QnAMakerDialog(knowledgeBaseId, endpointKey, hostName, httpClient: httpClient));
+            }
+
+            public override Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default)
+            {
+                return this.ContinueDialogAsync(outerDc, cancellationToken);
+            }
+
+            public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
+            {
+                if (dc.Context.Activity.Text == "moo")
+                {
+                    await dc.Context.SendActivityAsync("Yippee ki-yay!");
+                    return Dialog.EndOfTurn;
+                }
+                else
+                {
+                    return await dc.BeginDialogAsync("qnaDialog");
+                }
+            }
+
+            public IEnumerable<Dialog> GetDependencies()
+            {
+                return Dialogs.GetDialogs();
+            }
+
+            public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+            {
+                if ((bool)result == false)
+                {
+                    await dc.Context.SendActivityAsync("I didn't understand that.");
+                }
+
+                return await base.ResumeDialogAsync(dc, reason, result, cancellationToken);
+            }
+        }
+
+        private AdaptiveDialog CreateQnAMakerActionDialog(MockHttpMessageHandler mockHttp)
+        {
+            var client = new HttpClient(mockHttp);
+
+            var noAnswerActivity = new ActivityTemplate("No match found, please as another question.");
+            var host = "'https://dummy-hostname.azurewebsites.net/qnamaker'";
+            var knowlegeBaseId = "'dummy-id'";
+            var endpointKey = "'dummy-key'";
+
+            var outerDialog = new AdaptiveDialog("outer")
+            {
+                AutoEndDialog = false,
+                Triggers = new List<OnCondition>()
+                {
+                    new OnUnknownIntent()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new QnAMakerDialog(knowledgeBaseId: knowlegeBaseId, hostName: host, endpointKey: endpointKey, httpClient: client)
+                            {
+                                NoAnswer = noAnswerActivity
+                            }
+                        }
+                    }
+                }
+            };
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new BeginDialog(outerDialog.Id)
+                        }
+                    },
+                    new OnDialogEvent()
+                    {
+                        Event = "UnhandledUnknownIntent",
+                        Actions = new List<Dialog>()
+                        {
+                            new EditArray(),
+                            new SendActivity("magenta")
+                        }
+                    }
+                }
+            };
+            rootDialog.Dialogs.Add(outerDialog);
+            return rootDialog;
+        }
+
+        private string GetV2LegacyRequestUrl() => $"{_hostname}/v2.0/knowledgebases/{_knowledgeBaseId}/generateanswer";
+
+        private string GetV3LegacyRequestUrl() => $"{_hostname}/v3.0/knowledgebases/{_knowledgeBaseId}/generateanswer";
+
+        private string GetRequestUrl() => $"{_hostname}/knowledgebases/{_knowledgeBaseId}/generateanswer";
+
+        private string GetTrainRequestUrl() => $"{_hostname}/knowledgebases/{_knowledgeBaseId}/train";
 
         private Stream GetResponse(string fileName)
         {
-            var path = Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
+            var path = GetFilePath(fileName);
             return File.OpenRead(path);
+        }
+
+        private string GetFilePath(string fileName)
+        {
+            return Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
         }
 
         /// <summary>
@@ -1337,7 +1665,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowlegeBaseId,
+                    KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 },

@@ -1,9 +1,9 @@
 {
-  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.3/MicrosoftTeams.schema.json",
-  "manifestVersion": "1.3",
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.5",
   "version": "1.0",
-  "id": "528d4825-cca3-420a-bb88-712fbf54e6ca",
-  "packageName": "com.microsoft.teams.samples.v4bot",
+  "id": "00000000-0000-0000-0000-000000000000",
+  "packageName": "com.microsoft.teams.samples.fileUpload",
   "developer": {
     "name": "Microsoft Corp",
     "websiteUrl": "https://example.azurewebsites.net",
@@ -25,10 +25,9 @@
   "accentColor": "#abcdef",
   "bots": [
     {
-      "botId": "528d4825-cca3-420a-bb88-712fbf54e6ca",
+      "botId": "00000000-0000-0000-0000-000000000000",
       "scopes": [
-        "personal",
-        "team"
+        "personal"
       ],
       "supportsFiles": true
     }

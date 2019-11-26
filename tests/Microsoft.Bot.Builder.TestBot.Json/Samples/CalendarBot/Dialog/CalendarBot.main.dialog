@@ -1,0 +1,147 @@
+{
+    "$schema": "../../../app.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "autoEndDialog": false,
+    "generator": "calendarBot.lg",
+    "recognizer": {
+        "$kind": "Microsoft.RegexRecognizer",
+        "intents": [
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "ShowMeetingIntent",
+                "pattern": "(?i)show meeting"
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "CreateMeetingIntent",
+                "pattern": "(?i)create meeting"
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "HelpIntent",
+                "pattern": "(?i)help"
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "ShowNextPageIntent",
+                "pattern": "(?i)next page meeting"
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "UpdateMeetingIntent",
+                "pattern": "(?i)update meeting"
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "AcceptMeetingIntent",
+                "pattern": "(?i)accept meeting"
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "DeclineMeetingIntent",
+                "pattern": "(?i)decline meeting"
+            },
+            {
+
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "CancelIntent",
+                "pattern": "(?i)cancel"
+            }
+        ]
+    },
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnUnknownIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Hi! I'm a Calendar bot. Say \"show meeting\" to get started."
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "ShowMeetingIntent",
+            "actions": [
+                // should be initialize
+                "CalendarClearUserData",
+                "ShowMeeting",
+                "CalendarClearUserData"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "CreateMeetingIntent",
+            "actions": [
+                // should be initialize
+                "CalendarClearUserData",
+                "CreateMeeting",
+                "CalendarClearUserData"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "UpdateMeetingIntent",
+            "actions": [
+                // should be initialize
+                "CalendarClearUserData",
+                "UpdateMeeting",
+                "CalendarClearUserData"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "AcceptMeetingIntent",
+            "actions": [
+                // should be initialize
+                "CalendarClearUserData",
+                "AcceptMeeting",
+                "CalendarClearUserData"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "DeclineMeetingIntent",
+            "actions": [
+                // should be initialize
+                "CalendarClearUserData",
+                "DeclineMeeting",
+                "CalendarClearUserData"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "HelpIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "This is help"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "CancelIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.EndDialog"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "ShowNextPageIntent",
+            "actions": [
+                "CalendarNextPage",
+                "ShowMeeting"
+            ]
+        }
+    ]
+}
