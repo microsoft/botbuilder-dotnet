@@ -16,6 +16,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class TraceActivity : Dialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.TraceActivity";
+
         [JsonConstructor]
         public TraceActivity([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
@@ -28,6 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// Name of the trace activity.
         /// </value>
+        [JsonProperty("name")]
         public string Name { get; set; }
 
         /// <summary>
@@ -36,6 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// Value type of the trace activity.
         /// </value>
+        [JsonProperty("valueType")]
         public string ValueType { get; set; }
 
         /// <summary>
@@ -44,6 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// Property binding to memory to send as the value. 
         /// </value>
+        [JsonProperty("value")]
         public string Value { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))

@@ -1,9 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Threading.Tasks;
 using Microsoft.Bot.Expressions;
-using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative
@@ -39,6 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         /// <value>
         /// Expression to use to get the value from data.
         /// </value>
+        [JsonProperty("expression")]
         public string Expression
         {
             get { return InnerExpression?.ToString(); }
@@ -51,6 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         /// <value>
         /// Static value to use for the result (instead of data binding).
         /// </value>
+        [JsonProperty("value")]
         public T Value { get; set; }
 
         protected Expression InnerExpression { get; set; }
@@ -58,16 +59,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         /// <summary>
         /// Set the value.
         /// </summary>
-        /// <param name="value">vfalue to set.</param>
+        /// <param name="value">value to set.</param>
         public virtual void SetValue(object value)
         {
             if (value is string expression)
             {
                 this.Expression = expression;
             }
-            else
+            else if (value is JObject job)
             {
-                this.Value = ConvertObject(value);
+                dynamic jobj = job;
+                if (jobj.value != null)
+                {
+                    this.Value = ConvertObject(jobj.value);
+                }
+                else if (jobj.expression != null)
+                {
+                    this.Expression = jobj.expression.ToString();
+                }
+                else
+                {
+                    this.Value = ConvertObject(job);
+                }
+            }
+            else if (value is JArray jar)
+            {
+                this.Value = ConvertObject(jar);
             }
         }
 

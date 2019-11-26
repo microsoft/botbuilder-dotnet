@@ -1,44 +1,44 @@
 {
     "$schema": "../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "autoEndDialog": false,
     "generator": "todo.lg",
     "recognizer": {
-        "$type": "Microsoft.RegexRecognizer",
+        "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "AddIntent",
                 "pattern": "(?i)(?:add|create) .*(?:to-do|todo|task)(?: )?(?:named (?<title>.*))?" 
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "ClearIntent",
                 "pattern": "(?i)(?:delete|remove|clear) (?:all|every) (?:to-dos|todos|tasks)" 
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "DeleteIntent",
                 "pattern": "(?i)(?:delete|remove|clear) .*(?:to-do|todo|task)(?: )?(?:named (?<title>.*))?" 
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "ShowIntent",
                 "pattern": "(?i)(?:show|see|view) .*(?:to-do|todo|task)" 
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "HelpIntent",
                 "pattern": "(?i)help" 
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel|never mind"
             }
@@ -46,70 +46,70 @@
     },
     "triggers": [
         {
-            "$type": "Microsoft.OnBeginDialog",
+            "$kind": "Microsoft.OnBeginDialog",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started."
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "AddIntent",
             "actions": [
                 "AddToDo"
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "DeleteIntent",
             "actions": [
                 "DeleteToDo"
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "ClearIntent",
             "actions": [
                 "ClearToDos"
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "ShowIntent",
             "actions": [
                 "ShowToDos"
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "HelpIntent",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "@{help()}"
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "CancelIntent",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "ok."
                 },
                 {
-                    "$type": "Microsoft.EndDialog"
+                    "$kind": "Microsoft.EndDialog"
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnUnknownIntent",
+            "$kind": "Microsoft.OnUnknownIntent",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started."
                 }
             ]

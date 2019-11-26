@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Expressions.Memory;
+
 namespace Microsoft.Bot.Expressions
 {
     /// <summary>
@@ -21,7 +23,7 @@ namespace Microsoft.Bot.Expressions
     /// <param name="expression">Expression to evaluate.</param>
     /// <param name="state">Global state information.</param>
     /// <returns>Value and error string that is non-null if there is an error.</returns>
-    public delegate (object value, string error) EvaluateExpressionDelegate(Expression expression, object state);
+    public delegate (object value, string error) EvaluateExpressionDelegate(Expression expression, IMemory state);
 
     /// <summary>
     /// Delegate to lookup function information from the type.
@@ -104,7 +106,7 @@ namespace Microsoft.Bot.Expressions
         /// <param name="expression">Expression to evaluate.</param>
         /// <param name="state">Global state information.</param>
         /// <returns>Value and error string that is non-null if there is an error.</returns>
-        public (object value, string error) TryEvaluate(Expression expression, object state)
+        public (object value, string error) TryEvaluate(Expression expression, IMemory state)
             => _evaluator(expression, state);
 
         /// <summary>

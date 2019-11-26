@@ -1,5 +1,5 @@
 {
-    "$type": "Microsoft.LuisRecognizer",
+    "$kind": "Microsoft.LuisRecognizer",
     "applicationId": "@{settings.luis.ToDoLuis_en-us_lu}",
     "endpoint": "@{settings.luis.endpoint}",
     "endpointKey": "@{settings.luis.endpointKey}"

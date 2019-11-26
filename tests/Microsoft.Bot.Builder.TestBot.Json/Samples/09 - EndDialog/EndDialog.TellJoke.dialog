@@ -1,12 +1,12 @@
 {
     "$schema": "../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "recognizer": {
-        "$type": "Microsoft.RegexRecognizer",
+        "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel|never mind"
             }
@@ -14,27 +14,27 @@
     },
     "triggers": [
         {
-            "$type": "Microsoft.OnBeginDialog",
+            "$kind": "Microsoft.OnBeginDialog",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Why did the chicken cross the road?"
                 },
                 {
-                    "$type": "Microsoft.EndTurn"
+                    "$kind": "Microsoft.EndTurn"
                 },
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "To get to the other side"
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "CancelIntent",
             "actions": [
                 {
-                    "$type": "Microsoft.CancelAllDialogs"
+                    "$kind": "Microsoft.CancelAllDialogs"
                 }
             ]
         }

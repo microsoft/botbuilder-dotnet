@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder
         internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
         internal const string BotIdentityKey = "BotIdentity";
 
-        private static readonly HttpClient _defaultHttpClient = new HttpClient();
+        private static readonly HttpClient DefaultHttpClient = new HttpClient();
 
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder
         {
             CredentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             ChannelProvider = channelProvider;
-            _httpClient = customHttpClient ?? _defaultHttpClient;
+            _httpClient = customHttpClient ?? DefaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
             Logger = logger ?? NullLogger.Instance;
             _authConfiguration = authConfig ?? throw new ArgumentNullException(nameof(authConfig));
@@ -172,7 +172,7 @@ namespace Microsoft.Bot.Builder
             _appCredentials = credentials ?? throw new ArgumentNullException(nameof(credentials));
             CredentialProvider = new SimpleCredentialProvider(credentials.MicrosoftAppId, string.Empty);
             this.ChannelProvider = channelProvider;
-            _httpClient = customHttpClient ?? _defaultHttpClient;
+            _httpClient = customHttpClient ?? DefaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
             Logger = logger ?? NullLogger.Instance;
             _authConfiguration = authConfig ?? throw new ArgumentNullException(nameof(authConfig));
@@ -409,15 +409,19 @@ namespace Microsoft.Bot.Builder
             for (var index = 0; index < activities.Length; index++)
             {
                 var activity = activities[index];
+
+                // Clients and bots SHOULD NOT include an id field in activities they generate.
+                // ref: https://github.com/microsoft/botframework-sdk/blob/master/specs/botframework-activity/botframework-activity.md#id
+                activity.Id = null;
                 var response = default(ResourceResponse);
 
                 Logger.LogInformation($"Sending activity.  ReplyToId: {activity.ReplyToId}");
 
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
-                    // The Activity Schema doesn't have a delay type build in, so it's simulated
+                    // The Activity Schema doesn't have a delay type built in, so it's simulated
                     // here in the Bot. This matches the behavior in the Node connector.
-                    int delayMs = (int)activity.Value;
+                    var delayMs = (int)activity.Value;
                     await Task.Delay(delayMs, cancellationToken).ConfigureAwait(false);
 
                     // No need to create a response. One will be created below.
@@ -531,17 +535,17 @@ namespace Microsoft.Bot.Builder
         {
             if (turnContext.Activity.Conversation == null)
             {
-                throw new ArgumentNullException("BotFrameworkAdapter.deleteConversationMember(): missing conversation");
+                throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(DeleteConversationMemberAsync)}(): missing conversation");
             }
 
             if (string.IsNullOrWhiteSpace(turnContext.Activity.Conversation.Id))
             {
-                throw new ArgumentNullException("BotFrameworkAdapter.deleteConversationMember(): missing conversation.id");
+                throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(DeleteConversationMemberAsync)}(): missing conversation.id");
             }
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
 
-            string conversationId = turnContext.Activity.Conversation.Id;
+            var conversationId = turnContext.Activity.Conversation.Id;
 
             await connectorClient.Conversations.DeleteConversationMemberAsync(conversationId, memberId, cancellationToken).ConfigureAwait(false);
         }
@@ -563,18 +567,18 @@ namespace Microsoft.Bot.Builder
 
             if (turnContext.Activity.Conversation == null)
             {
-                throw new ArgumentNullException("BotFrameworkAdapter.GetActivityMembers(): missing conversation");
+                throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetActivityMembersAsync)}(): missing conversation");
             }
 
             if (string.IsNullOrWhiteSpace(turnContext.Activity.Conversation.Id))
             {
-                throw new ArgumentNullException("BotFrameworkAdapter.GetActivityMembers(): missing conversation.id");
+                throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetActivityMembersAsync)}(): missing conversation.id");
             }
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
             var conversationId = turnContext.Activity.Conversation.Id;
 
-            IList<ChannelAccount> accounts = await connectorClient.Conversations.GetActivityMembersAsync(conversationId, activityId, cancellationToken).ConfigureAwait(false);
+            var accounts = await connectorClient.Conversations.GetActivityMembersAsync(conversationId, activityId, cancellationToken).ConfigureAwait(false);
 
             return accounts;
         }
@@ -589,18 +593,18 @@ namespace Microsoft.Bot.Builder
         {
             if (turnContext.Activity.Conversation == null)
             {
-                throw new ArgumentNullException("BotFrameworkAdapter.GetActivityMembers(): missing conversation");
+                throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetConversationMembersAsync)}(): missing conversation");
             }
 
             if (string.IsNullOrWhiteSpace(turnContext.Activity.Conversation.Id))
             {
-                throw new ArgumentNullException("BotFrameworkAdapter.GetActivityMembers(): missing conversation.id");
+                throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetConversationMembersAsync)}(): missing conversation.id");
             }
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
             var conversationId = turnContext.Activity.Conversation.Id;
 
-            IList<ChannelAccount> accounts = await connectorClient.Conversations.GetConversationMembersAsync(conversationId, cancellationToken).ConfigureAwait(false);
+            var accounts = await connectorClient.Conversations.GetConversationMembersAsync(conversationId, cancellationToken).ConfigureAwait(false);
             return accounts;
         }
 
@@ -673,7 +677,7 @@ namespace Microsoft.Bot.Builder
             BotAssert.ContextNotNull(turnContext);
             if (turnContext.Activity.From == null || string.IsNullOrWhiteSpace(turnContext.Activity.From.Id))
             {
-                throw new ArgumentNullException("BotFrameworkAdapter.GetUserTokenAsync(): missing from or from.id");
+                throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetUserTokenAsync)}(): missing from or from.id");
             }
 
             if (string.IsNullOrWhiteSpace(connectionName))
@@ -780,7 +784,7 @@ namespace Microsoft.Bot.Builder
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully, the result contains the raw signin link.</remarks>
-        public virtual async Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default)
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -843,7 +847,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public virtual async Task SignOutUserAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName = null, string userId = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task SignOutUserAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName = null, string userId = null, CancellationToken cancellationToken = default)
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -879,7 +883,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="includeFilter">Optional comma separated list of connection's to include. Blank will return token status for all configured connections.</param>
         /// <param name="cancellationToken">The async operation cancellation token.</param>
         /// <returns>Array of TokenStatus.</returns>
-        public virtual async Task<TokenStatus[]> GetTokenStatusAsync(ITurnContext context, AppCredentials oAuthAppCredentials, string userId, string includeFilter = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<TokenStatus[]> GetTokenStatusAsync(ITurnContext context, AppCredentials oAuthAppCredentials, string userId, string includeFilter = null, CancellationToken cancellationToken = default)
         {
             BotAssert.ContextNotNull(context);
 
@@ -916,7 +920,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="userId">The user Id for which tokens are retrieved. If passing in null the userId is taken from the Activity in the ITurnContext.</param>
         /// <param name="cancellationToken">The async operation cancellation token.</param>
         /// <returns>Dictionary of resourceUrl to the corresponding TokenResponse.</returns>
-        public virtual async Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, AppCredentials oAuthAppCredentials, string connectionName, string[] resourceUrls, string userId = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, AppCredentials oAuthAppCredentials, string connectionName, string[] resourceUrls, string userId = null, CancellationToken cancellationToken = default)
         {
             BotAssert.ContextNotNull(context);
 
@@ -927,7 +931,7 @@ namespace Microsoft.Bot.Builder
 
             if (resourceUrls == null)
             {
-                throw new ArgumentNullException(nameof(userId));
+                throw new ArgumentNullException(nameof(resourceUrls));
             }
 
             if (string.IsNullOrWhiteSpace(userId))
@@ -991,9 +995,9 @@ namespace Microsoft.Bot.Builder
             eventActivity.ChannelData = conversationParameters.ChannelData;
             eventActivity.Recipient = conversationParameters.Bot;
 
-            using (TurnContext context = new TurnContext(this, (Activity)eventActivity))
+            using (var context = new TurnContext(this, (Activity)eventActivity))
             {
-                ClaimsIdentity claimsIdentity = new ClaimsIdentity();
+                var claimsIdentity = new ClaimsIdentity();
                 claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, credentials.MicrosoftAppId));
                 claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, credentials.MicrosoftAppId));
                 claimsIdentity.AddClaim(new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl));
@@ -1036,10 +1040,10 @@ namespace Microsoft.Bot.Builder
                 if (tenantId != null)
                 {
                     // Putting tenantId in channelData is a temporary solution while we wait for the Teams API to be updated
-                    conversationParameters.ChannelData = new { tenant = new { tenantId = tenantId.ToString() } };
+                    conversationParameters.ChannelData = new { tenant = new { tenantId } };
 
                     // Permanent solution is to put tenantId in parameters.tenantId
-                    conversationParameters.TenantId = tenantId.ToString();
+                    conversationParameters.TenantId = tenantId;
                 }
 
                 await CreateConversationAsync(channelId, serviceUrl, credentials, conversationParameters, callback, cancellationToken).ConfigureAwait(false);
@@ -1107,11 +1111,11 @@ namespace Microsoft.Bot.Builder
         /// Opportunity for subclasses to opt in to process an outgoing activity.
         /// </summary>
         /// <remarks>
-        /// Subclasses can override ProcessOutgoingAcivityAsync. If CanProcessOutgoingActivity returns true, 
-        /// ProcessOutgoingAcivityAsync will be responsible for sending the outgoing activity.
+        /// Subclasses can override ProcessOutgoingActivityAsync. If CanProcessOutgoingActivity returns true, 
+        /// ProcessOutgoingActivityAsync will be responsible for sending the outgoing activity.
         /// </remarks>
         /// <param name="activity">The outgoing activity.</param>
-        /// <returns>Whether should call ProcessoutgoingActivityAsync to send the outgoing activity.</returns>
+        /// <returns>Whether should call ProcessOutgoingActivityAsync to send the outgoing activity.</returns>
         protected virtual bool CanProcessOutgoingActivity(Activity activity)
         {
             return false;
@@ -1256,7 +1260,7 @@ namespace Microsoft.Bot.Builder
         /// </description>
         internal class TenantIdWorkaroundForTeamsMiddleware : IMiddleware
         {
-            public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
+            public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
             {
                 if (Channels.Msteams.Equals(turnContext.Activity.ChannelId, StringComparison.InvariantCultureIgnoreCase) && turnContext.Activity.Conversation != null && string.IsNullOrEmpty(turnContext.Activity.Conversation.TenantId) && turnContext.Activity.ChannelData != null)
                 {

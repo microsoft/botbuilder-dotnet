@@ -1,154 +1,154 @@
 {
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "autoEndDialog": false,
     "generator": "sandwich.lg",
     "recognizer": "OrderSandwichApp.lu",
     "triggers": [
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "actions": [
                 {
                     "$comment": "**** Primary ordering dialog ****",
-                    "$type": "Microsoft.AdaptiveDialog",
+                    "$kind": "Microsoft.AdaptiveDialog",
                     "recognizer":  "OrderSandwichApp.lu",
                     "triggers": [
                         {
                             "$comment": "**** Start of slot mapping over conversation.order as frame ****",
-                            "$type": "Microsoft.OnDialogEvent",
+                            "$kind": "Microsoft.OnDialogEvent",
                             "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "@meat && ignore(!turn.setmeat)",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "Set conversation.order.meat to @{@meat}"
                                 },
                                 {
-                                    "$type": "Microsoft.SetProperty",
+                                    "$kind": "Microsoft.SetProperty",
                                     "property": "conversation.order.meat",
                                     "value": "@meat"
                                 },
                                 {
                                     "$comment": "This is a mechanism to keep the event from running more than once per turn.",
-                                    "$type": "Microsoft.SetProperty",
+                                    "$kind": "Microsoft.SetProperty",
                                     "property": "turn.setmeat",
                                     "value": "true"
                                 },
                                 {
-                                    "$type": "Microsoft.EmitEvent",
+                                    "$kind": "Microsoft.EmitEvent",
                                     "eventName": "recognizedIntent",
                                     "bubbleEvent": true
                                 }
                             ]
                         },
                         {
-                            "$type": "Microsoft.OnDialogEvent",
+                            "$kind": "Microsoft.OnDialogEvent",
                             "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "@cheese && ignore(!turn.setcheese)",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "Set conversation.order.cheese to @{@cheese}"
                                 },
                                 {
-                                    "$type": "Microsoft.SetProperty",
+                                    "$kind": "Microsoft.SetProperty",
                                     "property": "conversation.order.cheese",
                                     "value": "@cheese"
                                 },
                                 {
-                                    "$type": "Microsoft.SetProperty",
+                                    "$kind": "Microsoft.SetProperty",
                                     "property": "turn.setcheese",
                                     "value": "true"
                                 },
                                 {
-                                    "$type": "Microsoft.EmitEvent",
+                                    "$kind": "Microsoft.EmitEvent",
                                     "eventName": "recognizedIntent",
                                     "bubbleEvent": true
                                 }
                             ]
                         },
                         {
-                            "$type": "Microsoft.OnDialogEvent",
+                            "$kind": "Microsoft.OnDialogEvent",
                             "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "@bread && ignore(!turn.setbread)",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "Set conversation.order.bread to @{@bread}"
                                 },
                                 {
-                                    "$type": "Microsoft.SetProperty",
+                                    "$kind": "Microsoft.SetProperty",
                                     "property": "conversation.order.bread",
                                     "value": "@bread"
                                 },
                                 {
-                                    "$type": "Microsoft.SetProperty",
+                                    "$kind": "Microsoft.SetProperty",
                                     "property": "turn.setbread",
                                     "value": "true"
                                 },
                                 {
-                                    "$type": "Microsoft.EmitEvent",
+                                    "$kind": "Microsoft.EmitEvent",
                                     "eventName": "recognizedIntent",
                                     "bubbleEvent": true
                                 }
                             ]
                         },
                         {
-                            "$type": "Microsoft.OnDialogEvent",
+                            "$kind": "Microsoft.OnDialogEvent",
                             "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "@topping && ignore(!turn.settopping)",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "Set conversation.order.topping to @{join(foreach(@@topping, list, first(list)), ', ')}"
                                 },
                                 {
-                                    "$type": "Microsoft.SetProperty",
+                                    "$kind": "Microsoft.SetProperty",
                                     "property": "conversation.order.topping",
                                     "value": "foreach(@@topping, list, first(list))"
                                 },
                                 {
-                                    "$type": "Microsoft.SetProperty",
+                                    "$kind": "Microsoft.SetProperty",
                                     "property": "turn.settopping",
                                     "value": "true"
                                 },
                                 {
-                                    "$type": "Microsoft.EmitEvent",
+                                    "$kind": "Microsoft.EmitEvent",
                                     "eventName": "recognizedIntent",
                                     "bubbleEvent": true
                                 }
                             ]
                         },
                         {
-                            "$type": "Microsoft.OnDialogEvent",
+                            "$kind": "Microsoft.OnDialogEvent",
                             "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "@confirmation && ignore(!turn.setconfirmation)",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "Set conversation.order.confirmation to @{@confirmation}"
                                 },
                                 {
-                                    "$type": "Microsoft.SetProperty",
+                                    "$kind": "Microsoft.SetProperty",
                                     "property": "conversation.order.confirmation",
                                     "value": "@confirmation"
                                 },
                                 {
-                                    "$type": "Microsoft.SetProperty",
+                                    "$kind": "Microsoft.SetProperty",
                                     "property": "turn.setconfirmation",
                                     "value": "true"
                                 },
                                 {
-                                    "$type": "Microsoft.EmitEvent",
+                                    "$kind": "Microsoft.EmitEvent",
                                     "eventName": "recognizedIntent",
                                     "bubbleEvent": true
                                 }
@@ -156,46 +156,46 @@
                         },
                         {
                             "$comment": "**** This is the start of prompts ****",
-                            "$type": "Microsoft.OnDialogEvent",
+                            "$kind": "Microsoft.OnDialogEvent",
                             "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.meat && !conversation.order.bread",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "@{MeatAndBread()}"
                                 }
                             ]
                         },
                         {
-                            "$type": "Microsoft.OnDialogEvent",
+                            "$kind": "Microsoft.OnDialogEvent",
                             "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "conversation.order.meat && conversation.order.bread && !conversation.order.cheese && !conversation.order.topping",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "@{CheeseAndToppingsWithMeatAndBread()}"
                                 }
                             ]
                         },
                         {
-                            "$type": "Microsoft.OnDialogEvent",
+                            "$kind": "Microsoft.OnDialogEvent",
                             "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.confirmation && conversation.order.meat && conversation.order.bread && conversation.order.cheese && conversation.order.topping",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "@{Confirmation()}"
                                 }
                             ]
                         },
                         {
-                            "$type": "Microsoft.OnDialogEvent",
+                            "$kind": "Microsoft.OnDialogEvent",
                             "$comment": "Should update this to use actual http with failure.",
                             "triggers": [
                                 "recognizedIntent"
@@ -203,128 +203,128 @@
                             "constraint": "conversation.order.confirmation == 'yes' && !conversation.order.alldone",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "@{BeingProcessed()}"
                                 },
                                 {
-                                    "$type": "Microsoft.SetProperty",
+                                    "$kind": "Microsoft.SetProperty",
                                     "property": "conversation.order.alldone",
                                     "value": "true"
                                 }
                             ]
                         },
                         {
-                            "$type": "Microsoft.OnDialogEvent",
+                            "$kind": "Microsoft.OnDialogEvent",
                             "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "conversation.order.confirmation == 'no'",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "@{StartAgain()}"
                                 },
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "@{Initial()}"
                                 },
                                 {
-                                    "$type": "Microsoft.DeleteProperty",
+                                    "$kind": "Microsoft.DeleteProperty",
                                     "property": "conversation.order"
                                 }
                             ]
                         },
                         {
-                            "$type": "Microsoft.OnDialogEvent",
+                            "$kind": "Microsoft.OnDialogEvent",
                             "$comment": "This is the kind of thing we should build in a default for.",
                             "triggers": [
                                 "recognizedIntent"
                             ],
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "@{NoIntent()}"
                                 }
                             ]
                         },
                         {
-                            "$type": "Microsoft.OnDialogEvent",
+                            "$kind": "Microsoft.OnDialogEvent",
                             "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "conversation.order.meat && conversation.order.cheese && !conversation.order.bread && !conversation.order.topping",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "@{BreadAndToppingsWithMeatAndCheese()}"
                                 }
                             ]
                         },
                         {
-                            "$type": "Microsoft.OnDialogEvent",
+                            "$kind": "Microsoft.OnDialogEvent",
                             "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.meat && conversation.order.bread",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "@{MeatWithBread()}"
                                 }
                             ]
                         },
                         {
                             "$comment": "*** Ideally these would be a generic template event against any slot value. ***",
-                            "$type": "Microsoft.OnDialogEvent",
+                            "$kind": "Microsoft.OnDialogEvent",
                             "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.meat",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "@{Meat()}"
                                 },
                                 {
-                                    "$type": "Microsoft.EndTurn"
+                                    "$kind": "Microsoft.EndTurn"
                                 }
                             ]
                         },
                         {
-                            "$type": "Microsoft.OnDialogEvent",
+                            "$kind": "Microsoft.OnDialogEvent",
                             "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.cheese",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "@{Cheese()}"
                                 }
                             ]
                         },
                         {
-                            "$type": "Microsoft.OnDialogEvent",
+                            "$kind": "Microsoft.OnDialogEvent",
                             "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.bread",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "@{Bread()}"
                                 }
                             ]
                         },
                         {
-                            "$type": "Microsoft.OnDialogEvent",
+                            "$kind": "Microsoft.OnDialogEvent",
                             "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.topping",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "@{Toppings()}"
                                 }
                             ]
@@ -341,63 +341,63 @@
             }
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "SandwichOptions",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "@{SandwichOptions()}"
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "BreadOptions",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "@{BreadOptions()}"
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "ToppingOptions",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "@{ToppingOptions()}"
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "CheeseOptions",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "@{CheeseOptions()}"
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "Greeting",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "@{Greeting()}"
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnDialogEvent",
+            "$kind": "Microsoft.OnDialogEvent",
             "triggers": [
                 "beginDialog"
             ],
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "@{Initial()}"
                 }
             ]

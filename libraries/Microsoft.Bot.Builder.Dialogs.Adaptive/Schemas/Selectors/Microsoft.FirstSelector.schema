@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "unionType(Microsoft.ITriggerSelector)",
+    "$role": "union(Microsoft.ITriggerSelector)",
     "title": "First Trigger Selector",
     "description": "Selector for first true rule",
     "type": "object"

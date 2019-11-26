@@ -1,12 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     /// <summary>
     /// Controls the way that choices for a `ChoicePrompt` or yes/no options for a `ConfirmPrompt` are
     /// presented to a user.
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum ListStyle
     {
         /// <summary>

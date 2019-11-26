@@ -17,9 +17,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         public override IEnumerable<TypeRegistration> GetTypes()
         {
-            yield return new TypeRegistration<TextTemplate>("Microsoft.TextTemplate");
-            yield return new TypeRegistration<ActivityTemplate>("Microsoft.ActivityTemplate");
-            yield return new TypeRegistration<StaticActivityTemplate>("Microsoft.StaticActivityTemplate");
+            yield return new TypeRegistration<TextTemplate>(TextTemplate.DeclarativeType);
+            yield return new TypeRegistration<ActivityTemplate>(ActivityTemplate.DeclarativeType);
+            yield return new TypeRegistration<StaticActivityTemplate>(StaticActivityTemplate.DeclarativeType);
         }
 
         public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)

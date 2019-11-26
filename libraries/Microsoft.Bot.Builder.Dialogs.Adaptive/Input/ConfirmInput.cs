@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.Choice;
+using Newtonsoft.Json;
 using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
@@ -17,6 +18,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// </summary>
     public class ConfirmInput : InputDialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.ConfirmInput";
+
         private static readonly Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> ChoiceDefaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>(StringComparer.OrdinalIgnoreCase)
         {
             { Spanish, (new Choice("Sí"), new Choice("No"), new ChoiceFactoryOptions(", ", " o ", ", o ", true)) },
@@ -34,12 +38,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        [JsonProperty("defaultLocale")]
         public string DefaultLocale { get; set; } = null;
 
+        [JsonProperty("style")]
         public ListStyle Style { get; set; } = ListStyle.Auto;
 
+        [JsonProperty("choiceOptions")]
         public ChoiceFactoryOptions ChoiceOptions { get; set; } = null;
 
+        [JsonProperty("confirmChoices")]
         public List<Choice> ConfirmChoices { get; set; } = null;
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)

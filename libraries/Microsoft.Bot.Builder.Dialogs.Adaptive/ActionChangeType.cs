@@ -1,11 +1,15 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     /// <summary>
     /// How to modify an action sequence.
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum ActionChangeType
     {
         /// <summary>

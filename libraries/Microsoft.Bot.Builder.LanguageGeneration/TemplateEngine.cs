@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Bot.Expressions;
+using Microsoft.Bot.Expressions.Memory;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -99,8 +100,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Evaluate result.</returns>
         public object EvaluateTemplate(string templateName, object scope = null)
         {
+            return this.EvaluateTemplate(templateName, new CustomizedMemory(scope));
+        }
+
+        public object EvaluateTemplate(string templateName, IMemory memory)
+        {
             var evaluator = new Evaluator(Templates, this.expressionEngine);
-            return evaluator.EvaluateTemplate(templateName, scope);
+            return evaluator.EvaluateTemplate(templateName, new CustomizedMemory(memory));
         }
 
         /// <summary>
@@ -113,7 +119,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public List<string> ExpandTemplate(string templateName, object scope = null)
         {
             var expander = new Expander(Templates, this.expressionEngine);
-            return expander.EvaluateTemplate(templateName, scope);
+            return expander.EvaluateTemplate(templateName, new CustomizedMemory(scope));
         }
 
         public AnalyzerResult AnalyzeTemplate(string templateName)
@@ -141,7 +147,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             RunStaticCheck(templates);
 
             var evaluator = new Evaluator(templates, this.expressionEngine);
-            return evaluator.EvaluateTemplate(fakeTemplateId, scope);
+            return evaluator.EvaluateTemplate(fakeTemplateId, new CustomizedMemory(scope));
         }
 
         /// <summary>

@@ -1,88 +1,88 @@
 {
   "$schema": "../../app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
+  "$kind": "Microsoft.AdaptiveDialog",
   "triggers": [
     {
-      "$type": "Microsoft.OnBeginDialog",
+      "$kind": "Microsoft.OnBeginDialog",
       "actions": [
         // Reset data
         {
-          "$type": "Microsoft.SetProperty",
+          "$kind": "Microsoft.SetProperty",
           "value": "'msgraph'",
           "property": "user.provider"
         },
         {
-          "$type": "Microsoft.SetProperty",
+          "$kind": "Microsoft.SetProperty",
           "value": "3",
           "property": "user.pageSize"
         },
         {
-          "$type": "Microsoft.SetProperty",
+          "$kind": "Microsoft.SetProperty",
           "value": "0",
           "property": "user.showIndex"
         },
         {
-          "$type": "Microsoft.SetProperty",
+          "$kind": "Microsoft.SetProperty",
           "property": "user.focusedMeeting",
           "value": "null"
         },
         {
-          "$type": "Microsoft.EditArray",
+          "$kind": "Microsoft.EditArray",
           "changeType": "Clear",
           "itemsProperty": "user.meetings"
         },
         {
-          "$type": "Microsoft.EditArray",
+          "$kind": "Microsoft.EditArray",
           "changeType": "Clear",
           "itemsProperty": "user.attendees"
         },
         {
-          "$type": "Microsoft.SetProperty",
+          "$kind": "Microsoft.SetProperty",
           "value": "null",
           "property": "user.meeting"
         },
         {
-          "$type": "Microsoft.SetProperty",
+          "$kind": "Microsoft.SetProperty",
           "value": "null",
           "property": "user.subject"
         },
         {
-          "$type": "Microsoft.SetProperty",
+          "$kind": "Microsoft.SetProperty",
           "value": "null",
           "property": "user.body"
         },
         {
-          "$type": "Microsoft.SetProperty",
+          "$kind": "Microsoft.SetProperty",
           "value": "null",
           "property": "user.email"
         },
         {
-          "$type": "Microsoft.SetProperty",
+          "$kind": "Microsoft.SetProperty",
           "value": "null",
           "property": "user.startDate"
         },
         {
-          "$type": "Microsoft.SetProperty",
+          "$kind": "Microsoft.SetProperty",
           "value": "null",
           "property": "user.startTime"
         },
         {
-          "$type": "Microsoft.SetProperty",
+          "$kind": "Microsoft.SetProperty",
           "value": "null",
           "property": "user.startDateTime"
         },
         {
-          "$type": "Microsoft.SetProperty",
+          "$kind": "Microsoft.SetProperty",
           "value": "null",
           "property": "user.endDateTime"
         },
         {
-          "$type": "Microsoft.SetProperty",
+          "$kind": "Microsoft.SetProperty",
           "value": "null",
           "property": "user.duration"
         },
         {
-          "$type": "Microsoft.SetProperty",
+          "$kind": "Microsoft.SetProperty",
           "value": "null",
           "property": "user.location"
         }

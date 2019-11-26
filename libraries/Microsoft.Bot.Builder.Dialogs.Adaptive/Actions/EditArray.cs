@@ -18,6 +18,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class EditArray : Dialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.EditArray";
+
         private Expression value;
         private Expression itemsProperty;
         private Expression resultProperty;
@@ -60,6 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        [JsonConverter(typeof(StringEnumConverter))]
         public enum ArrayChangeType
         {
             /// <summary>
@@ -94,7 +98,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// Type of change being applied.
         /// </value>
-        [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("changeType")]
         public ArrayChangeType ChangeType { get; set; }
 

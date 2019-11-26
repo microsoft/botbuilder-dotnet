@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Text;
+using Microsoft.Bot.Expressions.Memory;
 
 namespace Microsoft.Bot.Expressions
 {
@@ -267,6 +268,9 @@ namespace Microsoft.Bot.Expressions
         /// </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
         public (object value, string error) TryEvaluate(object state)
+            => Evaluator.TryEvaluate(this, SimpleObjectMemory.Wrap(state));
+
+        public (object value, string error) TryEvaluate(IMemory state)
             => Evaluator.TryEvaluate(this, state);
 
         public override string ToString()

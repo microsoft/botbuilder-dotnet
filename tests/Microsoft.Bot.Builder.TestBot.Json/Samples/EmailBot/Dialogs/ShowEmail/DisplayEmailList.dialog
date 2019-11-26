@@ -1,36 +1,36 @@
 ﻿{
     "$schema": "../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "actions": [
         "GetDisplayEmails",
         {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "[ShowEmailSummary(user)]"
         },
         {
-            "$type": "Microsoft.IfCondition",
+            "$kind": "Microsoft.IfCondition",
             "condition": "count(user.emails)>0",
             "actions": [
                 // Bug: Choice input cannot accept expression as value
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "[ShowEmailList(user)]"
                 },
                 {
-                    "$type": "Microsoft.TextInput",
+                    "$kind": "Microsoft.TextInput",
                     "prompt": "[ChooseEmailList(user)]",
                     "property": "dialog.choice"
                 },
                 // Question: how to use SwitchCondition
                 {
-                    "$type": "Microsoft.SwitchCondition",
+                    "$kind": "Microsoft.SwitchCondition",
                     "condition": "dialog.choice",
                     "cases": [
                         {
                             "case": "1",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SetProperty",
+                                    "$kind": "Microsoft.SetProperty",
                                     "property": "user.focusedEmail",
                                     "value": "user.emails[0]"
                                 }
@@ -41,7 +41,7 @@
                             "case": "2",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SetProperty",
+                                    "$kind": "Microsoft.SetProperty",
                                     "property": "user.focusedEmail",
                                     "value": "user.emails[1]"
                                 }
@@ -52,7 +52,7 @@
                             "case": "3",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SetProperty",
+                                    "$kind": "Microsoft.SetProperty",
                                     "property": "user.focusedEmail",
                                     "value": "user.emails[2]"
                                 }
@@ -61,11 +61,11 @@
                     ]
                 },
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "[ReadFocusedEmail(user)]"
                 },
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "[ShowEmailCard(user.focusedEmail)]"
                 }
             ]

@@ -1,0 +1,115 @@
+{
+  "$kind": "Microsoft.Test.Script",
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "AdaptiveDialog",
+    "recognizer": {
+      "$kind": "Microsoft.RegexRecognizer",
+      "intents": [
+        {
+          "$kind": "Microsoft.IntentPattern",
+          "intent": "Start",
+          "pattern": "(?i)start"
+        },
+        {
+          "$kind": "Microsoft.IntentPattern",
+          "intent": "None",
+          "pattern": "200"
+        }
+      ]
+    },
+    "generator": {
+      "$kind": "Microsoft.TemplateEngineLanguageGenerator",
+      "id": "",
+      "lgText": ""
+    },
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnIntent",
+        "intent": "Start",
+        
+        "actions": [
+          {
+            "$kind": "Microsoft.NumberInput",
+            "allowInterruptions": "True",
+            "property": "user.age",
+            "prompt": "What is your age?",
+            "invalidPrompt": "Sorry. @{this.value} does not work. I'm looking for a value between 1-150. What is your age?",
+            "validations": [
+              "int(this.value) >= 1",
+              "int(this.value) <= 150"
+            ]
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "I have @{user.age} as your age"
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnIntent",
+        "intent": "None",
+        
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "In None..."
+          },
+          {
+            "$kind": "Microsoft.SetProperty",
+            "property": "turn.interrupted",
+            "value": "False"
+          }
+        ]
+      }
+    ],
+    "AutoEndDialog": true,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "start"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "What is your age?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "200"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "In None..."
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Sorry. 200 does not work. I'm looking for a value between 1-150. What is your age?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "500"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "In None..."
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Sorry. 500 does not work. I'm looking for a value between 1-150. What is your age?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "36"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "In None..."
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "I have 36 as your age"
+    }
+  ]
+}
