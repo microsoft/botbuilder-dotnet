@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder
             actions = actions ?? throw new ArgumentNullException(nameof(actions));
 
             var cardActions = new List<CardAction>();
-            foreach (string s in actions)
+            foreach (var s in actions)
             {
                 var ca = new CardAction
                 {
