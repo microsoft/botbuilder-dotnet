@@ -25,20 +25,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// using a credential provider.
         /// </summary>
         /// <param name="credentialProvider">The credential provider.</param>
-        /// <param name="authConfig">The authentication configuration.</param>
+        /// <param name="authConfiguration">The authentication configuration.</param>
         /// <param name="channelProvider">The channel provider.</param>
         /// <exception cref="ArgumentNullException">throw ArgumentNullException.</exception>
-        /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
-        /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
-        /// add additional middleware to the adapter after construction.
-        /// </remarks>
         public ChannelServiceHandler(
             ICredentialProvider credentialProvider,
-            AuthenticationConfiguration authConfig,
+            AuthenticationConfiguration authConfiguration,
             IChannelProvider channelProvider = null)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
-            _authConfiguration = authConfig ?? throw new ArgumentNullException(nameof(authConfig));
+            _authConfiguration = authConfiguration ?? throw new ArgumentNullException(nameof(authConfiguration));
             _channelProvider = channelProvider;
         }
 
@@ -66,7 +62,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             await OnDeleteActivityAsync(claimsIdentity, conversationId, activityId, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<ChannelAccount[]> HandleGetActivityMembersAsync(string authHeader, string conversationId, string activityId, CancellationToken cancellationToken = default)
+        public async Task<IList<ChannelAccount>> HandleGetActivityMembersAsync(string authHeader, string conversationId, string activityId, CancellationToken cancellationToken = default)
         {
             var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnGetActivityMembersAsync(claimsIdentity, conversationId, activityId, cancellationToken).ConfigureAwait(false);
@@ -217,7 +213,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// OnGetActivityMembersAsync() API.
         /// </summary>
         /// <remarks>
-        /// Enumerate the members of an activity.
+        /// Override this method to enumerate the members of an activity.
         ///
         /// This REST API takes a ConversationId and a ActivityId, returning an array
         /// of ChannelAccount objects representing the members of the particular
@@ -228,7 +224,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name='activityId'>Activity ID.</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task with result.</returns>
-        protected virtual Task<ChannelAccount[]> OnGetActivityMembersAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, CancellationToken cancellationToken = default)
+        protected virtual Task<IList<ChannelAccount>> OnGetActivityMembersAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -237,7 +233,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// CreateConversation() API.
         /// </summary>
         /// <remarks>
-        /// Create a new Conversation.
+        /// Override this method to create a new Conversation.
         ///
         /// POST to this method with a
         /// * Bot being the bot creating the conversation
@@ -272,7 +268,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// OnGetConversationsAsync() API for Skill.
         /// </summary>
         /// <remarks>
-        /// List the Conversations in which this bot has participated.
+        /// Override this method to list the Conversations in which this bot has participated.
         /// 
         /// GET from this method with a skip token
         /// 
@@ -298,7 +294,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// GetConversationMembers() API for Skill.
         /// </summary>
         /// <remarks>
-        /// Enumerate the members of a conversation.
+        /// Override this method to enumerate the members of a conversation.
         ///
         /// This REST API takes a ConversationId and returns an array of ChannelAccount
         /// objects representing the members of the conversation.
@@ -316,7 +312,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// GetConversationPagedMembers() API for Skill.
         /// </summary>
         /// <remarks>
-        /// Enumerate the members of a conversation one page at a time.
+        /// Override this method to enumerate the members of a conversation one page at a time.
         ///
         /// This REST API takes a ConversationId. Optionally a pageSize and/or
         /// continuationToken can be provided. It returns a PagedMembersResult, which
@@ -349,7 +345,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// DeleteConversationMember() API for Skill.
         /// </summary>
         /// <remarks>
-        /// Deletes a member from a conversation.
+        /// Override this method to deletes a member from a conversation.
         ///
         /// This REST API takes a ConversationId and a memberId (of type string) and
         /// removes that member from the conversation. If that member was the last
@@ -370,8 +366,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// SendConversationHistory() API for Skill.
         /// </summary>
         /// <remarks>
-        /// This method allows you to upload the historic activities to the
-        /// conversation.
+        /// Override this method to this method allows you to upload the historic activities to the conversation.
         ///
         /// Sender must ensure that the historic activities have unique ids and
         /// appropriate timestamps. The ids are used by the client to deal with
@@ -393,8 +388,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// </summary>
         /// <remarks>
         /// 
-        /// This is useful because it allows you to store data in a compliant store
-        /// when dealing with enterprises.
+        /// Override this method to this is useful because it allows you to store data in a compliant store when dealing with enterprises.
         /// 
         /// The response is a ResourceResponse which contains an AttachmentId which is
         /// suitable for using with the attachments API.
@@ -411,6 +405,21 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
         private async Task<ClaimsIdentity> AuthenticateAsync(string authHeader)
         {
+            if (string.IsNullOrWhiteSpace(authHeader))
+            {
+                var isAuthDisabled = await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false);
+                if (isAuthDisabled)
+                {
+                    // In the scenario where Auth is disabled, we still want to have the
+                    // IsAuthenticated flag set in the ClaimsIdentity. To do this requires
+                    // adding in an empty claim.
+                    return new ClaimsIdentity(new List<Claim>(), "anonymous");
+                }
+
+                // No Auth Header. Auth is required. Request is not authorized.
+                throw new UnauthorizedAccessException();
+            }
+
             return await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider, "unknown", _authConfiguration).ConfigureAwait(false);
         }
     }
