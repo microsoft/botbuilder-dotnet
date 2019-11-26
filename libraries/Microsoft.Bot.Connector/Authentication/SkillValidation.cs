@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Connector.Authentication
         private static readonly TokenValidationParameters _tokenValidationParameters =
             new TokenValidationParameters
             {
-                ValidateIssuer = false,
+                ValidateIssuer = true,
                 ValidIssuers = new[]
                 {
                     "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/", // Auth v3.1, 1.0 token
