@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
 
@@ -40,6 +40,7 @@
     <None Remove="Examples\ConditionExpression.lg" />
     <None Remove="Examples\EvaluateOnce.lg" />
     <None Remove="Examples\LoopScope.lg" />
+    <None Remove="Examples\ExpressionExtract.lg" />
     <None Remove="ExceptionExamples\ConditionFormatError.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplates.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplatesInImportFiles.lg" />
@@ -96,6 +97,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\BasicActivity.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\ExpressionExtract.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\BasicList.lg">
@@ -236,9 +240,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
   </ItemGroup>
 
   <ItemGroup>

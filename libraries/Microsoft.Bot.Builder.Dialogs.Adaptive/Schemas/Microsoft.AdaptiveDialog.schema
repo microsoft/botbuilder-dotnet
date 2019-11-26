@@ -1,6 +1,6 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.IDialog)",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
     "title": "Adaptive Dialog",
     "description": "Flexible, data driven dialog that can adapt to the conversation.",
     "type": "object",
@@ -23,17 +23,17 @@
             "default": "dialog.result"
         },
         "recognizer": {
-            "$type": "Microsoft.IRecognizer",
+            "$kind": "Microsoft.IRecognizer",
             "title": "Recognizer",
             "description": "Language Understanding recognizer that interprets user input into intent and entities."
         },
         "generator": {
-            "$type": "Microsoft.ILanguageGenerator",
+            "$kind": "Microsoft.ILanguageGenerator",
             "title": "Language Generator",
             "description": "Language generator that generates bot responses."
         },
         "selector": {
-            "$type": "Microsoft.ITriggerSelector",
+            "$kind": "Microsoft.ITriggerSelector",
             "title": "Selector",
             "description": "Policy to determine which trigger is executed. Defaults to a 'best match' selector (optional)."
         },
@@ -42,7 +42,7 @@
             "description": "List of triggers defined for this dialog.",
             "title": "Triggers",
             "items": {
-                "$type": "Microsoft.ITriggerCondition"
+                "$kind": "Microsoft.ITriggerCondition"
             }
         }
     }

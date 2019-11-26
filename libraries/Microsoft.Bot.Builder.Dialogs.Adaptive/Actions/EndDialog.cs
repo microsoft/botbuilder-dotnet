@@ -15,6 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class EndDialog : Dialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.EndDialog";
+
         private Expression value;
 
         [JsonConstructor]
@@ -51,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (this.Value != null)
             {
-                var (result, error) = this.value.TryEvaluate(dc.State);
+                var (result, error) = this.value.TryEvaluate(dc.GetState());
                 return await EndParentDialogAsync(dc, result, cancellationToken).ConfigureAwait(false);
             }
 

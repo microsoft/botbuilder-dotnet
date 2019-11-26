@@ -12,6 +12,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     /// </summary>
     public class OnCancelDialog : OnDialogEvent
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.OnCancelDialog";
+
         [JsonConstructor]
         public OnCancelDialog(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(@event: AdaptiveEvents.CancelDialog, actions: actions, condition: condition, callerPath: callerPath, callerLine: callerLine)

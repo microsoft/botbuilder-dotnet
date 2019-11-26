@@ -5,12 +5,15 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
     /// <summary>
     /// Format specifier for outputs.
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum AttachmentOutputFormat
     {
         /// <summary>
@@ -26,16 +29,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
     public class AttachmentInput : InputDialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.AttachmentInput";
+
         public AttachmentInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        [JsonProperty("outputFormat")]
         public AttachmentOutputFormat OutputFormat { get; set; } = AttachmentOutputFormat.First;
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.State.GetValue<List<Attachment>>(VALUE_PROPERTY);
+            var input = dc.GetState().GetValue<List<Attachment>>(VALUE_PROPERTY);
             var first = input.Count > 0 ? input[0] : null;
 
             if (first == null || (string.IsNullOrEmpty(first.ContentUrl) && first.Content == null))
@@ -46,10 +53,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             switch (this.OutputFormat)
             {
                 case AttachmentOutputFormat.All:
-                    dc.State.SetValue(VALUE_PROPERTY, input);
+                    dc.GetState().SetValue(VALUE_PROPERTY, input);
                     break;
                 case AttachmentOutputFormat.First:
-                    dc.State.SetValue(VALUE_PROPERTY, first);
+                    dc.GetState().SetValue(VALUE_PROPERTY, first);
                     break;
             }
 

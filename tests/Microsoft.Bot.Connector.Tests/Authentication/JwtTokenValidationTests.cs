@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Moq;
 using Xunit;
 
 namespace Microsoft.Bot.Connector.Tests.Authentication
@@ -484,6 +485,29 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             // v2 version with azp
             v2Claims.Add(new Claim(AuthenticationConstants.AuthorizedParty, appId));
             Assert.Equal(appId, JwtTokenValidation.GetAppIdFromClaims(v2Claims));
+        }
+
+        [Fact]
+        public async Task ValidateClaimsTest()
+        {
+            var claims = new List<Claim>();
+            var defaultAuthConfig = new AuthenticationConfiguration();
+
+            // No validator should pass.
+            await JwtTokenValidation.ValidateClaimsAsync(defaultAuthConfig, claims);
+
+            var mockValidator = new Mock<ClaimsValidator>();
+            var authConfigWithClaimsValidator = new AuthenticationConfiguration() { ClaimsValidator = mockValidator.Object };
+
+            // ClaimsValidator configured but no exception should pass.
+            mockValidator.Setup(x => x.ValidateClaimsAsync(It.IsAny<List<Claim>>())).Returns(Task.CompletedTask);
+            await JwtTokenValidation.ValidateClaimsAsync(authConfigWithClaimsValidator, claims);
+
+            // Configure IClaimsValidator to fail
+            mockValidator.Setup(x => x.ValidateClaimsAsync(It.IsAny<List<Claim>>())).Throws(new UnauthorizedAccessException("Invalid claims."));
+            var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () => await JwtTokenValidation.ValidateClaimsAsync(authConfigWithClaimsValidator, claims));
+            Assert.Equal("Invalid claims.", exception.Message);
         }
 
         private async Task JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(string appId, string pwd, string channelService)

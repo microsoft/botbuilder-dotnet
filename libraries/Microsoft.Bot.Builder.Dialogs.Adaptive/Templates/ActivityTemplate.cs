@@ -4,7 +4,9 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
 {
@@ -13,8 +15,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
     /// and processed through registered IActivityGenerator/ILanguageGenerator.
     /// </summary>
     [DebuggerDisplay("{Template}")]
+    [JsonConverter(typeof(ActivityTemplateConverter))]
     public class ActivityTemplate : ITemplate<Activity>
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.ActivityTemplate";
+
         // Fixed text constructor for inline template
         public ActivityTemplate(string template)
         {
@@ -27,43 +33,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         /// <value>
         /// The template to evaluate to create the activity.
         /// </value>
+        [JsonProperty("template")]
         public string Template { get; set; }
 
         public virtual async Task<Activity> BindToData(ITurnContext context, object data)
         {
             if (!string.IsNullOrEmpty(this.Template))
             {
-                // if there is a message generator use that
-                IActivityGenerator activityGenerator = context.TurnState.Get<IActivityGenerator>();
-                if (activityGenerator != null)
-                {
-                    var result = await activityGenerator.Generate(
-                        turnContext: context,
-                        template: this.Template,
-                        data: data).ConfigureAwait(false);
-                    return result;
-                }
-
-                // fallback to just text based LG if there is a language generator
-                var message = Activity.CreateMessageActivity();
-                message.Text = this.Template;
-                message.Speak = this.Template;
-
-                ILanguageGenerator languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+                var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
                 if (languageGenerator != null)
                 {
-                    var result = await languageGenerator.Generate(
-                        turnContext: context,
-                        template: Template,
-                        data: data).ConfigureAwait(false);
-                    if (result != null)
-                    {
-                        message.Text = result;
-                        message.Speak = result;
-                    }
+                    var lgStringResult = await languageGenerator.Generate(context, this.Template, data).ConfigureAwait(false);
+                    var result = ActivityFactory.CreateActivity(lgStringResult);
+                    return result;
                 }
-
-                return message as Activity;
+                else
+                {
+                    var message = Activity.CreateMessageActivity();
+                    message.Text = this.Template;
+                    message.Speak = this.Template;
+                    return message as Activity;
+                }
             }
 
             return null;

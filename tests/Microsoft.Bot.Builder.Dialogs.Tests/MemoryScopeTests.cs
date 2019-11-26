@@ -158,10 +158,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             foreach (var scope in DialogStateManager.MemoryScopes.Where(ms => !(ms is DialogMemoryScope) && ms.IncludeInSnapshot == true).Select(ms => ms.Name))
             {
                 var path = $"{scope}.test";
-                Assert.IsNull(dc.State.GetValue<string>(path), $"{path} should be null");
-                dc.State.SetValue(path, scope);
-                Assert.IsNotNull(dc.State.GetValue<string>(path), $"{path} should not be null");
-                Assert.AreEqual(scope, dc.State.GetValue<string>(path), $"{path} should be {scope}");
+                Assert.IsNull(dc.GetState().GetValue<string>(path), $"{path} should be null");
+                dc.GetState().SetValue(path, scope);
+                Assert.IsNotNull(dc.GetState().GetValue<string>(path), $"{path} should not be null");
+                Assert.AreEqual(scope, dc.GetState().GetValue<string>(path), $"{path} should be {scope}");
             }
 
             await dc.Context.SendActivityAsync("next");
@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     {
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await dc.Context.SendActivityAsync(dc.State.GetValue<string>(dc.Context.Activity.Text));
+            await dc.Context.SendActivityAsync(dc.GetState().GetValue<string>(dc.Context.Activity.Text));
             return await dc.EndDialogAsync();
         }
     }
@@ -187,8 +187,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             ValidateSetValue(dc, "#test", "turn.recognized.intents.test");
             ValidateSetValue(dc, "$test", "dialog.test");
             ValidateSetValue(dc, "@@test", "turn.recognized.entities.test", entities);
-            Assert.AreEqual("test1", dc.State.GetValue<string>("@test"));
-            Assert.AreEqual("test2", dc.State.GetValue<string[]>("@@test")[1]);
+            Assert.AreEqual("test1", dc.GetState().GetValue<string>("@test"));
+            Assert.AreEqual("test2", dc.GetState().GetValue<string[]>("@@test")[1]);
 
             ValidateRemoveValue(dc, "#test", "turn.recognized.intents.test");
             ValidateRemoveValue(dc, "$test", "dialog.test");
@@ -201,16 +201,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         private void ValidateSetValue(DialogContext dc, string alias, string path, object value = null)
         {
-            Assert.IsNull(dc.State.GetValue<object>(alias), $"{alias} should be null");
-            dc.State.SetValue(path, value ?? alias);
+            Assert.IsNull(dc.GetState().GetValue<object>(alias), $"{alias} should be null");
+            dc.GetState().SetValue(path, value ?? alias);
             ValidateValue(dc, alias, path);
         }
 
         private void ValidateValue(DialogContext dc, string alias, string path)
         {
-            var p = dc.State.GetValue<object>(path);
+            var p = dc.GetState().GetValue<object>(path);
             Assert.IsNotNull(p);
-            var a = dc.State.GetValue<object>(alias);
+            var a = dc.GetState().GetValue<object>(alias);
             Assert.IsNotNull(a);
 
             Assert.AreEqual(JsonConvert.SerializeObject(p), JsonConvert.SerializeObject(a), $"{alias} should be same as {path}");
@@ -219,9 +219,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private void ValidateRemoveValue(DialogContext dc, string alias, string path)
         {
             ValidateValue(dc, alias, path);
-            dc.State.RemoveValue(alias);
-            Assert.IsNull(dc.State.GetValue<object>(path), $"property should be removed by alias {alias}");
-            Assert.IsNull(dc.State.GetValue<object>(alias), $"property should be removed by alias {alias}");
+            dc.GetState().RemoveValue(alias);
+            Assert.IsNull(dc.GetState().GetValue<object>(path), $"property should be removed by alias {alias}");
+            Assert.IsNull(dc.GetState().GetValue<object>(alias), $"property should be removed by alias {alias}");
         }
     }
 }

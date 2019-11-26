@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
 {
@@ -14,6 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
     [DebuggerDisplay("{Template}")]
     public class TextTemplate : ITemplate<string>
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.TextTemplate";
+
         // Fixed text constructor for inline template
         public TextTemplate(string template)
         {
@@ -26,6 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         /// <value>
         /// The template to evaluate to create the text.
         /// </value>
+        [JsonProperty("template")]
         public string Template { get; set; }
 
         public virtual async Task<string> BindToData(ITurnContext turnContext, object data)

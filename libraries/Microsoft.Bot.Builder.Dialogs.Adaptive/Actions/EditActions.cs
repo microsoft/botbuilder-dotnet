@@ -16,6 +16,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class EditActions : Dialog, IDialogDependencies
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.EditActions";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="EditActions"/> class.
         /// </summary>

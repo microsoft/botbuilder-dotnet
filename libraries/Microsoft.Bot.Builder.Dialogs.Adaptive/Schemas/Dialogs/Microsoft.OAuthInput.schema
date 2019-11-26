@@ -1,6 +1,6 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.IDialog)",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
     "title": "OAuthInput Dialog",
     "description": "Collect login information.",
     "type": "object",

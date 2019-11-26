@@ -38,16 +38,16 @@
 - Which type of meat and bread do you want for your sandwich?
 
 # CheeseAndToppingsWithMeatAndBread
-- What kind of cheese and toppings would you like on your {conversation.order.meat} on {conversation.order.bread} bread sandwich?
+- What kind of cheese and toppings would you like on your @{conversation.order.meat} on @{conversation.order.bread} bread sandwich?
 
 # BreadAndToppingsWithMeatAndCheese
-- What bread or toppings do you want on your {conversation.order.meat} with {conversation.order.cheese} sandwich?
+- What bread or toppings do you want on your @{conversation.order.meat} with @{conversation.order.cheese} sandwich?
 
 # MeatWithBread
-- What kind of meat would you like in your {conversation.order.meat} bread sandwich?
+- What kind of meat would you like in your @{conversation.order.meat} bread sandwich?
 
 # Confirmation
-- OK, do you want to place your order for a {conversation.order.meat} on {conversation.order.bread} sandwich with {join(conversation.order.topping, ',')} and {conversation.order.cheese}?
+- OK, do you want to place your order for a @{conversation.order.meat} on @{conversation.order.bread} sandwich with @{join(conversation.order.topping, ',')} and @{conversation.order.cheese}?
 
 # BeingProcessed
 - Your order is being processed
@@ -56,4 +56,4 @@
 - No problem, let's start again
 
 # NoIntent
-- Sorry, I don't understand {turn.intent}.
+- Sorry, I don't understand @{turn.intent}.

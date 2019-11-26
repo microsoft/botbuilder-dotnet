@@ -14,7 +14,7 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers;
 using Newtonsoft.Json;
 
-namespace Cards.Controllers
+namespace Microsoft.BotBuilderSamples
 {
     // This ASP Controller is created to handle a request. Dependency Injection will provide the Adapter and IBot
     // implementation at runtime. Multiple different IBot implementations running at different endpoints can be

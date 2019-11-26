@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.Choice;
+using Newtonsoft.Json;
 using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
@@ -17,6 +18,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// </summary>
     public class ConfirmInput : InputDialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.ConfirmInput";
+
         private static readonly Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> ChoiceDefaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>(StringComparer.OrdinalIgnoreCase)
         {
             { Spanish, (new Choice("Sí"), new Choice("No"), new ChoiceFactoryOptions(", ", " o ", ", o ", true)) },
@@ -34,17 +38,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        [JsonProperty("defaultLocale")]
         public string DefaultLocale { get; set; } = null;
 
+        [JsonProperty("style")]
         public ListStyle Style { get; set; } = ListStyle.Auto;
 
+        [JsonProperty("choiceOptions")]
         public ChoiceFactoryOptions ChoiceOptions { get; set; } = null;
 
+        [JsonProperty("confirmChoices")]
         public List<Choice> ConfirmChoices { get; set; } = null;
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.State.GetValue<object>(VALUE_PROPERTY);
+            var input = dc.GetState().GetValue<object>(VALUE_PROPERTY);
             if (dc.Context.Activity.Type == ActivityTypes.Message)
             {
                 // Recognize utterance
@@ -55,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     var first = results[0];
                     if (bool.TryParse(first.Resolution["value"].ToString(), out var value))
                     {
-                        dc.State.SetValue(VALUE_PROPERTY, value);
+                        dc.GetState().SetValue(VALUE_PROPERTY, value);
                         return Task.FromResult(InputState.Valid);
                     }
                     else
@@ -78,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                         if (secondAttemptResults.Count > 0)
                         {
                             input = secondAttemptResults[0].Resolution.Index == 0;
-                            dc.State.SetValue(VALUE_PROPERTY, input);
+                            dc.GetState().SetValue(VALUE_PROPERTY, input);
                         }
                         else
                         {

@@ -15,6 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class InitProperty : Dialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.InitProperty";
+
         [JsonConstructor]
         public InitProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
@@ -28,6 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// Property path to initialize.
         /// </value>
+        [JsonProperty("property")]
         public string Property { get; set; }
 
         /// <summary>
@@ -36,6 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// Type, either Array or Object.
         /// </value>
+        [JsonProperty("type")]
         public string Type { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -51,10 +56,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 switch (Type.ToLower())
                 {
                     case "array":
-                        dc.State.SetValue(this.Property, new JArray());
+                        dc.GetState().SetValue(this.Property, new JArray());
                         break;
                     case "object":
-                        dc.State.SetValue(this.Property, new JObject());
+                        dc.GetState().SetValue(this.Property, new JObject());
                         break;
                 }
 

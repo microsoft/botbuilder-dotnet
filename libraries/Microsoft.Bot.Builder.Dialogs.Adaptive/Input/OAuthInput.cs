@@ -9,12 +9,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
     public class OAuthInput : Dialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.OAuthInput";
+
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
         private const string PersistedExpires = "expires";
@@ -27,18 +31,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Gets or sets the name of the OAuth connection.
         /// </summary>
         /// <value>The name of the OAuth connection.</value>
+        [JsonProperty("connectionName")]
         public string ConnectionName { get; set; }
 
         /// <summary>
         /// Gets or sets the title of the sign-in card.
         /// </summary>
         /// <value>The title of the sign-in card.</value>
+        [JsonProperty("title")]
         public string Title { get; set; }
 
         /// <summary>
         /// Gets or sets any additional text to include in the sign-in card.
         /// </summary>
         /// <value>Any additional text to include in the sign-in card.</value>
+        [JsonProperty("text")]
         public string Text { get; set; }
 
         /// <summary>
@@ -46,6 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Default is 900,000 (15 minutes).
         /// </summary>
         /// <value>The number of milliseconds the prompt waits for the user to authenticate.</value>
+        [JsonProperty("timeout")]
         public int Timeout { get; set; } = 900000;
 
         /// <summary>
@@ -54,6 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <value>
         /// The memory property to use for token result.
         /// </value>
+        [JsonProperty("tokenProperty")]
         public string TokenProperty { get; set; }
 
         /// <summary>
@@ -118,7 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 if (this.TokenProperty != null)
                 {
-                    dc.State.SetValue(this.TokenProperty, output);
+                    dc.GetState().SetValue(this.TokenProperty, output);
                 }
 
                 // Return token
@@ -163,7 +172,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 if (this.TokenProperty != null)
                 {
-                    dc.State.SetValue(this.TokenProperty, null);
+                    dc.GetState().SetValue(this.TokenProperty, null);
                 }
 
                 // if the token fetch request times out, complete the prompt with no result.
@@ -190,7 +199,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     if (this.TokenProperty != null)
                     {
-                        dc.State.SetValue(this.TokenProperty, recognized.Value);
+                        dc.GetState().SetValue(this.TokenProperty, recognized.Value);
                     }
 
                     return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);

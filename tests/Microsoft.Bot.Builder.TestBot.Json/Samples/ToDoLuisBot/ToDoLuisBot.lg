@@ -1,5 +1,5 @@
 # LuisToDoGreeting
-- Welcome!  I'm a list bot [LuisToDoHelp]
+- Welcome!  I'm a list bot @{LuisToDoHelp()}
 
 # LuisToDoHelp
 - ```
@@ -9,13 +9,13 @@
   ```
 
 # showSingleList(x)
-- * {x} list
+- * @{x} list
 
 # showSingleItem(x)
-- * {x}
+- * @{x}
 
 # ShowItems
-- IF: {listName == "shopping"}
+- IF: @{listName == "shopping"}
     - ```
     You most recent @{count(user.lists.shopping)} shopping items are
     
@@ -24,14 +24,14 @@
      
 
      ```
-- ELSEIF: {listName == "grocery"}
+- ELSEIF: @{listName == "grocery"}
     - ```
     You most recent @{count(user.lists.grocery)} grocery items are
 
     @{join(foreach(user.lists.grocery, x, showSingleItem(x)), '\n')}
 
      ```
-- ELSEIF: {listName == "todo"}
+- ELSEIF: @{listName == "todo"}
     - ```
     You most recent @{count(user.lists.todo)} todo items are
 
@@ -42,7 +42,7 @@
 
 
 # ShowLists
-- IF: {count(lists) > 0}
+- IF: @{count(lists) > 0}
     - ```
       ```
 - ELSE:
@@ -51,8 +51,8 @@
 
 
 # PromptForList(lists)
-- What list did you want?\n\n[ShowLists]
+- What list did you want?\n\n@{ShowLists()}
 
 # PromptForItem(list)
-- What item did you want?\n\n[ShowItems]
+- What item did you want?\n\n@{ShowItems()}
 

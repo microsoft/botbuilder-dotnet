@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Expressions.TriggerTrees;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
@@ -17,6 +18,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// </summary>
     public class MostSpecificSelector : ITriggerSelector
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.MostSpecificSelector";
+
         private readonly TriggerTree _tree = new TriggerTree();
 
         /// <summary>
@@ -40,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 
         public async Task<IReadOnlyList<int>> Select(SequenceContext context, CancellationToken cancel)
         {
-            var nodes = _tree.Matches(context.State);
+            var nodes = _tree.Matches(context.GetState());
             IReadOnlyList<int> selections;
             if (Selector == null)
             {

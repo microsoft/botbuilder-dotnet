@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
         public FolderResourceProvider(string folder, bool includeSubFolders = true, bool monitorChanges = true)
         {
-            foreach (var extension in new string[] { ".lg", ".lu", ".dialog", ".schema", ".md" })
+            foreach (var extension in new string[] { ".lg", ".qna", ".lu", ".dialog", ".schema", ".md" })
             {
                 this.extensions.Add(extension);
             }
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
             lock (this.resources)
             {
-                return this.resources.Where(pair => Path.GetExtension(pair.Key).ToLower() == extension).Select(pair => pair.Value).ToList();
+                return this.resources.Where(pair => pair.Key.ToLower().EndsWith(extension)).Select(pair => pair.Value).ToList();
             }
         }
 

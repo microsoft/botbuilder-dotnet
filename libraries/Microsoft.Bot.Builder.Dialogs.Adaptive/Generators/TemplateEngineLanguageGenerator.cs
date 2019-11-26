@@ -2,8 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
@@ -12,10 +17,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// </summary>
     public class TemplateEngineLanguageGenerator : ILanguageGenerator
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.TemplateEngineLanguageGenerator";
+
         private const string DEFAULTLABEL = "Unknown";
 
-        // lazy loading
-        private TemplateEngine engine;
+        private readonly Dictionary<string, TemplateEngine> multiLangEngines = new Dictionary<string, TemplateEngine>();
+
+        private TemplateEngine engine;      
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
@@ -30,12 +39,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </summary>
         /// <param name="lgText">lg template text.</param>
         /// <param name="id">optional label for the source of the templates (used for labeling source of template errors).</param>
-        /// <param name="multiLanguageResolver">template resource loader delegate (local) -> <see cref="ImportResolverDelegate"/>.</param>
-        public TemplateEngineLanguageGenerator(string lgText, string id = null, Func<string, ImportResolverDelegate> multiLanguageResolver = null)
+        /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
+        public TemplateEngineLanguageGenerator(string lgText, string id, Dictionary<string, IList<IResource>> resourceMapping)
         {
-            this.LGText = lgText ?? string.Empty;
             this.Id = id ?? DEFAULTLABEL;
-            this.MultiLanguageResolver = multiLanguageResolver;
+            var (_, locale) = MultiLanguageResourceLoader.ParseLGFileName(id);
+            var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, resourceMapping.Keys.ToList());
+
+            foreach (var mapping in resourceMapping)    
+            {
+                // if no locale present in id, enumarate every locale found
+                // if locale is present, use that one
+                if (string.Equals(fallbackLocale, string.Empty) || string.Equals(fallbackLocale, mapping.Key))
+                {
+                    var engine = new TemplateEngine().AddText(lgText ?? string.Empty, Id, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
+                    multiLangEngines.Add(mapping.Key, engine);
+                }
+            }
+        }   
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
+        /// </summary>
+        /// <param name="filePath">lg template file absolute path.</param>
+        /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
+        public TemplateEngineLanguageGenerator(string filePath, Dictionary<string, IList<IResource>> resourceMapping)
+        {
+            filePath = PathUtils.NormalizePath(filePath);
+            this.Id = Path.GetFileName(filePath);
+
+            var (_, locale) = MultiLanguageResourceLoader.ParseLGFileName(Id);
+            var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, resourceMapping.Keys.ToList());
+
+            foreach (var mapping in resourceMapping)
+            {
+                // if no locale present in id, enumarate every locale found
+                // if locale is present, use that one
+                if (string.Equals(fallbackLocale, string.Empty) || string.Equals(fallbackLocale, mapping.Key))
+                {
+                    var engine = new TemplateEngine().AddFile(filePath, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
+                    multiLangEngines.Add(mapping.Key, engine);
+                }
+            }
         }
 
         /// <summary>
@@ -53,23 +98,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <value>
         /// Id of the source of this template (used for labeling errors).
         /// </value>
+        [JsonProperty("id")]
         public string Id { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets text content of the LG file.
-        /// </summary>
-        /// <value>
-        /// Text content of the LG file.
-        /// </value>
-        public string LGText { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets get <see cref="ImportResolverDelegate"/> from local.
-        /// </summary>
-        /// <value>
-        /// get <see cref="ImportResolverDelegate"/> from local.
-        /// </value>
-        public Func<string, ImportResolverDelegate> MultiLanguageResolver { get; set; }
 
         /// <summary>
         /// Method to generate text from given template and data.
@@ -99,14 +129,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private TemplateEngine InitTemplateEngine(ITurnContext turnContext)
         {
-            if (MultiLanguageResolver != null)
+            var locale = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
+            if (multiLangEngines.Count > 0)
             {
-                var local = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
-                engine = new TemplateEngine().AddText(LGText, Id, MultiLanguageResolver(local));
-            }
-            else if (!string.IsNullOrWhiteSpace(LGText) || !string.IsNullOrWhiteSpace(Id))
-            {
-                engine = new TemplateEngine().AddText(LGText, Id);
+                var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, multiLangEngines.Keys.ToList());
+                engine = multiLangEngines[fallbackLocale];
             }
             else
             {

@@ -1,15 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version Condition=" '$(PackageVersion)' == '' ">4.6.0-local</Version>
-    <Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
-    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.6.0-local</PackageVersion>
-    <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
+    <Version Condition=" '$(IsBuildServer)' == '' ">4.6.0-local</Version>
+    <Version Condition=" '$(IsBuildServer)' != '' ">$(ReleasePackageVersion)</Version>
+    <PackageVersion Condition=" '$(IsBuildServer)' == '' ">4.6.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(ReleasePackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Schema.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -18,12 +14,21 @@
     <Summary>This library implements C# schema classes for using the Bot Framework.</Summary>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Schema.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>Full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
   <PropertyGroup>
     <NoWarn>$(NoWarn);CS0108</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
   </ItemGroup>
 </Project>

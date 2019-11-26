@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Memory;
 using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -31,9 +30,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
-            State = new DialogStateManager(this);
 
-            State.SetValue(TurnPath.ACTIVITY, Context.Activity);
+            ObjectPath.SetPathValue(turnContext.TurnState, TurnPath.ACTIVITY, Context.Activity);
         }
 
         /// <summary>
@@ -74,14 +72,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// The current dialog stack.
         /// </value>
         public List<DialogInstance> Stack { get; private set; }
-
-        /// <summary>
-        /// Gets current active scoped state with (user|conversation|dialog|settings scopes).
-        /// </summary>
-        /// <value>
-        /// Current active scoped state with (user|conversation|dialog|settings scopes).
-        /// </value>
-        public DialogStateManager State { get; private set; }
 
         /// <summary>
         /// Gets or sets the parent <see cref="DialogContext"/>, if any. Used when searching for the ID of a dialog to start.
@@ -285,7 +275,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <seealso cref="Dialog.EndDialogAsync(ITurnContext, DialogInstance, DialogReason, CancellationToken)"/>
         public async Task<DialogTurnResult> EndDialogAsync(object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (result is CancellationToken token)
+            if (result is CancellationToken)
             {
                 throw new ArgumentException($"{this.ActiveDialog.Id}.EndDialogAsync() You can't pass a cancellation token as the result of a dialog when calling EndDialog.");
             }
@@ -426,7 +416,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // End the current dialog and giving the reason.
             await EndActiveDialogAsync(DialogReason.ReplaceCalled, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            this.State.SetValue("turn.__repeatDialogId", dialogId);
+            ObjectPath.SetPathValue(this.Context.TurnState, "turn.__repeatDialogId", dialogId);
 
             // Start replacement dialog
             return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
@@ -569,41 +559,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Stack.RemoveAt(0);
 
                 // set Turn.LastResult to result
-                this.State.SetValue(TurnPath.LASTRESULT, result);
-            }
-        }
-
-        private IDictionary<string, object> GetActiveDialogState(DialogContext dialogContext, IDictionary<string, object> state = null, int? stackIdx = null)
-        {
-            if (state == null && !stackIdx.HasValue)
-            {
-                throw new ArgumentNullException($"Either {nameof(state)} or {nameof(stackIdx)} must be provided");
-            }
-
-            if (stackIdx.HasValue)
-            {
-                // Positive values are indexes within the current DC and negative values are indexes in
-                // the parent DC.
-                int stackIndex = stackIdx.Value;
-
-                for (int iStack = stackIndex; iStack < dialogContext.Stack.Count && iStack >= 0; iStack--)
-                {
-                    if (dialogContext.Stack[iStack].State != null)
-                    {
-                        return dialogContext.Stack[iStack].State;
-                    }
-                }
-
-                if (dialogContext.Parent != null)
-                {
-                    return this.GetActiveDialogState(dialogContext.Parent, null, -stackIndex - 1);
-                }
-
-                return state;
-            }
-            else
-            {
-                return state;
+                ObjectPath.SetPathValue(this.Context.TurnState, TurnPath.LASTRESULT, result);
             }
         }
     }

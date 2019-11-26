@@ -16,6 +16,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     /// </summary>
     public class OnIntent : OnDialogEvent
     {
+        [JsonProperty("$kind")]
+        public new const string DeclarativeType = "Microsoft.OnIntent";
+
         [JsonConstructor]
         public OnIntent(string intent = null, List<string> entities = null, List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(@event: AdaptiveEvents.RecognizedIntent, actions: actions, condition: constraint, callerPath: callerPath, callerLine: callerLine)
@@ -78,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
         protected override ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
         {
-            var recognizerResult = planning.State.GetValue<RecognizerResult>($"{TurnPath.DIALOGEVENT}.value");
+            var recognizerResult = planning.GetState().GetValue<RecognizerResult>($"{TurnPath.DIALOGEVENT}.value");
             if (recognizerResult != null)
             {
                 var (name, score) = recognizerResult.GetTopScoringIntent();

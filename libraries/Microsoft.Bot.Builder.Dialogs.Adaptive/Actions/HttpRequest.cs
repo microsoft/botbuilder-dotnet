@@ -25,6 +25,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class HttpRequest : Dialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.HttpRequest";
+
         private static readonly HttpClient Client = new HttpClient();
 
         public HttpRequest(HttpMethod method, string url, string inputProperty, Dictionary<string, string> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -125,6 +128,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// The property expression to store the HTTP response in. 
         /// </value>
+        [JsonProperty("resultProperty")]
         public string ResultProperty { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -146,7 +150,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var instanceHeaders = Headers == null ? null : new Dictionary<string, string>(Headers);
             var instanceUrl = this.Url;
 
-            instanceUrl = await new TextTemplate(this.Url).BindToData(dc.Context, dc.State).ConfigureAwait(false);
+            instanceUrl = await new TextTemplate(this.Url).BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
 
             // Bind each string token to the data in state
             if (instanceBody != null)
@@ -160,8 +164,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 foreach (var unit in instanceHeaders)
                 {
                     Client.DefaultRequestHeaders.Add(
-                        await new TextTemplate(unit.Key).BindToData(dc.Context, dc.State),
-                        await new TextTemplate(unit.Value).BindToData(dc.Context, dc.State));
+                        await new TextTemplate(unit.Key).BindToData(dc.Context, dc.GetState()),
+                        await new TextTemplate(unit.Value).BindToData(dc.Context, dc.GetState()));
                 }
             }
 
@@ -279,7 +283,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (this.ResultProperty != null)
             {
-                dc.State.SetValue(this.ResultProperty, requestResult);
+                dc.GetState().SetValue(this.ResultProperty, requestResult);
             }
 
             // return the actionResult as the result of this operation
@@ -324,13 +328,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         if (text.StartsWith("{") && text.EndsWith("}"))
                         {
                             text = text.Trim('{', '}');
-                            var (val, error) = new ExpressionEngine().Parse(text).TryEvaluate(dc.State);
+                            var (val, error) = new ExpressionEngine().Parse(text).TryEvaluate(dc.GetState());
                             token.Replace(new JValue(val));
                         }
                         else
                         {
                             // use text template binding to bind in place to a string
-                            var temp = await new TextTemplate(text).BindToData(dc.Context, dc.State);
+                            var temp = await new TextTemplate(text).BindToData(dc.Context, dc.GetState());
                             token.Replace(new JValue(temp));
                         }
                     }

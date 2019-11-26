@@ -17,6 +17,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class SwitchCondition : Dialog, IDialogDependencies
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.SwitchCondition";
+
         private Dictionary<string, Expression> caseExpressions = null;
 
         private Expression condition;
@@ -47,6 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// Default case.
         /// </value>
+        [JsonProperty("default")]
         public List<Dialog> Default { get; set; } = new List<Dialog>();
 
         /// <summary>
@@ -55,6 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// Cases.
         /// </value>
+        [JsonProperty("cases")]
         public List<Case> Cases { get; set; } = new List<Case>();
 
         public virtual IEnumerable<Dialog> GetDependencies()
@@ -107,7 +112,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 foreach (var caseCondition in this.Cases)
                 {
-                    var (value, error) = this.caseExpressions[caseCondition.Value].TryEvaluate(dc.State);
+                    var (value, error) = this.caseExpressions[caseCondition.Value].TryEvaluate(dc.GetState());
 
                     if (error != null)
                     {

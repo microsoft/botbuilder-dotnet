@@ -3,29 +3,32 @@
 # wPhrase
 - Hi \r\n\t\[\]\{\}\\
 
+# AtEscapeChar
+- Hi{1+1}[wPhrase]{wPhrase()}\@{wPhrase()}@{1+1}\@{1+1}\ \
+
 # otherEscape
 - Hi \y \
 
 # escapeInExpression
-- Hi {replace('hello\\', '\\', '\\\\')}
+- Hi @{replace('hello\\', '\\', '\\\\')}
 
 # escapeInExpression2
-- Hi {replace('hello\"', '\"', "'")}
+- Hi @{replace('hello\"', '\"', "'")}
 
 # escapeInExpression3
-- Hi {replace("hello'", "'", '\"')}
+- Hi @{replace("hello'", "'", '\"')}
 
 # escapeInExpression4
-- Hi {replace("hello\n", "\n", '\"')}
+- Hi @{replace("hello\n", "\n", '\"')}
 
 # escapeInExpression5
-- Hi {replace('hello\"', '\"', '\n')}
+- Hi @{replace('hello\"', '\"', '\n')}
 
 # escapeInExpression6
-- Hi {replace("hello'", "'", '\n')}
+- Hi @{replace("hello'", "'", '\n')}
 
 # showTodo(todos)
-- IF: {count(todos) > 0}
+- IF: @{count(todos) > 0}
     - ```
     Your most recent @{count(todos)} tasks are
     @{join(foreach(todos, x, showSingleTodo(x)), '\n')}
@@ -36,4 +39,4 @@
     ```
 
 # showSingleTodo(x)
-- * {x}
+- * @{x}

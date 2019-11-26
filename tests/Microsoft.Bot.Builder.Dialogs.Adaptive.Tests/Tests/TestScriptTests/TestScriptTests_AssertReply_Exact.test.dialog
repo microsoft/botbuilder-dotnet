@@ -1,0 +1,26 @@
+﻿{
+    "$schema": "../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "description": "Test AssertReply",
+    "dialog": "simpleHello",
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hello"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "User1",
+            "exact": false
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hello"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "hi User1",
+            "exact": true
+        }
+    ]
+}

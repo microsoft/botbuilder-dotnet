@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version Condition=" '$(PreviewPackageVersion)' == '' ">4.6.0-local</Version>
-    <Version Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</Version>
-    <PackageVersion Condition=" '$(PreviewPackageVersion)' == '' ">4.6.0-local</PackageVersion>
-    <PackageVersion Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</PackageVersion>
+    <Version Condition=" '$(IsBuildServer)' == '' ">4.6.0-local</Version>
+    <Version Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</Version>
+    <PackageVersion Condition=" '$(IsBuildServer)' == '' ">4.6.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</PackageVersion>
     <Configurations>Debug;Release;</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
@@ -13,18 +13,27 @@
     <PackageId>Microsoft.Bot.Builder.Adapters.Slack</PackageId>
     <Description>Library for connecting bots with Slack.</Description>
     <Summary>This library implements C# classes for the Slack adapter.</Summary>
+    <!-- The SlackAPI package isn't signed, so supress the warning. There seems to not be a way to supress this for ONLY SlackAPI. -->
+    <NoWarn>$(NoWarn),CS8002</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Adapters.Slack.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>Full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="SlackAPI" Version="1.1.2" />
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
-    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(PackageVersion)' == '' " Version="4.6.0-local" />
-    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>

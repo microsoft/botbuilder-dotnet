@@ -15,6 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class LogAction : Dialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.LogAction";
+
         [JsonConstructor]
         public LogAction(string text = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
@@ -45,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var text = await Text.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+            var text = await Text.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
 
             System.Diagnostics.Trace.TraceInformation(text);
 

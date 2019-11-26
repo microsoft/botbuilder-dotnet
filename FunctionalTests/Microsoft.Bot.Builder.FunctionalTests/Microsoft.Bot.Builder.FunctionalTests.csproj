@@ -26,4 +26,10 @@
     <ProjectReference Include="..\..\tests\Microsoft.Bot.Builder.AI.LUIS.Tests\Microsoft.Bot.Builder.AI.Luis.Tests.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Assets\TellMeAJoke.wav">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

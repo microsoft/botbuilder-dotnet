@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
@@ -21,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public string Name => CodeModel.NameFor(Item) + (More != null ? ":" + More : string.Empty);
 
-        public object Data => DialogContext.State.GetMemorySnapshot();
+        public object Data => DialogContext.GetState().GetMemorySnapshot();
 
         private ICodeModel CodeModel { get; }
 
@@ -29,6 +30,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public override string ToString() => Name;
 
-        object ICodePoint.Evaluate(string expression) => DialogContext.State.GetValue<object>(expression);
+        object ICodePoint.Evaluate(string expression) => DialogContext.GetState().GetValue<object>(expression);
     }
 }
