@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
 
+using System;
 using System.Collections.Generic;
 using LuisV2 = Microsoft.Bot.Builder.AI.Luis;
 
@@ -32,6 +33,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
         /// </summary>
         /// <value>True to include API results.</value>
         /// <remarks>This is mainly useful for testing or getting access to LUIS features not yet in the SDK.</remarks>
+        [Obsolete]
         public bool IncludeAPIResults { get; set; } = false;
 
         /// <summary>

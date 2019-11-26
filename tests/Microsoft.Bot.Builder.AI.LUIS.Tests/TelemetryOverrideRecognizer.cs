@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
+    #pragma warning disable CS0618 // Type or member is obsolete
     public class TelemetryOverrideRecognizer : LuisRecognizer
     {
         public TelemetryOverrideRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)

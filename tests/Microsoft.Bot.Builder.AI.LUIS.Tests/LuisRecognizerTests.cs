@@ -13,6 +13,8 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
+    #pragma warning disable CS0612 // Type or member is obsolete
+
     public class LuisRecognizerTests
     {
         private readonly LuisApplication _luisApp;
@@ -50,7 +52,12 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Staging = staging,
             };
 
-            var sut = new LuisRecognizer(_luisApp, expectedOptions, clientHandler: _mockHttpClientHandler);
+            var opts = new LuisRecognizerOptionsV2(_luisApp)
+            {
+                PredictionOptions = expectedOptions,
+            };
+
+            var sut = new LuisRecognizer(opts, clientHandler: _mockHttpClientHandler);
 
             // Act
             await sut.RecognizeAsync(BuildTurnContextForUtterance("hi"), CancellationToken.None);
@@ -104,13 +111,21 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 LogPersonalInformation = constructorOptions.LogPersonalInformation,
             };
 
-            var sut = new LuisRecognizer(_luisApp, constructorOptions, clientHandler: _mockHttpClientHandler);
+            var opts = new LuisRecognizerOptionsV2(_luisApp)
+            {
+                PredictionOptions = constructorOptions,
+                TelemetryClient = constructorOptions.TelemetryClient,
+            };
+
+            // var sut = new LuisRecognizer(_luisApp, constructorOptions, clientHandler: _mockHttpClientHandler);
+            var sut = new LuisRecognizer(opts, clientHandler: _mockHttpClientHandler);
 
             // Act/Assert RecognizeAsync override
             await sut.RecognizeAsync(BuildTurnContextForUtterance("hi"), overridenOptions, CancellationToken.None);
             AssertLuisRequest(_mockHttpClientHandler.RequestMessage, expectedOptions);
 
             // these values can't be overriden and should stay unchanged.
+            Console.WriteLine(constructorOptions.TelemetryClient == sut.TelemetryClient);
             Assert.Equal(constructorOptions.TelemetryClient, sut.TelemetryClient);
             Assert.Equal(constructorOptions.LogPersonalInformation, sut.LogPersonalInformation);
 

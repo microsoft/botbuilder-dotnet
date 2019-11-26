@@ -24,6 +24,9 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
     [TestClass]
 
+    #pragma warning disable CS0618 // Type or member is obsolete
+    #pragma warning disable CS0612 // Type or member is obsolete
+
     // The LUIS application used in these unit tests is in TestData/Contoso App.json
     public class LuisOracleTests : LuisSettings
     {
@@ -52,7 +55,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act
-            var recognizer = new LuisRecognizer(endpoint);
+            var recognizer = new LuisRecognizer(new LuisRecognizerOptionsV2(new LuisApplication(endpoint)));
 
             // Assert
             var app = (LuisApplication)fieldInfo.GetValue(recognizer);
@@ -65,13 +68,15 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         public void LuisRecognizer_Timeout()
         {
             var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
-            var optionsWithTimeout = new LuisPredictionOptions()
+
+            var expectedTimeout = 300;
+
+            var opts = new LuisRecognizerOptionsV2(new LuisApplication(endpoint))
             {
                 Timeout = 300,
             };
-            var expectedTimeout = 300;
 
-            var recognizerWithTimeout = new LuisRecognizer(endpoint, optionsWithTimeout);
+            var recognizerWithTimeout = new LuisRecognizer(opts);
             Assert.IsNotNull(recognizerWithTimeout);
             Assert.AreEqual(expectedTimeout, LuisRecognizer.DefaultHttpClient.Timeout.Milliseconds);
         }
@@ -85,7 +90,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             // Act
             var myappNull = new LuisApplication(AppId, Key, null);
-            var recognizerNull = new LuisRecognizer(myappNull, null);
+            var recognizerNull = new LuisRecognizer(new LuisRecognizerOptionsV2(myappNull), null);
 
             // Assert
             var app = (LuisApplication)fieldInfo.GetValue(recognizerNull);
@@ -101,7 +106,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             // Act
             var myappEmpty = new LuisApplication(AppId, Key, string.Empty);
-            var recognizerEmpty = new LuisRecognizer(myappEmpty, null);
+
+            var recognizerEmpty = new LuisRecognizer(new LuisRecognizerOptionsV2(myappEmpty), null);
 
             // Assert
             var app = (LuisApplication)fieldInfo.GetValue(recognizerEmpty);
@@ -112,7 +118,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void LuisRecognizer_NullLuisAppArg()
         {
-            var recognizerWithNullLuisApplication = new LuisRecognizer(application: null);
+            var recognizerWithNullLuisApplication = new LuisRecognizer(new LuisRecognizerOptionsV2(application: null));
             Assert.IsNotNull(recognizerWithNullLuisApplication);
         }
 
@@ -358,7 +364,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             var clientHandler = new EmptyLuisResponseClientHandler();
 
-            var recognizer = new LuisRecognizer(application, clientHandler: clientHandler);
+            var recognizer = new LuisRecognizer(new LuisRecognizerOptionsV2(application), clientHandler: clientHandler);
 
             var adapter = new NullAdapter();
             var activity = new Activity
@@ -394,7 +400,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act
-            var recognizer = new LuisRecognizer(endpoint);
+            var recognizer = new LuisRecognizer(new LuisRecognizerOptionsV2(new LuisApplication(endpoint)));
 
             // Assert
             var app = (LuisApplication)fieldInfo.GetValue(recognizer);
@@ -430,8 +436,14 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Conversation = new ConversationAccount(),   // on no conversation
             };
 
+            var opts = new LuisRecognizerOptionsV2(luisApp)
+            {
+                TelemetryClient = telemetryClient.Object,
+                LogPersonalInformation = false,
+            };
+
             var turnContext = new TurnContext(adapter, activity);
-            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
+            var recognizer = new LuisRecognizer(opts, clientHandler);
 
             // Act
             var additionalProperties = new Dictionary<string, string>
@@ -478,12 +490,13 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             };
 
             var turnContext = new TurnContext(adapter, activity);
-            var options = new LuisPredictionOptions
+
+            var opts = new LuisRecognizerOptionsV2(luisApp)
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = true,
             };
-            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
+            var recognizer = new LuisRecognizer(opts, clientHandler);
 
             // Act
             var result = await recognizer.RecognizeAsync(turnContext, null).ConfigureAwait(false);
@@ -525,12 +538,12 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             };
 
             var turnContext = new TurnContext(adapter, activity);
-            var options = new LuisPredictionOptions
+            var options = new LuisRecognizerOptionsV2(luisApp)
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
             };
-            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
+            var recognizer = new LuisRecognizer(options, clientHandler);
 
             // Act
             var result = await recognizer.RecognizeAsync(turnContext, null).ConfigureAwait(false);
@@ -687,13 +700,14 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             };
 
             var turnContext = new TurnContext(adapter, activity);
-            var options = new LuisPredictionOptions
+
+            var opts = new LuisRecognizerOptionsV2(luisApp)
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
             };
 
-            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
+            var recognizer = new LuisRecognizer(opts, clientHandler);
 
             // Act
             var result = await recognizer.RecognizeAsync(turnContext, CancellationToken.None).ConfigureAwait(false);
@@ -731,12 +745,12 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             };
 
             var turnContext = new TurnContext(adapter, activity);
-            var options = new LuisPredictionOptions
+            var options = new LuisRecognizerOptionsV2(luisApp)
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
             };
-            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
+            var recognizer = new LuisRecognizer(options, clientHandler);
 
             // Act
             // Use a class the converts the Recognizer Result..
@@ -776,12 +790,12 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             var turnContext = new TurnContext(adapter, activity);
 
-            var options = new LuisPredictionOptions
+            var options = new LuisRecognizerOptionsV2(luisApp)
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
             };
-            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
+            var recognizer = new LuisRecognizer(options, clientHandler);
 
             // Act
             var additionalProperties = new Dictionary<string, string>

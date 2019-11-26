@@ -22,6 +22,7 @@ using RichardSzalay.MockHttp;
 namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
 {
     [TestClass]
+    #pragma warning disable CS0612 // Type or member is obsolete
 
     // The LUIS application used in these unit tests is in TestData/Contoso App.json
     public class LuisV3OracleTests : LuisSettings
@@ -166,7 +167,9 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             var mockHttp = GetMockHttpClientHandlerObject((string)oracle["text"], mockResponse);
             var oracleOptions = response["options"];
             var options = (oracleOptions == null || oracleOptions.Type == JTokenType.Null)
+            #pragma warning disable CS0612 // Type or member is obsolete
                 ? new LuisPredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true, IncludeAPIResults = true }
+            #pragma warning restore CS0612 // Type or member is obsolete
                     : oracleOptions.ToObject<LuisPredictionOptions>();
             var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
             response["options"] = (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options, settings));
@@ -212,6 +215,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
                 {
                     var traceActivity = activity as ITraceActivity;
                     Assert.IsNotNull(traceActivity);
+                    #pragma warning disable CS0612 // Type or member is obsolete
                     Assert.AreEqual(LuisRecognizer.LuisTraceType, traceActivity.ValueType);
                     Assert.AreEqual(LuisRecognizer.LuisTraceLabel, traceActivity.Label);
 

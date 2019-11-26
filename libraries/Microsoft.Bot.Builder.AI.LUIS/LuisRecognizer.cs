@@ -30,11 +30,15 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public const string LuisTraceLabel = "Luis Trace";
 
         private readonly LuisApplication _application;
+
+        #pragma warning disable CS0169 // Field is never used
         [Obsolete]
         private readonly LuisPredictionOptions _options;
+        #pragma warning disable CS0169 // Field is never used
+
         private readonly bool _includeApiResults;
 
-        private LuisRecognizerOptions _luisRecognizerOptions;
+        private readonly LuisRecognizerOptions _luisRecognizerOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
@@ -68,8 +72,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="predictionOptions">(Optional) The LUIS prediction options to use.</param>
         /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
+        [Obsolete("Constructor is deprecated, please use LuisRecognizer(LuisRecognizerOptions recognizer).")]
         public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
-            : this(application, telemetryClient: null, logPersonalInformation: false, predictionOptions: predictionOptions, includeApiResults: includeApiResults, clientHandler: clientHandler)
+        #pragma warning disable CS0618 // Type or member is obsolete
+        : this(application, telemetryClient: null, logPersonalInformation: false, predictionOptions: predictionOptions, includeApiResults: includeApiResults, clientHandler: clientHandler)
+        #pragma warning restore CS0618 // Type or member is obsolete
         {
         }
 
@@ -95,6 +102,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="predictionOptions">(Optional) The LUIS prediction options to use.</param>
         /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
+        [Obsolete("Constructor is deprecated, please use LuisRecognizer(LuisRecognizerOptions recognizer).")]
         public LuisRecognizer(LuisService service, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
             : this(new LuisApplication(service), predictionOptions, includeApiResults, clientHandler)
         {
@@ -107,6 +115,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="predictionOptions">(Optional) The LUIS prediction options to use.</param>
         /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
+        [Obsolete("Constructor is deprecated, please use LuisRecognizer(LuisRecognizerOptions recognizer).")]
         public LuisRecognizer(string applicationEndpoint, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
             : this(new LuisApplication(applicationEndpoint), predictionOptions, includeApiResults, clientHandler)
         {
@@ -350,13 +359,22 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <returns>LuisRecognizerOptions object.</returns>
         private static LuisRecognizerOptions BuildLuisRecognizerOptionsV2(LuisApplication application, LuisPredictionOptions options, bool includeAPIResults)
         {
-            var optionsV2 = options ?? new LuisPredictionOptions();
+            if (options == null) 
+            {
+                return new LuisRecognizerOptionsV3(application)
+                {
+                    IncludeAPIResults = includeAPIResults,
+                };
+            }
+
             var luisVersionOptions = new LuisRecognizerOptionsV2(application)
             {
-                PredictionOptions = optionsV2,
-                TelemetryClient = optionsV2.TelemetryClient,
-                Timeout = optionsV2.Timeout,
-                LogPersonalInformation = optionsV2.LogPersonalInformation,
+                PredictionOptions = options,
+                #pragma warning disable CS0612 // Type or member is obsolete
+                TelemetryClient = options.TelemetryClient,
+                Timeout = options.Timeout,
+                LogPersonalInformation = options.LogPersonalInformation,
+                #pragma warning restore CS0612 // Type or member is obsolete
                 IncludeAPIResults = includeAPIResults
             };
 

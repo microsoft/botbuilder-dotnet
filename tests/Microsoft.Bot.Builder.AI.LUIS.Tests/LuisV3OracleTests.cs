@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             // Act
             var myappNull = new LuisApplication(AppId, Key, null);
-            var recognizerNull = new LuisRecognizer(myappNull, null);
+            var recognizerNull = new LuisRecognizer(new LuisRecognizerOptionsV3(myappNull), null);
 
             // Assert
             var app = (LuisApplication)fieldInfo.GetValue(recognizerNull);
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             // Act
             var myappEmpty = new LuisApplication(AppId, Key, string.Empty);
-            var recognizerEmpty = new LuisRecognizer(myappEmpty, null);
+            var recognizerEmpty = new LuisRecognizer(new LuisRecognizerOptionsV3(myappEmpty), null);
 
             // Assert
             var app = (LuisApplication)fieldInfo.GetValue(recognizerEmpty);
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void LuisRecognizer_NullLuisAppArg()
         {
-            var recognizerWithNullLuisApplication = new LuisRecognizer(application: null);
+            var recognizerWithNullLuisApplication = new LuisRecognizer(new LuisRecognizerOptionsV3(null));
             Assert.Fail();
             Assert.IsNotNull(recognizerWithNullLuisApplication);
         }
@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var mockHttp = GetMockHttpClientHandlerObject((string)oracle["text"], mockResponse);
             var oracleOptions = response["options"];
             var options = (oracleOptions == null || oracleOptions.Type == JTokenType.Null)
-                ? new LuisV3.LuisPredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true, IncludeAPIResults = true }
+                ? new LuisV3.LuisPredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true }
                     : oracleOptions.ToObject<LuisV3.LuisPredictionOptions>();
             var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
             response["options"] = (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options, settings));
@@ -280,10 +280,10 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         public async Task Roles() => await TestJson<RecognizerResult>("roles.json");
 
         [TestMethod]
-        public async Task TypedEntities() => await TestJson<Contoso_App>("Typed.json");
+        public async Task TypedEntities() => await TestJson<Contoso_App_V3>("Typed.json");
 
         [TestMethod]
-        public async Task TypedPrebuiltDomains() => await TestJson<Contoso_App>("TypedPrebuilt.json");
+        public async Task TypedPrebuiltDomains() => await TestJson<Contoso_App_V3>("TypedPrebuilt.json");
 
         [TestMethod]
         public void TopIntentReturnsTopIntent()
@@ -368,7 +368,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act
-            var recognizer = new LuisRecognizer(new LuisApplication(endpoint));
+            var recognizer = new LuisRecognizer(new LuisRecognizerOptionsV3(new LuisApplication(endpoint)));
 
             // Assert
             var app = (LuisApplication)fieldInfo.GetValue(recognizer);
@@ -796,6 +796,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var luisRecognizerOptions = new LuisRecognizerOptionsV3(luisApp)
             {
                 PredictionOptions = options,
+                IncludeAPIResults = options == null ? false : true,
             };
             return new LuisRecognizer(luisRecognizerOptions, httpClientHandler);
 
@@ -828,7 +829,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             return new MockedHttpClientHandler(mockMessageHandler.ToHttpClient());
         }
 
-        private string GetRequestUrl() => $"{Endpoint}/luis/v3.0-preview/apps/{AppId}/*";
+        private string GetRequestUrl() => $"{Endpoint}/luis/prediction/v3.0/apps/{AppId}/*";
 
         private Stream GetResponse(string fileName)
         {

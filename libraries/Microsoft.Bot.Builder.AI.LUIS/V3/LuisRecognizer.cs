@@ -20,6 +20,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
     /// <summary>
     /// A LUIS based implementation of <see cref="ITelemetryRecognizer"/> for the V3 endpoint.
     /// </summary>
+    [Obsolete]
     public class LuisRecognizer : LuisV2.ITelemetryRecognizer
     {
         /// <summary>

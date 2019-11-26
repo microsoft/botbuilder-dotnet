@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 var uri = new UriBuilder(Application.Endpoint);
 
                 // TODO: When the endpoint GAs, we will need to change this.  I could make it an option, but other code is likely to need to change.
-                uri.Path += $"luis/v3.0-preview/apps/{Application.ApplicationId}";
+                uri.Path += $"luis/prediction/v3.0/apps/{Application.ApplicationId}";
 
                 var query = AddParam(null, "verbose", options.IncludeInstanceData);
                 query = AddParam(query, "log", options.Log);
@@ -103,8 +103,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
                     uri.Path += $"/versions/{options.Version}/predict";
                 }
 
+                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", Application.EndpointKey);
                 var response = await httpClient.PostAsync(uri.Uri, new StringContent(content.ToString(), System.Text.Encoding.UTF8, "application/json")).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
+                httpClient.DefaultRequestHeaders.Remove("Ocp-Apim-Subscription-Key");
                 luisResponse = (JObject)JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
                 var prediction = (JObject)luisResponse["prediction"];
                 recognizerResult = new RecognizerResult();
@@ -115,7 +117,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 recognizerResult.Entities = LuisV3.LuisUtil.ExtractEntitiesAndMetadata(prediction);
         
                 LuisV3.LuisUtil.AddProperties(prediction, recognizerResult);
-                if (options.IncludeAPIResults)
+                if (IncludeAPIResults)
                 {
                     recognizerResult.Properties.Add("luisResult", luisResponse);
                 }

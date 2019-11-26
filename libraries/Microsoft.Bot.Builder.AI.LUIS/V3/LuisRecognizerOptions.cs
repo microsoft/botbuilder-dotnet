@@ -11,6 +11,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
     /// <summary>
     /// Optional parameters for a LUIS recognizer.
     /// </summary>
+     [Obsolete]
      public class LuisRecognizerOptions
     {
         /// <summary>
