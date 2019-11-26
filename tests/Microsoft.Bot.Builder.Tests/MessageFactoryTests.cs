@@ -22,7 +22,8 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public void NullText()
         {
-            IMessageActivity message = MessageFactory.Text(null);
+            var message = MessageFactory.Text(null);
+            
             Assert.IsNull(message.Text, "Message Text is not null. Null must have been passed through.");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
         }
@@ -32,7 +33,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var messageText = Guid.NewGuid().ToString();
 
-            IMessageActivity message = MessageFactory.Text(messageText);
+            var message = MessageFactory.Text(messageText);
 
             Assert.AreEqual(message.Text, messageText, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
