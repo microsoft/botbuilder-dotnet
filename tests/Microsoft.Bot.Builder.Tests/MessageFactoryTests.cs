@@ -218,6 +218,22 @@ namespace Microsoft.Bot.Builder.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
+        public void SuggestedActionsCardActionCollectionNull()
+        {
+            MessageFactory.SuggestedActions((IEnumerable<CardAction>)null);
+            Assert.Fail("Exception not thrown");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void SuggestedActionsStringCollectionNull()
+        {
+            MessageFactory.SuggestedActions((IEnumerable<string>)null);
+            Assert.Fail("Exception not thrown");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
         public void AttachmentNull()
         {
             IMessageActivity message = MessageFactory.Attachment((Attachment)null);
@@ -237,6 +253,20 @@ namespace Microsoft.Bot.Builder.Tests
         public void CarouselNull()
         {
             IMessageActivity message = MessageFactory.Carousel((IList<Attachment>)null);
+            Assert.Fail("Exception not thrown");
+        }
+
+        [DataTestMethod]
+        [DataRow("url", null)]
+        [DataRow("url", "")]
+        [DataRow("url", " ")]
+        [DataRow(null, "contentType")]
+        [DataRow("", "contentType")]
+        [DataRow(" ", "contentType")]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ContentUrlNull(string url, string contentType)
+        {
+            MessageFactory.ContentUrl(url, contentType);
             Assert.Fail("Exception not thrown");
         }
 
@@ -375,7 +405,7 @@ namespace Microsoft.Bot.Builder.Tests
             string text = Guid.NewGuid().ToString();
             string ssml = Guid.NewGuid().ToString();
             string inputHint = InputHints.ExpectingInput;
-            string uri = $"https:// {Guid.NewGuid().ToString()}";
+            string uri = $"https://{Guid.NewGuid().ToString()}";
             string contentType = MediaTypeNames.Image.Jpeg;
             string name = Guid.NewGuid().ToString();
 
