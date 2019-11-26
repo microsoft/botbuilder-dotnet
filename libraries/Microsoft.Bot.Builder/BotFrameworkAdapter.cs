@@ -747,7 +747,7 @@ namespace Microsoft.Bot.Builder
                     ServiceUrl = serviceUrl,
                     User = activity.From,
                 },
-                MsAppId = (CredentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
+                MsAppId = (CredentialProvider as SimpleCredentialProvider)?.AppId,
             };
 
             var serializedState = JsonConvert.SerializeObject(tokenExchangeState);
@@ -810,7 +810,7 @@ namespace Microsoft.Bot.Builder
                     ServiceUrl = null,
                     User = new ChannelAccount { Role = "user", Id = userId, },
                 },
-                MsAppId = (CredentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
+                MsAppId = (CredentialProvider as SimpleCredentialProvider)?.AppId,
             };
 
             var serializedState = JsonConvert.SerializeObject(tokenExchangeState);
