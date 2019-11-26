@@ -4,16 +4,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO.Pipes;
-using System.Net.Mail;
-using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Streaming;
-using Microsoft.Bot.Streaming.Transport.NamedPipes;
 using Microsoft.Bot.Streaming.Transport.WebSockets;
 using Microsoft.Bot.Streaming.UnitTests.Mocks;
 using Xunit;
