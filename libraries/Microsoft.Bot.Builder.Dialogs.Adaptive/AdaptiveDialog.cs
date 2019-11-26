@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// The Adaptive Dialog models conversation using events and events to adapt dynamicaly to changing conversation flow.
     /// </summary>
-    public class AdaptiveDialog : DialogContainer
+    public class AdaptiveDialog : DialogContainer, IDialogDependencies
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.AdaptiveDialog";
@@ -225,16 +225,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public IEnumerable<Dialog> GetDependencies()
         {
-            foreach (var trigger in Triggers)
-            {
-                if (trigger is IDialogDependencies depends)
-                {
-                    foreach (var dlg in depends.GetDependencies())
-                    {
-                        yield return dlg;
-                    }
-                }
-            }
+            EnsureDependenciesInstalled();
+            
+            yield break;
         }
 
         protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default)
@@ -257,8 +250,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             // Save into turn
             sequenceContext.GetState().SetValue(TurnPath.DIALOGEVENT, dialogEvent);
-
-            EnsureDependenciesInstalled();
 
             // Look for triggered evt
             var handled = await QueueFirstMatchAsync(sequenceContext, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
@@ -395,16 +386,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             return handled;
-        }
-
-        protected override string OnComputeId()
-        {
-            if (DebugSupport.SourceMap.TryGetValue(this, out var range))
-            {
-                return $"{GetType().Name}({Path.GetFileName(range.Path)}:{range.StartPoint.LineIndex})";
-            }
-
-            return $"{GetType().Name}[]";
         }
 
         protected async Task<DialogTurnResult> ContinueActionsAsync(DialogContext dc, object options, CancellationToken cancellationToken)
