@@ -20,7 +20,9 @@ namespace Microsoft.Bot.Streaming.UnitTests
             SentHeaders = new List<Header>();
         }
 
+#pragma warning disable CS0067
         public event DisconnectedEventHandler Disconnected;
+#pragma warning restore CS0067
 
         public List<Header> SentHeaders { get; set; }
 
