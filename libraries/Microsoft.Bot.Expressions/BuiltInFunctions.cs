@@ -894,30 +894,9 @@ namespace Microsoft.Bot.Expressions
             return value;
         }
 
-        private static void ValidateAccessor(Expression expression)
-        {
-            var children = expression.Children;
-            if (children.Length == 0
-                || !(children[0] is Constant cnst)
-                || cnst.ReturnType != ReturnType.String)
-            {
-                throw new Exception($"{expression} must have a string as first argument.");
-            }
-
-            if (children.Length > 2)
-            {
-                throw new Exception($"{expression} has more than 2 children.");
-            }
-
-            if (children.Length == 2 && children[1].ReturnType != ReturnType.Object)
-            {
-                throw new Exception($"{expression} must have an object as its second argument.");
-            }
-        }
-
         // Try to accumulate the path from an Accessor or Element, from right to left
         // return the accumulated path and the expression left unable to accumulate
-        private static (string path, Expression left, string error) TryAccumulatePath(Expression expression, IMemory state)
+        public static (string path, Expression left, string error) TryAccumulatePath(Expression expression, IMemory state)
         {
             string path = string.Empty;
             var left = expression;
@@ -961,6 +940,27 @@ namespace Microsoft.Bot.Expressions
             }
 
             return (path, left, null);
+        }
+
+        private static void ValidateAccessor(Expression expression)
+        {
+            var children = expression.Children;
+            if (children.Length == 0
+                || !(children[0] is Constant cnst)
+                || cnst.ReturnType != ReturnType.String)
+            {
+                throw new Exception($"{expression} must have a string as first argument.");
+            }
+
+            if (children.Length > 2)
+            {
+                throw new Exception($"{expression} has more than 2 children.");
+            }
+
+            if (children.Length == 2 && children[1].ReturnType != ReturnType.Object)
+            {
+                throw new Exception($"{expression} must have an object as its second argument.");
+            }
         }
 
         private static (object value, string error) Accessor(Expression expression, IMemory state)
