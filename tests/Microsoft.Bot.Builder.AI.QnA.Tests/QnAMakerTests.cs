@@ -1590,7 +1590,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 AutoEndDialog = false,
                 Triggers = new List<OnCondition>()
                 {
-                    new OnUnknownIntent()
+                    new OnBeginDialog()
                     {
                         Actions = new List<Dialog>()
                         {

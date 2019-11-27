@@ -274,14 +274,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 switch (dialogEvent.Name)
                 {
                     case AdaptiveEvents.BeginDialog:
-                        // Emit leading ActivityReceived event
-                        var activityReceivedEvent = new DialogEvent
+                        if (sequenceContext.GetState().GetBoolValue(TurnPath.ACTIVITYPROCESSED) == false)
                         {
-                            Name = AdaptiveEvents.ActivityReceived,
-                            Value = sequenceContext.Context.Activity,
-                            Bubble = false
-                        };
-                        handled = await ProcessEventAsync(sequenceContext, dialogEvent: activityReceivedEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            // Emit leading ActivityReceived event
+                            var activityReceivedEvent = new DialogEvent()
+                            {
+                                Name = AdaptiveEvents.ActivityReceived,
+                                Value = sequenceContext.Context.Activity,
+                                Bubble = false
+                            };
+
+                            handled = await ProcessEventAsync(sequenceContext, dialogEvent: activityReceivedEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        }
+
                         break;
 
                     case AdaptiveEvents.ActivityReceived:
@@ -348,13 +353,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 switch (dialogEvent.Name)
                 {
                     case AdaptiveEvents.BeginDialog:
-                        var activityReceivedEvent = new DialogEvent
+                        if (sequenceContext.GetState().GetBoolValue(TurnPath.ACTIVITYPROCESSED) == false)
                         {
-                            Name = AdaptiveEvents.ActivityReceived,
-                            Value = sequenceContext.Context.Activity,
-                            Bubble = false
-                        };
-                        handled = await ProcessEventAsync(sequenceContext, dialogEvent: activityReceivedEvent, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            var activityReceivedEvent = new DialogEvent
+                            {
+                                Name = AdaptiveEvents.ActivityReceived,
+                                Value = sequenceContext.Context.Activity,
+                                Bubble = false
+                            };
+
+                            handled = await ProcessEventAsync(sequenceContext, dialogEvent: activityReceivedEvent, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        }
 
                         break;
 

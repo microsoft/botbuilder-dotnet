@@ -22,6 +22,12 @@
                 "title": "Options"
             }
         },
+        "includeActivity": {
+            "type": "boolean",
+            "title": "Include Activity",
+            "description": "Set to true if you want the new dialog to process the activity.",
+            "default": false
+        },
         "resultProperty": {
             "$role": "expression",
             "title": "Property",
