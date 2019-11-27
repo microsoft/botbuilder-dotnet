@@ -917,12 +917,19 @@ namespace Microsoft.Bot.Expressions
                         return (null, null, error);
                     }
 
-                    if (!(value is int || value is string))
+                    if (value is int)
+                    {
+                        path = $"[{value}]" + "." + path;
+                    }
+                    else if (value is string)
+                    {
+                        path = $"['{value}']" + "." + path;
+                    }
+                    else
                     {
                         return (null, null, $"{left.Children[1].ToString()} dones't return a int or string");
                     }
 
-                    path = $"['{value}']" + "." + path;
                     left = left.Children[0];
                 }
                 else

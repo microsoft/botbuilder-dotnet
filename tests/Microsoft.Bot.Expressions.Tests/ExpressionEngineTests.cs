@@ -755,15 +755,16 @@ namespace Microsoft.Bot.Expressions.Tests
                 z = new
                 {
                     z = "zar"
-                }
+                },
+                n = 2
             });
 
             var parser = new ExpressionEngine();
 
             // normal case, note, we doesn't append a " yet
-            var exp = parser.Parse("a[f].b[b].z");
+            var exp = parser.Parse("a[f].b[n].z");
             var (path, left, err) = BuiltInFunctions.TryAccumulatePath(exp, memory);
-            Assert.AreEqual(path, "a['foo'].b['bar'].z");
+            Assert.AreEqual(path, "a['foo'].b[2].z");
 
             // normal case
             exp = parser.Parse("a[z.z][z.z].y");
