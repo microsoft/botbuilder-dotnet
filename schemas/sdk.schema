@@ -881,6 +881,12 @@
                         "title": "Options"
                     }
                 },
+                "includeActivity": {
+                    "type": "boolean",
+                    "title": "Include Activity",
+                    "description": "Set to true if you want the new dialog to process the activity.",
+                    "default": false
+                },
                 "resultProperty": {
                     "$role": "expression",
                     "title": "Property",
@@ -6255,6 +6261,21 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "options": {
+                    "type": "object",
+                    "title": "Options",
+                    "description": "One or more options that are passed to the dialog that is called.",
+                    "additionalProperties": {
+                        "type": "string",
+                        "title": "Options"
+                    }
+                },
+                "includeActivity": {
+                    "type": "boolean",
+                    "title": "Include Activity",
+                    "description": "Set to true if you want the new dialog to process the activity.",
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -6311,7 +6332,10 @@
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
                     "title": "Dialog name",
-                    "description": "Current dialog will be replaced by this dialog.",
+                    "description": "Name of the dialog to call.",
+                    "examples": [
+                        "AddToDoDialog"
+                    ],
                     "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "options": {
@@ -6322,6 +6346,12 @@
                         "type": "string",
                         "title": "Options"
                     }
+                },
+                "includeActivity": {
+                    "type": "boolean",
+                    "title": "Include Activity",
+                    "description": "Set to true if you want the new dialog to process the activity.",
+                    "default": false
                 }
             },
             "additionalProperties": false,
