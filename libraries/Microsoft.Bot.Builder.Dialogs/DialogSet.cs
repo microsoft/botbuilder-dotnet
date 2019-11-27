@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -45,6 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>The <see cref="IBotTelemetryClient"/> to use for logging.</value>
         /// <remarks>When this property is set, it sets the <see cref="Dialog.TelemetryClient"/> of each
         /// dialog in the set to the new value.</remarks>
+        [JsonIgnore]
         public IBotTelemetryClient TelemetryClient
         {
             get

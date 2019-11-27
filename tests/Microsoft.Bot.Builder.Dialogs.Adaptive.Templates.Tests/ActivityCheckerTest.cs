@@ -38,12 +38,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests
             var diagnostics = ActivityChecker.Check("Not a valid json");
             Assert.AreEqual(diagnostics.Count, 1);
             Assert.IsTrue(diagnostics[0].Severity == DiagnosticSeverity.Warning);
-            Assert.AreEqual(diagnostics[0].Message, "LG output is not a json object, and will fallback to string format.");
+            Assert.AreEqual("LG output is not a json object, and will fallback to string format.", diagnostics[0].Message);
 
             diagnostics = ActivityChecker.Check("{}");
             Assert.AreEqual(diagnostics.Count, 1);
             Assert.IsTrue(diagnostics[0].Severity == DiagnosticSeverity.Error);
-            Assert.AreEqual(diagnostics[0].Message, "'type' or '$type' is not exist in lg output json object.");
+            Assert.AreEqual("'lgType' does not exist in lg output json object.", diagnostics[0].Message);
         }
 
         [TestMethod]
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests
             var diagnostics = ActivityChecker.Check(lgStringResult);
             Assert.AreEqual(diagnostics.Count, 1);
             Assert.IsTrue(diagnostics[0].Severity == DiagnosticSeverity.Error);
-            Assert.AreEqual(diagnostics[0].Message, "Type 'mystruct' is not support currently.");
+            Assert.AreEqual("Type 'mystruct' is not supported currently.", diagnostics[0].Message);
 
             lgStringResult = await languageGenerator.Generate(context, "@{ErrorActivityType()}", null);
             diagnostics = ActivityChecker.Check(lgStringResult);

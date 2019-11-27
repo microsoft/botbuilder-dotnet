@@ -13,6 +13,7 @@ using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.AI.Luis
@@ -23,6 +24,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
     /// </summary>
     public class LuisRecognizer : ITelemetryRecognizer
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.LuisRecognizer";
+
         /// <summary>
         /// The value type for a LUIS trace activity.
         /// </summary>
@@ -120,6 +124,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// Gets the currently configured <see cref="IBotTelemetryClient"/> that logs the LuisResult event.
         /// </summary>
         /// <value>The <see cref="IBotTelemetryClient"/> being used to log events.</value>
+        [JsonIgnore]
         public IBotTelemetryClient TelemetryClient { get; }
 
         /// <summary>

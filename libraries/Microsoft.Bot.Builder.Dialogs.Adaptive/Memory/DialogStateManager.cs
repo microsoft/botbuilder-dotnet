@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
+using Microsoft.Bot.Expressions.Memory;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory
@@ -18,9 +19,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
     /// MemoryScopes are named root level objects, which can exist either in the dialogcontext or off of turn state
     /// PathResolvers allow for shortcut behavior for mapping things like $foo -> dialog.foo.
     /// </summary>
-    public class DialogStateManager : IDictionary<string, object>
+    public class DialogStateManager : IDictionary<string, object>, IMemory
     {
         private readonly DialogContext dialogContext;
+        private int version = 0;
 
         public DialogStateManager(DialogContext dc)
         {
@@ -88,6 +90,56 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
 
             return MemoryScopes.FirstOrDefault(ms => string.Compare(ms.Name, name, ignoreCase: true) == 0);
+        }
+
+        /// <summary>
+        /// IMemory.GetValue is simple wrapper on 'TryGetValue' now, and swallow error silently.
+        /// </summary>
+        /// <param name="path">The path to get value for.</param>
+        /// <returns>The value get.</returns>
+        (object value, string error) IMemory.GetValue(string path)
+        {
+            if (this.TryGetValue<object>(path, out var result))
+            {
+                return (result, null);
+            }
+            else
+            {
+                // We choose to swallow error here to let an invalid path evaluate to null
+                // Maybe we can log a warnning message like
+                // $"Get value for path: '{path}' failed".
+                return (null, null);
+            }
+        }
+
+        /// <summary>
+        /// IMemory.SetValue is a simpler wrapper on top of 'SetValue', which is been widely used across
+        /// AdaptiveDialog. We may consider let other part of AdaptiveDialog use IMemory interface instead of
+        /// call `SetValue` directly.
+        /// </summary>
+        /// <param name="path">Path to set value.</param>
+        /// <param name="value">Value to set.</param>
+        /// <returns>Value set.</returns>
+        (object value, string error) IMemory.SetValue(string path, object value)
+        {
+            try
+            {
+                this.SetValue(path, value);
+                return (value, null);
+            }
+            catch (Exception e)
+            {
+                return (value, $"Set value to path: '{path}' failed, Reason: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Version help caller to identify the updates and decide cache or not.
+        /// </summary>
+        /// <returns>Current version.</returns>
+        string IMemory.Version()
+        {
+            return version.ToString();
         }
 
         /// <summary>
@@ -236,6 +288,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
             path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
             ObjectPath.SetPathValue(this, path, value);
+
+            // Every set will increase version
+            version++;
         }
 
         /// <summary>

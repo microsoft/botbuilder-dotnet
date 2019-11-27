@@ -1,0 +1,74 @@
+{
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "innerDialog",
+    "autoEndDialog": false,
+    "recognizer": {
+        "$kind": "Microsoft.RegexRecognizer",
+        "intents": [
+            {
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "JokeIntent",
+                "pattern": "(?i)joke"
+            },
+            {
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "GreetingIntent",
+                "pattern": "(?i)hi|hello"
+            },
+            {
+                "$kind": "Microsoft.IntentPattern",
+                "intent": "GoodbyeIntent",
+                "pattern": "(?i)bye|goodbye|seeya|see ya"
+            }
+        ]
+    },
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                "GreetingDialog",
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "I'm a joke bot. To get started say 'tell me a joke'"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "JokeIntent",
+            "actions": [
+                "TellJokeDialog"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "GreetingIntent",
+            "actions": [
+                "GreetingDialog"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "GoodbyeIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "See you later aligator!"
+                },
+                {
+                    "$kind": "Microsoft.EndDialog"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnUnknownIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Like I said, I'm a joke bot. To get started say 'tell me a joke'"
+                }
+            ]
+        }
+    ],
+    "defaultResultProperty": "dialog.result"
+}

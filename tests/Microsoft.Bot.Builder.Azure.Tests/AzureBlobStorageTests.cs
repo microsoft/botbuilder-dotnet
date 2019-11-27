@@ -6,15 +6,17 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
     [TestClass]
-    public class AzureBlobStorageTests
+    public class AzureBlobStorageTests : StorageBaseTests
     {
         private const string ConnectionString = @"AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;";
 
@@ -24,7 +26,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             get
             {
-                var containerName = TestContext.TestName.ToLower();
+                var containerName = TestContext.TestName.ToLower().Replace("_", string.Empty);
                 NameValidator.ValidateContainerName(containerName);
                 return containerName;
             }
@@ -78,6 +80,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     new AzureBlobStorage((CloudStorageAccount)null, null));
 
                 Assert.ThrowsException<ArgumentNullException>(() => new AzureBlobStorage((string)null, null));
+
+                Assert.ThrowsException<ArgumentNullException>(() =>
+                    new AzureBlobStorage(CloudStorageAccount.Parse(ConnectionString), ContainerName, (JsonSerializer)null));
             }
         }
 
@@ -87,8 +92,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (CheckEmulator())
             {
                 // Arrange
-                var storageAccount = CloudStorageAccount.Parse(ConnectionString);
-                var storage = new AzureBlobStorage(storageAccount, ContainerName);
+                var storage = GetStorage();
 
                 var changes = new Dictionary<string, object>
                 {
@@ -113,8 +117,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (CheckEmulator())
             {
                 // Arrange
-                var storageAccount = CloudStorageAccount.Parse(ConnectionString);
-                var storage = new AzureBlobStorage(storageAccount, ContainerName);
+                var storage = GetStorage();
 
                 var changes = new Dictionary<string, object>
                 {
@@ -139,8 +142,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (CheckEmulator())
             {
                 // Arrange
-                var storageAccount = CloudStorageAccount.Parse(ConnectionString);
-                var storage = new AzureBlobStorage(storageAccount, ContainerName);
+                var storage = GetStorage();
 
                 // Act
                 await storage.WriteAsync(new Dictionary<string, object> { { "a", "1.0" }, { "b", "2.0" } });
@@ -162,8 +164,59 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (CheckEmulator())
             {
                 // Arrange
-                var storageAccount = CloudStorageAccount.Parse(ConnectionString);
-                var storage = new AzureBlobStorage(storageAccount, ContainerName);
+                var storage = GetStorage();
+                var conversationState = new ConversationState(storage);
+                var propAccessor = conversationState.CreateProperty<Prop>("prop");
+
+                var adapter = new TestStorageAdapter();
+                var activity = new Activity
+                {
+                    ChannelId = "123",
+                    Conversation = new ConversationAccount { Id = "abc" },
+                };
+
+                // Act
+                var turnContext1 = new TurnContext(adapter, activity);
+                var propValue1 = await propAccessor.GetAsync(turnContext1, () => new Prop());
+                propValue1.X = "hello";
+                propValue1.Y = "world";
+                await conversationState.SaveChangesAsync(turnContext1, force: true);
+
+                var turnContext2 = new TurnContext(adapter, activity);
+                var propValue2 = await propAccessor.GetAsync(turnContext2);
+
+                // Assert
+                Assert.AreEqual("hello", propValue2.X);
+                Assert.AreEqual("world", propValue2.Y);
+
+                await propAccessor.DeleteAsync(turnContext1);
+                await conversationState.SaveChangesAsync(turnContext1);
+            }
+        }
+
+        [TestMethod]
+        public async Task TestConversationStateBlobStorage_TypeNameHandlingDefault()
+        {
+            await TestConversationStateBlobStorage_Method(GetStorage());
+        }
+
+        [TestMethod]
+        public async Task TestConversationStateBlobStorage_TypeNameHandlingNone()
+        {
+            await TestConversationStateBlobStorage_Method(GetStorage(true));
+        }
+
+        [TestMethod]
+        public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone()
+        {
+            await StatePersistsThroughMultiTurn(GetStorage(true));
+        }
+
+        private async Task TestConversationStateBlobStorage_Method(AzureBlobStorage storage)
+        {
+            if (CheckEmulator())
+            {
+                // Arrange
                 var conversationState = new ConversationState(storage);
                 var propAccessor = conversationState.CreateProperty<Prop>("prop");
                 var adapter = new TestStorageAdapter();
@@ -186,6 +239,22 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 // Assert
                 Assert.AreEqual("hello", propValue2.X);
                 Assert.AreEqual("world", propValue2.Y);
+            }
+        }
+
+        private AzureBlobStorage GetStorage(bool typeNameHandlingNone = false)
+        {
+            var storageAccount = CloudStorageAccount.Parse(ConnectionString);
+            if (typeNameHandlingNone)
+            {
+                return new AzureBlobStorage(
+                    storageAccount,
+                    ContainerName,
+                    new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
+            }
+            else
+            {
+                return new AzureBlobStorage(storageAccount, ContainerName);
             }
         }
 

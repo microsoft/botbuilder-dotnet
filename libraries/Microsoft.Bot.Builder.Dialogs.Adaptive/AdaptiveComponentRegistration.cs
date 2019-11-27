@@ -6,8 +6,13 @@ using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
@@ -23,99 +28,125 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public override IEnumerable<TypeRegistration> GetTypes()
         {
             // Conditionals
-            yield return new TypeRegistration<OnCondition>("Microsoft.OnCondition");
-            yield return new TypeRegistration<OnError>("Microsoft.OnError");
+            yield return new TypeRegistration<OnCondition>(OnCondition.DeclarativeType);
+            yield return new TypeRegistration<OnError>(OnError.DeclarativeType);
 
-            yield return new TypeRegistration<OnDialogEvent>("Microsoft.OnDialogEvent");
-            yield return new TypeRegistration<OnCustomEvent>("Microsoft.OnCustomEvent");
+            yield return new TypeRegistration<OnDialogEvent>(OnDialogEvent.DeclarativeType);
+            yield return new TypeRegistration<OnCustomEvent>(OnCustomEvent.DeclarativeType);
 
-            yield return new TypeRegistration<OnBeginDialog>("Microsoft.OnBeginDialog");
-            yield return new TypeRegistration<OnCancelDialog>("Microsoft.OnCancelDialog");
-            yield return new TypeRegistration<OnRepromptDialog>("Microsoft.OnRepromptDialog");
+            yield return new TypeRegistration<OnBeginDialog>(OnBeginDialog.DeclarativeType);
+            yield return new TypeRegistration<OnCancelDialog>(OnCancelDialog.DeclarativeType);
+            yield return new TypeRegistration<OnRepromptDialog>(OnRepromptDialog.DeclarativeType);
 
-            yield return new TypeRegistration<OnIntent>("Microsoft.OnIntent");
-            yield return new TypeRegistration<OnUnknownIntent>("Microsoft.OnUnknownIntent");
+            yield return new TypeRegistration<OnIntent>(OnIntent.DeclarativeType);
+            yield return new TypeRegistration<OnUnknownIntent>(OnUnknownIntent.DeclarativeType);
 
-            yield return new TypeRegistration<OnActivity>("Microsoft.OnActivity");
-            yield return new TypeRegistration<OnMessageActivity>("Microsoft.OnMessageActivity");
-            yield return new TypeRegistration<OnMessageUpdateActivity>("Microsoft.OnMessageUpdateActivity");
-            yield return new TypeRegistration<OnMessageDeleteActivity>("Microsoft.OnMessageDeleteActivity");
-            yield return new TypeRegistration<OnMessageReactionActivity>("Microsoft.OnMessageReactionActivity");
-            yield return new TypeRegistration<OnEventActivity>("Microsoft.OnEventActivity");
-            yield return new TypeRegistration<OnInvokeActivity>("Microsoft.OnInvokeActivity");
-            yield return new TypeRegistration<OnConversationUpdateActivity>("Microsoft.OnConversationUpdateActivity");
-            yield return new TypeRegistration<OnEndOfConversationActivity>("Microsoft.OnEndOfConversationActivity");
-            yield return new TypeRegistration<OnTypingActivity>("Microsoft.OnTypingActivity");
-            yield return new TypeRegistration<OnHandoffActivity>("Microsoft.OnHandoffActivity");
+            yield return new TypeRegistration<OnActivity>(OnActivity.DeclarativeType);
+            yield return new TypeRegistration<OnMessageActivity>(OnMessageActivity.DeclarativeType);
+            yield return new TypeRegistration<OnMessageUpdateActivity>(OnMessageUpdateActivity.DeclarativeType);
+            yield return new TypeRegistration<OnMessageDeleteActivity>(OnMessageDeleteActivity.DeclarativeType);
+            yield return new TypeRegistration<OnMessageReactionActivity>(OnMessageReactionActivity.DeclarativeType);
+            yield return new TypeRegistration<OnEventActivity>(OnEventActivity.DeclarativeType);
+            yield return new TypeRegistration<OnInvokeActivity>(OnInvokeActivity.DeclarativeType);
+            yield return new TypeRegistration<OnConversationUpdateActivity>(OnConversationUpdateActivity.DeclarativeType);
+            yield return new TypeRegistration<OnEndOfConversationActivity>(OnEndOfConversationActivity.DeclarativeType);
+            yield return new TypeRegistration<OnTypingActivity>(OnTypingActivity.DeclarativeType);
+            yield return new TypeRegistration<OnHandoffActivity>(OnHandoffActivity.DeclarativeType);
 
             // Actions
-            yield return new TypeRegistration<BeginDialog>("Microsoft.BeginDialog");
-            yield return new TypeRegistration<CancelAllDialogs>("Microsoft.CancelAllDialogs");
-            yield return new TypeRegistration<DebugBreak>("Microsoft.DebugBreak");
-            yield return new TypeRegistration<DeleteProperty>("Microsoft.DeleteProperty");
-            yield return new TypeRegistration<EditArray>("Microsoft.EditArray");
-            yield return new TypeRegistration<EditActions>("Microsoft.EditActions");
-            yield return new TypeRegistration<EmitEvent>("Microsoft.EmitEvent");
-            yield return new TypeRegistration<EndDialog>("Microsoft.EndDialog");
-            yield return new TypeRegistration<EndTurn>("Microsoft.EndTurn");
-            yield return new TypeRegistration<Foreach>("Microsoft.Foreach");
-            yield return new TypeRegistration<ForeachPage>("Microsoft.ForeachPage");
-            yield return new TypeRegistration<HttpRequest>("Microsoft.HttpRequest");
-            yield return new TypeRegistration<IfCondition>("Microsoft.IfCondition");
-            yield return new TypeRegistration<InitProperty>("Microsoft.InitProperty");
-            yield return new TypeRegistration<LogAction>("Microsoft.LogAction");
-            yield return new TypeRegistration<RepeatDialog>("Microsoft.RepeatDialog");
-            yield return new TypeRegistration<ReplaceDialog>("Microsoft.ReplaceDialog");
-            yield return new TypeRegistration<SendActivity>("Microsoft.SendActivity");
-            yield return new TypeRegistration<SetProperty>("Microsoft.SetProperty");
-            yield return new TypeRegistration<SwitchCondition>("Microsoft.SwitchCondition");
-            yield return new TypeRegistration<TraceActivity>("Microsoft.TraceActivity");
+            yield return new TypeRegistration<BeginDialog>(BeginDialog.DeclarativeType);
+            yield return new TypeRegistration<CancelAllDialogs>(CancelAllDialogs.DeclarativeType);
+            yield return new TypeRegistration<DebugBreak>(DebugBreak.DeclarativeType);
+            yield return new TypeRegistration<DeleteProperty>(DeleteProperty.DeclarativeType);
+            yield return new TypeRegistration<EditArray>(EditArray.DeclarativeType);
+            yield return new TypeRegistration<EditActions>(EditActions.DeclarativeType);
+            yield return new TypeRegistration<EmitEvent>(EmitEvent.DeclarativeType);
+            yield return new TypeRegistration<EndDialog>(EndDialog.DeclarativeType);
+            yield return new TypeRegistration<EndTurn>(EndTurn.DeclarativeType);
+            yield return new TypeRegistration<Foreach>(Foreach.DeclarativeType);
+            yield return new TypeRegistration<ForeachPage>(ForeachPage.DeclarativeType);
+            yield return new TypeRegistration<HttpRequest>(HttpRequest.DeclarativeType);
+            yield return new TypeRegistration<IfCondition>(IfCondition.DeclarativeType);
+            yield return new TypeRegistration<InitProperty>(InitProperty.DeclarativeType);
+            yield return new TypeRegistration<LogAction>(LogAction.DeclarativeType);
+            yield return new TypeRegistration<RepeatDialog>(RepeatDialog.DeclarativeType);
+            yield return new TypeRegistration<ReplaceDialog>(ReplaceDialog.DeclarativeType);
+            yield return new TypeRegistration<SendActivity>(SendActivity.DeclarativeType);
+            yield return new TypeRegistration<SetProperty>(SetProperty.DeclarativeType);
+            yield return new TypeRegistration<SwitchCondition>(SwitchCondition.DeclarativeType);
+            yield return new TypeRegistration<TraceActivity>(TraceActivity.DeclarativeType);
 
             // Inputs
-            yield return new TypeRegistration<AttachmentInput>("Microsoft.AttachmentInput");
-            yield return new TypeRegistration<ConfirmInput>("Microsoft.ConfirmInput");
-            yield return new TypeRegistration<NumberInput>("Microsoft.NumberInput");
-            yield return new TypeRegistration<TextInput>("Microsoft.TextInput");
-            yield return new TypeRegistration<ChoiceInput>("Microsoft.ChoiceInput");
-            yield return new TypeRegistration<DateTimeInput>("Microsoft.DateTimeInput");
-            yield return new TypeRegistration<OAuthInput>("Microsoft.OAuthInput");
+            yield return new TypeRegistration<AttachmentInput>(AttachmentInput.DeclarativeType);
+            yield return new TypeRegistration<ConfirmInput>(ConfirmInput.DeclarativeType);
+            yield return new TypeRegistration<NumberInput>(NumberInput.DeclarativeType);
+            yield return new TypeRegistration<TextInput>(TextInput.DeclarativeType);
+            yield return new TypeRegistration<ChoiceInput>(ChoiceInput.DeclarativeType);
+            yield return new TypeRegistration<DateTimeInput>(DateTimeInput.DeclarativeType);
+            yield return new TypeRegistration<OAuthInput>(OAuthInput.DeclarativeType);
 
             // Recognizers
-            yield return new TypeRegistration<LuisRecognizer>("Microsoft.LuisRecognizer") { CustomDeserializer = new LuisRecognizerLoader(TypeFactory.Configuration) };
-            yield return new TypeRegistration<RegexRecognizer>("Microsoft.RegexRecognizer");
-            yield return new TypeRegistration<IntentPattern>("Microsoft.IntentPattern");
-            yield return new TypeRegistration<MultiLanguageRecognizer>("Microsoft.MultiLanguageRecognizer");
+            yield return new TypeRegistration<LuisRecognizer>(LuisRecognizer.DeclarativeType) { CustomDeserializer = new LuisRecognizerLoader(TypeFactory.Configuration) };
+            yield return new TypeRegistration<RegexRecognizer>(RegexRecognizer.DeclarativeType);
+            yield return new TypeRegistration<IntentPattern>(IntentPattern.DeclarativeType);
+            yield return new TypeRegistration<MultiLanguageRecognizer>(MultiLanguageRecognizer.DeclarativeType);
 
             // Entity recognizers
-            yield return new TypeRegistration<AgeEntityRecognizer>("Microsoft.AgeEntityRecognizer");
-            yield return new TypeRegistration<ConfirmationEntityRecognizer>("Microsoft.ConfirmationEntityRecognizer");
-            yield return new TypeRegistration<CurrencyEntityRecognizer>("Microsoft.CurrencyEntityRecognizer");
-            yield return new TypeRegistration<DateTimeEntityRecognizer>("Microsoft.DateTimeEntityRecognizer");
-            yield return new TypeRegistration<DimensionEntityRecognizer>("Microsoft.DimensionEntityRecognizer");
-            yield return new TypeRegistration<EmailEntityRecognizer>("Microsoft.EmailEntityRecognizer");
-            yield return new TypeRegistration<EntityRecognizer>("Microsoft.EntityRecognizer");
-            yield return new TypeRegistration<EntityRecognizerSet>("Microsoft.EntityRecognizerSet");
-            yield return new TypeRegistration<GuidEntityRecognizer>("Microsoft.GuidEntityRecognizer");
-            yield return new TypeRegistration<HashtagEntityRecognizer>("Microsoft.HashtagEntityRecognizer");
-            yield return new TypeRegistration<IpEntityRecognizer>("Microsoft.IpEntityRecognizer");
-            yield return new TypeRegistration<MentionEntityRecognizer>("Microsoft.MentionEntityRecognizer");
-            yield return new TypeRegistration<NumberEntityRecognizer>("Microsoft.NumberEntityRecognizer");
-            yield return new TypeRegistration<NumberRangeEntityRecognizer>("Microsoft.NumberRangeEntityRecognizer");
-            yield return new TypeRegistration<OrdinalEntityRecognizer>("Microsoft.OrdinalEntityRecognizer");
-            yield return new TypeRegistration<PercentageEntityRecognizer>("Microsoft.PercentageEntityRecognizer");
-            yield return new TypeRegistration<PhoneNumberEntityRecognizer>("Microsoft.PhoneNumberEntityRecognizer");
-            yield return new TypeRegistration<TemperatureEntityRecognizer>("Microsoft.TemperatureEntityRecognizer");
-            yield return new TypeRegistration<UrlEntityRecognizer>("Microsoft.UrlEntityRecognizer");
+            yield return new TypeRegistration<AgeEntityRecognizer>(AgeEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<ConfirmationEntityRecognizer>(ConfirmationEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<CurrencyEntityRecognizer>(CurrencyEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<DateTimeEntityRecognizer>(DateTimeEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<DimensionEntityRecognizer>(DimensionEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<EmailEntityRecognizer>(EmailEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<EntityRecognizerSet>(EntityRecognizerSet.DeclarativeType);
+            yield return new TypeRegistration<GuidEntityRecognizer>(GuidEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<HashtagEntityRecognizer>(HashtagEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<IpEntityRecognizer>(IpEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<MentionEntityRecognizer>(MentionEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<NumberEntityRecognizer>(NumberEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<NumberRangeEntityRecognizer>(NumberRangeEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<OrdinalEntityRecognizer>(OrdinalEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<PercentageEntityRecognizer>(PercentageEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<PhoneNumberEntityRecognizer>(PhoneNumberEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<TemperatureEntityRecognizer>(TemperatureEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<UrlEntityRecognizer>(UrlEntityRecognizer.DeclarativeType);
+
+            // selectors
+            yield return new TypeRegistration<ConditionalSelector>(ConditionalSelector.DeclarativeType);
+            yield return new TypeRegistration<FirstSelector>(FirstSelector.DeclarativeType);
+            yield return new TypeRegistration<MostSpecificSelector>(MostSpecificSelector.DeclarativeType);
+            yield return new TypeRegistration<RandomSelector>(RandomSelector.DeclarativeType);
+            yield return new TypeRegistration<TrueSelector>(TrueSelector.DeclarativeType);
+
+            // Generators
+            yield return new TypeRegistration<ResourceMultiLanguageGenerator>(ResourceMultiLanguageGenerator.DeclarativeType);
+            yield return new TypeRegistration<MultiLanguageGenerator>(MultiLanguageGenerator.DeclarativeType);
+            yield return new TypeRegistration<TemplateEngineLanguageGenerator>(TemplateEngineLanguageGenerator.DeclarativeType);
 
             // Dialogs
-            yield return new TypeRegistration<AdaptiveDialog>("Microsoft.AdaptiveDialog");
-            yield return new TypeRegistration<QnAMakerDialog>("Microsoft.QnAMakerDialog");
+            yield return new TypeRegistration<AdaptiveDialog>(AdaptiveDialog.DeclarativeType);
+            yield return new TypeRegistration<QnAMakerDialog>(QnAMakerDialog.DeclarativeType);
+
+            // Testing
+            yield return new TypeRegistration<TestScript>(TestScript.DeclarativeType);
+            yield return new TypeRegistration<UserSays>(UserSays.DeclarativeType);
+            yield return new TypeRegistration<UserTyping>(UserTyping.DeclarativeType);
+            yield return new TypeRegistration<UserConversationUpdate>(UserConversationUpdate.DeclarativeType);
+            yield return new TypeRegistration<UserActivity>(UserActivity.DeclarativeType);
+            yield return new TypeRegistration<UserDelay>(UserDelay.DeclarativeType);
+            yield return new TypeRegistration<AssertReply>(AssertReply.DeclarativeType);
+            yield return new TypeRegistration<AssertReplyOneOf>(AssertReplyOneOf.DeclarativeType);
+            yield return new TypeRegistration<AssertReplyActivity>(AssertReplyActivity.DeclarativeType);
         }
 
         public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)
         {
             yield return new InterfaceConverter<OnCondition>(refResolver, sourceMap, paths);
+            yield return new InterfaceConverter<TestAction>(refResolver, sourceMap, paths);
+            yield return new InterfaceConverter<EntityRecognizer>(refResolver, sourceMap, paths);
+            yield return new InterfaceConverter<ITriggerSelector>(refResolver, sourceMap, paths);
             yield return new ExpressionPropertyConverter<ChoiceSet>();
+            yield return new ActivityTemplateConverter();
         }
     }
 }

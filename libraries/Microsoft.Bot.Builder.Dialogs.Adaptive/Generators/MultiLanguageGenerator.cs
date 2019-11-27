@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using Microsoft.Bot.Builder.Dialogs;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
@@ -12,6 +13,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// </summary>
     public class MultiLanguageGenerator : MultiLanguageGeneratorBase
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.MultiLanguageGenerator";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MultiLanguageGenerator"/> class.
         /// </summary>
@@ -25,6 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <value>
         /// The language generators for multiple languages.
         /// </value>
+        [JsonProperty("languageGenerators")]
         public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>

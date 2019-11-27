@@ -1,12 +1,12 @@
 {
   "$schema": "../../app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
+  "$kind": "Microsoft.AdaptiveDialog",
   "triggers": [
     {
-      "$type": "Microsoft.OnBeginDialog",
+      "$kind": "Microsoft.OnBeginDialog",
       "actions": [
         {
-          "$type": "Microsoft.QnAMakerDialog",
+          "$kind": "Microsoft.QnAMakerDialog",
           "knowledgeBaseId": "'dummy-id'",
           "endpointKey": "'dummy-key'",
           "hostname": "'https://dummy-hostname.azurewebsites.net/qnamaker'",

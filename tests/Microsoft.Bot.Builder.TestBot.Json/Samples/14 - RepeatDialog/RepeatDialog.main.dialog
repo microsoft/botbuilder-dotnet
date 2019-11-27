@@ -1,13 +1,13 @@
 {
     "$schema": "../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "$id": "root",
     "recognizer": {
-        "$type": "Microsoft.RegexRecognizer",
+        "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "cancel",
                 "pattern": "cancel"
             }
@@ -15,36 +15,36 @@
     },
     "triggers": [
         {
-            "$type": "Microsoft.OnBeginDialog",
+            "$kind": "Microsoft.OnBeginDialog",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "RepeatDialog.main.dialog starting"
                 },
                 {
-                    "$type": "Microsoft.TextInput",
+                    "$kind": "Microsoft.TextInput",
                     "prompt": "Hello, what is your name?",
                     "property": "user.name",
                     "value": "user.name"
                 },
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Hello @{user.name}, nice to meet you! (type cancel to end this)"
                 },
                 {
-                    "$type": "Microsoft.EndTurn"
+                    "$kind": "Microsoft.EndTurn"
                 },
                 {
-                    "$type": "Microsoft.RepeatDialog"
+                    "$kind": "Microsoft.RepeatDialog"
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "cancel",
             "actions": [
                 {
-                    "$type": "Microsoft.EndDialog"
+                    "$kind": "Microsoft.EndDialog"
                 }
             ]
         }

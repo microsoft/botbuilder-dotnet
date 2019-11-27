@@ -2,6 +2,7 @@
 // Licensed under the MIT License.using System.Security.Claims;
 
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
@@ -115,6 +116,44 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual(conversationIdValue, newActivity.Conversation.Id);
             Assert.AreEqual(tenantIdValue, newActivity.Conversation.TenantId);
             Assert.AreEqual(eventActivityName, newActivity.Name);
+        }
+
+        [TestMethod]
+        public async Task OutgoingActivityIdsAreNotSent()
+        {
+            // Arrange
+            var mockCredentialProvider = new Mock<ICredentialProvider>();
+            var mockConnector = new MemoryConnectorClient();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            var httpClient = new HttpClient(mockHttpMessageHandler.Object);
+            var adapter = new BotFrameworkAdapter(mockCredentialProvider.Object, customHttpClient: httpClient);
+
+            var incomingActivity = new Activity("test")
+            {
+                Id = "testid",
+                ChannelId = Channels.Directline,
+                ServiceUrl = "https://fake.service.url",
+                Conversation = new ConversationAccount
+                {
+                    Id = "cid",
+                }
+            };
+
+            var reply = MessageFactory.Text("test");
+            reply.Id = "TestReplyId";
+            
+            // Act
+            using (var turnContext = new TurnContext(adapter, incomingActivity))
+            {
+                turnContext.TurnState.Add<IConnectorClient>(mockConnector);
+
+                var responseIds = await turnContext.SendActivityAsync(reply, default);
+            }
+
+            var sentActivity = mockConnector.MemoryConversations.SentActivities.FirstOrDefault(f => f.Type == ActivityTypes.Message);
+
+            // Assert - assert the reply's id is not sent
+            Assert.IsNull(sentActivity.Id); 
         }
 
         private static async Task<IActivity> ProcessActivity(string channelId, object channelData, string conversationTenantId)

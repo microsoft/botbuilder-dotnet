@@ -1,12 +1,12 @@
 {
   "$schema": "../../../../app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
+  "$kind": "Microsoft.AdaptiveDialog",
   "triggers": [
     {
-      "$type": "Microsoft.OnBeginDialog",
+      "$kind": "Microsoft.OnBeginDialog",
       "actions": [
         {
-          "$type": "Microsoft.OAuthInput",
+          "$kind": "Microsoft.OAuthInput",
           "ConnectionName": "msgraph",
           "Title": "Log in",
           "Text": "Please log in to your calendar account",
@@ -14,7 +14,7 @@
         },
         "GetContactService"
         //{
-        //  "$type": "Microsoft.EditArray",
+        //  "$kind": "Microsoft.EditArray",
         //  "changeType": "Push",
         //  "itemsProperty": "user.recipients",
         //  "itemProperty": "dialog.getResponse.value[0].emailAddresses[0].address"

@@ -1,23 +1,23 @@
 ﻿{
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "generator": "root.lg",
     "triggers": [
         {
-            "$type": "Microsoft.OnBeginDialog",
+            "$kind": "Microsoft.OnBeginDialog",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "@{test()}"
                 },
                 {
-                    "$type": "Microsoft.AdaptiveDialog",
+                    "$kind": "Microsoft.AdaptiveDialog",
                     "generator": "subDialog.lg",
                     "triggers": [
                         {
-                            "$type": "Microsoft.OnBeginDialog",
+                            "$kind": "Microsoft.OnBeginDialog",
                             "actions": [
                                 {
-                                    "$type": "Microsoft.SendActivity",
+                                    "$kind": "Microsoft.SendActivity",
                                     "activity": "@{test()}"
                                 }
                             ]

@@ -9,6 +9,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
     public class RegexEntityRecognizer : EntityRecognizer
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.RegexEntityRecognizer";
+
         private string pattern;
         private Regex regex;
 
