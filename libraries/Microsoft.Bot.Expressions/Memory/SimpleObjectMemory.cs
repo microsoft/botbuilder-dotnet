@@ -40,7 +40,9 @@ namespace Microsoft.Bot.Expressions.Memory
                 return (null, null);
             }
 
-            var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => x.Trim('\'', '"'))
+                            .ToArray(); 
             object value = null;
             var curScope = memory;
 
@@ -79,7 +81,9 @@ namespace Microsoft.Bot.Expressions.Memory
                 return (null, "Can't set value with in a null memory");
             }
 
-            var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => x.Trim('\'', '"'))
+                            .ToArray();
 
             var curScope = memory;
             var curPath = string.Empty; // valid path so far
