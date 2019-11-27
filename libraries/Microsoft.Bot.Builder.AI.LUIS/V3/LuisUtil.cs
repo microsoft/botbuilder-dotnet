@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using LuisV2 = Microsoft.Bot.Builder.AI.Luis;
@@ -40,9 +42,8 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
             return type.Replace('.', '_').Replace(' ', '_');
         }
 
-        // TODO: This code should be removed once V3.1 returns a geography object.
-        // It exists to find the type field in $instance if present in order to create
-        // a geography object with type and value.
+        // It exists to find the type field in $instance if present in order 
+        // to map the role if present to a geography object with type and value.
         internal static void FindGeographyTypes(JToken source, Dictionary<string, string> geoTypes)
         {
             if (source != null)
@@ -110,15 +111,15 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
                     {
                         var name = NormalizeEntity(property.Name);
                         var isObj = property.Value.Type == JTokenType.Object;
-                        var isArr = property.Value.Type == JTokenType.Array;
-                        var isStr = property.Value.Type == JTokenType.String;
+                        var isArray = property.Value.Type == JTokenType.Array;
+                        var isString = property.Value.Type == JTokenType.String;
                         var isInt = property.Value.Type == JTokenType.Integer;
                         var val = MapProperties(property.Value, inInstance || property.Name == MetadataKey, geoTypes);
-                        if (name == "datetime" && isArr)
+                        if (name == "datetime" && isArray)
                         {
                             nobj.Add("datetimeV1", val);
                         }
-                        else if (name == "datetimeV2" && isArr)
+                        else if (name == "datetimeV2" && isArray)
                         {
                             nobj.Add("datetime", val);
                         }
@@ -130,7 +131,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
                                 nobj.Add("endIndex", property.Value.Value<int>() + property.Parent["startIndex"].Value<int>());
                             }
                             else if (!((isInt && name == "modelTypeId") ||
-                                       (isStr && name == "role")))
+                                       (isString && name == "role")))
                             {
                                 nobj.Add(name, val);
                             }
@@ -138,7 +139,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
                         else
                         {
                             // Correct non-$instance values
-                            if (name == "unit" && isStr)
+                            if (name == "unit" && isString)
                             {
                                 nobj.Add("units", val);
                             }
@@ -159,7 +160,18 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
                 {
                     if (!inInstance && geoTypes.TryGetValue(elt.Path, out var geoType))
                     {
-                        narr.Add(new JObject(new JProperty("location", elt.Value<string>()), new JProperty("type", geoType)));
+                        var geoEntity = new JObject();
+                        foreach (var props in elt.Children())
+                        {
+                            var tokenProp = props as JProperty;
+                            if (tokenProp.Name.Contains("value"))
+                            {
+                                geoEntity.Add("location", tokenProp.Value);
+                            }
+                        }
+
+                        geoEntity.Add("type", geoType);
+                        narr.Add(geoEntity);
                     }
                     else
                     {
@@ -177,6 +189,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
         {
             var entities = (JObject)JObject.FromObject(prediction["entities"]);
             var geoTypes = new Dictionary<string, string>();
+
             FindGeographyTypes(entities, geoTypes);
             return (JObject)MapProperties(entities, false, geoTypes);
         }

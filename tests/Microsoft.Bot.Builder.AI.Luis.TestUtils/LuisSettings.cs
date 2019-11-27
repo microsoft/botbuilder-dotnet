@@ -12,11 +12,11 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
         // By default (when the Mocks are being used), the subscription key used can be any GUID. Only if the tests
         // are connecting to LUIS is an actual key needed.
         // NOTE: DO NOT REMOVE THIS APP ID or ENDPOINT.  It points to the server model used for updating these tests.
-        public string AppId { get; set; } = "002bcc3a-85bf-48dc-9bb1-fd66ad287f83";
+        public string AppId { get; set; } = "38d43f13-3e8d-45f3-b23f-ef8a0b9d98ac";
 
         public string Endpoint { get; set; } = "https://westus.api.cognitive.microsoft.com";
 
-        public string Key { get; set; } = "6951add2b2c24b0e894e6804ed06e69c";
+        public string Key { get; set; }
 
         // LUIS tests run off of recorded HTTP responses to avoid service dependencies.
         // To update the recorded responses:
