@@ -21,8 +21,8 @@ namespace Microsoft.Bot.Builder.TestProtocol.Controllers
         public ForwardController(BotFrameworkHttpClient client, IConfiguration configuration, ISkillConversationIdFactory factory)
         {
             _client = client;
-            _toUri = new Uri(configuration["next"]);
-            _serviceUrl = new Uri(configuration["serviceUrl"]);
+            _toUri = new Uri(configuration["Next"]);
+            _serviceUrl = new Uri(configuration["ServiceUrl"]);
             _factory = factory;
         }
 
@@ -37,6 +37,12 @@ namespace Microsoft.Bot.Builder.TestProtocol.Controllers
             var nextConversationId = _factory.CreateSkillConversationId(currentConversationId, currentServiceUrl);
 
             await _client.PostActivityAsync(null, null, _toUri, _serviceUrl, nextConversationId, inboundActivity);
+
+            // ALTERNATIVE API IDEA...
+            //var inboundConversationReference = inboundActivity.GetConversationReference();
+            //var outboundActivity = MessageFactory.CreateActivity(inboundActivity);
+            //outboundActivity.ApplyConversationReference(inboundConversationReference, _serviceUrl, nextConversationId);
+            //await _client.PostActivityAsync(_toUri, outboundActivity, null, null);
         }
     }
 }

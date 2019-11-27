@@ -28,7 +28,10 @@ namespace Microsoft.Bot.Builder.TestProtocol
 
             // Configure credentials
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
-            
+
+            // Conversation Id factory
+            services.AddSingleton<ISkillConversationIdFactory, MyConversationIdFactory>();
+
             // AuthConfiguration to enable custom claim validation
             services.AddSingleton<AuthenticationConfiguration>();
 
@@ -51,7 +54,6 @@ namespace Microsoft.Bot.Builder.TestProtocol
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

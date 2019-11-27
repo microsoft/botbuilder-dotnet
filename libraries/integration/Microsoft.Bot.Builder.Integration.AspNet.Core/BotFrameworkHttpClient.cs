@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
 
             // Get token for the skill call
-            var token = await appCredentials.GetTokenAsync().ConfigureAwait(false);
+            var token = appCredentials == MicrosoftAppCredentials.Empty ? null : await appCredentials.GetTokenAsync().ConfigureAwait(false);
 
             // Capture current activity settings before changing them.
             // TODO: DO we need to set the activity ID? (events that are created manually don't have it).
@@ -78,7 +78,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     {
                         httpRequestMessage.Method = HttpMethod.Post;
                         httpRequestMessage.RequestUri = toUrl;
-                        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        if (token != null)
+                        {
+                            httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        }
+
                         httpRequestMessage.Content = jsonContent;
 
                         var response = await _httpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
