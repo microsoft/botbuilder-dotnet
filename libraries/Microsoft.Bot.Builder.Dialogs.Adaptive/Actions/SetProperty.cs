@@ -2,6 +2,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,8 +19,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.SetProperty";
-
-        private Expression value;
 
         [JsonConstructor]
         public SetProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -43,11 +43,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The expression to get the value to put into property path.
         /// </value>
         [JsonProperty("value")]
-        public string Value
-        {
-            get { return value?.ToString(); }
-            set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public string Value { get; set; }
+
+        /// <summary>
+        /// Gets or sets additional property assignments.
+        /// </summary>
+        /// <value>
+        /// Additional property settings as property=value pairs.
+        /// </value>
+        [JsonProperty("assignments")]
+        public List<PropertyAssignment> Assignments { get; set; } = new List<PropertyAssignment>();
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -57,10 +62,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
-            var (value, valueError) = this.value.TryEvaluate(dc.GetState());
+            var valexp = new ExpressionEngine().Parse(this.Value);
+            var (value, valueError) = valexp.TryEvaluate(dc.GetState());
             if (valueError == null)
             {
                 dc.GetState().SetValue(this.Property, value);
+            }
+
+            if (this.Assignments?.Any() == true)
+            {
+                foreach (var propValue in this.Assignments)
+                {
+                    valexp = new ExpressionEngine().Parse(propValue.Value);
+                    (value, valueError) = valexp.TryEvaluate(dc.GetState());
+                    if (valueError == null)
+                    {
+                        dc.GetState().SetValue(propValue.Property, value);
+                    }
+                }
             }
 
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);

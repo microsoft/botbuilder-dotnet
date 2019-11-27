@@ -188,5 +188,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             await TestUtils.RunTestScript("InputDialog_ActivityProcessed.test.dialog");
         }
+
+        [TestMethod]
+        public async Task Action_SetProperty()
+        {
+            await TestUtils.RunTestScript("Action_SetProperty.test.dialog");
+        }
     }
 }
