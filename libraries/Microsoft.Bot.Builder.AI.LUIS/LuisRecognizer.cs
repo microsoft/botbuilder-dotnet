@@ -28,16 +28,14 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// The context label for a LUIS trace activity.
         /// </summary>
         public const string LuisTraceLabel = "Luis Trace";
-
-        private readonly LuisApplication _application;
-
-        #pragma warning disable CS0169 // Field is never used
+#pragma warning disable CS0169 // Field is never used
+        [Obsolete]
+        private readonly LuisApplication _application;     
         [Obsolete]
         private readonly LuisPredictionOptions _options;
-        #pragma warning disable CS0169 // Field is never used
-
+        [Obsolete]
         private readonly bool _includeApiResults;
-
+#pragma warning restore CS0169 // Field is never used
         private readonly LuisRecognizerOptions _luisRecognizerOptions;
 
         /// <summary>
@@ -48,9 +46,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
         public LuisRecognizer(LuisRecognizerOptions recognizerOptions, HttpClientHandler clientHandler = null)
         {
-            _application = recognizerOptions.Application;
             _luisRecognizerOptions = recognizerOptions;
-            _includeApiResults = recognizerOptions.IncludeAPIResults;
 
             TelemetryClient = recognizerOptions.TelemetryClient;
             LogPersonalInformation = recognizerOptions.LogPersonalInformation;
@@ -290,7 +286,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             var properties = await FillLuisEventPropertiesAsync(recognizerResult, turnContext, telemetryProperties, cancellationToken).ConfigureAwait(false);
 
             // Track the event
-            TelemetryClient.TrackEvent(LuisTelemetryConstants.LuisResult, properties, telemetryMetrics);
+            _luisRecognizerOptions.TelemetryClient.TrackEvent(LuisTelemetryConstants.LuisResult, properties, telemetryMetrics);
         }
 
         /// <summary>
@@ -310,7 +306,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             // Add the intent score and conversation id properties
             var properties = new Dictionary<string, string>()
             {
-                { LuisTelemetryConstants.ApplicationIdProperty, _application.ApplicationId },
+                { LuisTelemetryConstants.ApplicationIdProperty, _luisRecognizerOptions.Application.ApplicationId },
                 { LuisTelemetryConstants.IntentProperty, topTwoIntents?[0].Key ?? string.Empty },
                 { LuisTelemetryConstants.IntentScoreProperty, topTwoIntents?[0].Value.Score?.ToString("N2") ?? "0.00" },
                 { LuisTelemetryConstants.Intent2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Key ?? string.Empty : string.Empty },
@@ -353,9 +349,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
         /// <summary>
         /// Returns a LuisRecognizerOptions object with the correspondig version.
+        /// If no V2 LuisPredictionoption passed it sets the recognizer to use Luis V3 endpoint.
+        /// This exists to maintain backwards compatibility with existing constructors.
         /// </summary>
         /// <param name="application">LuisAplication object to initialize LuisReognizerOptions.</param>
         /// <param name="options">If passed a LuisRecognizerOptionsV2 will be returned initialized with this object.</param>
+        /// <param name="includeAPIResults">Boolean value to initialize IncludeAPIResults .</param>
         /// <returns>LuisRecognizerOptions object.</returns>
         private static LuisRecognizerOptions BuildLuisRecognizerOptionsV2(LuisApplication application, LuisPredictionOptions options, bool includeAPIResults)
         {
@@ -381,14 +380,30 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return luisVersionOptions;
         }
 
+        /// <summary>
+        /// Returns a RecognizerResult object.
+        /// </summary>
+        /// <param name="turnContext">Dialog turn Context.</param>
+        /// <param name="predictionOptions">LuisRecognizerOptions implementation to override current properties.</param>
+        /// <param name="telemetryProperties"> Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
+        /// <returns>RecognizerResult object.</returns>
         private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, LuisRecognizerOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics, CancellationToken cancellationToken)
         {
             var recognizer = predictionOptions ?? _luisRecognizerOptions;
+            LogPersonalInformation = recognizer.LogPersonalInformation;
             var result = await recognizer.RecognizeInternalAsync(turnContext, DefaultHttpClient,  cancellationToken).ConfigureAwait(false);
             await OnRecognizerResultAsync(result, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
+            LogPersonalInformation = _luisRecognizerOptions.LogPersonalInformation;
             return result;
         }
 
+        /// <summary>
+        /// Returns a LuisRecognizerOptionsV2.
+        /// This exists to maintain backwards compatibility with existing constructors.
+        /// </summary>
+        /// <param name="overridenOptions">LuisPredictionOptions object to initialize or merge with existing LuisReognizerOptions.</param>
+        /// <returns>LuisRecognizerOptions object.</returns>
         private LuisRecognizerOptions MergeDefaultOptionsWithProvidedOptionsV2(LuisPredictionOptions overridenOptions)
         {
             var instanceLuisRecognizer = _luisRecognizerOptions as LuisRecognizerOptionsV2;
@@ -403,7 +418,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 Staging = overridenOptions.Staging ?? defaultOptions.Staging,
                 TimezoneOffset = overridenOptions.TimezoneOffset ?? defaultOptions.TimezoneOffset,
             };
-            return BuildLuisRecognizerOptionsV2(_application, overrideV2, _includeApiResults);
+            return BuildLuisRecognizerOptionsV2(_luisRecognizerOptions.Application, overrideV2, _luisRecognizerOptions.IncludeAPIResults);
         }
 
         private DelegatingHandler CreateHttpHandlerPipeline(HttpClientHandler httpClientHandler, params DelegatingHandler[] handlers)

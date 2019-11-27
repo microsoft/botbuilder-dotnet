@@ -52,16 +52,16 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             // theses are GUIDs edited to look right to the parsing and validation code.
             GetEnvironmentVars();
             var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
-            var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
+            var fieldInfo = typeof(LuisRecognizer).GetField("_luisRecognizerOptions", BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act
             var recognizer = new LuisRecognizer(new LuisRecognizerOptionsV2(new LuisApplication(endpoint)));
 
             // Assert
-            var app = (LuisApplication)fieldInfo.GetValue(recognizer);
-            Assert.AreEqual("b31aeaf3-3511-495b-a07f-571fc873214b", app.ApplicationId);
-            Assert.AreEqual("048ec46dc58e495482b0c447cfdbd291", app.EndpointKey);
-            Assert.AreEqual("https://westus.api.cognitive.microsoft.com", app.Endpoint);
+            var app = (LuisRecognizerOptions)fieldInfo.GetValue(recognizer);
+            Assert.AreEqual("b31aeaf3-3511-495b-a07f-571fc873214b", app.Application.ApplicationId);
+            Assert.AreEqual("048ec46dc58e495482b0c447cfdbd291", app.Application.EndpointKey);
+            Assert.AreEqual("https://westus.api.cognitive.microsoft.com", app.Application.Endpoint);
         }
 
         [TestMethod]
@@ -86,15 +86,15 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         {
             // Arrange
             GetEnvironmentVars();
-            var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
+            var fieldInfo = typeof(LuisRecognizer).GetField("_luisRecognizerOptions", BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act
             var myappNull = new LuisApplication(AppId, Key, null);
             var recognizerNull = new LuisRecognizer(new LuisRecognizerOptionsV2(myappNull), null);
 
             // Assert
-            var app = (LuisApplication)fieldInfo.GetValue(recognizerNull);
-            Assert.AreEqual("https://westus.api.cognitive.microsoft.com", app.Endpoint);
+            var app = (LuisRecognizerOptions)fieldInfo.GetValue(recognizerNull);
+            Assert.AreEqual("https://westus.api.cognitive.microsoft.com", app.Application.Endpoint);
         }
 
         [TestMethod]
@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         {
             // Arrange
             GetEnvironmentVars();
-            var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
+            var fieldInfo = typeof(LuisRecognizer).GetField("_luisRecognizerOptions", BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act
             var myappEmpty = new LuisApplication(AppId, Key, string.Empty);
@@ -110,8 +110,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var recognizerEmpty = new LuisRecognizer(new LuisRecognizerOptionsV2(myappEmpty), null);
 
             // Assert
-            var app = (LuisApplication)fieldInfo.GetValue(recognizerEmpty);
-            Assert.AreEqual("https://westus.api.cognitive.microsoft.com", app.Endpoint);
+            var app = (LuisRecognizerOptions)fieldInfo.GetValue(recognizerEmpty);
+            Assert.AreEqual("https://westus.api.cognitive.microsoft.com", app.Application.Endpoint);
         }
 
         [TestMethod]
@@ -397,16 +397,16 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             // Note this is NOT a real LUIS application ID nor a real LUIS subscription-key
             // theses are GUIDs edited to look right to the parsing and validation code.
             var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
-            var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
+            var fieldInfo = typeof(LuisRecognizer).GetField("_luisRecognizerOptions", BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act
             var recognizer = new LuisRecognizer(new LuisRecognizerOptionsV2(new LuisApplication(endpoint)));
 
             // Assert
-            var app = (LuisApplication)fieldInfo.GetValue(recognizer);
-            Assert.AreEqual("b31aeaf3-3511-495b-a07f-571fc873214b", app.ApplicationId);
-            Assert.AreEqual("048ec46dc58e495482b0c447cfdbd291", app.EndpointKey);
-            Assert.AreEqual("https://westus.api.cognitive.microsoft.com", app.Endpoint);
+            var app = (LuisRecognizerOptions)fieldInfo.GetValue(recognizer);
+            Assert.AreEqual("b31aeaf3-3511-495b-a07f-571fc873214b", app.Application.ApplicationId);
+            Assert.AreEqual("048ec46dc58e495482b0c447cfdbd291", app.Application.EndpointKey);
+            Assert.AreEqual("https://westus.api.cognitive.microsoft.com", app.Application.Endpoint);
         }
 
         [TestMethod]
