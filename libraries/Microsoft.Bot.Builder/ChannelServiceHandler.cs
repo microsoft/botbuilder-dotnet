@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core
+namespace Microsoft.Bot.Builder
 {
     /// <summary>
     /// A class to help with the implementation of the Bot Framework protocol.
