@@ -939,11 +939,11 @@ namespace Microsoft.Bot.Expressions
 
                     if (value is string)
                     {
-                        path = $"['{value}']";
+                        path = $"['{value}']" + "." + path;
                     } 
                     else if (value is int)
                     {
-                        path = $"[{value}]";
+                        path = $"[{value}]" + "." + path;
                     }
                     else 
                     {
