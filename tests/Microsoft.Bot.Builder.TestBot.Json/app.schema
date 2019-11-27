@@ -418,12 +418,12 @@
     ],
     "definitions": {
         "Microsoft.ActivityTemplate": {
-            "$role": "unionType(Microsoft.IActivityTemplate)",
+            "$role": "union(Microsoft.IActivityTemplate)",
             "title": "Microsoft ActivityTemplate",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -469,19 +469,19 @@
                     "title": "Type",
                     "required": [
                         "template",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.AdaptiveDialog": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Adaptive Dialog",
             "description": "Flexible, data driven dialog that can adapt to the conversation.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -522,19 +522,19 @@
                     "default": "dialog.result"
                 },
                 "recognizer": {
-                    "$type": "Microsoft.IRecognizer",
+                    "$kind": "Microsoft.IRecognizer",
                     "title": "Recognizer",
                     "description": "Language Understanding recognizer that interprets user input into intent and entities.",
                     "$ref": "#/definitions/Microsoft.IRecognizer"
                 },
                 "generator": {
-                    "$type": "Microsoft.ILanguageGenerator",
+                    "$kind": "Microsoft.ILanguageGenerator",
                     "title": "Language Generator",
                     "description": "Language generator that generates bot responses.",
                     "$ref": "#/definitions/Microsoft.ILanguageGenerator"
                 },
                 "selector": {
-                    "$type": "Microsoft.ITriggerSelector",
+                    "$kind": "Microsoft.ITriggerSelector",
                     "title": "Selector",
                     "description": "Policy to determine which trigger is executed. Defaults to a 'best match' selector (optional).",
                     "$ref": "#/definitions/Microsoft.ITriggerSelector"
@@ -544,7 +544,7 @@
                     "description": "List of triggers defined for this dialog.",
                     "title": "Triggers",
                     "items": {
-                        "$type": "Microsoft.ITriggerCondition",
+                        "$kind": "Microsoft.ITriggerCondition",
                         "$ref": "#/definitions/Microsoft.ITriggerCondition"
                     }
                 }
@@ -565,19 +565,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.AgeEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Age Entity Recognizer",
             "description": "Recognizer which recognizes age.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -617,19 +617,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.AttachmentInput": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Attachment input dialog",
             "description": "Collect information - Ask for a file or image.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -658,7 +658,7 @@
                     "description": "Optional id for the dialog"
                 },
                 "prompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Initial prompt",
                     "description": "Message to send to collect information.",
                     "examples": [
@@ -667,7 +667,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
                     "description": "Message to send if user response is not recognized.",
                     "examples": [
@@ -676,7 +676,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Invalid prompt",
                     "description": "Message to send if user response is invalid. Relies on specified validation expressions.",
                     "examples": [
@@ -685,7 +685,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Default value response",
                     "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
@@ -793,19 +793,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.BeginDialog": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Begin a dialog",
             "description": "Begin another dialog.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -829,7 +829,7 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "dialog": {
-                    "$type": "Microsoft.IDialog",
+                    "$kind": "Microsoft.IDialog",
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
@@ -872,19 +872,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.CancelAllDialogs": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Cancel all dialogs",
             "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -935,19 +935,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.ChoiceInput": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Choice input dialog",
             "description": "Collect information - Pick from a list of choices",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -976,7 +976,7 @@
                     "description": "Optional id for the dialog"
                 },
                 "prompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Initial prompt",
                     "description": "Message to send to collect information.",
                     "examples": [
@@ -985,7 +985,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
                     "description": "Message to send if user response is not recognized.",
                     "examples": [
@@ -994,7 +994,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Invalid prompt",
                     "description": "Message to send if user response is invalid. Relies on specified validation expressions.",
                     "examples": [
@@ -1003,7 +1003,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Default value response",
                     "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
@@ -1229,19 +1229,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.ConditionalSelector": {
-            "$role": "unionType(Microsoft.ITriggerSelector)",
+            "$role": "union(Microsoft.ITriggerSelector)",
             "title": "Condtional Trigger Selector",
             "description": "Use a rule selector based on a condition",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -1270,11 +1270,11 @@
                     "description": "String must contain an expression."
                 },
                 "ifTrue": {
-                    "$type": "Microsoft.ITriggerSelector",
+                    "$kind": "Microsoft.ITriggerSelector",
                     "$ref": "#/definitions/Microsoft.ITriggerSelector"
                 },
                 "ifFalse": {
-                    "$type": "Microsoft.ITriggerSelector",
+                    "$kind": "Microsoft.ITriggerSelector",
                     "$ref": "#/definitions/Microsoft.ITriggerSelector"
                 }
             },
@@ -1297,19 +1297,19 @@
                         "condition",
                         "ifTrue",
                         "ifFalse",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.ConfirmInput": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Confirm input dialog",
             "description": "Collect information - Ask for confirmation (yes or no).",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -1338,7 +1338,7 @@
                     "description": "Optional id for the dialog"
                 },
                 "prompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Initial prompt",
                     "description": "Message to send to collect information.",
                     "examples": [
@@ -1347,7 +1347,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
                     "description": "Message to send if user response is not recognized.",
                     "examples": [
@@ -1356,7 +1356,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Invalid prompt",
                     "description": "Message to send if user response is invalid. Relies on specified validation expressions.",
                     "examples": [
@@ -1365,7 +1365,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Default value response",
                     "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
@@ -1540,19 +1540,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.ConfirmationEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Confirmation Entity Recognizer",
             "description": "Recognizer which recognizes confirmation choices (yes/no).",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -1592,19 +1592,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.CurrencyEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Currency Entity Recognizer",
             "description": "Recognizer which recognizes currency.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -1644,19 +1644,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.DateTimeEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "DateTime Entity Recognizer",
             "description": "Recognizer which recognizes dates and time fragments.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -1696,19 +1696,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.DateTimeInput": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Date/time input dialog",
             "description": "Collect information - Ask for date and/ or time",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -1737,7 +1737,7 @@
                     "description": "Optional id for the dialog"
                 },
                 "prompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Initial prompt",
                     "description": "Message to send to collect information.",
                     "examples": [
@@ -1746,7 +1746,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
                     "description": "Message to send if user response is not recognized.",
                     "examples": [
@@ -1755,7 +1755,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Invalid prompt",
                     "description": "Message to send if user response is invalid. Relies on specified validation expressions.",
                     "examples": [
@@ -1764,7 +1764,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Default value response",
                     "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
@@ -1868,19 +1868,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.DebugBreak": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Debugger break",
             "description": "If debugger is attached, stop the execution at this point in the conversation.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -1920,19 +1920,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.DeleteProperty": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Delete Property",
             "description": "Delete a property and any value it holds.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -1979,19 +1979,19 @@
                     "title": "Type",
                     "required": [
                         "property",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.DimensionEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Dimension Entity Recognizer",
             "description": "Recognizer which recognizes dimension.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -2031,19 +2031,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.EditActions": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Edit actions.",
             "description": "Edit the current list of actions.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -2083,7 +2083,7 @@
                     "title": "Actions",
                     "description": "Actions to apply.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -2106,19 +2106,19 @@
                     "required": [
                         "changeType",
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.EditArray": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Edit array",
             "description": "Modify an array in memory",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -2195,19 +2195,19 @@
                     "required": [
                         "changeType",
                         "itemsProperty",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.EmailEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Email Entity Recognizer",
             "description": "Recognizer which recognizes email.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -2247,19 +2247,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.EmitEvent": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Emit a custom event",
             "description": "Emit an event. Capture this event with a trigger.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -2336,19 +2336,19 @@
                     "title": "Type",
                     "required": [
                         "eventName",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.EndDialog": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "End dialog",
             "description": "End this dialog.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -2398,19 +2398,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.EndTurn": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "End turn",
             "description": "End the current turn without ending the dialog.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -2450,13 +2450,13 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.EntityRecognizers": {
-            "$role": "unionType",
+            "$role": "union",
             "title": "Entity Recognizers",
             "description": "Union of components which derive from EntityRecognizer abstract class.",
             "type": "object",
@@ -2554,13 +2554,13 @@
             ]
         },
         "Microsoft.FirstSelector": {
-            "$role": "unionType(Microsoft.ITriggerSelector)",
+            "$role": "union(Microsoft.ITriggerSelector)",
             "title": "First Trigger Selector",
             "description": "Selector for first true rule",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -2600,19 +2600,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.Foreach": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "For each item",
             "description": "Execute actions on each item in an a collection.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -2649,7 +2649,7 @@
                     "title": "Actions",
                     "description": "Actions to execute for each item. Use '$foreach.value' to access the value of each item. Use '$foreach.index' to access the index of each item.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -2672,19 +2672,19 @@
                     "required": [
                         "itemsProperty",
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.ForeachPage": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "For each page",
             "description": "Execute actions on each page (collection of items) in an array.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -2721,7 +2721,7 @@
                     "title": "Actions",
                     "description": "Actions to execute for each page. Use '$foreach.page' to access each page.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
@@ -2750,19 +2750,19 @@
                     "required": [
                         "itemsProperty",
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.GuidEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Guid Entity Recognizer",
             "description": "Recognizer which recognizes guids.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -2802,19 +2802,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.HashtagEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Hashtag Entity Recognizer",
             "description": "Recognizer which recognizes Hashtags.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -2854,19 +2854,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.HttpRequest": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "type": "object",
             "title": "HTTP request",
             "description": "Make a HTTP request.",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -2965,7 +2965,7 @@
                     "required": [
                         "url",
                         "method",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
@@ -2973,7 +2973,7 @@
         "Microsoft.IActivityTemplate": {
             "title": "Microsoft ActivityTemplates",
             "description": "Components which are IActivityTemplates",
-            "$role": "unionType",
+            "$role": "union",
             "oneOf": [
                 {
                     "title": "Microsoft.ActivityTemplate",
@@ -2994,7 +2994,7 @@
         "Microsoft.IDialog": {
             "title": "Microsoft Dialogs",
             "description": "Union of components which implement the Dialog contract",
-            "$role": "unionType",
+            "$role": "union",
             "oneOf": [
                 {
                     "title": "Microsoft.AdaptiveDialog",
@@ -3165,7 +3165,7 @@
         "Microsoft.ILanguageGenerator": {
             "title": "Microsoft ILanguageGenerator",
             "description": "Union of components which implement the ILanguageGenerator interface",
-            "$role": "unionType",
+            "$role": "union",
             "oneOf": [
                 {
                     "type": "string",
@@ -3176,7 +3176,7 @@
         "Microsoft.IRecognizer": {
             "title": "Microsoft IRecognizer",
             "description": "Union of components which implement the IRecognizer interface",
-            "$role": "unionType",
+            "$role": "union",
             "oneOf": [
                 {
                     "title": "Microsoft.LuisRecognizer",
@@ -3202,7 +3202,7 @@
         "Microsoft.ITextTemplate": {
             "title": "Microsoft TextTemplate",
             "description": "Union of components which implement the TextTemplate",
-            "$role": "unionType",
+            "$role": "union",
             "oneOf": [
                 {
                     "title": "Microsoft.TextTemplate",
@@ -3216,7 +3216,7 @@
             ]
         },
         "Microsoft.ITriggerCondition": {
-            "$role": "unionType",
+            "$role": "union",
             "title": "Microsoft Triggers",
             "description": "Union of components which implement the OnCondition",
             "oneOf": [
@@ -3323,7 +3323,7 @@
             ]
         },
         "Microsoft.ITriggerSelector": {
-            "$role": "unionType",
+            "$role": "union",
             "title": "Selectors",
             "description": "Union of components which are trigger selectors",
             "oneOf": [
@@ -3355,13 +3355,13 @@
             ]
         },
         "Microsoft.IfCondition": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "If condition",
             "description": "Two-way branch the conversation flow based on a condition.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -3398,7 +3398,7 @@
                     "title": "Actions",
                     "description": "Actions to execute if condition is true.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
@@ -3407,7 +3407,7 @@
                     "title": "Else",
                     "description": "Actions to execute if condition is false.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -3430,19 +3430,19 @@
                     "required": [
                         "condition",
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.InitProperty": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Initialize property",
             "description": "Define and initialize a property to be an array or object.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -3502,19 +3502,19 @@
                     "required": [
                         "property",
                         "type",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.IpEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Ip Entity Recognizer",
             "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -3554,7 +3554,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
@@ -3565,8 +3565,8 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -3605,19 +3605,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.LogAction": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Log to console",
             "description": "Log a message to the host application. Send a TraceActivity to Bot Framework Emulator (optional).",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -3669,20 +3669,20 @@
                     "title": "Type",
                     "required": [
                         "text",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.LuisRecognizer": {
-            "$role": "unionType(Microsoft.IRecognizer)",
+            "$role": "union(Microsoft.IRecognizer)",
             "title": "LUIS Recognizer",
             "description": "LUIS recognizer.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -3733,19 +3733,19 @@
                         "applicationId",
                         "endpoint",
                         "endpointKey",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.MentionEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Mentions Entity Recognizer",
             "description": "Recognizer which recognizes @Mentions",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -3785,19 +3785,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.MostSpecificSelector": {
-            "$role": "unionType(Microsoft.ITriggerSelector)",
+            "$role": "union(Microsoft.ITriggerSelector)",
             "title": "Most Specific Trigger Selector",
             "description": "Select most specific true events with optional additional selector",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -3821,7 +3821,7 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "selector": {
-                    "$type": "Microsoft.ITriggerSelector",
+                    "$kind": "Microsoft.ITriggerSelector",
                     "$ref": "#/definitions/Microsoft.ITriggerSelector"
                 }
             },
@@ -3841,19 +3841,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.MultiLanguageRecognizer": {
-            "$role": "unionType(Microsoft.IRecognizer)",
+            "$role": "union(Microsoft.IRecognizer)",
             "title": "Multi-language recognizer",
             "description": "Configure one recognizer per language and the specify the language fallback policy.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -3877,7 +3877,7 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "languagePolicy": {
-                    "$type": "Microsoft.LanguagePolicy",
+                    "$kind": "Microsoft.LanguagePolicy",
                     "type": "object",
                     "title": "Language policy",
                     "description": "Defines fall back languages to try per user input language.",
@@ -3888,7 +3888,7 @@
                     "title": "Recognizers",
                     "description": "Map of language -> IRecognizer",
                     "additionalProperties": {
-                        "$type": "Microsoft.IRecognizer",
+                        "$kind": "Microsoft.IRecognizer",
                         "$ref": "#/definitions/Microsoft.IRecognizer"
                     }
                 }
@@ -3910,19 +3910,19 @@
                     "title": "Type",
                     "required": [
                         "recognizers",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.NumberEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Number Entity Recognizer",
             "description": "Recognizer which recognizes numbers.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -3962,19 +3962,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.NumberInput": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Number input dialog",
             "description": "Collect information - Ask for a number.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -4003,7 +4003,7 @@
                     "description": "Optional id for the dialog"
                 },
                 "prompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Initial prompt",
                     "description": "Message to send to collect information.",
                     "examples": [
@@ -4012,7 +4012,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
                     "description": "Message to send if user response is not recognized.",
                     "examples": [
@@ -4021,7 +4021,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Invalid prompt",
                     "description": "Message to send if user response is invalid. Relies on specified validation expressions.",
                     "examples": [
@@ -4030,7 +4030,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Default value response",
                     "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
@@ -4144,19 +4144,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.NumberRangeEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "NumberRange Entity Recognizer",
             "description": "Recognizer which recognizes ranges of numbers (Example:2 to 5).",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -4196,19 +4196,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OAuthInput": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "OAuthInput Dialog",
             "description": "Collect login information.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -4288,19 +4288,19 @@
                     "title": "Type",
                     "required": [
                         "connectionName",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnActivity": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On activity",
             "description": "Actions to perform on receipt of a generic activity.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -4336,7 +4336,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
@@ -4364,19 +4364,19 @@
                     "required": [
                         "actions",
                         "type",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnBeginDialog": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On begin dialog",
             "description": "Actions to perform when this dialog begins.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -4412,7 +4412,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -4434,19 +4434,19 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnCancelDialog": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On cancel dialog",
             "description": "Actions to perform on cancel dialog event.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -4482,7 +4482,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -4504,19 +4504,19 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnCondition": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On condition",
             "description": "Actions to perform when specified condition is true.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -4552,7 +4552,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -4574,19 +4574,19 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnConversationUpdateActivity": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On ConversationUpdate activity",
             "description": "Actions to perform on receipt of an activity with type 'ConversationUpdate'.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -4622,7 +4622,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -4644,19 +4644,19 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnCustomEvent": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On custom event",
             "description": "Actions to perform when a custom event is detected. Use 'Emit a custom event' action to raise a custom event.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -4692,7 +4692,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
@@ -4720,19 +4720,19 @@
                     "required": [
                         "actions",
                         "event",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnDialogEvent": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On dialog event",
             "description": "Actions to perform when a specific dialog event occurs.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -4768,7 +4768,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
@@ -4796,19 +4796,19 @@
                     "required": [
                         "actions",
                         "event",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnEndOfConversationActivity": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On EndOfConversation activity",
             "description": "Actions to perform on receipt of an activity with type 'EndOfConversation'.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -4844,7 +4844,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -4866,19 +4866,19 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnError": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On Error",
             "description": "Action to perform when an 'Error' dialog event occurs.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -4914,7 +4914,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -4936,19 +4936,19 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnEventActivity": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On Event activity",
             "description": "Actions to perform on receipt of an activity with type 'Event'.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -4984,7 +4984,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -5006,19 +5006,19 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnHandoffActivity": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On Handoff activity",
             "description": "Actions to perform on receipt of an activity with type 'HandOff'.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -5054,7 +5054,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -5076,19 +5076,19 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnIntent": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On intent recognition",
             "description": "Actions to perform when specified intent is recognized.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -5124,7 +5124,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
@@ -5160,19 +5160,19 @@
                     "required": [
                         "actions",
                         "intent",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnInvokeActivity": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On Invoke activity",
             "description": "Actions to perform on receipt of an activity with type 'Invoke'.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -5208,7 +5208,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -5230,19 +5230,19 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnMessageActivity": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On Message activity",
             "description": "Actions to perform on receipt of an activity with type 'Message'. Overrides Intent trigger.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -5278,7 +5278,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -5300,19 +5300,19 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnMessageDeleteActivity": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On MessageDelete activity",
             "description": "Actions to perform on receipt of an activity with type 'MessageDelete'.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -5348,7 +5348,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -5370,19 +5370,19 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnMessageReactionActivity": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On MessageReaction activity",
             "description": "Actions to perform on receipt of an activity with type 'MessageReaction'.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -5418,7 +5418,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -5440,19 +5440,19 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnMessageUpdateActivity": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On MessageUpdate activity",
             "description": "Actions to perform on receipt of an activity with type 'MessageUpdate'.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -5488,7 +5488,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -5510,19 +5510,19 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnRepromptDialog": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On RepromptDialog",
             "description": "Actions to perform when 'RepromptDialog' event occurs.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -5558,7 +5558,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -5580,19 +5580,19 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OnTypingActivity": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On Typing activity",
             "description": "Actions to perform on receipt of an activity with type 'Typing'.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -5628,7 +5628,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -5650,7 +5650,7 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
@@ -5659,10 +5659,10 @@
             "title": "On unknown intent",
             "description": "Action to perform when user input is unrecognized and if none of the 'on intent recognition' triggers match recognized intent.",
             "type": "object",
-            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "$role": "union(Microsoft.ITriggerCondition)",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -5698,7 +5698,7 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -5720,19 +5720,19 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.OrdinalEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Ordinal Entity Recognizer",
             "description": "Recognizer which recognizes ordinals (example: first, second, 3rd).",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -5772,19 +5772,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.PercentageEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Percentage Entity Recognizer",
             "description": "Recognizer which recognizes percentages.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -5824,19 +5824,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.PhoneNumberEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Phone Number Entity Recognizer",
             "description": "Recognizer which recognizes phone numbers.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -5876,20 +5876,20 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.QnAMakerDialog": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "QnAMaker Dialog",
             "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -5937,7 +5937,7 @@
                     "type": "string"
                 },
                 "noAnswer": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Fallback answer",
                     "description": "Default answer to return when none found in KB.",
                     "default": "Sorry, I did not find an answer.",
@@ -5962,7 +5962,7 @@
                     "default": "None of the above."
                 },
                 "cardNoMatchResponse ": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Card no match response",
                     "description": "Custom response when no match option was selected.",
                     "default": "Thanks for the feedback.",
@@ -5995,19 +5995,19 @@
                         "knowledgeBaseId",
                         "endpointKey",
                         "hostname",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.RandomSelector": {
-            "$role": "unionType(Microsoft.ITriggerSelector)",
+            "$role": "union(Microsoft.ITriggerSelector)",
             "title": "Random rule selector",
             "description": "Select most specific true rule",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -6050,19 +6050,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.RegExEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Regex Entity Recognizer",
             "description": "Recognizer which recognizes patterns of input based on regex.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -6114,19 +6114,19 @@
                     "required": [
                         "name",
                         "pattern",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.RegexRecognizer": {
-            "$role": "unionType(Microsoft.IRecognizer)",
+            "$role": "union(Microsoft.IRecognizer)",
             "title": "Regex recognizer",
             "description": "Use regular expressions to recognize intents and entities from user input.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -6174,7 +6174,7 @@
                     "title": "Entity recognizers",
                     "description": "Collection of entity recognizers to use.",
                     "items": {
-                        "$type": "Microsoft.EntityRecognizers",
+                        "$kind": "Microsoft.EntityRecognizers",
                         "$ref": "#/definitions/Microsoft.EntityRecognizers"
                     }
                 }
@@ -6196,19 +6196,19 @@
                     "title": "Type",
                     "required": [
                         "intents",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.RepeatDialog": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "type": "object",
             "title": "Repeat dialog",
             "description": "Repeat current dialog.",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -6248,19 +6248,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.ReplaceDialog": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "type": "object",
             "title": "Replace dialog",
             "description": "Replace current dialog with another dialog.",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -6284,7 +6284,7 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "dialog": {
-                    "$type": "Microsoft.IDialog",
+                    "$kind": "Microsoft.IDialog",
                     "title": "Dialog name",
                     "description": "Current dialog will be replaced by this dialog.",
                     "$ref": "#/definitions/Microsoft.IDialog"
@@ -6315,19 +6315,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.SendActivity": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Send an activity",
             "description": "Respond with an activity.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -6351,7 +6351,7 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "activity": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Activity",
                     "description": "Activity to send.",
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
@@ -6373,19 +6373,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.SetProperty": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Set property",
             "description": "Set property to a value.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -6447,19 +6447,19 @@
                     "required": [
                         "property",
                         "value",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.StaticActivityTemplate": {
-            "$role": "unionType(Microsoft.IActivityTemplate)",
+            "$role": "union(Microsoft.IActivityTemplate)",
             "title": "Microsoft Static Activity Template",
             "description": "This allows you to define a static Activity object",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -6505,19 +6505,19 @@
                     "title": "Type",
                     "required": [
                         "activity",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.SwitchCondition": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Switch condition",
             "description": "Execute different actions based on the value of a property.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -6575,7 +6575,7 @@
                                 "title": "Actions",
                                 "description": "Actions to execute.",
                                 "items": {
-                                    "$type": "Microsoft.IDialog",
+                                    "$kind": "Microsoft.IDialog",
                                     "$ref": "#/definitions/Microsoft.IDialog"
                                 }
                             }
@@ -6587,7 +6587,7 @@
                     "title": "Default",
                     "description": "Actions to execute if none of the cases meet the condition.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
+                        "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
@@ -6609,19 +6609,19 @@
                     "title": "Type",
                     "required": [
                         "condition",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.TemperatureEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Temperature Entity Recognizer",
             "description": "Recognizer which recognizes temperatures.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -6661,19 +6661,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.TextInput": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "type": "object",
             "title": "Text input dialog",
             "description": "Collection information - Ask for a word or sentence.",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -6702,7 +6702,7 @@
                     "description": "Optional id for the dialog"
                 },
                 "prompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Initial prompt",
                     "description": "Message to send to collect information.",
                     "examples": [
@@ -6711,7 +6711,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
                     "description": "Message to send if user response is not recognized.",
                     "examples": [
@@ -6720,7 +6720,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Invalid prompt",
                     "description": "Message to send if user response is invalid. Relies on specified validation expressions.",
                     "examples": [
@@ -6729,7 +6729,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.IActivityTemplate",
                     "title": "Default value response",
                     "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
@@ -6839,19 +6839,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.TextTemplate": {
-            "$role": "unionType(Microsoft.ITextTemplate)",
+            "$role": "union(Microsoft.ITextTemplate)",
             "title": "Microsoft TextTemplate",
             "description": "Lg tempalte to evaluate to create text",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -6897,19 +6897,19 @@
                     "title": "Type",
                     "required": [
                         "template",
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.TraceActivity": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Send a TraceActivity",
             "description": "Send a trace activity to the transcript logger and/ or Bot Framework Emulator.",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -6965,19 +6965,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.TrueSelector": {
-            "$role": "unionType(Microsoft.ITriggerSelector)",
+            "$role": "union(Microsoft.ITriggerSelector)",
             "title": "True Trigger Selector",
             "description": "Selector for all true events",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -7017,19 +7017,19 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Microsoft.UrlEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Url Entity Recognizer",
             "description": "Recognizer which recognizes urls (example: http://bing.com)",
             "type": "object",
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -7069,20 +7069,20 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Testbot.JavascriptAction": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Javascript Action",
             "description": "This gives you the ability to execute javascript to manipulate memory",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -7148,20 +7148,20 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]
         },
         "Testbot.Multiply": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "union(Microsoft.IDialog)",
             "title": "Multiply",
             "description": "This will return the result of arg1*arg2",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$type": {
-                    "title": "$type",
+                "$kind": {
+                    "title": "$kind",
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
@@ -7215,7 +7215,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
+                        "$kind"
                     ]
                 }
             ]

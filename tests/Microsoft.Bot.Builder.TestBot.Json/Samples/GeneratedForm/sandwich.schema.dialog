@@ -62,37 +62,28 @@
             "type": "string",
             "$mappings": [
                 "Confirmation"
-            ],
-            "$templates": [
-                "CancelConfirmation.dialog",
-                "CancelConfirmationSet.dialog"
             ]
         },
         "CompleteConfirmation": {
             "type": "string",
             "$mappings": [
                 "Confirmation"
-            ],
-            "$templates": [
-                "CompleteConfirmation.dialog",
-                "CompleteConfirmationSet.dialog"
             ]
         },
         "PropertyToChange": {
             "type": "string",
+            "enum": [
+                "Quantity",
+                "Directions",
+                "Length",
+                "Bread",
+                "Cheese",
+                "Meat",
+                "Name"
+            ],
             "$mappings": [
                 "PROPERTYName"
-            ],
-            "$templates": [
-                "PropertyToChangeSet.dialog"
             ]
-        },
-        "lastExpectedProperty": {
-            "type": "string",
-            "$mappings": [
-                "PROPERTYName"
-            ],
-            "$templates": []
         }
     },
     "required": [
@@ -100,30 +91,35 @@
         "Bread",
         "Cheese"
     ],
-    "$requires": [
-        "standard.schema.dialog"
-    ],
     "$expectedOnly": [
         "CancelConfirmation",
         "CompleteConfirmation",
-        "PropertyToChange",
-        "lastExpectedProperty"
+        "PropertyToChange"
     ],
-    "$templates": [
-        "helpIntent.lu",
-        "cancelIntent.lu",
-        "noneIntent.lu",
-        "triggerIntent.lu",
-        "locale.lu",
-        "locale.lg",
-        "BeginDialog.dialog",
-        "ChooseProperty.dialog",
-        "HelpIntent.dialog",
-        "NotUnderstood.dialog",
-        "TriggerIntent.dialog",
-        "luconfig.json",
-        "lu.dialog",
-        "Main.dialog"
+    "$public": [
+        "Quantity",
+        "Directions",
+        "Length",
+        "Bread",
+        "Cheese",
+        "Meat",
+        "Name"
     ],
-    "definition": {}
+    "definitions": {
+        "PROPERTYName": {
+            "type": "string",
+            "enum": [
+                "Quantity",
+                "Directions",
+                "Length",
+                "Bread",
+                "Cheese",
+                "Meat",
+                "Name"
+            ],
+            "$mappings": [
+                "PROPERTYName"
+            ]
+        }
+    }
 }

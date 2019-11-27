@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Microsoft.Bot.Expressions;
+using Microsoft.Bot.Expressions.Memory;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -61,6 +62,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             var templateTarget = new EvaluationTarget(templateName, scope);
+
             var currentEvaluateId = templateTarget.GetId();
 
             EvaluationTarget previousEvaluateTarget = null;
@@ -102,7 +104,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var result = new JObject();
             var typeName = context.structuredBodyNameLine().STRUCTURED_CONTENT().GetText().Trim();
-            result["$type"] = typeName;
+            result["lgType"] = typeName;
 
             var bodys = context.structuredBodyContentLine().STRUCTURED_CONTENT();
             foreach (var body in bodys)
@@ -148,7 +150,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var propertyObject = JObject.FromObject(EvalExpression(line));
 
                     // Full reference to another structured template is limited to the structured template with same type 
-                    if (propertyObject["$type"] != null && propertyObject["$type"].ToString() == typeName)
+                    if (propertyObject["lgType"] != null && propertyObject["lgType"].ToString() == typeName)
                     {
                         foreach (var item in propertyObject)
                         {
@@ -278,14 +280,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var newScope = parameters.Zip(args, (k, v) => new { k, v })
                                     .ToDictionary(x => x.k, x => x.v);
 
-            if (currentScope is CustomizedMemoryScope cms)
+            if (currentScope is CustomizedMemory memory)
             {
-                // if current scope is already customized, inherit it's global scope
-                return new CustomizedMemoryScope(newScope, cms.GlobalScope);
+                // inherit current memory's global scope
+                return new CustomizedMemory(memory.GlobalMemory, new SimpleObjectMemory(newScope));
             }
             else
             {
-                return new CustomizedMemoryScope(newScope, currentScope);
+                throw new Exception("Scope is a LG customized memory");
             }
         }
 
@@ -429,7 +431,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             return new JObject
             {
-                ["$type"] = "attachment",
+                ["lgType"] = "attachment",
                 ["contenttype"] = args[1].ToString(),
                 ["content"] = args[0] as JObject
             };

@@ -13,6 +13,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     /// </summary>
     public class OnConversationUpdateActivity : OnActivity
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.OnConversationUpdateActivity";
+
         [JsonConstructor]
         public OnConversationUpdateActivity(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(type: ActivityTypes.ConversationUpdate, actions: actions, condition: condition, callerPath: callerPath, callerLine: callerLine)

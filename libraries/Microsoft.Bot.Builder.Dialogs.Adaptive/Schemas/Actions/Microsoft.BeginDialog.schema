@@ -1,12 +1,12 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/form/schemas/component.schema",
-    "$role": "unionType(Microsoft.IDialog)",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
     "title": "Begin a dialog",
     "description": "Begin another dialog.",
     "type": "object",
     "properties": {
         "dialog": {
-            "$type": "Microsoft.IDialog",
+            "$kind": "Microsoft.IDialog",
             "title": "Dialog name",
             "description": "Name of the dialog to call.",
             "examples": [

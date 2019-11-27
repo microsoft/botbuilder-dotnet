@@ -1,0 +1,159 @@
+{
+  "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "outer",
+        "autoEndDialog": false,
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "$kind": "Microsoft.IntentPattern",
+                    "intent": "BeginIntent",
+                    "pattern": "(?i)begin"
+                },
+                {
+                    "$kind": "Microsoft.IntentPattern",
+                    "intent": "HelpIntent",
+                    "pattern": "(?i)help"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Hi, type 'begin' to start a dialog, type 'help' to get help."
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "BeginIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.TraceActivity"
+                    },
+                    "AdaptiveDialog_BeingDialog_innerDialog"
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "HelpIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "help is coming"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Hi, type 'begin' to start a dialog, type 'help' to get help."
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Hi, type 'begin' to start a dialog, type 'help' to get help."
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "begin"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Hello, what is your name?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "Carlos"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Hello Carlos, nice to meet you!"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "I'm a joke bot. To get started say 'tell me a joke'"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "tell me a joke"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Why did the chicken cross the road?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "Why?"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "To get to the other side"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Hello Carlos, nice to see you again!"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "Do you know a joke?"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Why did the chicken cross the road?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "Why?"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "To get to the other side"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "ummm"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Like I said, I'm a joke bot. To get started say 'tell me a joke'"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "help"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "help is coming"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "bye"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "See you later aligator!"
+    }
+  ]
+}

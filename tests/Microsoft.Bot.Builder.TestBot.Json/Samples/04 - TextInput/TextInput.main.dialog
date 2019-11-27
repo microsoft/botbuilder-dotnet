@@ -1,11 +1,11 @@
 {
     "$schema": "../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "recognizer": {
-        "$type": "Microsoft.RegexRecognizer",
+        "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "Cancel",
                 "pattern": "(?i)cancel"
             }
@@ -13,14 +13,14 @@
     },
     "triggers": [
         {
-            "$type": "Microsoft.OnBeginDialog",
+            "$kind": "Microsoft.OnBeginDialog",
             "actions": [
                 {
-                    "$type": "Microsoft.IfCondition",
+                    "$kind": "Microsoft.IfCondition",
                     "condition": "user.name == null",
                     "actions": [
                         {
-                            "$type": "Microsoft.TextInput",
+                            "$kind": "Microsoft.TextInput",
                             "property": "user.name",
                             "prompt": "Hello, I'm Zoidberg. What is your name?",
                             "outputFormat": "trim",
@@ -29,15 +29,15 @@
                     ]
                 },
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Hello @{user.name}, nice to talk to you!"
                 },
                 {
-                    "$type": "Microsoft.IfCondition",
+                    "$kind": "Microsoft.IfCondition",
                     "condition": "user.name2 == null",
                     "actions": [
                         {
-                            "$type": "Microsoft.TextInput",
+                            "$kind": "Microsoft.TextInput",
                             "property": "user.name2",
                             "prompt": "Hello, I'm Zoidberg. What is your name?",
                             "outputFormat": "trim",
@@ -46,17 +46,17 @@
                     ]
                 },
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Hello @{user.name2}, nice to talk to you!"
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "Cancel",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Cancel"
                 }
             ]

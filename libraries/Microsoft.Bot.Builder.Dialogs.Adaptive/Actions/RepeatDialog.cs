@@ -12,6 +12,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     public class RepeatDialog : Dialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.RepeatDialog";
+
         [JsonConstructor]
         public RepeatDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()

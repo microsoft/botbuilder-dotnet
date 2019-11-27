@@ -1,35 +1,24 @@
 
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
-    "$type": "Microsoft.OnAsk",
-    "condition":"and(!$Directions, contains(dialog.requiredProperties, 'Directions'))",
+    "$kind": "Microsoft.OnAsk",
+    "condition":"!$Directions && contains(dialog.requiredProperties, 'Directions')",
     "actions": [
         {
-            "$type": "Microsoft.IfCondition",
-            "condition":"$lastExpectedProperty == 'Directions'",
-            "actions":[
-                {
-                    "$type": "Microsoft.SendActivity",
-                    "activity": "@{help(@PropertyName)}"
-                }
-                    
-            ]
-        },
-        {
-            "$type": "Microsoft.IfCondition",
+            "$kind": "Microsoft.IfCondition",
             "condition": "contains(turn.schema.properties['Directions'].$mappings, 'utterance')",
             "actions":[
                 {
-                    "$type": "Microsoft.Ask",
+                    "$kind": "Microsoft.Ask",
                     "activity": "@{AskDirections()}",
                     "expectedProperties": [
                          "utterance","Directions"
-            ]
+                    ]
                 }
             ],
             "elseActions":[
                 {
-                    "$type": "Microsoft.Ask",
+                    "$kind": "Microsoft.Ask",
                     "activity": "@{AskDirections()}",
                     "expectedProperties": [
                         "Directions"
@@ -37,10 +26,5 @@
                 }
             ]
         },
-        {
-            "$type": "Microsoft.SetProperty",
-            "property": "$lastExpectedProperty",
-            "value": "'Directions'"
-        }
     ]
 }

@@ -1,11 +1,11 @@
 
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
-    "$type": "Microsoft.OnClarifyEntity",
+    "$kind": "Microsoft.OnClarifyEntity",
     "entity": "CheeseEntity",
     "actions": [
         {
-            "$type": "Microsoft.Ask",
+            "$kind": "Microsoft.Ask",
             "activity": "@{clarifyCheeseEntity()}",
             "expectedProperties": ["Cheese"]
         }

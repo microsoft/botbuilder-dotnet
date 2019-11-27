@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
@@ -40,6 +41,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
             }
 
             var resource = resourceExplorer.GetResource($"{refTarget}.dialog");
+            if (resource == null)
+            {
+                throw new FileNotFoundException($"Failed to find resource named {refTarget}.dialog");
+            }
+
             string text = await resource.ReadTextAsync().ConfigureAwait(false);
             var json = JToken.Parse(text);
 

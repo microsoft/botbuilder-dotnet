@@ -1,16 +1,16 @@
 
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
-    "$type": "Microsoft.OnSetProperty",
+    "$kind": "Microsoft.OnSetProperty",
     "property": "Meat",
     "entity": "MeatEntity",
     "actions": [
         {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "@{setPropertyMessage('Meat', @MeatEntity)}"
         },    
         {
-            "$type": "Microsoft.SetProperty",
+            "$kind": "Microsoft.SetProperty",
             "property": "$Meat",
             "value": "@MeatEntity"
         }

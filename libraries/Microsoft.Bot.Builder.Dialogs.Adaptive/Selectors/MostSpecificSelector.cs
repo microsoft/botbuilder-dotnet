@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Expressions.TriggerTrees;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
@@ -16,6 +17,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// </summary>
     public class MostSpecificSelector : ITriggerSelector
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.MostSpecificSelector";
+
         private readonly TriggerTree _tree = new TriggerTree();
 
         /// <summary>

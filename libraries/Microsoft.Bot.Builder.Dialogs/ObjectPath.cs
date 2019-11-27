@@ -519,6 +519,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return value;
             }
 
+            if (obj is JValue jval)
+            {
+                // in order to make things like "this.value.Length" work, when "this.value" is a string.
+                return GetObjectProperty(jval.Value, property);
+            }
+
             var prop = obj.GetType().GetProperties().Where(p => p.Name.ToLower() == property.ToLower()).FirstOrDefault();
             if (prop != null)
             {

@@ -1,6 +1,6 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/form/schemas/component.schema",
-    "$role": "unionType(Microsoft.IDialog)",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
     "title": "If condition",
     "description": "Two-way branch the conversation flow based on a condition.",
     "type": "object",
@@ -20,7 +20,7 @@
         "actions": {
             "type": "array",
             "items": {
-                "$type": "Microsoft.IDialog"
+                "$kind": "Microsoft.IDialog"
             },
             "title": "Actions",
             "description": "Actions to execute if condition is true."
@@ -28,7 +28,7 @@
         "elseActions": {
             "type": "array",
             "items": {
-                "$type": "Microsoft.IDialog"
+                "$kind": "Microsoft.IDialog"
             },
             "title": "Else",
             "description": "Actions to execute if condition is false."

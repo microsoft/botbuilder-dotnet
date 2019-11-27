@@ -1,27 +1,27 @@
 {
     "$schema": "../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "$id": "root",
     "triggers": [
         {
-            "$type": "Microsoft.OnBeginDialog",
+            "$kind": "Microsoft.OnBeginDialog",
             "actions": [
                 {
-                    "$type": "Microsoft.TextInput",
+                    "$kind": "Microsoft.TextInput",
                     "prompt": "Welcome! Here is a http request sample, please enter a name for you visual pet.",
                     "property": "dialog.petname"
                 },
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Great! Your pet's name is @{dialog.petname}"
                 },
                 {
-                    "$type": "Microsoft.NumberInput",
+                    "$kind": "Microsoft.NumberInput",
                     "prompt": "Now please enter the id of your pet, this could help you find your pet later.",
                     "property": "dialog.petid"
                 },
                 {
-                    "$type": "Microsoft.HttpRequest",
+                    "$kind": "Microsoft.HttpRequest",
                     "url": "http://petstore.swagger.io/v2/pet",
                     "method": "POST",
                     "headers": {
@@ -49,22 +49,22 @@
                     "resultProperty": "dialog.postResponse"
                 },
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Done! You have added a pet named \"@{dialog.postResponse.content.name}\" with id \"@{dialog.postResponse.content.id}\""
                 },
                 {
-                    "$type": "Microsoft.NumberInput",
+                    "$kind": "Microsoft.NumberInput",
                     "prompt": "Now try to specify the id of your pet, and I will help your find it out from the store.",
                     "property": "$id2"
                 },
               {
-                "$type": "Microsoft.HttpRequest",
+                "$kind": "Microsoft.HttpRequest",
                 "url": "http://petstore.swagger.io/v2/pet/@{$id2}",
                 "method": "GET",
                 "resultProperty": "dialog.getResponse"
               },
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Great! I found your pet named \"@{dialog.getResponse.content.name}\""
                 }
             ]

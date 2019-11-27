@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
@@ -10,6 +11,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </summary>
     public class IntentPattern
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.IntentPattern";
+
         private Regex regex;
         private string pattern;
 
@@ -29,6 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <value>
         /// The intent.
         /// </value>
+        [JsonProperty("intent")]
         public string Intent { get; set; }
 
         /// <summary>
@@ -37,6 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <value>
         /// The regex pattern to match.
         /// </value>
+        [JsonProperty("pattern")]
         public string Pattern
         {
             get
@@ -51,6 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             }
         }
 
+        [JsonIgnore]
         public Regex Regex => this.regex;
     }
 }

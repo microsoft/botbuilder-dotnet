@@ -19,6 +19,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     /// </remarks>
     public class OnUnknownIntent : OnDialogEvent
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.OnUnknownIntent";
+
         [JsonConstructor]
         public OnUnknownIntent(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(

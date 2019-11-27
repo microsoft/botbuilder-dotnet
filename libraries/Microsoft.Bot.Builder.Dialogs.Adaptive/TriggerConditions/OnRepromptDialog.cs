@@ -12,6 +12,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     /// </summary>
     public class OnRepromptDialog : OnDialogEvent
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.OnRepromptDialog";
+
         [JsonConstructor]
         public OnRepromptDialog(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(@event: AdaptiveEvents.RepromptDialog, actions: actions, condition: condition, callerPath: callerPath, callerLine: callerLine)

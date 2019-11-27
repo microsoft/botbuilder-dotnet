@@ -1,13 +1,13 @@
 {
   "$schema": "../../app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
+  "$kind": "Microsoft.AdaptiveDialog",
   "actions": [
     {
-      "$type": "Microsoft.IfCondition",
+      "$kind": "Microsoft.IfCondition",
       "condition": "dialog.token == null",
       "actions": [
         {
-          "$type": "Microsoft.OAuthInput",
+          "$kind": "Microsoft.OAuthInput",
           "ConnectionName": "msgraph",
           "Title": "Log in",
           "Text": "Please log in to your email account",
@@ -16,7 +16,7 @@
       ]
     },
     {
-      "$type": "Microsoft.HttpRequest",
+      "$kind": "Microsoft.HttpRequest",
       "url": "https://graph.microsoft.com/beta/me/mailFolders/inbox/messages",
       "method": "GET",
       "header": {

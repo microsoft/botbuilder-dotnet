@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -17,6 +18,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
@@ -26,6 +28,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// </summary>
     public class AdaptiveDialog : DialogContainer
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.AdaptiveDialog";
+
         private const string AdaptiveKey = "adaptiveDialogState";
 
         private readonly string changeKey = Guid.NewGuid().ToString();
@@ -40,8 +45,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             RegisterSourceLocation(callerPath, callerLine);
         }
 
+        [JsonIgnore]
         public IStatePropertyAccessor<BotState> BotState { get; set; }
 
+        [JsonIgnore]
         public IStatePropertyAccessor<Dictionary<string, object>> UserState { get; set; }
 
         /// <summary>
@@ -50,6 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <value>
         /// Recognizer for processing incoming user input.
         /// </value>
+        [JsonProperty("recognizer")]
         public IRecognizer Recognizer { get; set; }
 
         /// <summary>
@@ -58,6 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <value>
         /// Language Generator override.
         /// </value>
+        [JsonProperty("generator")]
         public ILanguageGenerator Generator { get; set; }
 
         /// <summary>
@@ -66,6 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <value>
         /// Trigger handlers to respond to conditions which modifying the executing plan. 
         /// </value>
+        [JsonProperty("triggers")]
         public virtual List<OnCondition> Triggers { get; set; } = new List<OnCondition>();
 
         /// <summary>
@@ -78,6 +88,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <value>
         /// Whether to end the dialog when there are no actions to execute.
         /// </value>
+        [DefaultValue(true)]
+        [JsonProperty("autoEndDialog")]
         public bool AutoEndDialog { get; set; } = true;
 
         /// <summary>
@@ -86,6 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <value>
         /// The selector for picking the possible events to execute.
         /// </value>
+        [JsonProperty("selector")]
         public ITriggerSelector Selector { get; set; }
 
         /// <summary>
@@ -94,6 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <value>
         /// The property to return as the result when the dialog ends when there are no more Actions and AutoEndDialog = true.
         /// </value>
+        [JsonProperty("defaultResultProperty")]
         public string DefaultResultProperty { get; set; } = "dialog.result";
 
         /// <summary>
@@ -102,6 +116,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <value>JSON Schema for the dialog.</value>
         public DialogSchema Schema { get; set; }
 
+        [JsonIgnore]
         public override IBotTelemetryClient TelemetryClient
         {
             get
@@ -241,6 +256,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             return null;
+        }
+
+        public IEnumerable<Dialog> GetDependencies()
+        {
+            foreach (var trigger in Triggers)
+            {
+                if (trigger is IDialogDependencies depends)
+                {
+                    foreach (var dlg in depends.GetDependencies())
+                    {
+                        yield return dlg;
+                    }
+                }
+            }
         }
 
         protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default)
@@ -510,20 +539,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var instanceId = GetUniqueInstanceId(sequenceContext);
 
             // Execute queued actions
-            var action = CreateChildContext(sequenceContext) as SequenceContext;
-            while (action != null)
+            var actionContext = CreateChildContext(sequenceContext) as SequenceContext;
+            while (actionContext != null)
             {
                 // Continue current step
                 // DEBUG: To debug step execution set a breakpoint on line below and add a watch 
                 //        statement for sequenceContext.Actions.
-                var result = await action.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+                var result = await actionContext.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
 
                 // Start step if not continued
                 if (result.Status == DialogTurnStatus.Empty && GetUniqueInstanceId(sequenceContext) == instanceId)
                 {
                     // Call begin dialog on our next step, passing the effective options we computed
-                    var nextAction = action.Actions.First();
-                    result = await action.BeginDialogAsync(nextAction.DialogId, nextAction.Options, cancellationToken).ConfigureAwait(false);
+                    var nextAction = actionContext.Actions.First();
+                    result = await actionContext.BeginDialogAsync(nextAction.DialogId, nextAction.Options, cancellationToken).ConfigureAwait(false);
                 }
 
                 // Is the step waiting for input or were we cancelled?
@@ -567,7 +596,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                 // Apply any local changes and fetch next action
                 await sequenceContext.ApplyChangesAsync(cancellationToken).ConfigureAwait(false);
-                action = CreateChildContext(sequenceContext) as SequenceContext;
+                actionContext = CreateChildContext(sequenceContext) as SequenceContext;
             }
 
             return await OnEndOfActionsAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
@@ -704,9 +733,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     var noActivity = 0;
                     var activity = 1000;
                     var input = 2000;
-                    foreach (var @event in Triggers)
+                    foreach (var trigger in Triggers)
                     {
-                        if (@event is IDialogDependencies depends)
+                        if (trigger is IDialogDependencies depends)
                         {
                             foreach (var dlg in depends.GetDependencies())
                             {
@@ -714,12 +743,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             }
                         }
 
-                        if (@event.RunOnce)
+                        if (trigger.RunOnce)
                         {
                             needsTracker = true;
                         }
 
-                        if (!@event.Priority.HasValue)
+                        if (!trigger.Priority.HasValue)
                         {
                             // Analyze actions to set default priorities
                             // 0-999 Non-activity
@@ -727,7 +756,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             // 2000+ Contains input action
                             var foundActivity = false;
                             var foundInput = false;
-                            foreach (var action in @event.Actions)
+                            foreach (var action in trigger.Actions)
                             {
                                 if (action is InputDialog || action is Ask)
                                 {
@@ -741,19 +770,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                             if (foundInput)
                             {
-                                @event.Priority = input++;
+                                trigger.Priority = input++;
                             }
                             else if (foundActivity)
                             {
-                                @event.Priority = activity++;
+                                trigger.Priority = activity++;
                             }
                             else
                             {
-                                @event.Priority = noActivity++;
+                                trigger.Priority = noActivity++;
                             }
                         }
 
-                        @event.Id = id++;
+                        trigger.Id = id++;
                     }
 
                     // Wire up selector

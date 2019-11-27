@@ -29,7 +29,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Adaptive" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Adaptive" Condition=" '$(IsBuildServer)' != '' " Version="$(PreviewPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />

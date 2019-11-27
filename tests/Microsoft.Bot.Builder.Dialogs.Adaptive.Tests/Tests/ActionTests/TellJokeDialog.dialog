@@ -1,0 +1,26 @@
+{
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "TellJokeDialog",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Why did the chicken cross the road?"
+                },
+                {
+                    "$kind": "Microsoft.EndTurn",
+                    "id": "EndTurn"
+                },
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "To get to the other side"
+                }
+            ]
+        }
+    ],
+    "AutoEndDialog": true,
+    "defaultResultProperty": "dialog.result",
+    "dialogs": {}
+}

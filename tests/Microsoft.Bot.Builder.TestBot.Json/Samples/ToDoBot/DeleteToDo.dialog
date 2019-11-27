@@ -1,42 +1,42 @@
 {
     "$schema": "../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "generator": "todo.lg",
     "triggers": [
         {
-            "$type": "Microsoft.OnBeginDialog",
+            "$kind": "Microsoft.OnBeginDialog",
 
             "actions": [
                 {
-                    "$type": "Microsoft.SetProperty",
+                    "$kind": "Microsoft.SetProperty",
                     "value": "@title",
                     "property": "dialog.todo"
                 },
                 {
-                    "$type": "Microsoft.TextInput",
+                    "$kind": "Microsoft.TextInput",
                     "prompt": "OK, please enter the title of the todo you want to remove.",
                     "value": "@title",
                     "property": "dialog.todo"
                 },
                 {
-                    "$type": "Microsoft.EditArray",
+                    "$kind": "Microsoft.EditArray",
                     "changeType": "Remove",
                     "itemsProperty": "user.todos",
                     "value": "dialog.todo",
                     "resultProperty": "dialog.removed"
                 },
                 {
-                    "$type": "Microsoft.IfCondition",
+                    "$kind": "Microsoft.IfCondition",
                     "condition": "dialog.removed",
                     "actions": [
                         {
-                            "$type": "Microsoft.SendActivity",
+                            "$kind": "Microsoft.SendActivity",
                             "activity": "Successfully removed a todo named \"@{dialog.todo}\""
                         }
                     ],
                     "elseActions": [
                         {
-                            "$type": "Microsoft.SendActivity",
+                            "$kind": "Microsoft.SendActivity",
                             "activity": "\"@{dialog.todo}\" is not in the Todo List"
                         }
                     ]

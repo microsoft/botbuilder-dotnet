@@ -28,10 +28,13 @@ Which value do you want for @{name(property)}?
 - Enter a number for @{name(property)}:
 
 # askString(property)
-- Enter a value for @{name(property)}
+- ```
+@{askHelp()}
+Enter a value for @{name(property)}
+```
 
 # askHelp
-- IF: @{and($retries, $retries > 0, toLower($lastIntent)!='help')}
+- IF: @{$retries > 0 && $lastIntent != 'Help'}
 - @{join(foreach($expectedProperties, expected, help1(expected)), '\n')}
 - ELSE:
 - 

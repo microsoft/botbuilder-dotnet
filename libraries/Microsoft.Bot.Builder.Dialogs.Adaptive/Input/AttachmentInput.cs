@@ -5,12 +5,15 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
     /// <summary>
     /// Format specifier for outputs.
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum AttachmentOutputFormat
     {
         /// <summary>
@@ -26,11 +29,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
     public class AttachmentInput : InputDialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.AttachmentInput";
+
         public AttachmentInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        [JsonProperty("outputFormat")]
         public AttachmentOutputFormat OutputFormat { get; set; } = AttachmentOutputFormat.First;
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)

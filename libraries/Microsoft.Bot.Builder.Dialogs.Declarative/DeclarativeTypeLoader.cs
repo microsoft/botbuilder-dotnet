@@ -45,11 +45,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                 paths.Push(fileResource.FullName);
             }
 
+            string json = null;
             try
             {
-                var json = await resource.ReadTextAsync();
+                json = await resource.ReadTextAsync();
 
-                return Load<T>(sourceMap, refResolver, paths, json);
+                var result = Load<T>(sourceMap, refResolver, paths, json);
+                if (result is Dialog dlg)
+                {
+                    // dialog id's are resource ids
+                    dlg.Id = resource.Id;
+                }
+
+                return result;
             }
             catch (Exception err)
             {
