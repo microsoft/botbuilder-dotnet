@@ -922,7 +922,7 @@ namespace Microsoft.Bot.Expressions
                         return (null, null, $"{left.Children[1].ToString()} dones't return a int or string");
                     }
 
-                    path = $"[{value}]" + "." + path;
+                    path = $"['{value}']" + "." + path;
                     left = left.Children[0];
                 }
                 else
