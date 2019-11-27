@@ -970,6 +970,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var memory = new
             {
+                myProperty = new
+                {
+                    name = "p1"
+                },
+
                 turn = new
                 {
                     properties = new Dictionary<string, object>
@@ -981,7 +986,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 }
             };
 
+            // this evaulate will hit memory access twice
+            // first for "property", and get "p1", from local
+            // sencond for "turn.property[p1].enum" and get "p1enum" from global
             var result = engine.EvaluateTemplate("T1", memory);
+            Assert.AreEqual(result, "p1enum");
+
+            // this evaulate will hit memory access twice
+            // first for "myProperty.name", and get "p1", from global
+            // sencond for "turn.property[p1].enum" and get "p1enum" from global 
+            result = engine.EvaluateTemplate("T3", memory);
             Assert.AreEqual(result, "p1enum");
         }
 

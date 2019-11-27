@@ -752,7 +752,10 @@ namespace Microsoft.Bot.Expressions.Tests
             {
                 f = "foo",
                 b = "bar",
-                z = "zar"
+                z = new
+                {
+                    z = "zar"
+                }
             });
 
             var parser = new ExpressionEngine();
@@ -761,6 +764,16 @@ namespace Microsoft.Bot.Expressions.Tests
             var exp = parser.Parse("a[f].b[b].z");
             var (path, left, err) = BuiltInFunctions.TryAccumulatePath(exp, memory);
             Assert.AreEqual(path, "a[foo].b[bar].z");
+
+            // normal case
+            exp = parser.Parse("a[z.z].y");
+            (path, left, err) = BuiltInFunctions.TryAccumulatePath(exp, memory);
+            Assert.AreEqual(path, "a[zar].y");
+
+            // normal case
+            exp = parser.Parse("a.b[z.z]");
+            (path, left, err) = BuiltInFunctions.TryAccumulatePath(exp, memory);
+            Assert.AreEqual(path, "a.b[zar]");
 
             // stop evaluate at middle
             exp = parser.Parse("json(x).b");
