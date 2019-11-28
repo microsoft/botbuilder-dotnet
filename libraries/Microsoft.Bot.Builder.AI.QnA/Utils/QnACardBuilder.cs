@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 new CardAction()
                 {
                     Value = cardNoMatchText,
-                    Type = "imBack",
+                    Type = "imBack",    
                     Title = cardNoMatchText
                 });
 

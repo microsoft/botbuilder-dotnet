@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_withPrompts.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
                .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_MultiTurnLevel1.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
@@ -1588,6 +1588,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var host = "'https://dummy-hostname.azurewebsites.net/qnamaker'";
             var knowlegeBaseId = "'dummy-id'";
             var endpointKey = "'dummy-key'";
+            var activeLearningCardTitle = "QnAMaker Active Learning";
 
             var outerDialog = new AdaptiveDialog("outer")
             {
@@ -1600,11 +1601,13 @@ namespace Microsoft.Bot.Builder.AI.Tests
                         {
                             new QnAMakerDialog2()
                             {
-                                KnowledgeBaseId = knowlegeBaseId, 
-                                HostName = host, 
-                                EndpointKey = endpointKey, 
+                                KnowledgeBaseId = knowlegeBaseId,
+                                HostName = host,
+                                EndpointKey = endpointKey,
                                 HttpClient = client,
-                                NoAnswer = noAnswerActivity
+                                NoAnswer = noAnswerActivity,
+                                ActiveLearningCardTitle = activeLearningCardTitle,
+                                CardNoMatchText = "None of the above.",
                             }
                         }
                     }
