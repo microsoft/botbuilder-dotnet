@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.TestProtocol.Controllers

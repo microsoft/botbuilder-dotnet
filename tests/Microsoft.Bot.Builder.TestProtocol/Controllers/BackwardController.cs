@@ -6,7 +6,7 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 
 namespace Microsoft.Bot.Builder.TestProtocol.Controllers
 {
-    [Route("api/connector/v3/conversations")]
+    [Route("api/connector")]
     [ApiController]
     public class BackwardController : ChannelServiceController
     {

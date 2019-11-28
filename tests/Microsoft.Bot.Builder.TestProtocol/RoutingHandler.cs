@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -33,10 +34,6 @@ namespace Microsoft.Bot.Builder.TestProtocol
 
         protected override async Task<ResourceResponse> OnReplyToActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
-            if (activity.Type != ActivityTypes.EndOfConversation)
-            {
-            }
-
             var (backConversationId, backServiceUrl) = _factory.GetConversationInfo(conversationId);
             var connectorClient = GetConnectorClient(backServiceUrl);
             activity.Conversation.Id = backConversationId;
