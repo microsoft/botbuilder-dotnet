@@ -1,0 +1,71 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperties",
+                        "assignments": [
+                            {
+                                "property": "$p1",
+                                "value": "'val1'"
+                            },
+                            {
+                                "property": "$p2",
+                                "value": "$p1"
+                            },
+                            {
+                                "property": "$p3",
+                                "value": "13"
+                            },
+                            {
+                                "property": "$p4",
+                                "value": "'billybob'"
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "@{$p1}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "@{$p2}"
+                    },                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "@{$p3}"
+                    },                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "@{$p4}"
+                    },
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserConversationUpdate"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "val1"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "val1"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "13"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "billybob"
+        }
+    ]
+}

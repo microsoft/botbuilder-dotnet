@@ -15,35 +15,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Sets a property with the result of evaluating a value expression.
     /// </summary>
-    public class SetProperty : Dialog
+    public class SetProperties : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.SetProperty";
+        public const string DeclarativeType = "Microsoft.SetProperties";
 
         [JsonConstructor]
-        public SetProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SetProperties([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
-        /// Gets or sets property path to put the value in.
+        /// Gets or sets additional property assignments.
         /// </summary>
         /// <value>
-        /// Property path to put the value in.
+        /// Additional property settings as property=value pairs.
         /// </value>
-        [JsonProperty("property")]
-        public string Property { get; set; }
-
-        /// <summary>
-        /// Gets or sets the expression to get the value to put into property path.
-        /// </summary>
-        /// <value>
-        /// The expression to get the value to put into property path.
-        /// </value>
-        [JsonProperty("value")]
-        public string Value { get; set; }
+        [JsonProperty("assignments")]
+        public List<PropertyAssignment> Assignments { get; set; } = new List<PropertyAssignment>();
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -52,12 +43,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
-            var valexp = new ExpressionEngine().Parse(this.Value ?? throw new ArgumentNullException(nameof(this.Value)));
-            var (value, valueError) = valexp.TryEvaluate(dc.GetState());
-            if (valueError == null)
+            foreach (var propValue in this.Assignments)
             {
-                dc.GetState().SetValue(this.Property, value);
+                var valexp = new ExpressionEngine().Parse(propValue.Value);
+                var (value, valueError) = valexp.TryEvaluate(dc.GetState());
+                if (valueError == null)
+                {
+                    dc.GetState().SetValue(propValue.Property, value);
+                }
             }
 
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -65,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.Property ?? string.Empty}]";
+            return $"{this.GetType().Name}[{string.Join(",", this.Assignments)}]";
         }
     }
 }

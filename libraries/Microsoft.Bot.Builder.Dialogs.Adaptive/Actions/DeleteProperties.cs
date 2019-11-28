@@ -14,37 +14,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Deletes a property from memory.
     /// </summary>
-    public class DeleteProperty : Dialog
+    public class DeleteProperties : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.DeleteProperty";
+        public const string DeclarativeType = "Microsoft.DeleteProperties";
 
         [JsonConstructor]
-        public DeleteProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public DeleteProperties([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
-
-        public DeleteProperty(string property, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base()
-        {
-            this.RegisterSourceLocation(callerPath, callerLine);
-            if (!string.IsNullOrEmpty(property))
-            {
-                this.Properties.Add(property);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the property path to remove.
-        /// </summary>
-        /// <example>
-        /// user.age will remove "age" from "user".
-        /// </example>
-        /// <value>the property path to remove.</value>
-        [JsonProperty("property")]
-        public string Property { get; set; }
 
         /// <summary>
         /// Gets or sets properties to remove.
@@ -68,11 +48,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Ensure planning context
             if (dc is SequenceContext planning)
             {
-                if (!string.IsNullOrEmpty(this.Property))
-                {
-                    dc.GetState().RemoveValue(this.Property);
-                }
-
                 if (this.Properties?.Any() == true)
                 {
                     foreach (var property in this.Properties)

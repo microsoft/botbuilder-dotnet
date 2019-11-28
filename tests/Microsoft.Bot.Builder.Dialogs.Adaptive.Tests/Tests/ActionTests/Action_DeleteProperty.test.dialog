@@ -16,6 +16,19 @@
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "@{$p1}"
+                    },
+                    {
+                        "$kind": "Microsoft.DeleteProperty",
+                        "property": "$p1"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "$p1 == null",
+                        "description": "$p1 should be null"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "done"
                     }
                 ]
             }
@@ -28,6 +41,10 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "val1"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "done"
         }
     ]
 }

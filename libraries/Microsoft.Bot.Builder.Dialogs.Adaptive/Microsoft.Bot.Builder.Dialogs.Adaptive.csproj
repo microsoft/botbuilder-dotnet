@@ -35,6 +35,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Schemas\Actions\Microsoft.DeleteProperties.schema" />
+    <None Remove="Schemas\Actions\Microsoft.SetProperties.schema" />
+    <None Remove="Schemas\Testing\Microsoft.Test.AssertCondition.schema" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />

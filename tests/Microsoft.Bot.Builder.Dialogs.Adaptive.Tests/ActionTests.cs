@@ -194,5 +194,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             await TestUtils.RunTestScript("Action_SetProperty.test.dialog");
         }
+
+        [TestMethod]
+        public async Task Action_SetProperties()
+        {
+            await TestUtils.RunTestScript("Action_SetProperties.test.dialog");
+        }
+
+        [TestMethod]
+        public async Task Action_DeleteProperty()
+        {
+            await TestUtils.RunTestScript("Action_DeleteProperty.test.dialog");
+        }
+
+        [TestMethod]
+        public async Task Action_DeleteProperties()
+        {
+            await TestUtils.RunTestScript("Action_DeleteProperties.test.dialog");
+        }
     }
 }

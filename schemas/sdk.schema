@@ -362,7 +362,7 @@
         },
         {
             "title": "Microsoft.SetProperty",
-            "description": "Set property to a value.",
+            "description": "Set one or more property values.",
             "$ref": "#/definitions/Microsoft.SetProperty"
         },
         {
@@ -379,6 +379,11 @@
             "title": "Microsoft.TemperatureEntityRecognizer",
             "description": "Recognizer which recognizes temperatures.",
             "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
+        },
+        {
+            "title": "Microsoft.Test.AssertCondition",
+            "description": "Assert condition is true.",
+            "$ref": "#/definitions/Microsoft.Test.AssertCondition"
         },
         {
             "title": "Microsoft.Test.AssertReply",
@@ -1995,6 +2000,17 @@
                     "title": "Property",
                     "description": "Property to delete.",
                     "type": "string"
+                },
+                "properties": {
+                    "type": "array",
+                    "title": "Additional Properties",
+                    "description": "Additional Properties to delete.",
+                    "items": {
+                        "$role": "expression",
+                        "title": "Property",
+                        "description": "Property to delete.",
+                        "type": "string"
+                    }
                 }
             },
             "additionalProperties": false,
@@ -2013,7 +2029,6 @@
                 {
                     "title": "Type",
                     "required": [
-                        "property",
                         "$kind"
                     ]
                 }
@@ -3163,13 +3178,18 @@
                 },
                 {
                     "title": "Microsoft.SetProperty",
-                    "description": "Set property to a value.",
+                    "description": "Set one or more property values.",
                     "$ref": "#/definitions/Microsoft.SetProperty"
                 },
                 {
                     "title": "Microsoft.SwitchCondition",
                     "description": "Execute different actions based on the value of a property.",
                     "$ref": "#/definitions/Microsoft.SwitchCondition"
+                },
+                {
+                    "title": "Microsoft.Test.AssertCondition",
+                    "description": "Assert condition is true.",
+                    "$ref": "#/definitions/Microsoft.Test.AssertCondition"
                 },
                 {
                     "title": "Microsoft.TextInput",
@@ -6406,7 +6426,7 @@
         "Microsoft.SetProperty": {
             "$role": "union(Microsoft.IDialog)",
             "title": "Set property",
-            "description": "Set property to a value.",
+            "description": "Set one or more property values.",
             "type": "object",
             "properties": {
                 "$kind": {
@@ -6452,6 +6472,36 @@
                         "dialog.favColor == 'red'"
                     ],
                     "type": "string"
+                },
+                "assignments": {
+                    "type": "array",
+                    "title": "Additional Assignments",
+                    "description": "Additional property value assignments to set.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "property": {
+                                "$role": "expression",
+                                "title": "Property",
+                                "description": "Property (named location to store information).",
+                                "examples": [
+                                    "user.age"
+                                ],
+                                "type": "string"
+                            },
+                            "value": {
+                                "$role": "expression",
+                                "title": "Value",
+                                "description": "New value or expression.",
+                                "examples": [
+                                    "'milk'",
+                                    "dialog.favColor",
+                                    "dialog.favColor == 'red'"
+                                ],
+                                "type": "string"
+                            }
+                        }
+                    }
                 }
             },
             "additionalProperties": false,
@@ -6470,8 +6520,6 @@
                 {
                     "title": "Type",
                     "required": [
-                        "property",
-                        "value",
                         "$kind"
                     ]
                 }
@@ -6668,6 +6716,72 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.AssertCondition": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Assert Condition",
+            "description": "Assert condition is true.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.AssertCondition"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Expression to evalute",
+                    "examples": [
+                        "user.age > 10"
+                    ],
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "title": "Description",
+                    "description": "Description of what the condition is testing"
                 }
             },
             "additionalProperties": false,
