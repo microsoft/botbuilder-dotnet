@@ -46,7 +46,7 @@
                         "activity": "@{$p4}"
                     },
                     {
-                        "$kind": "Microsoft.DeleteProperty",
+                        "$kind": "Microsoft.DeleteProperties",
                         "properties": [
                             "$p3", "$p4"
                         ]
