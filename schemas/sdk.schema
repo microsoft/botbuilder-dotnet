@@ -76,6 +76,11 @@
             "$ref": "#/definitions/Microsoft.DebugBreak"
         },
         {
+            "title": "Microsoft.DeleteProperties",
+            "description": "Delete multiple properties and any value it holds.",
+            "$ref": "#/definitions/Microsoft.DeleteProperties"
+        },
+        {
             "title": "Microsoft.DeleteProperty",
             "description": "Delete a property and any value it holds.",
             "$ref": "#/definitions/Microsoft.DeleteProperty"
@@ -361,8 +366,13 @@
             "$ref": "#/definitions/Microsoft.SendActivity"
         },
         {
-            "title": "Microsoft.SetProperty",
+            "title": "Microsoft.SetProperties",
             "description": "Set one or more property values.",
+            "$ref": "#/definitions/Microsoft.SetProperties"
+        },
+        {
+            "title": "Microsoft.SetProperty",
+            "description": "Set property to a value.",
             "$ref": "#/definitions/Microsoft.SetProperty"
         },
         {
@@ -1965,6 +1975,70 @@
                 }
             ]
         },
+        "Microsoft.DeleteProperties": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Delete Properties",
+            "description": "Delete multiple properties and any value it holds.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.DeleteProperties"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "properties": {
+                    "type": "array",
+                    "title": "Properties",
+                    "description": "Properties to delete.",
+                    "items": {
+                        "$role": "expression",
+                        "title": "Property",
+                        "description": "Property to delete.",
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "properties",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
         "Microsoft.DeleteProperty": {
             "$role": "union(Microsoft.IDialog)",
             "title": "Delete Property",
@@ -2000,17 +2074,6 @@
                     "title": "Property",
                     "description": "Property to delete.",
                     "type": "string"
-                },
-                "properties": {
-                    "type": "array",
-                    "title": "Additional Properties",
-                    "description": "Additional Properties to delete.",
-                    "items": {
-                        "$role": "expression",
-                        "title": "Property",
-                        "description": "Property to delete.",
-                        "type": "string"
-                    }
                 }
             },
             "additionalProperties": false,
@@ -2029,6 +2092,7 @@
                 {
                     "title": "Type",
                     "required": [
+                        "property",
                         "$kind"
                     ]
                 }
@@ -3087,6 +3151,11 @@
                     "$ref": "#/definitions/Microsoft.DebugBreak"
                 },
                 {
+                    "title": "Microsoft.DeleteProperties",
+                    "description": "Delete multiple properties and any value it holds.",
+                    "$ref": "#/definitions/Microsoft.DeleteProperties"
+                },
+                {
                     "title": "Microsoft.DeleteProperty",
                     "description": "Delete a property and any value it holds.",
                     "$ref": "#/definitions/Microsoft.DeleteProperty"
@@ -3177,8 +3246,13 @@
                     "$ref": "#/definitions/Microsoft.SendActivity"
                 },
                 {
-                    "title": "Microsoft.SetProperty",
+                    "title": "Microsoft.SetProperties",
                     "description": "Set one or more property values.",
+                    "$ref": "#/definitions/Microsoft.SetProperties"
+                },
+                {
+                    "title": "Microsoft.SetProperty",
+                    "description": "Set property to a value.",
                     "$ref": "#/definitions/Microsoft.SetProperty"
                 },
                 {
@@ -6423,10 +6497,93 @@
                 }
             ]
         },
-        "Microsoft.SetProperty": {
+        "Microsoft.SetProperties": {
             "$role": "union(Microsoft.IDialog)",
             "title": "Set property",
             "description": "Set one or more property values.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.SetProperties"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "assignments": {
+                    "type": "array",
+                    "title": "Assignments",
+                    "description": "Property value assignments to set.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "property": {
+                                "$role": "expression",
+                                "title": "Property",
+                                "description": "Property (named location to store information).",
+                                "examples": [
+                                    "user.age"
+                                ],
+                                "type": "string"
+                            },
+                            "value": {
+                                "$role": "expression",
+                                "title": "Value",
+                                "description": "New value or expression.",
+                                "examples": [
+                                    "'milk'",
+                                    "dialog.favColor",
+                                    "dialog.favColor == 'red'"
+                                ],
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "assignments",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.SetProperty": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Set property",
+            "description": "Set property to a value.",
             "type": "object",
             "properties": {
                 "$kind": {
@@ -6472,36 +6629,6 @@
                         "dialog.favColor == 'red'"
                     ],
                     "type": "string"
-                },
-                "assignments": {
-                    "type": "array",
-                    "title": "Additional Assignments",
-                    "description": "Additional property value assignments to set.",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "property": {
-                                "$role": "expression",
-                                "title": "Property",
-                                "description": "Property (named location to store information).",
-                                "examples": [
-                                    "user.age"
-                                ],
-                                "type": "string"
-                            },
-                            "value": {
-                                "$role": "expression",
-                                "title": "Value",
-                                "description": "New value or expression.",
-                                "examples": [
-                                    "'milk'",
-                                    "dialog.favColor",
-                                    "dialog.favColor == 'red'"
-                                ],
-                                "type": "string"
-                            }
-                        }
-                    }
                 }
             },
             "additionalProperties": false,
@@ -6520,6 +6647,8 @@
                 {
                     "title": "Type",
                     "required": [
+                        "property",
+                        "value",
                         "$kind"
                     ]
                 }

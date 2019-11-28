@@ -2,8 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,31 +30,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             this.RegisterSourceLocation(callerPath, callerLine);
             if (!string.IsNullOrEmpty(property))
             {
-                this.Properties.Add(property);
+                this.Property = property;
             }
         }
 
         /// <summary>
-        /// Gets or sets the property path to remove.
-        /// </summary>
-        /// <example>
-        /// user.age will remove "age" from "user".
-        /// </example>
-        /// <value>the property path to remove.</value>
-        [JsonProperty("property")]
-        public string Property { get; set; }
-
-        /// <summary>
-        /// Gets or sets properties to remove.
+        /// Gets or sets property path to remove.
         /// </summary>
         /// <example>
         /// user.age will remove "age" from "user".
         /// </example>
         /// <value>
-        /// Collection of property paths to remove.
+        /// Property path to remove.
         /// </value>
-        [JsonProperty("properties")]
-        public List<string> Properties { get; set; } = new List<string>();
+        [JsonProperty("property")]
+        public string Property { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -68,24 +56,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Ensure planning context
             if (dc is SequenceContext planning)
             {
-                if (!string.IsNullOrEmpty(this.Property))
-                {
-                    dc.GetState().RemoveValue(this.Property);
-                }
-
-                if (this.Properties?.Any() == true)
-                {
-                    foreach (var property in this.Properties)
-                    {
-                        dc.GetState().RemoveValue(property);
-                    }
-                }
-
+                dc.GetState().RemoveValue(Property);
                 return await dc.EndDialogAsync();
             }
             else
             {
-                throw new Exception("`DeleteProperty` should only be used in the context of an adaptive dialog.");
+                throw new Exception("`ClearProperty` should only be used in the context of an adaptive dialog.");
             }
         }
     }

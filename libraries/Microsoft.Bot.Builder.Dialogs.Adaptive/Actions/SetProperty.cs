@@ -2,8 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +17,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.SetProperty";
+
+        private Expression value;
 
         [JsonConstructor]
         public SetProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -43,7 +43,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The expression to get the value to put into property path.
         /// </value>
         [JsonProperty("value")]
-        public string Value { get; set; }
+        public string Value
+        {
+            get { return value?.ToString(); }
+            set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -53,8 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
-            var valexp = new ExpressionEngine().Parse(this.Value ?? throw new ArgumentNullException(nameof(this.Value)));
-            var (value, valueError) = valexp.TryEvaluate(dc.GetState());
+            var (value, valueError) = this.value.TryEvaluate(dc.GetState());
             if (valueError == null)
             {
                 dc.GetState().SetValue(this.Property, value);
