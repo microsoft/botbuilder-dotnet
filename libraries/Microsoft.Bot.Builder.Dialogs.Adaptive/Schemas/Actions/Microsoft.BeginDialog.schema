@@ -25,7 +25,7 @@
         "includeActivity": {
             "type": "boolean",
             "title": "Include Activity",
-            "description": "Set to true if you want the new dialog to process the activity.",
+            "description": "When set to true, dialog that is called can process the current activity.",
             "default": false
         },
         "resultProperty": {
