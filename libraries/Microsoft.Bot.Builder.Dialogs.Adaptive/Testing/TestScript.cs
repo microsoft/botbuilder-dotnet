@@ -38,11 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         {
             Formatting = Formatting.Indented,
             NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore,
-            ContractResolver = new IgnoreEmptyEnumerablesResolver
-            {
-                NamingStrategy = new CamelCaseNamingStrategy()
-            }
+            DefaultValueHandling = DefaultValueHandling.Ignore
         };
 
         /// <summary>
