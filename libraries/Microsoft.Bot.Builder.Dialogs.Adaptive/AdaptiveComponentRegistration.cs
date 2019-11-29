@@ -126,7 +126,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             // Dialogs
             yield return new TypeRegistration<AdaptiveDialog>(AdaptiveDialog.DeclarativeType);
-            yield return new TypeRegistration<QnAMakerDialog2>(QnAMakerDialog2.DeclarativeType);
 
             // Testing
             yield return new TypeRegistration<TestScript>(TestScript.DeclarativeType);

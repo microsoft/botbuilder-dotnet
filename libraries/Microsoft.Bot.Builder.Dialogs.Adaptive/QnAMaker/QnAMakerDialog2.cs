@@ -11,6 +11,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
 {
     public class QnAMakerDialog2 : QnAMakerDialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.QnAMakerDialog";
+
         private Expression knowledgebaseIdExpression;
         private Expression endpointkeyExpression;
         private Expression hostnameExpression;
@@ -72,9 +75,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
                 return qnaClient;
             }
 
-            var (epKey, error) = this.endpointkeyExpression.TryEvaluate(dc.State);
-            var (hn, error2) = this.hostnameExpression.TryEvaluate(dc.State);
-            var (kbId, error3) = this.knowledgebaseIdExpression.TryEvaluate(dc.State);
+            var (epKey, error) = this.endpointkeyExpression.TryEvaluate(dc.GetState());
+            var (hn, error2) = this.hostnameExpression.TryEvaluate(dc.GetState());
+            var (kbId, error3) = this.knowledgebaseIdExpression.TryEvaluate(dc.GetState());
 
             var endpoint = new QnAMakerEndpoint
             {
@@ -98,8 +101,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
 
         protected async override Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
         {
-            var noAnswer = (this.NoAnswer != null) ? await this.NoAnswer.BindToData(dc.Context, dc.State).ConfigureAwait(false) : null;
-            var cardNoMatchResponse = (this.CardNoMatchResponse != null) ? await this.CardNoMatchResponse.BindToData(dc.Context, dc.State).ConfigureAwait(false) : null;
+            var noAnswer = (this.NoAnswer != null) ? await this.NoAnswer.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false) : null;
+            var cardNoMatchResponse = (this.CardNoMatchResponse != null) ? await this.CardNoMatchResponse.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false) : null;
 
             var responseOptions = new QnADialogResponseOptions
             {

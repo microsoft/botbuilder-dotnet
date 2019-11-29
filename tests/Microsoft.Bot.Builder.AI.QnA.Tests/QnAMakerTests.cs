@@ -1595,7 +1595,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 AutoEndDialog = false,
                 Triggers = new List<OnCondition>()
                 {
-                    new OnUnknownIntent()
+                    new OnBeginDialog()
                     {
                         Actions = new List<Dialog>()
                         {
