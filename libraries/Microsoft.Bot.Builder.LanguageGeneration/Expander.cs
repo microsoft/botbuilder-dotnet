@@ -142,9 +142,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var stb = context.structuredTemplateBody();
             var result = new JObject();
             var typeName = stb.structuredBodyNameLine().STRUCTURED_CONTENT().GetText().Trim();
-            result["lgType"] = typeName;
-            var expandedResult = new List<JObject>();
-            expandedResult.Add(result);
+            result[Evaluator.LGType] = typeName;
+            var expandedResult = new List<JObject>
+            {
+                result
+            };
             var bodys = stb.structuredBodyContentLine().STRUCTURED_CONTENT();
             foreach (var body in bodys)
             {
@@ -199,7 +201,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                             var tempRes = JObject.FromObject(res);
 
                             // Full reference to another structured template is limited to the structured template with same type 
-                            if (propertyObject["lgType"] != null && propertyObject["lgType"].ToString() == typeName)
+                            if (propertyObject[Evaluator.LGType] != null && propertyObject[Evaluator.LGType].ToString() == typeName)
                             {
                                 foreach (var item in propertyObject)
                                 {
@@ -223,7 +225,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             foreach (var idToString in idToStringDict)
             {
                 // convert id text or expression to list of evaluated values
-                if ((idToString.Value.StartsWith("@") || idToString.Value.EndsWith("{")) && idToString.Value.EndsWith("}"))
+                if (idToString.Value.StartsWith("@{") && idToString.Value.EndsWith("}"))
                 {
                     templateRefValues.Add(idToString.Key, this.EvalExpression(idToString.Value));
                 }
@@ -372,11 +374,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private (object value, string error) EvalByExpressionEngine(string exp, object scope)
         {
-            object value = null;
-            string error = null;
             var expanderExpression = this.expanderExpressionEngine.Parse(exp);
             var evaluatorExpression = this.evaluatorExpressionEngine.Parse(exp);
             var parse = ReconstructExpression(expanderExpression, evaluatorExpression);
+            string error;
+            object value;
             (value, error) = parse.TryEvaluate(scope);
 
             return (value, error);

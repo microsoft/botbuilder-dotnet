@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
     internal static class HttpHelper
     {
-        public static readonly JsonSerializer BotMessageSerializer = JsonSerializer.Create(new JsonSerializerSettings
+        public static readonly JsonSerializerSettings BotMessageSerializerSettings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
             Formatting = Formatting.Indented,
@@ -25,7 +25,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
             ContractResolver = new ReadOnlyJsonContractResolver(),
             Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() },
-        });
+        };
+
+        public static readonly JsonSerializer BotMessageSerializer = JsonSerializer.Create(BotMessageSerializerSettings);
 
         public static async Task<Activity> ReadRequestAsync(HttpRequest request)
         {

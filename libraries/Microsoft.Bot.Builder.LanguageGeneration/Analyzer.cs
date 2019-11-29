@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private readonly IExpressionParser _expressionParser;
 
-        private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
+        private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
         public Analyzer(List<LGTemplate> templates, ExpressionEngine expressionEngine)
         {

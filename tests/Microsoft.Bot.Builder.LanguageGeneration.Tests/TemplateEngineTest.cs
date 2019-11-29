@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Expressions.Memory;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
@@ -960,6 +961,42 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(evaled1, espectedResult);
             Assert.AreEqual(evaled2, espectedResult);
             Assert.AreEqual(evaled3, espectedResult);
+        }
+
+        [TestMethod]
+        public void TestMemoryAccessPath()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("MemoryAccess.lg"));
+
+            var memory = new
+            {
+                myProperty = new
+                {
+                    name = "p1"
+                },
+
+                turn = new
+                {
+                    properties = new Dictionary<string, object>
+                    {
+                        {
+                            "p1", new Dictionary<string, object>() { { "enum", "p1enum" } }
+                        }
+                    }
+                }
+            };
+
+            // this evaulate will hit memory access twice
+            // first for "property", and get "p1", from local
+            // sencond for "turn.property[p1].enum" and get "p1enum" from global
+            var result = engine.EvaluateTemplate("T1", memory);
+            Assert.AreEqual(result, "p1enum");
+
+            // this evaulate will hit memory access twice
+            // first for "myProperty.name", and get "p1", from global
+            // sencond for "turn.property[p1].enum" and get "p1enum" from global 
+            result = engine.EvaluateTemplate("T3", memory);
+            Assert.AreEqual(result, "p1enum");
         }
 
         public class LoopClass
