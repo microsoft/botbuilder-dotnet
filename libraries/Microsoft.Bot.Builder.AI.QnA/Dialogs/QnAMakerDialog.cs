@@ -20,8 +20,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
     public class QnAMakerDialog : WaterfallDialog
     {
         // Dialog Options parameters
-        private const float DefaultThreshold = 0.3F;
-        private const int DefaultTopN = 3;
+        protected const float DefaultThreshold = 0.3F;
+        protected const int DefaultTopN = 3;
         private const string DefaultNoAnswer = "No QnAMaker answers found.";
 
         // Card parameters
@@ -34,6 +34,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         private string hostName;
         private string endpointKey;
         private float threshold;
+        private int top;
         private Activity noAnswer;
         private string activeLearningCardTitle;
         private string cardNoMatchText;
@@ -48,6 +49,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             float threshold = DefaultThreshold,
             string activeLearningCardTitle = DefaultCardTitle,
             string cardNoMatchText = DefaultCardNoMatchText,
+            int top = DefaultTopN,
             Activity cardNoMatchResponse = null,
             Metadata[] strictFilters = null,
             HttpClient httpClient = null,
@@ -60,6 +62,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             this.hostName = hostName ?? throw new ArgumentNullException(nameof(hostName));
             this.endpointKey = endpointKey ?? throw new ArgumentNullException(nameof(endpointKey));
             this.threshold = threshold;
+            this.top = top;
             this.activeLearningCardTitle = activeLearningCardTitle;
             this.cardNoMatchText = cardNoMatchText;
             this.strictFilters = strictFilters;
@@ -141,7 +144,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             return Task.FromResult(new QnAMakerOptions
             {
                 ScoreThreshold = this.threshold,
-                StrictFilters = this.strictFilters
+                StrictFilters = this.strictFilters,
+                Top = this.top
             });
         }
 

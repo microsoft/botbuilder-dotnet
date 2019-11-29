@@ -43,8 +43,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         }
 
         [JsonProperty("threshold")]
-        public float Threshold { get; set; }
+        public float Threshold { get; set; } = DefaultThreshold;
 
+        [JsonProperty("top")]
+        public int Top { get; set; } = DefaultTopN;
+        
         [JsonProperty("noAnswer")]
         public ITemplate<Activity> NoAnswer { get; set; }
 
@@ -88,7 +91,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
             return Task.FromResult(new QnAMakerOptions
             {
                 ScoreThreshold = this.Threshold,
-                StrictFilters = this.StrictFilters
+                StrictFilters = this.StrictFilters,
+                Top = this.Top
             });
         }
 
