@@ -203,13 +203,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// end. 
         /// </remarks>
         /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim.</param>
-        /// <param name='conversationId'>conversationId.</param> 
         /// <param name='parameters'>Parameters to create the conversation from.</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task for a conversation resource response.</returns>
-        protected override Task<ConversationResourceResponse> OnCreateConversationAsync(ClaimsIdentity claimsIdentity, string conversationId, ConversationParameters parameters, CancellationToken cancellationToken = default)
+        protected override Task<ConversationResourceResponse> OnCreateConversationAsync(ClaimsIdentity claimsIdentity, ConversationParameters parameters, CancellationToken cancellationToken = default)
         {
-            return InvokeChannelApiAsync<ConversationResourceResponse>(_adapter, _bot, claimsIdentity, ChannelApiMethods.CreateConversation, conversationId, parameters);
+            return InvokeChannelApiAsync<ConversationResourceResponse>(_adapter, _bot, claimsIdentity, ChannelApiMethods.CreateConversation, null, parameters);
         }
 
         /// <summary>

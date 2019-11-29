@@ -27,6 +27,10 @@
                 <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Twilio.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Slack.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Facebook.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Expressions.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Adaptive.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Declarative.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.LanguageGeneration.dll$</ModulePath>                
                 <!-- <ModulePath>Microsoft.Bot.Builder.Schema.dll$</ModulePath> -->
               </Include>
             </ModulePaths>

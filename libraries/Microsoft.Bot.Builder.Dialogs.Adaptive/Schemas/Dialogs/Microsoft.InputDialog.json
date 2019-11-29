@@ -8,7 +8,7 @@
       "description": "Optional id for the dialog"
     },
     "prompt": {
-      "$type": "Microsoft.IActivityTemplate",
+      "$kind": "Microsoft.IActivityTemplate",
       "title": "Initial prompt",
       "description": "Message to send to collect information.",
       "examples": [
@@ -16,7 +16,7 @@
       ]
     },
     "unrecognizedPrompt": {
-      "$type": "Microsoft.IActivityTemplate",
+      "$kind": "Microsoft.IActivityTemplate",
       "title": "Unrecognized prompt",
       "description": "Message to send if user response is not recognized.",
       "examples": [
@@ -24,7 +24,7 @@
       ]
     },
     "invalidPrompt": {
-      "$type": "Microsoft.IActivityTemplate",
+      "$kind": "Microsoft.IActivityTemplate",
       "title": "Invalid prompt",
       "description": "Message to send if user response is invalid. Relies on specified validation expressions.",
       "examples": [
@@ -32,7 +32,7 @@
       ]
     },
     "defaultValueResponse": {
-      "$type": "Microsoft.IActivityTemplate",
+      "$kind": "Microsoft.IActivityTemplate",
       "title": "Default value response",
       "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
       "examples": [

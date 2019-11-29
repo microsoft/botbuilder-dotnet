@@ -113,6 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 var segment = segments[i];
                 var nextSegment = segments[i + 1];
+
                 current = ResolveSegment(current, segment, nextSegment);
                 if (current == null)
                 {
@@ -366,6 +367,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 jobj.TryGetValue(property, StringComparison.InvariantCultureIgnoreCase, out var value);
                 return value;
+            }
+
+            if (obj is JValue jval)
+            {
+                // in order to make things like "this.value.Length" work, when "this.value" is a string.
+                return GetObjectProperty(jval.Value, property);
             }
 
             var prop = obj.GetType().GetProperties().Where(p => p.Name.ToLower() == property.ToLower()).FirstOrDefault();

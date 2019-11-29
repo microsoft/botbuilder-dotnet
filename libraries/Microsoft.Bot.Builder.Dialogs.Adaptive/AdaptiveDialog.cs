@@ -23,14 +23,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// The Adaptive Dialog models conversation using events and events to adapt dynamicaly to changing conversation flow.
     /// </summary>
-    public class AdaptiveDialog : DialogContainer
+    public class AdaptiveDialog : DialogContainer, IDialogDependencies
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.AdaptiveDialog";
 
-        private const string AdaptiveKey = "adaptiveDialogState";
+        private const string AdaptiveKey = "_adaptive";
 
-        private readonly string changeKey = Guid.NewGuid().ToString();
+        // unique key for language generator turn property, (TURN STATE ONLY)
+        private readonly string generatorTurnKey = Guid.NewGuid().ToString();
+
+        // unique key for change tracking of the turn state (TURN STATE ONLY)
+        private readonly string changeTurnKey = Guid.NewGuid().ToString();
 
         private bool installedDependencies;
 
@@ -215,7 +219,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (state.Actions != null && state.Actions.Any())
             {
-                var ctx = new SequenceContext(this.Dialogs, dc, state.Actions.First(), state.Actions, changeKey, this.Dialogs);
+                var ctx = new SequenceContext(this.Dialogs, dc, state.Actions.First(), state.Actions, changeTurnKey, this.Dialogs);
                 ctx.Parent = dc;
                 return ctx;
             }
@@ -225,16 +229,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public IEnumerable<Dialog> GetDependencies()
         {
-            foreach (var trigger in Triggers)
-            {
-                if (trigger is IDialogDependencies depends)
-                {
-                    foreach (var dlg in depends.GetDependencies())
-                    {
-                        yield return dlg;
-                    }
-                }
-            }
+            EnsureDependenciesInstalled();
+            
+            yield break;
         }
 
         protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default)
@@ -395,16 +392,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             return handled;
-        }
-
-        protected override string OnComputeId()
-        {
-            if (DebugSupport.SourceMap.TryGetValue(this, out var range))
-            {
-                return $"{GetType().Name}({Path.GetFileName(range.Path)}:{range.StartPoint.LineIndex})";
-            }
-
-            return $"{GetType().Name}[]";
         }
 
         protected async Task<DialogTurnResult> ContinueActionsAsync(DialogContext dc, object options, CancellationToken cancellationToken)
@@ -643,28 +630,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 state.Actions = new List<ActionState>();
             }
 
-            var sequenceContext = new SequenceContext(dc.Dialogs, dc, new DialogState { DialogStack = dc.Stack }, state.Actions, changeKey, this.Dialogs);
+            var sequenceContext = new SequenceContext(dc.Dialogs, dc, new DialogState { DialogStack = dc.Stack }, state.Actions, changeTurnKey, this.Dialogs);
             sequenceContext.Parent = dc.Parent;
             return sequenceContext;
-        }
-
-        private string GetGeneratorKey()
-        {
-            return $"{this.OnComputeId()}_PreviousLanguageGenerator";
         }
 
         private void SetLocalGenerator(ITurnContext context)
         {
             if (Generator != null)
             {
-                var key = GetGeneratorKey();
-                var previousGenerator = context.TurnState.Get<ILanguageGenerator>(key);
+                var previousGenerator = context.TurnState.Get<ILanguageGenerator>(generatorTurnKey);
                 if (previousGenerator == null)
                 {
                     previousGenerator = context.TurnState.Get<ILanguageGenerator>();
                     if (previousGenerator != null)
                     {
-                        context.TurnState.Add(GetGeneratorKey(), previousGenerator);
+                        context.TurnState.Add(generatorTurnKey, previousGenerator);
                     }
                 }
 
@@ -674,12 +655,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         private void RestoreParentGenerator(ITurnContext context)
         {
-            var key = GetGeneratorKey();
-            var previousGenerator = context.TurnState.Get<ILanguageGenerator>(key);
+            var previousGenerator = context.TurnState.Get<ILanguageGenerator>(generatorTurnKey);
             if (previousGenerator != null)
             {
                 context.TurnState.Set(previousGenerator);
-                context.TurnState.Remove(key);
+                context.TurnState.Remove(this.generatorTurnKey);
             }
         }
     }
