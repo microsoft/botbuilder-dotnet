@@ -1,5 +1,5 @@
 {
-  "$id": "https://microsoft.com/botframework/schemas/skill-manifest-1-0-preview-1.json",
+  "$id": "https://microsoft.com/botframework/schemas/skill-manifest-2-1-preview-0.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Skill Manifest (Preview)",
   "description": "A schema for Bot Framework skill manifests (Preview)",
@@ -124,7 +124,7 @@
     },
     "sendActivities": {
       "type": "object",
-      "description": "Definition for the activies sent by the skill",
+      "description": "Definition for the activities sent by the skill",
       "additionalProperties": {
         "anyOf": [
           {

@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
@@ -19,7 +18,7 @@ using Newtonsoft.Json;
 using Xunit;
 using Xunit.Sdk;
 
-namespace Microsoft.Bot.Builder.Skills.Tests
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills.Tests
 {
     // TODO: need to simplify this tests
     public class SkillHandlerTests
@@ -177,8 +176,8 @@ namespace Microsoft.Bot.Builder.Skills.Tests
                     // ReplyToActivity(conversationId, activityId, activity).
                     case ChannelApiMethods.ReplyToActivity:
                         Assert.Equal(2, apiArgs.Args.Length);
-                        Assert.IsType<string>(apiArgs.Args[0]);
-                        Assert.IsType<Activity>(apiArgs.Args[1]);
+                        Assert.IsType<Activity>(apiArgs.Args[0]);
+                        Assert.IsType<string>(apiArgs.Args[1]);
                         apiArgs.Result = new ResourceResponse(id: NewResourceId);
                         break;
 

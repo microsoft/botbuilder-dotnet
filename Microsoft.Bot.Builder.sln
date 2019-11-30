@@ -176,7 +176,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Prototypes", "Prototypes", 
 		prototypes\SampleInlineSkillManifest-Preview.json = prototypes\SampleInlineSkillManifest-Preview.json
 		prototypes\SampleSimpleSkillManifest.json = prototypes\SampleSimpleSkillManifest.json
 		prototypes\skill-manifest-schema-1-0-0.json = prototypes\skill-manifest-schema-1-0-0.json
-		prototypes\skill-manifest-schema-1-0-preview-1.json = prototypes\skill-manifest-schema-1-0-preview-1.json
+		prototypes\skill-manifest-schema-2-1-preview-0.json = prototypes\skill-manifest-schema-2-1-preview-0.json
 		prototypes\SkillManifestVA.json = prototypes\SkillManifestVA.json
 	EndProjectSection
 EndProject

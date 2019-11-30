@@ -4,7 +4,7 @@
     <TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <Configurations>Debug;Release</Configurations>
-    <RootNamespace>Microsoft.Bot.Builder.Integration.AspNet.Core.Tests</RootNamespace>
+    <RootNamespace>Microsoft.Bot.Builder.Integration.AspNet.Core.Skills.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

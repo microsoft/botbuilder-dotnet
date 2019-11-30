@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 {
     /// <summary>
     /// Registration for a BotFrameworkHttpProtocol based Skill endpoint.

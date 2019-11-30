@@ -1,5 +1,6 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/gabog/SkillsSecondPass/prototypes/skill-manifest-schema-1-0-preview-1.json",
+  "$schema":
+    "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/gabog/SkillsSecondPass/prototypes/skill-manifest-schema-1-0-preview-1.json",
   "$id": "SkillBot",
   "name": "Demo skill bot with dialogs",
   "version": "1.0",
@@ -14,31 +15,39 @@
     "authentication",
     "travel"
   ],
-  "endpoints": 
+  "endpoints":
   [
-  {
-    "name": "production",
+    {
+      "name": "production",
       "protocol": "BotFrameworkV3",
       "description": "Production  endpoint for SkillBot.",
       "endpointUrl": "http://contoso.com/api/messages",
       "msAppId": "00000000-0000-0000-0000-000000000000"
     },
     {
-    "name": "staging",
+      "name": "staging",
       "protocol": "BotFrameworkV3",
       "description": "Staging endpoint for SkillBot.",
       "endpointUrl": "http://staging.contoso.com/api/messages",
       "msAppId": "11111111-1111-1111-1111-111111111111"
     }
   ],
-  "language": {
-    "models": {
-      "en": "http://sample.com/SkillBot-en.lu",
-      "es": "http://sample.com/SkillBot-es.lu"
+  "dispatchModels": {
+    "languages": {
+      // At least one
+      "en": {
+        "contentType": "application/lu",
+        "url": "http://sample.com/SkillBot-en.lu"
+      },
+      "es": {
+        "contentType": "application/lu",
+        "url": "http://sample.com/SkillBot-es.lu"
+      }
     },
+    // optional
     "intents": {
-      "help": "#/activities/message",
-      "getWeather": "#/activities/messageWithLocale",
+      "*": "#/activities/message",
+      "getWeather": "#/activities/messageWithLocation",
       "bookAFlight": "#/activities/messageWithUserProfile"
     }
   },
@@ -153,7 +162,7 @@
       }
     }
   },
-  "sendActivities": {
+  "activitiesSent": {
     "FlightUpdatedEvent": {
       "type": "event",
       "name": "FlightUpdated",

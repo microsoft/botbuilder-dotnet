@@ -41,7 +41,7 @@ namespace DialogRootBot.Middleware
             // How do I know if this outgoing request is coming from a skill or the host?
             foreach (var activity in activities)
             {
-                var message = $"{_label} {activity.Type} {activity.Text}";
+                var message = $"{_label} {activity.Type} {activity.Text} {activity.ReplyToId}";
                 Console.WriteLine(message);
             }
 
