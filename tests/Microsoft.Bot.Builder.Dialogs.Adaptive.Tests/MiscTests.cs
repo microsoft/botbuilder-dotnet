@@ -53,9 +53,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 new TextInput()
                                 {
                                     Prompt = new ActivityTemplate("Enter age"),
-                                    Property = "dialog.age"
+                                    Property = "$age"
                                 },
-                                new SendActivity("You said @{dialog.age}")
+                                new SendActivity("You said @{$age}")
                             }
                         }
                     }
