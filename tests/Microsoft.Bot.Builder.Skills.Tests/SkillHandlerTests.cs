@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
@@ -19,7 +18,7 @@ using Newtonsoft.Json;
 using Xunit;
 using Xunit.Sdk;
 
-namespace Microsoft.Bot.Builder.Skills.Tests
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills.Tests
 {
     // TODO: need to simplify this tests
     public class SkillHandlerTests
@@ -47,7 +46,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
             var middleware = new AssertInvokeMiddleware(botAdapter, activityId);
             botAdapter.Use(middleware);
             var bot = new CallbackBot();
-            var skillClient = new SkillHandlerInstanceForTests(botAdapter, bot, new Mock<ICredentialProvider>().Object, new AuthenticationConfiguration());
+            var skillHandler = new SkillHandlerInstanceForTests(botAdapter, bot, new Mock<ICredentialProvider>().Object, new AuthenticationConfiguration());
 
             var sc = new TestConversationIdFactory();
 
@@ -57,61 +56,61 @@ namespace Microsoft.Bot.Builder.Skills.Tests
             claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, botId));
             claimsIdentity.AddClaim(new Claim(AuthenticationConstants.ServiceUrlClaim, botAdapter.Conversation.ServiceUrl));
 
-            object result = await skillClient.TestOnCreateConversationAsync(claimsIdentity, new ConversationParameters());
+            object result = await skillHandler.TestOnCreateConversationAsync(claimsIdentity, new ConversationParameters());
             Assert.IsType<ConversationResourceResponse>(result);
             
             //Assert.Equal(middleware.NewResourceId, ((ConversationResourceResponse)result).Id);
 
-            await skillClient.TestOnDeleteActivityAsync(claimsIdentity, skillConversationId, activityId);
+            await skillHandler.TestOnDeleteActivityAsync(claimsIdentity, skillConversationId, activityId);
 
-            await skillClient.TestOnDeleteConversationMemberAsync(claimsIdentity, skillConversationId, "user2");
+            await skillHandler.TestOnDeleteConversationMemberAsync(claimsIdentity, skillConversationId, "user2");
 
-            result = await skillClient.TestOnGetActivityMembersAsync(claimsIdentity, skillConversationId, activityId);
+            result = await skillHandler.TestOnGetActivityMembersAsync(claimsIdentity, skillConversationId, activityId);
             Assert.IsAssignableFrom<IList<ChannelAccount>>(result);
 
-            result = await skillClient.TestOnGetConversationMembersAsync(claimsIdentity, skillConversationId);
+            result = await skillHandler.TestOnGetConversationMembersAsync(claimsIdentity, skillConversationId);
             Assert.IsAssignableFrom<IList<ChannelAccount>>(result);
 
-            result = await skillClient.TestOnGetConversationPagedMembersAsync(claimsIdentity, skillConversationId);
+            result = await skillHandler.TestOnGetConversationPagedMembersAsync(claimsIdentity, skillConversationId);
             Assert.IsType<PagedMembersResult>(result);
 
-            result = await skillClient.TestOnGetConversationPagedMembersAsync(claimsIdentity, skillConversationId, 10);
+            result = await skillHandler.TestOnGetConversationPagedMembersAsync(claimsIdentity, skillConversationId, 10);
             Assert.IsType<PagedMembersResult>(result);
 
             var pagedMembersResult = (PagedMembersResult)result;
-            result = await skillClient.TestOnGetConversationPagedMembersAsync(claimsIdentity, skillConversationId, continuationToken: pagedMembersResult.ContinuationToken);
+            result = await skillHandler.TestOnGetConversationPagedMembersAsync(claimsIdentity, skillConversationId, continuationToken: pagedMembersResult.ContinuationToken);
             Assert.IsType<PagedMembersResult>(result);
 
-            result = await skillClient.TestOnGetConversationsAsync(claimsIdentity, skillConversationId);
+            result = await skillHandler.TestOnGetConversationsAsync(claimsIdentity, skillConversationId);
             Assert.IsType<ConversationsResult>(result);
 
             var conversationsResult = (ConversationsResult)result;
-            result = await skillClient.TestOnGetConversationsAsync(claimsIdentity, skillConversationId, continuationToken: conversationsResult.ContinuationToken);
+            result = await skillHandler.TestOnGetConversationsAsync(claimsIdentity, skillConversationId, continuationToken: conversationsResult.ContinuationToken);
             Assert.IsType<ConversationsResult>(result);
 
             var msgActivity = Activity.CreateMessageActivity();
             msgActivity.Conversation = botAdapter.Conversation.Conversation;
             msgActivity.Text = "yo";
 
-            result = await skillClient.TestOnSendToConversationAsync(claimsIdentity, skillConversationId, (Activity)msgActivity);
+            result = await skillHandler.TestOnSendToConversationAsync(claimsIdentity, skillConversationId, (Activity)msgActivity);
             Assert.IsType<ResourceResponse>(result);
             Assert.Equal(middleware.NewResourceId, ((ResourceResponse)result).Id);
             msgActivity.Id = ((ResourceResponse)result).Id;
 
-            result = await skillClient.TestOnReplyToActivityAsync(claimsIdentity, skillConversationId, activityId, (Activity)msgActivity);
+            result = await skillHandler.TestOnReplyToActivityAsync(claimsIdentity, skillConversationId, activityId, (Activity)msgActivity);
             Assert.IsType<ResourceResponse>(result);
             Assert.Equal(middleware.NewResourceId, ((ResourceResponse)result).Id);
             msgActivity.Id = ((ResourceResponse)result).Id;
 
-            result = await skillClient.TestOnSendConversationHistoryAsync(claimsIdentity, skillConversationId, new Transcript());
+            result = await skillHandler.TestOnSendConversationHistoryAsync(claimsIdentity, skillConversationId, new Transcript());
             Assert.IsType<ResourceResponse>(result);
             Assert.Equal(middleware.NewResourceId, ((ResourceResponse)result).Id);
 
-            result = await skillClient.TestOnUpdateActivityAsync(claimsIdentity, skillConversationId, activityId, (Activity)msgActivity);
+            result = await skillHandler.TestOnUpdateActivityAsync(claimsIdentity, skillConversationId, activityId, (Activity)msgActivity);
             Assert.IsType<ResourceResponse>(result);
             Assert.Equal(middleware.NewResourceId, ((ResourceResponse)result).Id);
 
-            result = await skillClient.TestOnUploadAttachmentAsync(claimsIdentity, skillConversationId, new AttachmentData());
+            result = await skillHandler.TestOnUploadAttachmentAsync(claimsIdentity, skillConversationId, new AttachmentData());
             Assert.IsType<ResourceResponse>(result);
             Assert.Equal(middleware.NewResourceId, ((ResourceResponse)result).Id);
         }
@@ -177,8 +176,8 @@ namespace Microsoft.Bot.Builder.Skills.Tests
                     // ReplyToActivity(conversationId, activityId, activity).
                     case ChannelApiMethods.ReplyToActivity:
                         Assert.Equal(2, apiArgs.Args.Length);
-                        Assert.IsType<string>(apiArgs.Args[0]);
-                        Assert.IsType<Activity>(apiArgs.Args[1]);
+                        Assert.IsType<Activity>(apiArgs.Args[0]);
+                        Assert.IsType<string>(apiArgs.Args[1]);
                         apiArgs.Result = new ResourceResponse(id: NewResourceId);
                         break;
 

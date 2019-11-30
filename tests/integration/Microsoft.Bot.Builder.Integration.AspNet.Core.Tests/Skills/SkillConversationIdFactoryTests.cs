@@ -3,10 +3,11 @@
 
 using System;
 using System.Text;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests.Skills
 {
     public class SkillConversationIdFactoryTests
     {
