@@ -27,12 +27,24 @@ namespace Microsoft.Bot.Builder.Dialogs
         public DialogManager(Dialog rootDialog = null)
         {
             this.dialogSet = new DialogSet();
-
-            if (rootDialog != null)
-            {
-                this.RootDialog = rootDialog;
-            }
+            this.RootDialog = rootDialog;
         }
+
+        /// <summary>
+        /// Gets or sets the ConversationState.
+        /// </summary>
+        /// <value>
+        /// The ConversationState.
+        /// </value>
+        public ConversationState ConversationState { get; set; }
+
+        /// <summary>
+        /// Gets or sets the UserState.
+        /// </summary>
+        /// <value>
+        /// The UserState.
+        /// </value>
+        public UserState UserState { get; set; }
 
         /// <summary>
         /// Gets or sets root dialog to use to start conversation.
@@ -68,6 +80,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
+        /// Gets or sets the DialogStateManagerConfiguration.
+        /// </summary>
+        /// <value>
+        /// The DialogStateManagerConfiguration.
+        /// </value>
+        public DialogStateManagerConfiguration StateConfiguration { get; set; }
+
+        /// <summary>
         /// Gets or sets (optional) number of milliseconds to expire the bot's state after.
         /// </summary>
         /// <value>
@@ -83,8 +103,18 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>result of the running the logic against the activity.</returns>
         public async Task<DialogManagerResult> OnTurnAsync(ITurnContext context, CancellationToken cancellationToken = default(CancellationToken))
         {
-            ConversationState conversationState = context.TurnState.Get<ConversationState>() ?? throw new ArgumentNullException($"{nameof(ConversationState)} is not found in the turn context. Have you called adapter.UseState() with a configured ConversationState object?");
-            UserState userState = context.TurnState.Get<UserState>() ?? throw new ArgumentNullException($"{nameof(UserState)} is not found in the turn context. Have you called adapter.UseState() with a configured UserState object?");
+            BotStateSet botStateSet = new BotStateSet();
+            ConversationState conversationState = this.ConversationState ?? context.TurnState.Get<ConversationState>() ?? throw new ArgumentNullException($"{nameof(ConversationState)} is not found in the turn context. Have you called adapter.UseState() with a configured ConversationState object?");
+            UserState userState = this.UserState ?? context.TurnState.Get<UserState>();
+            if (conversationState != null)
+            {
+                botStateSet.Add(conversationState); 
+            }
+
+            if (userState != null)
+            {
+                botStateSet.Add(userState);
+            }
 
             // create property accessors
             var lastAccessProperty = conversationState.CreateProperty<DateTime>(LASTACCESS);
@@ -108,6 +138,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Create DialogContext
             var dc = new DialogContext(this.dialogSet, context, dialogState);
 
+            // set DSM configuration
+            dc.SetStateConfiguration(this.StateConfiguration ?? DialogStateManager.CreateStandardConfiguration(conversationState, userState));
+
+            // load scopes
+            await dc.GetState().LoadAllScopesAsync(cancellationToken).ConfigureAwait(false);
+
             DialogTurnResult turnResult = null;
             if (dc.ActiveDialog == null)
             {
@@ -127,8 +163,16 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
             }
 
+            // save all state scopes to their respective stores.
+            await dc.GetState().SaveAllChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            // save botstate changes
+            await botStateSet.SaveAllChangesAsync(dc.Context, false, cancellationToken).ConfigureAwait(false);
+
             // send trace of memory
-            await dc.Context.SendActivityAsync((Activity)Activity.CreateTraceActivity("BotState", "https://www.botframework.com/schemas/botState", dc.GetState().GetMemorySnapshot(), "Bot State")).ConfigureAwait(false);
+            var snapshot = dc.GetState().GetMemorySnapshot();
+            var traceActivity = (Activity)Activity.CreateTraceActivity("BotState", "https://www.botframework.com/schemas/botState", snapshot, "Bot State");
+            await dc.Context.SendActivityAsync(traceActivity).ConfigureAwait(false);
 
             return new DialogManagerResult() { TurnResult = turnResult };
         }

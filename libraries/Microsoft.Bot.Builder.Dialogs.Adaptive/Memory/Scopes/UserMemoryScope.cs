@@ -13,8 +13,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// <remarks>This relies on the UserState object being accessible from turnContext.TurnState.Get&lt;UserState&gt().</remarks>
     public class UserMemoryScope : BotStateMemoryScope<UserState>
     {
-        public UserMemoryScope()
-            : base(ScopePath.USER)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserMemoryScope"/> class.
+        /// </summary>
+        /// <param name="userState">UserState to bind the UserMemory to.</param>
+        /// <param name="propertyName">Optional alternate propertyName to store UserMemoryScope in.</param>
+        public UserMemoryScope(UserState userState, string propertyName = null)
+            : base(ScopePath.USER, userState, propertyName)
         {
         }
     }
