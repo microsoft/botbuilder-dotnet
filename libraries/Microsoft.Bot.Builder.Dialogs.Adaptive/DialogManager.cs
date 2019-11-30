@@ -54,8 +54,16 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             set
             {
-                this.rootDialogId = value.Id;
-                this.dialogSet.Add(value);
+                this.dialogSet = new DialogSet();
+                if (value != null)
+                {
+                    this.rootDialogId = value.Id;
+                    this.dialogSet.Add(value);
+                }
+                else
+                {
+                    this.rootDialogId = null;
+                }
             }
         }
 
@@ -76,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public async Task<DialogManagerResult> OnTurnAsync(ITurnContext context, CancellationToken cancellationToken = default(CancellationToken))
         {
             ConversationState conversationState = context.TurnState.Get<ConversationState>() ?? throw new ArgumentNullException($"{nameof(ConversationState)} is not found in the turn context. Have you called adapter.UseState() with a configured ConversationState object?");
-            UserState userState = context.TurnState.Get<UserState>() ?? throw new ArgumentNullException($"{nameof(UserState)} is not found in the turn context. Have you called adapter.UseState() with a configured UserState object?"); 
+            UserState userState = context.TurnState.Get<UserState>() ?? throw new ArgumentNullException($"{nameof(UserState)} is not found in the turn context. Have you called adapter.UseState() with a configured UserState object?");
 
             // create property accessors
             var lastAccessProperty = conversationState.CreateProperty<DateTime>(LASTACCESS);
@@ -99,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Create DialogContext
             var dc = new DialogContext(this.dialogSet, context, dialogState);
-            
+
             DialogTurnResult turnResult = null;
             if (dc.ActiveDialog == null)
             {
