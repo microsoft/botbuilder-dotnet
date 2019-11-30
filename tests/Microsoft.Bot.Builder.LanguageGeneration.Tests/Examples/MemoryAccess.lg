@@ -1,0 +1,8 @@
+﻿# T1
+- @{T2("p1")}
+
+# T2(property)
+- @{turn.properties[property].enum}
+
+# T3
+- @{turn.properties[myProperty.name].enum}

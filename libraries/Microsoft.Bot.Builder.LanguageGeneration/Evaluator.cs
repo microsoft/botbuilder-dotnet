@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class Evaluator : LGFileParserBaseVisitor<object>
     {
+        public const string LGType = "lgType";
         public static readonly Regex ExpressionRecognizeRegex = new Regex(@"(?<!\\)@{(((\'([^'\r\n])*?\')|(\""([^""\r\n])*?\""))|[^\r\n{}'""])*?}", RegexOptions.Compiled);
         public static readonly Regex EscapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
@@ -104,7 +105,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var result = new JObject();
             var typeName = context.structuredBodyNameLine().STRUCTURED_CONTENT().GetText().Trim();
-            result["lgType"] = typeName;
+            result[LGType] = typeName;
 
             var bodys = context.structuredBodyContentLine().STRUCTURED_CONTENT();
             foreach (var body in bodys)
@@ -150,7 +151,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var propertyObject = JObject.FromObject(EvalExpression(line));
 
                     // Full reference to another structured template is limited to the structured template with same type 
-                    if (propertyObject["lgType"] != null && propertyObject["lgType"].ToString() == typeName)
+                    if (propertyObject[LGType] != null && propertyObject[LGType].ToString() == typeName)
                     {
                         foreach (var item in propertyObject)
                         {
@@ -330,13 +331,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string EvalEscape(string exp)
         {
-            var commonEscapes = new List<string>() { "\\r", "\\n", "\\t" };
-            if (commonEscapes.Contains(exp))
+            return new Regex(@"\\[^\r\n]?").Replace(exp, new MatchEvaluator(m =>
             {
-                return Regex.Unescape(exp);
-            }
+                var value = m.Value;
+                var commonEscapes = new List<string>() { "\\r", "\\n", "\\t" };
+                if (commonEscapes.Contains(value))
+                {
+                    return Regex.Unescape(value);
+                }
 
-            return exp.Substring(1);
+                return value.Substring(1);
+            }));
         }
 
         private object EvalExpression(string exp)
@@ -376,7 +381,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             else
             {
                 var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
-                return Regex.Unescape(ExpressionRecognizeRegex.Replace(exp, evalutor));
+                var result = ExpressionRecognizeRegex.Replace(exp, evalutor);
+                return EvalEscape(result);
             }
         }
 
@@ -431,7 +437,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             return new JObject
             {
-                ["lgType"] = "attachment",
+                [LGType] = "attachment",
                 ["contenttype"] = args[1].ToString(),
                 ["content"] = args[0] as JObject
             };
