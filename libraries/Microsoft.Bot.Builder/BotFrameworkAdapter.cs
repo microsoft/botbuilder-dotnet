@@ -341,6 +341,7 @@ namespace Microsoft.Bot.Builder
             using (var context = new TurnContext(this, activity))
             {
                 context.TurnState.Add<IIdentity>(BotIdentityKey, identity);
+                context.TurnState.Add<BotCallbackHandler>(callback);
 
                 var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, identity, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
