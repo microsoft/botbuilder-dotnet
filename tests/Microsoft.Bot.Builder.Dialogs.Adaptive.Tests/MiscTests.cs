@@ -38,16 +38,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task DialogManager_InitDialogsEnsureDependencies()
         {
-            TestScript CreateTestScript()
-            {
-                return new TestScript()
-                    .Send("hi")
-                        .AssertReply("You said 'hi'")
-                        .AssertReply("Enter age")
-                    .Send("10")
-                        .AssertReply("You said 10");
-            }
-
             Dialog CreateDialog()
             {
                 return new AdaptiveDialog()
@@ -72,12 +62,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 };
             }
 
-            var script = CreateTestScript();
-            script.Dialog = CreateDialog();
-            await script.ExecuteAsync();
+            await new TestScript()
+                {
+                    Dialog = CreateDialog()
+                }
+                .Send("hi")
+                    .AssertReply("You said 'hi'")
+                    .AssertReply("Enter age")
+                .Send("10")
+                    .AssertReply("You said 10")
+                .ExecuteAsync();
 
             // create new dialog manager and new dialog each turn should be the same as when it's static
-            await CreateTestScript()
+            await new TestScript()
+                .Send("hi")
+                    .AssertReply("You said 'hi'")
+                    .AssertReply("Enter age")
+                .Send("10")
+                    .AssertReply("You said 10")
                 .ExecuteAsync(callback: (context, ct) => new DialogManager(CreateDialog()).OnTurnAsync(context, ct));
         }
     }
