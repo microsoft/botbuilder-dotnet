@@ -178,6 +178,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Action_TextInputWithValueExpression()
+        {
+            await TestUtils.RunTestScript("Action_TextInputWithValueExpression.test.dialog");
+        }
+
+        [TestMethod]
         public async Task Action_TraceActivity()
         {
             await TestUtils.RunTestScript("Action_TraceActivity.test.dialog");

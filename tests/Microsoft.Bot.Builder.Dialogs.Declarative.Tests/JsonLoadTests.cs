@@ -19,6 +19,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
@@ -168,7 +169,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                     var trace = (Activity)activity;
                     Assert.AreEqual(ActivityTypes.Trace, trace.Type, "should be trace activity");
                     Assert.AreEqual("memory", trace.ValueType, "value type should be memory");
-                    Assert.AreEqual("Carlos", ((IDictionary<string, object>)trace.Value)["name"].ToString(), "value should be user object with name='Carlos'");
+                    Assert.AreEqual("Carlos", ((JObject)trace.Value)["name"].ToString(), "value should be user object with name='Carlos'");
                 })
             .StartTestAsync();
         }
