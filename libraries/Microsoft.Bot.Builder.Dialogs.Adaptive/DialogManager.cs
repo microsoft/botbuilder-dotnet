@@ -27,7 +27,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         public DialogManager(Dialog rootDialog = null)
         {
             this.dialogSet = new DialogSet();
-            this.RootDialog = rootDialog;
+
+            if (rootDialog != null)
+            {
+                this.RootDialog = rootDialog;
+            }
         }
 
         /// <summary>
