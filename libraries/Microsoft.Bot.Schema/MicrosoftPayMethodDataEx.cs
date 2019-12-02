@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -10,7 +9,6 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Pay method data for Microsoft Payment.
     /// </summary>
-    [Obsolete("Bot Framework no longer supports payments.")]
     public partial class MicrosoftPayMethodData
     {
         /// <summary>
