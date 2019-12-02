@@ -138,7 +138,7 @@ namespace DialogRootBot.Dialogs
                 invokeActivity.Recipient = stepContext.Context.Activity.Recipient;
 
                 await _conversationState.SaveChangesAsync(stepContext.Context, true, cancellationToken);
-                var skillConversationId = _conversationIdFactory.CreateSkillConversationId(stepContext.Context.Activity.Conversation.Id, stepContext.Context.Activity.ServiceUrl);
+                var skillConversationId = await _conversationIdFactory.CreateSkillConversationIdAsync(stepContext.Context.Activity.Conversation.Id, stepContext.Context.Activity.ServiceUrl, cancellationToken);
                 var response = await _skillClient.PostActivityAsync(_botId, _skillsConfig.Skills["SkillBot"].AppId, _skillsConfig.Skills["SkillBot"].SkillEndpoint, _skillsConfig.SkillHostEndpoint, skillConversationId, (Activity)invokeActivity, cancellationToken);
                 return await stepContext.NextAsync(response.Body, cancellationToken);
             }

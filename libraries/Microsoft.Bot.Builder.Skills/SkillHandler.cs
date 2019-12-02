@@ -380,7 +380,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 
             _logger.LogInformation($"HandleChannelRequestAsync(). Invoking method \"{method}\"");
 
-            var (callerConversationId, callerServiceUrl) = _conversationIdIdFactory.GetConversationInfo(conversationId);
+            var (callerConversationId, callerServiceUrl) = await _conversationIdIdFactory.GetConversationInfoAsync(conversationId, CancellationToken.None).ConfigureAwait(false);
 
             var channelApiInvokeActivity = CreateSkillInvokeActivity(callerServiceUrl, callerConversationId);
 

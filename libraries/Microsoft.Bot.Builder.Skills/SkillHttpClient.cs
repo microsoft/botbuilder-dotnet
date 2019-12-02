@@ -5,14 +5,11 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 
-namespace DialogRootBot.Sdk
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 {
     /// <summary>
     /// EXPERIMENTAL: WIP a BotFrameworkHttpClient specialized for Skills that encapsulates Conversation ID generation.
@@ -27,10 +24,10 @@ namespace DialogRootBot.Sdk
             _conversationIdFactory = conversationIdFactory;
         }
 
-        public Task<InvokeResponse> PostActivityAsync(string fromBotId, string toBotId, Uri toUrl, Uri serviceUrl, Activity activity, CancellationToken cancellationToken)
+        public async Task<InvokeResponse> PostActivityAsync(string fromBotId, string toBotId, Uri toUrl, Uri serviceUrl, Activity activity, CancellationToken cancellationToken)
         {
-            var skillConversationId = _conversationIdFactory.CreateSkillConversationId(activity.Conversation.Id, activity.ServiceUrl);
-            return PostActivityAsync(fromBotId, toBotId, toUrl, serviceUrl, skillConversationId, activity, cancellationToken);
+            var skillConversationId = await _conversationIdFactory.CreateSkillConversationIdAsync(activity.Conversation.Id, activity.ServiceUrl, cancellationToken).ConfigureAwait(false);
+            return await PostActivityAsync(fromBotId, toBotId, toUrl, serviceUrl, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
         }
     }
 }

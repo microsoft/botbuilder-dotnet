@@ -184,7 +184,7 @@ namespace DialogRootBot.Dialogs
             // Always save state before forwarding
             // (the dialog stack won't get updated with the skillDialog and 'things won't work if you don't)
             await _conversationState.SaveChangesAsync(dc.Context, true, cancellationToken);
-            var skillConversationId = _conversationIdFactory.CreateSkillConversationId(dc.Context.Activity.Conversation.Id, dc.Context.Activity.ServiceUrl);
+            var skillConversationId = await _conversationIdFactory.CreateSkillConversationIdAsync(dc.Context.Activity.Conversation.Id, dc.Context.Activity.ServiceUrl, cancellationToken);
             var response = await _skillClient.PostActivityAsync(_botId, _skillsConfig.Skills[skillId].AppId, _skillsConfig.Skills[skillId].SkillEndpoint, _skillsConfig.SkillHostEndpoint, skillConversationId, activity, cancellationToken);
             return EndOfTurn;
         }
