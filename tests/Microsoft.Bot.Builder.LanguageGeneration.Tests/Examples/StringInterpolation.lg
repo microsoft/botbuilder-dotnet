@@ -12,3 +12,6 @@
 
 # StringTemplateWithEscape()
 - just want to output @{`\@{bala\`bala}`}
+
+# StringTemplateWithTemplateRef
+- @{`@{StringTemplateWithVariable('jack')} , welcome.`} nice weather!

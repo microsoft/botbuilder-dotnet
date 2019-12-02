@@ -982,6 +982,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = engine.EvaluateTemplate("StringTemplateWithEscape");
             Assert.AreEqual("just want to output @{bala`bala}", evaled);
+
+            evaled = engine.EvaluateTemplate("StringTemplateWithTemplateRef");
+            Assert.AreEqual("hello jack , welcome. nice weather!", evaled);
         }
 
         public void TestMemoryAccessPath()
