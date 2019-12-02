@@ -113,8 +113,8 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_withPrompts.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
-               .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_MultiTurnLevel1.json"));
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1}")
+                .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_MultiTurnLevel1.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
         }

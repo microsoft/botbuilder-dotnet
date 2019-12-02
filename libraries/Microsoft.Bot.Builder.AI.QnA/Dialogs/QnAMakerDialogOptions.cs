@@ -10,8 +10,20 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
     /// </summary>
     public class QnAMakerDialogOptions
     {
-        public QnAMakerOptions Options { get; set; }
+        /// <summary>
+        /// Gets or sets the options for the QnAMaker service.
+        /// </summary>
+        /// <value>
+        /// The options for the QnAMaker service.
+        /// </value>
+        public QnAMakerOptions QnAMakerOptions { get; set; }
 
+        /// <summary>
+        /// Gets or sets the response options for the QnAMakerDialog.
+        /// </summary>
+        /// <value>
+        /// The response options for the QnAMakerDialog.
+        /// </value>
         public QnADialogResponseOptions ResponseOptions { get; set; }
     }
 }

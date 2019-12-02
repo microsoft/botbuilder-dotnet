@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
             var dialogOptions = new QnAMakerDialogOptions()
             {
-                Options = await GetQnAMakerOptionsAsync(dc).ConfigureAwait(false),
+                QnAMakerOptions = await GetQnAMakerOptionsAsync(dc).ConfigureAwait(false),
                 ResponseOptions = await GetQnAResponseOptionsAsync(dc).ConfigureAwait(false)
             };
 
@@ -177,20 +177,20 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
             if (previousQnAId > 0)
             {
-                dialogOptions.Options.Context = new QnARequestContext
+                dialogOptions.QnAMakerOptions.Context = new QnARequestContext
                 {
                     PreviousQnAId = previousQnAId
                 };
 
                 if (previousContextData.TryGetValue(stepContext.Context.Activity.Text, out var currentQnAId))
                 {
-                    dialogOptions.Options.QnAId = currentQnAId;
+                    dialogOptions.QnAMakerOptions.QnAId = currentQnAId;
                 }
             }
 
             // Calling QnAMaker to get response.
             var qnaClient = await GetQnAMakerClientAsync(stepContext).ConfigureAwait(false);
-            var response = await qnaClient.GetAnswersRawAsync(stepContext.Context, dialogOptions.Options).ConfigureAwait(false);
+            var response = await qnaClient.GetAnswersRawAsync(stepContext.Context, dialogOptions.QnAMakerOptions).ConfigureAwait(false);
 
             // Resetting previous query.
             previousQnAId = -1;
@@ -316,7 +316,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
                     foreach (var prompt in answer.Context.Prompts)
                     {
-                        previousContextData.Add(prompt.DisplayText, prompt.QnaId);
+                        previousContextData[prompt.DisplayText] = prompt.QnaId;
                     }
 
                     ObjectPath.SetPathValue(stepContext.ActiveDialog.State, QnAContextData, previousContextData);
@@ -358,7 +358,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             var previousQnAId = ObjectPath.GetPathValue<int>(stepContext.ActiveDialog.State, PreviousQnAId, 0);
             if (previousQnAId > 0)
             {
-                return await stepContext.ReplaceDialogAsync(this.Id, dialogOptions, cancellationToken).ConfigureAwait(false);
+                return await stepContext.ReplaceDialogAsync(this.Id, stepContext.ActiveDialog.State, cancellationToken).ConfigureAwait(false);
             }
 
             // If response is present then show that response, else default answer.
