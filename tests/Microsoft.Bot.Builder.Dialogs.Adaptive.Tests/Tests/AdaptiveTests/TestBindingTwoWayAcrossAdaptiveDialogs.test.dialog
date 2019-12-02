@@ -22,7 +22,7 @@
                             "$kind": "Microsoft.AdaptiveDialog",
                             "triggers": [
                                 {
-                                    "$kind": "Microsoft.OnUnknownIntent",
+                                    "$kind": "Microsoft.OnBeginDialog",
                                     "actions": [
                                         {
                                             "$kind": "Microsoft.NumberInput",

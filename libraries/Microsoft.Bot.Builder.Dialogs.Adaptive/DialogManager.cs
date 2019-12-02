@@ -70,8 +70,16 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             set
             {
-                this.rootDialogId = value.Id;
-                this.dialogSet.Add(value);
+                this.dialogSet = new DialogSet();
+                if (value != null)
+                {
+                    this.rootDialogId = value.Id;
+                    this.dialogSet.Add(value);
+                }
+                else
+                {
+                    this.rootDialogId = null;
+                }
             }
         }
 
