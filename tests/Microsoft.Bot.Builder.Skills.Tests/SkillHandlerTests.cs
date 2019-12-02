@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills.Tests
 
             var sc = new TestConversationIdFactory();
 
-            var skillConversationId = sc.CreateSkillConversationId(botAdapter.Conversation.Conversation.Id, botAdapter.Conversation.ServiceUrl);
+            var skillConversationId = await sc.CreateSkillConversationIdAsync(botAdapter.Conversation.Conversation.Id, botAdapter.Conversation.ServiceUrl, CancellationToken.None);
             var claimsIdentity = new ClaimsIdentity();
             claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, botId));
             claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, botId));
@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills.Tests
 
                 switch (apiArgs.Method)
                 {
-                    // ReplyToActivity(conversationId, activityId, activity).
+                    // ReplyToActivity(callerConversationId, activityId, activity).
                     case ChannelApiMethods.ReplyToActivity:
                         Assert.Equal(2, apiArgs.Args.Length);
                         Assert.IsType<Activity>(apiArgs.Args[0]);
@@ -197,27 +197,27 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills.Tests
                         apiArgs.Result = new ResourceResponse(id: NewResourceId);
                         break;
 
-                    // DeleteActivity(conversationId, activityId).
+                    // DeleteActivity(callerConversationId, activityId).
                     case ChannelApiMethods.DeleteActivity:
                         Assert.Single(apiArgs.Args);
                         Assert.IsType<string>(apiArgs.Args[0]);
                         Assert.Equal(_expectedActivityId, apiArgs.Args[0]);
                         break;
 
-                    // SendConversationHistory(conversationId, history).
+                    // SendConversationHistory(callerConversationId, history).
                     case ChannelApiMethods.SendConversationHistory:
                         Assert.Single(apiArgs.Args);
                         Assert.IsType<Transcript>(apiArgs.Args[0]);
                         apiArgs.Result = new ResourceResponse(id: NewResourceId);
                         break;
 
-                    // GetConversationMembers(conversationId).
+                    // GetConversationMembers(callerConversationId).
                     case ChannelApiMethods.GetConversationMembers:
                         Assert.Empty(apiArgs.Args);
                         apiArgs.Result = new List<ChannelAccount>();
                         break;
 
-                    // GetConversationPageMembers(conversationId, (int)pageSize, continuationToken).
+                    // GetConversationPageMembers(callerConversationId, (int)pageSize, continuationToken).
                     case ChannelApiMethods.GetConversationPagedMembers:
                         Assert.Equal(2, apiArgs.Args.Length);
 
@@ -238,20 +238,20 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills.Tests
                         };
                         break;
 
-                    // DeleteConversationMember(conversationId, memberId).
+                    // DeleteConversationMember(callerConversationId, memberId).
                     case ChannelApiMethods.DeleteConversationMember:
                         Assert.Single(apiArgs.Args);
                         Assert.IsType<string>(apiArgs.Args[0]);
                         break;
 
-                    // GetActivityMembers(conversationId, activityId).
+                    // GetActivityMembers(callerConversationId, activityId).
                     case ChannelApiMethods.GetActivityMembers:
                         Assert.Single(apiArgs.Args);
                         Assert.IsType<string>(apiArgs.Args[0]);
                         apiArgs.Result = new List<ChannelAccount>();
                         break;
 
-                    // UploadAttachment(conversationId, attachmentData).
+                    // UploadAttachment(callerConversationId, attachmentData).
                     case ChannelApiMethods.UploadAttachment:
                         Assert.Single(apiArgs.Args);
                         Assert.IsType<AttachmentData>(apiArgs.Args[0]);
@@ -292,27 +292,27 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills.Tests
         private class TestConversationIdFactory
             : ISkillConversationIdFactory
         {
-            public string CreateSkillConversationId(string conversationId, string serviceUrl)
+            public Task<string> CreateSkillConversationIdAsync(string callerConversationId, string serviceUrl, CancellationToken cancellationToken)
             {
                 var jsonString = JsonConvert.SerializeObject(new[]
                 {
-                    conversationId,
+                    callerConversationId,
                     serviceUrl
                 });
 
-                return Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonString));
+                return Task.FromResult(Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonString)));
             }
 
-            public (string, string) GetConversationInfo(string conversationId)
+            public Task<(string, string)> GetConversationInfoAsync(string skillConversationId, CancellationToken cancellationToken)
             {
-                if (conversationId == null)
+                if (skillConversationId == null)
                 {
-                    return (null, null);
+                    return Task.FromResult(((string)null, (string)null));
                 }
 
-                var jsonString = Encoding.UTF8.GetString(Convert.FromBase64String(conversationId));
+                var jsonString = Encoding.UTF8.GetString(Convert.FromBase64String(skillConversationId));
                 var parts = JsonConvert.DeserializeObject<string[]>(jsonString);
-                return (parts[0], parts[1]);
+                return Task.FromResult((parts[0], parts[1]));
             }
         }
 
