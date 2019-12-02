@@ -172,9 +172,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <param name="turnContext">Turn context.</param>
         /// <param name="predictionOptions">A <see cref="LuisPredictionOptions"/> instance to be used by the call.
-        /// This parameter gets merged with the default <see cref="LuisPredictionOptions"/> passed in the constructor.</param>
+        /// This parameter gets merged with the default <see cref="LuisPredictionOptions"/> passed in the constructor. This will call Luis V2 endpoint if passed.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Analysis of utterance.</returns>
+        [Obsolete("Method is deprecated, please use RecognizeAsync(ITurnContext turnContext, LuisRecognizerOptions recognizerOptions, CancellationToken cancellationToken).")]
         public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, LuisPredictionOptions predictionOptions, CancellationToken cancellationToken)
         {
             var overrideV2 = MergeDefaultOptionsWithProvidedOptionsV2(predictionOptions);
@@ -196,9 +197,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <typeparam name="T">The recognition result type.</typeparam>
         /// <param name="turnContext">Turn context.</param>
         /// <param name="predictionOptions">A <see cref="LuisPredictionOptions"/> instance to be used by the call.
-        /// This parameter gets merged with the default <see cref="LuisPredictionOptions"/> passed in the constructor.</param>
+        /// This parameter gets merged with the default <see cref="LuisPredictionOptions"/> passed in the constructor. This will call Luis V2 endpoint if passed.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Analysis of utterance.</returns>
+        [Obsolete("Method is deprecated, please use RecognizeAsync<T>(ITurnContext turnContext, LuisRecognizerOptions recognizerOptions, CancellationToken cancellationToken).")]
         public virtual async Task<T> RecognizeAsync<T>(ITurnContext turnContext, LuisPredictionOptions predictionOptions, CancellationToken cancellationToken)
             where T : IRecognizerConvert, new()
         {
@@ -224,11 +226,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
         /// <param name="predictionOptions">A <see cref="LuisPredictionOptions"/> instance to be used by the call.
-        /// This parameter gets merged with the default <see cref="LuisPredictionOptions"/> passed in the constructor.</param>
+        /// This parameter gets merged with the default <see cref="LuisPredictionOptions"/> passed in the constructor. This will call Luis V2 endpoint if passed.</param>
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
+        [Obsolete("Method is deprecated, please use RecognizeAsync(ITurnContext turnContext, LuisRecognizerOptions recognizerOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken)).")]
         public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, LuisPredictionOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var overrideV2 = MergeDefaultOptionsWithProvidedOptionsV2(predictionOptions);
@@ -258,17 +261,82 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <typeparam name="T">The recognition result type.</typeparam>
         /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
         /// <param name="predictionOptions">A <see cref="LuisPredictionOptions"/> instance to be used by the call.
-        /// This parameter gets merged with the default <see cref="LuisPredictionOptions"/> passed in the constructor.</param>
+        /// This parameter gets merged with the default <see cref="LuisPredictionOptions"/> passed in the constructor. This will use Luis V2 endpoint if passed.</param>
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
+        [Obsolete("Method is deprecated, please use RecognizeAsync(ITurnContext turnContext, LuisRecognizerOptions recognizerOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken)).")]
         public virtual async Task<T> RecognizeAsync<T>(ITurnContext turnContext, LuisPredictionOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
             where T : IRecognizerConvert, new()
         {
             var result = new T();
             var overrideV2 = MergeDefaultOptionsWithProvidedOptionsV2(predictionOptions);
             result.Convert(await RecognizeInternalAsync(turnContext, overrideV2, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false));
+            return result;
+        }
+
+        /// <summary>
+        /// Runs an utterance through a recognizer and returns a generic recognizer result.
+        /// </summary>
+        /// <param name="turnContext">Turn context.</param>
+        /// <param name="recognizerOptions">A <see cref="LuisRecognizerOptions"/> instance to be used by the call.
+        /// This parameter overrides the default <see cref="LuisRecognizerOptions"/> passed in the constructor.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Analysis of utterance.</returns>
+        public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, LuisRecognizerOptions recognizerOptions, CancellationToken cancellationToken)
+        {
+            return await RecognizeInternalAsync(turnContext, recognizerOptions, null, null, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Runs an utterance through a recognizer and returns a strongly-typed recognizer result.
+        /// </summary>
+        /// <typeparam name="T">The recognition result type.</typeparam>
+        /// <param name="turnContext">Turn context.</param>
+        /// <param name="recognizerOptions">A <see cref="LuisRecognizerOptions"/> instance to be used by the call.
+        /// This parameter overrides the default <see cref="LuisRecognizerOptions"/> passed in the constructor.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Analysis of utterance.</returns>
+        public virtual async Task<T> RecognizeAsync<T>(ITurnContext turnContext, LuisRecognizerOptions recognizerOptions, CancellationToken cancellationToken)
+            where T : IRecognizerConvert, new()
+        {
+            var result = new T();
+            result.Convert(await RecognizeInternalAsync(turnContext, recognizerOptions, null, null, cancellationToken).ConfigureAwait(false));
+            return result;
+        }
+
+        /// <summary>
+        /// Return results of the analysis (Suggested actions and intents).
+        /// </summary>
+        /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
+        /// <param name="recognizerOptions">A <see cref="LuisRecognizerOptions"/> instance to be used by the call.
+        /// This parameter overrides the default <see cref="LuisRecognizerOptions"/> passed in the constructor.</param>
+        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
+        public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, LuisRecognizerOptions recognizerOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return await RecognizeInternalAsync(turnContext, recognizerOptions, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Return results of the analysis (Suggested actions and intents).
+        /// </summary>
+        /// <typeparam name="T">The recognition result type.</typeparam>
+        /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
+        /// <param name="recognizerOptions">A <see cref="LuisRecognizerOptions"/> instance to be used by the call.
+        /// This parameter overrides the default <see cref="LuisRecognizerOptions"/> passed in the constructor.</param>
+        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
+        public virtual async Task<T> RecognizeAsync<T>(ITurnContext turnContext, LuisRecognizerOptions recognizerOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
+            where T : IRecognizerConvert, new()
+        {
+            var result = new T();
+            result.Convert(await RecognizeInternalAsync(turnContext, recognizerOptions, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false));
             return result;
         }
 
@@ -391,10 +459,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, LuisRecognizerOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics, CancellationToken cancellationToken)
         {
             var recognizer = predictionOptions ?? _luisRecognizerOptions;
-            LogPersonalInformation = recognizer.LogPersonalInformation;
             var result = await recognizer.RecognizeInternalAsync(turnContext, DefaultHttpClient,  cancellationToken).ConfigureAwait(false);
             await OnRecognizerResultAsync(result, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
-            LogPersonalInformation = _luisRecognizerOptions.LogPersonalInformation;
             return result;
         }
 
