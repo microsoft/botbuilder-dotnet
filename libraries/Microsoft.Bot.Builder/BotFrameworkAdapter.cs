@@ -7,21 +7,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration;
-using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Rest;
 using Microsoft.Rest.TransientFaultHandling;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -440,7 +436,9 @@ namespace Microsoft.Bot.Builder
                         // we want to populate it here in order to make sure credentials are accessible and do not expire.
                         try
                         {
-                            _ = (await GetAppCredentialsAsync((CredentialProvider as SimpleCredentialProvider).AppId).ConfigureAwait(false)).GetTokenAsync();
+                            var appId = GetBotAppId(turnContext);
+
+                            _ = (await GetAppCredentialsAsync(appId).ConfigureAwait(false)).GetTokenAsync();
                         }
                         catch (Exception ex)
                         {
@@ -716,6 +714,8 @@ namespace Microsoft.Bot.Builder
                 serviceUrl = parts[1];
             }
 
+            var appId = GetBotAppId(turnContext);
+
             var tokenExchangeState = new TokenExchangeState()
             {
                 ConnectionName = connectionName,
@@ -728,7 +728,7 @@ namespace Microsoft.Bot.Builder
                     ServiceUrl = serviceUrl,
                     User = activity.From,
                 },
-                MsAppId = (CredentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
+                MsAppId = appId,
             };
 
             var serializedState = JsonConvert.SerializeObject(tokenExchangeState);
@@ -764,6 +764,8 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(userId));
             }
 
+            var appId = GetBotAppId(turnContext);
+
             var tokenExchangeState = new TokenExchangeState()
             {
                 ConnectionName = connectionName,
@@ -776,7 +778,7 @@ namespace Microsoft.Bot.Builder
                     ServiceUrl = null,
                     User = new ChannelAccount { Role = "user", Id = userId, },
                 },
-                MsAppId = (CredentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
+                MsAppId = appId,
             };
 
             var serializedState = JsonConvert.SerializeObject(tokenExchangeState);
@@ -970,17 +972,7 @@ namespace Microsoft.Bot.Builder
                 OAuthClientConfig.EmulateOAuthCards = true;
             }
 
-            var botIdentity = (ClaimsIdentity)turnContext.TurnState.Get<IIdentity>(BotIdentityKey);
-            if (botIdentity == null)
-            {
-                throw new InvalidOperationException("An IIdentity is required in TurnState for this operation.");
-            }
-
-            var appId = botIdentity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
-            if (string.IsNullOrWhiteSpace(appId))
-            {
-                throw new InvalidOperationException("Unable to get the bot AppId from the audience claim.");
-            }
+            var appId = GetBotAppId(turnContext);
 
             var appCredentials = await GetAppCredentialsAsync(appId).ConfigureAwait(false);
 
@@ -1136,6 +1128,28 @@ namespace Microsoft.Bot.Builder
             // Cache the credentials for later use
             _appCredentialMap[cacheKey] = appCredentials;
             return appCredentials;
+        }
+
+        /// <summary>
+        /// Gets the AppId of the Bot out of the TurnState.
+        /// </summary>
+        /// <param name="turnContext">The context object for the turn.</param>
+        /// <returns>Bot's AppId.</returns>
+        private string GetBotAppId(ITurnContext turnContext)
+        {
+            var botIdentity = (ClaimsIdentity)turnContext.TurnState.Get<IIdentity>(BotIdentityKey);
+            if (botIdentity == null)
+            {
+                throw new InvalidOperationException("An IIdentity is required in TurnState for this operation.");
+            }
+
+            var appId = botIdentity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
+            if (string.IsNullOrWhiteSpace(appId))
+            {
+                throw new InvalidOperationException("Unable to get the bot AppId from the audience claim.");
+            }
+
+            return appId;
         }
 
         /// <summary>
