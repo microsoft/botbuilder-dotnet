@@ -3,6 +3,7 @@
 
 using System;
 using System.Text;
+using Microsoft.Bot.Builder.Skills;
 using Newtonsoft.Json;
 using Xunit;
 

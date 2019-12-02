@@ -168,6 +168,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot\Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.csproj", "{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.TestProtocol", "tests\Microsoft.Bot.Builder.TestProtocol\Microsoft.Bot.Builder.TestProtocol.csproj", "{24CCB459-B4F6-484F-8BA4-946A4AB816FA}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.MockLuis", "tests\Microsoft.Bot.Builder.MockLuis\Microsoft.Bot.Builder.MockLuis.csproj", "{DE4945A6-7289-4B66-8764-2C60B1DC9A74}"
 EndProject
 Global
@@ -684,6 +686,14 @@ Global
 		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 		{DE4945A6-7289-4B66-8764-2C60B1DC9A74}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
 		{DE4945A6-7289-4B66-8764-2C60B1DC9A74}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{DE4945A6-7289-4B66-8764-2C60B1DC9A74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -768,6 +778,7 @@ Global
 		{E372D54C-73AA-41DB-A471-81348AC37F36} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
 		{C8E31CD2-89D4-4659-9557-43EC9C99D984} = {6230B915-B238-4E57-AAC4-06B4498F540F}
 		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{DE4945A6-7289-4B66-8764-2C60B1DC9A74} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

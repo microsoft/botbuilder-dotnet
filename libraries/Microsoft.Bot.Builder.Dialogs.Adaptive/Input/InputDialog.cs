@@ -369,7 +369,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             // Use Value expression for input second
             if (input == null && !string.IsNullOrEmpty(this.Value))
             {
-                dc.GetState().TryGetValue(this.Value, out input);
+                var (value, valueError) = new ExpressionEngine().Parse(this.Value).TryEvaluate(dc.GetState());
+                if (valueError != null)
+                { 
+                    throw new Exception($"In InputDialog, this.Value expression evaluation resulted in an error. Expression: {this.Value}. Error: {valueError}");
+                }
+                 
+                input = value;
             }
 
             // Fallback to using activity

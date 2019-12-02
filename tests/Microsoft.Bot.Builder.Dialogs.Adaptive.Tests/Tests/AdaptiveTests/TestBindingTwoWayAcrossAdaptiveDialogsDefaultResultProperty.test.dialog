@@ -6,7 +6,6 @@
         "triggers": [
             {
                 "$kind": "Microsoft.OnUnknownIntent",
-
                 "actions": [
                     {
                         "$kind": "Microsoft.TextInput",
@@ -24,7 +23,7 @@
                             "defaultResultProperty": "$age",
                             "triggers": [
                                 {
-                                    "$kind": "Microsoft.OnUnknownIntent",
+                                    "$kind": "Microsoft.OnBeginDialog",
                                     "actions": [
                                         {
                                             "$kind": "Microsoft.NumberInput",

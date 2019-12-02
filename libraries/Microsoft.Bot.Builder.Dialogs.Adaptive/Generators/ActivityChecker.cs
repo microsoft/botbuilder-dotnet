@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             else
             {
                 var diagnosticMessage = string.IsNullOrWhiteSpace(type) ? 
-                    "'lgType' does not exist in lg output json object."
+                    $"'{Evaluator.LGType}' does not exist in lg output json object."
                     : $"Type '{type}' is not supported currently.";
                 result.Add(BuildDiagnostic(diagnosticMessage));
             }
@@ -281,7 +281,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 return result;
             }
 
-            var properties = value.Properties().Select(u => u.Name.ToLowerInvariant()).Where(u => u != "lgtype");
+            var properties = value.Properties().Select(u => u.Name.ToLowerInvariant()).Where(u => u != Evaluator.LGType.ToLowerInvariant());
             IList<string> objectProperties;
 
             if (type == typeof(Activity))
@@ -313,7 +313,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 return string.Empty;
             }
 
-            var type = jObj["lgType"]?.ToString()?.Trim();
+            var type = jObj[Evaluator.LGType]?.ToString()?.Trim();
             if (string.IsNullOrEmpty(type))
             {
                 // Adaptive card type

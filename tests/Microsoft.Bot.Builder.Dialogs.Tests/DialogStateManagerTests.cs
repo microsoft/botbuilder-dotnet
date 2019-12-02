@@ -51,14 +51,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             await CreateDialogContext(async (context, ct) =>
             {
-                foreach (var memoryScope in DialogStateManager.MemoryScopes)
+                var dsm = new DialogStateManager(context);
+                foreach (var memoryScope in dsm.Configuration.MemoryScopes)
                 {
                     try
                     {
                         memoryScope.GetMemory(null);
                         Assert.Fail($"Should have thrown exception with null for {memoryScope.Name}");
                     }
-                    catch (ArgumentNullException)
+                    catch (Exception)
                     {
                     }
 
@@ -78,7 +79,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public void TestPathResolverNullChecks()
         {
-            foreach (var resolver in DialogStateManager.PathResolvers)
+            var config = DialogStateManager.CreateStandardConfiguration();
+            foreach (var resolver in config.PathResolvers)
             {
                 try
                 {
@@ -97,7 +99,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await CreateDialogContext(async (context, ct) =>
             {
                 JObject snapshot = context.GetState().GetMemorySnapshot();
-                foreach (var memoryScope in DialogStateManager.MemoryScopes)
+                var dsm = new DialogStateManager(context);
+                foreach (var memoryScope in dsm.Configuration.MemoryScopes)
                 {
                     if (memoryScope.IncludeInSnapshot)
                     {

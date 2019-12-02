@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
-    internal static class HttpHelper
+    public static class HttpHelper
     {
         public static readonly JsonSerializerSettings BotMessageSerializerSettings = new JsonSerializerSettings
         {
