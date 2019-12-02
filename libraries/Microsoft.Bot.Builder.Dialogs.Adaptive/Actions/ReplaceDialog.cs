@@ -37,6 +37,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // use bindingOptions to bind to the bound options
             var boundOptions = BindOptions(dc, options);
 
+            if (this.IncludeActivity)
+            {
+                // reset this to false so that new dialog has opportunity to process the activity
+                dc.GetState().SetValue(TurnPath.ACTIVITYPROCESSED, false);
+            }
+
             // replace dialog with bound options passed in as the options
             return await dc.ReplaceDialogAsync(dialog.Id, options: boundOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
         }

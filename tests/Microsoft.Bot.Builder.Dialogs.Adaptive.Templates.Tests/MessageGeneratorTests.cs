@@ -716,13 +716,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             return context;
         }
 
-        private async Task<ITurnContext> GetTurnContext(string lgFile)
+        private Task<ITurnContext> GetTurnContext(string lgFile)
         {
             var context = new TurnContext(new TestAdapter(), new Activity());
             var lgresource = resourceExplorer.GetResource(lgFile) as FileResource;
             context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgresource.FullName, MultiLanguageResourceLoader.Load(resourceExplorer)));
 
-            return context;
+            return Task.FromResult((ITurnContext)context);
         }
 
         private string GetLGTFilePath(string fileName)

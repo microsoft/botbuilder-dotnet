@@ -168,31 +168,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot\Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.csproj", "{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Prototypes", "Prototypes", "{6F0ECA8C-452B-4844-90F3-67DDFF4D1C8E}"
-	ProjectSection(SolutionItems) = preProject
-		prototypes\cc-skill-manifest-sample.json = prototypes\cc-skill-manifest-sample.json
-		prototypes\SampleComplexSkillManifest-Preview.json = prototypes\SampleComplexSkillManifest-Preview.json
-		prototypes\SampleEchoSkillManifest.json = prototypes\SampleEchoSkillManifest.json
-		prototypes\SampleInlineSkillManifest-Preview.json = prototypes\SampleInlineSkillManifest-Preview.json
-		prototypes\SampleSimpleSkillManifest.json = prototypes\SampleSimpleSkillManifest.json
-		prototypes\skill-manifest-schema-1-0-0.json = prototypes\skill-manifest-schema-1-0-0.json
-		prototypes\skill-manifest-schema-2-1-preview-0.json = prototypes\skill-manifest-schema-2-1-preview-0.json
-		prototypes\SkillManifestVA.json = prototypes\SkillManifestVA.json
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. SimpleBotToBot", "01. SimpleBotToBot", "{8DDCE911-88B8-49CE-B07E-BAB87FC5C1B5}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. DialogToDialog", "02. DialogToDialog", "{00603E6B-4E31-4051-9B45-F20FF071CCD5}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleRootBot", "prototypes\SimpleBotToBot\SimpleRootBot\SimpleRootBot.csproj", "{26538545-9683-4BC0-9447-523D295EF27C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleChildBot", "prototypes\SimpleBotToBot\SimpleChildBot\SimpleChildBot.csproj", "{3B5E4AFB-A19D-49C2-92AF-21456A680399}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DialogRootBot", "prototypes\DialogToDialog\DialogRootBot\DialogRootBot.csproj", "{8080B093-08B0-417D-94A0-035467E7E10E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DialogChildBot", "prototypes\DialogToDialog\DialogChildBot\DialogChildBot.csproj", "{ADC9F309-71AA-4EB2-B63C-50B8CBAF1001}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationBot", "prototypes\DialogToDialog\AuthenticationBot\AuthenticationBot.csproj", "{E34A55F7-2CFC-458C-B3B8-3219D30376C4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.TestProtocol", "tests\Microsoft.Bot.Builder.TestProtocol\Microsoft.Bot.Builder.TestProtocol.csproj", "{24CCB459-B4F6-484F-8BA4-946A4AB816FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -706,46 +682,14 @@ Global
 		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{26538545-9683-4BC0-9447-523D295EF27C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{26538545-9683-4BC0-9447-523D295EF27C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{26538545-9683-4BC0-9447-523D295EF27C}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{26538545-9683-4BC0-9447-523D295EF27C}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{26538545-9683-4BC0-9447-523D295EF27C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{26538545-9683-4BC0-9447-523D295EF27C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{26538545-9683-4BC0-9447-523D295EF27C}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{26538545-9683-4BC0-9447-523D295EF27C}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{3B5E4AFB-A19D-49C2-92AF-21456A680399}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3B5E4AFB-A19D-49C2-92AF-21456A680399}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3B5E4AFB-A19D-49C2-92AF-21456A680399}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{3B5E4AFB-A19D-49C2-92AF-21456A680399}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{3B5E4AFB-A19D-49C2-92AF-21456A680399}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3B5E4AFB-A19D-49C2-92AF-21456A680399}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3B5E4AFB-A19D-49C2-92AF-21456A680399}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{3B5E4AFB-A19D-49C2-92AF-21456A680399}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{8080B093-08B0-417D-94A0-035467E7E10E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8080B093-08B0-417D-94A0-035467E7E10E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8080B093-08B0-417D-94A0-035467E7E10E}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{8080B093-08B0-417D-94A0-035467E7E10E}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{8080B093-08B0-417D-94A0-035467E7E10E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8080B093-08B0-417D-94A0-035467E7E10E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8080B093-08B0-417D-94A0-035467E7E10E}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{8080B093-08B0-417D-94A0-035467E7E10E}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{ADC9F309-71AA-4EB2-B63C-50B8CBAF1001}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ADC9F309-71AA-4EB2-B63C-50B8CBAF1001}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ADC9F309-71AA-4EB2-B63C-50B8CBAF1001}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{ADC9F309-71AA-4EB2-B63C-50B8CBAF1001}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{ADC9F309-71AA-4EB2-B63C-50B8CBAF1001}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ADC9F309-71AA-4EB2-B63C-50B8CBAF1001}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ADC9F309-71AA-4EB2-B63C-50B8CBAF1001}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{ADC9F309-71AA-4EB2-B63C-50B8CBAF1001}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{E34A55F7-2CFC-458C-B3B8-3219D30376C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E34A55F7-2CFC-458C-B3B8-3219D30376C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E34A55F7-2CFC-458C-B3B8-3219D30376C4}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{E34A55F7-2CFC-458C-B3B8-3219D30376C4}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{E34A55F7-2CFC-458C-B3B8-3219D30376C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E34A55F7-2CFC-458C-B3B8-3219D30376C4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E34A55F7-2CFC-458C-B3B8-3219D30376C4}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{E34A55F7-2CFC-458C-B3B8-3219D30376C4}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -820,13 +764,7 @@ Global
 		{E372D54C-73AA-41DB-A471-81348AC37F36} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
 		{C8E31CD2-89D4-4659-9557-43EC9C99D984} = {6230B915-B238-4E57-AAC4-06B4498F540F}
 		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
-		{8DDCE911-88B8-49CE-B07E-BAB87FC5C1B5} = {6F0ECA8C-452B-4844-90F3-67DDFF4D1C8E}
-		{00603E6B-4E31-4051-9B45-F20FF071CCD5} = {6F0ECA8C-452B-4844-90F3-67DDFF4D1C8E}
-		{26538545-9683-4BC0-9447-523D295EF27C} = {8DDCE911-88B8-49CE-B07E-BAB87FC5C1B5}
-		{3B5E4AFB-A19D-49C2-92AF-21456A680399} = {8DDCE911-88B8-49CE-B07E-BAB87FC5C1B5}
-		{8080B093-08B0-417D-94A0-035467E7E10E} = {00603E6B-4E31-4051-9B45-F20FF071CCD5}
-		{ADC9F309-71AA-4EB2-B63C-50B8CBAF1001} = {00603E6B-4E31-4051-9B45-F20FF071CCD5}
-		{E34A55F7-2CFC-458C-B3B8-3219D30376C4} = {00603E6B-4E31-4051-9B45-F20FF071CCD5}
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnTypingActivity : OnActivity
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.OnTypingActivity";
+        public new const string DeclarativeType = "Microsoft.OnTypingActivity";
         
         [JsonConstructor]
         public OnTypingActivity(List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
