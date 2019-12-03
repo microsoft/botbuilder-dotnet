@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.TestProtocol.Controllers
@@ -31,7 +32,7 @@ namespace Microsoft.Bot.Builder.TestProtocol.Controllers
         [HttpPost]
         public async Task PostAsync()
         {
-            var inboundActivity = await HttpHelper.ReadRequestAsync(Request);
+            var inboundActivity = await HttpHelper.ReadRequestAsync<Activity>(Request);
 
             var currentConversationId = inboundActivity.Conversation.Id;
             var currentServiceUrl = inboundActivity.ServiceUrl;

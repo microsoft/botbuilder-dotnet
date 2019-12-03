@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest.TransientFaultHandling;
@@ -115,7 +116,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             else
             {
                 // Deserialize the incoming Activity
-                var activity = await HttpHelper.ReadRequestAsync(httpRequest).ConfigureAwait(false);
+                var activity = await HttpHelper.ReadRequestAsync<Activity>(httpRequest).ConfigureAwait(false);
 
                 if (string.IsNullOrEmpty(activity?.Type))
                 {
