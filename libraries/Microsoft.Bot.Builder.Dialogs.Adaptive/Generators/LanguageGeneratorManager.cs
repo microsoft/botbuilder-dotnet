@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 var resource = resources.FirstOrDefault(u => MultiLanguageResourceLoader.ParseLGFileName(u.Id).prefix.ToLower() == MultiLanguageResourceLoader.ParseLGFileName(resourceName).prefix.ToLower());
                 if (resource == null)
                 {
-                    return (string.Empty, resource.Id);
+                    throw new Exception($"There is no matching LG resource for {resourceName}");
                 }
                 else
                 {
