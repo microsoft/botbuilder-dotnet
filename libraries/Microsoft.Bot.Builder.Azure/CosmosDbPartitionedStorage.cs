@@ -55,6 +55,17 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentException("ContainerId is required.", nameof(cosmosDbStorageOptions.ContainerId));
             }
 
+            if (!string.IsNullOrWhiteSpace(cosmosDbStorageOptions.KeySuffix))
+            {
+                // In order to reduce key complexity, we do not allow invalid characters in a KeySuffix
+                // If the KeySuffix has invalid characters, the EscapeKey will not match
+                var suffixEscaped = CosmosDbKeyEscape.EscapeKey(cosmosDbStorageOptions.KeySuffix);
+                if (!cosmosDbStorageOptions.KeySuffix.Equals(suffixEscaped, StringComparison.Ordinal))
+                {
+                    throw new ArgumentException($"Cnnot use invalid Row Key characters: {_cosmosDbStorageOptions.KeySuffix}", nameof(cosmosDbStorageOptions.KeySuffix));
+                }
+            }
+
             _cosmosDbStorageOptions = cosmosDbStorageOptions;
         }
 
@@ -96,7 +107,7 @@ namespace Microsoft.Bot.Builder.Azure
             {
                 try
                 {
-                    var escapedKey = CosmosDbKeyEscape.EscapeKey(key);
+                    var escapedKey = CosmosDbKeyEscape.EscapeKey(key, _cosmosDbStorageOptions.KeySuffix, _cosmosDbStorageOptions.MaxKeyLength);
 
                     var readItemResponse = await _container.ReadItemAsync<DocumentStoreItem>(
                             escapedKey,
@@ -159,8 +170,8 @@ namespace Microsoft.Bot.Builder.Azure
 
                 var documentChange = new DocumentStoreItem
                 {
-                    Id = CosmosDbKeyEscape.EscapeKey(change.Key),
-                    RealId = change.Key,
+                    Id = CosmosDbKeyEscape.EscapeKey(change.Key, _cosmosDbStorageOptions.KeySuffix, _cosmosDbStorageOptions.MaxKeyLength),
+                    RealId = $"{change.Key}{_cosmosDbStorageOptions.KeySuffix}",
                     Document = json,
                 };
 
@@ -202,7 +213,7 @@ namespace Microsoft.Bot.Builder.Azure
 
             foreach (var key in keys)
             {
-                var escapedKey = CosmosDbKeyEscape.EscapeKey(key);
+                var escapedKey = CosmosDbKeyEscape.EscapeKey(key, _cosmosDbStorageOptions.KeySuffix, _cosmosDbStorageOptions.MaxKeyLength);
 
                 try
                 {

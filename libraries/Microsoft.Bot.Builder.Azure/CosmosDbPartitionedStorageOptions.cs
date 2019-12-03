@@ -60,5 +60,26 @@ namespace Microsoft.Bot.Builder.Azure
         /// Container throughput. Defaults to 400.
         /// </value>
         public int ContainerThroughput { get; set; } = 400;
+
+        /// <summary>
+        /// Gets or sets the suffix to be added to every key. <see cref="CosmosDbKeyEscape.EscapeKey"/>.
+        /// 
+        /// Note: When KeySuffix is used, keys will NOT be truncated but an exception will be thrown if
+        /// the key length is longer than <see cref="MaxKeyLength"/>.
+        /// </summary>
+        /// <value>
+        /// String containing valid CosmosDb key characters. (e.g. not: '\\', '?', '/', '#', '*').
+        /// </value>
+        public string KeySuffix { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum row key length to use for <see cref="CosmosDbPartitionedStorage"/>.
+        /// </summary>
+        /// <value>
+        /// Currently, max key length for cosmosdb is now 1024:
+        /// https://docs.microsoft.com/en-us/azure/cosmos-db/concepts-limits#per-item-limits
+        /// Default for backwards compatibility is 255 <see cref="CosmosDbKeyEscape.MaxKeyLength"/>.
+        /// </value>
+        public int MaxKeyLength { get; set; } = CosmosDbKeyEscape.MaxKeyLength;
     }
 }
