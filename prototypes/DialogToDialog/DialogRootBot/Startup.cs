@@ -37,7 +37,7 @@ namespace DialogRootBot
 
             // Register the skills client and skills request handler.
             services.AddSingleton<ISkillConversationIdFactory, SkillConversationIdFactory>();
-            services.AddHttpClient<BotFrameworkHttpClient>();
+            services.AddHttpClient<SkillHttpClient>();
             services.AddSingleton<ChannelServiceHandler, SkillHandler>();
 
             // Register the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -23,19 +24,17 @@ namespace DialogRootBot.Dialogs
     public class SkillDialog : Dialog
     {
         private readonly string _botId;
-        private readonly ISkillConversationIdFactory _conversationIdFactory;
         private readonly ConversationState _conversationState;
-        private readonly BotFrameworkHttpClient _skillClient;
+        private readonly SkillHttpClient _skillClient;
         private readonly SkillsConfiguration _skillsConfig;
 
-        public SkillDialog(ConversationState conversationState, BotFrameworkHttpClient skillClient, ISkillConversationIdFactory conversationIdFactory, SkillsConfiguration skillsConfig, IConfiguration configuration, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SkillDialog(ConversationState conversationState, SkillHttpClient skillClient, SkillsConfiguration skillsConfig, IConfiguration configuration, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(nameof(SkillDialog))
         {
             _botId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
             _skillClient = skillClient;
             _skillsConfig = skillsConfig;
             _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
-            _conversationIdFactory = conversationIdFactory ?? throw new ArgumentNullException(nameof(conversationIdFactory));
             RegisterSourceLocation(callerPath, callerLine);
         }
 
@@ -184,8 +183,7 @@ namespace DialogRootBot.Dialogs
             // Always save state before forwarding
             // (the dialog stack won't get updated with the skillDialog and 'things won't work if you don't)
             await _conversationState.SaveChangesAsync(dc.Context, true, cancellationToken);
-            var skillConversationId = await _conversationIdFactory.CreateSkillConversationIdAsync(dc.Context.Activity.Conversation.Id, dc.Context.Activity.ServiceUrl, cancellationToken);
-            var response = await _skillClient.PostActivityAsync(_botId, _skillsConfig.Skills[skillId].AppId, _skillsConfig.Skills[skillId].SkillEndpoint, _skillsConfig.SkillHostEndpoint, skillConversationId, activity, cancellationToken);
+            var response = await _skillClient.PostActivityAsync(_botId, _skillsConfig.Skills[skillId], _skillsConfig.SkillHostEndpoint, activity, cancellationToken);
             return EndOfTurn;
         }
     }

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -19,20 +20,18 @@ namespace DialogRootBot.Dialogs
     public class MainDialog : ComponentDialog
     {
         private readonly string _botId;
-        private readonly ISkillConversationIdFactory _conversationIdFactory;
         private readonly ConversationState _conversationState;
-        private readonly BotFrameworkHttpClient _skillClient;
+        private readonly SkillHttpClient _skillClient;
         private readonly SkillsConfiguration _skillsConfig;
 
         // Dependency injection uses this constructor to instantiate MainDialog
-        public MainDialog(ConversationState conversationState, BotFrameworkHttpClient skillClient, ISkillConversationIdFactory conversationIdFactory, SkillsConfiguration skillsConfig, SkillDialog bookingDialog, IConfiguration configuration)
+        public MainDialog(ConversationState conversationState, SkillHttpClient skillClient, SkillsConfiguration skillsConfig, SkillDialog bookingDialog, IConfiguration configuration)
             : base(nameof(MainDialog))
         {
             _botId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
             _skillClient = skillClient;
             _skillsConfig = skillsConfig;
             _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
-            _conversationIdFactory = conversationIdFactory ?? throw new ArgumentNullException(nameof(conversationIdFactory));
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(bookingDialog);
@@ -138,8 +137,7 @@ namespace DialogRootBot.Dialogs
                 invokeActivity.Recipient = stepContext.Context.Activity.Recipient;
 
                 await _conversationState.SaveChangesAsync(stepContext.Context, true, cancellationToken);
-                var skillConversationId = await _conversationIdFactory.CreateSkillConversationIdAsync(stepContext.Context.Activity.Conversation.Id, stepContext.Context.Activity.ServiceUrl, cancellationToken);
-                var response = await _skillClient.PostActivityAsync(_botId, _skillsConfig.Skills["SkillBot"].AppId, _skillsConfig.Skills["SkillBot"].SkillEndpoint, _skillsConfig.SkillHostEndpoint, skillConversationId, (Activity)invokeActivity, cancellationToken);
+                var response = await _skillClient.PostActivityAsync(_botId, _skillsConfig.Skills["SkillBot"], _skillsConfig.SkillHostEndpoint, (Activity)invokeActivity, cancellationToken);
                 return await stepContext.NextAsync(response.Body, cancellationToken);
             }
 
