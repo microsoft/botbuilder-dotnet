@@ -77,6 +77,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 {
                     start.CharIndex -= text.Length;
                 }
+                else
+                {
+                    end.LineIndex += item.ToString().Split('\n').Length - 1;
+                }
             }
 
             return item;

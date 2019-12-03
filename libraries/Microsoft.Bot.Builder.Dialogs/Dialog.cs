@@ -79,6 +79,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        [JsonIgnore]
+        public virtual SourceRange Source => DebugSupport.SourceMap.TryGetValue(this, out var range) ? range : null;
+
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
         /// </summary>
