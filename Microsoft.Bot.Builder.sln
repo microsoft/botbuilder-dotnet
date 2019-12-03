@@ -168,7 +168,33 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot\Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.csproj", "{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.TestProtocol", "tests\Microsoft.Bot.Builder.TestProtocol\Microsoft.Bot.Builder.TestProtocol.csproj", "{24CCB459-B4F6-484F-8BA4-946A4AB816FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestProtocol", "tests\Microsoft.Bot.Builder.TestProtocol\Microsoft.Bot.Builder.TestProtocol.csproj", "{24CCB459-B4F6-484F-8BA4-946A4AB816FA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Prototypes", "Prototypes", "{4904817E-AF5C-4EEA-A221-40AD45F9EBC8}"
+	ProjectSection(SolutionItems) = preProject
+		prototypes\cc-skill-manifest-sample.json = prototypes\cc-skill-manifest-sample.json
+		prototypes\SampleComplexSkillManifest-Preview.json = prototypes\SampleComplexSkillManifest-Preview.json
+		prototypes\SampleEchoSkillManifest.json = prototypes\SampleEchoSkillManifest.json
+		prototypes\SampleInlineSkillManifest-Preview.json = prototypes\SampleInlineSkillManifest-Preview.json
+		prototypes\SampleSimpleSkillManifest.json = prototypes\SampleSimpleSkillManifest.json
+		prototypes\skill-manifest-schema-1-0-0.json = prototypes\skill-manifest-schema-1-0-0.json
+		prototypes\skill-manifest-schema-2-1-preview-0.json = prototypes\skill-manifest-schema-2-1-preview-0.json
+		prototypes\SkillManifestVA.json = prototypes\SkillManifestVA.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. SimpleBotToBot", "01. SimpleBotToBot", "{4F93053E-5352-401A-92AD-E538031A4856}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleChildBot", "prototypes\SimpleBotToBot\SimpleChildBot\SimpleChildBot.csproj", "{1AA8F812-B312-4D3E-B290-B365F587E8AA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleRootBot", "prototypes\SimpleBotToBot\SimpleRootBot\SimpleRootBot.csproj", "{206AF777-3A80-47D2-B82C-40CDFA0627C6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. DialogToDialog", "02. DialogToDialog", "{9B469D5B-441B-45A5-93AD-191FB3D7F3DE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DialogChildBot", "prototypes\DialogToDialog\DialogChildBot\DialogChildBot.csproj", "{821A9F9F-1FF8-4A89-A2C7-B344F3E94904}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DialogRootBot", "prototypes\DialogToDialog\DialogRootBot\DialogRootBot.csproj", "{88FAAEC9-9EE1-47A5-9477-65D59481F902}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationBot", "prototypes\DialogToDialog\AuthenticationBot\AuthenticationBot.csproj", "{49C5AEEB-CE46-452D-AA93-F2E8029A1D55}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -690,6 +716,46 @@ Global
 		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{1AA8F812-B312-4D3E-B290-B365F587E8AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AA8F812-B312-4D3E-B290-B365F587E8AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AA8F812-B312-4D3E-B290-B365F587E8AA}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AA8F812-B312-4D3E-B290-B365F587E8AA}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{1AA8F812-B312-4D3E-B290-B365F587E8AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AA8F812-B312-4D3E-B290-B365F587E8AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AA8F812-B312-4D3E-B290-B365F587E8AA}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{1AA8F812-B312-4D3E-B290-B365F587E8AA}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{206AF777-3A80-47D2-B82C-40CDFA0627C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{206AF777-3A80-47D2-B82C-40CDFA0627C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{206AF777-3A80-47D2-B82C-40CDFA0627C6}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{206AF777-3A80-47D2-B82C-40CDFA0627C6}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{206AF777-3A80-47D2-B82C-40CDFA0627C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{206AF777-3A80-47D2-B82C-40CDFA0627C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{206AF777-3A80-47D2-B82C-40CDFA0627C6}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{206AF777-3A80-47D2-B82C-40CDFA0627C6}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{821A9F9F-1FF8-4A89-A2C7-B344F3E94904}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{821A9F9F-1FF8-4A89-A2C7-B344F3E94904}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{821A9F9F-1FF8-4A89-A2C7-B344F3E94904}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{821A9F9F-1FF8-4A89-A2C7-B344F3E94904}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{821A9F9F-1FF8-4A89-A2C7-B344F3E94904}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{821A9F9F-1FF8-4A89-A2C7-B344F3E94904}.Release|Any CPU.Build.0 = Release|Any CPU
+		{821A9F9F-1FF8-4A89-A2C7-B344F3E94904}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{821A9F9F-1FF8-4A89-A2C7-B344F3E94904}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{88FAAEC9-9EE1-47A5-9477-65D59481F902}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88FAAEC9-9EE1-47A5-9477-65D59481F902}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88FAAEC9-9EE1-47A5-9477-65D59481F902}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{88FAAEC9-9EE1-47A5-9477-65D59481F902}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{88FAAEC9-9EE1-47A5-9477-65D59481F902}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88FAAEC9-9EE1-47A5-9477-65D59481F902}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88FAAEC9-9EE1-47A5-9477-65D59481F902}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{88FAAEC9-9EE1-47A5-9477-65D59481F902}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{49C5AEEB-CE46-452D-AA93-F2E8029A1D55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49C5AEEB-CE46-452D-AA93-F2E8029A1D55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49C5AEEB-CE46-452D-AA93-F2E8029A1D55}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{49C5AEEB-CE46-452D-AA93-F2E8029A1D55}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{49C5AEEB-CE46-452D-AA93-F2E8029A1D55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49C5AEEB-CE46-452D-AA93-F2E8029A1D55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49C5AEEB-CE46-452D-AA93-F2E8029A1D55}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{49C5AEEB-CE46-452D-AA93-F2E8029A1D55}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -765,6 +831,13 @@ Global
 		{C8E31CD2-89D4-4659-9557-43EC9C99D984} = {6230B915-B238-4E57-AAC4-06B4498F540F}
 		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
 		{24CCB459-B4F6-484F-8BA4-946A4AB816FA} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{4F93053E-5352-401A-92AD-E538031A4856} = {4904817E-AF5C-4EEA-A221-40AD45F9EBC8}
+		{1AA8F812-B312-4D3E-B290-B365F587E8AA} = {4F93053E-5352-401A-92AD-E538031A4856}
+		{206AF777-3A80-47D2-B82C-40CDFA0627C6} = {4F93053E-5352-401A-92AD-E538031A4856}
+		{9B469D5B-441B-45A5-93AD-191FB3D7F3DE} = {4904817E-AF5C-4EEA-A221-40AD45F9EBC8}
+		{821A9F9F-1FF8-4A89-A2C7-B344F3E94904} = {9B469D5B-441B-45A5-93AD-191FB3D7F3DE}
+		{88FAAEC9-9EE1-47A5-9477-65D59481F902} = {9B469D5B-441B-45A5-93AD-191FB3D7F3DE}
+		{49C5AEEB-CE46-452D-AA93-F2E8029A1D55} = {9B469D5B-441B-45A5-93AD-191FB3D7F3DE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

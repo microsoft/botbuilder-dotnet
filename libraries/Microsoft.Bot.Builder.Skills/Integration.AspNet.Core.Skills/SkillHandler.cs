@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
@@ -19,7 +20,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
     /// </summary>
     public class SkillHandler : ChannelServiceHandler
     {
-        public const string InvokeActivityName = "SkillEvents.ChannelApiInvoke";
         private readonly BotAdapter _adapter;
         private readonly IBot _bot;
         private readonly ISkillConversationIdFactory _conversationIdIdFactory;
@@ -356,7 +356,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         private static IInvokeActivity CreateSkillInvokeActivity(string callerServiceUrl, string callerConversationId)
         {
             var channelApiInvokeActivity = Activity.CreateInvokeActivity();
-            channelApiInvokeActivity.Name = InvokeActivityName;
+            channelApiInvokeActivity.Name = ChannelApiMiddleware.InvokeActivityName;
             channelApiInvokeActivity.ChannelId = "unknown";
             channelApiInvokeActivity.ServiceUrl = callerServiceUrl;
             channelApiInvokeActivity.Conversation = new ConversationAccount(id: callerConversationId);

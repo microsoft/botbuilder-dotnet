@@ -3,14 +3,16 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Skills;
 
 namespace Microsoft.Bot.Builder.TestProtocol
 {
     public class MyConversationIdFactory : ISkillConversationIdFactory
     {
-        private readonly ConcurrentDictionary<string, string> _forwardXref;
         private readonly ConcurrentDictionary<string, (string, string)> _backwardXref;
+        private readonly ConcurrentDictionary<string, string> _forwardXref;
 
         public MyConversationIdFactory()
         {
@@ -18,16 +20,16 @@ namespace Microsoft.Bot.Builder.TestProtocol
             _backwardXref = new ConcurrentDictionary<string, (string, string)>();
         }
 
-        public string CreateSkillConversationId(string conversationId, string serviceUrl)
+        public Task<string> CreateSkillConversationIdAsync(string conversationId, string serviceUrl, CancellationToken cancellationToken)
         {
-            var result = _forwardXref.GetOrAdd(conversationId, (key) => { return Guid.NewGuid().ToString(); });
+            var result = _forwardXref.GetOrAdd(conversationId, key => { return Guid.NewGuid().ToString(); });
             _backwardXref[result] = (conversationId, serviceUrl);
-            return result;
+            return Task.FromResult(result);
         }
 
-        public (string conversationId, string serviceUrl) GetConversationInfo(string encodedConversationId)
+        public Task<(string conversationId, string serviceUrl)> GetConversationInfoAsync(string encodedConversationId, CancellationToken cancellationToken)
         {
-            return _backwardXref[encodedConversationId];
+            return Task.FromResult(_backwardXref[encodedConversationId]);
         }
     }
 }

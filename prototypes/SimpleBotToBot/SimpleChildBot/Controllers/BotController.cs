@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -43,6 +44,7 @@ namespace SimpleChildBot.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                Debugger.Break();
                 throw;
             }
         }

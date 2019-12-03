@@ -6,14 +6,15 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Skills;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using Xunit;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests.Skills
+namespace Microsoft.Bot.Builder.Tests.Skills
 {
+    [TestClass]
     public class SkillConversationIdFactoryTests
     {
-        [Fact]
+        [TestMethod]
         public async Task TestSkillConversationEncoding()
         {
             var conversationId = Guid.NewGuid().ToString("N");
@@ -22,8 +23,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests.Skills
             var skillConversationId = await sc.CreateSkillConversationIdAsync(conversationId, serviceUrl, CancellationToken.None);
             var (returnedConversationId, returnedServerUrl) = await sc.GetConversationInfoAsync(skillConversationId, CancellationToken.None);
 
-            Assert.Equal(conversationId, returnedConversationId);
-            Assert.Equal(serviceUrl, returnedServerUrl);
+            Assert.AreEqual(conversationId, returnedConversationId);
+            Assert.AreEqual(serviceUrl, returnedServerUrl);
         }
 
         private class TestConversationIdFactory

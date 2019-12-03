@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -11,7 +12,7 @@ using Moq;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills.Tests
+namespace Microsoft.Bot.Builder.Skills.Tests
 {
     public class ChannelApiMiddlewareTests
     {
@@ -165,7 +166,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills.Tests
             };
 
             var activity = Activity.CreateInvokeActivity();
-            activity.Name = SkillHandler.InvokeActivityName;
+            activity.Name = ChannelApiMiddleware.InvokeActivityName;
             activity.Value = apiArgs;
 
             return (Activity)activity;

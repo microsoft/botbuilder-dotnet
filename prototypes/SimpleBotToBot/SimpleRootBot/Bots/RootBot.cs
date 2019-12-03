@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +30,24 @@ namespace SimpleRootBot.Bots
             _skillsConfig = skillsConfig;
             _conversationState = conversationState;
             _activeSkillProperty = conversationState.CreateProperty<string>("activeSkillProperty");
+        }
+
+        public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
+        {
+            if (turnContext.Activity.Type == ActivityTypes.EndOfConversation)
+            {
+                // Handle end of conversation back from the skill
+                // forget skill invocation
+                await _activeSkillProperty.DeleteAsync(turnContext, cancellationToken);
+                await _conversationState.SaveChangesAsync(turnContext, force: true, cancellationToken: cancellationToken);
+
+                // We are back
+                await turnContext.SendActivityAsync(MessageFactory.Text("Back in the root bot. Say \"skill\" and I'll patch you through"), cancellationToken);
+            }
+            else
+            {
+                await base.OnTurnAsync(turnContext, cancellationToken);
+            }
         }
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
@@ -78,21 +96,6 @@ namespace SimpleRootBot.Bots
                     await turnContext.SendActivityAsync(MessageFactory.Text("Hello and welcome!"), cancellationToken);
                 }
             }
-        }
-
-        protected override async Task OnUnrecognizedActivityTypeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
-        {
-            if (turnContext.Activity.Type == ActivityTypes.EndOfConversation)
-            {
-                // forget skill invocation
-                await _activeSkillProperty.DeleteAsync(turnContext, cancellationToken);
-                await _conversationState.SaveChangesAsync(turnContext, force: true, cancellationToken: cancellationToken);
-
-                // We are back
-                await turnContext.SendActivityAsync(MessageFactory.Text("Back in the root bot. Say \"skill\" and I'll patch you through"), cancellationToken);
-            }
-
-            await base.OnUnrecognizedActivityTypeAsync(turnContext, cancellationToken);
         }
     }
 }

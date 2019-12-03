@@ -11,7 +11,7 @@ namespace DialogRootBot.Controllers
     /// EXPERIMENTAL: This class is just to check if we can provide a ControllerBase instead of manually processing HttpRequests.
     /// </summary>
     [ApiController]
-    [Route("v3/conversations/")]
+    [Route("api/skills/")]
     public class SkillController : ChannelServiceController
     {
         public SkillController(ChannelServiceHandler handler)

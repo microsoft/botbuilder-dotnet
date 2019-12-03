@@ -8,7 +8,7 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 namespace SimpleRootBot.Controllers
 {
     [ApiController]
-    [Route("v3/conversations/")]
+    [Route("api/skills")]
     public class SkillController : ChannelServiceController
     {
         public SkillController(ChannelServiceHandler handler)
