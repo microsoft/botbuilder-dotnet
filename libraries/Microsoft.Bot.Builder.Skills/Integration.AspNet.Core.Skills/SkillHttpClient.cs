@@ -25,10 +25,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             _conversationIdFactory = conversationIdFactory;
         }
 
-        public async Task<InvokeResponse> PostActivityAsync(string fromBotId, BotFrameworkSkill skill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
+        public async Task<InvokeResponse> PostActivityAsync(string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
         {
             var skillConversationId = await _conversationIdFactory.CreateSkillConversationIdAsync(activity.Conversation.Id, activity.ServiceUrl, cancellationToken).ConfigureAwait(false);
-            return await PostActivityAsync(fromBotId, skill.AppId, skill.SkillEndpoint, callbackUrl, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
+            return await PostActivityAsync(fromBotId, toSkill.AppId, toSkill.SkillEndpoint, callbackUrl, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
         }
     }
 }
