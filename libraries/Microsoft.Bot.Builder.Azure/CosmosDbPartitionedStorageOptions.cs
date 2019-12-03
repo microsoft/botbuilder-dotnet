@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
 
 namespace Microsoft.Bot.Builder.Azure
 {
@@ -64,22 +61,28 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Gets or sets the suffix to be added to every key. <see cref="CosmosDbKeyEscape.EscapeKey"/>.
         /// 
-        /// Note: When KeySuffix is used, keys will NOT be truncated but an exception will be thrown if
-        /// the key length is longer than <see cref="MaxKeyLength"/>.
+        /// Note: <see cref="TruncateKeysForCompatibility"/> must be set to 'false' to use a KeySuffix.
+        /// When KeySuffix is used, keys will NOT be truncated but an exception will be thrown if
+        /// the key length is longer than allowed by CosmosDb.
         /// </summary>
         /// <value>
-        /// String containing valid CosmosDb key characters. (e.g. not: '\\', '?', '/', '#', '*').
+        /// String containing only valid CosmosDb key characters. (e.g. not: '\\', '?', '/', '#', '*').
         /// </value>
         public string KeySuffix { get; set; }
 
         /// <summary>
-        /// Gets or sets the maximum row key length to use for <see cref="CosmosDbPartitionedStorage"/>.
+        /// Gets or sets a value indicating whether or not keys longer than 255 should be truncated.
+        /// Early versions of CosmosDb had a key length limit of 255.  Keys longer than this were
+        /// truncated in <see cref="CosmosDbKeyEscape"/>.  This remains the default behavior, but
+        /// can be overridden by setting TruncateKeysForCompatibility to false.
+        /// 
+        /// Note: TruncateKeysForCompatibility cannot be 'true' if KeySuffix is used.
         /// </summary>
         /// <value>
-        /// Currently, max key length for cosmosdb is now 1023:
+        /// Currently, max key length for cosmosdb is 1023:
         /// https://docs.microsoft.com/en-us/azure/cosmos-db/concepts-limits#per-item-limits
-        /// Default for backwards compatibility is 255 <see cref="CosmosDbKeyEscape.MaxKeyLength"/>.
+        /// The default for backwards compatibility is 255 <see cref="CosmosDbKeyEscape.MaxKeyLength"/>.
         /// </value>
-        public int MaxKeyLength { get; set; } = CosmosDbKeyEscape.MaxKeyLength;
+        public bool TruncateKeysForCompatibility { get; set; } = true;
     }
 }
