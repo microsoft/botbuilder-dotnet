@@ -38,11 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         {
             Formatting = Formatting.Indented,
             NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore,
-            ContractResolver = new IgnoreEmptyEnumerablesResolver
-            {
-                NamingStrategy = new CamelCaseNamingStrategy()
-            }
+            DefaultValueHandling = DefaultValueHandling.Ignore
         };
 
         /// <summary>
@@ -114,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 resourceExplorer = new ResourceExplorer()
                     .AddFolder(GetProjectPath());
             }
-            
+
             if (adapter == null)
             {
                 TypeFactory.Configuration = configuration ?? new ConfigurationBuilder().Build();
@@ -134,14 +130,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             adapter.EnableTrace = this.EnableTrace;
             adapter.Locale = this.Locale;
 
-            DialogManager dm = new DialogManager(this.Dialog);
-            foreach (var testAction in this.Script)
+            if (callback != null)
             {
-                if (callback != null)
+                foreach (var testAction in this.Script)
                 {
                     await testAction.ExecuteAsync(adapter, callback).ConfigureAwait(false);
                 }
-                else
+            }
+            else
+            {
+                DialogManager dm = new DialogManager(this.Dialog);
+                foreach (var testAction in this.Script)
                 {
                     await testAction.ExecuteAsync(adapter, dm.OnTurnAsync).ConfigureAwait(false);
                 }

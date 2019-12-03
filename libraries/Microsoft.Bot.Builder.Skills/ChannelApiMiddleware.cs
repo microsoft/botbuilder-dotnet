@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
+namespace Microsoft.Bot.Builder.Skills
 {
     /// <summary>
     /// Handles InvokeActivity for ChannelAPI methods calls coming from the skill adapter.
@@ -18,9 +18,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         {
             if (turnContext.Activity.Type == ActivityTypes.Invoke && turnContext.Activity.Name == SkillHandler.InvokeActivityName)
             {
-                // process skill invoke Activity 
+                // process Invoke Activity 
                 var invokeActivity = turnContext.Activity.AsInvokeActivity();
                 var invokeArgs = invokeActivity.Value as ChannelApiArgs;
+
+                // TODO This needs to be more robust to get bot id
                 await ProcessSkillActivityAsync(turnContext, next, invokeArgs, cancellationToken).ConfigureAwait(false);
             }
             else
@@ -37,33 +39,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             turnContext.Activity.Type = endOfConversation.Type;
             turnContext.Activity.Text = endOfConversation.Text;
             turnContext.Activity.Code = endOfConversation.Code;
-
-            turnContext.Activity.ReplyToId = endOfConversation.ReplyToId;
-            turnContext.Activity.Value = activityPayload.Value;
             turnContext.Activity.Entities = endOfConversation.Entities;
             turnContext.Activity.LocalTimestamp = endOfConversation.LocalTimestamp;
             turnContext.Activity.Timestamp = endOfConversation.Timestamp;
+            turnContext.Activity.Value = activityPayload.Value;
             turnContext.Activity.ChannelData = endOfConversation.ChannelData;
             turnContext.Activity.Properties = ((Activity)endOfConversation).Properties;
-            await next(cancellationToken).ConfigureAwait(false);
-        }
-
-        private static async Task ProcessEventAsync(ITurnContext turnContext, NextDelegate next, Activity activityPayload, CancellationToken cancellationToken)
-        {
-            // transform the turnContext.Activity to be the EventActivity and pass up to the bot, we would set the Activity, but it only has a get;
-            var eventActivity = activityPayload.AsEventActivity();
-            turnContext.Activity.Type = eventActivity.Type;
-            turnContext.Activity.Name = eventActivity.Name;
-            turnContext.Activity.Value = eventActivity.Value;
-            turnContext.Activity.RelatesTo = eventActivity.RelatesTo;
-
-            turnContext.Activity.ReplyToId = eventActivity.ReplyToId;
-            turnContext.Activity.Value = activityPayload.Value;
-            turnContext.Activity.Entities = eventActivity.Entities;
-            turnContext.Activity.LocalTimestamp = eventActivity.LocalTimestamp;
-            turnContext.Activity.Timestamp = eventActivity.Timestamp;
-            turnContext.Activity.ChannelData = eventActivity.ChannelData;
-            turnContext.Activity.Properties = ((Activity)eventActivity).Properties;
             await next(cancellationToken).ConfigureAwait(false);
         }
 
@@ -76,43 +57,53 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 
                 switch (invokeArgs.Method)
                 {
+                    // Send activity(activity)
                     case ChannelApiMethods.SendToConversation:
-                    case ChannelApiMethods.ReplyToActivity:
                     {
                         var activityPayload = (Activity)invokeArgs.Args[0];
-                        if (invokeArgs.Args.Length > 1)
+                        if (activityPayload.Type == ActivityTypes.EndOfConversation)
                         {
-                            // ReplyToActivity send a ReplyToId property.
-                            activityPayload.ReplyToId = (string)invokeArgs.Args[1];
+                            await ProcessEndOfConversationAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
+                            invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+                            return;
                         }
 
-                        switch (activityPayload.Type)
-                        {
-                            case ActivityTypes.EndOfConversation:
-                                await ProcessEndOfConversationAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
-                                invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
-                                return;
-                            case ActivityTypes.Event:
-                                await ProcessEventAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
-                                invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
-                                return;
-                            default:
-                                invokeArgs.Result = await turnContext.SendActivityAsync(activityPayload, cancellationToken).ConfigureAwait(false);
-                                return;
-                        }
+                        invokeArgs.Result = await turnContext.SendActivityAsync(activityPayload, cancellationToken).ConfigureAwait(false);
+                        return;
                     }
 
+                    // Send activity(replyToId, activity)
+                    case ChannelApiMethods.ReplyToActivity:
+                    {
+                        var activityPayload = (Activity)invokeArgs.Args[1];
+                        activityPayload.ReplyToId = (string)invokeArgs.Args[0];
+
+                        if (activityPayload.Type == ActivityTypes.EndOfConversation)
+                        {
+                            await ProcessEndOfConversationAsync(turnContext, next, activityPayload, cancellationToken).ConfigureAwait(false);
+                            invokeArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+                            return;
+                        }
+
+                        invokeArgs.Result = await turnContext.SendActivityAsync(activityPayload, cancellationToken).ConfigureAwait(false);
+                        return;
+                    }
+
+                    // UpdateActivity(activity)
                     case ChannelApiMethods.UpdateActivity:
                         invokeArgs.Result = await turnContext.UpdateActivityAsync((Activity)invokeArgs.Args[0], cancellationToken).ConfigureAwait(false);
                         return;
 
+                    // DeleteActivity(activityId)
                     case ChannelApiMethods.DeleteActivity:
                         await turnContext.DeleteActivityAsync((string)invokeArgs.Args[0], cancellationToken).ConfigureAwait(false);
                         break;
 
+                    // SendConversationHistory(history)
                     case ChannelApiMethods.SendConversationHistory:
                         throw new NotImplementedException($"{ChannelApiMethods.SendConversationHistory} is not supported");
 
+                    // GetConversationMembers()
                     case ChannelApiMethods.GetConversationMembers:
                         if (adapter != null)
                         {
@@ -121,6 +112,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 
                         break;
 
+                    // GetConversationPageMembers((int)pageSize, continuationToken)
                     case ChannelApiMethods.GetConversationPagedMembers:
                         throw new NotImplementedException($"{ChannelApiMethods.SendConversationHistory} is not supported");
 
@@ -129,6 +121,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
                     //    invokeArgs.Result = await adapter.OnGetConversationsAsync((int)invokeArgs.Args[0], (string)invokeArgs.Args[1], cancellationToken).ConfigureAwait(false);
                     //}
 
+                    // DeleteConversationMember(memberId)
                     case ChannelApiMethods.DeleteConversationMember:
                         if (adapter != null)
                         {
@@ -137,6 +130,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 
                         break;
 
+                    // GetActivityMembers(activityId)
                     case ChannelApiMethods.GetActivityMembers:
                         if (adapter != null)
                         {

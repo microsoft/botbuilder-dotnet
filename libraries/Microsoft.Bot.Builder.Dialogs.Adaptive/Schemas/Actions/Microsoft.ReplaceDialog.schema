@@ -8,7 +8,10 @@
         "dialog": {
             "$kind": "Microsoft.IDialog",
             "title": "Dialog name",
-            "description": "Current dialog will be replaced by this dialog."
+            "description": "Name of the dialog to call.",
+            "examples": [
+                "AddToDoDialog"
+            ]
         },
         "options": {
             "type": "object",
@@ -18,6 +21,12 @@
                 "type": "string",
                 "title": "Options"
             }
+        },
+        "includeActivity": {
+            "type": "boolean",
+            "title": "Include Activity",
+            "description": "When set to true, dialog that is called can process the current activity.",
+            "default": false
         }
     }
 }
