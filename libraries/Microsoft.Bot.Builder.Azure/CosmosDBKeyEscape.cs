@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <returns>An escaped key that can be used safely with CosmosDB.</returns>
         public static string EscapeKey(string key)
         {
-            return TruncateKeyIfNeeded(EscapeKey(key, string.Empty, MaxKeyLength), MaxKeyLength);
+            return EscapeKey(key, string.Empty, MaxKeyLength);
         }
 
         /// <summary>
