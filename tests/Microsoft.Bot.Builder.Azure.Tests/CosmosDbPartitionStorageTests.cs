@@ -155,7 +155,18 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 ContainerId = "testId",
                 DatabaseId = "testDb",
                 CosmosDbEndpoint = "testEndpoint",
-                KeySuffix = "?#*test"
+                KeySuffix = "?#*test",
+                TruncateKeysForCompatibility = false
+            }));
+
+            Assert.ThrowsException<ArgumentException>(() => new CosmosDbPartitionedStorage(new CosmosDbPartitionedStorageOptions()
+            {
+                AuthKey = "testAuthKey",
+                ContainerId = "testId",
+                DatabaseId = "testDb",
+                CosmosDbEndpoint = "testEndpoint",
+                KeySuffix = "thisisatest",
+                TruncateKeysForCompatibility = true
             }));
         }
 
@@ -350,16 +361,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     .StartTestAsync();
             }
         }
-
-        //// NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        //[TestMethod]
-        //public async Task ThrowsOn()
-        //{
-        //    if (CheckEmulator())
-        //    {
-
-        //    }
-        //}
 
         public bool CheckEmulator()
         {
