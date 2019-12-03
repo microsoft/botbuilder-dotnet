@@ -10,7 +10,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.QnA;
+using Microsoft.Bot.Builder.AI.QnA.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -365,12 +367,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
         private TestFlow BuildQnAMakerTestFlow()
         {
-            var adapter = InitializeAdapter();
+            var adapter = InitializeAdapter()
+                .Use(new RegisterClassMiddleware<IQnAMakerClient>(new MockQnAMakerClient()));
             var resource = resourceExplorer.GetResource("QnAMakerBot.main.dialog");
             var dialog = DeclarativeTypeLoader.Load<AdaptiveDialog>(resource, resourceExplorer, DebugSupport.SourceMap);
-            var qnaMakerDialog = (QnAMakerDialog)dialog.Triggers[0].Actions[0];
-
-            qnaMakerDialog.QnaMakerClient = new MockQnAMakerClient();
+            var qnaMakerDialog = (QnAMakerDialog2)dialog.Triggers[0].Actions[0];
 
             dialog.Triggers[0].Actions[0] = qnaMakerDialog;
 

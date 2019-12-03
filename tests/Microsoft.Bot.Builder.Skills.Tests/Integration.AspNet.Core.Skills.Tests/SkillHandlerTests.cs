@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
@@ -19,7 +19,7 @@ using Newtonsoft.Json;
 using Xunit;
 using Xunit.Sdk;
 
-namespace Microsoft.Bot.Builder.Skills.Tests
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills.Tests
 {
     // TODO: need to simplify this tests
     public class SkillHandlerTests
@@ -47,71 +47,71 @@ namespace Microsoft.Bot.Builder.Skills.Tests
             var middleware = new AssertInvokeMiddleware(botAdapter, activityId);
             botAdapter.Use(middleware);
             var bot = new CallbackBot();
-            var skillClient = new SkillHandlerInstanceForTests(botAdapter, bot, new Mock<ICredentialProvider>().Object, new AuthenticationConfiguration());
+            var skillHandler = new SkillHandlerInstanceForTests(botAdapter, bot, new Mock<ICredentialProvider>().Object, new AuthenticationConfiguration());
 
             var sc = new TestConversationIdFactory();
 
-            var skillConversationId = sc.CreateSkillConversationId(botAdapter.Conversation.Conversation.Id, botAdapter.Conversation.ServiceUrl);
+            var skillConversationId = await sc.CreateSkillConversationIdAsync(botAdapter.Conversation.Conversation.Id, botAdapter.Conversation.ServiceUrl, CancellationToken.None);
             var claimsIdentity = new ClaimsIdentity();
             claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, botId));
             claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, botId));
             claimsIdentity.AddClaim(new Claim(AuthenticationConstants.ServiceUrlClaim, botAdapter.Conversation.ServiceUrl));
 
-            object result = await skillClient.TestOnCreateConversationAsync(claimsIdentity, new ConversationParameters());
+            object result = await skillHandler.TestOnCreateConversationAsync(claimsIdentity, new ConversationParameters());
             Assert.IsType<ConversationResourceResponse>(result);
             
             //Assert.Equal(middleware.NewResourceId, ((ConversationResourceResponse)result).Id);
 
-            await skillClient.TestOnDeleteActivityAsync(claimsIdentity, skillConversationId, activityId);
+            await skillHandler.TestOnDeleteActivityAsync(claimsIdentity, skillConversationId, activityId);
 
-            await skillClient.TestOnDeleteConversationMemberAsync(claimsIdentity, skillConversationId, "user2");
+            await skillHandler.TestOnDeleteConversationMemberAsync(claimsIdentity, skillConversationId, "user2");
 
-            result = await skillClient.TestOnGetActivityMembersAsync(claimsIdentity, skillConversationId, activityId);
+            result = await skillHandler.TestOnGetActivityMembersAsync(claimsIdentity, skillConversationId, activityId);
             Assert.IsAssignableFrom<IList<ChannelAccount>>(result);
 
-            result = await skillClient.TestOnGetConversationMembersAsync(claimsIdentity, skillConversationId);
+            result = await skillHandler.TestOnGetConversationMembersAsync(claimsIdentity, skillConversationId);
             Assert.IsAssignableFrom<IList<ChannelAccount>>(result);
 
-            result = await skillClient.TestOnGetConversationPagedMembersAsync(claimsIdentity, skillConversationId);
+            result = await skillHandler.TestOnGetConversationPagedMembersAsync(claimsIdentity, skillConversationId);
             Assert.IsType<PagedMembersResult>(result);
 
-            result = await skillClient.TestOnGetConversationPagedMembersAsync(claimsIdentity, skillConversationId, 10);
+            result = await skillHandler.TestOnGetConversationPagedMembersAsync(claimsIdentity, skillConversationId, 10);
             Assert.IsType<PagedMembersResult>(result);
 
             var pagedMembersResult = (PagedMembersResult)result;
-            result = await skillClient.TestOnGetConversationPagedMembersAsync(claimsIdentity, skillConversationId, continuationToken: pagedMembersResult.ContinuationToken);
+            result = await skillHandler.TestOnGetConversationPagedMembersAsync(claimsIdentity, skillConversationId, continuationToken: pagedMembersResult.ContinuationToken);
             Assert.IsType<PagedMembersResult>(result);
 
-            result = await skillClient.TestOnGetConversationsAsync(claimsIdentity, skillConversationId);
+            result = await skillHandler.TestOnGetConversationsAsync(claimsIdentity, skillConversationId);
             Assert.IsType<ConversationsResult>(result);
 
             var conversationsResult = (ConversationsResult)result;
-            result = await skillClient.TestOnGetConversationsAsync(claimsIdentity, skillConversationId, continuationToken: conversationsResult.ContinuationToken);
+            result = await skillHandler.TestOnGetConversationsAsync(claimsIdentity, skillConversationId, continuationToken: conversationsResult.ContinuationToken);
             Assert.IsType<ConversationsResult>(result);
 
             var msgActivity = Activity.CreateMessageActivity();
             msgActivity.Conversation = botAdapter.Conversation.Conversation;
             msgActivity.Text = "yo";
 
-            result = await skillClient.TestOnSendToConversationAsync(claimsIdentity, skillConversationId, (Activity)msgActivity);
+            result = await skillHandler.TestOnSendToConversationAsync(claimsIdentity, skillConversationId, (Activity)msgActivity);
             Assert.IsType<ResourceResponse>(result);
             Assert.Equal(middleware.NewResourceId, ((ResourceResponse)result).Id);
             msgActivity.Id = ((ResourceResponse)result).Id;
 
-            result = await skillClient.TestOnReplyToActivityAsync(claimsIdentity, skillConversationId, activityId, (Activity)msgActivity);
+            result = await skillHandler.TestOnReplyToActivityAsync(claimsIdentity, skillConversationId, activityId, (Activity)msgActivity);
             Assert.IsType<ResourceResponse>(result);
             Assert.Equal(middleware.NewResourceId, ((ResourceResponse)result).Id);
             msgActivity.Id = ((ResourceResponse)result).Id;
 
-            result = await skillClient.TestOnSendConversationHistoryAsync(claimsIdentity, skillConversationId, new Transcript());
+            result = await skillHandler.TestOnSendConversationHistoryAsync(claimsIdentity, skillConversationId, new Transcript());
             Assert.IsType<ResourceResponse>(result);
             Assert.Equal(middleware.NewResourceId, ((ResourceResponse)result).Id);
 
-            result = await skillClient.TestOnUpdateActivityAsync(claimsIdentity, skillConversationId, activityId, (Activity)msgActivity);
+            result = await skillHandler.TestOnUpdateActivityAsync(claimsIdentity, skillConversationId, activityId, (Activity)msgActivity);
             Assert.IsType<ResourceResponse>(result);
             Assert.Equal(middleware.NewResourceId, ((ResourceResponse)result).Id);
 
-            result = await skillClient.TestOnUploadAttachmentAsync(claimsIdentity, skillConversationId, new AttachmentData());
+            result = await skillHandler.TestOnUploadAttachmentAsync(claimsIdentity, skillConversationId, new AttachmentData());
             Assert.IsType<ResourceResponse>(result);
             Assert.Equal(middleware.NewResourceId, ((ResourceResponse)result).Id);
         }
@@ -168,17 +168,17 @@ namespace Microsoft.Bot.Builder.Skills.Tests
                 Assert.Equal(_adapter.Conversation.Bot.Id, turnContext.Activity.Recipient.Id);
 
                 var invoke = turnContext.Activity.AsInvokeActivity();
-                Assert.Equal(SkillHandler.InvokeActivityName, invoke.Name);
+                Assert.Equal(ChannelApiMiddleware.InvokeActivityName, invoke.Name);
                 var apiArgs = invoke.Value as ChannelApiArgs;
                 Assert.NotNull(apiArgs);
 
                 switch (apiArgs.Method)
                 {
-                    // ReplyToActivity(conversationId, activityId, activity).
+                    // ReplyToActivity(callerConversationId, activityId, activity).
                     case ChannelApiMethods.ReplyToActivity:
                         Assert.Equal(2, apiArgs.Args.Length);
-                        Assert.IsType<string>(apiArgs.Args[0]);
-                        Assert.IsType<Activity>(apiArgs.Args[1]);
+                        Assert.IsType<Activity>(apiArgs.Args[0]);
+                        Assert.IsType<string>(apiArgs.Args[1]);
                         apiArgs.Result = new ResourceResponse(id: NewResourceId);
                         break;
 
@@ -198,27 +198,27 @@ namespace Microsoft.Bot.Builder.Skills.Tests
                         apiArgs.Result = new ResourceResponse(id: NewResourceId);
                         break;
 
-                    // DeleteActivity(conversationId, activityId).
+                    // DeleteActivity(callerConversationId, activityId).
                     case ChannelApiMethods.DeleteActivity:
                         Assert.Single(apiArgs.Args);
                         Assert.IsType<string>(apiArgs.Args[0]);
                         Assert.Equal(_expectedActivityId, apiArgs.Args[0]);
                         break;
 
-                    // SendConversationHistory(conversationId, history).
+                    // SendConversationHistory(callerConversationId, history).
                     case ChannelApiMethods.SendConversationHistory:
                         Assert.Single(apiArgs.Args);
                         Assert.IsType<Transcript>(apiArgs.Args[0]);
                         apiArgs.Result = new ResourceResponse(id: NewResourceId);
                         break;
 
-                    // GetConversationMembers(conversationId).
+                    // GetConversationMembers(callerConversationId).
                     case ChannelApiMethods.GetConversationMembers:
                         Assert.Empty(apiArgs.Args);
                         apiArgs.Result = new List<ChannelAccount>();
                         break;
 
-                    // GetConversationPageMembers(conversationId, (int)pageSize, continuationToken).
+                    // GetConversationPageMembers(callerConversationId, (int)pageSize, continuationToken).
                     case ChannelApiMethods.GetConversationPagedMembers:
                         Assert.Equal(2, apiArgs.Args.Length);
 
@@ -239,20 +239,20 @@ namespace Microsoft.Bot.Builder.Skills.Tests
                         };
                         break;
 
-                    // DeleteConversationMember(conversationId, memberId).
+                    // DeleteConversationMember(callerConversationId, memberId).
                     case ChannelApiMethods.DeleteConversationMember:
                         Assert.Single(apiArgs.Args);
                         Assert.IsType<string>(apiArgs.Args[0]);
                         break;
 
-                    // GetActivityMembers(conversationId, activityId).
+                    // GetActivityMembers(callerConversationId, activityId).
                     case ChannelApiMethods.GetActivityMembers:
                         Assert.Single(apiArgs.Args);
                         Assert.IsType<string>(apiArgs.Args[0]);
                         apiArgs.Result = new List<ChannelAccount>();
                         break;
 
-                    // UploadAttachment(conversationId, attachmentData).
+                    // UploadAttachment(callerConversationId, attachmentData).
                     case ChannelApiMethods.UploadAttachment:
                         Assert.Single(apiArgs.Args);
                         Assert.IsType<AttachmentData>(apiArgs.Args[0]);
@@ -293,27 +293,27 @@ namespace Microsoft.Bot.Builder.Skills.Tests
         private class TestConversationIdFactory
             : ISkillConversationIdFactory
         {
-            public string CreateSkillConversationId(string conversationId, string serviceUrl)
+            public Task<string> CreateSkillConversationIdAsync(string callerConversationId, string serviceUrl, CancellationToken cancellationToken)
             {
                 var jsonString = JsonConvert.SerializeObject(new[]
                 {
-                    conversationId,
+                    callerConversationId,
                     serviceUrl
                 });
 
-                return Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonString));
+                return Task.FromResult(Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonString)));
             }
 
-            public (string, string) GetConversationInfo(string conversationId)
+            public Task<(string, string)> GetConversationInfoAsync(string skillConversationId, CancellationToken cancellationToken)
             {
-                if (conversationId == null)
+                if (skillConversationId == null)
                 {
-                    return (null, null);
+                    return Task.FromResult(((string)null, (string)null));
                 }
 
-                var jsonString = Encoding.UTF8.GetString(Convert.FromBase64String(conversationId));
+                var jsonString = Encoding.UTF8.GetString(Convert.FromBase64String(skillConversationId));
                 var parts = JsonConvert.DeserializeObject<string[]>(jsonString);
-                return (parts[0], parts[1]);
+                return Task.FromResult((parts[0], parts[1]));
             }
         }
 

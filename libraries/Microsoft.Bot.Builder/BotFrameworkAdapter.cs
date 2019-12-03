@@ -338,7 +338,7 @@ namespace Microsoft.Bot.Builder
             {
                 context.TurnState.Add<IIdentity>(BotIdentityKey, identity);
                 context.TurnState.Add<BotCallbackHandler>(callback);
-
+                
                 var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, identity, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
 
@@ -707,11 +707,8 @@ namespace Microsoft.Bot.Builder
 
             if (turnContext.TurnState.Get<ClaimsIdentity>("BotIdentity") is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
             {
-                // Skills need to unpack the conversation ID and create their own link.
-                // TODO: use the skill helper functions to handle unpacking conversation ID once we go GA with skills.
-                var parts = JsonConvert.DeserializeObject<string[]>(Encoding.UTF8.GetString(Convert.FromBase64String(turnContext.Activity.Conversation.Id)));
-                conversation.Id = parts[0];
-                serviceUrl = parts[1];
+                conversation.Id = turnContext.Activity.Conversation.Id;
+                serviceUrl = turnContext.Activity.ServiceUrl;
             }
 
             var appId = GetBotAppId(turnContext);
