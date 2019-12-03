@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// TwilioValidationUrl: The validation URL for incoming requests.
         /// </remarks>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        public TwilioAdapter(IConfiguration configuration, ILogger logger)
+        public TwilioAdapter(IConfiguration configuration, ILogger logger = null)
             : this(new TwilioClientWrapper(new TwilioAdapterOptions(configuration["TwilioNumber"], configuration["TwilioAccountSid"], configuration["TwilioAuthToken"], new Uri(configuration["TwilioValidationUrl"]))), logger)
         {
         }
