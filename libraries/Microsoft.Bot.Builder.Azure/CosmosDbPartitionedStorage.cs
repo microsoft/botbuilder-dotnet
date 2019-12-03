@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Azure
                 var suffixEscaped = CosmosDbKeyEscape.EscapeKey(cosmosDbStorageOptions.KeySuffix);
                 if (!cosmosDbStorageOptions.KeySuffix.Equals(suffixEscaped, StringComparison.Ordinal))
                 {
-                    throw new ArgumentException($"Cnnot use invalid Row Key characters: {_cosmosDbStorageOptions.KeySuffix}", nameof(cosmosDbStorageOptions.KeySuffix));
+                    throw new ArgumentException($"Cnnot use invalid Row Key characters: {cosmosDbStorageOptions.KeySuffix}", nameof(cosmosDbStorageOptions.KeySuffix));
                 }
             }
 
@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Builder.Azure
                 var documentChange = new DocumentStoreItem
                 {
                     Id = CosmosDbKeyEscape.EscapeKey(change.Key, _cosmosDbStorageOptions.KeySuffix, _cosmosDbStorageOptions.MaxKeyLength),
-                    RealId = $"{change.Key}{_cosmosDbStorageOptions.KeySuffix}",
+                    RealId = change.Key,
                     Document = json,
                 };
 

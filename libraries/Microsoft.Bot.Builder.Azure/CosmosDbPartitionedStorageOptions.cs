@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// Gets or sets the maximum row key length to use for <see cref="CosmosDbPartitionedStorage"/>.
         /// </summary>
         /// <value>
-        /// Currently, max key length for cosmosdb is now 1024:
+        /// Currently, max key length for cosmosdb is now 1023:
         /// https://docs.microsoft.com/en-us/azure/cosmos-db/concepts-limits#per-item-limits
         /// Default for backwards compatibility is 255 <see cref="CosmosDbKeyEscape.MaxKeyLength"/>.
         /// </value>
