@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
@@ -167,7 +168,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills.Tests
                 Assert.Equal(_adapter.Conversation.Bot.Id, turnContext.Activity.Recipient.Id);
 
                 var invoke = turnContext.Activity.AsInvokeActivity();
-                Assert.Equal(SkillHandler.InvokeActivityName, invoke.Name);
+                Assert.Equal(ChannelApiMiddleware.InvokeActivityName, invoke.Name);
                 var apiArgs = invoke.Value as ChannelApiArgs;
                 Assert.NotNull(apiArgs);
 

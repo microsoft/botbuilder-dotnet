@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
+namespace Microsoft.Bot.Builder.Skills
 {
     public class SkillConversationIdFactory : ISkillConversationIdFactory
     {

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
@@ -35,7 +36,7 @@ namespace Microsoft.Bot.Builder.TestProtocol.Controllers
             var currentConversationId = inboundActivity.Conversation.Id;
             var currentServiceUrl = inboundActivity.ServiceUrl;
 
-            var nextConversationId = _factory.CreateSkillConversationId(currentConversationId, currentServiceUrl);
+            var nextConversationId = await _factory.CreateSkillConversationIdAsync(currentConversationId, currentServiceUrl, CancellationToken.None);
 
             await _client.PostActivityAsync(null, null, _toUri, _serviceUrl, nextConversationId, inboundActivity);
 

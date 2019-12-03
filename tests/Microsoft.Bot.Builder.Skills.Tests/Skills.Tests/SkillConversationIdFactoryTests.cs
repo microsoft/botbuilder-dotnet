@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills.Tests
+namespace Microsoft.Bot.Builder.Skills.Tests
 {
     public class SkillConversationIdFactoryTests
     {

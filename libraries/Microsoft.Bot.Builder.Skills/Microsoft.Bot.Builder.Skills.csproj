@@ -14,7 +14,7 @@
     <PackageId>Microsoft.Bot.Builder.Skills</PackageId>
     <Description>Library for building skills into bots using Microsoft Bot Framework</Description>
     <Summary>Library for building skills into bots using Microsoft Bot Framework</Summary>
-    <RootNamespace>Microsoft.Bot.Builder.Integration.AspNet.Core.Skills</RootNamespace>
+    <RootNamespace>Microsoft.Bot.Builder</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
