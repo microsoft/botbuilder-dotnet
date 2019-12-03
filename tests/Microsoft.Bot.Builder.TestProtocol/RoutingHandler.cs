@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.TestProtocol
 
         protected override async Task<ResourceResponse> OnReplyToActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
-            var (backConversationId, backServiceUrl) = _factory.GetConversationInfo(conversationId);
+            var (backConversationId, backServiceUrl) = await _factory.GetConversationInfoAsync(conversationId, cancellationToken);
             var connectorClient = GetConnectorClient(backServiceUrl);
             activity.Conversation.Id = backConversationId;
             activity.ServiceUrl = backServiceUrl;
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.TestProtocol
 
         protected override async Task<ResourceResponse> OnSendToConversationAsync(ClaimsIdentity claimsIdentity, string conversationId, Activity activity, CancellationToken cancellationToken = default)
         {
-            var (backConversationId, backServiceUrl) = _factory.GetConversationInfo(conversationId);
+            var (backConversationId, backServiceUrl) = await _factory.GetConversationInfoAsync(conversationId, cancellationToken);
             var connectorClient = GetConnectorClient(backServiceUrl);
             activity.Conversation.Id = backConversationId;
             activity.ServiceUrl = backServiceUrl;
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.TestProtocol
 
         protected override async Task<ResourceResponse> OnUpdateActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
-            var (backConversationId, backServiceUrl) = _factory.GetConversationInfo(conversationId);
+            var (backConversationId, backServiceUrl) = await _factory.GetConversationInfoAsync(conversationId, cancellationToken);
             var connectorClient = GetConnectorClient(backServiceUrl);
             activity.Conversation.Id = backConversationId;
             activity.ServiceUrl = backServiceUrl;
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.TestProtocol
 
         protected override async Task OnDeleteActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, CancellationToken cancellationToken = default)
         {
-            var (backConversationId, backServiceUrl) = _factory.GetConversationInfo(conversationId);
+            var (backConversationId, backServiceUrl) = await _factory.GetConversationInfoAsync(conversationId, cancellationToken);
             var connectorClient = GetConnectorClient(backServiceUrl);
 
             await connectorClient.Conversations.DeleteActivityAsync(backConversationId, activityId, cancellationToken);

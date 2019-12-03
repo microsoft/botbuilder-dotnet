@@ -355,15 +355,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                     // In the skills preview bits, we require magic code (we'll need to update WebChat and emulator to avoid this in the next release.
                     if (turnContext.Activity.ChannelId == Channels.Emulator || turnContext.Activity.ChannelId == Channels.Webchat)
                     {
-                        // TODO: use the skill helper functions to handle unpacking conversation ID once we go GA with skills.
-                        // Skills need to unpack the conversation ID and create their own link.
-                        var parts = JsonConvert.DeserializeObject<string[]>(Encoding.UTF8.GetString(Convert.FromBase64String(turnContext.Activity.Conversation.Id)));
-                        var conversationId = parts[0];
-
                         if (turnContext.Activity.ChannelId == Channels.Emulator)
                         {
                             // Emulator links need to be prefixed with oathlink.
-                            signInLink = $"oauthlink://{signInLink}&&&{conversationId}";
+                            signInLink = $"oauthlink://{signInLink}&&&{turnContext.Activity.Conversation.Id}";
                         }
 
                         cardActionType = ActionTypes.OpenUrl;
