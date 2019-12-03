@@ -156,7 +156,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 DatabaseId = "testDb",
                 CosmosDbEndpoint = "testEndpoint",
                 KeySuffix = "?#*test",
-                TruncateKeysForCompatibility = false
+                CompatibilityMode = false
             }));
 
             Assert.ThrowsException<ArgumentException>(() => new CosmosDbPartitionedStorage(new CosmosDbPartitionedStorageOptions()
@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 DatabaseId = "testDb",
                 CosmosDbEndpoint = "testEndpoint",
                 KeySuffix = "thisisatest",
-                TruncateKeysForCompatibility = true
+                CompatibilityMode = true
             }));
         }
 

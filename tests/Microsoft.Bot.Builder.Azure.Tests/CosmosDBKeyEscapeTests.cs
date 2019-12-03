@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [TestMethod]
-        public void Long_Key_Should_Not_Be_Truncated_With_False_TruncateKeysForCompatibility()
+        public void Long_Key_Should_Not_Be_Truncated_With_False_CompatibilityMode()
         {
             var tooLongKey = new string('a', CosmosDbKeyEscape.MaxKeyLength + 1);
 
@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [TestMethod]
-        public void Long_Key_With_Illegal_Characters_Should_Not_Be_Truncated_With_False_TruncateKeysForCompatibility()
+        public void Long_Key_With_Illegal_Characters_Should_Not_Be_Truncated_With_False_CompatibilityMode()
         {
             var longKeyWithIllegalCharacters = "?test?" + new string('A', 1000);
             var sanitizedKey = CosmosDbKeyEscape.EscapeKey(longKeyWithIllegalCharacters, string.Empty, false);

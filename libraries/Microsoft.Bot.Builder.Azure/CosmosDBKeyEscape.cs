@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Azure
     {
         // Older libraries had a max key length of 255.
         // The limit is now 1023. In this library, 255 remains the default for backwards compat.
-        // To override this behavior, and use the longer limit, set CosmosDbPartitionedStorageOptions.TruncateKeysForCompatibility to false.
+        // To override this behavior, and use the longer limit, set CosmosDbPartitionedStorageOptions.CompatibilityMode to false.
         // https://docs.microsoft.com/en-us/azure/cosmos-db/concepts-limits#per-item-limits
         public const int MaxKeyLength = 255;
 
@@ -46,12 +46,13 @@ namespace Microsoft.Bot.Builder.Azure
         /// </summary>
         /// <param name="key">The key to escape.</param>
         /// <param name="suffix">The string to add at the end of all row keys.</param>
-        /// <param name="truncateKeysForCompatibility ">True if keys should be truncated in order to support
-        /// previous CosmosDb max key length of 255. This behavior can be overridden by setting
-        /// <see cref="CosmosDbPartitionedStorageOptions.TruncateKeysForCompatibility"/> to false.
+        /// <param name="compatibilityMode ">True if running in compatability mode and keys should
+        /// be truncated in order to support previous CosmosDb max key length of 255. 
+        /// This behavior can be overridden by setting
+        /// <see cref="CosmosDbPartitionedStorageOptions.CompatibilityMode"/> to false.
         /// </param>
         /// <returns>An escaped key that can be used safely with CosmosDB.</returns>
-        public static string EscapeKey(string key, string suffix, bool truncateKeysForCompatibility)
+        public static string EscapeKey(string key, string suffix, bool compatibilityMode)
         {
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -64,7 +65,7 @@ namespace Microsoft.Bot.Builder.Azure
             // return immediately and avoid any further processing/allocations
             if (firstIllegalCharIndex == -1)
             {
-                return TruncateKeyIfNeeded($"{key}{suffix}", truncateKeysForCompatibility);
+                return TruncateKeyIfNeeded($"{key}{suffix}", compatibilityMode);
             }
 
             // Allocate a builder that assumes that all remaining characters might be replaced to avoid any extra allocations
@@ -99,7 +100,7 @@ namespace Microsoft.Bot.Builder.Azure
                 sanitizedKeyBuilder.Append(suffix);
             }
 
-            return TruncateKeyIfNeeded(sanitizedKeyBuilder.ToString(), truncateKeysForCompatibility);
+            return TruncateKeyIfNeeded(sanitizedKeyBuilder.ToString(), compatibilityMode);
         }
 
         private static string TruncateKeyIfNeeded(string key, bool truncateKeysForCompatibility)

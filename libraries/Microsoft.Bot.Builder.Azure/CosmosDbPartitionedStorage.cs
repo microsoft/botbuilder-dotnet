@@ -57,9 +57,9 @@ namespace Microsoft.Bot.Builder.Azure
 
             if (!string.IsNullOrWhiteSpace(cosmosDbStorageOptions.KeySuffix))
             {
-                if (cosmosDbStorageOptions.TruncateKeysForCompatibility)
+                if (cosmosDbStorageOptions.CompatibilityMode)
                 {
-                    throw new ArgumentException($"TruncateKeysForCompatibility cannot be 'true' while using a KeySuffix.", nameof(cosmosDbStorageOptions.TruncateKeysForCompatibility));
+                    throw new ArgumentException($"CompatibilityMode cannot be 'true' while using a KeySuffix.", nameof(cosmosDbStorageOptions.CompatibilityMode));
                 }
 
                 // In order to reduce key complexity, we do not allow invalid characters in a KeySuffix
@@ -112,11 +112,11 @@ namespace Microsoft.Bot.Builder.Azure
             {
                 try
                 {
-                    var escapedKey = CosmosDbKeyEscape.EscapeKey(key, _cosmosDbStorageOptions.KeySuffix, _cosmosDbStorageOptions.TruncateKeysForCompatibility);
+                    var escapedKey = CosmosDbKeyEscape.EscapeKey(key, _cosmosDbStorageOptions.KeySuffix, _cosmosDbStorageOptions.CompatibilityMode);
 
                     var readItemResponse = await _container.ReadItemAsync<DocumentStoreItem>(
                             escapedKey,
-                            new PartitionKey(escapedKey),
+                            GetPartitionKey(escapedKey),
                             cancellationToken: cancellationToken)
                         .ConfigureAwait(false);
 
@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Builder.Azure
 
                 var documentChange = new DocumentStoreItem
                 {
-                    Id = CosmosDbKeyEscape.EscapeKey(change.Key, _cosmosDbStorageOptions.KeySuffix, _cosmosDbStorageOptions.TruncateKeysForCompatibility),
+                    Id = CosmosDbKeyEscape.EscapeKey(change.Key, _cosmosDbStorageOptions.KeySuffix, _cosmosDbStorageOptions.CompatibilityMode),
                     RealId = change.Key,
                     Document = json,
                 };
@@ -186,7 +186,7 @@ namespace Microsoft.Bot.Builder.Azure
                     // if new item or * then insert or replace unconditionally
                     await _container.UpsertItemAsync(
                             documentChange,
-                            new PartitionKey(documentChange.PartitionKey),
+                            GetPartitionKey(documentChange.PartitionKey),
                             cancellationToken: cancellationToken)
                         .ConfigureAwait(false);
                 }
@@ -195,7 +195,7 @@ namespace Microsoft.Bot.Builder.Azure
                     // if we have an etag, do opt. concurrency replace
                     await _container.UpsertItemAsync(
                             documentChange,
-                            new PartitionKey(documentChange.PartitionKey),
+                            GetPartitionKey(documentChange.PartitionKey),
                             new ItemRequestOptions() { IfMatchEtag = etag, },
                             cancellationToken)
                         .ConfigureAwait(false);
@@ -218,12 +218,12 @@ namespace Microsoft.Bot.Builder.Azure
 
             foreach (var key in keys)
             {
-                var escapedKey = CosmosDbKeyEscape.EscapeKey(key, _cosmosDbStorageOptions.KeySuffix, _cosmosDbStorageOptions.TruncateKeysForCompatibility);
+                var escapedKey = CosmosDbKeyEscape.EscapeKey(key, _cosmosDbStorageOptions.KeySuffix, _cosmosDbStorageOptions.CompatibilityMode);
 
                 try
                 {
                     await _container.DeleteItemAsync<DocumentStoreItem>(
-                            partitionKey: new PartitionKey(escapedKey),
+                            partitionKey: GetPartitionKey(escapedKey),
                             id: escapedKey,
                             cancellationToken: cancellationToken)
                         .ConfigureAwait(false);
@@ -241,6 +241,16 @@ namespace Microsoft.Bot.Builder.Azure
                     throw;
                 }
             }
+        }
+
+        private PartitionKey GetPartitionKey(string key)
+        {
+            if (_cosmosDbStorageOptions.CompatibilityMode)
+            {
+                return PartitionKey.None;
+            }
+
+            return new PartitionKey(key);
         }
 
         /// <summary>
@@ -262,14 +272,25 @@ namespace Microsoft.Bot.Builder.Azure
 
                 if (_container == null)
                 {
-                    var containerResponse = await _client
-                        .GetDatabase(_cosmosDbStorageOptions.DatabaseId)
-                        .DefineContainer(_cosmosDbStorageOptions.ContainerId, DocumentStoreItem.PartitionKeyPath)
-                        .WithIndexingPolicy().WithAutomaticIndexing(false).WithIndexingMode(IndexingMode.None).Attach()
-                        .CreateIfNotExistsAsync(_cosmosDbStorageOptions.ContainerThroughput)
-                        .ConfigureAwait(false);
+                    if (_cosmosDbStorageOptions.CompatibilityMode)
+                    {
+                        // This will throw if the container or db does not exist, which is what we
+                        // want for CompatibilityMode. (It is expected that users are utilizing CompatibilityMode
+                        // for legacy containers, and not for creating new containers.)
+                        _container = _client.GetContainer(_cosmosDbStorageOptions.DatabaseId, _cosmosDbStorageOptions.ContainerId);
+                        var readContainer = await _container.ReadContainerAsync().ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        var containerResponse = await _client
+                            .GetDatabase(_cosmosDbStorageOptions.DatabaseId)
+                            .DefineContainer(_cosmosDbStorageOptions.ContainerId, DocumentStoreItem.PartitionKeyPath)
+                            .WithIndexingPolicy().WithAutomaticIndexing(false).WithIndexingMode(IndexingMode.None).Attach()
+                            .CreateIfNotExistsAsync(_cosmosDbStorageOptions.ContainerThroughput)
+                            .ConfigureAwait(false);
 
-                    _container = containerResponse.Container;
+                        _container = containerResponse.Container;
+                    }
                 }
             }
         }
