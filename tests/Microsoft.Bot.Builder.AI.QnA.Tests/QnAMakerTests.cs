@@ -970,6 +970,69 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
+        public async Task QnaMaker_RankerType_QuestionOnly()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
+
+            var qna = GetQnAMaker(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowledgeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
+                },
+                new QnAMakerOptions
+                {
+                    Top = 5,
+                });
+
+            var results = await qna.GetAnswersAsync(GetContext("Q11"));
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Length, 4, "should get four results");
+
+            var filteredResults = qna.GetLowScoreVariation(results);
+            Assert.IsNotNull(filteredResults);
+            Assert.AreEqual(filteredResults.Length, 3, "should get three results");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        public async Task QnaMaker_IsTest_True()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_IsTest_True.json"));
+
+            var qna = GetQnAMaker(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowledgeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
+                },
+                new QnAMakerOptions
+                {
+                    Top = 1,
+                    IsTest = true
+                });
+
+            var results = await qna.GetAnswersAsync(GetContext("Q11"));
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Length, 4, "should get four results");
+
+            var filteredResults = qna.GetLowScoreVariation(results);
+            Assert.IsNotNull(filteredResults);
+            Assert.AreEqual(filteredResults.Length, 3, "should get three results");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
         public async Task QnaMaker_Test_Options_Hydration()
         {
             var mockHttp = new MockHttpMessageHandler();

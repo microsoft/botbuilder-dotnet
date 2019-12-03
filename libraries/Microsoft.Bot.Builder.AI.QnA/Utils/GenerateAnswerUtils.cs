@@ -178,6 +178,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
                 hydratedOptions.Context = queryOptions.Context;
                 hydratedOptions.QnAId = queryOptions.QnAId;
+                hydratedOptions.IsTest = queryOptions.IsTest;
+                hydratedOptions.RankerType = queryOptions.RankerType;
             }
 
             return hydratedOptions;
