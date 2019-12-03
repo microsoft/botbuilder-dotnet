@@ -288,7 +288,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 }
                 else
                 {
-                    return await stepContext.ReplaceDialogAsync(this.Id, stepContext.ActiveDialog.State[Options], cancellationToken).ConfigureAwait(false);
+                    // restart the waterfall to step 0
+                    return await RunStepAsync(stepContext, index: 0, reason: DialogReason.BeginCalled, result: null, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
             }
 
@@ -358,7 +359,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             var previousQnAId = ObjectPath.GetPathValue<int>(stepContext.ActiveDialog.State, PreviousQnAId, 0);
             if (previousQnAId > 0)
             {
-                return await stepContext.ReplaceDialogAsync(this.Id, stepContext.ActiveDialog.State, cancellationToken).ConfigureAwait(false);
+                // restart the waterfall to step 0
+                return await RunStepAsync(stepContext, index: 0, reason: DialogReason.BeginCalled, result: null, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             // If response is present then show that response, else default answer.
