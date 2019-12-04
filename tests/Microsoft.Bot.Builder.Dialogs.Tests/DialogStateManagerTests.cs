@@ -312,6 +312,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public async Task TestRemoveValue_RootScope()
+        {
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                try
+                {
+                    dc.GetState().RemoveValue(null);
+                    Assert.Fail("Should have thrown with null memory scope");
+                }
+                catch (ArgumentNullException err)
+                {
+                    Assert.IsTrue(err.Message.Contains("path"));
+                }
+
+                try
+                {
+                    dc.GetState().RemoveValue("user");
+                    Assert.Fail("Should have thrown with known root memory scope");
+                }
+                catch (ArgumentNullException err)
+                {
+                    Assert.IsTrue(err.Message.Contains("cannot be null"));
+                }
+
+                try
+                {
+                    dc.GetState().RemoveValue("xxx");
+                    Assert.Fail("Should have thrown with unknown memory scope");
+                }
+                catch (ArgumentOutOfRangeException err)
+                {
+                    Assert.IsTrue(err.Message.Contains("does not match memory scope"));
+                }
+            }).StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task TestHashResolver()
         {
             await CreateDialogContext(async (dc, ct) =>
