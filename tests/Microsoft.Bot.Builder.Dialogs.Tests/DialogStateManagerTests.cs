@@ -284,6 +284,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public async Task TestSetValue_RootScope()
+        {
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                try
+                {
+                    dc.GetState().SetValue(null, 13);
+                    Assert.Fail("Should have thrown with null memory scope");
+                }
+                catch (ArgumentNullException err)
+                {
+                    Assert.IsTrue(err.Message.Contains("path"));
+                }
+
+                try
+                {
+                    // complex type paths
+                    dc.GetState().SetValue("xxx", 13);
+                    Assert.Fail("Should have thrown with unknown memory scope");
+                }
+                catch (ArgumentOutOfRangeException err)
+                {
+                    Assert.IsTrue(err.Message.Contains("does not match memory scope"));
+                }
+            }).StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task TestHashResolver()
         {
             await CreateDialogContext(async (dc, ct) =>
