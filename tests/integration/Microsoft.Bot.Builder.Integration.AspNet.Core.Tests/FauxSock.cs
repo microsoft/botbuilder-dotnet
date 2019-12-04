@@ -62,11 +62,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             return;
         }
 
-        public override async Task<WebSocketReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
+        public override Task<WebSocketReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
         {
             ReceivedArray = buffer;
 
-            return new WebSocketReceiveResult(buffer.Count, WebSocketMessageType.Close, true);
+            return Task.FromResult(new WebSocketReceiveResult(buffer.Count, WebSocketMessageType.Close, true));
         }
 
         public override Task SendAsync(ArraySegment<byte> buffer, WebSocketMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
