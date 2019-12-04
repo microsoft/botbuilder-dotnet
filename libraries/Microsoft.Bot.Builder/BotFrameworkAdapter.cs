@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
@@ -206,6 +207,22 @@ namespace Microsoft.Bot.Builder
         /// The logger for this adapter.
         /// </value>
         protected ILogger Logger { get; private set; }
+
+        /// <summary>
+        /// Gets the map of applications to <see cref="AppCredentials"/> for this adapter.
+        /// </summary>
+        /// <value>
+        /// The map of applications to <see cref="AppCredentials"/> for this adapter.
+        /// </value>
+        protected ConcurrentDictionary<string, AppCredentials> AppCredentialMap { get => _appCredentialMap; }
+
+        /// <summary>
+        /// Gets the custom <see cref="HttpClient"/> for this adapter if specified.
+        /// </summary>
+        /// <value>
+        /// The custom <see cref="HttpClient"/> for this adapter if specified.
+        /// </value>
+        protected HttpClient HttpClient { get => _httpClient; }
 
         /// <summary>
         /// Sends a proactive message from the bot to a conversation.
@@ -1001,6 +1018,19 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Logic to build an <see cref="AppCreentials"/> object to be used to acquire tokens
+        /// for this HttpClient.
+        /// </summary>
+        /// <param name="appId">The application id.</param>
+        /// <param name="oAuthScope">The optional OAuth scope.</param>
+        /// <returns>The app credentials to be used to acquire tokens.</returns>
+        protected virtual async Task<AppCredentials> BuildCredentialsAsync(string appId, string oAuthScope = null)
+        {
+            var appPassword = await CredentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
+            return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
+        }
+
+        /// <summary>
         /// Creates the connector client asynchronous.
         /// </summary>
         /// <param name="serviceUrl">The service URL.</param>
@@ -1105,12 +1135,9 @@ namespace Microsoft.Bot.Builder
                 return _appCredentials;
             }
 
-            // NOTE: we can't do async operations inside of a AddOrUpdate, so we split access pattern
-            var appPassword = await CredentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
-            appCredentials = ChannelProvider != null && ChannelProvider.IsGovernment() ?
-                new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient, Logger) :
-                new MicrosoftAppCredentials(appId, appPassword, _httpClient, Logger, oAuthScope);
-            
+            // Credentials not found in cache, build them
+            appCredentials = await BuildCredentialsAsync(appId, oAuthScope).ConfigureAwait(false);
+
             // Cache the credentials for later use
             _appCredentialMap[cacheKey] = appCredentials;
             return appCredentials;

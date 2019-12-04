@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,26 +20,30 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
     public class BotFrameworkHttpClient
     {
-        // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)
-        // AppCredentials are cached using appId + scope (this last parameter is only used if the app credentials are used to call a skill)
-        private static readonly ConcurrentDictionary<string, AppCredentials> _appCredentialMapCache = new ConcurrentDictionary<string, AppCredentials>();
-        private readonly IChannelProvider _channelProvider;
-        private readonly ICredentialProvider _credentialProvider;
-        private readonly HttpClient _httpClient;
-        private readonly ILogger _logger;
-
         public BotFrameworkHttpClient(
             HttpClient httpClient,
             ICredentialProvider credentialProvider,
             IChannelProvider channelProvider = null,
             ILogger logger = null)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
-            _channelProvider = channelProvider;
-            _logger = logger ?? NullLogger.Instance;
-            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
+            HttpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            CredentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
+            ChannelProvider = channelProvider;
+            Logger = logger ?? NullLogger.Instance;
+            ConnectorClient.AddDefaultRequestHeaders(HttpClient);
         }
+
+        // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)
+        // AppCredentials are cached using appId + scope (this last parameter is only used if the app credentials are used to call a skill)
+        protected static ConcurrentDictionary<string, AppCredentials> AppCredentialMapCache { get; private set; } = new ConcurrentDictionary<string, AppCredentials>();
+
+        protected IChannelProvider ChannelProvider { get; private set; }
+
+        protected ICredentialProvider CredentialProvider { get; private set; }
+
+        protected HttpClient HttpClient { get; private set; }
+
+        protected ILogger Logger { get; private set; }
 
         /// <summary>
         /// Forwards an activity to a skill (bot).
@@ -85,7 +90,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                         httpRequestMessage.Content = jsonContent;
 
-                        var response = await _httpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
+                        var response = await HttpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
 
                         var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                         return new InvokeResponse
@@ -105,6 +110,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         /// <summary>
+        /// Logic to build an <see cref="AppCreentials"/> object to be used to acquire tokens
+        /// for this HttpClient.
+        /// </summary>
+        /// <param name="appId">The application id.</param>
+        /// <param name="oAuthScope">The optional OAuth scope.</param>
+        /// <returns>The app credentials to be used to acquire tokens.</returns>
+        protected virtual async Task<AppCredentials> BuildCredentialsAsync(string appId, string oAuthScope = null)
+        {
+            var appPassword = await CredentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
+            return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
+        }
+
+        /// <summary>
         /// Gets the application credentials. App Credentials are cached so as to ensure we are not refreshing
         /// token every time.
         /// </summary>
@@ -118,18 +136,18 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 return MicrosoftAppCredentials.Empty;
             }
 
+            // If the credentials are in the cache, retrieve them from there
             var cacheKey = $"{appId}{oAuthScope}";
-            if (_appCredentialMapCache.TryGetValue(cacheKey, out var appCredentials))
+            if (AppCredentialMapCache.TryGetValue(cacheKey, out var appCredentials))
             {
                 return appCredentials;
             }
 
-            // NOTE: we can't do async operations inside of a AddOrUpdate, so we split access pattern
-            var appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
-            appCredentials = _channelProvider != null && _channelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient, _logger) : new MicrosoftAppCredentials(appId, appPassword, _httpClient, _logger, oAuthScope);
+            // Credentials not found in cache, build them
+            appCredentials = await BuildCredentialsAsync(appId, oAuthScope).ConfigureAwait(false);
 
             // Cache the credentials for later use
-            _appCredentialMapCache[cacheKey] = appCredentials;
+            AppCredentialMapCache[cacheKey] = appCredentials;
             return appCredentials;
         }
     }
