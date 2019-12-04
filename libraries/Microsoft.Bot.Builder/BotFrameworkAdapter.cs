@@ -702,17 +702,6 @@ namespace Microsoft.Bot.Builder
             }
 
             var activity = turnContext.Activity;
-            var serviceUrl = activity.ServiceUrl;
-
-            // Clone the conversation information
-            var conversation = JsonConvert.DeserializeObject<ConversationAccount>(JsonConvert.SerializeObject(activity.Conversation));
-
-            if (turnContext.TurnState.Get<ClaimsIdentity>("BotIdentity") is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
-            {
-                conversation.Id = turnContext.Activity.Conversation.Id;
-                serviceUrl = turnContext.Activity.ServiceUrl;
-            }
-
             var tokenExchangeState = new TokenExchangeState()
             {
                 ConnectionName = connectionName,
@@ -721,8 +710,8 @@ namespace Microsoft.Bot.Builder
                     ActivityId = activity.Id,
                     Bot = activity.Recipient,       // Activity is from the user to the bot
                     ChannelId = activity.ChannelId,
-                    Conversation = conversation,
-                    ServiceUrl = serviceUrl,
+                    Conversation = activity.Conversation,
+                    ServiceUrl = activity.ServiceUrl,
                     User = activity.From,
                 },
                 MsAppId = (CredentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
