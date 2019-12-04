@@ -54,7 +54,7 @@ namespace SimpleRootBot.Bots
         {
             // if there is an active skill
             var activeSkillId = await _activeSkillProperty.GetAsync(turnContext, () => null, cancellationToken);
-            var skillConversationId = await _conversationIdFactory.CreateSkillConversationIdAsync(turnContext.Activity.Conversation.Id, turnContext.Activity.ServiceUrl, cancellationToken);
+            var skillConversationId = await _conversationIdFactory.CreateSkillConversationIdAsync(turnContext.Activity.GetConversationReference(), cancellationToken);
 
             if (activeSkillId != null)
             {

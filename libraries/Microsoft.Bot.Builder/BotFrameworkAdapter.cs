@@ -227,7 +227,7 @@ namespace Microsoft.Bot.Builder
         /// Most _channels require a user to initialize a conversation with a bot
         /// before the bot can send activities to the user.
         /// <para>This method registers the following services for the turn.<list type="bullet">
-        /// <item><description><see cref="IIdentity"/> (key = "BotIdentity"), a claims identity for the bot.
+        /// <item><description><see cref="IIdentity"/> (key = "BotIdentity"), a claims claimsIdentity for the bot.
         /// </description></item>
         /// <item><description><see cref="IConnectorClient"/>, the channel connector client to use this turn.
         /// </description></item>
@@ -259,19 +259,46 @@ namespace Microsoft.Bot.Builder
 
             Logger.LogInformation($"Sending proactive message.  botAppId: {botAppId}");
 
+            // Hand craft Claims Identity.
+            var claimsIdentity = new ClaimsIdentity(new List<Claim>
+            {
+                // Adding claims for both Emulator and Channel.
+                new Claim(AuthenticationConstants.AudienceClaim, botAppId),
+                new Claim(AuthenticationConstants.AppIdClaim, botAppId),
+            });
+
+            await ContinueConversationAsync(claimsIdentity, reference, callback, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Sends a proactive message from the bot to a conversation.
+        /// </summary>
+        /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the conversation.</param>
+        /// <param name="reference">A reference to the conversation to continue.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>Call this method to proactively send a message to a conversation.
+        /// Most _channels require a user to initialize a conversation with a bot
+        /// before the bot can send activities to the user.
+        /// <para>This method registers the following services for the turn.<list type="bullet">
+        /// <item><description><see cref="IIdentity"/> (key = "BotIdentity"), a claims claimsIdentity for the bot.
+        /// </description></item>
+        /// <item><description><see cref="IConnectorClient"/>, the channel connector client to use this turn.
+        /// </description></item>
+        /// </list></para>
+        /// </remarks>
+        /// <seealso cref="ProcessActivityAsync(string, Activity, BotCallbackHandler, CancellationToken)"/>
+        /// <seealso cref="BotAdapter.RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
+        public override async Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
             using (var context = new TurnContext(this, reference.GetContinuationActivity()))
             {
-                // Hand craft Claims Identity.
-                var claimsIdentity = new ClaimsIdentity(new List<Claim>
-                {
-                    // Adding claims for both Emulator and Channel.
-                    new Claim(AuthenticationConstants.AudienceClaim, botAppId),
-                    new Claim(AuthenticationConstants.AppIdClaim, botAppId),
-                });
-
                 context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
+                context.TurnState.Add<BotCallbackHandler>(callback);
                 var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
+
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
         }
@@ -309,7 +336,7 @@ namespace Microsoft.Bot.Builder
         /// (<see cref="Activity.ChannelId"/> + <see cref="Activity.Id"/>) is found
         /// then an <see cref="InvokeResponse"/> is returned, otherwise null is returned.
         /// <para>This method registers the following services for the turn.<list type="bullet">
-        /// <item><see cref="IIdentity"/> (key = "BotIdentity"), a claims identity for the bot.</item>
+        /// <item><see cref="IIdentity"/> (key = "BotIdentity"), a claims claimsIdentity for the bot.</item>
         /// <item><see cref="IConnectorClient"/>, the channel connector client to use this turn.</item>
         /// </list></para>
         /// </remarks>
@@ -326,13 +353,13 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Creates a turn context and runs the middleware pipeline for an incoming activity.
         /// </summary>
-        /// <param name="identity">A <see cref="ClaimsIdentity"/> for the request.</param>
+        /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the request.</param>
         /// <param name="activity">The incoming activity.</param>
         /// <param name="callback">The code to run at the end of the adapter's middleware pipeline.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public override async Task<InvokeResponse> ProcessActivityAsync(ClaimsIdentity identity, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
+        public override async Task<InvokeResponse> ProcessActivityAsync(ClaimsIdentity claimsIdentity, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             BotAssert.ActivityNotNull(activity);
 
@@ -340,10 +367,10 @@ namespace Microsoft.Bot.Builder
 
             using (var context = new TurnContext(this, activity))
             {
-                context.TurnState.Add<IIdentity>(BotIdentityKey, identity);
+                context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 context.TurnState.Add<BotCallbackHandler>(callback);
                 
-                var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, identity, cancellationToken).ConfigureAwait(false);
+                var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
 
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
@@ -1012,7 +1039,7 @@ namespace Microsoft.Bot.Builder
         /// Creates the connector client asynchronous.
         /// </summary>
         /// <param name="serviceUrl">The service URL.</param>
-        /// <param name="claimsIdentity">The claims identity.</param>
+        /// <param name="claimsIdentity">The claims claimsIdentity.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>ConnectorClient instance.</returns>
         /// <exception cref="NotSupportedException">ClaimsIdentity cannot be null. Pass Anonymous ClaimsIdentity if authentication is turned off.</exception>
@@ -1024,7 +1051,7 @@ namespace Microsoft.Bot.Builder
             }
 
             // For requests from channel App Id is in Audience claim of JWT token. For emulator it is in AppId claim. For
-            // unauthenticated requests we have anonymous identity provided auth is disabled.
+            // unauthenticated requests we have anonymous claimsIdentity provided auth is disabled.
             // For Activities coming from Emulator AppId claim contains the Bot's AAD AppId.
             var botAppIdClaim = claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim);
             if (botAppIdClaim == null)
