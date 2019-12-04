@@ -45,7 +45,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
 
                 dc.GetState().SetValue(VALUE_PROPERTY, result);
-
                 if (!string.IsNullOrEmpty(OutputFormat))
                 {
                     var outputExpression = new ExpressionEngine().Parse(OutputFormat);

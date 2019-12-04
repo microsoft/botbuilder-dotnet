@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                                 throw new Exception($"OutputFormat Expression evaluation resulted in an error. Expression: {outputExpression.ToString()}. Error: {error}");
                             }
                         }
-                        
+
                         return Task.FromResult(InputState.Valid);
                     }
                     else
