@@ -22,6 +22,7 @@ namespace Microsoft.Bot.Builder.Azure
         private Container _container;
         private readonly CosmosDbPartitionedStorageOptions _cosmosDbStorageOptions;
         private CosmosClient _client;
+        private bool _compatibilityModePartitionKey = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CosmosDbPartitionedStorage"/> class.
@@ -245,7 +246,7 @@ namespace Microsoft.Bot.Builder.Azure
 
         private PartitionKey GetPartitionKey(string key)
         {
-            if (_cosmosDbStorageOptions.CompatibilityMode)
+            if (_compatibilityModePartitionKey)
             {
                 return PartitionKey.None;
             }
@@ -272,27 +273,50 @@ namespace Microsoft.Bot.Builder.Azure
 
                 if (_container == null)
                 {
-                    if (_cosmosDbStorageOptions.CompatibilityMode)
+                    if (!_cosmosDbStorageOptions.CompatibilityMode)
                     {
-                        // This will throw if the container or db does not exist, which is what we
-                        // want for CompatibilityMode. (It is expected that users are utilizing CompatibilityMode
-                        // for legacy containers, and not for creating new containers.)
-                        _container = _client.GetContainer(_cosmosDbStorageOptions.DatabaseId, _cosmosDbStorageOptions.ContainerId);
-                        var readContainer = await _container.ReadContainerAsync().ConfigureAwait(false);
+                        await CreateContainerIfNotExistsAsync().ConfigureAwait(false);
                     }
                     else
                     {
-                        var containerResponse = await _client
-                            .GetDatabase(_cosmosDbStorageOptions.DatabaseId)
-                            .DefineContainer(_cosmosDbStorageOptions.ContainerId, DocumentStoreItem.PartitionKeyPath)
-                            .WithIndexingPolicy().WithAutomaticIndexing(false).WithIndexingMode(IndexingMode.None).Attach()
-                            .CreateIfNotExistsAsync(_cosmosDbStorageOptions.ContainerThroughput)
-                            .ConfigureAwait(false);
+                        try
+                        {
+                            _container = _client.GetContainer(_cosmosDbStorageOptions.DatabaseId, _cosmosDbStorageOptions.ContainerId);
+                            
+                            // This will throw if the container does not exist. 
+                            var readContainer = await _container.ReadContainerAsync().ConfigureAwait(false);
 
-                        _container = containerResponse.Container;
+                            // Containers created with CosmosDbStorage had no partition key set, so the default was '/_partitionKey'.
+                            var partitionKeyPath = readContainer.Resource.PartitionKeyPath;
+                            if (partitionKeyPath == "/_partitionKey")
+                            {
+                                _compatibilityModePartitionKey = true;
+                            }
+                            else if (partitionKeyPath != DocumentStoreItem.PartitionKeyPath)
+                            {
+                                // We are not supporting custom Partition Key Paths
+                                throw new InvalidOperationException($"Custom Partition Key Paths are not supported. {_cosmosDbStorageOptions.ContainerId} has a custom Partition Key Path of {partitionKeyPath}.");
+                            }
+                        }
+                        catch (CosmosException)
+                        {
+                            await CreateContainerIfNotExistsAsync().ConfigureAwait(false);
+                        }
                     }
                 }
             }
+        }
+
+        private async Task CreateContainerIfNotExistsAsync()
+        {
+            var containerResponse = await _client
+                .GetDatabase(_cosmosDbStorageOptions.DatabaseId)
+                .DefineContainer(_cosmosDbStorageOptions.ContainerId, DocumentStoreItem.PartitionKeyPath)
+                .WithIndexingPolicy().WithAutomaticIndexing(false).WithIndexingMode(IndexingMode.None).Attach()
+                .CreateIfNotExistsAsync(_cosmosDbStorageOptions.ContainerThroughput)
+                .ConfigureAwait(false);
+
+            _container = containerResponse.Container;
         }
 
         /// <summary>
