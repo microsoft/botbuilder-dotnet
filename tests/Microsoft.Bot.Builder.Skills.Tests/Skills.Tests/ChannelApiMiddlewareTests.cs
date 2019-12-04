@@ -148,7 +148,7 @@ namespace Microsoft.Bot.Builder.Skills.Tests
         [InlineData(ChannelApiMethods.ReplyToActivity)]
         public void SendsAllOtherActivitiesToTheChannel(string channelApiMethod)
         {
-            var testActivty = new Activity();
+            var testActivty = new Activity() { Text = channelApiMethod };
         }
 
         private Activity CreateSkillInvokeActivity(string channelApiMethod, Activity activityPayload)
