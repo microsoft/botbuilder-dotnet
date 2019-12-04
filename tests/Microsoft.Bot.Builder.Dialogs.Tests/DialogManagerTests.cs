@@ -23,16 +23,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task DialogManager_ConversationState_PersistedAcrossTurns()
         {
+            var firstConversationId = Guid.NewGuid().ToString();
+            var storage = new MemoryStorage();
+
             var adaptiveDialog = CreateTestDialog(property: "conversation.name");
 
-            await new TestScript() { Dialog = adaptiveDialog }
+            await CreateFlow(adaptiveDialog, storage, firstConversationId)
             .Send("hi")
                 .AssertReply("Hello, what is your name?")
             .Send("Carlos")
                 .AssertReply("Hello Carlos, nice to meet you!")
             .Send("hi")
                 .AssertReply("Hello Carlos, nice to meet you!")
-            .SaveScript(nameof(DialogManagerTests));
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -109,19 +112,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task DialogManager_OnErrorEvent_Leaf()
         {
-            await TestUtilities.RunTestScript("DialogManager_OnErrorEvent_Leaf.test.dialog");
+            await TestUtilities.RunTestScript();
         }
 
         [TestMethod]
         public async Task DialogManager_OnErrorEvent_Parent()
         {
-            await TestUtilities.RunTestScript("DialogManager_OnErrorEvent_Parent.test.dialog");
+            await TestUtilities.RunTestScript();
         }
 
         [TestMethod]
         public async Task DialogManager_OnErrorEvent_Root()
         {
-            await TestUtilities.RunTestScript("DialogManager_OnErrorEvent_Root.test.dialog");
+            await TestUtilities.RunTestScript();
         }
 
         private Dialog CreateTestDialog(string property = "user.name")
