@@ -166,6 +166,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         private async Task<DialogTurnResult> CallGenerateAnswerAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);
+            dialogOptions.QnAMakerOptions.QnAId = 0;
 
             // Storing the context info
             stepContext.Values[ValueProperty.CurrentQuery] = stepContext.Context.Activity.Text;

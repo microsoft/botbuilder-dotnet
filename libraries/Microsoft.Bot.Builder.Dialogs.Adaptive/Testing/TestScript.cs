@@ -44,9 +44,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <summary>
         /// Initializes a new instance of the <see cref="TestScript"/> class.
         /// </summary>
-        /// <param name="callback">The bot turn processing logic to test.</param>
-        /// <param name="adapter">The optional test adapter to use.</param>
-        /// <remarks>If adapter is not provided a standard test adapter with all services will be registered.</remarks>
         public TestScript()
         {
         }
@@ -274,7 +271,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         }
 
         /// <summary>
-        /// Shortcut for calling <see cref="Send(string)"/> followed by <see cref="AssertReply(string, string, uint)"/>.
+        /// Shortcut for calling <see cref="Send(string, string, int)"/> followed by <see cref="AssertReply(string, string, uint, string[], string, int)"/>.
         /// </summary>
         /// <param name="userSays">The text of the message to send.</param>
         /// <param name="expected">The expected text of a message from the bot.</param>

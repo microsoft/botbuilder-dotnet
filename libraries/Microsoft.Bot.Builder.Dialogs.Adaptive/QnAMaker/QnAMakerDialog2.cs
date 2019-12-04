@@ -24,6 +24,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         {
         }
 
+        /// <summary>
+        /// Gets or sets the KnowledgeBase Id of your QnA Maker KnowledgeBase.
+        /// </summary>
+        /// <value>
+        /// The knowledgebase Id.
+        /// </value>
         [JsonProperty("knowledgeBaseId")]
         public string KnowledgeBaseId
         {
@@ -31,6 +37,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
             set { knowledgebaseIdExpression = value != null ? new ExpressionEngine().Parse(value) : null; }
         }
 
+        /// <summary>
+        /// Gets or sets the Hostname for your QnA Maker service.
+        /// </summary>
+        /// <value>
+        /// The host name of the QnA Maker knowledgebase.
+        /// </value>
         [JsonProperty("hostname")]
         public string HostName
         {
@@ -38,6 +50,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
             set { hostnameExpression = value != null ? new ExpressionEngine().Parse(value) : null; }
         }
 
+        /// <summary>
+        /// Gets or sets the Endpoint key for the QnA Maker KB.
+        /// </summary>
+        /// <value>
+        /// The endpoint key for the QnA service.
+        /// </value>
         [JsonProperty("endpointKey")]
         public string EndpointKey
         {
@@ -45,24 +63,66 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
             set { endpointkeyExpression = value != null ? new ExpressionEngine().Parse(value) : null; }
         }
 
+        /// <summary>
+        /// Gets or sets the Threshold score to filter results.
+        /// </summary>
+        /// <value>
+        /// The threshold for the results.
+        /// </value>
         [JsonProperty("threshold")]
         public float Threshold { get; set; } = DefaultThreshold;
 
+        /// <summary>
+        /// Gets or sets the number of results you want.
+        /// </summary>
+        /// <value>
+        /// The number of results you want.
+        /// </value>
         [JsonProperty("top")]
         public int Top { get; set; } = DefaultTopN;
-        
+
+        /// <summary>
+        /// Gets or sets the template for Default answer to return when none found in KB.
+        /// </summary>
+        /// <value>
+        /// The template for the answer when there are no results.
+        /// </value>
         [JsonProperty("noAnswer")]
         public ITemplate<Activity> NoAnswer { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Title for active learning suggestions card.
+        /// </summary>
+        /// <value>
+        /// Title for active learning suggestions card.
+        /// </value>
         [JsonProperty("activeLearningCardTitle")]
         public string ActiveLearningCardTitle { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Text for no match option.
+        /// </summary>
+        /// <value>
+        /// The Text for no match option.
+        /// </value>
         [JsonProperty("cardNoMatchText")]
         public string CardNoMatchText { get; set; }
 
+        /// <summary>
+        /// Gets or sets the template for Custom response when no match option was selected.
+        /// </summary>
+        /// <value>
+        /// The template for Custom response when no match option was selected.
+        /// </value>
         [JsonProperty("cardNoMatchResponse")]
         public ITemplate<Activity> CardNoMatchResponse { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Metadata filters to use when calling the QnA Maker KB.
+        /// </summary>
+        /// <value>
+        /// The metadata strict filters.
+        /// </value>
         [JsonProperty("strictFilters")]
         public Metadata[] StrictFilters { get; set; }
 
