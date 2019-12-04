@@ -290,16 +290,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
             path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
             var memoryScope = ResolveMemoryScope(path, out var remainingPath);
-            if (memoryScope != null && string.IsNullOrEmpty(remainingPath))
+            if (memoryScope == null)
             {
-                // Every set will increase version
-                var memory = memoryScope.GetMemory(this.dialogContext);
-                version++;
-                ObjectPath.SetPathValue(memory, remainingPath, value);
-                return;
+                throw new ArgumentException($"{path} does not resolve to a memory scope: {string.Join(",", this.Configuration.MemoryScopes.Select(ms => ms.Name))}");
             }
 
-            throw new ArgumentException($"{path} does not resolve to a memory scope: {string.Join(",", this.Configuration.MemoryScopes.Select(ms => ms.Name))}");
+            if (string.IsNullOrEmpty(remainingPath))
+            {
+                memoryScope.SetMemory(this.dialogContext, value);
+            }
+            else
+            {
+                ObjectPath.SetPathValue(this, path, value);
+            }
+
+            // Every set will increase version
+            version++;
         }
 
         /// <summary>
