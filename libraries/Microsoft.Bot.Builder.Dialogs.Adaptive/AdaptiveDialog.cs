@@ -864,7 +864,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 var queues = EventQueues.Read(context);
                 var entities = NormalizeEntities(context);
                 var utterance = context.Context.Activity?.AsMessageActivity()?.Text;
-                if (!context.GetState().TryGetValue<string[]>("$expectedProperties", out var expected))
+                if (!context.GetState().TryGetValue<string[]>(DialogPath.ExpectedProperties, out var expected))
                 {
                     expected = new string[0];
                 }
@@ -874,7 +874,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     entities["utterance"] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = "utterance", Score = 0.0, Type = "string", Value = utterance, Text = utterance } };
                 }
 
-                var updated = UpdateLastEvent(context, queues, entities);
+                var updated = UpdateLastEvent(context, queues, entities, expected);
                 var newQueues = new EventQueues();
                 var recognized = AssignEntities(entities, expected, newQueues);
                 var unrecognized = SplitUtterance(utterance, recognized);
@@ -914,7 +914,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return unrecognized;
         }
 
-        private List<EntityInfo> UpdateLastEvent(SequenceContext context, EventQueues queues, Dictionary<string, List<EntityInfo>> entities)
+        private List<EntityInfo> UpdateLastEvent(SequenceContext context, EventQueues queues, Dictionary<string, List<EntityInfo>> entities, string[] expected)
         {
             var recognized = new List<EntityInfo>();
             if (context.GetState().TryGetValue<string>(DialogPath.LastEvent, out var evt))
@@ -969,10 +969,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                                     queues.ChooseProperty.Dequeue();
                                     choice.Expected = true;
                                     queues.SetProperty.Add(choice);
+                                    context.GetState().SetValue(DialogPath.ExpectedProperties, expected.Concat(new string[] { choice.Property }).ToArray());
 
                                     // TODO: This seems a little draconian, but we don't want property names to trigger help
-                                    context.GetState().SetValue("turn.recognized.intent", "None");
-                                    context.GetState().SetValue("turn.recognized.score", 1.0);
+                                    context.GetState().SetValue(TurnPath.TOPINTENT, "None");
+                                    context.GetState().SetValue(TurnPath.TOPSCORE, 1.0);
                                 }
                             }
 

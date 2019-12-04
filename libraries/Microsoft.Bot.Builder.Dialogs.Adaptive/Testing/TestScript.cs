@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
@@ -16,6 +15,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.MockLuis;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -124,6 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                     .UseResourceExplorer(resourceExplorer)
                     .UseAdaptiveDialogs()
                     .UseLanguageGeneration(resourceExplorer)
+                    .UseMockLuis()
                     .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
             }
 

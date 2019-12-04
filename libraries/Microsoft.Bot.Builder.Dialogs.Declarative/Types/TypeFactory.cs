@@ -96,7 +96,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 
         public static void Reset()
         {
-            EnsureConfig();
             types.Clear();
             names.Clear();
             builders.Clear();

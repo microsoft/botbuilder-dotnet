@@ -1,1 +1,0 @@
-{"query":"ham","alteredQuery":null,"topScoringIntent":{"intent":"sandwich","score":0.9999347},"intents":null,"entities":[{"entity":"ham","type":"MeatEntity","startIndex":0,"endIndex":2,"resolution":{"values":["ham"]},"role":""}],"compositeEntities":null,"sentimentAnalysis":null,"connectedServiceResult":null}

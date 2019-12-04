@@ -49,8 +49,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             var activity = await Activity.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
-            var response = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
-            return await dc.EndDialogAsync(response, cancellationToken).ConfigureAwait(false);
+            if (activity.Type != "message" || activity.Text != null || activity.Attachments.Count > 0)
+            {
+                var response = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                return await dc.EndDialogAsync(response, cancellationToken).ConfigureAwait(false);
+            }
+
+            return new DialogTurnResult(DialogTurnStatus.Complete);
         }
 
         protected override string OnComputeId()
