@@ -7,6 +7,8 @@ using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,22 +23,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task DialogManager_ConversationState_PersistedAcrossTurns()
         {
-            var conversationId = Guid.NewGuid().ToString();
-            var storage = new MemoryStorage();
-
             var adaptiveDialog = CreateTestDialog(property: "conversation.name");
 
-            await CreateFlow(adaptiveDialog, storage, conversationId)
+            await new TestScript() { Dialog = adaptiveDialog }
             .Send("hi")
                 .AssertReply("Hello, what is your name?")
             .Send("Carlos")
                 .AssertReply("Hello Carlos, nice to meet you!")
-            .StartTestAsync();
-
-            await CreateFlow(adaptiveDialog, storage, conversationId)
             .Send("hi")
                 .AssertReply("Hello Carlos, nice to meet you!")
-            .StartTestAsync();
+            .SaveScript(nameof(DialogManagerTests));
         }
 
         [TestMethod]
@@ -108,6 +104,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send("hi")
                 .AssertReply("Hello Carlos, nice to meet you!")
             .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task DialogManager_OnErrorEvent_Leaf()
+        {
+            await TestUtilities.RunTestScript("DialogManager_OnErrorEvent_Leaf.test.dialog");
+        }
+
+        [TestMethod]
+        public async Task DialogManager_OnErrorEvent_Parent()
+        {
+            await TestUtilities.RunTestScript("DialogManager_OnErrorEvent_Parent.test.dialog");
+        }
+
+        [TestMethod]
+        public async Task DialogManager_OnErrorEvent_Root()
+        {
+            await TestUtilities.RunTestScript("DialogManager_OnErrorEvent_Root.test.dialog");
         }
 
         private Dialog CreateTestDialog(string property = "user.name")
