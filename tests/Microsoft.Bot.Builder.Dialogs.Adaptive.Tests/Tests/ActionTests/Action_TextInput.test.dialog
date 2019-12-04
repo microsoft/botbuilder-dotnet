@@ -19,7 +19,8 @@
                 "unrecognizedPrompt": "How should I call you?",
                 "validations": [
                   "this.value.Length > 3"
-                ]
+                ],
+                "outputFormat": "toUpper(this.value)"
               }
             ]
           },
@@ -56,7 +57,7 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "Hello Carlos, nice to meet you!"
+      "text": "Hello CARLOS, nice to meet you!"
     }
   ]
 }

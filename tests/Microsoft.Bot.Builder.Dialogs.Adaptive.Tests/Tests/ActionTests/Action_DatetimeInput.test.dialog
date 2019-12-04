@@ -5,17 +5,17 @@
     "id": "planningTest",
     "triggers": [
       {
-        "$kind": "Microsoft.OnUnknownIntent",
-        
+        "$kind": "Microsoft.OnUnknownIntent",       
         "actions": [
           {
             "$kind": "Microsoft.DateTimeInput",
             "property": "user.date",
-            "prompt": "Please enter a date."
+            "prompt": "Please enter a date.",
+            "outputFormat":  "this.value[0].Value"
           },
           {
             "$kind": "Microsoft.SendActivity",
-            "activity": "You entered @{user.date[0].Value}"
+            "activity": "You entered @{user.date}"
           }
         ]
       }

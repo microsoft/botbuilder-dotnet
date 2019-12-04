@@ -36,11 +36,12 @@
             "alwaysPrompt": true,
             "property": "user.confirmed",
             "prompt": "yes or no",
-            "unrecognizedPrompt": "I need a yes or no."
+            "unrecognizedPrompt": "I need a yes or no.",
+            "outputFormat": "concat('confirmation: ', this.value)"
           },
           {
             "$kind": "Microsoft.SendActivity",
-            "activity": "confirmation: @{user.confirmed}"
+            "activity": "@{user.confirmed}"
           }
         ]
       }
