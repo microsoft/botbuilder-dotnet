@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             foreach (var item in lgJObj)
             {
                 var property = item.Key.Trim();
-                if (property == "lgType")
+                if (property == Evaluator.LGType)
                 {
                     continue;
                 }
@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 return string.Empty;
             }
 
-            var type = jObj["lgType"]?.ToString()?.Trim();
+            var type = jObj[Evaluator.LGType]?.ToString()?.Trim();
             if (string.IsNullOrEmpty(type))
             {
                 // Adaptive card type

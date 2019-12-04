@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Bot.Expressions;
+using Microsoft.Bot.Expressions.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -742,6 +743,43 @@ namespace Microsoft.Bot.Expressions.Tests
                 var actualRefs = parsed.References();
                 Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
             }
+        }
+
+        [TestMethod]
+        public void TestAccumulatePath()
+        {
+            var memory = new SimpleObjectMemory(new
+            {
+                f = "foo",
+                b = "bar",
+                z = new
+                {
+                    z = "zar"
+                },
+                n = 2
+            });
+
+            var parser = new ExpressionEngine();
+
+            // normal case, note, we doesn't append a " yet
+            var exp = parser.Parse("a[f].b[n].z");
+            var (path, left, err) = BuiltInFunctions.TryAccumulatePath(exp, memory);
+            Assert.AreEqual(path, "a['foo'].b[2].z");
+
+            // normal case
+            exp = parser.Parse("a[z.z][z.z].y");
+            (path, left, err) = BuiltInFunctions.TryAccumulatePath(exp, memory);
+            Assert.AreEqual(path, "a['zar']['zar'].y");
+
+            // normal case
+            exp = parser.Parse("a.b[z.z]");
+            (path, left, err) = BuiltInFunctions.TryAccumulatePath(exp, memory);
+            Assert.AreEqual(path, "a.b['zar']");
+
+            // stop evaluate at middle
+            exp = parser.Parse("json(x).b");
+            (path, left, err) = BuiltInFunctions.TryAccumulatePath(exp, memory);
+            Assert.AreEqual(path, "b");
         }
 
         private void AssertObjectEquals(object expected, object actual)

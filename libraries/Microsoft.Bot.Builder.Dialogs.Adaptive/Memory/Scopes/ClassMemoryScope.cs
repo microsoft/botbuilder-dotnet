@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
         public override void SetMemory(DialogContext dc, object memory)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("You can't modify the class scope");
         }
     }
 }

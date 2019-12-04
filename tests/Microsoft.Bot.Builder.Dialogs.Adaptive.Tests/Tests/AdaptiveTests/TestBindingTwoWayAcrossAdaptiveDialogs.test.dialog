@@ -22,11 +22,11 @@
                             "$kind": "Microsoft.AdaptiveDialog",
                             "triggers": [
                                 {
-                                    "$kind": "Microsoft.OnUnknownIntent",
+                                    "$kind": "Microsoft.OnBeginDialog",
                                     "actions": [
                                         {
                                             "$kind": "Microsoft.NumberInput",
-                                            "prompt": "Hello @{$options.userName}, how old are you?",
+                                            "prompt": "Hello @{$userName}, how old are you?",
                                             "property": "$age"
                                         },
                                         {

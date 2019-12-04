@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnHandoffActivity : OnActivity
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.OnHandoffActivity";
+        public new const string DeclarativeType = "Microsoft.OnHandoffActivity";
 
         [JsonConstructor]
         public OnHandoffActivity(List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

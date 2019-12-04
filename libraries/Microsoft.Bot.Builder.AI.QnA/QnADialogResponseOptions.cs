@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -33,7 +32,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// Get or set for No answer.
         /// </value>
-        public ITemplate<Activity> NoAnswer { get; set; }
+        public Activity NoAnswer { get; set; }
 
         /// <summary>
         /// Gets or sets get or set for Card no match response.
@@ -41,6 +40,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// Get or set for Card no match response.
         /// </value>
-        public ITemplate<Activity> CardNoMatchResponse { get; set; }
+        public Activity CardNoMatchResponse { get; set; }
     }
 }
