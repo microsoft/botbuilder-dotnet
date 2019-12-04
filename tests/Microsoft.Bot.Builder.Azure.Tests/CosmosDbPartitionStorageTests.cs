@@ -147,6 +147,27 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 DatabaseId = "testDb",
                 CosmosDbEndpoint = "testEndpoint",
             }));
+
+            // Invalid Row Key characters in KeySuffix
+            Assert.ThrowsException<ArgumentException>(() => new CosmosDbPartitionedStorage(new CosmosDbPartitionedStorageOptions()
+            {
+                AuthKey = "testAuthKey",
+                ContainerId = "testId",
+                DatabaseId = "testDb",
+                CosmosDbEndpoint = "testEndpoint",
+                KeySuffix = "?#*test",
+                CompatibilityMode = false
+            }));
+
+            Assert.ThrowsException<ArgumentException>(() => new CosmosDbPartitionedStorage(new CosmosDbPartitionedStorageOptions()
+            {
+                AuthKey = "testAuthKey",
+                ContainerId = "testId",
+                DatabaseId = "testDb",
+                CosmosDbEndpoint = "testEndpoint",
+                KeySuffix = "thisisatest",
+                CompatibilityMode = true
+            }));
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
