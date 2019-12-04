@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
@@ -34,40 +33,37 @@ namespace Microsoft.Bot.Builder.TestProtocol
 
         protected override async Task<ResourceResponse> OnReplyToActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
-            var (backConversationId, backServiceUrl) = await _factory.GetConversationInfoAsync(conversationId, cancellationToken);
-            var connectorClient = GetConnectorClient(backServiceUrl);
-            activity.Conversation.Id = backConversationId;
-            activity.ServiceUrl = backServiceUrl;
+            var conversationReference = await _factory.GetConversationReferenceAsync(conversationId, cancellationToken);
+            var connectorClient = GetConnectorClient(conversationReference.ServiceUrl);
+            activity.ApplyConversationReference(conversationReference);
 
             return await connectorClient.Conversations.ReplyToActivityAsync(activity, cancellationToken);
         }
 
         protected override async Task<ResourceResponse> OnSendToConversationAsync(ClaimsIdentity claimsIdentity, string conversationId, Activity activity, CancellationToken cancellationToken = default)
         {
-            var (backConversationId, backServiceUrl) = await _factory.GetConversationInfoAsync(conversationId, cancellationToken);
-            var connectorClient = GetConnectorClient(backServiceUrl);
-            activity.Conversation.Id = backConversationId;
-            activity.ServiceUrl = backServiceUrl;
+            var conversationReference = await _factory.GetConversationReferenceAsync(conversationId, cancellationToken);
+            var connectorClient = GetConnectorClient(conversationReference.ServiceUrl);
+            activity.ApplyConversationReference(conversationReference);
 
             return await connectorClient.Conversations.SendToConversationAsync(activity, cancellationToken);
         }
 
         protected override async Task<ResourceResponse> OnUpdateActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
-            var (backConversationId, backServiceUrl) = await _factory.GetConversationInfoAsync(conversationId, cancellationToken);
-            var connectorClient = GetConnectorClient(backServiceUrl);
-            activity.Conversation.Id = backConversationId;
-            activity.ServiceUrl = backServiceUrl;
+            var conversationReference = await _factory.GetConversationReferenceAsync(conversationId, cancellationToken);
+            var connectorClient = GetConnectorClient(conversationReference.ServiceUrl);
+            activity.ApplyConversationReference(conversationReference);
 
             return await connectorClient.Conversations.UpdateActivityAsync(activity, cancellationToken);
         }
 
         protected override async Task OnDeleteActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, CancellationToken cancellationToken = default)
         {
-            var (backConversationId, backServiceUrl) = await _factory.GetConversationInfoAsync(conversationId, cancellationToken);
-            var connectorClient = GetConnectorClient(backServiceUrl);
+            var conversationReference = await _factory.GetConversationReferenceAsync(conversationId, cancellationToken);
+            var connectorClient = GetConnectorClient(conversationReference.ServiceUrl);
 
-            await connectorClient.Conversations.DeleteActivityAsync(backConversationId, activityId, cancellationToken);
+            await connectorClient.Conversations.DeleteActivityAsync(conversationReference.Conversation.Id, activityId, cancellationToken);
         }
 
         protected override async Task<ConversationResourceResponse> OnCreateConversationAsync(ClaimsIdentity claimsIdentity, ConversationParameters parameters, CancellationToken cancellationToken = default)
