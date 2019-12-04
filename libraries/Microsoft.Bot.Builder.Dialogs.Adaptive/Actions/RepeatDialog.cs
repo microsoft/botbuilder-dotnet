@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             // use bindingOptions to bind to the bound options
-            var boundOptions = BindOptions(dc, dc.GetState().GetValue<object>(ThisPath.OPTIONS));
+            var boundOptions = BindOptions(dc, options);
 
             var targetDialogId = dc.Parent.ActiveDialog.Id;
 

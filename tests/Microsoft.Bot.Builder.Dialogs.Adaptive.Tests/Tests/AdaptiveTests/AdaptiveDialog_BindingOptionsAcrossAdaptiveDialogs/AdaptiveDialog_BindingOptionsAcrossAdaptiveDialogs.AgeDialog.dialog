@@ -7,11 +7,11 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "Hello, you are @{dialog.options.userAge} years old!"
+                    "activity": "Hello, you are @{dialog.userAge} years old!"
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "And your actual age is @{$options.userAge}"
+                    "activity": "And your actual age is @{$userAge}"
                 }
             ]
         }
