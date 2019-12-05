@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.AI.Luis
 {
+    /// <summary>
+    /// Luis Recognizer Options.
+    /// </summary>
     public abstract class LuisRecognizerOptions
     {
         protected LuisRecognizerOptions(LuisApplication application)
@@ -15,6 +18,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
             Application = application ?? throw new ArgumentNullException(nameof(application));
         }
 
+        /// <summary>
+        /// Gets the LUIS application used to recognize text..
+        /// </summary>
+        /// <value>
+        /// The LUIS application to use to recognize text.
+        /// </value>
         public LuisApplication Application { get; private set; }
 
         /// <summary>

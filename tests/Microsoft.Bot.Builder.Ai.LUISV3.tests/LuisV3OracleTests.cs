@@ -21,8 +21,9 @@ using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
 {
+#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
     [TestClass]
-    #pragma warning disable CS0612 // Type or member is obsolete
 
     // The LUIS application used in these unit tests is in TestData/Contoso App.json
     public class LuisV3OracleTests : LuisSettings

@@ -437,11 +437,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
             var luisVersionOptions = new LuisRecognizerOptionsV2(application)
             {
                 PredictionOptions = options,
-                #pragma warning disable CS0612 // Type or member is obsolete
+                #pragma warning disable CS0618 // Type or member is obsolete
                 TelemetryClient = options.TelemetryClient,
                 Timeout = options.Timeout,
                 LogPersonalInformation = options.LogPersonalInformation,
-                #pragma warning restore CS0612 // Type or member is obsolete
+                #pragma warning restore CS0618 // Type or member is obsolete
                 IncludeAPIResults = includeAPIResults
             };
 

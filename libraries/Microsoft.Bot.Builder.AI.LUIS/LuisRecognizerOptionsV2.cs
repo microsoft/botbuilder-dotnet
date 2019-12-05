@@ -25,11 +25,19 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         public const string LuisTraceType = "https://www.luis.ai/schemas/trace";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LuisRecognizerOptionsV2"/> class.
+        /// </summary>
+        /// <param name="application">The LUIS application to use to recognize text.</param>
         public LuisRecognizerOptionsV2(LuisApplication application)
         : base(application) 
         {
         }
 
+        /// <summary>
+        /// Gets or sets the Luis Prediction Options for the V2 endpoint.
+        /// </summary>
+        /// <value> This settings will be used to call Luis.</value>
         public LuisPredictionOptions PredictionOptions { get; set; } = new LuisPredictionOptions();
 
         internal override async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, HttpClient httpClient,  CancellationToken cancellationToken)

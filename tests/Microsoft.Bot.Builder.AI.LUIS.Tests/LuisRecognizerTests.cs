@@ -13,8 +13,7 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
-    #pragma warning disable CS0612 // Type or member is obsolete
-
+#pragma warning disable CS0612 // Type or member is obsolete
     public class LuisRecognizerTests
     {
         private readonly LuisApplication _luisApp;
@@ -99,6 +98,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Staging = staging,
             };
 
+#pragma warning disable CS0618 // Type or member is obsolete
+
             // Create combined options for assertion taking the test case value if not null or the constructor value if not null.
             var expectedOptions = new LuisPredictionOptions()
             {
@@ -121,8 +122,6 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var sut = new LuisRecognizer(opts, clientHandler: _mockHttpClientHandler);
 
             // Act/Assert RecognizeAsync override
-
-#pragma warning disable CS0618 // Type or member is obsolete
             await sut.RecognizeAsync(BuildTurnContextForUtterance("hi"), overridenOptions, CancellationToken.None);
             AssertLuisRequest(_mockHttpClientHandler.RequestMessage, expectedOptions);
 
@@ -134,11 +133,11 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             // Act/Assert RecognizeAsync<T> override
             await sut.RecognizeAsync<Contoso_App>(BuildTurnContextForUtterance("hi"), overridenOptions, CancellationToken.None);
             AssertLuisRequest(_mockHttpClientHandler.RequestMessage, expectedOptions);
-#pragma warning restore CS0618 // Type or member is obsolete
 
             // these values can't be overriden and should stay unchanged.
             Assert.Equal(constructorOptions.TelemetryClient, sut.TelemetryClient);
             Assert.Equal(constructorOptions.LogPersonalInformation, sut.LogPersonalInformation);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         [Theory]
@@ -188,6 +187,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Staging = staging,
             };
 
+#pragma warning disable CS0618 // Type or member is obsolete
             var opts = new LuisRecognizerOptionsV2(_luisApp)
             {
                 PredictionOptions = constructorOptions,
@@ -200,6 +200,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             // Act/Assert RecognizeAsync override
             await sut.RecognizeAsync(BuildTurnContextForUtterance("hi"), overridenOptions, CancellationToken.None);
             AssertLuisRequest(_mockHttpClientHandler.RequestMessage, expectedOptions);
+
+#pragma warning disable CS0618 // Type or member is obsolete
 
             // these values can't be overriden and should stay unchanged.
             Console.WriteLine(constructorOptions.TelemetryClient == sut.TelemetryClient);

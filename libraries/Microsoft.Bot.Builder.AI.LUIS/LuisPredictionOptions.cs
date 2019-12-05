@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// This value can only be set when <see cref="LuisRecognizer"/> is created and can't be changed
         /// in individual <see cref="IRecognizer.RecognizeAsync"/> calls.
         /// </remarks>
-        [Obsolete]
+        [Obsolete("Member is deprecated, please use LuisRecognizerOptionsV2 to set this value).")]
         public double Timeout { get; set; } = 100000;
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// This value can only be set when <see cref="LuisRecognizer"/> is created and can't be changed
         /// in individual <see cref="IRecognizer.RecognizeAsync"/> calls.
         /// </remarks>
-        [Obsolete]
+        [Obsolete("Member is deprecated, please use LuisRecognizerOptionsV2 to set this value).")]
         [JsonIgnore]
         public IBotTelemetryClient TelemetryClient { get; set; } = new NullBotTelemetryClient();
 
@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// This value can only be set when <see cref="LuisRecognizer"/> is created and can't be changed
         /// in individual <see cref="IRecognizer.RecognizeAsync"/> calls.
         /// </remarks>
-        [Obsolete]
+        [Obsolete("Member is deprecated, please use LuisRecognizerOptionsV2 to set this value).")]
         public bool LogPersonalInformation { get; set; } = false;
     }
 }

@@ -27,11 +27,19 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         public const string LuisTraceLabel = "LuisV3 Trace";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LuisRecognizerOptionsV3"/> class.
+        /// </summary>
+        /// <param name="application">The LUIS application to use to recognize text.</param>
         public LuisRecognizerOptionsV3(LuisApplication application)
         : base(application)
         {
         }
 
+        /// <summary>
+        /// Gets or sets the Luis Prediction Options for the V3 endpoint.
+        /// </summary>
+        /// <value> This settings will be used to call Luis.</value>
         public LuisV3.LuisPredictionOptions PredictionOptions { get; set; } = new LuisV3.LuisPredictionOptions();
 
         internal override async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, HttpClient httpClient, CancellationToken cancellationToken)
@@ -116,7 +124,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             var query = HttpUtility.ParseQueryString(uri.Query);
             query["verbose"] = options.IncludeInstanceData.ToString();
             query["log"] = options.Log.ToString();
-            query["show - all - intents"] = options.IncludeAllIntents.ToString();
+            query["show-all-intents"] = options.IncludeAllIntents.ToString();
             uri.Query = query.ToString();
             return uri;
         }
