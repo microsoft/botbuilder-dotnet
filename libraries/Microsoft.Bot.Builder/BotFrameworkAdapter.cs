@@ -1018,7 +1018,7 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Logic to build an <see cref="AppCreentials"/> object to be used to acquire tokens
+        /// Logic to build an <see cref="AppCredentials"/> object to be used to acquire tokens
         /// for this HttpClient.
         /// </summary>
         /// <param name="appId">The application id.</param>
@@ -1026,7 +1026,10 @@ namespace Microsoft.Bot.Builder
         /// <returns>The app credentials to be used to acquire tokens.</returns>
         protected virtual async Task<AppCredentials> BuildCredentialsAsync(string appId, string oAuthScope = null)
         {
+            // Get the password from the credential provider
             var appPassword = await CredentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
+
+            // Construct an AppCredentials using the app + password combination. If government, we create a government specific credential.
             return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
         }
 

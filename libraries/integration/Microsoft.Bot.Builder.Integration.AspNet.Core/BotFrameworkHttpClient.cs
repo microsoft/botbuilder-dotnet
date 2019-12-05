@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         /// <summary>
-        /// Logic to build an <see cref="AppCreentials"/> object to be used to acquire tokens
+        /// Logic to build an <see cref="AppCredentials"/> object to be used to acquire tokens
         /// for this HttpClient.
         /// </summary>
         /// <param name="appId">The application id.</param>
