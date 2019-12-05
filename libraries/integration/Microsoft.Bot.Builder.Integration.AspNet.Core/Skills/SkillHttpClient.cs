@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 {
     /// <summary>
-    /// EXPERIMENTAL: WIP a BotFrameworkHttpClient specialized for Skills that encapsulates Conversation ID generation.
+    /// A <see cref="BotFrameworkHttpClient"/>specialized for Skills that encapsulates Conversation ID generation.
     /// </summary>
     public class SkillHttpClient : BotFrameworkHttpClient
     {
