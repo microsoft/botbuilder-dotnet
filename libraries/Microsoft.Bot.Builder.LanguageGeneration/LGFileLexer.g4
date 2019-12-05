@@ -43,7 +43,7 @@ fragment EXPRESSION_FRAGMENT : '@' '{' (STRING_LITERAL| ~[\r\n{}'"] )*? '}';
 fragment ESCAPE_CHARACTER_FRAGMENT : '\\' ~[\r\n]?;
 
 COMMENTS
-  : ('>'|'$') ~('\r'|'\n')+ NEWLINE? -> skip
+  : ('>'|'$') ~('\r'|'\n')+ -> skip
   ;
 
 WS
@@ -51,7 +51,7 @@ WS
   ;
 
 NEWLINE
-  : '\r'? '\n'
+  : '\r'? '\n' -> skip
   ;
 
 HASH
@@ -81,7 +81,7 @@ WS_IN_NAME
   ;
 
 NEWLINE_IN_NAME
-  : '\r'? '\n' -> type(NEWLINE), popMode
+  : '\r'? '\n' -> skip, popMode
   ;
 
 IDENTIFIER
@@ -124,7 +124,7 @@ MULTILINE_PREFIX
   ;
 
 NEWLINE_IN_BODY
-  : '\r'? '\n' {ignoreWS = true;} -> type(NEWLINE), popMode
+  : '\r'? '\n' {ignoreWS = true;} -> skip, popMode
   ;
 
 IF

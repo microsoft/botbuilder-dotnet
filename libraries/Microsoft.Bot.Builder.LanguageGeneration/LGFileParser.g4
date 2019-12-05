@@ -10,21 +10,13 @@ file
 	;
 
 paragraph
-    : newline
-    | templateDefinition
+    : templateDefinition
     | importDefinition
-    ;
-
-// Treat EOF as newline to hanle file end gracefully
-// It's possible that parser doesn't even have to handle NEWLINE, 
-// but before the syntax is finalized, we still keep the NEWLINE in grammer 
-newline
-    : NEWLINE
     | EOF
     ;
 
 templateDefinition
-	: templateNameLine newline templateBody?
+	: templateNameLine templateBody?
 	;
 
 templateNameLine
@@ -67,7 +59,7 @@ structuredBodyEndLine
     ;
 
 normalTemplateBody
-    : (templateString newline)+
+    : templateString+
     ;
 
 templateString
@@ -88,7 +80,7 @@ ifElseTemplateBody
     ;
 
 ifConditionRule
-    : ifCondition newline normalTemplateBody?
+    : ifCondition normalTemplateBody?
     ;
 
 ifCondition
@@ -100,7 +92,7 @@ switchCaseTemplateBody
     ;
 
 switchCaseRule
-    : switchCaseStat newline normalTemplateBody?
+    : switchCaseStat normalTemplateBody?
     ;
 
 switchCaseStat
