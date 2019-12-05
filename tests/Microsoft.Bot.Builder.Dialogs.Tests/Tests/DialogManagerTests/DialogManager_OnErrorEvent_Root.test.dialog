@@ -79,7 +79,9 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Specified argument was out of the range of valid values.\r\nParameter name: 'xxx' does not match memory scopes:turn,settings,dialog,class,this,conversation,user"
+            "assertions": [
+                "contains(text, 'does not match memory scopes')"
+            ]
         }
     ]
 }

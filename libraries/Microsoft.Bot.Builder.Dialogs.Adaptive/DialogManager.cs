@@ -182,7 +182,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                     if (!handled)
                     {
-                        throw err;
+                        throw;
                     }
                 }
             }
