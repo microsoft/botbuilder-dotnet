@@ -15,31 +15,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         [TestMethod]
         public async Task RecognizerTest_EnUsFallback()
         {
-            await TestUtils.RunTestScript("RecognizerTest_EnUsFallback.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
         public async Task RecognizerTest_EnUsFallback_ActivityLocaleCasing()
         {
-            await TestUtils.RunTestScript("RecognizerTest_EnUsFallback_ActivityLocaleCasing.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
         public async Task RecognizerTest_EnGbFallback()
         {
-            await TestUtils.RunTestScript("RecognizerTest_EnGbFallback.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
         public async Task RecognizerTest_EnFallback()
         {
-            await TestUtils.RunTestScript("RecognizerTest_EnFallback.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
         public async Task RecognizerTest_DefaultFallback()
         {
-            await TestUtils.RunTestScript("RecognizerTest_DefaultFallback.test.dialog");
+            await TestUtils.RunTestScript();
         }
     }
 }
