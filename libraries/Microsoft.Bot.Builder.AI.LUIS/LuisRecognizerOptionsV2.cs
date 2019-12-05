@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value> This settings will be used to call Luis.</value>
         public LuisPredictionOptions PredictionOptions { get; set; } = new LuisPredictionOptions();
 
-        internal override async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, HttpClient httpClient,  CancellationToken cancellationToken)
+        internal override async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, HttpClient httpClient, CancellationToken cancellationToken)
         {
             BotAssert.ContextNotNull(turnContext);
 
