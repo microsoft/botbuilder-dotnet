@@ -59,7 +59,7 @@ structuredBodyNameLine
     ;
 
 structuredBodyContentLine
-    : (STRUCTURED_CONTENT STRUCTURED_NEWLINE)+
+    : (STRUCTURED_CONTENT? STRUCTURED_NEWLINE)+
     ;
 
 structuredBodyEndLine
@@ -108,5 +108,5 @@ switchCaseStat
     ;
 
 importDefinition
-    : IMPORT_DESC IMPORT_PATH
+    : IMPORT
     ;

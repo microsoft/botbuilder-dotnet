@@ -66,16 +66,8 @@ LEFT_SQUARE_BRACKET
   : '[' -> pushMode(STRUCTURED_TEMPLATE_BODY_MODE)
   ;
 
-RIGHT_SQUARE_BRACKET
-  : ']'
-  ;
-
-IMPORT_DESC
-  : '[' ~[\r\n]*? ']'
-  ;
-
-IMPORT_PATH
-  : '(' ~[\r\n]*? ')'
+IMPORT
+  : '[' ~[\r\n[\]]*? ']' '(' ~[\r\n()]*? ')'
   ;
 
 INVALID_TOKEN_DEFAULT_MODE
@@ -186,7 +178,7 @@ STRUCTURED_NEWLINE
   ;
 
 STRUCTURED_TEMPLATE_BODY_END
-  : WS_IN_STRUCTURED? RIGHT_SQUARE_BRACKET WS_IN_STRUCTURED? -> popMode
+  : WS_IN_STRUCTURED? ']' WS_IN_STRUCTURED? -> popMode
   ;
 
 STRUCTURED_CONTENT
