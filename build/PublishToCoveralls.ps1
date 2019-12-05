@@ -3,7 +3,7 @@
 # Arguments example: -coverallsToken $(Coveralls.Token) -pathToCoverageFiles $(Build.SourcesDirectory)\CodeCoverage
 #
 Param(
-    [string]$coverallsToken,
+    [string]$coverallsToken = '',  # This arg will display in the Azure pipeline log. To hide it, pass it as environment var CoverallsToken instead.
     [string]$pathToCoverageFiles,
     [string]$serviceName = 'Azure DevOps'
 )
@@ -28,9 +28,15 @@ $analyzeArgs += $coverageFiles
 Foreach ($i in $analyzeArgs) { Write-Host "  $i" }
 ."$coverageAnalyzer" @analyzeArgs
 
+# Get $coverallsToken from environment var
+if ($coverallsToken -eq '') {
+    $coverallsToken = $Env:CoverallsToken;
+}
+
 Write-Host "Upload coverage [$coverageUploader] with args"
 if (Test-Path env:System_PullRequest_SourceBranch) {
-    $branchName = $env:System_PullRequest_SourceBranch -replace "refs/heads/", "" }
+    $branchName = $env:System_PullRequest_SourceBranch -replace "refs/heads/", "" 
+}
 $uploadArgs = @(
     "--dynamiccodecoverage",
     "-i ""$pathToCoverageFiles\coverage.coveragexml""",
@@ -45,17 +51,20 @@ $uploadArgs = @(
     "--commitMessage ""$env:Build_SourceVersionMessage""",
     "--serviceName ""$serviceName"""
 );
-if (Test-Path env:System_PullRequest_SourceBranch)
-{
+if (Test-Path env:System_PullRequest_SourceBranch) {
     $uploadArgs += "--commitBranch ""$($env:System_PullRequest_SourceBranch -replace ""refs/heads/"", """")"""
 }
-else
-{
+else {
     $uploadArgs += "--commitBranch ""$($env:Build_SourceBranch -replace ""refs/heads/"", """")"""
 }
-if (Test-Path env:System_PullRequest_PullRequestNumber)
-{
+if (Test-Path env:System_PullRequest_PullRequestNumber) {
     $uploadArgs += "--pullRequest ""$env:System_PullRequest_PullRequestNumber"""
 }
-Foreach ($i in $uploadArgs) { Write-Host "  $i" }
+Foreach ($i in $uploadArgs) { 
+    if (-not $i.StartsWith("--repoToken")) {
+        Write-Host "  $i";
+    } else {
+        Write-Host "  --repoToken ******";
+    }
+}
 Start-Process $coverageUploader -ArgumentList $uploadArgs -NoNewWindow
