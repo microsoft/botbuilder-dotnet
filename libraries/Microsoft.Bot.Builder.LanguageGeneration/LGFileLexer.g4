@@ -16,15 +16,11 @@ lexer grammar LGFileLexer;
 @lexer::members {
   bool ignoreWS = true;      // usually we ignore whitespace, but inside template, whitespace is significant
   bool expectKeywords = false; // whether we are expecting IF/ELSEIF/ELSE
+  bool inTemplate = false; // whether we are in the template
+  bool startOfTemplateBody = false; // whether we are at the begining of template body
 }
 
-fragment LETTER: 'a'..'z' | 'A'..'Z';
-fragment NUMBER: '0'..'9';
-
-fragment WHITESPACE
-  : ' '|'\t'|'\ufeff'|'\u00a0'
-  ;
-
+// fragments
 fragment A: 'a' | 'A';
 fragment C: 'c' | 'C';
 fragment D: 'd' | 'D';
@@ -38,10 +34,20 @@ fragment T: 't' | 'T';
 fragment U: 'u' | 'U';
 fragment W: 'w' | 'W';
 
+fragment LETTER: 'a'..'z' | 'A'..'Z';
+
+fragment NUMBER: '0'..'9';
+
+fragment WHITESPACE : ' '|'\t'|'\ufeff'|'\u00a0';
+
 fragment STRING_LITERAL : ('\'' (~['\r\n])* '\'') | ('"' (~["\r\n])* '"');
+
 fragment EXPRESSION_FRAGMENT : '@' '{' (STRING_LITERAL| ~[\r\n{}'"] )*? '}';
+
 fragment ESCAPE_CHARACTER_FRAGMENT : '\\' ~[\r\n]?;
 
+
+// top level elements
 COMMENTS
   : ('>'|'$') ~('\r'|'\n')+ -> skip
   ;
@@ -55,19 +61,19 @@ NEWLINE
   ;
 
 HASH
-  : '#' -> pushMode(TEMPLATE_NAME_MODE)
+  : '#' { inTemplate = true; startOfTemplateBody = false; } -> pushMode(TEMPLATE_NAME_MODE)
   ;
 
 DASH
-  : '-' {expectKeywords = true;} -> pushMode(TEMPLATE_BODY_MODE)
+  : '-' { inTemplate }? { expectKeywords = true; startOfTemplateBody = false; } -> pushMode(TEMPLATE_BODY_MODE)
   ;
 
 LEFT_SQUARE_BRACKET
-  : '[' -> pushMode(STRUCTURED_TEMPLATE_BODY_MODE)
+  : '[' { inTemplate && startOfTemplateBody }? -> pushMode(STRUCTURED_TEMPLATE_BODY_MODE)
   ;
 
 IMPORT
-  : '[' ~[\r\n[\]]*? ']' '(' ~[\r\n()]*? ')'
+  : '[' ~[\r\n[\]]*? ']' '(' ~[\r\n()]*? ')' { inTemplate = false;}
   ;
 
 INVALID_TOKEN_DEFAULT_MODE
@@ -81,7 +87,7 @@ WS_IN_NAME
   ;
 
 NEWLINE_IN_NAME
-  : '\r'? '\n' -> skip, popMode
+  : '\r'? '\n' { startOfTemplateBody = true;}-> skip, popMode
   ;
 
 IDENTIFIER
@@ -178,7 +184,7 @@ STRUCTURED_NEWLINE
   ;
 
 STRUCTURED_TEMPLATE_BODY_END
-  : WS_IN_STRUCTURED? ']' WS_IN_STRUCTURED? -> popMode
+  : WS_IN_STRUCTURED? ']' WS_IN_STRUCTURED? { inTemplate = false;} -> popMode
   ;
 
 STRUCTURED_CONTENT
