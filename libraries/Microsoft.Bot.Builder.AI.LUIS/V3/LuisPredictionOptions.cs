@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using LuisV2 = Microsoft.Bot.Builder.AI.Luis;
 
 namespace Microsoft.Bot.Builder.AI.LuisV3
 {

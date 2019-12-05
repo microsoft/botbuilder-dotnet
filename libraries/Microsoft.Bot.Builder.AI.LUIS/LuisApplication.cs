@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Linq;
 using System.Web;
 using Microsoft.Bot.Configuration;
 
@@ -106,23 +105,19 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 throw new ArgumentException(nameof(applicationEndpoint));
             }
 
-            string applicationId = null;
-            var foundApps = false;
-            foreach (var segment in uri.Segments)
-            {
-                if (foundApps)
-                {
-                    applicationId = segment.TrimEnd('/');
-                    break;
-                }
+            var applicationId = string.Empty;
 
-                if (segment == "apps/")
+            var segments = uri.Segments;
+            for (var segment = 0; segment < segments.Length - 1; segment++)
+            {
+                if (segments[segment] == "apps/")
                 {
-                    foundApps = true;
+                    applicationId = segments[segment + 1].TrimEnd('/');
+                    break;
                 }
             }
 
-            if (applicationId == null)
+            if (string.IsNullOrEmpty(applicationId))
             {
                 throw new ArgumentException($"Could not find application Id in {applicationEndpoint}");
             }

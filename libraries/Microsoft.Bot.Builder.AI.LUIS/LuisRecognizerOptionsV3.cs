@@ -1,8 +1,13 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license.
+
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -32,7 +37,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         internal override async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, HttpClient httpClient, CancellationToken cancellationToken)
         {
             BotAssert.ContextNotNull(turnContext);
-            if (turnContext.Activity.Type != ActivityTypes.Message)
+            if (turnContext.Activity == null || turnContext.Activity.Type != ActivityTypes.Message)
             {
                 return null;
             }
@@ -53,56 +58,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
             else
             {
-                var uri = new UriBuilder(Application.Endpoint);
-
-                // TODO: When the endpoint GAs, we will need to change this.  I could make it an option, but other code is likely to need to change.
-                uri.Path += $"luis/prediction/v3.0/apps/{Application.ApplicationId}";
-
-                var query = AddParam(null, "verbose", options.IncludeInstanceData);
-                query = AddParam(query, "log", options.Log);
-                query = AddParam(query, "show-all-intents", options.IncludeAllIntents);
-                uri.Query = query;
-
-                var content = new JObject
-                {
-                    { "query", utterance },
-                };
-                var queryOptions = new JObject
-                {
-                    { "overridePredictions", options.PreferExternalEntities },
-                };
-                content.Add("options", queryOptions);
-
-                var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
-                if (options.DynamicLists != null)
-                {
-                    foreach (var list in options.DynamicLists)
-                    {
-                        list.Validate();
-                    }
-
-                    content.Add("dynamicLists", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.DynamicLists, settings)));
-                }
-
-                if (options.ExternalEntities != null)
-                {
-                    foreach (var entity in options.ExternalEntities)
-                    {
-                        entity.Validate();
-                    }
-
-                    content.Add("externalEntities", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.ExternalEntities, settings)));
-                }
-
-                if (options.Version == null)
-                {
-                    uri.Path += $"/slots/{options.Slot}/predict";
-                }
-                else
-                {
-                    uri.Path += $"/versions/{options.Version}/predict";
-                }
-
+                var uri = BuildUri();
+                var content = BuildRequestBody(utterance);
                 httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", Application.EndpointKey);
                 var response = await httpClient.PostAsync(uri.Uri, new StringContent(content.ToString(), System.Text.Encoding.UTF8, "application/json")).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
@@ -139,22 +96,66 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return recognizerResult;
         }
 
-        private string AddParam(string query, string prop, bool? val)
+        private UriBuilder BuildUri()
         {
-            var result = query;
-            if (val.HasValue)
+            var options = PredictionOptions;
+            var path = new StringBuilder(Application.Endpoint);
+            path.Append($"/luis/prediction/v3.0/apps/{Application.ApplicationId}");
+
+            if (options.Version == null)
             {
-                if (query == null)
-                {
-                    result = $"{prop}={val.Value}";
-                }
-                else
-                {
-                    result += $"&{prop}={val.Value}";
-                }
+                path.Append($"/slots/{options.Slot}/predict");
+            }
+            else
+            {
+                path.Append($"/versions/{options.Version}/predict");
             }
 
-            return result;
+            var uri = new UriBuilder(path.ToString());
+
+            var query = HttpUtility.ParseQueryString(uri.Query);
+            query["verbose"] = options.IncludeInstanceData.ToString();
+            query["log"] = options.Log.ToString();
+            query["show - all - intents"] = options.IncludeAllIntents.ToString();
+            uri.Query = query.ToString();
+            return uri;
+        }
+
+        private JObject BuildRequestBody(string utterance)
+        {
+            var options = PredictionOptions;
+            var content = new JObject
+                {
+                    { "query", utterance },
+                };
+            var queryOptions = new JObject
+                {
+                    { "overridePredictions", options.PreferExternalEntities },
+                };
+            content.Add("options", queryOptions);
+
+            var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+            if (options.DynamicLists != null)
+            {
+                foreach (var list in options.DynamicLists)
+                {
+                    list.Validate();
+                }
+
+                content.Add("dynamicLists", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.DynamicLists, settings)));
+            }
+
+            if (options.ExternalEntities != null)
+            {
+                foreach (var entity in options.ExternalEntities)
+                {
+                    entity.Validate();
+                }
+
+                content.Add("externalEntities", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.ExternalEntities, settings)));
+            }
+
+            return content;
         }
     }
 }

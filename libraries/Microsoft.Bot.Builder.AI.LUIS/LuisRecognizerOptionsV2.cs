@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license.
+
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
@@ -34,7 +36,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
             BotAssert.ContextNotNull(turnContext);
 
-            if (turnContext.Activity.Type != ActivityTypes.Message)
+            if (turnContext.Activity == null || turnContext.Activity.Type != ActivityTypes.Message)
             {
                 return null;
             }
