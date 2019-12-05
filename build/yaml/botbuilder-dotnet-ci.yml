@@ -6,7 +6,8 @@ variables:
   ApiCompatVersion: 4.6.3
   BuildConfiguration: Debug-Windows
   BuildPlatform: any cpu
-  GitHubCommentApiKey: needs to be defined in Azure
+  CoverallsToken: define this in Azure
+  GitHubCommentApiKey: define this in Azure
   IsBuildServer: true
   Parameters.solution: Microsoft.Bot.Builder.sln
   PreviewPackageVersion: 4.6.0-preview-$(Build.BuildNumber)

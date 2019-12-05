@@ -82,7 +82,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: './$(Build.SourcesDirectory)\build\PublishToCoveralls.ps1'
-    arguments: '-coverallsToken "w6UdWtDlTF7KJ9rsZx4PQJHgaWVGOPwHY" -pathToCoverageFiles "$(Build.SourcesDirectory)\CodeCoverage" -serviceName "master CI-PR"'
+    arguments: '-coverallsToken $(CoverallsToken) -pathToCoverageFiles "$(Build.SourcesDirectory)\CodeCoverage" -serviceName "master CI-PR"'
   continueOnError: true
 
 - task: PublishBuildArtifacts@1
