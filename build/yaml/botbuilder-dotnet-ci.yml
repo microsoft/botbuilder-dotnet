@@ -14,12 +14,24 @@ variables:
 
 #Multi-configuration and multi-agent job options are not exported to YAML. Configure these options using documentation guidance: https://docs.microsoft.com/vsts/pipelines/process/phases
 jobs:
-- job: Windows
+- job: Debug-Windows
   pool:
     name: Hosted Windows 2019 with VS2019
     demands:
     - msbuild
     - visualstudio
+  variables:
+    BuildConfiguration: Debug-Windows
+  steps:
+  - template: ci-phase-1-steps.yml
+- job: Release-Windows
+  pool:
+    name: Hosted Windows 2019 with VS2019
+    demands:
+    - msbuild
+    - visualstudio
+  variables:
+    BuildConfiguration: Release-Windows
   steps:
   - template: ci-phase-1-steps.yml
 
