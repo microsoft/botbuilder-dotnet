@@ -62,6 +62,10 @@
     },
     "Weather_GetForecast": {
       "score": 0.00913477
+    },
+    "sentiment": {
+      "label": "positive",
+      "score": 0.7149857
     }
   },
   "text": "buy hul and 2 items",
@@ -150,6 +154,11 @@
           "Weather.GetForecast": {
             "score": 0.00913477
           }
+        },
+        "normalizedQuery": "buy hul and 2 items",
+        "sentiment": {
+          "label": "positive",
+          "score": 0.7149857
         },
         "topIntent": "EntityTests"
       },
