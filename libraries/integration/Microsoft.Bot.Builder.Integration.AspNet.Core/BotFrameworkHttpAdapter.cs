@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// </remarks>
         public BotFrameworkHttpAdapter(
             ICredentialProvider credentialProvider,
-            AuthenticationConfiguration authConfig = null,
+            AuthenticationConfiguration authConfig,
             IChannelProvider channelProvider = null,
             RetryPolicy connectorClientRetryPolicy = null,
             HttpClient customHttpClient = null,
