@@ -27,6 +27,10 @@
                 <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Twilio.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Slack.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Facebook.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Expressions.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Adaptive.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Declarative.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.LanguageGeneration.dll$</ModulePath>                
                 <!-- <ModulePath>Microsoft.Bot.Builder.Schema.dll$</ModulePath> -->
               </Include>
             </ModulePaths>
@@ -46,8 +50,6 @@
                 <Source>.*\\SlackEvent.cs</Source>
                 <Source>.*\\SlackPayload.cs</Source>
                 <Source>.*\\SlackRequestBody.cs</Source>
-                <Source>.*\\FacebookAdapterOptions.cs</Source>
-                <Source>.*\\FacebookMessage.cs</Source>
                 <Source>.*\\Button.cs</Source>
                 <Source>.*\\DefaultAction.cs</Source>
                 <Source>.*\\Element.cs</Source>
@@ -60,7 +62,12 @@
                 <Source>.*\\FacebookResponseOk.cs</Source>
                 <Source>.*\\FacebookQuickReply.cs</Source>
                 <Source>.*\\MessagePayload.cs</Source>
-                <Source>.*\\Message.cs</Source>
+                <Source>.*\\FacebookPassThreadControl.cs</Source>
+                <Source>.*\\FacebookRequestThreadControl.cs</Source>
+                <Source>.*\\FacebookTakeThreadControl.cs</Source>
+                <Source>.*\\FacebookThreadControl.cs</Source>
+                <Source>.*\\HandoverConstants.cs</Source>
+                <Source>.*\\AttachmentPayload.cs</Source>
               </Exclude>
             </Sources>
           </CodeCoverage>

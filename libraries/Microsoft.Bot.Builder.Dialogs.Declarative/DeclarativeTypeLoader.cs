@@ -5,10 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
@@ -47,11 +45,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                 paths.Push(fileResource.FullName);
             }
 
+            string json = null;
             try
             {
-                var json = await resource.ReadTextAsync();
+                json = await resource.ReadTextAsync();
 
-                return Load<T>(sourceMap, refResolver, paths, json);
+                var result = Load<T>(sourceMap, refResolver, paths, json);
+                if (result is Dialog dlg)
+                {
+                    // dialog id's are resource ids
+                    dlg.Id = resource.Id;
+                }
+
+                return result;
             }
             catch (Exception err)
             {

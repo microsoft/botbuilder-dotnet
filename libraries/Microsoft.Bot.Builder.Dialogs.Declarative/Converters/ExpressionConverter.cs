@@ -31,6 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
+            value = ((Expression)value).ToString();
             serializer.Serialize(writer, value);
         }
     }

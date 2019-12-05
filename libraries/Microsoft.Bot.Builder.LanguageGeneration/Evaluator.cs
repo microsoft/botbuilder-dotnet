@@ -4,19 +4,22 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Microsoft.Bot.Expressions;
+using Microsoft.Bot.Expressions.Memory;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class Evaluator : LGFileParserBaseVisitor<object>
     {
-        public static readonly Regex ExpressionRecognizeRegex = new Regex(@"@{(((\'([^'\r\n])*?\')|(\""([^""\r\n])*?\""))|[^\r\n{}'""])*?}", RegexOptions.Compiled);
+        public const string LGType = "lgType";
+        public static readonly Regex ExpressionRecognizeRegex = new Regex(@"(?<!\\)@{(((\'([^'\r\n])*?\')|(\""([^""\r\n])*?\""))|[^\r\n{}'""])*?}", RegexOptions.Compiled);
         public static readonly Regex EscapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
@@ -60,6 +63,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             var templateTarget = new EvaluationTarget(templateName, scope);
+
             var currentEvaluateId = templateTarget.GetId();
 
             EvaluationTarget previousEvaluateTarget = null;
@@ -101,7 +105,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var result = new JObject();
             var typeName = context.structuredBodyNameLine().STRUCTURED_CONTENT().GetText().Trim();
-            result["$type"] = typeName;
+            result[LGType] = typeName;
 
             var bodys = context.structuredBodyContentLine().STRUCTURED_CONTENT();
             foreach (var body in bodys)
@@ -147,7 +151,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var propertyObject = JObject.FromObject(EvalExpression(line));
 
                     // Full reference to another structured template is limited to the structured template with same type 
-                    if (propertyObject["$type"] != null && propertyObject["$type"].ToString() == typeName)
+                    if (propertyObject[LGType] != null && propertyObject[LGType].ToString() == typeName)
                     {
                         foreach (var item in propertyObject)
                         {
@@ -277,14 +281,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var newScope = parameters.Zip(args, (k, v) => new { k, v })
                                     .ToDictionary(x => x.k, x => x.v);
 
-            if (currentScope is CustomizedMemoryScope cms)
+            if (currentScope is CustomizedMemory memory)
             {
-                // if current scope is already customized, inherit it's global scope
-                return new CustomizedMemoryScope(newScope, cms.GlobalScope);
+                // inherit current memory's global scope
+                return new CustomizedMemory(memory.GlobalMemory, new SimpleObjectMemory(newScope));
             }
             else
             {
-                return new CustomizedMemoryScope(newScope, currentScope);
+                throw new Exception("Scope is a LG customized memory");
             }
         }
 
@@ -327,13 +331,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string EvalEscape(string exp)
         {
-            var commonEscapes = new List<string>() { "\\r", "\\n", "\\t" };
-            if (commonEscapes.Contains(exp))
+            return new Regex(@"\\[^\r\n]?").Replace(exp, new MatchEvaluator(m =>
             {
-                return Regex.Unescape(exp);
-            }
+                var value = m.Value;
+                var commonEscapes = new List<string>() { "\\r", "\\n", "\\t" };
+                if (commonEscapes.Contains(value))
+                {
+                    return Regex.Unescape(value);
+                }
 
-            return exp.Substring(1);
+                return value.Substring(1);
+            }));
         }
 
         private object EvalExpression(string exp)
@@ -373,7 +381,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             else
             {
                 var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
-                return Regex.Unescape(ExpressionRecognizeRegex.Replace(exp, evalutor));
+                var result = ExpressionRecognizeRegex.Replace(exp, evalutor);
+                return EvalEscape(result);
             }
         }
 
@@ -406,8 +415,100 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(template, BuiltInFunctions.Apply(this.TemplateFunction()), ReturnType.Object, this.ValidateTemplateFunction);
             }
 
+            const string fromFile = "fromFile";
+
+            if (name.Equals(fromFile))
+            {
+                return new ExpressionEvaluator(fromFile, BuiltInFunctions.Apply(this.FromFile()), ReturnType.String, this.ValidateFromFile);
+            }
+
+            const string activityAttachment = "ActivityAttachment";
+
+            if (name.Equals(activityAttachment))
+            {
+                return new ExpressionEvaluator(activityAttachment, BuiltInFunctions.Apply(this.ActivityAttachment()), ReturnType.Object, this.ValidateActivityAttachment);
+            }
+
             return baseLookup(name);
         };
+
+        private Func<IReadOnlyList<object>, object> ActivityAttachment()
+        => (IReadOnlyList<object> args) =>
+        {
+            return new JObject
+            {
+                [LGType] = "attachment",
+                ["contenttype"] = args[1].ToString(),
+                ["content"] = args[0] as JObject
+            };
+        };
+
+        private void ValidateActivityAttachment(Expression expression)
+        {
+            if (expression.Children.Length != 2)
+            {
+                throw new Exception("ActivityAttachment should have two parameters");
+            }
+
+            var children0 = expression.Children[0];
+            if (children0.ReturnType != ReturnType.Object)
+            {
+                throw new Exception($"{children0} can't be used as a json file");
+            }
+
+            var children1 = expression.Children[1];
+            if (children1.ReturnType != ReturnType.Object && children1.ReturnType != ReturnType.String)
+            {
+                throw new Exception($"{children0} can't be used as an attachment format, must be a string value");
+            }
+        }
+
+        private Func<IReadOnlyList<object>, object> FromFile()
+       => (IReadOnlyList<object> args) =>
+       {
+           var filePath = ImportResolver.NormalizePath(args[0].ToString());
+
+           var resourcePath = GetResourcePath(filePath);
+           return EvalText(File.ReadAllText(resourcePath));
+       };
+
+        private void ValidateFromFile(Expression expression)
+        {
+            if (expression.Children.Length != 1)
+            {
+                throw new Exception("fromFile should have one parameter");
+            }
+
+            var children0 = expression.Children[0];
+            if (children0.ReturnType != ReturnType.Object && children0.ReturnType != ReturnType.String)
+            {
+                throw new Exception($"{children0} can't be used as a file path, must be a string value");
+            }
+        }
+
+        private string GetResourcePath(string filePath)
+        {
+            string resourcePath;
+
+            if (Path.IsPathRooted(filePath))
+            {
+                resourcePath = filePath;
+            }
+            else
+            {
+                var template = TemplateMap[CurrentTarget().TemplateName];
+                var sourcePath = ImportResolver.NormalizePath(template.Source);
+                var baseFolder = Environment.CurrentDirectory;
+                if (Path.IsPathRooted(sourcePath))
+                {
+                    baseFolder = Path.GetDirectoryName(sourcePath);
+                }
+
+                resourcePath = Path.GetFullPath(Path.Combine(baseFolder, filePath));
+            }
+
+            return resourcePath;
+        }
 
         // Evaluator for template(templateName, ...args) 
         // normal case we can just use templateName(...args), but template function is particularly useful when the template name is not pre-known

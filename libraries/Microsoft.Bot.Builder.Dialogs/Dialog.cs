@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -24,6 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private IBotTelemetryClient _telemetryClient;
 
+        [JsonProperty("id")]
         private string id;
 
         /// <summary>
@@ -43,6 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// Id for the dialog.
         /// </value>
+        [JsonIgnore]
         public string Id
         {
             get
@@ -62,6 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <value>The <see cref="IBotTelemetryClient"/> to use for logging.</value>
         /// <seealso cref="DialogSet.TelemetryClient"/>
+        [JsonIgnore]
         public virtual IBotTelemetryClient TelemetryClient
         {
             get
@@ -74,6 +78,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 _telemetryClient = value;
             }
         }
+
+        [JsonIgnore]
+        public virtual SourceRange Source => DebugSupport.SourceMap.TryGetValue(this, out var range) ? range : null;
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.

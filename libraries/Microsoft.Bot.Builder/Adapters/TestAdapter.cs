@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Adapters
     /// <seealso cref="TestFlow"/>
     public class TestAdapter : BotAdapter, IUserTokenProvider
     {
-        private readonly bool _sendTraceActivity;
+        private bool _sendTraceActivity;
         private readonly object _conversationLock = new object();
         private readonly object _activeQueueLock = new object();
         private readonly IDictionary<UserTokenKey, string> _userTokens = new Dictionary<UserTokenKey, string>();
@@ -72,6 +72,24 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to send trace activities.
+        /// </summary>
+        /// <value>
+        /// A value indicating whether to send trace activities.
+        /// </value>
+        public bool EnableTrace
+        {
+            get => _sendTraceActivity;
+            set => this._sendTraceActivity = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the locale for the conversation.
+        /// </summary>
+        /// <value>
+        /// The locale for the conversation.
+        /// </value>
         public string Locale { get; set; } = "en-us";
 
         /// <summary>
@@ -138,7 +156,12 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
 
                 activity.ChannelId = Conversation.ChannelId;
-                activity.From = Conversation.User;
+                
+                if (activity.From == null || activity.From.Id == "unknown" || activity.From.Role == RoleTypes.Bot)
+                {
+                    activity.From = Conversation.User;
+                }
+
                 activity.Recipient = Conversation.Bot;
                 activity.Conversation = Conversation.Conversation;
                 activity.ServiceUrl = Conversation.ServiceUrl;
@@ -160,13 +183,13 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Creates a turn context and runs the middleware pipeline for an incoming activity.
         /// </summary>
-        /// <param name="identity">A <see cref="ClaimsIdentity"/> for the request.</param>
+        /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the request.</param>
         /// <param name="activity">The incoming activity.</param>
         /// <param name="callback">The code to run at the end of the adapter's middleware pipeline.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public override async Task<InvokeResponse> ProcessActivityAsync(ClaimsIdentity identity, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
+        public override async Task<InvokeResponse> ProcessActivityAsync(ClaimsIdentity claimsIdentity, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             await ProcessActivityAsync(activity, callback, cancellationToken).ConfigureAwait(false);
             return null;

@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 return strings.Select(s => new Choice(s)).ToList();
             }
 
-            // support JArray to => hoice
+            // support JArray to => choice
             if (result is JArray array)
             {
                 var choices = new List<Choice>();

@@ -1,16 +1,19 @@
 {
   "$schema": "../../app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
+  "$kind": "Microsoft.AdaptiveDialog",
   "triggers": [
     {
-      "$type": "Microsoft.OnBeginDialog",
+      "$kind": "Microsoft.OnBeginDialog",
       "actions": [
         {
-          "$type": "Microsoft.QnAMakerDialog",
+          "$kind": "Microsoft.QnAMakerDialog",
           "knowledgeBaseId": "'dummy-id'",
           "endpointKey": "'dummy-key'",
           "hostname": "'https://dummy-hostname.azurewebsites.net/qnamaker'",
-          "noAnswer": "Answers not found in kb."
+          "noAnswer": "Answers not found in kb.",
+          "top": 3,
+          "activeLearningCardTitle": "Did you mean:",
+          "cardNoMatchText": "None of the above."
         }
       ]
     }

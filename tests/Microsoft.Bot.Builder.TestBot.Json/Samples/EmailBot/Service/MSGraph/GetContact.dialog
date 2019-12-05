@@ -1,13 +1,13 @@
 {
     "$schema": "../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "actions": [
         {
-            "$type": "Microsoft.IfCondition",
+            "$kind": "Microsoft.IfCondition",
             "condition": "dialog.token == null",
             "actions": [
                 {
-                    "$type": "Microsoft.OAuthInput",
+                    "$kind": "Microsoft.OAuthInput",
                     "ConnectionName": "msgraph",
                     "Title": "Log in",
                     "Text": "Please log in to your email account",
@@ -16,7 +16,7 @@
             ]
         },
         {
-            "$type": "Microsoft.HttpRequest",
+            "$kind": "Microsoft.HttpRequest",
             "url": "https://graph.microsoft.com/v1.0/me/contacts?$filter=startswith(displayName,'{user.email}')",
             "method": "GET",
             "header": {
@@ -25,11 +25,11 @@
             "Property": "dialog.getResponse"
         },
         {
-            "$type": "Microsoft.SendActivity",
+            "$kind": "Microsoft.SendActivity",
             "activity": "The contact you find is {dialog.getResponse.content.value[0].displayName}, email address is {dialog.getResponse.content.value[0].emailAddresses[0].address}."
         },
         {
-            "$type": "Microsoft.SetProperty",
+            "$kind": "Microsoft.SetProperty",
             "value": "dialog.getResponse.content.value[0].emailAddresses[0].address",
             "property": "user.email"
         }

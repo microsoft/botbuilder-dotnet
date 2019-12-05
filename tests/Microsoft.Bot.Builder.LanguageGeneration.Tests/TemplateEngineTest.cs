@@ -1,10 +1,14 @@
-﻿#pragma warning disable SA1202 // Elements should be ordered by access
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+#pragma warning disable SA1202 // Elements should be ordered by access
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Expressions.Memory;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
@@ -749,7 +753,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled = engine.EvaluateTemplate("T1", new { turn = new { name = "Dong", count = 3 } });
             Assert.AreEqual(evaled, "Hi Dong, welcome to Seattle, Seattle is a beautiful place, how many burgers do you want, 3?");
 
-            evaled = engine.EvaluateTemplate("AskBread", new
+            var scope = new SimpleObjectMemory(new
             {
                 schema = new Dictionary<string, object>()
                 {
@@ -763,6 +767,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     }
                 }
             });
+
+            evaled = engine.EvaluateTemplate("AskBread", scope);
 
             Assert.AreEqual(evaled, "Which Bread, A or B do you want?");
         }
@@ -780,58 +786,57 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled = engine.EvaluateTemplate("AskForAge.prompt");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"how old are you?\"}"), evaled as JObject)
-                || JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"what's your age?\"}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"lgType\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"how old are you?\"}"), evaled as JObject)
+                || JToken.DeepEquals(JObject.Parse("{\"lgType\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"what's your age?\"}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("AskForAge.prompt2");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"suggestedactions\":[\"10\",\"20\",\"30\"]}"), evaled as JObject)
-                || JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"suggestedactions\":[\"10\",\"20\",\"30\"]}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"lgType\":\"Activity\",\"text\":\"how old are you?\",\"suggestedactions\":[\"10\",\"20\",\"30\"]}"), evaled as JObject)
+                || JToken.DeepEquals(JObject.Parse("{\"lgType\":\"Activity\",\"text\":\"what's your age?\",\"suggestedactions\":[\"10\",\"20\",\"30\"]}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("AskForAge.prompt3");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject)
-                || JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"lgType\":\"Activity\",\"text\":\"@{GetAge()}\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("T1");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"text\":\"This is awesome\",\"speak\":\"foo bar I can also speak!\"}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"lgType\":\"Activity\",\"text\":\"This is awesome\",\"speak\":\"foo bar I can also speak!\"}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("ST1");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"MyStruct\",\"text\":\"foo\",\"speak\":\"bar\"}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"lgType\":\"MyStruct\",\"text\":\"foo\",\"speak\":\"bar\"}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("AskForColor");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Activity\",\"suggestedactions\":[{\"$type\":\"MyStruct\",\"speak\":\"bar\",\"text\":\"zoo\"},{\"$type\":\"Activity\",\"speak\":\"I can also speak!\"}]}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"lgType\":\"Activity\",\"suggestedactions\":[{\"lgType\":\"MyStruct\",\"speak\":\"bar\",\"text\":\"zoo\"},{\"lgType\":\"Activity\",\"speak\":\"I can also speak!\"}]}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("MultiExpression");
             var options = new string[]
             {
-                "{\r\n  \"$type\": \"Activity\",\r\n  \"speak\": \"I can also speak!\"\r\n} {\r\n  \"$type\": \"MyStruct\",\r\n  \"text\": \"hi\"\r\n}",
-                "{\n  \"$type\": \"Activity\",\n  \"speak\": \"I can also speak!\"\n} {\n  \"$type\": \"MyStruct\",\n  \"text\": \"hi\"\n}"
+                "{\r\n  \"lgType\": \"Activity\",\r\n  \"speak\": \"I can also speak!\"\r\n} {\r\n  \"lgType\": \"MyStruct\",\r\n  \"text\": \"hi\"\r\n}",
+                "{\n  \"lgType\": \"Activity\",\n  \"speak\": \"I can also speak!\"\n} {\n  \"lgType\": \"MyStruct\",\n  \"text\": \"hi\"\n}"
             };
             Assert.IsTrue(options.Contains(evaled.ToString()));
 
             evaled = engine.EvaluateTemplate("StructuredTemplateRef");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"MyStruct\",\"text\":\"hi\"}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"lgType\":\"MyStruct\",\"text\":\"hi\"}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("MultiStructuredRef");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"MyStruct\",\"list\":[{\"$type\":\"SubStruct\",\"text\":\"hello\"},{\"$type\":\"SubStruct\",\"text\":\"world\"}]}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"lgType\":\"MyStruct\",\"list\":[{\"lgType\":\"SubStruct\",\"text\":\"hello\"},{\"lgType\":\"SubStruct\",\"text\":\"world\"}]}"), evaled as JObject));
 
             evaled = engine.EvaluateTemplate("templateWithSquareBrackets", new { manufacturer = new { Name = "Acme Co" } });
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"$type\":\"Struct\",\"text\":\"Acme Co\"}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"lgType\":\"Struct\",\"text\":\"Acme Co\"}"), evaled as JObject));
         }
 
         [TestMethod]
@@ -899,10 +904,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(4, evaled.Count);
             var expectedResults = new List<string>()
             {
-                "{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"how old are you?\"}",
-                "{\"$type\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"what's your age?\"}",
-                "{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"how old are you?\"}",
-                "{\"$type\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"what's your age?\"}"
+                "{\"lgType\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"how old are you?\"}",
+                "{\"lgType\":\"Activity\",\"text\":\"how old are you?\",\"speak\":\"what's your age?\"}",
+                "{\"lgType\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"how old are you?\"}",
+                "{\"lgType\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"what's your age?\"}"
             };
 
             expectedResults.ForEach(x => Assert.AreEqual(true, evaled.Contains(x)));
@@ -911,10 +916,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(4, evaled.Count);
             expectedResults = new List<string>()
             {
-                "{\"$type\":\"MyStruct\",\"text\":\"Hi\",\"speak\":\"how old are you?\"}",
-                "{\"$type\":\"MyStruct\",\"text\":\"Hi\",\"speak\":\"what's your age?\"}",
-                "{\"$type\":\"MyStruct\",\"text\":\"Hello\",\"speak\":\"how old are you?\"}",
-                "{\"$type\":\"MyStruct\",\"text\":\"Hello\",\"speak\":\"what's your age?\"}"
+                "{\"lgType\":\"MyStruct\",\"text\":\"Hi\",\"speak\":\"how old are you?\"}",
+                "{\"lgType\":\"MyStruct\",\"text\":\"Hi\",\"speak\":\"what's your age?\"}",
+                "{\"lgType\":\"MyStruct\",\"text\":\"Hello\",\"speak\":\"how old are you?\"}",
+                "{\"lgType\":\"MyStruct\",\"text\":\"Hello\",\"speak\":\"what's your age?\"}"
             };
 
             expectedResults.ForEach(x => Assert.AreEqual(true, evaled.Contains(x)));
@@ -956,6 +961,42 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(evaled1, espectedResult);
             Assert.AreEqual(evaled2, espectedResult);
             Assert.AreEqual(evaled3, espectedResult);
+        }
+
+        [TestMethod]
+        public void TestMemoryAccessPath()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("MemoryAccess.lg"));
+
+            var memory = new
+            {
+                myProperty = new
+                {
+                    name = "p1"
+                },
+
+                turn = new
+                {
+                    properties = new Dictionary<string, object>
+                    {
+                        {
+                            "p1", new Dictionary<string, object>() { { "enum", "p1enum" } }
+                        }
+                    }
+                }
+            };
+
+            // this evaulate will hit memory access twice
+            // first for "property", and get "p1", from local
+            // sencond for "turn.property[p1].enum" and get "p1enum" from global
+            var result = engine.EvaluateTemplate("T1", memory);
+            Assert.AreEqual(result, "p1enum");
+
+            // this evaulate will hit memory access twice
+            // first for "myProperty.name", and get "p1", from global
+            // sencond for "turn.property[p1].enum" and get "p1enum" from global 
+            result = engine.EvaluateTemplate("T3", memory);
+            Assert.AreEqual(result, "p1enum");
         }
 
         public class LoopClass

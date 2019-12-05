@@ -8,15 +8,14 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Schema;
 using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
-    internal static class HttpHelper
+    public static class HttpHelper
     {
-        public static readonly JsonSerializer BotMessageSerializer = JsonSerializer.Create(new JsonSerializerSettings
+        public static readonly JsonSerializerSettings BotMessageSerializerSettings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
             Formatting = Formatting.Indented,
@@ -24,10 +23,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             DateTimeZoneHandling = DateTimeZoneHandling.Utc,
             ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
             ContractResolver = new ReadOnlyJsonContractResolver(),
-            Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() },
-        });
+            Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() }
+        };
 
-        public static async Task<Activity> ReadRequestAsync(HttpRequest request)
+        public static readonly JsonSerializer BotMessageSerializer = JsonSerializer.Create(BotMessageSerializerSettings);
+
+        public static async Task<T> ReadRequestAsync<T>(HttpRequest request)
         {
             try
             {
@@ -36,23 +37,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     throw new ArgumentNullException(nameof(request));
                 }
 
-                var activity = default(Activity);
-
                 using (var memoryStream = new MemoryStream())
                 {
                     await request.Body.CopyToAsync(memoryStream).ConfigureAwait(false);
                     memoryStream.Seek(0, SeekOrigin.Begin);
                     using (var bodyReader = new JsonTextReader(new StreamReader(memoryStream, Encoding.UTF8)))
                     {
-                        activity = BotMessageSerializer.Deserialize<Activity>(bodyReader);
+                        return BotMessageSerializer.Deserialize<T>(bodyReader);
                     }
                 }
-
-                return activity;
             }
             catch (JsonException)
             {
-                return null;
+                return default;
             }
         }
 

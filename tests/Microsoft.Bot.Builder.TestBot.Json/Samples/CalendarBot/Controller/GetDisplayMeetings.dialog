@@ -1,54 +1,54 @@
 {
   "$schema": "../../app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
+  "$kind": "Microsoft.AdaptiveDialog",
   "triggers": [
     {
-      "$type": "Microsoft.OnBeginDialog",
+      "$kind": "Microsoft.OnBeginDialog",
       "actions": [
         "GetMeetingsService",
         {
-          "$type": "Microsoft.EditArray",
+          "$kind": "Microsoft.EditArray",
           "changeType": "Clear",
           "itemsProperty": "user.meetings"
         },
         // *** Translate from graph model to view model. Map the same entity from graph/google to the same attribute. ***
         {
-          "$type": "Microsoft.IfCondition",
+          "$kind": "Microsoft.IfCondition",
           "condition": "user.provider=='msgraph'",
           "actions": [
             // Need subarray. Hack for now.
             //{
-            //  "$type": "Microsoft.EditArray",
+            //  "$kind": "Microsoft.EditArray",
             //  "changeType": "Push",
             //  "itemsProperty": "user.meetings",
             //  "itemProperty": "user.getGraphMeetings.value[user.showIndex * user.pageSize + 0]"
             //},
             //{
-            //  "$type": "Microsoft.EditArray",
+            //  "$kind": "Microsoft.EditArray",
             //  "changeType": "Push",
             //  "itemsProperty": "user.meetings",
             //  "itemProperty": "user.getGraphMeetings.value[user.showIndex * user.pageSize + 1]"
             //},
             //{
-            //  "$type": "Microsoft.EditArray",
+            //  "$kind": "Microsoft.EditArray",
             //  "changeType": "Push",
             //  "itemsProperty": "user.meetings",
             //  "itemProperty": "user.getGraphMeetings.value[user.showIndex * user.pageSize + 2]"
             //},
             {
-              "$type": "Microsoft.EditArray",
+              "$kind": "Microsoft.EditArray",
               "changeType": "Push",
               "itemsProperty": "user.meetings",
               "itemProperty": "user.getGraphMeetings.value[0]"
             },
             {
-              "$type": "Microsoft.EditArray",
+              "$kind": "Microsoft.EditArray",
               "changeType": "Push",
               "itemsProperty": "user.meetings",
               "itemProperty": "user.getGraphMeetings.value[1]"
             },
             {
-              "$type": "Microsoft.EditArray",
+              "$kind": "Microsoft.EditArray",
               "changeType": "Push",
               "itemsProperty": "user.meetings",
               "itemProperty": "user.getGraphMeetings.value[2]"
@@ -57,7 +57,7 @@
           ]
         }
         //,{
-        //  "$type": "Microsoft.SendActivity",
+        //  "$kind": "Microsoft.SendActivity",
         //  "activity": "Get meetings model done"
         //}
       ]

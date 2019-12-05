@@ -19,6 +19,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     [DebuggerDisplay("{GetIdentity()}")]
     public class OnCondition : IItemIdentity, IDialogDependencies
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.OnCondition";
+
         // constraints from Rule.AddConstraint()
         private List<Expression> extraConstraints = new List<Expression>();
 
@@ -50,6 +53,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// </value>
         [JsonProperty("actions")]
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
+
+        [JsonIgnore]
+        public virtual SourceRange Source => DebugSupport.SourceMap.TryGetValue(this, out var range) ? range : null;
 
         /// <summary>
         /// Get the expression for this rule by calling GatherConstraints().
@@ -144,14 +150,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             foreach (var action in this.Actions)
             {
                 yield return action;
-
-                if (action is IDialogDependencies depends)
-                {
-                    foreach (var dialog in depends.GetDependencies())
-                    {
-                        yield return dialog;
-                    }
-                }
             }
 
             yield break;

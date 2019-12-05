@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
@@ -146,9 +147,16 @@ namespace Microsoft.Bot.Builder
             var accessor = _inspectionState.CreateProperty<InspectionSessionsByStatus>(nameof(InspectionSessionsByStatus));
             var sessions = await accessor.GetAsync(turnContext, () => new InspectionSessionsByStatus()).ConfigureAwait(false);
 
-            if (AttachCommand(turnContext.Activity.Conversation.Id, sessions, sessionId))
+            if (AttachCommand(GetAttachId(turnContext.Activity), sessions, sessionId))
             {
-                await turnContext.SendActivityAsync(MessageFactory.Text($"Attached to session, all traffic is being replicated for inspection."), cancellationToken).ConfigureAwait(false);
+                if (turnContext.Activity.TeamsGetTeamInfo()?.Id == null)
+                {
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Attached to session, all traffic is being replicated for inspection."), cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Attached to session, all traffic, directed to this bot, within this Team, is being replicated for inspection."), cancellationToken).ConfigureAwait(false);
+                }
             }
             else
             {
@@ -165,11 +173,11 @@ namespace Microsoft.Bot.Builder
             return sessionId;
         }
 
-        private bool AttachCommand(string conversationId, InspectionSessionsByStatus sessions, string sessionId)
+        private bool AttachCommand(string attachId, InspectionSessionsByStatus sessions, string sessionId)
         {
             if (sessions.OpenedSessions.TryGetValue(sessionId, out var inspectionSessionState))
             {
-                sessions.AttachedSessions[conversationId] = inspectionSessionState;
+                sessions.AttachedSessions[attachId] = inspectionSessionState;
                 sessions.OpenedSessions.Remove(sessionId);
                 return true;
             }
@@ -182,7 +190,7 @@ namespace Microsoft.Bot.Builder
             var accessor = _inspectionState.CreateProperty<InspectionSessionsByStatus>(nameof(InspectionSessionsByStatus));
             var openSessions = await accessor.GetAsync(turnContext, () => new InspectionSessionsByStatus(), cancellationToken).ConfigureAwait(false);
 
-            if (openSessions.AttachedSessions.TryGetValue(turnContext.Activity.Conversation.Id, out var conversationReference))
+            if (openSessions.AttachedSessions.TryGetValue(GetAttachId(turnContext.Activity), out var conversationReference))
             {
                 return new InspectionSession(conversationReference, _credentials, GetHttpClient(), Logger);
             }
@@ -207,8 +215,15 @@ namespace Microsoft.Bot.Builder
         {
             var accessor = _inspectionState.CreateProperty<InspectionSessionsByStatus>(nameof(InspectionSessionsByStatus));
             var openSessions = await accessor.GetAsync(turnContext, () => new InspectionSessionsByStatus(), cancellationToken).ConfigureAwait(false);
-            openSessions.AttachedSessions.Remove(turnContext.Activity.Conversation.Id);
+            openSessions.AttachedSessions.Remove(GetAttachId(turnContext.Activity));
             await _inspectionState.SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
+        }
+
+        private string GetAttachId(Activity activity)
+        {
+            // If we are running in a Microsoft Teams Team the conversation Id will reflect a particular thread the bot is in.
+            // So if we are in a Team then we will associate the "attach" with the Team Id rather than the more restrictive conversation Id.
+            return activity.TeamsGetTeamInfo()?.Id ?? activity.Conversation.Id;
         }
     }
 }

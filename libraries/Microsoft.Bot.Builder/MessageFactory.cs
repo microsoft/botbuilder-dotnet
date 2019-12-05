@@ -95,13 +95,10 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="SuggestedActions(IEnumerable{CardAction}, string, string, string)"/>
         public static IMessageActivity SuggestedActions(IEnumerable<string> actions, string text = null, string ssml = null, string inputHint = null)
         {
-            if (actions == null)
-            {
-                throw new ArgumentNullException(nameof(actions));
-            }
+            actions = actions ?? throw new ArgumentNullException(nameof(actions));
 
             var cardActions = new List<CardAction>();
-            foreach (string s in actions)
+            foreach (var s in actions)
             {
                 var ca = new CardAction
                 {
@@ -150,10 +147,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="SuggestedActions(IEnumerable{string}, string, string, string)"/>
         public static IMessageActivity SuggestedActions(IEnumerable<CardAction> cardActions, string text = null, string ssml = null, string inputHint = null)
         {
-            if (cardActions == null)
-            {
-                throw new ArgumentNullException(nameof(cardActions));
-            }
+            cardActions = cardActions ?? throw new ArgumentNullException(nameof(cardActions));
 
             var ma = Activity.CreateMessageActivity();
             SetTextAndSpeak(ma, text, ssml, inputHint);
@@ -181,10 +175,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="Carousel(IEnumerable{Attachment}, string, string, string)"/>
         public static IMessageActivity Attachment(Attachment attachment, string text = null, string ssml = null, string inputHint = null)
         {
-            if (attachment == null)
-            {
-                throw new ArgumentNullException(nameof(attachment));
-            }
+            attachment = attachment ?? throw new ArgumentNullException(nameof(attachment));
 
             return Attachment(new List<Attachment> { attachment }, text, ssml, inputHint);
         }
@@ -207,10 +198,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="Attachment(Schema.Attachment, string, string, string)"/>
         public static IMessageActivity Attachment(IEnumerable<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
         {
-            if (attachments == null)
-            {
-                throw new ArgumentNullException(nameof(attachments));
-            }
+            attachments = attachments ?? throw new ArgumentNullException(nameof(attachments));
 
             return AttachmentActivity(AttachmentLayoutTypes.List, attachments, text, ssml, inputHint);
         }
@@ -268,10 +256,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="Attachment(IEnumerable{Attachment}, string, string, string)"/>
         public static IMessageActivity Carousel(IEnumerable<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
         {
-            if (attachments == null)
-            {
-                throw new ArgumentNullException(nameof(attachments));
-            }
+            attachments = attachments ?? throw new ArgumentNullException(nameof(attachments));
 
             return AttachmentActivity(AttachmentLayoutTypes.Carousel, attachments, text, ssml, inputHint);
         }

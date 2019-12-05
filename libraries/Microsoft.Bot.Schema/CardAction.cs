@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="type">The type of action implemented by this button.
         /// Possible values include: 'openUrl', 'imBack', 'postBack',
         /// 'playAudio', 'playVideo', 'showImage', 'downloadFile', 'signin',
-        /// 'call', 'payment', 'messageBack', 'openApp'</param>
+        /// 'call', 'messageBack', 'openApp'</param>
         /// <param name="title">Text description which appears on the
         /// button</param>
         /// <param name="image">Image URL which will appear on the button, next
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets the type of action implemented by this button.
         /// Possible values include: 'openUrl', 'imBack', 'postBack',
         /// 'playAudio', 'playVideo', 'showImage', 'downloadFile', 'signin',
-        /// 'call', 'payment', 'messageBack'
+        /// 'call', 'messageBack'
         /// </summary>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }

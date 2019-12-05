@@ -1,40 +1,40 @@
 {
     "$schema": "../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "generator": "todo.lg",
     "triggers": [
         {
-            "$type": "Microsoft.OnBeginDialog",
+            "$kind": "Microsoft.OnBeginDialog",
             "actions": [
                 {
-                    "$type": "Microsoft.SetProperty",
+                    "$kind": "Microsoft.SetProperty",
                     "value": "@title",
                     "property": "dialog.todo"
                 },
                 {
-                    "$type": "Microsoft.TextInput",
+                    "$kind": "Microsoft.TextInput",
                     "prompt": "OK, please enter the title of your todo.",
                     "property": "dialog.todo"
                 },
                 {
-                    "$type": "Microsoft.IfCondition",
+                    "$kind": "Microsoft.IfCondition",
                     "condition": "user.todos == null",
                     "actions": [
                         {
-                            "$type": "Microsoft.InitProperty",
+                            "$kind": "Microsoft.InitProperty",
                             "property": "user.todos",
                             "type": "array"
                         }
                     ]
                 },
                 {
-                    "$type": "Microsoft.EditArray",
+                    "$kind": "Microsoft.EditArray",
                     "changeType": "Push",
                     "itemsProperty": "user.todos",
                     "value": "dialog.todo"
                 },
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Successfully added a todo named \"@{dialog.todo}\""
                 }
             ]

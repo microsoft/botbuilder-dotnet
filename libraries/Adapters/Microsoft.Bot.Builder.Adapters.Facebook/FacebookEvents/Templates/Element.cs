@@ -61,6 +61,10 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Templates
         [JsonProperty(PropertyName = "buttons")]
         public List<Button> Buttons { get; } = new List<Button>();
 
+        /// <summary>
+        /// Newtonsoft Json method for conditionally serializing Buttons property.
+        /// </summary>
+        /// <returns>A boolean with the value.</returns>
         public bool ShouldSerializeButtons()
         {
             return Buttons.Count > 0;

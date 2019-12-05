@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
@@ -11,6 +12,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </summary>
     public class EntityRecognizerSet : List<EntityRecognizer>
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.EntityRecognizerSet";
+
         public EntityRecognizerSet()
         {
         }

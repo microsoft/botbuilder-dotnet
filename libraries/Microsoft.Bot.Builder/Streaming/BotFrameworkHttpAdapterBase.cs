@@ -6,25 +6,37 @@ using System.Net.Http;
 using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Security.Principal;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
+using Microsoft.Rest.TransientFaultHandling;
 
 namespace Microsoft.Bot.Builder.Streaming
 {
     public class BotFrameworkHttpAdapterBase : BotFrameworkAdapter, IStreamingActivityProcessor
     {
+        public BotFrameworkHttpAdapterBase(
+            ICredentialProvider credentialProvider,
+            AuthenticationConfiguration authConfig,
+            IChannelProvider channelProvider = null,
+            RetryPolicy connectorClientRetryPolicy = null,
+            HttpClient customHttpClient = null,
+            IMiddleware middleware = null,
+            ILogger logger = null)
+            : base(credentialProvider, authConfig, channelProvider, connectorClientRetryPolicy, customHttpClient, middleware, logger)
+        {
+        }
+        
         public BotFrameworkHttpAdapterBase(ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILogger<BotFrameworkHttpAdapterBase> logger = null)
-            : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, null, null, null, logger)
+            : this(credentialProvider ?? new SimpleCredentialProvider(), new AuthenticationConfiguration(), channelProvider, null, null, null, logger)
         {
         }
 
         public BotFrameworkHttpAdapterBase(ICredentialProvider credentialProvider, IChannelProvider channelProvider, HttpClient httpClient, ILogger<BotFrameworkHttpAdapterBase> logger)
-            : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, null, httpClient, null, logger)
+            : this(credentialProvider ?? new SimpleCredentialProvider(), new AuthenticationConfiguration(), channelProvider, null, httpClient, null, logger)
         {
         }
 
@@ -75,7 +87,7 @@ namespace Microsoft.Bot.Builder.Streaming
         {
             BotAssert.ActivityNotNull(activity);
 
-            Logger.LogInformation($"Received an incoming straming activity. ActivityId: {activity.Id}");
+            Logger.LogInformation($"Received an incoming streaming activity. ActivityId: {activity.Id}");
 
             // If a conversation has moved from one connection to another for the same Channel or Skill and
             // hasn't been forgotten by the previous StreamingRequestHandler. The last requestHandler
@@ -161,6 +173,35 @@ namespace Microsoft.Bot.Builder.Streaming
 
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Creates a new StreamingRequestHandler to listen to the specififed Named Pipe
+        /// and pass requests to this adapter.
+        /// </summary>
+        /// <param name="pipeName">The name of the Named Pipe to connect to.</param>
+        /// <param name="bot">The bot to use when processing activities received over the Named Pipe.</param>
+        /// <returns>A task that completes only once the StreamingRequestHandler has stopped listening
+        /// for incoming requests on the Named Pipe.</returns>
+        public async Task ConnectNamedPipeAsync(string pipeName, IBot bot)
+        {
+            if (string.IsNullOrEmpty(pipeName))
+            {
+                throw new ArgumentNullException(nameof(pipeName));
+            }
+
+            ConnectedBot = bot ?? throw new ArgumentNullException(nameof(bot));
+            ClaimsIdentity = ClaimsIdentity ?? new ClaimsIdentity();
+
+            if (RequestHandlers == null)
+            {
+                RequestHandlers = new List<StreamingRequestHandler>();
+            }
+
+            var requestHandler = new StreamingRequestHandler(bot, this, pipeName, Logger);
+            RequestHandlers.Add(requestHandler);
+
+            await requestHandler.ListenAsync().ConfigureAwait(false);
         }
 
         protected override bool CanProcessOutgoingActivity(Activity activity)

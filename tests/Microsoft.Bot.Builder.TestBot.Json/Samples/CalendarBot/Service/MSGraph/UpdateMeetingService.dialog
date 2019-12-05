@@ -1,14 +1,14 @@
 {
   "$schema": "../../app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
+  "$kind": "Microsoft.AdaptiveDialog",
     "actions": [
 
         {
-            "$type": "Microsoft.IfCondition",
+            "$kind": "Microsoft.IfCondition",
             "condition": "dialog.token == null",
             "actions": [
                 {
-                    "$type": "Microsoft.OAuthInput",
+                    "$kind": "Microsoft.OAuthInput",
                     "ConnectionName": "msgraph",
                     "Title": "Log in",
                     "Text": "Please log in to your calendar account",
@@ -18,7 +18,7 @@
         },
 
         {
-            "$type": "Microsoft.HttpRequest",
+            "$kind": "Microsoft.HttpRequest",
             "url": "https://graph.microsoft.com/v1.0/me/events/{user.focusedMeeting.id}",
             "method": "PATCH",
             "header": {
@@ -37,7 +37,7 @@
             "Property": "user.updateResponse"
         }
         //{
-        //  "$type": "Microsoft.SendActivity",
+        //  "$kind": "Microsoft.SendActivity",
         //  "activity": "response: {user.updateResponse.content}"
         //}
     ]

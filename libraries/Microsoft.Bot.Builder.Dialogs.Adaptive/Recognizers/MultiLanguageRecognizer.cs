@@ -14,6 +14,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </summary>
     public class MultiLanguageRecognizer : IRecognizer
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.MultiLanguageRecognizer";
+
         public MultiLanguageRecognizer()
         {
         }

@@ -1,22 +1,22 @@
 {
     "$schema": "../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "triggers": [
         {
-            "$type": "Microsoft.OnBeginDialog",
+            "$kind": "Microsoft.OnBeginDialog",
             "actions": [
                 {
-                    "$type": "Microsoft.NumberInput",
+                    "$kind": "Microsoft.NumberInput",
                     "alwaysPrompt": true,
                     "property": "user.age",
                     "prompt": "What is your age?"
                 },
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Your age is: @{user.age}"
                 },
                 {
-                    "$type": "Testbot.JavascriptAction",
+                    "$kind": "Testbot.JavascriptAction",
                     "script": "Samples/13 - CustomStep/dogyears.js",
                     "inputBindings": {
                         "age": "user.age"
@@ -24,7 +24,7 @@
                     "outputBinding": "conversation.dogyears"
                 },
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Your age in dog years is: @{conversation.dogyears}"
                 }
             ]

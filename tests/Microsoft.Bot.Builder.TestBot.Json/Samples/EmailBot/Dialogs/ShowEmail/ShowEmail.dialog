@@ -1,30 +1,30 @@
 {
   "$schema": "../../app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
+  "$kind": "Microsoft.AdaptiveDialog",
   "recognizer": {
-    "$type": "Microsoft.RegexRecognizer",
+    "$kind": "Microsoft.RegexRecognizer",
     "intents": [
         {
 
-            "$type": "Microsoft.IntentPattern",
+            "$kind": "Microsoft.IntentPattern",
             "intent": "ForwardEmailIntent",
             "pattern": "(?i)forward" 
         },
         {
 
-            "$type": "Microsoft.IntentPattern",
+            "$kind": "Microsoft.IntentPattern",
             "intent": "ReplyEmailIntent",
             "pattern": "(?i)reply" 
         },
         {
 
-            "$type": "Microsoft.IntentPattern",
+            "$kind": "Microsoft.IntentPattern",
             "intent": "ShowNextPageIntent",
             "pattern": "(?i)next page" 
         },
         {
 
-            "$type": "Microsoft.IntentPattern",
+            "$kind": "Microsoft.IntentPattern",
             "intent": "ShowEmailIntent",
             "pattern": "(?i)show"
         }
@@ -32,21 +32,21 @@
   },
   "triggers": [
     {
-      "$type": "Microsoft.OnIntent",
+      "$kind": "Microsoft.OnIntent",
       "intent": "ForwardEmailIntent",
       "actions": [
         "ForwardEmail"
       ]
     },
     {
-      "$type": "Microsoft.OnIntent",
+      "$kind": "Microsoft.OnIntent",
       "intent": "ReplyEmailIntent",
       "actions": [
         "ReplyEmail"
       ]
     },
     {
-      "$type": "Microsoft.OnIntent",
+      "$kind": "Microsoft.OnIntent",
       "intent": "ShowNextPageIntent",
       "actions": [
         "NextPage",
@@ -54,7 +54,7 @@
       ]
     },
     {
-      "$type": "Microsoft.OnIntent",
+      "$kind": "Microsoft.OnIntent",
       "intent": "ShowEmailIntent",
       "actions": [
         "DisplayEmailList"
@@ -64,9 +64,9 @@
   "actions": [
     "DisplayEmailList",
     // Display overview again -- a little hack way. Always use intent to push a new dialog on top of stack, and reprompt this question after this new dialog is finished.
-    // Question: How to build a dialog which can repeat itself: show email->read email->show again?->show email… Do we need to use Microsoft.RepeatDialog? How to use it?
+    // Question: How to build a dialog which can repeat itself: show email->read email->show again?->show emailï¿½ Do we need to use Microsoft.RepeatDialog? How to use it?
     {
-      "$type": "Microsoft.ConfirmInput",
+      "$kind": "Microsoft.ConfirmInput",
       "property": "dialog.confirmed",
       "prompt": "You can say next page, show email again, forward this email, reply this email, etc, or say no to cancel the flow.",
       "retryPrompt": "Please try again.",
@@ -74,22 +74,22 @@
       "alwaysPrompt": true
     },
     {
-      "$type": "Microsoft.IfCondition",
+      "$kind": "Microsoft.IfCondition",
       "condition": "dialog.confirmed",
       "actions": [
       ],
       "elseActions": [
         {
-          "$type": "Microsoft.SendActivity",
+          "$kind": "Microsoft.SendActivity",
           "activity": "OK, have a good time."
         }
       ]
     },
 
     //// Display overview again
-    //// Question: How to build a dialog which can repeat itself: show email->read email->show again?->show email… Do we need to use Microsoft.RepeatDialog? How to use it?
+    //// Question: How to build a dialog which can repeat itself: show email->read email->show again?->show emailï¿½ Do we need to use Microsoft.RepeatDialog? How to use it?
     //{
-    //  "$type": "Microsoft.ConfirmInput",
+    //  "$kind": "Microsoft.ConfirmInput",
     //  "property": "dialog.confirmed",
     //  "prompt": "Do you want to see current email overview again?",
     //  "retryPrompt": "Please try again.",
@@ -97,18 +97,18 @@
     //  "alwaysPrompt": true
     //},
     //{
-    //  "$type": "Microsoft.IfCondition",
+    //  "$kind": "Microsoft.IfCondition",
     //  "condition": "dialog.confirmed",
     //  "actions": [
     //    //"ShowEmail",
     //    {
-    //      "$type": "Microsoft.SendActivity",
+    //      "$kind": "Microsoft.SendActivity",
     //      "activity": "Show email again."
     //    }
     //  ],
     //  "elseActions": [
     //    {
-    //      "$type": "Microsoft.SendActivity",
+    //      "$kind": "Microsoft.SendActivity",
     //      "activity": "OK, have a good time. You can also say 'next page email' to go to next page."
     //    }
     //  ]
