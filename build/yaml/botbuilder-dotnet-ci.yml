@@ -8,6 +8,7 @@ variables:
   BuildPlatform: any cpu
   GitHubCommentApiKey: needs to be defined in Azure
   IsBuildServer: true
+  Parameters.solution: Microsoft.Bot.Builder.sln
   PreviewPackageVersion: 4.6.0-preview-$(Build.BuildNumber)
   ReleasePackageVersion: 4.6.0-preview-$(Build.BuildNumber)
 
