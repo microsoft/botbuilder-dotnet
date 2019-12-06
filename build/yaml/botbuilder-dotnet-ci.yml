@@ -74,7 +74,7 @@ stages:
       timeoutInMinutes: 10
     strategy:
       maxParallel: 10
-      matrix: $(THREADS)
+      matrix: "$(THREADS)"
     steps:
     - script: echo "$(BotBuilderDll)"
     #- template: ci-api-validation-steps.yml
@@ -90,6 +90,3 @@ stages:
     steps:
     - script: echo Executing this 3
     #- template: ci-post-to-github-steps.yml
-
-
-
