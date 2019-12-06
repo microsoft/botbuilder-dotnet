@@ -382,7 +382,7 @@ namespace Microsoft.Bot.Builder.Skills
             turnContext.Activity.LocalTimestamp = eventActivity.LocalTimestamp;
             turnContext.Activity.Timestamp = eventActivity.Timestamp;
             turnContext.Activity.ChannelData = eventActivity.ChannelData;
-            turnContext.Activity.Properties = ((Activity)eventActivity).Properties;
+            turnContext.Activity.Properties = eventActivity.Properties;
         }
 
         private async Task<ResourceResponse> ProcessActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string replyToActivityId, Activity activity, CancellationToken cancellationToken)
