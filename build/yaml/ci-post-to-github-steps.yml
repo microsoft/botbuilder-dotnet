@@ -1,6 +1,3 @@
-dependsOn: Job_1
-pool:
-  name: Hosted Windows 2019 with VS2019
 #Your build pipeline references a secret variable named ‘GitHubCommentApiKey’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it secret. See https://go.microsoft.com/fwlink/?linkid=865972
 
 steps:
