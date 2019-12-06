@@ -61,12 +61,14 @@ stages:
        $threads = $threads.TrimEnd(' ').TrimEnd(',') + "}";
        $threads
 
-       "##vso[task.setVariable variable=threadvars;isOutput=true]$threads"
+       "##vso[task.setVariable variable=THREADS;isOutput=true]$threads"
       name: generate_threads
-    - script: echo $(threadvars)
+    - script: echo "$(THREADS)"
 
   - job: run_threads
     dependsOn: generate_thread_variables
+    variables:
+      THREADS: $[ dependencies.generate_thread_variables.outputs['generate_threads.THREADS'] ]
     pool:
       name: Hosted Windows 2019 with VS2019
       timeoutInMinutes: 10
@@ -74,8 +76,8 @@ stages:
     #  maxParallel: 10
     #  matrix: $[ dependencies.generate_thread_variables.outputs['generate_threads.threads'] ]
     steps:
-    - script: echo $[ dependencies.generate_thread_variables.outputs['generate_threads.threadvars'] ]
-    - script: echo $(threadvars)
+    - script: echo "$[ dependencies.generate_thread_variables.outputs['generate_threads.THREADS'] ]"
+    - script: echo "$(THREADS)"
     #- template: ci-api-validation-steps.yml
 
 - stage: Post_Results_to_GitHub
