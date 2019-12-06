@@ -23,7 +23,7 @@ stages:
   - job: generator
     steps:
     #- bash: echo "##vso[task.setVariable variable=legs;isOutput=true]{'a':{'myvar':'A'}, 'b':{'myvar':'B'}}"
-    - bash: echo "##vso[task.setVariable variable=legs;isOutput=true]{'Luis':{'BotBuilderDll':'Microsoft.Bot.Builder.AI.Luis'}, {'QnA':{'BotBuilderDll':'Microsoft.Bot.Builder.AI.QnA'}, {'ApplicationInsights':{'BotBuilderDll':'Microsoft.Bot.Builder.ApplicationInsights'}}"    
+    - bash: echo "##vso[task.setVariable variable=legs;isOutput=true]{'Luis':{'BotBuilderDll':'Microsoft.Bot.Builder.AI.Luis'}, 'QnA':{'BotBuilderDll':'Microsoft.Bot.Builder.AI.QnA'}, 'ApplicationInsights':{'BotBuilderDll':'Microsoft.Bot.Builder.ApplicationInsights'}}"
       name: mtrx
   # This expands to the matrix
   #   a:
