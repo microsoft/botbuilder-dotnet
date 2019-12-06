@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                             new Expression(
                                 TriggerTree.LookupFunction("ignore"),
                                 new Expression(new ExpressionEvaluator(
-                                    "runOnce",
+                                    $"runOnce{Id}",
                                     (expression, os) =>
                                     {
                                         var state = os as DialogStateManager;

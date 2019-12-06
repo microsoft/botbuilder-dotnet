@@ -201,7 +201,7 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
         /// </summary>
         /// <param name="state">State to evaluate against.</param>
         /// <returns>Enumeration of possible matches.</returns>
-        public IEnumerable<Node> Matches(object state) => Root.Matches(state);
+        public IEnumerable<Trigger> Matches(object state) => Root.Matches(state);
 
         /// <summary>
         /// Verify the tree meets speicalization/generalization invariants. 

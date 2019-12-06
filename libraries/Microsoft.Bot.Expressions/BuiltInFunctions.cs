@@ -1178,7 +1178,7 @@ namespace Microsoft.Bot.Expressions
 
         private static (object value, string error) And(Expression expression, IMemory state)
         {
-            object result = false;
+            object result = true;
             string error = null;
             foreach (var child in expression.Children)
             {

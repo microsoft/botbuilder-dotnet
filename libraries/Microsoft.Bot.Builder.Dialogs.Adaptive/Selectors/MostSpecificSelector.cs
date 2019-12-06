@@ -47,14 +47,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 
         public virtual async Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel)
         {
-            var nodes = _tree.Matches(context.GetState());
+            var triggers = _tree.Matches(context.GetState());
             var matches = new List<OnCondition>();
-            foreach (var node in nodes)
+            foreach (var trigger in triggers)
             {
-                foreach (var trigger in node.AllTriggers)
-                {
-                    matches.Add(trigger.Action as OnCondition);
-                }
+                matches.Add(trigger.Action as OnCondition);
             }
 
             IReadOnlyList<OnCondition> selections = matches;
