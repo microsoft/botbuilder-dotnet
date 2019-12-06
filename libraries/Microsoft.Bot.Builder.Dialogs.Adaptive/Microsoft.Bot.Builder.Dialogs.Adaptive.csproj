@@ -35,12 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Schemas\Actions\Microsoft.BreakLoop.schema" />
-    <None Remove="Schemas\Actions\Microsoft.ContinueLoop.schema" />
-    <None Remove="Schemas\Actions\Microsoft.GotoAction.schema" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(IsBuildServer)' == '' " Version="4.6.0-local" />
