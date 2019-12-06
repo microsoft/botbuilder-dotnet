@@ -39,29 +39,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("pageSize")]
         public int PageSize { get; set; } = 10;
 
-        public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            return NextPageAsync(dc, cancellationToken);
+            return await NextPageAsync(dc, cancellationToken).ConfigureAwait(false);
         }
 
-        protected override Task<DialogTurnResult> OnEndOfActionsAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default)
+        protected override async Task<DialogTurnResult> OnEndOfActionsAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default)
         {
-            return NextPageAsync(dc, cancellationToken);
+            return await NextPageAsync(dc, cancellationToken).ConfigureAwait(false);
         }
 
-        protected override Task<DialogTurnResult> OnBreakLoopAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
+        protected override async Task<DialogTurnResult> OnBreakLoopAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
         {
-            return dc.EndDialogAsync(cancellationToken: cancellationToken);
+            return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
-        protected override Task<DialogTurnResult> OnContinueLoopAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
+        protected override async Task<DialogTurnResult> OnContinueLoopAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
         {
-            return this.NextPageAsync(dc, cancellationToken);
+            return await this.NextPageAsync(dc, cancellationToken).ConfigureAwait(false);
         }
 
         protected override string OnComputeId()
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return $"{this.GetType().Name}({this.ItemsProperty})";
         }
 
-        private Task<DialogTurnResult> NextPageAsync(DialogContext dc, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> NextPageAsync(DialogContext dc, CancellationToken cancellationToken)
         {
             Expression itemsProperty = new ExpressionEngine().Parse(this.ItemsProperty);
             int pageIndex = dc.GetState().GetIntValue(FOREACHPAGEINDEX, 0);
@@ -85,12 +85,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 {
                     dc.GetState().SetValue(FOREACHPAGE, page);
                     dc.GetState().SetValue(FOREACHPAGEINDEX, ++pageIndex);
-                    return this.BeginActionAsync(dc, 0, cancellationToken);
+                    return await this.BeginActionAsync(dc, 0, cancellationToken).ConfigureAwait(false);
                 }
             }
 
             // End of list has been reached
-            return dc.EndDialogAsync(cancellationToken: cancellationToken);
+            return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         private List<object> GetPage(object list, int index, int pageSize)
@@ -116,15 +116,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             return page;
-        }
-
-        public class ForeachPageOptions
-        {
-            public Expression Items { get; set; }
-
-            public int Offset { get; set; }
-
-            public int PageSize { get; set; }
         }
     }
 }

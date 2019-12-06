@@ -22,32 +22,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
-        public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             if (this.Actions.Any())
             {
-                return this.BeginActionAsync(dc, 0, cancellationToken);
+                return await this.BeginActionAsync(dc, 0, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                return dc.EndDialogAsync(null, cancellationToken);
+                return await dc.EndDialogAsync(null, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
         {
             if (result is ActionScopeResult actionScopeResult)
             {
-                return OnActionScopeResultAsync(dc, actionScopeResult, cancellationToken);
+                return await OnActionScopeResultAsync(dc, actionScopeResult, cancellationToken).ConfigureAwait(false);
             }
 
             var nextOffset = dc.GetState().GetIntValue(OFFSETKEY, 0) + 1;
             if (nextOffset < this.Actions.Count)
             {
-                return this.BeginActionAsync(dc, nextOffset, cancellationToken: cancellationToken);
+                return await this.BeginActionAsync(dc, nextOffset, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            return this.OnEndOfActionsAsync(dc, result, cancellationToken: cancellationToken);
+            return await this.OnEndOfActionsAsync(dc, result, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         public virtual IEnumerable<Dialog> GetDependencies()
@@ -58,25 +58,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
-        protected virtual Task<DialogTurnResult> OnActionScopeResultAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
+        protected virtual async Task<DialogTurnResult> OnActionScopeResultAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
         {
             switch (actionScopeResult.ActionScopeCommand)
             {
                 case ActionScopeCommands.GotoAction:
-                    return this.OnGotoActionAsync(dc, actionScopeResult, cancellationToken);
+                    return await this.OnGotoActionAsync(dc, actionScopeResult, cancellationToken).ConfigureAwait(false);
 
                 case ActionScopeCommands.BreakLoop:
-                    return this.OnBreakLoopAsync(dc, actionScopeResult, cancellationToken);
+                    return await this.OnBreakLoopAsync(dc, actionScopeResult, cancellationToken).ConfigureAwait(false);
 
                 case ActionScopeCommands.ContinueLoop:
-                    return this.OnContinueLoopAsync(dc, actionScopeResult, cancellationToken);
+                    return await this.OnContinueLoopAsync(dc, actionScopeResult, cancellationToken).ConfigureAwait(false);
 
                 default:
                     throw new NotImplementedException($"Unknown action scope command returned: {actionScopeResult.ActionScopeCommand}");
             }
         }
 
-        protected virtual Task<DialogTurnResult> OnGotoActionAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
+        protected virtual async Task<DialogTurnResult> OnGotoActionAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
         {
             // Look for action to goto
             var offset = this.Actions.FindIndex((d) => d.Id == actionScopeResult.ActionId);
@@ -85,11 +85,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             if (offset >= 0)
             {
                 // being that action
-                return this.BeginActionAsync(dc, offset, cancellationToken);
+                return await this.BeginActionAsync(dc, offset, cancellationToken).ConfigureAwait(false);
             }
             else if (dc.Stack.Count > 1)
             {
-                return dc.EndDialogAsync(actionScopeResult, cancellationToken);
+                return await dc.EndDialogAsync(actionScopeResult, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -97,33 +97,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
-        protected virtual Task<DialogTurnResult> OnBreakLoopAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
+        protected virtual async Task<DialogTurnResult> OnBreakLoopAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
         {
-            return dc.EndDialogAsync(actionScopeResult, cancellationToken);
+            return await dc.EndDialogAsync(actionScopeResult, cancellationToken).ConfigureAwait(false);
         }
 
-        protected virtual Task<DialogTurnResult> OnContinueLoopAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
+        protected virtual async Task<DialogTurnResult> OnContinueLoopAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
         {
-            return dc.EndDialogAsync(actionScopeResult, cancellationToken);
+            return await dc.EndDialogAsync(actionScopeResult, cancellationToken).ConfigureAwait(false);
         }
 
-        protected virtual Task<DialogTurnResult> OnEndOfActionsAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default)
+        protected virtual async Task<DialogTurnResult> OnEndOfActionsAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default)
         {
             if (result is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
             }
 
-            return dc.EndDialogAsync(result, cancellationToken);
+            return await dc.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
         }
 
-        protected virtual Task<DialogTurnResult> BeginActionAsync(DialogContext dc, int offset, CancellationToken cancellationToken = default)
+        protected virtual async Task<DialogTurnResult> BeginActionAsync(DialogContext dc, int offset, CancellationToken cancellationToken = default)
         {
             dc.GetState().SetValue(OFFSETKEY, offset);
             var actionId = this.Actions[offset].Id;
 
             // begin Action
-            return dc.BeginDialogAsync(actionId, cancellationToken: cancellationToken);
+            return await dc.BeginDialogAsync(actionId, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         protected override string OnComputeId()
