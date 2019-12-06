@@ -1,10 +1,10 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "union(Microsoft.IDialog)",
-    "title": "QnAMaker Dialog",
-    "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
-    "type": "object",
-    "additionalProperties": false,
+  "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+  "$role": "union(Microsoft.IDialog)",
+  "title": "QnAMaker Dialog",
+  "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
+  "type": "object",
+  "additionalProperties": false,
   "properties": {
     "knowledgeBaseId": {
       "$role": "expression",
@@ -96,9 +96,9 @@
       "default": "Default"
     }
   },
-    "required": [
-        "knowledgeBaseId",
-        "endpointKey",
-        "hostname"
-    ]
+  "required": [
+    "knowledgeBaseId",
+    "endpointKey",
+    "hostname"
+  ]
 }
