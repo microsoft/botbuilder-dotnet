@@ -69,11 +69,11 @@ stages:
     pool:
       name: Hosted Windows 2019 with VS2019
       timeoutInMinutes: 10
-    strategy:
-      maxParallel: 10
-      matrix: $[ dependencies.generate_thread_variables.outputs['generate_threads.threads'] ]
+    #strategy:
+    #  maxParallel: 10
+    #  matrix: $[ dependencies.generate_thread_variables.outputs['generate_threads.threads'] ]
     steps:
-    - script: echo $(BotBuilderDll)
+    - script: echo $[ dependencies.generate_thread_variables.outputs['generate_threads.threads'] ]
     #- template: ci-api-validation-steps.yml
 
 - stage: Post_Results_to_GitHub
