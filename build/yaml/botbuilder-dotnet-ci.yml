@@ -19,6 +19,8 @@ stages:
 - stage: API_Compatibility_Validation
   jobs:
   - job: generator
+    pool:
+      name: Hosted Windows 2019 with VS2019
     steps:
     - bash: echo "##vso[task.setVariable variable=legs;isOutput=true]{'a':{'myvar':'A'}, 'b':{'myvar':'B'}}"
       name: mtrx
