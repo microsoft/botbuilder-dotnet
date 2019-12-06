@@ -56,9 +56,9 @@ stages:
            Write-Host $library
 
            $threadName = $library.Split(".")[-1];
-           $threads += "{'" + $threadName + "':{'BotBuilderDll':'" + $library + "'},";
+           $threads += "{'" + $threadName + "':{'BotBuilderDll':'" + $library + "'}, ";
          }
-       $threads = $threads.TrimEnd(',') + "}";
+       $threads = $threads.TrimEnd(' ').TrimEnd(',') + "}";
        $threads
 
        "##vso[task.setVariable variable=threads;isOutput=true]$threads"
