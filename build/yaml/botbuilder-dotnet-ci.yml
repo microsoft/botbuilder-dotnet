@@ -13,14 +13,14 @@ variables:
   Parameters.solution: Microsoft.Bot.Builder.sln
   PreviewPackageVersion: 4.6.0-preview-$(Build.BuildNumber)
   ReleasePackageVersion: 4.6.0-preview-$(Build.BuildNumber)
+pool:
+  name: Hosted Windows 2019 with VS2019
 
 #Multi-configuration and multi-agent job options are not exported to YAML. Configure these options using documentation guidance: https://docs.microsoft.com/vsts/pipelines/process/phases
 stages:
 - stage: API_Compatibility_Validation
   jobs:
   - job: generator
-    pool:
-      name: Hosted Windows 2019 with VS2019
     steps:
     - bash: echo "##vso[task.setVariable variable=legs;isOutput=true]{'a':{'myvar':'A'}, 'b':{'myvar':'B'}}"
       name: mtrx
