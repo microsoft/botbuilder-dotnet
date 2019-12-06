@@ -33,12 +33,7 @@ namespace Microsoft.Bot.Builder.TestProtocol.Controllers
         public async Task PostAsync()
         {
             var inboundActivity = await HttpHelper.ReadRequestAsync<Activity>(Request);
-
-            var currentConversationId = inboundActivity.Conversation.Id;
-            var currentServiceUrl = inboundActivity.ServiceUrl;
-
-            var nextConversationId = await _factory.CreateSkillConversationIdAsync(currentConversationId, currentServiceUrl, CancellationToken.None);
-
+            var nextConversationId = await _factory.CreateSkillConversationIdAsync(inboundActivity.GetConversationReference(), CancellationToken.None);
             await _client.PostActivityAsync(null, null, _toUri, _serviceUrl, nextConversationId, inboundActivity);
 
             // ALTERNATIVE API IDEA...

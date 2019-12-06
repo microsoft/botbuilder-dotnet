@@ -148,7 +148,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             {
                 ScoreThreshold = this.threshold,
                 StrictFilters = this.strictFilters,
-                Top = this.top
+                Top = this.top, 
+                Context = new QnARequestContext(),
+                QnAId = 0,
+                RankerType = RankerTypes.DefaultRankerType,
+                IsTest = false
             });
         }
 
@@ -166,7 +170,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         private async Task<DialogTurnResult> CallGenerateAnswerAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);
+            
+            // Resetting context and QnAId
             dialogOptions.QnAMakerOptions.QnAId = 0;
+            dialogOptions.QnAMakerOptions.Context = new QnARequestContext();
 
             // Storing the context info
             stepContext.Values[ValueProperty.CurrentQuery] = stepContext.Context.Activity.Text;

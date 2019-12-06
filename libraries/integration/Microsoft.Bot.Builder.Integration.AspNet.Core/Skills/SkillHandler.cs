@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -80,9 +80,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <param name='activity'>Activity to send.</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task for a resource response.</returns>
-        protected override Task<ResourceResponse> OnSendToConversationAsync(ClaimsIdentity claimsIdentity, string conversationId, Activity activity, CancellationToken cancellationToken = default)
+        protected override async Task<ResourceResponse> OnSendToConversationAsync(ClaimsIdentity claimsIdentity, string conversationId, Activity activity, CancellationToken cancellationToken = default)
         {
-            return HandleChannelRequestAsync<ResourceResponse>(claimsIdentity, ChannelApiMethods.SendToConversation, conversationId, activity);
+            return await ProcessActivityAsync(claimsIdentity, conversationId, null, activity, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -109,9 +109,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <param name='activity'>Activity to send.</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task for a resource response.</returns>
-        protected override Task<ResourceResponse> OnReplyToActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
+        protected override async Task<ResourceResponse> OnReplyToActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
-            return HandleChannelRequestAsync<ResourceResponse>(claimsIdentity, ChannelApiMethods.ReplyToActivity, conversationId, activity, activityId);
+            return await ProcessActivityAsync(claimsIdentity, conversationId, activityId, activity, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <returns>task for a resource response.</returns>
         protected override Task<ResourceResponse> OnUpdateActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
-            return HandleChannelRequestAsync<ResourceResponse>(claimsIdentity, ChannelApiMethods.UpdateActivity, conversationId, activityId, activity);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <returns>task for a resource response.</returns>
         protected override Task OnDeleteActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, CancellationToken cancellationToken = default)
         {
-            return HandleChannelRequestAsync(claimsIdentity, ChannelApiMethods.DeleteActivity, conversationId, activityId);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <returns>task with result.</returns>
         protected override Task<IList<ChannelAccount>> OnGetActivityMembersAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, CancellationToken cancellationToken = default)
         {
-            return HandleChannelRequestAsync<IList<ChannelAccount>>(claimsIdentity, ChannelApiMethods.GetActivityMembers, conversationId, activityId);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <returns>task for a conversation resource response.</returns>
         protected override Task<ConversationResourceResponse> OnCreateConversationAsync(ClaimsIdentity claimsIdentity, ConversationParameters parameters, CancellationToken cancellationToken = default)
         {
-            return HandleChannelRequestAsync<ConversationResourceResponse>(claimsIdentity, ChannelApiMethods.CreateConversation, null, parameters);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <returns>task for ConversationsResult.</returns>
         protected override Task<ConversationsResult> OnGetConversationsAsync(ClaimsIdentity claimsIdentity, string conversationId, string continuationToken = default, CancellationToken cancellationToken = default)
         {
-            return HandleChannelRequestAsync<ConversationsResult>(claimsIdentity, ChannelApiMethods.GetConversations, conversationId, continuationToken);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <returns>task for a response.</returns>
         protected override Task<IList<ChannelAccount>> OnGetConversationMembersAsync(ClaimsIdentity claimsIdentity, string conversationId, CancellationToken cancellationToken = default)
         {
-            return HandleChannelRequestAsync<IList<ChannelAccount>>(claimsIdentity, ChannelApiMethods.GetConversationMembers, conversationId);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <returns>task for a response.</returns>
         protected override Task<PagedMembersResult> OnGetConversationPagedMembersAsync(ClaimsIdentity claimsIdentity, string conversationId, int? pageSize = default, string continuationToken = default, CancellationToken cancellationToken = default)
         {
-            return HandleChannelRequestAsync<PagedMembersResult>(claimsIdentity, ChannelApiMethods.GetConversationPagedMembers, conversationId, pageSize, continuationToken);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -306,7 +306,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <returns>task.</returns>
         protected override Task OnDeleteConversationMemberAsync(ClaimsIdentity claimsIdentity, string conversationId, string memberId, CancellationToken cancellationToken = default)
         {
-            return HandleChannelRequestAsync(claimsIdentity, ChannelApiMethods.DeleteConversationMember, conversationId, memberId);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -328,7 +328,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <returns>task for a resource response.</returns>
         protected override Task<ResourceResponse> OnSendConversationHistoryAsync(ClaimsIdentity claimsIdentity, string conversationId, Transcript transcript, CancellationToken cancellationToken = default)
         {
-            return HandleChannelRequestAsync<ResourceResponse>(claimsIdentity, ChannelApiMethods.SendConversationHistory, conversationId, transcript);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -350,76 +350,67 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <returns>task with result.</returns>
         protected override Task<ResourceResponse> OnUploadAttachmentAsync(ClaimsIdentity claimsIdentity, string conversationId, AttachmentData attachmentUpload, CancellationToken cancellationToken = default)
         {
-            return HandleChannelRequestAsync<ResourceResponse>(claimsIdentity, ChannelApiMethods.UploadAttachment, conversationId, attachmentUpload);
+            throw new NotImplementedException();
         }
 
-        private static IInvokeActivity CreateSkillInvokeActivity(string callerServiceUrl, string callerConversationId)
+        private static void ApplyEoCToTurnContextActivity(ITurnContext turnContext, Activity endOfConversationActivity)
         {
-            var channelApiInvokeActivity = Activity.CreateInvokeActivity();
-            channelApiInvokeActivity.Name = ChannelApiMiddleware.InvokeActivityName;
-            channelApiInvokeActivity.ChannelId = "unknown";
-            channelApiInvokeActivity.ServiceUrl = callerServiceUrl;
-            channelApiInvokeActivity.Conversation = new ConversationAccount(id: callerConversationId);
-            channelApiInvokeActivity.From = new ChannelAccount(id: "unknown");
-            channelApiInvokeActivity.Recipient = new ChannelAccount(id: "unknown", role: RoleTypes.Bot);
-            return channelApiInvokeActivity;
+            // transform the turnContext.Activity to be the EndOfConversation.
+            turnContext.Activity.Type = endOfConversationActivity.Type;
+            turnContext.Activity.Text = endOfConversationActivity.Text;
+            turnContext.Activity.Code = endOfConversationActivity.Code;
+
+            turnContext.Activity.ReplyToId = endOfConversationActivity.ReplyToId;
+            turnContext.Activity.Value = endOfConversationActivity.Value;
+            turnContext.Activity.Entities = endOfConversationActivity.Entities;
+            turnContext.Activity.LocalTimestamp = endOfConversationActivity.LocalTimestamp;
+            turnContext.Activity.Timestamp = endOfConversationActivity.Timestamp;
+            turnContext.Activity.ChannelData = endOfConversationActivity.ChannelData;
+            turnContext.Activity.Properties = endOfConversationActivity.Properties;
         }
 
-        private async Task HandleChannelRequestAsync(ClaimsIdentity claimsIdentity, string method, string conversationId, params object[] args)
+        private static void ApplyEventToTurnContextActivity(ITurnContext turnContext, Activity eventActivity)
         {
-            await HandleChannelRequestAsync<object>(claimsIdentity, method, conversationId, args).ConfigureAwait(false);
+            // transform the turnContext.Activity to be the EventActivity.
+            turnContext.Activity.Type = eventActivity.Type;
+            turnContext.Activity.Name = eventActivity.Name;
+            turnContext.Activity.Value = eventActivity.Value;
+            turnContext.Activity.RelatesTo = eventActivity.RelatesTo;
+
+            turnContext.Activity.ReplyToId = eventActivity.ReplyToId;
+            turnContext.Activity.Value = eventActivity.Value;
+            turnContext.Activity.Entities = eventActivity.Entities;
+            turnContext.Activity.LocalTimestamp = eventActivity.LocalTimestamp;
+            turnContext.Activity.Timestamp = eventActivity.Timestamp;
+            turnContext.Activity.ChannelData = eventActivity.ChannelData;
+            turnContext.Activity.Properties = ((Activity)eventActivity).Properties;
         }
 
-        private async Task<T> HandleChannelRequestAsync<T>(ClaimsIdentity claimsIdentity, string method, string conversationId, params object[] args)
+        private async Task<ResourceResponse> ProcessActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string replyToActivityId, Activity activity, CancellationToken cancellationToken)
         {
-            // make sure there is a channel api middleware
-            if (!_adapter.MiddlewareSet.Any(mw => mw is ChannelApiMiddleware))
+            var conversationReference = await _conversationIdIdFactory.GetConversationReferenceAsync(conversationId, CancellationToken.None).ConfigureAwait(false);
+            var callback = new BotCallbackHandler(async (turnContext, ct) =>
             {
-                _adapter.MiddlewareSet.Use(new ChannelApiMiddleware());
-            }
+                activity.ApplyConversationReference(conversationReference);
+                turnContext.Activity.Id = replyToActivityId;
+                switch (activity.Type)
+                {
+                    case ActivityTypes.EndOfConversation:
+                        ApplyEoCToTurnContextActivity(turnContext, activity);
+                        await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
+                        break;
+                    case ActivityTypes.Event:
+                        ApplyEventToTurnContextActivity(turnContext, activity);
+                        await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
+                        break;
+                    default:
+                        await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                        break;
+                }
+            });
 
-            _logger.LogInformation($"HandleChannelRequestAsync(). Invoking method \"{method}\"");
-
-            var (callerConversationId, callerServiceUrl) = await _conversationIdIdFactory.GetConversationInfoAsync(conversationId, CancellationToken.None).ConfigureAwait(false);
-
-            var channelApiInvokeActivity = CreateSkillInvokeActivity(callerServiceUrl, callerConversationId);
-
-            var activityPayload = args?.Where(arg => arg is Activity).Cast<Activity>().FirstOrDefault();
-            if (activityPayload != null)
-            {
-                // fix up activityPayload with original conversation.Id and id
-                activityPayload.Conversation.Id = callerConversationId;
-                activityPayload.ServiceUrl = callerServiceUrl;
-
-                // use the activityPayload for channel accounts, it will be in From=Bot/Skill Recipient=User, 
-                // We want to send it to the bot as From=User, Recipient=Bot so we have correct state context.
-                channelApiInvokeActivity.ChannelId = activityPayload.ChannelId;
-                channelApiInvokeActivity.From = activityPayload.Recipient;
-                channelApiInvokeActivity.Recipient = activityPayload.From;
-
-                // We want ActivityPayload to also be in User->Bot context, if it is outbound it will go through context.SendActivity which will flip outgoing to Bot->User
-                // regardless this gives us same memory context of User->Bot which is useful for things like EndOfConversation processing being in the correct memory context.
-                activityPayload.From = channelApiInvokeActivity.From;
-                activityPayload.Recipient = channelApiInvokeActivity.Recipient;
-            }
-
-            var channelApiArgs = new ChannelApiArgs
-            {
-                Method = method,
-                Args = args
-            };
-            channelApiInvokeActivity.Value = channelApiArgs;
-
-            // send up to the bot to process it...
-            await _adapter.ProcessActivityAsync(claimsIdentity, (Activity)channelApiInvokeActivity, _bot.OnTurnAsync, CancellationToken.None).ConfigureAwait(false);
-
-            if (channelApiArgs.Exception != null)
-            {
-                throw channelApiArgs.Exception;
-            }
-
-            // Return the result that was captured in the middleware handler. 
-            return (T)channelApiArgs.Result;
+            await _adapter.ContinueConversationAsync(claimsIdentity, conversationReference, callback, cancellationToken).ConfigureAwait(false);
+            return new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
         }
     }
 }
