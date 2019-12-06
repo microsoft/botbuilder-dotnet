@@ -63,6 +63,7 @@ stages:
 
        "##vso[task.setVariable variable=threadvars;isOutput=true]$threads"
       name: generate_threads
+    - script: echo $(threadvars)
 
   - job: run_threads
     dependsOn: generate_thread_variables
@@ -74,6 +75,7 @@ stages:
     #  matrix: $[ dependencies.generate_thread_variables.outputs['generate_threads.threads'] ]
     steps:
     - script: echo $[ dependencies.generate_thread_variables.outputs['generate_threads.threadvars'] ]
+    - script: echo $(threadvars)
     #- template: ci-api-validation-steps.yml
 
 - stage: Post_Results_to_GitHub
