@@ -13,26 +13,80 @@ variables:
   Parameters.solution: Microsoft.Bot.Builder.sln
   PreviewPackageVersion: 4.6.0-preview-$(Build.BuildNumber)
   ReleasePackageVersion: 4.6.0-preview-$(Build.BuildNumber)
-pool:
-  name: Hosted Windows 2019 with VS2019
 
 #Multi-configuration and multi-agent job options are not exported to YAML. Configure these options using documentation guidance: https://docs.microsoft.com/vsts/pipelines/process/phases
 stages:
-- stage: API_Compatibility_Validation
+- stage: Build
   jobs:
-  - job: generator
+  - job: Debug_Windows_Configuration
+    pool:
+      name: Hosted Windows 2019 with VS2019
+      demands:
+      - msbuild
+      - visualstudio
+    variables:
+      BuildConfiguration: Debug-Windows
     steps:
-    #- bash: echo "##vso[task.setVariable variable=legs;isOutput=true]{'a':{'myvar':'A'}, 'b':{'myvar':'B'}}"
-    - bash: echo "##vso[task.setVariable variable=legs;isOutput=true]{'Luis':{'BotBuilderDll':'Microsoft.Bot.Builder.AI.Luis'}, 'QnA':{'BotBuilderDll':'Microsoft.Bot.Builder.AI.QnA'}, 'ApplicationInsights':{'BotBuilderDll':'Microsoft.Bot.Builder.ApplicationInsights'}}"
-      name: mtrx
-  # This expands to the matrix
-  #   a:
-  #     myvar: A
-  #   b:
-  #     myvar: B
-  - job: runner
-    dependsOn: generator
+    - script: echo Executing this 1
+    #- template: ci-build-steps.yml
+  - job: Release_Windows_Configuration
+    pool:
+      name: Hosted Windows 2019 with VS2019
+      demands:
+      - msbuild
+      - visualstudio
+    variables:
+      BuildConfiguration: Release-Windows
+    steps:
+    - script: echo Executing this 2
+    #- template: ci-build-steps.yml
+
+- stage: API_Compatibility_Validation
+  dependsOn: Build
+  jobs:
+  - job: generate_thread_variables
+    pool:
+      name: Hosted Windows 2019 with VS2019
+    steps:
+    - powershell: |
+       $threads = '{';
+
+       $env:BotBuilderDll.Split(",") | ForEach {
+           $library = $_.Trim()
+           Write-Host $library
+
+           $threadName = $library.Split(".")[-1];
+           $threads += "'" + $threadName + "':{'BotBuilderDll':'" + $library + "'}, ";
+         }
+       $threads = $threads.TrimEnd(' ').TrimEnd(',') + "}";
+       $threads
+
+       "##vso[task.setVariable variable=THREADS;isOutput=true]$threads"
+      name: generate_threads
+    - script: echo $(generate_threads.THREADS)
+
+  - job: run_threads
+    dependsOn: generate_thread_variables
+    variables:
+      THREADS: $[ dependencies.generate_thread_variables.outputs['generate_threads.THREADS'] ]
+    pool:
+      name: Hosted Windows 2019 with VS2019
+      timeoutInMinutes: 10
     strategy:
-      matrix: $[ dependencies.generator.outputs['mtrx.legs'] ]
+      matrix: $[ dependencies.generate_thread_variables.outputs['generate_threads.THREADS'] ]
     steps:
-    - script: echo $(myvar) # echos A or B depending on which leg is running
+    - script: echo $(BotBuilderDll)
+    - script: echo $(THREADS)
+    #- template: ci-api-validation-steps.yml
+
+- stage: Post_Results_to_GitHub
+  dependsOn: API_Compatibility_Validation
+  jobs:
+  - job: Post_to_GitHub
+    pool:
+      name: Hosted Windows 2019 with VS2019
+    variables:
+      BuildConfiguration: Release-Windows
+    steps:
+    - script: echo Executing this 3
+    #- template: ci-post-to-github-steps.yml
