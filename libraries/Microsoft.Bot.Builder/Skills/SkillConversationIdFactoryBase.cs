@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// </summary>
         /// <param name="skillConversationId">A skill conversationId created using <see cref="CreateSkillConversationIdAsync"/>.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
-        /// <returns>The caller's <see cref="ConversationReference"/> for a skillConversationId. null if not found</returns>
+        /// <returns>The caller's <see cref="ConversationReference"/> for a skillConversationId. null if not found.</returns>
         public abstract Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken);
 
         /// <summary>
