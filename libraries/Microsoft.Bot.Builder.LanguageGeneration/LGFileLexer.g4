@@ -14,10 +14,11 @@ lexer grammar LGFileLexer;
 @lexer::header {#pragma warning disable 3021} // Disable StyleCop warning CS3021 re CLSCompliant attribute in generated files.
 
 @lexer::members {
-  bool ignoreWS = true;      // usually we ignore whitespace, but inside template, whitespace is significant
-  bool expectKeywords = false; // whether we are expecting IF/ELSEIF/ELSE
+  bool ignoreWS = true; // usually we ignore whitespace, but inside template, whitespace is significant
   bool inTemplate = false; // whether we are in the template
-  bool startOfTemplateBody = false; // whether we are at the begining of template body
+  bool beginOfTemplateBody = false; // whether we are at the begining of template body
+  bool inMultiline = false; // whether we are in multiline
+  bool beginOfTemplateLine = false;// weather we are at the begining of template string
 }
 
 // fragments
@@ -61,22 +62,22 @@ NEWLINE
   ;
 
 HASH
-  : '#' { inTemplate = true; startOfTemplateBody = false; } -> pushMode(TEMPLATE_NAME_MODE)
+  : '#' { inTemplate = true; beginOfTemplateBody = false; } -> pushMode(TEMPLATE_NAME_MODE)
   ;
 
 DASH
-  : '-' { inTemplate }? { expectKeywords = true; startOfTemplateBody = false; } -> pushMode(TEMPLATE_BODY_MODE)
+  : '-' { inTemplate }? { beginOfTemplateLine = true; beginOfTemplateBody = false; } -> pushMode(TEMPLATE_BODY_MODE)
   ;
 
 LEFT_SQUARE_BRACKET
-  : '[' { inTemplate && startOfTemplateBody }? -> pushMode(STRUCTURED_TEMPLATE_BODY_MODE)
+  : '[' { inTemplate && beginOfTemplateBody }? -> pushMode(STRUCTURED_TEMPLATE_BODY_MODE)
   ;
 
 IMPORT
   : '[' ~[\r\n[\]]*? ']' '(' ~[\r\n()]*? ')' { inTemplate = false;}
   ;
 
-INVALID_TOKEN_DEFAULT_MODE
+INVALID_TOKEN
   : .
   ;
 
@@ -87,7 +88,7 @@ WS_IN_NAME
   ;
 
 NEWLINE_IN_NAME
-  : '\r'? '\n' { startOfTemplateBody = true;}-> skip, popMode
+  : '\r'? '\n' { beginOfTemplateBody = true;}-> skip, popMode
   ;
 
 IDENTIFIER
@@ -116,57 +117,70 @@ TEXT_IN_NAME
 
 mode TEMPLATE_BODY_MODE;
 
-// a little tedious on the rules, a big improvement on portability
-WS_IN_BODY_IGNORED
+WS_IN_BODY
   : WHITESPACE+  {ignoreWS}? -> skip
   ;
 
-WS_IN_BODY
-  : WHITESPACE+  -> type(WS)
-  ;
-
 MULTILINE_PREFIX
-  : '```' -> pushMode(MULTILINE)
+  : '```' { !inMultiline  && beginOfTemplateLine }? { inMultiline = true; beginOfTemplateLine = false;}-> pushMode(MULTILINE_MODE)
   ;
 
 NEWLINE_IN_BODY
-  : '\r'? '\n' {ignoreWS = true;} -> skip, popMode
+  : '\r'? '\n' { ignoreWS = true;} -> skip, popMode
   ;
 
 IF
-  : I F WHITESPACE* ':'  {expectKeywords}? { ignoreWS = true;}
+  : I F WHITESPACE* ':'  {beginOfTemplateLine}? { ignoreWS = true; beginOfTemplateLine = false;}
   ;
 
 ELSEIF
-  : E L S E WHITESPACE* I F WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+  : E L S E WHITESPACE* I F WHITESPACE* ':' {beginOfTemplateLine}? { ignoreWS = true; beginOfTemplateLine = false;}
   ;
 
 ELSE
-  : E L S E WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+  : E L S E WHITESPACE* ':' {beginOfTemplateLine}? { ignoreWS = true; beginOfTemplateLine = false;}
   ;
 
 SWITCH
-  : S W I T C H WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+  : S W I T C H WHITESPACE* ':' {beginOfTemplateLine}? { ignoreWS = true; beginOfTemplateLine = false;}
   ;
 
 CASE
-  : C A S E WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+  : C A S E WHITESPACE* ':' {beginOfTemplateLine}? { ignoreWS = true; beginOfTemplateLine = false;}
   ;
 
 DEFAULT
-  : D E F A U L T WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+  : D E F A U L T WHITESPACE* ':' {beginOfTemplateLine}? { ignoreWS = true; beginOfTemplateLine = false;}
   ;
 
 ESCAPE_CHARACTER
-  : ESCAPE_CHARACTER_FRAGMENT  { ignoreWS = false; expectKeywords = false;}
+  : ESCAPE_CHARACTER_FRAGMENT  { ignoreWS = false; beginOfTemplateLine = false;}
   ;
 
 EXPRESSION
-  : EXPRESSION_FRAGMENT  { ignoreWS = false; expectKeywords = false;}
+  : EXPRESSION_FRAGMENT  { ignoreWS = false; beginOfTemplateLine = false;}
   ;
 
 TEXT
-  : ~[\r\n]+?  { ignoreWS = false; expectKeywords = false;}
+  : ~[\r\n]+?  { ignoreWS = false; beginOfTemplateLine = false;}
+  ;
+
+mode MULTILINE_MODE;
+
+MULTILINE_SUFFIX
+  : '```' { inMultiline = false; } -> popMode
+  ;
+
+MULTILINE_ESCAPE_CHARACTER
+  : ESCAPE_CHARACTER_FRAGMENT -> type(ESCAPE_CHARACTER)
+  ;
+
+MULTILINE_EXPRESSION
+  : EXPRESSION_FRAGMENT -> type(EXPRESSION)
+  ;
+
+MULTILINE_TEXT
+  : (('\r'? '\n') | ~[\r\n])+? -> type(TEXT)
   ;
 
 mode STRUCTURED_TEMPLATE_BODY_MODE;
@@ -189,22 +203,4 @@ STRUCTURED_TEMPLATE_BODY_END
 
 STRUCTURED_CONTENT
   : ~[\r\n]+
-  ;
-
-mode MULTILINE;
-
-MULTILINE_SUFFIX
-  : '```' -> popMode
-  ;
-
-MULTILINE_ESCAPE_CHARACTER
-  : ESCAPE_CHARACTER_FRAGMENT -> type(ESCAPE_CHARACTER)
-  ;
-
-MULTILINE_EXPRESSION
-  : EXPRESSION_FRAGMENT -> type(EXPRESSION)
-  ;
-
-MULTILINE_TEXT
-  : (('\r'? '\n') | ~[\r\n])+? -> type(TEXT)
   ;

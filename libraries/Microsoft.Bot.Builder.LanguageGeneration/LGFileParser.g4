@@ -13,6 +13,11 @@ paragraph
     : templateDefinition
     | importDefinition
     | EOF
+    | errorTemplate
+    ;
+
+errorTemplate
+    : INVALID_TOKEN+
     ;
 
 templateDefinition
@@ -68,11 +73,11 @@ templateString
     ;
 
 normalTemplateString
-	: DASH (WS|TEXT|EXPRESSION|ESCAPE_CHARACTER|MULTILINE_SUFFIX|MULTILINE_PREFIX)*
-	;
+    : DASH MULTILINE_PREFIX? (TEXT|EXPRESSION|ESCAPE_CHARACTER)* MULTILINE_SUFFIX?
+    ;
 
 errorTemplateString
-	: INVALID_TOKEN_DEFAULT_MODE+
+	: INVALID_TOKEN+
 	;
 
 ifElseTemplateBody

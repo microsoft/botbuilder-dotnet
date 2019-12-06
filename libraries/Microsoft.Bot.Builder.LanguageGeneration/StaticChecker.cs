@@ -460,9 +460,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     result.AddRange(CheckExpression(expression.GetText(), context));
                 }
 
-                var multiLinePrefixNum = context.MULTILINE_PREFIX().Length;
-                var multiLineSuffixNum = context.MULTILINE_SUFFIX().Length;
-                if (multiLinePrefixNum > 0 && multiLinePrefixNum > multiLineSuffixNum)
+                var multiLinePrefix = context.MULTILINE_PREFIX();
+                var multiLineSuffix = context.MULTILINE_SUFFIX();
+
+                if (multiLinePrefix != null && multiLineSuffix == null)
                 {
                     result.Add(BuildLGDiagnostic("Close ``` is missing.", context: context));
                 }
