@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// Ranker Types.
         /// </value>
         [JsonProperty("rankerType")]
-        public string RankerType { get; set; }
+        public string RankerType { get; set; } = RankerTypes.DefaultRankerType;
 
         protected async override Task<IQnAMakerClient> GetQnAMakerClientAsync(DialogContext dc)
         {
@@ -174,10 +174,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
                 ScoreThreshold = this.Threshold,
                 StrictFilters = this.StrictFilters,
                 Top = this.Top,
-                Context = new QnARequestContext(),
                 QnAId = 0,
-                RankerType = RankerTypes.DefaultRankerType,
-                IsTest = false
+                RankerType = this.RankerType,
+                IsTest = this.IsTest
             });
         }
 
