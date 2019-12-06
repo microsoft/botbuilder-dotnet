@@ -74,7 +74,7 @@ stages:
       timeoutInMinutes: 10
     strategy:
       maxParallel: 10
-      matrix: "$(THREADS)"
+      matrix: $[ dependencies.generate_thread_variables.outputs['generate_threads.THREADS'] ]
     steps:
     - script: echo "$(BotBuilderDll)"
     #- template: ci-api-validation-steps.yml
