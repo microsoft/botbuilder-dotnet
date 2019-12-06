@@ -5,7 +5,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,15 +34,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
         // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)
         // AppCredentials are cached using appId + scope (this last parameter is only used if the app credentials are used to call a skill)
-        protected static ConcurrentDictionary<string, AppCredentials> AppCredentialMapCache { get; private set; } = new ConcurrentDictionary<string, AppCredentials>();
+        protected static ConcurrentDictionary<string, AppCredentials> AppCredentialMapCache { get; } = new ConcurrentDictionary<string, AppCredentials>();
 
-        protected IChannelProvider ChannelProvider { get; private set; }
+        protected IChannelProvider ChannelProvider { get; }
 
-        protected ICredentialProvider CredentialProvider { get; private set; }
+        protected ICredentialProvider CredentialProvider { get; }
 
-        protected HttpClient HttpClient { get; private set; }
+        protected HttpClient HttpClient { get; }
 
-        protected ILogger Logger { get; private set; }
+        protected ILogger Logger { get; }
 
         /// <summary>
         /// Forwards an activity to a skill (bot).
@@ -96,7 +95,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         return new InvokeResponse
                         {
                             Status = (int)response.StatusCode,
-                            Body = content.Length > 0 ? JsonConvert.DeserializeObject(content) : null
+                            Body = content.Length > 0 ? GetBodyContent(content) : null
                         };
                     }
                 }
@@ -120,6 +119,18 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         {
             var appPassword = await CredentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
             return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
+        }
+
+        private static object GetBodyContent(string content)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject(content);
+            }
+            catch (JsonException)
+            {
+                return content;
+            }
         }
 
         /// <summary>

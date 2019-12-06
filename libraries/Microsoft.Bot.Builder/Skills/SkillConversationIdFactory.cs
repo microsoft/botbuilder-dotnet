@@ -13,9 +13,9 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Skills
 {
     /// <summary>
-    /// A <see cref="ISkillConversationIdFactory"/> that uses <see cref="IStorage"/> to store and retrieve <see cref="ConversationReference"/> instances.
+    /// A <see cref="SkillConversationIdFactory"/> that uses <see cref="IStorage"/> to store and retrieve <see cref="ConversationReference"/> instances.
     /// </summary>
-    public class SkillConversationIdFactory : ISkillConversationIdFactory
+    public class SkillConversationIdFactory : SkillConversationIdFactoryBase
     {
         private readonly IStorage _storage;
 
@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Skills
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
 
-        public async Task<string> CreateSkillConversationIdAsync(ConversationReference conversationReference, CancellationToken cancellationToken)
+        public override async Task<string> CreateSkillConversationIdAsync(ConversationReference conversationReference, CancellationToken cancellationToken)
         {
             if (conversationReference == null)
             {
@@ -36,19 +36,19 @@ namespace Microsoft.Bot.Builder.Skills
                 throw new NullReferenceException($"ConversationId in {nameof(conversationReference)} can't be null.");
             }
 
-            if (string.IsNullOrWhiteSpace(conversationReference.ServiceUrl))
+            if (string.IsNullOrWhiteSpace(conversationReference.ChannelId))
             {
-                throw new NullReferenceException($"ServiceUrl in {nameof(conversationReference)} can't be null.");
+                throw new NullReferenceException($"ChannelId in {nameof(conversationReference)} can't be null.");
             }
 
-            var storageKey = (conversationReference.Conversation.Id + conversationReference.ServiceUrl).GetHashCode().ToString(CultureInfo.InvariantCulture);
+            var storageKey = $"{conversationReference.Conversation.Id}{conversationReference.ChannelId}".GetHashCode().ToString(CultureInfo.InvariantCulture);
             var skillConversationInfo = new Dictionary<string, object> { { storageKey, JObject.FromObject(conversationReference) } };
             await _storage.WriteAsync(skillConversationInfo, cancellationToken).ConfigureAwait(false);
 
             return storageKey;
         }
 
-        public async Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+        public override async Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(skillConversationId))
             {
@@ -56,13 +56,18 @@ namespace Microsoft.Bot.Builder.Skills
             }
 
             var skillConversationInfo = await _storage.ReadAsync(new[] { skillConversationId }, cancellationToken).ConfigureAwait(false);
-            if (!skillConversationInfo.Any())
+            if (skillConversationInfo.Any())
             {
-                throw new InvalidOperationException($"Unable to find skill conversation information for skillConversationId {skillConversationId}");
+                var conversationInfo = ((JObject)skillConversationInfo[skillConversationId]).ToObject<ConversationReference>();
+                return conversationInfo;
             }
 
-            var conversationInfo = ((JObject)skillConversationInfo[skillConversationId]).ToObject<ConversationReference>();
-            return conversationInfo;
+            return null;
+        }
+
+        public override async Task DeleteConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+        {
+            await _storage.DeleteAsync(new[] { skillConversationId }, cancellationToken).ConfigureAwait(false);
         }
     }
 }

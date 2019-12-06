@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -50,11 +51,12 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         }
 
         [TestMethod]
-        public async Task FailsIfConversationIdNotFound()
+        public async Task ReturnsNullIfConversationIdNotFound()
         {
             var storage = new MemoryStorage();
             var sut = new SkillConversationIdFactory(storage);
-            await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await sut.GetConversationReferenceAsync("Not there", CancellationToken.None));
+            var conversationReference = await sut.GetConversationReferenceAsync("Not there", CancellationToken.None);
+            Assert.IsNull(conversationReference);
         }
 
         [TestMethod]
@@ -69,7 +71,8 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             var inputConversationRef = new ConversationReference
             {
                 Conversation = new ConversationAccount(id: conversationId),
-                ServiceUrl = serviceUrl
+                ServiceUrl = serviceUrl,
+                ChannelId = Channels.Test
             };
 
             var skillConversationId = await sut.CreateSkillConversationIdAsync(inputConversationRef, CancellationToken.None);
@@ -78,6 +81,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             // Retrieve
             var returnedConversationRef = await sut.GetConversationReferenceAsync(skillConversationId, CancellationToken.None);
             Assert.AreEqual(conversationId, returnedConversationRef.Conversation.Id);
+            Assert.AreEqual(Channels.Test, returnedConversationRef.ChannelId);
             Assert.AreEqual(serviceUrl, returnedConversationRef.ServiceUrl);
         }
 
@@ -100,11 +104,11 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         }
 
         private class TestConversationIdFactory
-            : ISkillConversationIdFactory
+            : SkillConversationIdFactoryBase
         {
             private readonly ConcurrentDictionary<string, string> _conversationRefs = new ConcurrentDictionary<string, string>();
 
-            public Task<string> CreateSkillConversationIdAsync(ConversationReference conversationReference, CancellationToken cancellationToken)
+            public override Task<string> CreateSkillConversationIdAsync(ConversationReference conversationReference, CancellationToken cancellationToken)
             {
                 var crJson = JsonConvert.SerializeObject(conversationReference);
                 var key = (conversationReference.Conversation.Id + conversationReference.ServiceUrl).GetHashCode().ToString(CultureInfo.InvariantCulture);
@@ -112,10 +116,15 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                 return Task.FromResult(key);
             }
 
-            public Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+            public override Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
             {
                 var conversationReference = JsonConvert.DeserializeObject<ConversationReference>(_conversationRefs[skillConversationId]);
                 return Task.FromResult(conversationReference);
+            }
+
+            public override Task DeleteConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
             }
         }
     }
