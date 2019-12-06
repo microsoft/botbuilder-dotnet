@@ -61,7 +61,7 @@ stages:
        $threads = $threads.TrimEnd(' ').TrimEnd(',') + "}";
        $threads
 
-       "##vso[task.setVariable variable=threads;isOutput=true]$threads"
+       "##vso[task.setVariable variable=threadvars;isOutput=true]$threads"
       name: generate_threads
 
   - job: run_threads
@@ -73,7 +73,7 @@ stages:
     #  maxParallel: 10
     #  matrix: $[ dependencies.generate_thread_variables.outputs['generate_threads.threads'] ]
     steps:
-    - script: echo $[ dependencies.generate_thread_variables.outputs['generate_threads.threads'] ]
+    - script: echo $[ dependencies.generate_thread_variables.outputs['generate_threads.threadvars'] ]
     #- template: ci-api-validation-steps.yml
 
 - stage: Post_Results_to_GitHub
