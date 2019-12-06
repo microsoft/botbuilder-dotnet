@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// <summary>
     /// BotStateMemoryScope represents a BotState scoped memory.
     /// </summary>
-    /// <remarks>This relies on the BotState object being accessible from turnContext.TurnState.Get&lt;T&amp;gt().</remarks>
+    /// <remarks>This relies on the BotState object being accessible from turnContext.TurnState.Get&lt;T&gt;().</remarks>
     /// <typeparam name="T">botState type.</typeparam>
     public class BotStateMemoryScope<T> : MemoryScope
         where T : BotState
