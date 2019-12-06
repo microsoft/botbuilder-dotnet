@@ -23,7 +23,7 @@
           "type": "Airline"
         }
       ],
-      "geographyV2": [
+      "endloc": [
         {
           "endIndex": 12,
           "modelType": "Prebuilt Entity Extractor",
@@ -44,7 +44,7 @@
         "DeltaAir"
       ]
     ],
-    "geographyV2": [
+    "endloc": [
       {
         "location": "zimbabwe",
         "type": "countryRegion"
@@ -74,21 +74,17 @@
       "score": 0.0241017919
     },
     "search": {
-      "score": 0.00722271856
+      "score": 0.006795147
     },
     "SpecifyName": {
-      "score": 0.007082664
+      "score": 0.006843741
     },
     "Travel": {
-      "score": 0.0149908112
+      "score": 0.017196469
     },
     "Weather_GetForecast": {
       "score": 0.006921158
     }
-  },
-  "sentiment": {
-    "label": "neutral",
-    "score": 0.5
   },
   "text": "fly zimbabwe airlines or deltaair",
   "v3": {
@@ -144,7 +140,7 @@
                 "type": "Airline"
               }
             ],
-            "geographyV2": [
+            "endloc": [
               {
                 "length": 8,
                 "modelType": "Prebuilt Entity Extractor",
@@ -152,6 +148,7 @@
                 "recognitionSources": [
                   "model"
                 ],
+                "role": "endloc",
                 "startIndex": 4,
                 "text": "zimbabwe",
                 "type": "builtin.geographyV2.countryRegion"
@@ -166,8 +163,11 @@
               "DeltaAir"
             ]
           ],
-          "geographyV2": [
-            "zimbabwe"
+          "endloc": [
+            {
+              "type": "countryRegion",
+              "value": "zimbabwe"
+            }
           ]
         },
         "intents": {
@@ -193,22 +193,17 @@
             "score": 0.0241017919
           },
           "search": {
-            "score": 0.00722271856
+            "score": 0.006795147
           },
           "SpecifyName": {
-            "score": 0.007082664
+            "score": 0.006843741
           },
           "Travel": {
-            "score": 0.0149908112
+            "score": 0.017196469
           },
           "Weather.GetForecast": {
             "score": 0.006921158
           }
-        },
-        "normalizedQuery": "fly zimbabwe airlines or deltaair",
-        "sentiment": {
-          "label": "neutral",
-          "score": 0.5
         },
         "topIntent": "EntityTests"
       },

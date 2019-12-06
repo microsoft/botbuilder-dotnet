@@ -52,21 +52,21 @@
       "score": 0.04635598
     },
     "search": {
-      "score": 0.0106323734
+      "score": 0.008885799
     },
     "SpecifyName": {
-      "score": 0.00679729227
+      "score": 0.00721160974
     },
     "Travel": {
-      "score": 0.004811074
+      "score": 0.005146626
     },
     "Weather_GetForecast": {
       "score": 0.00913477
+    },
+    "sentiment": {
+      "label": "positive",
+      "score": 0.7149857
     }
-  },
-  "sentiment": {
-    "label": "positive",
-    "score": 0.7149857
   },
   "text": "buy hul and 2 items",
   "v3": {
@@ -143,13 +143,13 @@
             "score": 0.04635598
           },
           "search": {
-            "score": 0.0106323734
+            "score": 0.008885799
           },
           "SpecifyName": {
-            "score": 0.00679729227
+            "score": 0.00721160974
           },
           "Travel": {
-            "score": 0.004811074
+            "score": 0.005146626
           },
           "Weather.GetForecast": {
             "score": 0.00913477

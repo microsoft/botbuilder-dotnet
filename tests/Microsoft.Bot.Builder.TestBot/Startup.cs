@@ -130,7 +130,7 @@ namespace Microsoft.BotBuilderSamples
                     Configuration["LuisAPIKey"],
                     "https://" + Configuration["LuisAPIHostName"]);
 
-                var recognizer = new LuisRecognizer(luisApplication);
+                var recognizer = new LuisRecognizer(new LuisRecognizerOptionsV2(luisApplication));
                 services.AddSingleton<IRecognizer>(recognizer);
             }
         }
