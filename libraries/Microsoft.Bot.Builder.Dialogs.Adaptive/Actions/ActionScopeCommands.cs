@@ -6,8 +6,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     public class ActionScopeCommands
     {
-        public const string GotoCommand = "goto";
-        public const string BreakCommand = "break";
-        public const string ContinueCommand = "continue";
+        public const string GotoAction = "goto";
+        public const string BreakLoop = "break";
+        public const string ContinueLoop = "continue";
     }
 }

@@ -3,82 +3,101 @@
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
-        "id": "planningTest",
-        "recognizer": {
-            "$kind": "Microsoft.RegexRecognizer",
-            "intents": [
-                {
-                    "$kind": "Microsoft.IntentPattern",
-                    "intent": "JokeIntent",
-                    "pattern": "joke"
-                }
-            ]
-        },
+        "id": "root",
         "triggers": [
             {
                 "$kind": "Microsoft.OnBeginDialog",
                 "actions": [
                     {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": "I'm a joke bot. To get started say 'tell me a joke'"
+                        "$kind": "Microsoft.InitProperty",
+                        "property": "dialog.todo",
+                        "type": "array"
                     },
                     {
-                        "$kind": "Microsoft.BeginDialog",
-                        "options": {},
-                        "dialog": "AskNameDialog"
-                    }
-                ]
-            },
-            {
-                "$kind": "Microsoft.OnIntent",
-                "intent": "JokeIntent",
-                "actions": [
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "changeType": "Push",
+                        "value": "1"
+                    },
                     {
-                        "$kind": "Microsoft.BeginDialog",
-                        "options": {},
-                        "dialog": "TellJokeDialog"
-                    }
-                ]
-            },
-            {
-                "$kind": "Microsoft.OnUnknownIntent",
-                "actions": [
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "changeType": "Push",
+                        "value": "2"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "changeType": "Push",
+                        "value": "3"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "changeType": "Push",
+                        "value": "4"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "changeType": "Push",
+                        "value": "5"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "changeType": "Push",
+                        "value": "6"
+                    },
+                    {
+                        "$kind": "Microsoft.Foreach",
+                        "itemsProperty": "dialog.todo",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.IfCondition",
+                                "condition": "(dialog.foreach.value % 2) == 1",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.ContinueLoop"
+                                    }
+                                ]
+                            },
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "index is: @{dialog.foreach.index} and value is: @{dialog.foreach.value}"
+                            }
+                        ]
+                    },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "I'm a joke bot. To get started say 'tell me a joke'"
+                        "activity": "done"
                     }
                 ]
             }
         ],
+        "autoEndDialog": true,
         "defaultResultProperty": "dialog.result"
     },
     "script": [
         {
-            "$kind": "Microsoft.Test.UserConversationUpdate"
-        },
-        {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "I'm a joke bot. To get started say 'tell me a joke'"
-        },
-        {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "Hello, what is your name?"
-        },
-        {
             "$kind": "Microsoft.Test.UserSays",
-            "text": "Carlos"
+            "text": "hi"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Hello Carlos, nice to meet you!"
-        },
-        {
-            "$kind": "Microsoft.Test.UserSays",
-            "text": "Cool"
+            "text": "index is: 1 and value is: 2"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "I'm a joke bot. To get started say 'tell me a joke'"
+            "text": "index is: 3 and value is: 4"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "index is: 5 and value is: 6"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "done"
         }
     ]
 }

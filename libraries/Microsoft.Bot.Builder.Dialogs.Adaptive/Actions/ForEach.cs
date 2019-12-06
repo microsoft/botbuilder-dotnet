@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("itemsProperty")]
         public string ItemsProperty { get; set; }
 
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
@@ -47,25 +47,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             dc.GetState().SetValue(INDEX, -1);
-            return await this.NextItemAsync(dc, cancellationToken).ConfigureAwait(false);
+            return this.NextItemAsync(dc, cancellationToken);
         }
 
-        protected async override Task<DialogTurnResult> OnBreakActionAsync(DialogContext dc, CancellationToken cancellationToken = default)
+        protected override Task<DialogTurnResult> OnBreakLoopAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
         {
-            return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            return dc.EndDialogAsync(cancellationToken: cancellationToken);
         }
 
-        protected async override Task<DialogTurnResult> OnContinueActionAsync(DialogContext dc, CancellationToken cancellationToken = default)
+        protected override Task<DialogTurnResult> OnContinueLoopAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
         {
-            return await this.NextItemAsync(dc, cancellationToken).ConfigureAwait(false);
+            return this.NextItemAsync(dc, cancellationToken);
         }
 
-        protected async override Task<DialogTurnResult> OnEndOfActionsAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default)
+        protected override Task<DialogTurnResult> OnEndOfActionsAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default)
         {
-            return await this.NextItemAsync(dc, cancellationToken).ConfigureAwait(false);
+            return this.NextItemAsync(dc, cancellationToken);
         }
 
-        protected async virtual Task<DialogTurnResult> NextItemAsync(DialogContext dc, CancellationToken cancellationToken = default)
+        protected virtual Task<DialogTurnResult> NextItemAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             // Get list information
             var itemsProperty = new ExpressionEngine().Parse(this.ItemsProperty);
@@ -81,12 +81,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 dc.GetState().SetValue(INDEX, index);
 
                 // Start loop
-                return await this.BeginActionAsync(dc, 0, cancellationToken).ConfigureAwait(false);
+                return this.BeginActionAsync(dc, 0, cancellationToken);
             }
             else
             {
                 // End of list has been reached
-                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+                return dc.EndDialogAsync(cancellationToken: cancellationToken);
             }
         }
 

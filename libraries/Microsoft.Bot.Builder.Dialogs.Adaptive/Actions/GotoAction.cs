@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             var actionScopeResult = new ActionScopeResult()
             {
-                ActionScopeCommand = ActionScopeCommands.GotoCommand,
+                ActionScopeCommand = ActionScopeCommands.GotoAction,
                 ActionId = this.ActionId ?? throw new ArgumentNullException(nameof(ActionId))
             };
 

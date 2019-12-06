@@ -220,6 +220,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        [Ignore]
         public async Task TestForeachWithLargeItems()
         {
             var testFlow = new TestScript()

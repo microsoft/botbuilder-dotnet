@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             var actionScopeResult = new ActionScopeResult()
             {
-                ActionScopeCommand = ActionScopeCommands.BreakCommand
+                ActionScopeCommand = ActionScopeCommands.BreakLoop
             };
 
             return await dc.EndDialogAsync(result: actionScopeResult, cancellationToken: cancellationToken).ConfigureAwait(false);

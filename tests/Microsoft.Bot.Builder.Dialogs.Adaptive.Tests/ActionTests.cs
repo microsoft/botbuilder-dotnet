@@ -106,6 +106,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Action_ForeachPage_Empty()
+        {
+            await TestUtils.RunTestScript();
+        }
+
+        [TestMethod]
+        public async Task Action_ForeachPage_Partial()
+        {
+            await TestUtils.RunTestScript();
+        }
+
+        [TestMethod]
         public async Task Action_IfCondition()
         {
             await TestUtils.RunTestScript();

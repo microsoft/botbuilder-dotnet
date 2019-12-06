@@ -44,12 +44,6 @@
             "value": "5"
           },
           {
-            "$kind": "Microsoft.EditArray",
-            "itemsProperty": "dialog.todo",
-            "changeType": "Push",
-            "value": "6"
-          },
-          {
             "$kind": "Microsoft.ForeachPage",
             "itemsProperty": "dialog.todo",
             "pageSize": 3,
@@ -103,7 +97,7 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "This page have 3 items"
+      "text": "This page have 2 items"
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
@@ -112,10 +106,6 @@
     {
       "$kind": "Microsoft.Test.AssertReply",
       "text": "index is: 1 and value is: 5"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "index is: 2 and value is: 6"
     },
     {
         "$kind": "Microsoft.Test.AssertReply",
