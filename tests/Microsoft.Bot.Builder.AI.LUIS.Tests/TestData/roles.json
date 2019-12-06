@@ -2294,8 +2294,14 @@
             }
           ],
           "geographyV2": [
-            "hawaii",
-            "redmond"
+            {
+              "type": "state",
+              "value": "hawaii"
+            },
+            {
+              "type": "city",
+              "value": "redmond"
+            }
           ],
           "leave": [
             {

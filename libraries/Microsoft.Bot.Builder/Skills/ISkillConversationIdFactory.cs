@@ -3,6 +3,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Skills
 {
@@ -12,23 +13,22 @@ namespace Microsoft.Bot.Builder.Skills
     public interface ISkillConversationIdFactory
     {
         /// <summary>
-        /// Creates a unique conversation ID based on a unique identifier and the skill's caller serviceUrl.
+        /// Creates a conversation ID for a skill conversation based on the caller's <see cref="ConversationReference"/>.
         /// </summary>
-        /// <param name="callerConversationId">The skill's caller conversationId.</param>
-        /// <param name="serviceUrl">The skill's caller serviceUrl for the activity being sent.</param>
+        /// <param name="conversationReference">The skill's caller <see cref="ConversationReference"/>.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>A unique conversation ID used to communicate with the skill.</returns>
         /// <remarks>
         /// It should be possible to use the returned string on a request URL and it should not contain special characters. 
         /// </remarks>
-        Task<string> CreateSkillConversationIdAsync(string callerConversationId, string serviceUrl, CancellationToken cancellationToken);
+        Task<string> CreateSkillConversationIdAsync(ConversationReference conversationReference, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Gets the original conversationId and ServiceUrl created using <see cref="CreateSkillConversationIdAsync"/> for a skillConversationId.
+        /// Gets the <see cref="ConversationReference"/> created using <see cref="CreateSkillConversationIdAsync"/> for a skillConversationId.
         /// </summary>
-        /// <param name="skillConversationId">A conversationId created using <see cref="CreateSkillConversationIdAsync"/>.</param>
-        /// /// <param name="cancellationToken">A cancellation token.</param>
-        /// <returns>the original conversationId and ServiceUrl for a skillConversationId.</returns>
-        Task<(string conversationId, string serviceUrl)> GetConversationInfoAsync(string skillConversationId, CancellationToken cancellationToken);
+        /// <param name="skillConversationId">A skill conversationId created using <see cref="CreateSkillConversationIdAsync"/>.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
+        /// <returns>The caller's <see cref="ConversationReference"/> for a skillConversationId.</returns>
+        Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken);
     }
 }
