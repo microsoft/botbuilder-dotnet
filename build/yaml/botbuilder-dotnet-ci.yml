@@ -57,8 +57,9 @@ stages:
            $threads += "{'" + $threadName + "':{'BotBuilderDll':'" + $library + "'},";
          }
        $threads = $threads.TrimEnd(',') + "}";
+       $threads
 
-       Write-Host "##vso[task.setVariable variable=threads;isOutput=true]$threads"
+       "##vso[task.setVariable variable=threads;isOutput=true]$threads"
       name: generate_threads
 
   - job: run_threads
@@ -72,6 +73,16 @@ stages:
     steps:
     - template: ci-api-validation-steps.yml
 
+- stage: Post_Results_to_GitHub
+  dependsOn: API_Compatibility_Validation
+  jobs:
+  - job: Post_to_GitHub
+    pool:
+      name: Hosted Windows 2019 with VS2019
+    variables:
+      BuildConfiguration: Release-Windows
+    steps:
+    - template: ci-post-to-github-steps.yml
 
 
 
