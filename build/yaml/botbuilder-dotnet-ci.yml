@@ -42,17 +42,31 @@ stages:
 - stage: API_Compatibility_Validation
   dependsOn: Build
   jobs:
-  - job: MicrosoftBotBuilderAILuis
+  - job: generate_thread_variables
+    steps:
+    - powershell: |
+       $threads = '';
+
+       $env:BotBuilderDll.Split(",") | ForEach {
+           $library = $_.Trim()
+           Write-Host $library
+
+           $threadName = $library.Split(".")[-1];
+           $threads += "{'" + $threadName + "':{'BotBuilderDll':'" + $library + "'},";
+         }
+       $threads = $threads.TrimEnd(',') + "}";
+
+       Write-Host "##vso[task.setVariable variable=threads;isOutput=true]$threads"
+      name: generate_threads
+
+  - job: run_threads
+    dependsOn: generate_thread_variables
     pool:
       name: Hosted Windows 2019 with VS2019
       timeoutInMinutes: 10
     strategy:
       maxParallel: 10
-      matrix: 
-        Luis:
-          BotBuilderDll: Microsoft.Bot.Builder.AI.Luis
-        Qna:
-          BotBuilderDll: Microsoft.Bot.Builder.AI.QnA
+      matrix: $[ dependencies.generate_thread_variables.outputs['generate_threads.threads'] ]
     steps:
     - template: ci-api-validation-steps.yml
 
