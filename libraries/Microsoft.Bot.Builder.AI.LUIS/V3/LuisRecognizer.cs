@@ -18,8 +18,9 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
 {
     /// <inheritdoc />
     /// <summary>
-    /// A LUIS based implementation of <see cref="ITelemetryRecognizer"/> for the V3 endpoint.
+    /// A LUIS based implementation of <see cref="LuisV2.ITelemetryRecognizer"/> for the V3 endpoint.
     /// </summary>
+    [Obsolete("Class is deprecated, please use Microsoft.Bot.Builder.AI.Luis.LuisRecognizer(LuisRecognizerOptions recognizer).")]
     public class LuisRecognizer : LuisV2.ITelemetryRecognizer
     {
         /// <summary>

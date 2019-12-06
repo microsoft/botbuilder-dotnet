@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Text;
+using System.Collections.Concurrent;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -15,37 +17,105 @@ namespace Microsoft.Bot.Builder.Tests.Skills
     public class SkillConversationIdFactoryTests
     {
         [TestMethod]
+        public void NullStorageThrowsException()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() => new SkillConversationIdFactory(null));
+        }
+
+        [TestMethod]
+        [DataRow(null, null)]
+        [DataRow("", null)]
+        [DataRow("notNull", null)]
+        [DataRow("notNull", "")]
+        public async Task CreateConversationIdValidatesParameters(string conversationId, string serviceUrl)
+        {
+            var storage = new MemoryStorage();
+            var sut = new SkillConversationIdFactory(storage);
+            var inputConversationRef = new ConversationReference
+            {
+                Conversation = new ConversationAccount(id: conversationId),
+                ServiceUrl = serviceUrl
+            };
+            await Assert.ThrowsExceptionAsync<NullReferenceException>(async () => await sut.CreateSkillConversationIdAsync(inputConversationRef, CancellationToken.None));
+        }
+
+        [TestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        public async Task GetConversationInfoValidatesParameters(string skillConversationId)
+        {
+            var storage = new MemoryStorage();
+            var sut = new SkillConversationIdFactory(storage);
+            await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await sut.GetConversationReferenceAsync(skillConversationId, CancellationToken.None));
+        }
+
+        [TestMethod]
+        public async Task FailsIfConversationIdNotFound()
+        {
+            var storage = new MemoryStorage();
+            var sut = new SkillConversationIdFactory(storage);
+            await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await sut.GetConversationReferenceAsync("Not there", CancellationToken.None));
+        }
+
+        [TestMethod]
+        public async Task CreateAndRetrieveConversationId()
+        {
+            var storage = new MemoryStorage();
+            var sut = new SkillConversationIdFactory(storage);
+            var conversationId = Guid.NewGuid().ToString("n");
+            var serviceUrl = "http://contoso.com/test";
+
+            // Create
+            var inputConversationRef = new ConversationReference
+            {
+                Conversation = new ConversationAccount(id: conversationId),
+                ServiceUrl = serviceUrl
+            };
+
+            var skillConversationId = await sut.CreateSkillConversationIdAsync(inputConversationRef, CancellationToken.None);
+            Assert.IsNotNull(skillConversationId);
+
+            // Retrieve
+            var returnedConversationRef = await sut.GetConversationReferenceAsync(skillConversationId, CancellationToken.None);
+            Assert.AreEqual(conversationId, returnedConversationRef.Conversation.Id);
+            Assert.AreEqual(serviceUrl, returnedConversationRef.ServiceUrl);
+        }
+
+        [TestMethod]
         public async Task TestSkillConversationEncoding()
         {
             var conversationId = Guid.NewGuid().ToString("N");
             var serviceUrl = "http://test.com/xyz?id=1&id=2";
             var sc = new TestConversationIdFactory();
-            var skillConversationId = await sc.CreateSkillConversationIdAsync(conversationId, serviceUrl, CancellationToken.None);
-            var (returnedConversationId, returnedServerUrl) = await sc.GetConversationInfoAsync(skillConversationId, CancellationToken.None);
+            var inputRef = new ConversationReference
+            {
+                Conversation = new ConversationAccount(id: conversationId),
+                ServiceUrl = serviceUrl
+            };
+            var skillConversationId = await sc.CreateSkillConversationIdAsync(inputRef, CancellationToken.None);
+            var returnedRef = await sc.GetConversationReferenceAsync(skillConversationId, CancellationToken.None);
 
-            Assert.AreEqual(conversationId, returnedConversationId);
-            Assert.AreEqual(serviceUrl, returnedServerUrl);
+            Assert.AreEqual(conversationId, returnedRef.Conversation.Id);
+            Assert.AreEqual(serviceUrl, returnedRef.ServiceUrl);
         }
 
         private class TestConversationIdFactory
             : ISkillConversationIdFactory
         {
-            public Task<string> CreateSkillConversationIdAsync(string callerConversationId, string serviceUrl, CancellationToken cancellationToken)
-            {
-                var jsonString = JsonConvert.SerializeObject(new[]
-                {
-                    callerConversationId,
-                    serviceUrl
-                });
+            private readonly ConcurrentDictionary<string, string> _conversationRefs = new ConcurrentDictionary<string, string>();
 
-                return Task.FromResult(Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonString)));
+            public Task<string> CreateSkillConversationIdAsync(ConversationReference conversationReference, CancellationToken cancellationToken)
+            {
+                var crJson = JsonConvert.SerializeObject(conversationReference);
+                var key = (conversationReference.Conversation.Id + conversationReference.ServiceUrl).GetHashCode().ToString(CultureInfo.InvariantCulture);
+                _conversationRefs.GetOrAdd(key, crJson);
+                return Task.FromResult(key);
             }
 
-            public Task<(string, string)> GetConversationInfoAsync(string skillConversationId, CancellationToken cancellationToken)
+            public Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
             {
-                var jsonString = Encoding.UTF8.GetString(Convert.FromBase64String(skillConversationId));
-                var parts = JsonConvert.DeserializeObject<string[]>(jsonString);
-                return Task.FromResult((parts[0], parts[1]));
+                var conversationReference = JsonConvert.DeserializeObject<ConversationReference>(_conversationRefs[skillConversationId]);
+                return Task.FromResult(conversationReference);
             }
         }
     }

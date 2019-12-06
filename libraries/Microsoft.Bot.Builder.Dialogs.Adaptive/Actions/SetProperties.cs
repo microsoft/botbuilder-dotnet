@@ -47,10 +47,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 var valexp = new ExpressionEngine().Parse(propValue.Value);
                 var (value, valueError) = valexp.TryEvaluate(dc.GetState());
-                if (valueError == null)
+                if (valueError != null)
                 {
-                    dc.GetState().SetValue(propValue.Property, value);
+                    throw new Exception($"Expression evaluation resulted in an error. Expression: {valexp.ToString()}. Error: {valueError}");
                 }
+
+                dc.GetState().SetValue(propValue.Property, value);
             }
 
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);

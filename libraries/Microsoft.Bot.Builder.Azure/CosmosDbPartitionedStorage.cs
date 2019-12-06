@@ -22,6 +22,7 @@ namespace Microsoft.Bot.Builder.Azure
         private Container _container;
         private readonly CosmosDbPartitionedStorageOptions _cosmosDbStorageOptions;
         private CosmosClient _client;
+        private bool _compatibilityModePartitionKey = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CosmosDbPartitionedStorage"/> class.
@@ -53,6 +54,22 @@ namespace Microsoft.Bot.Builder.Azure
             if (string.IsNullOrEmpty(cosmosDbStorageOptions.ContainerId))
             {
                 throw new ArgumentException("ContainerId is required.", nameof(cosmosDbStorageOptions.ContainerId));
+            }
+
+            if (!string.IsNullOrWhiteSpace(cosmosDbStorageOptions.KeySuffix))
+            {
+                if (cosmosDbStorageOptions.CompatibilityMode)
+                {
+                    throw new ArgumentException($"CompatibilityMode cannot be 'true' while using a KeySuffix.", nameof(cosmosDbStorageOptions.CompatibilityMode));
+                }
+
+                // In order to reduce key complexity, we do not allow invalid characters in a KeySuffix
+                // If the KeySuffix has invalid characters, the EscapeKey will not match
+                var suffixEscaped = CosmosDbKeyEscape.EscapeKey(cosmosDbStorageOptions.KeySuffix);
+                if (!cosmosDbStorageOptions.KeySuffix.Equals(suffixEscaped, StringComparison.Ordinal))
+                {
+                    throw new ArgumentException($"Cannot use invalid Row Key characters: {cosmosDbStorageOptions.KeySuffix}", nameof(cosmosDbStorageOptions.KeySuffix));
+                }
             }
 
             _cosmosDbStorageOptions = cosmosDbStorageOptions;
@@ -96,11 +113,11 @@ namespace Microsoft.Bot.Builder.Azure
             {
                 try
                 {
-                    var escapedKey = CosmosDbKeyEscape.EscapeKey(key);
+                    var escapedKey = CosmosDbKeyEscape.EscapeKey(key, _cosmosDbStorageOptions.KeySuffix, _cosmosDbStorageOptions.CompatibilityMode);
 
                     var readItemResponse = await _container.ReadItemAsync<DocumentStoreItem>(
                             escapedKey,
-                            new PartitionKey(escapedKey),
+                            GetPartitionKey(escapedKey),
                             cancellationToken: cancellationToken)
                         .ConfigureAwait(false);
 
@@ -159,7 +176,7 @@ namespace Microsoft.Bot.Builder.Azure
 
                 var documentChange = new DocumentStoreItem
                 {
-                    Id = CosmosDbKeyEscape.EscapeKey(change.Key),
+                    Id = CosmosDbKeyEscape.EscapeKey(change.Key, _cosmosDbStorageOptions.KeySuffix, _cosmosDbStorageOptions.CompatibilityMode),
                     RealId = change.Key,
                     Document = json,
                 };
@@ -170,7 +187,7 @@ namespace Microsoft.Bot.Builder.Azure
                     // if new item or * then insert or replace unconditionally
                     await _container.UpsertItemAsync(
                             documentChange,
-                            new PartitionKey(documentChange.PartitionKey),
+                            GetPartitionKey(documentChange.PartitionKey),
                             cancellationToken: cancellationToken)
                         .ConfigureAwait(false);
                 }
@@ -179,7 +196,7 @@ namespace Microsoft.Bot.Builder.Azure
                     // if we have an etag, do opt. concurrency replace
                     await _container.UpsertItemAsync(
                             documentChange,
-                            new PartitionKey(documentChange.PartitionKey),
+                            GetPartitionKey(documentChange.PartitionKey),
                             new ItemRequestOptions() { IfMatchEtag = etag, },
                             cancellationToken)
                         .ConfigureAwait(false);
@@ -202,12 +219,12 @@ namespace Microsoft.Bot.Builder.Azure
 
             foreach (var key in keys)
             {
-                var escapedKey = CosmosDbKeyEscape.EscapeKey(key);
+                var escapedKey = CosmosDbKeyEscape.EscapeKey(key, _cosmosDbStorageOptions.KeySuffix, _cosmosDbStorageOptions.CompatibilityMode);
 
                 try
                 {
                     await _container.DeleteItemAsync<DocumentStoreItem>(
-                            partitionKey: new PartitionKey(escapedKey),
+                            partitionKey: GetPartitionKey(escapedKey),
                             id: escapedKey,
                             cancellationToken: cancellationToken)
                         .ConfigureAwait(false);
@@ -225,6 +242,16 @@ namespace Microsoft.Bot.Builder.Azure
                     throw;
                 }
             }
+        }
+
+        private PartitionKey GetPartitionKey(string key)
+        {
+            if (_compatibilityModePartitionKey)
+            {
+                return PartitionKey.None;
+            }
+
+            return new PartitionKey(key);
         }
 
         /// <summary>
@@ -246,16 +273,50 @@ namespace Microsoft.Bot.Builder.Azure
 
                 if (_container == null)
                 {
-                    var containerResponse = await _client
-                        .GetDatabase(_cosmosDbStorageOptions.DatabaseId)
-                        .DefineContainer(_cosmosDbStorageOptions.ContainerId, DocumentStoreItem.PartitionKeyPath)
-                        .WithIndexingPolicy().WithAutomaticIndexing(false).WithIndexingMode(IndexingMode.None).Attach()
-                        .CreateIfNotExistsAsync(_cosmosDbStorageOptions.ContainerThroughput)
-                        .ConfigureAwait(false);
+                    if (!_cosmosDbStorageOptions.CompatibilityMode)
+                    {
+                        await CreateContainerIfNotExistsAsync().ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        try
+                        {
+                            _container = _client.GetContainer(_cosmosDbStorageOptions.DatabaseId, _cosmosDbStorageOptions.ContainerId);
+                            
+                            // This will throw if the container does not exist. 
+                            var readContainer = await _container.ReadContainerAsync().ConfigureAwait(false);
 
-                    _container = containerResponse.Container;
+                            // Containers created with CosmosDbStorage had no partition key set, so the default was '/_partitionKey'.
+                            var partitionKeyPath = readContainer.Resource.PartitionKeyPath;
+                            if (partitionKeyPath == "/_partitionKey")
+                            {
+                                _compatibilityModePartitionKey = true;
+                            }
+                            else if (partitionKeyPath != DocumentStoreItem.PartitionKeyPath)
+                            {
+                                // We are not supporting custom Partition Key Paths
+                                throw new InvalidOperationException($"Custom Partition Key Paths are not supported. {_cosmosDbStorageOptions.ContainerId} has a custom Partition Key Path of {partitionKeyPath}.");
+                            }
+                        }
+                        catch (CosmosException)
+                        {
+                            await CreateContainerIfNotExistsAsync().ConfigureAwait(false);
+                        }
+                    }
                 }
             }
+        }
+
+        private async Task CreateContainerIfNotExistsAsync()
+        {
+            var containerResponse = await _client
+                .GetDatabase(_cosmosDbStorageOptions.DatabaseId)
+                .DefineContainer(_cosmosDbStorageOptions.ContainerId, DocumentStoreItem.PartitionKeyPath)
+                .WithIndexingPolicy().WithAutomaticIndexing(false).WithIndexingMode(IndexingMode.None).Attach()
+                .CreateIfNotExistsAsync(_cosmosDbStorageOptions.ContainerThroughput)
+                .ConfigureAwait(false);
+
+            _container = containerResponse.Container;
         }
 
         /// <summary>
