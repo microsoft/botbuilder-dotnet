@@ -59,7 +59,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <exception cref="ArgumentNullException">.</exception>
         public virtual Task LoadAsync(DialogContext dialogContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.CompletedTask;
@@ -74,7 +73,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <exception cref="ArgumentNullException">.</exception>
         public virtual Task SaveChangesAsync(DialogContext dialogContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.CompletedTask;
@@ -87,7 +85,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <exception cref="ArgumentNullException">.</exception>
         public virtual Task DeleteAsync(DialogContext dialogContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.CompletedTask;
