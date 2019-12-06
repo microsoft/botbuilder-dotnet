@@ -44,40 +44,21 @@ stages:
 - stage: API_Compatibility_Validation
   dependsOn: Build
   jobs:
-  - job: generate_thread_variables
-    pool:
-      name: Hosted Windows 2019 with VS2019
+  - job: generator
     steps:
-    - powershell: |
-       $threads = '';
-
-       $env:BotBuilderDll.Split(",") | ForEach {
-           $library = $_.Trim()
-           Write-Host $library
-
-           $threadName = $library.Split(".")[-1];
-           $threads += "{'" + $threadName + "':{'BotBuilderDll':'" + $library + "'}, ";
-         }
-       $threads = $threads.TrimEnd(' ').TrimEnd(',') + "}";
-       $threads
-
-       "##vso[task.setVariable variable=THREADS;isOutput=true]$threads"
-      name: generate_threads
-    - script: echo $(generate_threads.THREADS)
-
-  - job: run_threads
-    dependsOn: generate_thread_variables
-    variables:
-      THREADS: $[ dependencies.generate_thread_variables.outputs['generate_threads.THREADS'] ]
-    pool:
-      name: Hosted Windows 2019 with VS2019
-      timeoutInMinutes: 10
+    - bash: echo "##vso[task.setVariable variable=legs;isOutput=true]{'a':{'myvar':'A'}, 'b':{'myvar':'B'}}"
+      name: mtrx
+  # This expands to the matrix
+  #   a:
+  #     myvar: A
+  #   b:
+  #     myvar: B
+  - job: runner
+    dependsOn: generator
     strategy:
-      matrix: $[ dependencies.generate_thread_variables.outputs['generate_threads.THREADS'] ]
+      matrix: $[ dependencies.generator.outputs['mtrx.legs'] ]
     steps:
-    - script: echo $(BotBuilderDll)
-    - script: echo $(THREADS)
-    #- template: ci-api-validation-steps.yml
+    - script: echo $(myvar) # echos A or B depending on which leg is running
 
 - stage: Post_Results_to_GitHub
   dependsOn: API_Compatibility_Validation
