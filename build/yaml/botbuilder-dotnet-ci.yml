@@ -16,31 +16,6 @@ variables:
 
 #Multi-configuration and multi-agent job options are not exported to YAML. Configure these options using documentation guidance: https://docs.microsoft.com/vsts/pipelines/process/phases
 stages:
-- stage: Build
-  jobs:
-  - job: Debug_Windows_Configuration
-    pool:
-      name: Hosted Windows 2019 with VS2019
-      demands:
-      - msbuild
-      - visualstudio
-    variables:
-      BuildConfiguration: Debug-Windows
-    steps:
-    - script: echo Executing this 1
-    #- template: ci-build-steps.yml
-  - job: Release_Windows_Configuration
-    pool:
-      name: Hosted Windows 2019 with VS2019
-      demands:
-      - msbuild
-      - visualstudio
-    variables:
-      BuildConfiguration: Release-Windows
-    steps:
-    - script: echo Executing this 2
-    #- template: ci-build-steps.yml
-
 - stage: API_Compatibility_Validation
   dependsOn: Build
   jobs:
@@ -59,15 +34,3 @@ stages:
       matrix: $[ dependencies.generator.outputs['mtrx.legs'] ]
     steps:
     - script: echo $(myvar) # echos A or B depending on which leg is running
-
-- stage: Post_Results_to_GitHub
-  dependsOn: API_Compatibility_Validation
-  jobs:
-  - job: Post_to_GitHub
-    pool:
-      name: Hosted Windows 2019 with VS2019
-    variables:
-      BuildConfiguration: Release-Windows
-    steps:
-    - script: echo Executing this 3
-    #- template: ci-post-to-github-steps.yml
