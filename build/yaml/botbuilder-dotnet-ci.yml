@@ -17,7 +17,6 @@ variables:
 #Multi-configuration and multi-agent job options are not exported to YAML. Configure these options using documentation guidance: https://docs.microsoft.com/vsts/pipelines/process/phases
 stages:
 - stage: API_Compatibility_Validation
-  dependsOn: Build
   jobs:
   - job: generator
     steps:
