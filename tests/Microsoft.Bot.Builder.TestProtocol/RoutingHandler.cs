@@ -17,11 +17,11 @@ namespace Microsoft.Bot.Builder.TestProtocol
 {
     public class RoutingHandler : ChannelServiceHandler
     {
-        private readonly ISkillConversationIdFactory _factory;
+        private readonly SkillConversationIdFactoryBase _factory;
         private readonly ServiceClientCredentials _credentials;
 
         public RoutingHandler(
-            ISkillConversationIdFactory factory,
+            SkillConversationIdFactoryBase factory,
             ICredentialProvider credentialProvider,
             AuthenticationConfiguration authConfiguration,
             IChannelProvider channelProvider = null)

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.Threading;
@@ -11,11 +12,11 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.TestProtocol
 {
-    public class MyConversationIdFactory : ISkillConversationIdFactory
+    public class MyConversationIdFactory : SkillConversationIdFactoryBase
     {
         private readonly ConcurrentDictionary<string, string> _conversationRefs = new ConcurrentDictionary<string, string>();
 
-        public Task<string> CreateSkillConversationIdAsync(ConversationReference conversationReference, CancellationToken cancellationToken)
+        public override Task<string> CreateSkillConversationIdAsync(ConversationReference conversationReference, CancellationToken cancellationToken)
         {
             var crJson = JsonConvert.SerializeObject(conversationReference);
             var key = (conversationReference.Conversation.Id + conversationReference.ServiceUrl).GetHashCode().ToString(CultureInfo.InvariantCulture);
@@ -23,10 +24,15 @@ namespace Microsoft.Bot.Builder.TestProtocol
             return Task.FromResult(key);
         }
 
-        public Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+        public override Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
         {
             var conversationReference = JsonConvert.DeserializeObject<ConversationReference>(_conversationRefs[skillConversationId]);
             return Task.FromResult(conversationReference);
+        }
+
+        public override Task DeleteConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

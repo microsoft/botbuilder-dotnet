@@ -7,13 +7,12 @@ using System.Globalization;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
+namespace Microsoft.Bot.Builder.Skills
 {
     /// <summary>
     /// A Bot Framework Handler for skills.
@@ -22,7 +21,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
     {
         private readonly BotAdapter _adapter;
         private readonly IBot _bot;
-        private readonly ISkillConversationIdFactory _conversationIdIdFactory;
+        private readonly SkillConversationIdFactoryBase _conversationIdIdFactory;
         private readonly ILogger _logger;
 
         /// <summary>
@@ -31,7 +30,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// </summary>
         /// <param name="adapter">An instance of the <see cref="BotAdapter"/> that will handle the request.</param>
         /// <param name="bot">The <see cref="IBot"/> instance.</param>
-        /// <param name="conversationIdFactory">A <see cref="ISkillConversationIdFactory"/> to unpack the conversation ID and map it to the calling bot.</param>
+        /// <param name="conversationIdFactory">A <see cref="SkillConversationIdFactoryBase"/> to unpack the conversation ID and map it to the calling bot.</param>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="authConfig">The authentication configuration.</param>
         /// <param name="channelProvider">The channel provider.</param>
@@ -44,7 +43,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         public SkillHandler(
             BotAdapter adapter,
             IBot bot,
-            ISkillConversationIdFactory conversationIdFactory,
+            SkillConversationIdFactoryBase conversationIdFactory,
             ICredentialProvider credentialProvider,
             AuthenticationConfiguration authConfig,
             IChannelProvider channelProvider = null,
@@ -383,7 +382,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             turnContext.Activity.LocalTimestamp = eventActivity.LocalTimestamp;
             turnContext.Activity.Timestamp = eventActivity.Timestamp;
             turnContext.Activity.ChannelData = eventActivity.ChannelData;
-            turnContext.Activity.Properties = ((Activity)eventActivity).Properties;
+            turnContext.Activity.Properties = eventActivity.Properties;
         }
 
         private async Task<ResourceResponse> ProcessActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string replyToActivityId, Activity activity, CancellationToken cancellationToken)
