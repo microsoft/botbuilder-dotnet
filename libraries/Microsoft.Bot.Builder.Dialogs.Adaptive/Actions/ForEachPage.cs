@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Executes a set of actions once for each item in an in-memory list or collection.
     /// </summary>
-    public class ForeachPage : Dialog, IDialogDependencies
+    public class ForeachPage : ActionScope
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.ForeachPage";
@@ -40,11 +40,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         // Actions to be run for each of items.
         [JsonProperty("actions")]
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
-
-        public virtual IEnumerable<Dialog> GetDependencies()
-        {
-            return this.Actions;
-        }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {

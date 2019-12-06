@@ -1,4 +1,5 @@
 {
+    "$schema": "../../../../schemas/sdk.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -47,7 +48,6 @@
             {
                 "$kind": "Microsoft.OnMessageUpdateActivity",
                 "type": "messageUpdate",
-
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -58,7 +58,6 @@
             {
                 "$kind": "Microsoft.OnMessageReactionActivity",
                 "type": "messageReaction",
-
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
