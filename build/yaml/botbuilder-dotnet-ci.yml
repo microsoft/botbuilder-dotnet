@@ -27,7 +27,8 @@ stages:
     variables:
       BuildConfiguration: Debug-Windows
     steps:
-    - template: ci-build-steps.yml
+    - script: echo Executing this 1
+    #- template: ci-build-steps.yml
   - job: Release_Windows_Configuration
     pool:
       name: Hosted Windows 2019 with VS2019
@@ -37,7 +38,8 @@ stages:
     variables:
       BuildConfiguration: Release-Windows
     steps:
-    - template: ci-build-steps.yml
+    - script: echo Executing this 2
+    #- template: ci-build-steps.yml
 
 - stage: API_Compatibility_Validation
   dependsOn: Build
@@ -71,7 +73,8 @@ stages:
       maxParallel: 10
       matrix: $[ dependencies.generate_thread_variables.outputs['generate_threads.threads'] ]
     steps:
-    - template: ci-api-validation-steps.yml
+    - script: echo $(BotBuilderDll)
+    #- template: ci-api-validation-steps.yml
 
 - stage: Post_Results_to_GitHub
   dependsOn: API_Compatibility_Validation
@@ -82,7 +85,8 @@ stages:
     variables:
       BuildConfiguration: Release-Windows
     steps:
-    - template: ci-post-to-github-steps.yml
+    - script: echo Executing this 3
+    #- template: ci-post-to-github-steps.yml
 
 
 
