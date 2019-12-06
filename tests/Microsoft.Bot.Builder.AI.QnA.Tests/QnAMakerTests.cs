@@ -987,14 +987,15 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
-                },
-                new QnAMakerOptions
-                {
-                    Top = 1,
-                    IsTest = true
                 });
 
-            var results = await qna.GetAnswersAsync(GetContext("Q11"));
+            var qnaamkerOptions = new QnAMakerOptions
+            {
+                Top = 1,
+                IsTest = true
+            };
+
+            var results = await qna.GetAnswersAsync(GetContext("Q11"), qnaamkerOptions);
             Assert.IsNotNull(results);
             Assert.AreEqual(results.Length, 0, "should get no results");
         }
@@ -1015,14 +1016,15 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
-                },
-                new QnAMakerOptions
-                {
-                    Top = 2,
-                    RankerType = RankerTypes.QuestionOnly
                 });
 
-            var results = await qna.GetAnswersAsync(GetContext("Q11"));
+            var qnamakerOptions = new QnAMakerOptions
+            {
+                Top = 1,
+                RankerType = "QuestionOnly"
+            };
+
+            var results = await qna.GetAnswersAsync(GetContext("Q11"), qnamakerOptions);
             Assert.IsNotNull(results);
             Assert.AreEqual(results.Length, 2, "should get two results");
         }

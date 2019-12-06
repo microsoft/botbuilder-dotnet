@@ -100,6 +100,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// A value indicating whether to call test or prod environment of knowledgebase. 
         /// </value>
+        [JsonProperty("isTest")]
         public bool IsTest { get; set; }
 
         /// <summary>
@@ -108,6 +109,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// Ranker Types.
         /// </value>
-        public RankerTypes RankerType { get; set; }
+        [JsonProperty("rankerType")]
+        public string RankerType { get; set; }
     }
 }

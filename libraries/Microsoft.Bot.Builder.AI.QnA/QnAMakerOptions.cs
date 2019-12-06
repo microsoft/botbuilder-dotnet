@@ -36,6 +36,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// This property allows users to set Timeout without having to pass in a custom HttpClient to QnAMaker class constructor.
         /// If using custom HttpClient, then set Timeout value in HttpClient instead of QnAMakerOptions.Timeout.
         /// </remarks>
+        [JsonProperty("timeout")] 
         public double Timeout { get; set; }
 
         /// <summary>
@@ -53,6 +54,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// The context of previous turn.
         /// </value>
+        [JsonProperty("context")]
         public QnARequestContext Context { get; set; }
 
         /// <summary>
@@ -61,8 +63,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// Id of the current question asked.
         /// </value>
+        [JsonProperty("qnAId")]
         public int QnAId { get; set; }
 
+        [JsonProperty("strictFilters")]
         public Metadata[] StrictFilters { get; set; }
 
         /// <summary>
@@ -71,6 +75,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// A value indicating whether to call test or prod environment of knowledgebase. 
         /// </value>
+        [JsonProperty("isTest")]
         public bool IsTest { get; set; }
 
         /// <summary>
@@ -79,7 +84,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// Ranker Types.
         /// </value>
-        public RankerTypes RankerType { get; set; }
+        [JsonProperty("rankerType")]
+        public string RankerType { get; set; }
 
         [JsonProperty("metadataBoost")]
         public Metadata[] MetadataBoost { get; set; }
