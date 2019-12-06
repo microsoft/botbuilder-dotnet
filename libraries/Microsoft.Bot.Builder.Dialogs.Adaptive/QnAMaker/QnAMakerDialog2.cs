@@ -126,6 +126,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         [JsonProperty("strictFilters")]
         public Metadata[] StrictFilters { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether gets or sets environment of knowledgebase to be called. 
+        /// </summary>
+        /// <value>
+        /// A value indicating whether to call test or prod environment of knowledgebase. 
+        /// </value>
+        [JsonProperty("isTest")]
+        public bool IsTest { get; set; }
+
+        /// <summary>
+        /// Gets or sets ranker Types.
+        /// </summary>
+        /// <value>
+        /// Ranker Types.
+        /// </value>
+        [JsonProperty("rankerType")]
+        public string RankerType { get; set; }
+
         protected async override Task<IQnAMakerClient> GetQnAMakerClientAsync(DialogContext dc)
         {
             var qnaClient = dc.Context.TurnState.Get<IQnAMakerClient>();
@@ -155,7 +173,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
             {
                 ScoreThreshold = this.Threshold,
                 StrictFilters = this.StrictFilters,
-                Top = this.Top
+                Top = this.Top,
+                Context = new QnARequestContext(),
+                QnAId = 0,
+                RankerType = RankerTypes.DefaultRankerType,
+                IsTest = false
             });
         }
 
