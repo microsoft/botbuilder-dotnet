@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .Send("Cancel")
                 .AssertReply("Cancel")
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
-            .Send("Carlos  ") // outputFormat = trim
+            .Send("Carlos  ") // outputFormat = trim(this.value)
                 .AssertReply("Hello Carlos, nice to talk to you!")
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Cancel") // allowInterruptions = notRecognized

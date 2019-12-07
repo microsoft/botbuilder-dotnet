@@ -6,11 +6,10 @@
     "triggers": [
       {
         "$kind": "Microsoft.OnUnknownIntent",
-        
         "actions": [
           {
             "$kind": "Microsoft.NumberInput",
-            "outputFormat": 1,
+            "outputFormat": "int(this.value)",
             "property": "user.userProfile.Age",
             "prompt": "Please enter your age.",
             "unrecognizedPrompt": "The value entered must be greater than 0 and less than 150.",

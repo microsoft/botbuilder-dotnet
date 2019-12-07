@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.Choice;
 using Newtonsoft.Json;
@@ -50,6 +51,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         [JsonProperty("confirmChoices")]
         public List<Choice> ConfirmChoices { get; set; } = null;
 
+        [JsonProperty("outputFormat")]
+        public string OutputFormat { get; set; }
+
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
             var input = dc.GetState().GetValue<object>(VALUE_PROPERTY);
@@ -64,6 +68,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     if (bool.TryParse(first.Resolution["value"].ToString(), out var value))
                     {
                         dc.GetState().SetValue(VALUE_PROPERTY, value);
+                        if (!string.IsNullOrEmpty(OutputFormat))
+                        {
+                            var outputExpression = new ExpressionEngine().Parse(OutputFormat);
+                            var (outputValue, error) = outputExpression.TryEvaluate(dc.GetState());
+                            if (error == null)
+                            {
+                                dc.GetState().SetValue(VALUE_PROPERTY, outputValue);
+                            }
+                            else
+                            {
+                                throw new Exception($"OutputFormat Expression evaluation resulted in an error. Expression: {outputExpression.ToString()}. Error: {error}");
+                            }
+                        }
+
                         return Task.FromResult(InputState.Valid);
                     }
                     else
