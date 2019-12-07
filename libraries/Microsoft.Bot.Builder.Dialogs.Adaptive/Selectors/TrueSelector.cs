@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     public class TrueSelector : ITriggerSelector
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.class";
+        public const string DeclarativeType = "Microsoft.TrueSelector";
 
         private List<OnCondition> _conditionals;
         private bool _evaluate;
