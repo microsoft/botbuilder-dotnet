@@ -13,28 +13,23 @@ variables:
   Parameters.solution: Microsoft.Bot.Builder.sln
   PreviewPackageVersion: 4.6.0-preview-$(Build.BuildNumber)
   ReleasePackageVersion: 4.6.0-preview-$(Build.BuildNumber)
+pool:
+  name: Hosted Windows 2019 with VS2019
+  demands:
+  - msbuild
+  - visualstudio
 
 #Multi-configuration and multi-agent job options are not exported to YAML. Configure these options using documentation guidance: https://docs.microsoft.com/vsts/pipelines/process/phases
 stages:
 - stage: Build
   jobs:
   - job: Debug_Windows_Configuration
-    pool:
-      name: Hosted Windows 2019 with VS2019
-      demands:
-      - msbuild
-      - visualstudio
     variables:
       BuildConfiguration: Debug-Windows
     steps:
     - script: echo Executing this 1
     #- template: ci-build-steps.yml
   - job: Release_Windows_Configuration
-    pool:
-      name: Hosted Windows 2019 with VS2019
-      demands:
-      - msbuild
-      - visualstudio
     variables:
       BuildConfiguration: Release-Windows
     steps:
@@ -44,47 +39,38 @@ stages:
 - stage: API_Compatibility_Validation
   dependsOn: Build
   jobs:
-  - job: generate_thread_variables
-    pool:
-      name: Hosted Windows 2019 with VS2019
+  - job: generate_multijob_vars
     steps:
     - powershell: |
-       $threads = '{';
+       $multijobs = '{';
 
        $env:BotBuilderDll.Split(",") | ForEach {
            $library = $_.Trim()
            Write-Host $library
 
            $threadName = $library.Split(".")[-1];
-           $threads += "'" + $threadName + "':{'BotBuilderDll':'" + $library + "'}, ";
+           $multijobs += "'" + $threadName + "':{'BotBuilderDll':'" + $library + "'}, ";
          }
-       $threads = $threads.TrimEnd(' ').TrimEnd(',') + "}";
-       $threads
+       $multijobs = $multijobs.TrimEnd(' ').TrimEnd(',') + "}";
+       $multijobs
 
-       "##vso[task.setVariable variable=THREADS;isOutput=true]$threads"
-      name: generate_threads
-    - script: echo $(generate_threads.THREADS)
+       "##vso[task.setVariable variable=MULTIJOBS;isOutput=true]$multijobs"
+      name: generate_vars
+    - script: echo $(generate_vars.MULTIJOBS)
 
-  - job: run_threads
-    dependsOn: generate_thread_variables
-    variables:
-      THREADS: $[ dependencies.generate_thread_variables.outputs['generate_threads.THREADS'] ]
-    pool:
-      name: Hosted Windows 2019 with VS2019
+  - job: check_api_for
+    dependsOn: generate_multijob_vars
       timeoutInMinutes: 10
     strategy:
-      matrix: $[ dependencies.generate_thread_variables.outputs['generate_threads.THREADS'] ]
+      matrix: $[ dependencies.generate_multijob_vars.outputs['generate_vars.MULTIJOBS'] ]
     steps:
     - script: echo $(BotBuilderDll)
-    - script: echo $(THREADS)
     #- template: ci-api-validation-steps.yml
 
 - stage: Post_Results_to_GitHub
   dependsOn: API_Compatibility_Validation
   jobs:
   - job: Post_to_GitHub
-    pool:
-      name: Hosted Windows 2019 with VS2019
     variables:
       BuildConfiguration: Release-Windows
     steps:
