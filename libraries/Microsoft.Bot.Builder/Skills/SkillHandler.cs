@@ -388,6 +388,12 @@ namespace Microsoft.Bot.Builder.Skills
         private async Task<ResourceResponse> ProcessActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string replyToActivityId, Activity activity, CancellationToken cancellationToken)
         {
             var conversationReference = await _conversationIdIdFactory.GetConversationReferenceAsync(conversationId, CancellationToken.None).ConfigureAwait(false);
+
+            if (conversationReference == null)
+            {
+                throw new KeyNotFoundException();
+            }
+
             var callback = new BotCallbackHandler(async (turnContext, ct) =>
             {
                 activity.ApplyConversationReference(conversationReference);
@@ -395,6 +401,7 @@ namespace Microsoft.Bot.Builder.Skills
                 switch (activity.Type)
                 {
                     case ActivityTypes.EndOfConversation:
+                        await _conversationIdIdFactory.DeleteConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
                         ApplyEoCToTurnContextActivity(turnContext, activity);
                         await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
                         break;
