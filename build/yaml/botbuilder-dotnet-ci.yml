@@ -60,7 +60,7 @@ stages:
 
   - job: check_api_for
     dependsOn: generate_multijob_vars
-      timeoutInMinutes: 10
+    timeoutInMinutes: 10
     strategy:
       matrix: $[ dependencies.generate_multijob_vars.outputs['generate_vars.MULTIJOBS'] ]
     steps:
