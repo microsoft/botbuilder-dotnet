@@ -28,13 +28,13 @@ stages:
       BuildConfiguration: Debug-Windows
     steps:
     - script: echo Executing this 1
-    #- template: ci-build-steps.yml
+    - template: ci-build-steps.yml
   - job: Release_Windows_Configuration
     variables:
       BuildConfiguration: Release-Windows
     steps:
     - script: echo Executing this 2
-    #- template: ci-build-steps.yml
+    - template: ci-build-steps.yml
 
 - stage: API_Compatibility_Validation
   dependsOn: Build
@@ -62,10 +62,11 @@ stages:
     dependsOn: generate_multijob_vars
     timeoutInMinutes: 10
     strategy:
+      maxParallel: 10
       matrix: $[ dependencies.generate_multijob_vars.outputs['generate_vars.MULTIJOBS'] ]
     steps:
     - script: echo $(BotBuilderDll)
-    #- template: ci-api-validation-steps.yml
+    - template: ci-api-validation-steps.yml
 
 - stage: Post_Results_to_GitHub
   dependsOn: API_Compatibility_Validation
