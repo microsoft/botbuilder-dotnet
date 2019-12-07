@@ -27,13 +27,13 @@ stages:
     variables:
       BuildConfiguration: Debug-Windows
     steps:
-    - script: echo Executing this 1
+    #- script: echo Executing this 1
     - template: ci-build-steps.yml
   - job: Release_Windows_Configuration
     variables:
       BuildConfiguration: Release-Windows
     steps:
-    - script: echo Executing this 2
+    #- script: echo Executing this 2
     - template: ci-build-steps.yml
 
 - stage: API_Compatibility_Validation
@@ -75,5 +75,5 @@ stages:
     variables:
       BuildConfiguration: Release-Windows
     steps:
-    - script: echo Executing this 3
-    #- template: ci-post-to-github-steps.yml
+    #- script: echo Executing this 3
+    - template: ci-post-to-github-steps.yml
