@@ -20,12 +20,16 @@ namespace Microsoft.Bot.Builder.TestProtocol.Controllers
         private readonly Uri _toUri;
         private readonly Uri _serviceUrl;
         private readonly SkillConversationIdFactoryBase _factory;
+        private readonly String _botId;
+        private readonly String _skillId;
 
         public ForwardController(BotFrameworkHttpClient client, IConfiguration configuration, SkillConversationIdFactoryBase factory)
         {
             _client = client;
             _toUri = new Uri(configuration["Next"]);
             _serviceUrl = new Uri(configuration["ServiceUrl"]);
+            _botId = configuration["MicrosofAppId"];
+            _skillId = configuration["SkillId"];
             _factory = factory;
         }
 
@@ -34,7 +38,7 @@ namespace Microsoft.Bot.Builder.TestProtocol.Controllers
         {
             var inboundActivity = await HttpHelper.ReadRequestAsync<Activity>(Request);
             var nextConversationId = await _factory.CreateSkillConversationIdAsync(inboundActivity.GetConversationReference(), CancellationToken.None);
-            await _client.PostActivityAsync(null, null, _toUri, _serviceUrl, nextConversationId, inboundActivity);
+            await _client.PostActivityAsync(_botId, _skillId, _toUri, _serviceUrl, nextConversationId, inboundActivity);
 
             // ALTERNATIVE API IDEA...
             //var inboundConversationReference = inboundActivity.GetConversationReference();
