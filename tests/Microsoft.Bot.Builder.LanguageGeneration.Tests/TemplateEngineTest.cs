@@ -999,6 +999,21 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(result, "p1enum");
         }
 
+        [TestMethod]
+        public void TestIsTemplateFunction()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("IsTemplate.lg"));
+
+            var evaled = engine.EvaluateTemplate("template2", new { templateName = "template1" });
+            Assert.AreEqual("template template1 exists", evaled);
+
+            evaled = engine.EvaluateTemplate("template2", new { templateName = "wPhrase" });
+            Assert.AreEqual("template wPhrase exists", evaled);
+
+            evaled = engine.EvaluateTemplate("template2", new { templateName = "xxx" });
+            Assert.AreEqual("template xxx does not exist", evaled);
+        }
+
         public class LoopClass
         {
             public string Name { get; set; }
