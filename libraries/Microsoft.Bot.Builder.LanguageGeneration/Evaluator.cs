@@ -429,8 +429,36 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(activityAttachment, BuiltInFunctions.Apply(this.ActivityAttachment()), ReturnType.Object, this.ValidateActivityAttachment);
             }
 
+            const string inTemplate = "inTemplate";
+
+            if (name.Equals(inTemplate))
+            {
+                return new ExpressionEvaluator(inTemplate, BuiltInFunctions.Apply(this.InTemplate()), ReturnType.Boolean, this.ValidateInTemplate);
+            }
+
             return baseLookup(name);
         };
+
+        private Func<IReadOnlyList<object>, object> InTemplate()
+       => (IReadOnlyList<object> args) =>
+       {
+           var templateName = args[0].ToString();
+           return TemplateMap.ContainsKey(templateName);
+       };
+
+        private void ValidateInTemplate(Expression expression)
+        {
+            if (expression.Children.Length != 1)
+            {
+                throw new Exception("inTemplate should have one parameter");
+            }
+
+            var children0 = expression.Children[0];
+            if (children0.ReturnType != ReturnType.Object && children0.ReturnType != ReturnType.String)
+            {
+                throw new Exception($"{children0} can't be used as a template name, must be a string value");
+            }
+        }
 
         private Func<IReadOnlyList<object>, object> ActivityAttachment()
         => (IReadOnlyList<object> args) =>
