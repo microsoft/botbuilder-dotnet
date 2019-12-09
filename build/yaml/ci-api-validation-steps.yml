@@ -65,13 +65,10 @@ steps:
    Write-Host "The updated line 1: `n$FileContent[0]"
   displayName: 'Insert nuget link into ApiCompat results file.'
 
-- task: CopyPublishBuildArtifacts@1
+- task: PublishBuildArtifacts@1
   displayName: 'Publish Compat Results artifact'
   inputs:
-    CopyRoot: '$(Build.ArtifactStagingDirectory)'
-    Contents: '**'
     ArtifactName: '$(BotBuilderDll).$(ApiCompatVersion).CompatResults'
-    ArtifactType: Container
 
 - script: |
    cd ..
