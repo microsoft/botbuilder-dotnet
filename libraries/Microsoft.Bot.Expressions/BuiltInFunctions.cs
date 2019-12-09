@@ -1350,32 +1350,15 @@ namespace Microsoft.Bot.Expressions
                 }
                 else if (instance is JObject jobj)
                 {
-                    var tempList = new List<object>();
-                    
-                    foreach (var item in jobj)
-                    {
-                        tempList.Add(new { key = item.Key, value = item.Value });
-                    }
-
-                    list = tempList;
+                    list = Object2KVPairList(jobj);
+                }
+                else if (JToken.FromObject(instance) is JObject jobject)
+                {
+                    list = Object2KVPairList(jobject);
                 }
                 else
                 {
-                    var jToken = JToken.FromObject(instance);
-                    if (jToken is JObject jobject)
-                    {
-                        var tempList = new List<object>();
-                        foreach (var item in jobject)
-                        {
-                            tempList.Add(new { key = item.Key, value = item.Value });
-                        }
-
-                        list = tempList;
-                    }
-                    else
-                    {
-                        error = $"{expression.Children[0]} is not a collection or structure object to run foreach";
-                    }
+                    error = $"{expression.Children[0]} is not a collection or structure object to run foreach";
                 }
 
                 if (error == null)
@@ -1418,41 +1401,24 @@ namespace Microsoft.Bot.Expressions
             {
                 // 2nd parameter has been rewrite to $local.item
                 var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
-                var isList = false;
+                var isInstanceList = false;
                 IList list = null;
                 if (TryParseList(instance, out IList ilist))
                 {
-                    isList = true;
+                    isInstanceList = true;
                     list = ilist;
                 }
                 else if (instance is JObject jobj)
                 {
-                    var tempList = new List<object>();
-
-                    foreach (var item in jobj)
-                    {
-                        tempList.Add(new { key = item.Key, value = item.Value });
-                    }
-
-                    list = tempList;
+                    list = Object2KVPairList(jobj);
+                }
+                else if (JToken.FromObject(instance) is JObject jobject)
+                {
+                    list = Object2KVPairList(jobject);
                 }
                 else
                 {
-                    var jToken = JToken.FromObject(instance);
-                    if (jToken is JObject jobject)
-                    {
-                        var tempList = new List<object>();
-                        foreach (var item in jobject)
-                        {
-                            tempList.Add(new { key = item.Key, value = item.Value });
-                        }
-
-                        list = tempList;
-                    }
-                    else
-                    {
-                        error = $"{expression.Children[0]} is not a collection or structure object to run foreach";
-                    }
+                    error = $"{expression.Children[0]} is not a collection or structure object to run foreach";
                 }
 
                 if (error == null)
@@ -1478,7 +1444,7 @@ namespace Microsoft.Bot.Expressions
                         }
                     }
 
-                    if (!isList)
+                    if (!isInstanceList)
                     {
                         // re-construct object
                         var jobjResult = new JObject();
@@ -1493,6 +1459,17 @@ namespace Microsoft.Bot.Expressions
             }
 
             return (result, error);
+        }
+
+        private static List<object> Object2KVPairList(JObject jobj)
+        {
+            var tempList = new List<object>();
+            foreach (var item in jobj)
+            {
+                tempList.Add(new { key = item.Key, value = item.Value });
+            }
+
+            return tempList;
         }
 
         private static void ValidateWhere(Expression expression) => ValidateForeach(expression);
