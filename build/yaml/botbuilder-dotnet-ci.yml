@@ -21,7 +21,7 @@ pool:
   - msbuild
   - visualstudio
 
-#Multi-configuration and multi-agent job options are not exported to YAML. Configure these options using documentation guidance: https://docs.microsoft.com/vsts/pipelines/process/phases
+#The following 2 stages run multi-configuration, multi-agent parallel jobs
 stages:
 - stage: Build
   jobs:
