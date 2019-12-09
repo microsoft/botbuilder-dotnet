@@ -1,5 +1,5 @@
 #
-# Build configuration file to run build BotBuilder-DotNet-master-CI-PR on azure pipelines
+# YAML build definition to replace BotBuilder-DotNet-master-CI-PR
 #
 name: TestBuild-$(Build.BuildId)
 variables:
