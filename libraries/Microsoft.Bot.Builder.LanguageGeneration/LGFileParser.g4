@@ -52,11 +52,11 @@ structuredTemplateBody
     ;
 
 structuredBodyNameLine
-    : LEFT_SQUARE_BRACKET STRUCTURED_CONTENT STRUCTURED_NEWLINE
+    : LEFT_SQUARE_BRACKET STRUCTURED_CONTENT
     ;
 
 structuredBodyContentLine
-    : (STRUCTURED_CONTENT? STRUCTURED_NEWLINE)+
+    : STRUCTURED_CONTENT+
     ;
 
 structuredBodyEndLine

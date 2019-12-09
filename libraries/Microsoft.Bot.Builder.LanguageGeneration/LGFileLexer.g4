@@ -194,7 +194,7 @@ STRUCTURED_COMMENTS
   ;
 
 STRUCTURED_NEWLINE
-  : '\r'? '\n'
+  : '\r'? '\n' -> skip
   ;
 
 STRUCTURED_TEMPLATE_BODY_END
