@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.Choice;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
@@ -9,6 +10,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </summary>
     public class ConfirmationEntityRecognizer : EntityRecognizer
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.ConfirmationEntityRecognizer";
+
         public ConfirmationEntityRecognizer()
         {
         }

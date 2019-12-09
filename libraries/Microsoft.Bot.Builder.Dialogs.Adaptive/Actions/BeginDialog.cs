@@ -15,6 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class BeginDialog : BaseInvokeDialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.BeginDialog";
+
         [JsonConstructor]
         public BeginDialog(string dialogIdToCall = null, IDictionary<string, string> options = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(dialogIdToCall, options)
@@ -28,6 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// The property path to store the dialog result in.
         /// </value>
+        [JsonProperty("resultProperty")]
         public string ResultProperty { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -41,6 +45,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             // use bindingOptions to bind to the bound options
             var boundOptions = BindOptions(dc, options);
+
+            if (this.IncludeActivity)
+            {
+                // reset this to false so that new dialog has opportunity to process the activity
+                dc.GetState().SetValue(TurnPath.ACTIVITYPROCESSED, false);
+            }
 
             // start dialog with bound options passed in as the options
             return await dc.BeginDialogAsync(dialog.Id, options: boundOptions, cancellationToken: cancellationToken).ConfigureAwait(false);

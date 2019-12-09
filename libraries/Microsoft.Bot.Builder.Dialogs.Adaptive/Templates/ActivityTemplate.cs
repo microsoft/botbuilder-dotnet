@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
 {
@@ -14,8 +15,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
     /// and processed through registered IActivityGenerator/ILanguageGenerator.
     /// </summary>
     [DebuggerDisplay("{Template}")]
+    [JsonConverter(typeof(ActivityTemplateConverter))]
     public class ActivityTemplate : ITemplate<Activity>
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.ActivityTemplate";
+
         // Fixed text constructor for inline template
         public ActivityTemplate(string template)
         {
@@ -28,6 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         /// <value>
         /// The template to evaluate to create the activity.
         /// </value>
+        [JsonProperty("template")]
         public string Template { get; set; }
 
         public virtual async Task<Activity> BindToData(ITurnContext context, object data)

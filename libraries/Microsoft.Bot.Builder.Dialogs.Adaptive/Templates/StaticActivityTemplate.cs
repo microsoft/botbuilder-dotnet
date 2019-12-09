@@ -3,6 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
 {
@@ -11,6 +12,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
     /// </summary>
     public class StaticActivityTemplate : ITemplate<Activity>
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.StaticActivityTemplate";
+
         public StaticActivityTemplate()
         {
         }
@@ -20,6 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
             this.Activity = activity;
         }
 
+        [JsonProperty("activity")]
         public Activity Activity { get; set; }
 
         public Task<Activity> BindToData(ITurnContext context, object data)

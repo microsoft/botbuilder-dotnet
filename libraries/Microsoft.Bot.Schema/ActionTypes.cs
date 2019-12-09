@@ -8,6 +8,8 @@
 // regenerated.
 // </auto-generated>
 
+using System;
+
 namespace Microsoft.Bot.Schema
 {
 
@@ -25,6 +27,7 @@ namespace Microsoft.Bot.Schema
         public const string DownloadFile = "downloadFile";
         public const string Signin = "signin";
         public const string Call = "call";
+        [Obsolete("Bot Framework no longer supports payments.")]
         public const string Payment = "payment";
         public const string MessageBack = "messageBack";
         public const string openApp = "openApp";

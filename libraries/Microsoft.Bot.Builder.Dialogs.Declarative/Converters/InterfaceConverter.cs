@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 {
-    public class InterfaceConverter<T> : JsonConverter 
+    public class InterfaceConverter<T> : JsonConverter
         where T : class
     {
         private readonly IRefResolver refResolver;
@@ -42,10 +42,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 jsonObject = refResolver.ResolveAsync(jsonObject).GetAwaiter().GetResult();
             }
 
-            // jsonObject["id"] = jsonObject["id"] ?? jsonObject["$id"];
-
-            var typeName = jsonObject["$type"]?.ToString();
-            if (typeName == null)
+            var kind = (string)jsonObject["$kind"] ?? (string)jsonObject["$type"];
+            if (kind == null)
             {
                 throw new ArgumentNullException(JsonConvert.SerializeObject(jsonObject));
             }
@@ -58,8 +56,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 paths.Push(range.Path);
             }
 
-            T result = TypeFactory.Build<T>(typeName, jsonObject, serializer);
-
+            T result = TypeFactory.Build<T>(kind, jsonObject, serializer);
+            
             // DeclarativeTypeLoader.LoadAsync only adds FileResource to the paths stack
             if (paths.Count > 0)
             {

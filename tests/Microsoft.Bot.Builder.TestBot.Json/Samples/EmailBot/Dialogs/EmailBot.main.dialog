@@ -1,55 +1,55 @@
 {
     "$schema": "../../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
+    "$kind": "Microsoft.AdaptiveDialog",
     "autoEndDialog": false,
     "recognizer": {
-        "$type": "Microsoft.RegexRecognizer",
+        "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "ShowEmailIntent",
                 "pattern": "(?i)show email" 
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "SendEmailIntent",
                 "pattern": "(?i)send email" 
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "HelpIntent",
                 "pattern": "(?i)help" 
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "FindContactIntent",
                 "pattern": "(?i)find email contact" 
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "ShowNextPageIntent",
                 "pattern": "(?i)next page email" 
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "ForwardEmailIntent",
                 "pattern": "(?i)forward email" 
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "ReplyEmailIntent",
                 "pattern": "(?i)reply email" 
             },
             {
 
-                "$type": "Microsoft.IntentPattern",
+                "$kind": "Microsoft.IntentPattern",
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel|never mind"
             }
@@ -57,29 +57,29 @@
     },
     "triggers": [
         {
-            "$type": "Microsoft.OnUnknownIntent",
+            "$kind": "Microsoft.OnUnknownIntent",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "Hi! I'm a Email bot. Say \"show email\" to get started."
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "CancelIntent",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "ok, see you next time."
                 },
                 {
-                    "$type": "Microsoft.EndDialog"
+                    "$kind": "Microsoft.EndDialog"
                 }
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "ShowEmailIntent",
             "actions": [
                 "ClearUserData",
@@ -87,7 +87,7 @@
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "ShowNextPageIntent",
             "actions": [
                 "NextPage",
@@ -95,7 +95,7 @@
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "SendEmailIntent",
             "actions": [
                 "ClearUserData",
@@ -103,7 +103,7 @@
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "FindContactIntent",
             "actions": [
                 "ClearUserData",
@@ -111,7 +111,7 @@
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "ForwardEmailIntent",
             "actions": [
                 "ClearUserData",
@@ -119,7 +119,7 @@
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "ReplyEmailIntent",
             "actions": [
                 "ClearUserData",
@@ -127,11 +127,11 @@
             ]
         },
         {
-            "$type": "Microsoft.OnIntent",
+            "$kind": "Microsoft.OnIntent",
             "intent": "HelpIntent",
             "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
+                    "$kind": "Microsoft.SendActivity",
                     "activity": "I am an email bot, Please try show email to get started."
                 }
             ]

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
@@ -554,8 +555,38 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
                 await storage.WriteAsync(changes, CancellationToken.None);
 
+#if NETCOREAPP2_1
                 // Should throw DocumentClientException: Cross partition query is required but disabled
                 await Assert.ThrowsExceptionAsync<DocumentClientException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));
+#else // required by NETCOREAPP3_0 (have only tested NETCOREAPP2_1 and NETCOREAPP3_0)
+                bool badRequestExceptionThrown = false;
+                try
+                {
+                    await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None);
+                }
+                catch (DocumentClientException ex)
+                {
+                    badRequestExceptionThrown = ex.StatusCode == HttpStatusCode.BadRequest; 
+                }
+
+                Assert.IsTrue(badRequestExceptionThrown, "Expected: DocumentClientException with HttpStatusCode.BadRequest");
+
+                // TODO: netcoreapp3.0 throws Microsoft.Azure.Documents.BadRequestException which derives from DocumentClientException, but it is internal
+                //await Assert.ThrowsExceptionAsync<DocumentClientException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));
+#endif
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone()
+        {
+            if (CheckEmulator())
+            {
+                var storage = new CosmosDbStorage(
+                                   CreateCosmosDbStorageOptions(),
+                                   new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
+                await StatePersistsThroughMultiTurn(storage);
             }
         }
 

@@ -4,62 +4,79 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 {
     /// <summary>
     /// BotStateMemoryScope represents a BotState scoped memory.
     /// </summary>
-    /// <remarks>This relies on the BotState object being accessible from turnContext.TurnState.Get&lt;T&gt().</remarks>
+    /// <remarks>This relies on the BotState object being accessible from turnContext.TurnState.Get&lt;T&gt;().</remarks>
     /// <typeparam name="T">botState type.</typeparam>
     public class BotStateMemoryScope<T> : MemoryScope
         where T : BotState
     {
-        public BotStateMemoryScope(string name)
-            : base(name)
+        private IStatePropertyAccessor<JObject> property;
+        private JObject state;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotStateMemoryScope{T}"/> class.
+        /// </summary>
+        /// <param name="name">name of the property.</param>
+        /// <param name="botState">bot state that is storage for this memoryscope.</param>
+        /// <param name="propertyName">optional propertyname.</param>
+        public BotStateMemoryScope(string name, BotState botState, string propertyName = null)
+            : base(name, includeInSnapshot: true)
         {
+            this.property = botState.CreateProperty<JObject>(propertyName ?? name ?? throw new ArgumentNullException("BotStateMemoryScope must have name or propertyname"));
         }
 
         /// <summary>
         /// Get the backing memory for this scope.
         /// </summary>
-        /// <param name="dc">dc.</param>
+        /// <param name="dialogContext">dc.</param>
         /// <returns>memory for the scope.</returns>
-        public override object GetMemory(DialogContext dc)
+        public override object GetMemory(DialogContext dialogContext)
         {
-            var property = GetBotStateProperty(dc);
-            
-            // NOTE: the BotState should already be in memory, this is accessing the in-memory cache, which means it should complete without blocking
-            return property.GetAsync(dc.Context, () => new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase)).GetAwaiter().GetResult();
+            if (dialogContext == null)
+            {
+                throw new ArgumentNullException($"{nameof(dialogContext)} is null");
+            }
+
+            return this.state;
         }
 
         /// <summary>
         /// Changes the backing object for the memory scope.
         /// </summary>
-        /// <param name="dc">dc.</param>
+        /// <param name="dialogContext">dc.</param>
         /// <param name="memory">memory.</param>
-        public override void SetMemory(DialogContext dc, object memory)
+        public override void SetMemory(DialogContext dialogContext, object memory)
         {
-            var property = GetBotStateProperty(dc);
+            if (dialogContext == null)
+            {
+                throw new ArgumentNullException($"{nameof(dialogContext)} is null");
+            }
 
-            // NOTE: the BotState should already be in memory, this is accessing the in-memory cache, which means it should complete without blocking
-            property.SetAsync(dc.Context, memory).GetAwaiter().GetResult();
+            this.state = JObject.FromObject(memory);
         }
 
-        private IStatePropertyAccessor<object> GetBotStateProperty(DialogContext dc)
+        public override async Task LoadAsync(DialogContext dc, bool force = false, CancellationToken cancellationToken = default)
         {
-            if (dc == null)
-            {
-                throw new ArgumentNullException(nameof(dc));
-            }
+            this.state = await this.property.GetAsync(dc.Context, () => new JObject(), cancellationToken).ConfigureAwait(false);
+        }
 
-            var conversationState = dc.Context.TurnState.Get<T>();
-            if (conversationState == null)
-            {
-                throw new ArgumentNullException($"There is no {typeof(T).Name} registered in TurnContext.TurnState.Get<{typeof(T).Name}>().  Have you registered {typeof(T).Name}?");
-            }
+        public override async Task SaveChangesAsync(DialogContext dialogContext, bool force = false, CancellationToken cancellationToken = default)
+        {
+            await this.property.SetAsync(dialogContext.Context, this.state, cancellationToken).ConfigureAwait(false);
+        }
 
-            return conversationState.CreateProperty<object>(this.GetType().Name);
+        public override async Task DeleteAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
+        {
+            await this.property.DeleteAsync(dialogContext.Context, cancellationToken).ConfigureAwait(false);
         }
     }
 }

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Bot.Expressions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -33,6 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// Configurable options for the dialog. 
         /// </value>
+        [JsonProperty("options")]
         public object Options { get; set; } = new JObject();
 
         /// <summary>
@@ -41,7 +43,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// The dialog to call.
         /// </value>
+        [JsonProperty("dialog")]
         public Dialog Dialog { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to have the new dialog include activity.
+        /// </summary>
+        /// <value>If this flag is true, then the activity is flagged to be processed by the new dialog.</value>
+        [JsonProperty("includeProperty")]
+        public bool IncludeActivity { get; set; }
 
         public virtual IEnumerable<Dialog> GetDependencies()
         {

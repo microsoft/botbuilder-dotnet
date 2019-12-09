@@ -1,14 +1,14 @@
 {
   "$schema": "../../app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
+  "$kind": "Microsoft.AdaptiveDialog",
   "actions": [
     // Reset data
     {
-      "$type": "Microsoft.DeleteProperty",
+      "$kind": "Microsoft.DeleteProperty",
       "property": "user.fwContent"
     },
     {
-      "$type": "Microsoft.DeleteProperty",
+      "$kind": "Microsoft.DeleteProperty",
       "property": "user.fwSubject"
     },
   ]

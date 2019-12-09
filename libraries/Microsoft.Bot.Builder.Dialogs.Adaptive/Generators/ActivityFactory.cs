@@ -88,20 +88,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             var activity = new JObject
             {
-                ["Type"] = ActivityTypes.Message
+                ["type"] = ActivityTypes.Message
             };
+
             foreach (var item in lgJObj)
             {
                 var property = item.Key.Trim();
+                if (property == Evaluator.LGType)
+                {
+                    continue;
+                }
+
                 var value = item.Value;
 
                 switch (property.ToLowerInvariant())
                 {
                     case "attachments":
-                        activity["Attachments"] = JArray.FromObject(GetAttachments(value));
+                        activity["attachments"] = JArray.FromObject(GetAttachments(value));
                         break;
                     case "suggestedactions":
-                        activity["SuggestedActions"] = JObject.FromObject(GetSuggestions(value));
+                        activity["suggestedActions"] = JObject.FromObject(GetSuggestions(value));
                         break;
                     default:
                         activity[property] = value;
@@ -147,7 +153,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 var type = GetStructureType(actionJObj);
                 var cardActionJson = new JObject()
                 {
-                    ["Type"] = ActionTypes.ImBack
+                    ["type"] = ActionTypes.ImBack
                 };
 
                 if (type == nameof(CardAction).ToLowerInvariant())
@@ -171,7 +177,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 return string.Empty;
             }
 
-            var type = jObj["$type"]?.ToString()?.Trim();
+            var type = jObj[Evaluator.LGType]?.ToString()?.Trim();
             if (string.IsNullOrEmpty(type))
             {
                 // Adaptive card type
@@ -239,15 +245,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                             var type = value.ToString().ToLowerInvariant();
                             if (GenericCardTypeMapping.ContainsKey(type))
                             {
-                                attachmentJson["ContentType"] = GenericCardTypeMapping[type];
+                                attachmentJson["contentType"] = GenericCardTypeMapping[type];
                             }
                             else if (type == "adaptivecard")
                             {
-                                attachmentJson["ContentType"] = AdaptiveCardType;
+                                attachmentJson["contentType"] = AdaptiveCardType;
                             }
                             else
                             {
-                                attachmentJson["ContentType"] = type;
+                                attachmentJson["contentType"] = type;
                             }
 
                             break;
@@ -361,7 +367,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private static IList<JToken> NormalizedToList(JToken item)
         {
-            return item == null ? 
+            return item == null ?
                 new List<JToken>() :
                 item is JArray array ? array.ToList() : new List<JToken>() { item };
         }

@@ -5,14 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -341,33 +339,15 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var cardActionType = ActionTypes.Signin;
                 string signInLink = null;
 
-                // Streaming channels support rendering OAuthCards, but require the OAuthCard signin link to be pre-filled in
-                // Check if the incoming Activity is from a streaming connection, and if it is, fetch the sign-in link.
                 if (turnContext.Activity.IsFromStreamingConnection())
                 {
                     signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
                 }
                 else if (turnContext.TurnState.Get<ClaimsIdentity>("BotIdentity") is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
                 {
-                    // Generate sign in link for Skills (Emulator and WebChat don't' have the skill appId so we need to create the link for it
+                    // Force magic code for Skills (to be addressed in R8)
                     signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
-
-                    // In the skills preview bits, we require magic code (we'll need to update WebChat and emulator to avoid this in the next release.
-                    if (turnContext.Activity.ChannelId == Channels.Emulator || turnContext.Activity.ChannelId == Channels.Webchat)
-                    {
-                        // TODO: use the skill helper functions to handle unpacking conversation ID once we go GA with skills.
-                        // Skills need to unpack the conversation ID and create their own link.
-                        var parts = JsonConvert.DeserializeObject<string[]>(Encoding.UTF8.GetString(Convert.FromBase64String(turnContext.Activity.Conversation.Id)));
-                        var conversationId = parts[0];
-
-                        if (turnContext.Activity.ChannelId == Channels.Emulator)
-                        {
-                            // Emulator links need to be prefixed with oathlink.
-                            signInLink = $"oauthlink://{signInLink}&&&{conversationId}";
-                        }
-
-                        cardActionType = ActionTypes.OpenUrl;
-                    }
+                    cardActionType = ActionTypes.OpenUrl;
                 }
 
                 prompt.Attachments.Add(new Attachment

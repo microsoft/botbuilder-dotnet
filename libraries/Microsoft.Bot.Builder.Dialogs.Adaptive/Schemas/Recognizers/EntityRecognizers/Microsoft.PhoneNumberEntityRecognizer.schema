@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "unionType(Microsoft.EntityRecognizers)",
+    "$role": "union(Microsoft.EntityRecognizers)",
     "title": "Phone Number Entity Recognizer",
     "description": "Recognizer which recognizes phone numbers.",
     "type": "object",

@@ -1,0 +1,64 @@
+﻿{
+    "$schema": "../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "description": "Test AssertReply",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnConversationUpdateActivity",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.Foreach",
+                        "itemsProperty": "turn.activity.membersAdded",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "Hello @{dialog.foreach.value.name}"
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.Foreach",
+                        "itemsProperty": "turn.activity.membersRemoved",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "Goodbye @{dialog.foreach.value.name}"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserConversationUpdate",
+            "membersAdded": [
+                "john",
+                "sue"
+            ],
+            "membersRemoved": [
+                "fred",
+                "joe"
+            ]
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello john"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello sue"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Goodbye fred"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Goodbye joe"
+        }
+    ]
+}

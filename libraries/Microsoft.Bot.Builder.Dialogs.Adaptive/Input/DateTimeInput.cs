@@ -1,22 +1,32 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Microsoft.Bot.Expressions;
 using Microsoft.Recognizers.Text.DateTime;
+using Newtonsoft.Json;
 using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
     public class DateTimeInput : InputDialog
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.DateTimeInput";
+
         public DateTimeInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        [JsonProperty("defaultLocale")]
         public string DefaultLocale { get; set; } = null;
+
+        [JsonProperty("outputFormat")]
+        public string OutputFormat { get; set; }
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
@@ -35,6 +45,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
 
                 dc.GetState().SetValue(VALUE_PROPERTY, result);
+                if (!string.IsNullOrEmpty(OutputFormat))
+                {
+                    var outputExpression = new ExpressionEngine().Parse(OutputFormat);
+                    var (outputValue, error) = outputExpression.TryEvaluate(dc.GetState());
+                    if (error == null)
+                    {
+                        dc.GetState().SetValue(VALUE_PROPERTY, outputValue);
+                    }
+                    else
+                    {
+                        throw new Exception($"OutputFormat Expression evaluation resulted in an error. Expression: {outputExpression.ToString()}. Error: {error}");
+                    }
+                }
             }
             else
             {

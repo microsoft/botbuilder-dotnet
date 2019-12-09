@@ -150,10 +150,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Streaming.Tes
 		{ADA8AB8B-2066-4193-B8F7-985669B23E00} = {ADA8AB8B-2066-4193-B8F7-985669B23E00}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Skills", "libraries\Microsoft.Bot.Builder.Skills\Microsoft.Bot.Builder.Skills.csproj", "{01ADC4CC-029D-4720-9860-32D7E223F8D8}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Skills.Tests", "tests\Microsoft.Bot.Builder.Skills.Tests\Microsoft.Bot.Builder.Skills.Tests.csproj", "{96167FDC-8D49-4767-AE58-22933C246C67}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Slack", "libraries\Adapters\Microsoft.Bot.Builder.Adapters.Slack\Microsoft.Bot.Builder.Adapters.Slack.csproj", "{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Slack.TestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\Microsoft.Bot.Builder.Adapters.Slack.TestBot.csproj", "{170EA6A3-26A6-4A1A-A6F9-44BE5208FA06}"
@@ -167,6 +163,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Facebook", "libraries\Adapters\Microsoft.Bot.Builder.Adapters.Facebook\Microsoft.Bot.Builder.Adapters.Facebook.csproj", "{C8E31CD2-89D4-4659-9557-43EC9C99D984}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot\Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.csproj", "{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestProtocol", "tests\Microsoft.Bot.Builder.TestProtocol\Microsoft.Bot.Builder.TestProtocol.csproj", "{24CCB459-B4F6-484F-8BA4-946A4AB816FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -608,22 +606,6 @@ Global
 		{D243AC2D-7823-4177-9D8A-23FDFDA274D2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D243AC2D-7823-4177-9D8A-23FDFDA274D2}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{D243AC2D-7823-4177-9D8A-23FDFDA274D2}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{01ADC4CC-029D-4720-9860-32D7E223F8D8}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{96167FDC-8D49-4767-AE58-22933C246C67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{96167FDC-8D49-4767-AE58-22933C246C67}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{96167FDC-8D49-4767-AE58-22933C246C67}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{96167FDC-8D49-4767-AE58-22933C246C67}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{96167FDC-8D49-4767-AE58-22933C246C67}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{96167FDC-8D49-4767-AE58-22933C246C67}.Release|Any CPU.Build.0 = Release|Any CPU
-		{96167FDC-8D49-4767-AE58-22933C246C67}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{96167FDC-8D49-4767-AE58-22933C246C67}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -680,6 +662,14 @@ Global
 		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -745,8 +735,6 @@ Global
 		{EFAA1D3D-3102-4307-A5DD-EAB4DB9B0386} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{4C82FD14-418F-43E4-AC59-3D926B55CEA3} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{D243AC2D-7823-4177-9D8A-23FDFDA274D2} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
-		{01ADC4CC-029D-4720-9860-32D7E223F8D8} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
-		{96167FDC-8D49-4767-AE58-22933C246C67} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079} = {6230B915-B238-4E57-AAC4-06B4498F540F}
 		{170EA6A3-26A6-4A1A-A6F9-44BE5208FA06} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
 		{195FC24B-C4DA-4055-918D-5ABF50FD805B} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
@@ -754,6 +742,7 @@ Global
 		{E372D54C-73AA-41DB-A471-81348AC37F36} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
 		{C8E31CD2-89D4-4659-9557-43EC9C99D984} = {6230B915-B238-4E57-AAC4-06B4498F540F}
 		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
+		{24CCB459-B4F6-484F-8BA4-946A4AB816FA} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
