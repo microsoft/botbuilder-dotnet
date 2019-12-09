@@ -1,7 +1,9 @@
 #
-# Build configuration file to run build BotBuilder-DotNet-master-CI-PR on azure pipelines
+# YAML build definition to replace BotBuilder-DotNet-master-CI-PR
 #
-name: TestBuild-$(Build.BuildId)
+
+# "name" below defines the build number format. Its expanded value during a build is accessed via the var $(Build.BuildNumber)
+name: $(Build.BuildId)
 variables:
   ApiCompatVersion: 4.6.3
   BotBuilderDll: Microsoft.Bot.Builder.AI.Luis,Microsoft.Bot.Builder.AI.QnA,Microsoft.Bot.Builder.ApplicationInsights,Microsoft.Bot.Builder.Azure,Microsoft.Bot.Builder.Dialogs,Microsoft.Bot.Builder.Integration.ApplicationInsights.Core,Microsoft.Bot.Builder.Integration.AspNet.Core,Microsoft.Bot.Builder.TemplateManager,Microsoft.Bot.Builder.Testing,Microsoft.Bot.Builder,Microsoft.Bot.Configuration,Microsoft.Bot.Connector,Microsoft.Bot.Schema,Microsoft.Bot.Streaming
