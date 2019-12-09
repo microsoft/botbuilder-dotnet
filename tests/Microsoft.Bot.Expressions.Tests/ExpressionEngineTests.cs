@@ -615,6 +615,7 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("join(select(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string> { "nestedItems" }),
             Test("join(select(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string> { "items" }),
             Test("join(where(items, item, item == 'two'), ',')", "two"),
+            Test("string(where(dialog, item, item.value=='Dialog Title'))", "{\"title\":\"Dialog Title\"}"),
             Test("join(foreach(where(nestedItems, item, item.x > 1), result, result.x), ',')", "2,3", new HashSet<string> { "nestedItems" }),
             Test("last(items)", "two"),
             Test("last('hello')", "o"),
