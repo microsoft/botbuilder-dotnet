@@ -1,0 +1,57 @@
+{
+  "$kind": "Microsoft.Test.Script",
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "planningTest",
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnUnknownIntent",      
+        "actions": [
+		  {
+            "$kind": "Microsoft.SetProperty",
+			"property": "dialog.firstName",
+			"value": "'lu'"
+          },
+		  {
+            "$kind": "Microsoft.SetProperty",
+			"property": "dialog.lastName",
+			"value": "'han'"
+          },
+          {
+            "$kind": "Microsoft.IfCondition",
+            "condition": "(user.name == null)",
+            "actions": [
+              {
+                "$kind": "Microsoft.TextInput",
+                "property": "user.name",
+                "prompt": "Hello, what is your name?",
+                "unrecognizedPrompt": "How should I call you?",
+                "invalidPrompt": "That does not soud like a name",
+                "validations": [
+                  "this.value.Length > 3"
+                ],
+				"value": "concat(toUpper($firstName),toUpper($lastName))"
+              }
+            ]
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "Hello @{user.name}, nice to meet you!"
+          }
+        ]
+      }
+    ],
+    "AutoEndDialog": true,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Hello LUHAN, nice to meet you!"
+    }
+  ]
+}

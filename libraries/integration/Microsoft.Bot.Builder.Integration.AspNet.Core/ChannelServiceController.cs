@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="conversationId">Conversation ID.</param>
         /// <param name="activity">Activity to send.</param>
         /// <returns>TODO Document.</returns>
-        [HttpPost("{conversationId}/activities")]
+        [HttpPost("v3/conversations/{conversationId}/activities")]
         public virtual async Task<IActionResult> SendToConversationAsync(string conversationId, [FromBody] Activity activity)
         {
             var result = await _handler.HandleSendToConversationAsync(HttpContext.Request.Headers["Authorization"], conversationId, activity).ConfigureAwait(false);
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="activityId">activityId the reply is to (OPTIONAL).</param>
         /// <param name="activity">Activity to send.</param>
         /// <returns>TODO Document.</returns>
-        [HttpPost("{conversationId}/activities/{activityId}")]
+        [HttpPost("v3/conversations/{conversationId}/activities/{activityId}")]
         public virtual async Task<IActionResult> ReplyToActivityAsync(string conversationId, string activityId, [FromBody] Activity activity)
         {
             var result = await _handler.HandleReplyToActivityAsync(HttpContext.Request.Headers["Authorization"], conversationId, activityId, activity).ConfigureAwait(false);
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="activityId">activityId to update.</param>
         /// <param name="activity">replacement Activity.</param>
         /// <returns>TODO Document.</returns>
-        [HttpPut("{conversationId}/activities/{activityId}")]
+        [HttpPut("v3/conversations/{conversationId}/activities/{activityId}")]
         public virtual async Task<IActionResult> UpdateActivityAsync(string conversationId, string activityId, [FromBody] Activity activity)
         {
             var result = await _handler.HandleUpdateActivityAsync(HttpContext.Request.Headers["Authorization"], conversationId, activityId, activity).ConfigureAwait(false);
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="conversationId">Conversation ID.</param>
         /// <param name="activityId">activityId to delete.</param>
         /// <returns>TODO Document.</returns>
-        [HttpDelete("{conversationId}/activities/{activityId}")]
+        [HttpDelete("v3/conversations/{conversationId}/activities/{activityId}")]
         public virtual async Task DeleteActivityAsync(string conversationId, string activityId)
         {
             await _handler.HandleDeleteActivityAsync(HttpContext.Request.Headers["Authorization"], conversationId, activityId).ConfigureAwait(false);
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="conversationId">Conversation ID.</param>
         /// <param name="activityId">Activity ID.</param>
         /// <returns>TODO Document.</returns>
-        [HttpGet("{conversationId}/activities/{activityId}/members")]
+        [HttpGet("v3/conversations/{conversationId}/activities/{activityId}/members")]
         public virtual async Task<IActionResult> GetActivityMembersAsync(string conversationId, string activityId)
         {
             var result = await _handler.HandleGetActivityMembersAsync(HttpContext.Request.Headers["Authorization"], conversationId, activityId).ConfigureAwait(false);
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// </summary>
         /// <param name="parameters">Parameters to create the conversation from.</param>
         /// <returns>TODO Document.</returns>
-        [HttpPost]
+        [HttpPost("v3/conversations")]
         public virtual async Task<IActionResult> CreateConversationAsync([FromBody] ConversationParameters parameters)
         {
             var result = await _handler.HandleCreateConversationAsync(HttpContext.Request.Headers["Authorization"], parameters).ConfigureAwait(false);
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// </summary>
         /// <param name="continuationToken">skip or continuation token.</param>
         /// <returns>TODO Document.</returns>
-        [HttpGet]
+        [HttpGet("v3/conversations")]
         public virtual async Task<IActionResult> GetConversationsAsync(string continuationToken = null)
         {
             var result = await _handler.HandleGetConversationsAsync(HttpContext.Request.Headers["Authorization"], continuationToken).ConfigureAwait(false);
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// </summary>
         /// <param name="conversationId">Conversation ID.</param>
         /// <returns>TODO Document.</returns>
-        [HttpGet("{conversationId}/members")]
+        [HttpGet("v3/conversations/{conversationId}/members")]
         public virtual async Task<IActionResult> GetConversationMembersAsync(string conversationId)
         {
             var result = await _handler.HandleGetConversationMembersAsync(HttpContext.Request.Headers["Authorization"], conversationId).ConfigureAwait(false);
@@ -136,7 +136,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="pageSize">Suggested page size.</param>
         /// <param name="continuationToken">Continuation Token.</param>
         /// <returns>TODO Document.</returns>
-        [HttpGet("{conversationId}/pagedmembers")]
+        [HttpGet("v3/conversations/{conversationId}/pagedmembers")]
         public virtual async Task<IActionResult> GetConversationPagedMembersAsync(string conversationId, int pageSize = -1, string continuationToken = null)
         {
             var result = await _handler.HandleGetConversationPagedMembersAsync(HttpContext.Request.Headers["Authorization"], conversationId, pageSize, continuationToken).ConfigureAwait(false);
@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="conversationId">Conversation ID.</param>
         /// <param name="memberId">ID of the member to delete from this conversation.</param>
         /// <returns>TODO Document.</returns>
-        [HttpDelete("{conversationId}/members/{memberId}")]
+        [HttpDelete("v3/conversations/{conversationId}/members/{memberId}")]
         public virtual async Task DeleteConversationMemberAsync(string conversationId, string memberId)
         {
             await _handler.HandleDeleteConversationMemberAsync(HttpContext.Request.Headers["Authorization"], conversationId, memberId).ConfigureAwait(false);
@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="conversationId">Conversation ID.</param>
         /// <param name="history">Historic activities.</param>
         /// <returns>TODO Document.</returns>
-        [HttpPost("{conversationId}/activities/history")]
+        [HttpPost("v3/conversations/{conversationId}/activities/history")]
         public virtual async Task<IActionResult> SendConversationHistoryAsync(string conversationId, [FromBody] Transcript history)
         {
             var result = await _handler.HandleSendConversationHistoryAsync(HttpContext.Request.Headers["Authorization"], conversationId, history).ConfigureAwait(false);
@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="conversationId">Conversation ID.</param>
         /// <param name="attachmentUpload">Attachment data.</param>
         /// <returns>TODO Document.</returns>
-        [HttpPost("{conversationId}/attachments")]
+        [HttpPost("v3/conversations/{conversationId}/attachments")]
         public virtual async Task<IActionResult> UploadAttachmentAsync(string conversationId, [FromBody] AttachmentData attachmentUpload)
         {
             var result = await _handler.HandleUploadAttachmentAsync(HttpContext.Request.Headers["Authorization"], conversationId, attachmentUpload).ConfigureAwait(false);

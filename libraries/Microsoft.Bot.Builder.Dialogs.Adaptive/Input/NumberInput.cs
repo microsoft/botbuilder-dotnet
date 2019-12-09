@@ -4,6 +4,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Microsoft.Bot.Expressions;
 using Microsoft.Recognizers.Text.Number;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -42,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public string DefaultLocale { get; set; } = null;
 
         [JsonProperty("outputFormat")]
-        public NumberOutputFormat OutputFormat { get; set; } = NumberOutputFormat.Float;
+        public string OutputFormat { get; set; }
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
@@ -69,17 +70,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return Task.FromResult(InputState.Unrecognized);
             }
 
-            switch (this.OutputFormat)
-            {
-                case NumberOutputFormat.Float:
-                default:
-                    dc.GetState().SetValue(VALUE_PROPERTY, input);
-                    break;
-                case NumberOutputFormat.Integer:
-                    dc.GetState().SetValue(VALUE_PROPERTY, Math.Floor((float)input));
-                    break;
-            }
+            dc.GetState().SetValue(VALUE_PROPERTY, input);
 
+            if (!string.IsNullOrEmpty(OutputFormat))
+            {
+                var outputExpression = new ExpressionEngine().Parse(OutputFormat);
+                var (outputValue, error) = outputExpression.TryEvaluate(dc.GetState());
+                if (error == null)
+                {
+                    dc.GetState().SetValue(VALUE_PROPERTY, outputValue);
+                }
+                else
+                {
+                    throw new Exception($"In TextInput, OutputFormat Expression evaluation resulted in an error. Expression: {outputExpression.ToString()}. Error: {error}");
+                }
+            }
+            
             return Task.FromResult(InputState.Valid);
         }
 

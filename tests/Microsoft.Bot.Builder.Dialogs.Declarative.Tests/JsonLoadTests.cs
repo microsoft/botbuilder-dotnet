@@ -10,7 +10,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.QnA;
+using Microsoft.Bot.Builder.AI.QnA.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -19,6 +21,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
@@ -111,7 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .Send("Cancel")
                 .AssertReply("Cancel")
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
-            .Send("Carlos  ") // outputFormat = trim
+            .Send("Carlos  ") // outputFormat = trim(this.value)
                 .AssertReply("Hello Carlos, nice to talk to you!")
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Cancel") // allowInterruptions = notRecognized
@@ -168,7 +171,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                     var trace = (Activity)activity;
                     Assert.AreEqual(ActivityTypes.Trace, trace.Type, "should be trace activity");
                     Assert.AreEqual("memory", trace.ValueType, "value type should be memory");
-                    Assert.AreEqual("Carlos", ((IDictionary<string, object>)trace.Value)["name"].ToString(), "value should be user object with name='Carlos'");
+                    Assert.AreEqual("Carlos", ((JObject)trace.Value)["name"].ToString(), "value should be user object with name='Carlos'");
                 })
             .StartTestAsync();
         }
@@ -362,15 +365,58 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task JsonDialogLoad_QnAMakerDialog_IsTest_True()
+        {
+            await BuildQnAMakerTestFlow_IsTest_True()
+            .Send("Surface book 2 price")
+                .AssertReply("Surface book 2 price is $1400.")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task JsonDialogLoad_QnAMakerDialog_RankerType_QuestionOnly()
+        {
+            await BuildQnAMakerTestFlow_RankerType_QuestionOnly()
+            .Send("What ranker do you want to use?")
+                .AssertReply("We are using QuestionOnly ranker.")
+            .StartTestAsync();
+        }
+
         private TestFlow BuildQnAMakerTestFlow()
         {
-            var adapter = InitializeAdapter();
+            var adapter = InitializeAdapter()
+                .Use(new RegisterClassMiddleware<IQnAMakerClient>(new MockQnAMakerClient()));
             var resource = resourceExplorer.GetResource("QnAMakerBot.main.dialog");
             var dialog = DeclarativeTypeLoader.Load<AdaptiveDialog>(resource, resourceExplorer, DebugSupport.SourceMap);
-            var qnaMakerDialog = (QnAMakerDialog)dialog.Triggers[0].Actions[0];
+            var qnaMakerDialog = (QnAMakerDialog2)dialog.Triggers[0].Actions[0];
+            
+            dialog.Triggers[0].Actions[0] = qnaMakerDialog;
 
-            qnaMakerDialog.QnaMakerClient = new MockQnAMakerClient();
+            return GetTestAdapter(dialog, adapter);
+        }
 
+        private TestFlow BuildQnAMakerTestFlow_IsTest_True()
+        {
+            var adapter = InitializeAdapter()
+                .Use(new RegisterClassMiddleware<IQnAMakerClient>(new MockQnAMakerClient()));
+            var resource = resourceExplorer.GetResource("QnAMakerBot.main.dialog");
+            var dialog = DeclarativeTypeLoader.Load<AdaptiveDialog>(resource, resourceExplorer, DebugSupport.SourceMap);
+            var qnaMakerDialog = (QnAMakerDialog2)dialog.Triggers[0].Actions[0];
+            qnaMakerDialog.IsTest = true;
+            dialog.Triggers[0].Actions[0] = qnaMakerDialog;
+
+            return GetTestAdapter(dialog, adapter);
+        }
+
+        private TestFlow BuildQnAMakerTestFlow_RankerType_QuestionOnly()
+        {
+            var adapter = InitializeAdapter()
+                .Use(new RegisterClassMiddleware<IQnAMakerClient>(new MockQnAMakerClient()));
+            var resource = resourceExplorer.GetResource("QnAMakerBot.main.dialog");
+            var dialog = DeclarativeTypeLoader.Load<AdaptiveDialog>(resource, resourceExplorer, DebugSupport.SourceMap);
+            var qnaMakerDialog = (QnAMakerDialog2)dialog.Triggers[0].Actions[0];
+            qnaMakerDialog.RankerType = RankerTypes.QuestionOnly;
             dialog.Triggers[0].Actions[0] = qnaMakerDialog;
 
             return GetTestAdapter(dialog, adapter);

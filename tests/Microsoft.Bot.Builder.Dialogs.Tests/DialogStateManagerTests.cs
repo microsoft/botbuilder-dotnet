@@ -51,14 +51,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             await CreateDialogContext(async (context, ct) =>
             {
-                foreach (var memoryScope in DialogStateManager.MemoryScopes)
+                var dsm = new DialogStateManager(context);
+                foreach (var memoryScope in dsm.Configuration.MemoryScopes)
                 {
                     try
                     {
                         memoryScope.GetMemory(null);
                         Assert.Fail($"Should have thrown exception with null for {memoryScope.Name}");
                     }
-                    catch (ArgumentNullException)
+                    catch (Exception)
                     {
                     }
 
@@ -78,7 +79,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public void TestPathResolverNullChecks()
         {
-            foreach (var resolver in DialogStateManager.PathResolvers)
+            var config = DialogStateManager.CreateStandardConfiguration();
+            foreach (var resolver in config.PathResolvers)
             {
                 try
                 {
@@ -97,7 +99,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await CreateDialogContext(async (context, ct) =>
             {
                 JObject snapshot = context.GetState().GetMemorySnapshot();
-                foreach (var memoryScope in DialogStateManager.MemoryScopes)
+                var dsm = new DialogStateManager(context);
+                foreach (var memoryScope in dsm.Configuration.MemoryScopes)
                 {
                     if (memoryScope.IncludeInSnapshot)
                     {
@@ -277,6 +280,71 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 // complex type paths
                 dc.GetState().SetValue("TurN.fOo", foo);
                 Assert.AreEqual(dc.GetState().GetValue<Foo>("turn.foo").SubName.Name, "bob");
+            }).StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task TestSetValue_RootScope()
+        {
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                try
+                {
+                    dc.GetState().SetValue(null, 13);
+                    Assert.Fail("Should have thrown with null memory scope");
+                }
+                catch (ArgumentNullException err)
+                {
+                    Assert.IsTrue(err.Message.Contains("path"));
+                }
+
+                try
+                {
+                    // complex type paths
+                    dc.GetState().SetValue("xxx", 13);
+                    Assert.Fail("Should have thrown with unknown memory scope");
+                }
+                catch (ArgumentOutOfRangeException err)
+                {
+                    Assert.IsTrue(err.Message.Contains("does not match memory scope"));
+                }
+            }).StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task TestRemoveValue_RootScope()
+        {
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                try
+                {
+                    dc.GetState().RemoveValue(null);
+                    Assert.Fail("Should have thrown with null memory scope");
+                }
+                catch (ArgumentNullException err)
+                {
+                    Assert.IsTrue(err.Message.Contains("path"));
+                }
+
+                try
+                {
+                    dc.GetState().RemoveValue("user");
+                    Assert.Fail("Should have thrown with known root memory scope");
+                }
+                catch (ArgumentNullException err)
+                {
+                    Assert.IsTrue(err.Message.Contains("cannot be null"));
+                }
+
+                try
+                {
+                    dc.GetState().RemoveValue("xxx");
+                    Assert.Fail("Should have thrown with unknown memory scope");
+                }
+                catch (ArgumentOutOfRangeException err)
+                {
+                    Assert.IsTrue(err.Message.Contains("does not match memory scope"));
+                }
             }).StartTestAsync();
         }
 

@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
-    public class RepeatDialog : Dialog
+    public class RepeatDialog : BaseInvokeDialog
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.RepeatDialog";
@@ -29,16 +29,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            object originalOptions = dc.GetState().GetValue<object>(ThisPath.OPTIONS);
-
-            if (options == null)
-            {
-                options = originalOptions;
-            }
-            else if (originalOptions != null)
-            {
-                options = ObjectPath.Merge(options, originalOptions);
-            }
+            // use bindingOptions to bind to the bound options
+            var boundOptions = BindOptions(dc, options);
 
             var targetDialogId = dc.Parent.ActiveDialog.Id;
 
@@ -51,7 +43,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             repeatedIds.Add(targetDialogId);
             dc.GetState().SetValue(TurnPath.REPEATEDIDS, repeatedIds);
 
-            var turnResult = await dc.Parent.ReplaceDialogAsync(dc.Parent.ActiveDialog.Id, options, cancellationToken).ConfigureAwait(false);
+            if (this.IncludeActivity)
+            {
+                // reset this to false so that new dialog has opportunity to process the activity
+                dc.GetState().SetValue(TurnPath.ACTIVITYPROCESSED, false);
+            }
+
+            var turnResult = await dc.Parent.ReplaceDialogAsync(dc.Parent.ActiveDialog.Id, boundOptions, cancellationToken).ConfigureAwait(false);
             turnResult.ParentEnded = true;
             return turnResult;
         }

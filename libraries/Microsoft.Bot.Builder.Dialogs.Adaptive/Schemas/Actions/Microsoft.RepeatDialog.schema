@@ -3,5 +3,22 @@
     "$role": "union(Microsoft.IDialog)",
     "type": "object",
     "title": "Repeat dialog",
-    "description": "Repeat current dialog."
+    "description": "Repeat current dialog.",
+    "properties": {
+        "options": {
+            "type": "object",
+            "title": "Options",
+            "description": "One or more options that are passed to the dialog that is called.",
+            "additionalProperties": {
+                "type": "string",
+                "title": "Options"
+            }
+        },
+        "includeActivity": {
+            "type": "boolean",
+            "title": "Include Activity",
+            "description": "When set to true, dialog that is called can process the current activity.",
+            "default": false
+        }
+    }
 }

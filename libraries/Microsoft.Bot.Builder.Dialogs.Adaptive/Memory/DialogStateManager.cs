@@ -6,11 +6,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Expressions.Memory;
 using Newtonsoft.Json.Linq;
+using NuGet.Common;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory
 {
@@ -27,69 +29,69 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public DialogStateManager(DialogContext dc)
         {
             dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
+            this.Configuration = dc.Context.TurnState.Get<DialogStateManagerConfiguration>() ?? CreateStandardConfiguration();
         }
 
-        /// <summary>
-        /// Gets the path resolvers used to evaluate memory paths.
-        /// </summary>
-        /// <remarks>
-        /// The built in path resolvers are $,#,@,@@,%.  Additional ones can be added here to handle path resolvers around additional scopes.
-        /// </remarks>
-        /// <value>
-        /// The path resolvers used to evaluate memory paths.
-        /// </value>
-        public static List<IPathResolver> PathResolvers { get; } = new List<IPathResolver>
-        {
-            new DollarPathResolver(),
-            new HashPathResolver(),
-            new AtAtPathResolver(),
-            new AtPathResolver(),
-            new PercentPathResolver()
-        };
+        public DialogStateManagerConfiguration Configuration { get; set; }
 
-        /// <summary>
-        /// Gets the supported memory scopes for the dialog state manager.  
-        /// </summary>
-        /// <remarks>
-        /// components can extend valid scopes by adding to this list, for example to add top level scopes such as Company, Team, etc.
-        /// </remarks>
-        /// <value>
-        /// The supported memory scopes for the dialog state manager.  
-        /// </value>
-        public static List<MemoryScope> MemoryScopes { get; } = new List<MemoryScope>
-        {
-            new UserMemoryScope(),
-            new ConversationMemoryScope(),
-            new TurnMemoryScope(),
-            new SettingsMemoryScope(),
-            new DialogMemoryScope(),
-            new ClassMemoryScope(),
-            new ThisMemoryScope()
-        };
+        public ICollection<string> Keys => Configuration.MemoryScopes.Select(ms => ms.Name).ToList();
 
-        public ICollection<string> Keys => MemoryScopes.Select(ms => ms.Name).ToList();
+        public ICollection<object> Values => Configuration.MemoryScopes.Select(ms => ms.GetMemory(dialogContext)).ToList();
 
-        public ICollection<object> Values => MemoryScopes.Select(ms => ms.GetMemory(dialogContext)).ToList();
-
-        public int Count => MemoryScopes.Count;
+        public int Count => Configuration.MemoryScopes.Count;
 
         public bool IsReadOnly => true;
 
         public object this[string key] { get => GetValue<object>(key, () => null); set => SetValue(key, value); }
+
+        public static DialogStateManagerConfiguration CreateStandardConfiguration(ConversationState conversationState = null, UserState userState = null)
+        {
+            var result = new DialogStateManagerConfiguration()
+            {
+                PathResolvers = new List<IPathResolver>
+                {
+                    new DollarPathResolver(),
+                    new HashPathResolver(),
+                    new AtAtPathResolver(),
+                    new AtPathResolver(),
+                    new PercentPathResolver()
+                },
+                MemoryScopes = new List<MemoryScope>
+                {
+                    new TurnMemoryScope(),
+                    new SettingsMemoryScope(),
+                    new DialogMemoryScope(),
+                    new ClassMemoryScope(),
+                    new ThisMemoryScope()
+                }
+            };
+
+            if (conversationState != null)
+            {
+                result.MemoryScopes.Add(new ConversationMemoryScope(conversationState));
+            }
+
+            if (userState != null)
+            {
+                result.MemoryScopes.Add(new UserMemoryScope(userState));
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Get MemoryScope by name.
         /// </summary>
         /// <param name="name">Name of scope.</param>
         /// <returns>A memory scope.</returns>
-        public static MemoryScope GetMemoryScope(string name)
+        public MemoryScope GetMemoryScope(string name)
         {
             if (name == null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
 
-            return MemoryScopes.FirstOrDefault(ms => string.Compare(ms.Name, name, ignoreCase: true) == 0);
+            return Configuration.MemoryScopes.FirstOrDefault(ms => string.Compare(ms.Name, name, ignoreCase: true) == 0);
         }
 
         /// <summary>
@@ -182,7 +184,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>The transformed path.</returns>
         public virtual string TransformPath(string path)
         {
-            foreach (var pathResolver in PathResolvers)
+            foreach (var pathResolver in Configuration.PathResolvers)
             {
                 path = pathResolver.TransformPath(path);
             }
@@ -287,7 +289,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
 
             path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            ObjectPath.SetPathValue(this, path, value);
+            var memoryScope = ResolveMemoryScope(path, out var remainingPath);
+            if (memoryScope == null)
+            {
+                throw new ArgumentException($"{path} does not resolve to a memory scope: {string.Join(",", this.Configuration.MemoryScopes.Select(ms => ms.Name))}");
+            }
+
+            if (string.IsNullOrEmpty(remainingPath))
+            {
+                memoryScope.SetMemory(this.dialogContext, value);
+            }
+            else
+            {
+                ObjectPath.SetPathValue(this, path, value);
+            }
 
             // Every set will increase version
             version++;
@@ -300,7 +315,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public void RemoveValue(string path)
         {
             path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            ObjectPath.RemovePathValue(this, path);
+
+            //var memoryScope = ResolveMemoryScope(path, out var remainingPath);
+            //if (memoryScope == null)
+            //{
+            //    throw new ArgumentException($"{path} does not resolve to a memory scope: {string.Join(",", this.Configuration.MemoryScopes.Select(ms => ms.Name))}");
+            //}
+
+            //if (string.IsNullOrEmpty(remainingPath))
+            //{
+            //    throw new ArgumentException("You cannot remove a root memory scope.");
+            //}
+            //else
+            {
+                ObjectPath.RemovePathValue(this, path);
+            }
         }
 
         /// <summary>
@@ -311,7 +340,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             var result = new JObject();
 
-            foreach (var scope in MemoryScopes.Where(ms => ms.IncludeInSnapshot == true))
+            foreach (var scope in Configuration.MemoryScopes.Where(ms => ms.IncludeInSnapshot == true))
             {
                 var memory = scope.GetMemory(dialogContext);
                 if (memory != null)
@@ -323,6 +352,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             return result;
         }
 
+        /// <summary>
+        /// Load all of the scopes.
+        /// </summary>
+        /// <param name="cancellationToken">cancellationToken.</param>
+        /// <returns>Task.</returns>
+        public async Task LoadAllScopesAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            foreach (var scope in this.Configuration.MemoryScopes)
+            {
+                await scope.LoadAsync(this.dialogContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Save all changes for all scopes.
+        /// </summary>
+        /// <param name="cancellationToken">cancellationToken.</param>
+        /// <returns>Task.</returns>
+        public async Task SaveAllChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            foreach (var scope in this.Configuration.MemoryScopes)
+            {
+                await scope.SaveChangesAsync(this.dialogContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Delete the memory for a scope.
+        /// </summary>
+        /// <param name="name">name of the scope.</param>
+        /// <param name="cancellationToken">cancellationToken.</param>
+        /// <returns>Task.</returns>
+        public async Task DeleteScopesMemoryAsync(string name, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            name = name.ToLower();
+            var scope = this.Configuration.MemoryScopes.SingleOrDefault(s => s.Name.ToLower() == name);
+            if (scope != null)
+            {
+                await scope.DeleteAsync(this.dialogContext, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
         public void Add(string key, object value)
         {
             throw new NotSupportedException();
@@ -330,7 +401,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public bool ContainsKey(string key)
         {
-            return MemoryScopes.Any(ms => ms.Name.ToLower() == key.ToLower());
+            return Configuration.MemoryScopes.Any(ms => ms.Name.ToLower() == key.ToLower());
         }
 
         public bool Remove(string key)
@@ -361,7 +432,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
         {
-            foreach (var ms in MemoryScopes)
+            foreach (var ms in Configuration.MemoryScopes)
             {
                 array[arrayIndex++] = new KeyValuePair<string, object>(ms.Name, ms.GetMemory(dialogContext));
             }
@@ -374,7 +445,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
-            foreach (var ms in MemoryScopes)
+            foreach (var ms in Configuration.MemoryScopes)
             {
                 yield return new KeyValuePair<string, object>(ms.Name, ms.GetMemory(dialogContext));
             }
@@ -382,15 +453,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            foreach (var ms in MemoryScopes)
+            foreach (var ms in Configuration.MemoryScopes)
             {
                 yield return new KeyValuePair<string, object>(ms.Name, ms.GetMemory(dialogContext));
             }
         }
 
-        private static string GetBadScopeMessage(string path)
+        private string GetBadScopeMessage(string path)
         {
-            return $"'{path}' does not match memory scopes:{string.Join(",", MemoryScopes.Select(ms => ms.Name))}";
+            return $"'{path}' does not match memory scopes:{string.Join(",", Configuration.MemoryScopes.Select(ms => ms.Name))}";
         }
 
         private bool TryGetFirstNestedValue<T>(ref T value, ref string remainingPath, object memory)

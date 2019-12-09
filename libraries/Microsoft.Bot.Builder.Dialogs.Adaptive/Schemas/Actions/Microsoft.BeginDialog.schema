@@ -22,6 +22,12 @@
                 "title": "Options"
             }
         },
+        "includeActivity": {
+            "type": "boolean",
+            "title": "Include Activity",
+            "description": "When set to true, dialog that is called can process the current activity.",
+            "default": false
+        },
         "resultProperty": {
             "$role": "expression",
             "title": "Property",

@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Evaluate result.</returns>
         public object EvaluateTemplate(string templateName, object scope = null)
         {
-            return this.EvaluateTemplate(templateName, new CustomizedMemory(scope));
+            return this.EvaluateTemplate(templateName, SimpleObjectMemory.Wrap(scope));
         }
 
         public object EvaluateTemplate(string templateName, IMemory memory)

@@ -28,6 +28,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Action_BeginDialogWithActivity()
+        {
+            await TestUtils.RunTestScript("Action_BeginDialogWithActivity.test.dialog");
+        }
+
+        [TestMethod]
         public async Task Action_ChoiceInput()
         {
             await TestUtils.RunTestScript("Action_ChoiceInput.test.dialog");
@@ -172,6 +178,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Action_TextInputWithValueExpression()
+        {
+            await TestUtils.RunTestScript("Action_TextInputWithValueExpression.test.dialog");
+        }
+
+        [TestMethod]
         public async Task Action_TraceActivity()
         {
             await TestUtils.RunTestScript("Action_TraceActivity.test.dialog");
@@ -187,6 +199,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task InputDialog_ActivityProcessed()
         {
             await TestUtils.RunTestScript("InputDialog_ActivityProcessed.test.dialog");
+        }
+
+        [TestMethod]
+        public async Task Action_SetProperty()
+        {
+            await TestUtils.RunTestScript("Action_SetProperty.test.dialog");
+        }
+
+        [TestMethod]
+        public async Task Action_SetProperties()
+        {
+            await TestUtils.RunTestScript("Action_SetProperties.test.dialog");
+        }
+
+        [TestMethod]
+        public async Task Action_DeleteProperty()
+        {
+            await TestUtils.RunTestScript("Action_DeleteProperty.test.dialog");
+        }
+
+        [TestMethod]
+        public async Task Action_DeleteProperties()
+        {
+            await TestUtils.RunTestScript("Action_DeleteProperties.test.dialog");
         }
     }
 }
