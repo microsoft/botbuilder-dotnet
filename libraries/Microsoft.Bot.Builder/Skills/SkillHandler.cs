@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Skills
     /// </summary>
     public class SkillHandler : ChannelServiceHandler
     {
-        public const string SkillConversationRefenenceKey = "SkillConversationReference";
+        public static readonly string SkillConversationReferenceKey = $"{typeof(SkillHandler).Namespace}.SkillConversationReference";
 
         private readonly BotAdapter _adapter;
         private readonly IBot _bot;
@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Builder.Skills
 
             var callback = new BotCallbackHandler(async (turnContext, ct) =>
             {
-                turnContext.TurnState.Add(SkillConversationRefenenceKey, skillConversationReference);
+                turnContext.TurnState.Add(SkillConversationReferenceKey, skillConversationReference);
 
                 activity.ApplyConversationReference(conversationReference);
 
