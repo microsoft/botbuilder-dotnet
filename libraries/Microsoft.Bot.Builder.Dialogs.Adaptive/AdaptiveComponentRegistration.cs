@@ -91,6 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Recognizers
             yield return new TypeRegistration<LuisRecognizer>(LuisRecognizer.DeclarativeType) { CustomDeserializer = new LuisRecognizerLoader(TypeFactory.Configuration) };
             yield return new TypeRegistration<RegexRecognizer>(RegexRecognizer.DeclarativeType);
+            yield return new TypeRegistration<HttpRecognizer>(HttpRecognizer.DeclarativeType);
             yield return new TypeRegistration<IntentPattern>(IntentPattern.DeclarativeType);
             yield return new TypeRegistration<MultiLanguageRecognizer>(MultiLanguageRecognizer.DeclarativeType);
 

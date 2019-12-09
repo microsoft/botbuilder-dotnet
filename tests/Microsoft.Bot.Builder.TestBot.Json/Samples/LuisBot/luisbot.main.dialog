@@ -1,0 +1,49 @@
+{
+  "$kind": "Microsoft.AdaptiveDialog",
+  "autoEndDialog": false,
+  "recognizer": {
+    "$kind": "Microsoft.MultiLanguageRecognizer",
+    "recognizers": {
+      "en": {
+        "$kind": "Microsoft.HttpRecognizer",
+        "method": "GET",
+        "url": "http://localhost:8000/get_intent_list?query=@{turn.activity.text}",
+        "intents": "\\{\"@{intent_list[0][0].intent}\":\\{\"score\":\"@{intent_list[0][0].score}\"\\}\\}",
+        "entities": "{\"geographyV2\": [ @{join(foreach(where(intent_list[0][0].entities,x,x.type=='builtin.geographyV2.city'),x,concat('{\"type\":\"',x.type,'\",\"location\":\"',x.entity,'\"}')),',')} ] }"
+      }
+    }
+  },
+  "triggers": [
+    {
+      "$kind": "Microsoft.OnIntent",
+      "intent": "None",
+      "actions": [
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "None intent"
+        }
+      ]
+    },
+    {
+      "$kind": "Microsoft.OnIntent",
+      "intent": "Book",
+      "actions": [
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "Book intent @{join(foreach(@@geographyV2,x,x.location),',')}"
+        }
+      ]
+    },
+    {
+      "$kind": "Microsoft.OnIntent",
+      "intent": "Budget",
+      "actions": [
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "Budget intent"
+        }
+      ]
+    }
+  ],
+  "$schema": "../../app.schema"
+}

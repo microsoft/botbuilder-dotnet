@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <Folder Include="CustomDialogs\" />
+    <Folder Include="Samples\LuisBot\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
