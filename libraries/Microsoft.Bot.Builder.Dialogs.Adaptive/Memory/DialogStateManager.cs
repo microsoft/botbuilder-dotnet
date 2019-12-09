@@ -289,7 +289,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
 
             path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            ObjectPath.SetPathValue(this, path, value);
+            var memoryScope = ResolveMemoryScope(path, out var remainingPath);
+            if (memoryScope == null)
+            {
+                throw new ArgumentException($"{path} does not resolve to a memory scope: {string.Join(",", this.Configuration.MemoryScopes.Select(ms => ms.Name))}");
+            }
+
+            if (string.IsNullOrEmpty(remainingPath))
+            {
+                memoryScope.SetMemory(this.dialogContext, value);
+            }
+            else
+            {
+                ObjectPath.SetPathValue(this, path, value);
+            }
 
             // Every set will increase version
             version++;
@@ -302,7 +315,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public void RemoveValue(string path)
         {
             path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            ObjectPath.RemovePathValue(this, path);
+
+            //var memoryScope = ResolveMemoryScope(path, out var remainingPath);
+            //if (memoryScope == null)
+            //{
+            //    throw new ArgumentException($"{path} does not resolve to a memory scope: {string.Join(",", this.Configuration.MemoryScopes.Select(ms => ms.Name))}");
+            //}
+
+            //if (string.IsNullOrEmpty(remainingPath))
+            //{
+            //    throw new ArgumentException("You cannot remove a root memory scope.");
+            //}
+            //else
+            {
+                ObjectPath.RemovePathValue(this, path);
+            }
         }
 
         /// <summary>
