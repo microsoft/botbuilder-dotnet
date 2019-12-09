@@ -19,6 +19,8 @@ namespace Microsoft.Bot.Builder.Skills
     /// </summary>
     public class SkillHandler : ChannelServiceHandler
     {
+        public const string SkillConversationRefenenceKey = "SkillConversationReference";
+
         private readonly BotAdapter _adapter;
         private readonly IBot _bot;
         private readonly SkillConversationIdFactoryBase _conversationIdIdFactory;
@@ -155,9 +157,14 @@ namespace Microsoft.Bot.Builder.Skills
                 throw new KeyNotFoundException();
             }
 
+            var skillConversationReference = activity.GetConversationReference();
+
             var callback = new BotCallbackHandler(async (turnContext, ct) =>
             {
+                turnContext.TurnState.Add(SkillConversationRefenenceKey, skillConversationReference);
+
                 activity.ApplyConversationReference(conversationReference);
+
                 turnContext.Activity.Id = replyToActivityId;
                 switch (activity.Type)
                 {
