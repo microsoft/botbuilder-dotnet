@@ -240,9 +240,6 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         public async Task Composite3() => await TestJson<RecognizerResult>("Composite3.json");
 
         [TestMethod]
-        public async Task DynamicLists() => await TestJson<RecognizerResult>("DynamicListsAndList.json");
-
-        [TestMethod]
         public async Task ExternalEntitiesAndBuiltin() => await TestJson<RecognizerResult>("ExternalEntitiesAndBuiltin.json");
 
         [TestMethod]
@@ -284,6 +281,9 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
         [TestMethod]
         public async Task TypedPrebuiltDomains() => await TestJson<Contoso_App_V3>("TypedPrebuilt.json");
+
+        [TestMethod]
+        public async Task NoEntitiesInstanceTrue() => await TestJson<RecognizerResult>("NoEntitiesInstanceTrue.json");
 
         [TestMethod]
         public void TopIntentReturnsTopIntent()
