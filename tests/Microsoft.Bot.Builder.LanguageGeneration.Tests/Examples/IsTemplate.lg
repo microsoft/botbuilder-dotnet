@@ -4,7 +4,7 @@
 - hi
 
 # template2(templateName)
-- IF: @{inTemplate(templateName)}
+- IF: @{isTemplate(templateName)}
 - template @{templateName} exists
 - ELSE:
 - template @{templateName} does not exist

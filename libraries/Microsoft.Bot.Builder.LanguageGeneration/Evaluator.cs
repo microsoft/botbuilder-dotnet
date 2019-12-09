@@ -429,28 +429,28 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(activityAttachment, BuiltInFunctions.Apply(this.ActivityAttachment()), ReturnType.Object, this.ValidateActivityAttachment);
             }
 
-            const string inTemplate = "inTemplate";
+            const string isTemplate = "isTemplate";
 
-            if (name.Equals(inTemplate))
+            if (name.Equals(isTemplate))
             {
-                return new ExpressionEvaluator(inTemplate, BuiltInFunctions.Apply(this.InTemplate()), ReturnType.Boolean, this.ValidateInTemplate);
+                return new ExpressionEvaluator(isTemplate, BuiltInFunctions.Apply(this.IsTemplate()), ReturnType.Boolean, this.ValidateIsTemplate);
             }
 
             return baseLookup(name);
         };
 
-        private Func<IReadOnlyList<object>, object> InTemplate()
+        private Func<IReadOnlyList<object>, object> IsTemplate()
        => (IReadOnlyList<object> args) =>
        {
            var templateName = args[0].ToString();
            return TemplateMap.ContainsKey(templateName);
        };
 
-        private void ValidateInTemplate(Expression expression)
+        private void ValidateIsTemplate(Expression expression)
         {
             if (expression.Children.Length != 1)
             {
-                throw new Exception("inTemplate should have one parameter");
+                throw new Exception("isTemplate should have one parameter");
             }
 
             var children0 = expression.Children[0];

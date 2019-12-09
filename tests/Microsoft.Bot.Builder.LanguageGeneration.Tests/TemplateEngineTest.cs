@@ -1000,9 +1000,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
-        public void TestInTemplateFunction()
+        public void TestIsTemplateFunction()
         {
-            var engine = new TemplateEngine().AddFile(GetExampleFilePath("InTemplate.lg"));
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("IsTemplate.lg"));
 
             var evaled = engine.EvaluateTemplate("template2", new { templateName = "template1" });
             Assert.AreEqual("template template1 exists", evaled);
