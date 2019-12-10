@@ -9,8 +9,7 @@ variables:
   Parameters.solution: Microsoft.Bot.Builder.sln
 
 pool:
-  name: Hosted macOS
-
+    vmImage: 'macOS-latest'
 steps:
 - task: UseDotNet@2
   displayName: 'Use .Net Core sdk 2.1.x'
