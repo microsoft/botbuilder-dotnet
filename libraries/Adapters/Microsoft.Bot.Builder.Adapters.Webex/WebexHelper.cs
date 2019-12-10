@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 ChannelId = "webex",
                 Conversation = new ConversationAccount
                 {
-                    Id = payload.MessageData.SpaceId,
+                    Id = payload.SpaceMembershipData.SpaceId,
                 },
                 From = new ChannelAccount
                 {
