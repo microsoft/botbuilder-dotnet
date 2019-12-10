@@ -29,14 +29,12 @@ stages:
     variables:
       BuildConfiguration: Debug-Windows
     steps:
-    #- script: echo Executing this 1
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
   - job: Release_Windows_Configuration
     variables:
       BuildConfiguration: Release-Windows
     steps:
-    #- script: echo Executing this 2
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
 
