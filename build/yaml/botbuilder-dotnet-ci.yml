@@ -14,8 +14,8 @@ variables:
   IsBuildServer: true # This is consumed by projects in Microsoft.Bot.Builder.sln.
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
   Parameters.solution: Microsoft.Bot.Builder.sln
-  PreviewPackageVersion: 4.6.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
-  ReleasePackageVersion: 4.6.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
+  PreviewPackageVersion: 4.8.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
+  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
 pool:
   name: Hosted Windows 2019 with VS2019
   demands:

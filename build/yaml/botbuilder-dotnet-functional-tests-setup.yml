@@ -10,18 +10,16 @@ variables:
   IsBuildServer: true # Consumed by projects in Microsoft.Bot.Builder.sln.
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:DefineConstants="FUNCTIONALTESTS"
   Parameters.solution: Microsoft.Bot.Builder.sln
-  PreviewPackageVersion: 4.6.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.
-  ReleasePackageVersion: 4.6.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.
+  PreviewPackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.
+  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.
 pool:
   name: Hosted Windows 2019 with VS2019
   demands:
   - msbuild
   - visualstudio
 
-stages:
-- stage: Build
-  jobs:
-  - job: Debug_Windows_Configuration
-    steps:
-    - template: ci-build-steps.yml
-    - template: functional-test-setup-steps.yml
+jobs:
+- job: Set_Up_Functional_Tests
+  steps:
+  - template: ci-build-steps.yml
+  - template: functional-test-setup-steps.yml
