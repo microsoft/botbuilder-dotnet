@@ -29,6 +29,15 @@ steps:
   inputs:
     restoreSolution: '$(Parameters.solution)'
 
+- task: VSBuild@1
+  displayName: 'Build solution Microsoft.Bot.Builder.sln'
+  inputs:
+    solution: '$(Parameters.solution)'
+    vsVersion: 16.0
+    msbuildArgs: '-p:SignAssembly=false -p:delaySign=false'
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
+
 - powershell: |
    Remove-Item CodeCoverage -Force -Recurse -ErrorAction Ignore
    New-Item CodeCoverage -ItemType Directory -Force
@@ -41,15 +50,6 @@ steps:
         Write-Host "Starting CosmosDB Emulator on Windows"
         Import-Module "C:/Program Files/Azure Cosmos DB Emulator/PSModules/Microsoft.Azure.CosmosDB.Emulator"
         Start-CosmosDbEmulator
-
-- task: VSBuild@1
-  displayName: 'Build solution Microsoft.Bot.Builder.sln'
-  inputs:
-    solution: '$(Parameters.solution)'
-    vsVersion: 16.0
-    msbuildArgs: '-p:SignAssembly=false -p:delaySign=false'
-    platform: '$(BuildPlatform)'
-    configuration: '$(BuildConfiguration)'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test (release)'
