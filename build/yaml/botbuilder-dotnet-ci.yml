@@ -1,5 +1,5 @@
 #
-# YAML build definition to replace BotBuilder-DotNet-master-CI-PR
+# This YAML build definition replaces the classic BotBuilder-DotNet-master-CI-PR
 #
 
 # "name" below defines the build number format. Its expanded value during a build is accessed via the var $(Build.BuildNumber)
