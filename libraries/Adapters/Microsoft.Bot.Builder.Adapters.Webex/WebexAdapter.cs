@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                         recipientId = activity.Conversation.Id;
                         target = MessageTarget.SpaceId;
                     }
-                    else if (activity.Conversation == null && activity.Recipient.Id != null)
+                    else if (activity.Conversation == null && activity.Recipient?.Id != null)
                     {
                         recipientId = activity.Recipient.Id;
                     }
