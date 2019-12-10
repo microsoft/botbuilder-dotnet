@@ -11,10 +11,10 @@ variables:
   BuildPlatform: any cpu
   CoverallsToken: define this in Azure
   GitHubCommentApiKey: define this in Azure
-  IsBuildServer: true
+  IsBuildServer: true # This is consumed by projects in Microsoft.Bot.Builder.sln.
   Parameters.solution: Microsoft.Bot.Builder.sln
-  PreviewPackageVersion: 4.6.0-preview-$(Build.BuildNumber)
-  ReleasePackageVersion: 4.6.0-preview-$(Build.BuildNumber)
+  PreviewPackageVersion: 4.6.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
+  ReleasePackageVersion: 4.6.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
 pool:
   name: Hosted Windows 2019 with VS2019
   demands:
