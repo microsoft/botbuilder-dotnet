@@ -53,6 +53,11 @@ namespace Microsoft.Bot.Expressions
         private static readonly Dictionary<string, ExpressionEvaluator> _functions = BuildFunctionLookup();
 
         /// <summary>
+        /// Object used to lock Randomizer.
+        /// </summary>
+        private static readonly object _randomizerLock = new object();
+
+        /// <summary>
         /// Verify the result of an expression is of the appropriate type and return a string if not.
         /// </summary>
         /// <param name="value">Value to verify.</param>
@@ -3403,7 +3408,10 @@ namespace Microsoft.Bot.Expressions
                             }
                             else
                             {
-                                value = Randomizer.Next(min, max);
+                                lock (_randomizerLock)
+                                {
+                                    value = Randomizer.Next(min, max);
+                                }
                             }
 
                             return (value, error);
