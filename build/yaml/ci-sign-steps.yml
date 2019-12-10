@@ -137,18 +137,33 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\publish'
 
 - powershell: |
-   [string[]]$outvar = (Get-ChildItem *.nupkg -Path $(Build.ArtifactStagingDirectory)\publish ).Name;
-   [int] $j = $outvar.Length;
-   $PackagesDescription = "$j packages";
+   [string[]]$outvar = (Get-ChildItem *.nupkg -Path $(Build.ArtifactStagingDirectory)\publish ).BaseName;
+   
+   [int] $packageCount = $outvar.Length;
+   $PackagesDescription = "$packageCount packages";
    Write-Host $PackagesDescription
    "##vso[task.setvariable variable=PackagesDescription;]$PackagesDescription";
    
-   for ($i = 0; $i -lt $outvar.Length; $i++ ) {
-       $p = $outvar[$i];
-       "##vso[task.setvariable variable=pkg$i;]$p";
-       Write-Host $p
+   ## Log the package names
+   for ($i = 0; $i -lt $packageCount; $i++ ) {
+       Write-Host $outvar[$i];
    }
-   for ($i = $outvar.Length; $i -lt 15; $i++ ) {
+   
+   if ($packageCount -gt 30) {
+       ## Too many packages for tags. Show this message instead
+       $message = "See the 'Get package names' log output for their names";
+       Write-Host "##vso[task.setvariable variable=pkg0;]$message";
+       $packageCount = 1;
+   } else {
+       ## Set package name variables for tags
+       for ($i = 0; $i -lt $packageCount; $i++ ) {
+           $p = $outvar[$i];
+           "##vso[task.setvariable variable=pkg$i;]$p";
+       }
+   }
+   
+   for ($i = $packageCount; $i -le 30; $i++ ) {
+       ## Set remaining variables to an empty string
        "##vso[task.setvariable variable=pkg$i;]";
    }
   displayName: 'Get package names'
@@ -173,6 +188,21 @@ steps:
      $(PKG12)
      $(PKG13)
      $(PKG14)
+     $(PKG15)
+     $(PKG16)
+     $(PKG17)
+     $(PKG18)
+     $(PKG19)
+     $(PKG20)
+     $(PKG21)
+     $(PKG22)
+     $(PKG23)
+     $(PKG24)
+     $(PKG25)
+     $(PKG26)
+     $(PKG27)
+     $(PKG28)
+     $(PKG29)
 
 - script: |
    cd ..
