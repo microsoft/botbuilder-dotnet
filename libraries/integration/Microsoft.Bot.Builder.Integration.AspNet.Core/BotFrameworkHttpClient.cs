@@ -68,13 +68,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var token = appCredentials == MicrosoftAppCredentials.Empty ? null : await appCredentials.GetTokenAsync().ConfigureAwait(false);
 
             // Capture current activity settings before changing them.
-            // TODO: DO we need to set the activity ID? (events that are created manually don't have it).
             var originalConversationId = activity.Conversation.Id;
             var originalServiceUrl = activity.ServiceUrl;
+            var originalCallerId = activity.CallerId;
             try
             {
                 activity.Conversation.Id = conversationId;
                 activity.ServiceUrl = serviceUrl.ToString();
+                activity.CallerId = fromBotId;
 
                 using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
                 {
@@ -105,6 +106,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 // Restore activity properties.
                 activity.Conversation.Id = originalConversationId;
                 activity.ServiceUrl = originalServiceUrl;
+                activity.CallerId = originalCallerId;
             }
         }
 

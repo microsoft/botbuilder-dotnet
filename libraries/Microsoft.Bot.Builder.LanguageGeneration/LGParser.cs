@@ -15,6 +15,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var templates = ExtractLGTemplates(fileContext, content, id);
             var imports = ExtractLGImports(fileContext, id);
 
+            // TODO how to handler it.
+            var errorTemplates = fileContext == null ? new List<LGFileParser.ErrorTemplateContext>() :
+                   fileContext.paragraph()
+                   .Select(x => x.errorTemplate());
+
             return new LGResource(templates, imports, content, id);
         }
 

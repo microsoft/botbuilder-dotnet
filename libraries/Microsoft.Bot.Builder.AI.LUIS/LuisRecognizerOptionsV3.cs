@@ -86,6 +86,15 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 {
                     recognizerResult.Properties.Add("luisResult", luisResponse);
                 }
+
+                if (PredictionOptions.IncludeInstanceData)
+                {
+                    var instanceObject = recognizerResult.Entities["$instance"];
+                    if (instanceObject == null)
+                    {
+                        recognizerResult.Entities.Add("$instance", new JObject());
+                    }
+                }
             }
 
             var traceInfo = JObject.FromObject(
