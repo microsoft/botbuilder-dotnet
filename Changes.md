@@ -4,8 +4,6 @@
 consolidating using generics with POCO objects and shared base class
 * Added BotContextWrapper so developer can easily create custom BotContext with their own helpers/methods
 
-
-
 ## 4.0.0-alpha201802027a
 * Milan release 
 

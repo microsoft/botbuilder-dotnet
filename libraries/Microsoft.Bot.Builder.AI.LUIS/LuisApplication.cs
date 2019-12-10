@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Linq;
 using System.Web;
 using Microsoft.Bot.Configuration;
 
@@ -106,7 +105,23 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 throw new ArgumentException(nameof(applicationEndpoint));
             }
 
-            var applicationId = uri.Segments.Last();
+            var applicationId = string.Empty;
+
+            var segments = uri.Segments;
+            for (var segment = 0; segment < segments.Length - 1; segment++)
+            {
+                if (segments[segment] == "apps/")
+                {
+                    applicationId = segments[segment + 1].TrimEnd('/');
+                    break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(applicationId))
+            {
+                throw new ArgumentException($"Could not find application Id in {applicationEndpoint}");
+            }
+
             var endpointKey = HttpUtility.ParseQueryString(uri.Query).Get("subscription-key");
             var endpoint = uri.GetLeftPart(UriPartial.Authority);
             return (applicationId, endpointKey, endpoint);

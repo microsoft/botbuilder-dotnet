@@ -34,6 +34,22 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
+        public async Task TestEndOfConversationActivity()
+        {
+            // Arrange
+            var activity = new Activity { Type = ActivityTypes.EndOfConversation, Value = "some value" };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(1, bot.Record.Count);
+            Assert.AreEqual("OnEndOfConversationActivityAsync", bot.Record[0]);
+        }
+
+        [TestMethod]
         public async Task TestMemberAdded1()
         {
             // Arrange
@@ -475,6 +491,12 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnEventAsync(turnContext, cancellationToken);
+            }
+
+            protected override Task OnEndOfConversationActivityAsync(ITurnContext<IEndOfConversationActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnEndOfConversationActivityAsync(turnContext, cancellationToken);
             }
 
             protected override Task OnUnrecognizedActivityTypeAsync(ITurnContext turnContext, CancellationToken cancellationToken)

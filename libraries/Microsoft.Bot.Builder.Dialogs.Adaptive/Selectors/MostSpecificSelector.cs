@@ -29,6 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// <value>
         /// Optional rule selector to use when more than one most specific rule is true.
         /// </value>
+        [JsonProperty("selector")]
         public ITriggerSelector Selector { get; set; }
 
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
