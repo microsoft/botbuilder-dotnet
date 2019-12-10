@@ -8,6 +8,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
@@ -134,7 +135,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             // Dialogs
             yield return new TypeRegistration<AdaptiveDialog>(AdaptiveDialog.DeclarativeType);
-            yield return new TypeRegistration<QnAMakerDialog>(QnAMakerDialog.DeclarativeType);
 
             // test actions
             yield return new TypeRegistration<AssertCondition>(AssertCondition.DeclarativeType);

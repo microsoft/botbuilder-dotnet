@@ -173,12 +173,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             SetLocalGenerator(dc.Context);
 
+            // replace initial activeDialog.State with clone of options
+            if (options != null)
+            {
+                dc.ActiveDialog.State = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(options));
+            }
+
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
             activeDialogState[AdaptiveKey] = new AdaptiveDialogState();
             var state = activeDialogState[AdaptiveKey] as AdaptiveDialogState;
-
-            // Persist options to dialog state
-            dc.GetState().SetValue(ThisPath.OPTIONS, options);
 
             // Evaluate events and queue up step changes
             var dialogEvent = new DialogEvent

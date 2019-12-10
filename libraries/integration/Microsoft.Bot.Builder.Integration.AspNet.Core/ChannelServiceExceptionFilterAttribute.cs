@@ -2,13 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
-    public class ChannelServiceExceptionFilter : Attribute, IExceptionFilter
+    internal class ChannelServiceExceptionFilterAttribute : Attribute, IExceptionFilter
     {
         public void OnException(ExceptionContext context)
         {
@@ -21,6 +22,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 else if (context.Exception is UnauthorizedAccessException)
                 {
                     context.Result = new StatusCodeResult(StatusCodes.Status401Unauthorized);
+                }
+                else if (context.Exception is KeyNotFoundException)
+                {
+                    context.Result = new StatusCodeResult(StatusCodes.Status404NotFound);
                 }
                 else
                 {

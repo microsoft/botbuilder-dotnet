@@ -5968,13 +5968,31 @@
                     "default": "Thanks for the feedback.",
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
-                "strictFilters": {
+                 "strictFilters": {
                     "type": "array",
-                    "title": "Strict Filter Property",
-                    "description": "Memory property that holds strict filters to use when calling the QnA Maker KB.",
+                    "title": "Strict Filters",
+                    "description": "Metadata filters to use when calling the QnA Maker KB.",
                     "items": {
-                        "type": "object"
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "title": "Name",
+                                "maximum": 100
+                            },
+                            "value": {
+                                "type": "string",
+                                "title": "Value",
+                                "maximum": 100
+                            }
+                        }
                     }
+                },
+                "top": {
+                    "type": "number",
+                    "title": "Top",
+                    "description": "The number of answers you want to retrieve.",
+                    "default": 3
                 }
             },
             "patternProperties": {

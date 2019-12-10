@@ -57,6 +57,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         [JsonProperty("actions")]
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
+        [JsonIgnore]
+        public virtual SourceRange Source => DebugSupport.SourceMap.TryGetValue(this, out var range) ? range : null;
+
         /// <summary>
         /// Gets or sets the rule priority where 0 is the highest.
         /// </summary>

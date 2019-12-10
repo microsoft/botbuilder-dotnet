@@ -303,6 +303,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             {
                 ObjectPath.SetPathValue(this, path, value);
             }
+
+            // Every set will increase version
+            version++;
         }
 
         /// <summary>
