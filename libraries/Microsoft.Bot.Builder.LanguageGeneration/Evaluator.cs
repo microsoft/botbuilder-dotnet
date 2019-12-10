@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -104,51 +105,28 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public override object VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
         {
             var result = new JObject();
-            var typeName = context.structuredBodyNameLine().STRUCTURED_CONTENT().GetText().Trim();
+            var typeName = context.structuredBodyNameLine().STRUCTURE_NAME().GetText();
             result[LGType] = typeName;
 
-            var bodys = context.structuredBodyContentLine().STRUCTURED_CONTENT();
+            var bodys = context.structuredBodyContentLine();
             foreach (var body in bodys)
             {
-                var line = body.GetText().Trim();
-
-                if (string.IsNullOrWhiteSpace(line))
+                var isKVPairBody = body.keyValueStructureLine() != null;
+                if (isKVPairBody)
                 {
-                    continue;
+                    var property = body.keyValueStructureLine().STRUCTURE_IDENTIFIER().GetText();
+                    var value = VisitStructureValue(body.keyValueStructureLine());
+                    result[property] = JToken.FromObject(value);
                 }
-
-                var start = line.IndexOf('=');
-                if (start > 0)
-                {
-                    // make it insensitive
-                    var property = line.Substring(0, start).Trim().ToLower();
-                    var originValue = line.Substring(start + 1).Trim();
-
-                    var valueArray = EscapeSeperatorRegex.Split(originValue);
-                    if (valueArray.Length == 1)
-                    {
-                        result[property] = EvalText(originValue);
-                    }
-                    else
-                    {
-                        var valueList = new JArray();
-                        foreach (var item in valueArray)
-                        {
-                            valueList.Add(EvalText(item.Trim()));
-                        }
-
-                        result[property] = valueList;
-                    }
-                }
-                else if (IsPureExpression(line))
+                else
                 {
                     // [MyStruct
                     // Text = foo
                     // {ST2()}
                     // ]
 
-                    // When the same property exists in both the calling template as well as callee, the content in caller will trump any content in the callee.
-                    var propertyObject = JObject.FromObject(EvalExpression(line));
+                    // When the same property exists in both the calling template as well as callee, the content in caller will trump any content in 
+                    var propertyObject = JObject.FromObject(EvalExpression(body.objectStructureLine().GetText()));
 
                     // Full reference to another structured template is limited to the structured template with same type 
                     if (propertyObject[LGType] != null && propertyObject[LGType].ToString() == typeName)
@@ -290,6 +268,44 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 throw new Exception("Scope is a LG customized memory");
             }
+        }
+        
+        private object VisitStructureValue(LGFileParser.KeyValueStructureLineContext context)
+        {
+            var values = context.keyValueStructureValue();
+
+            var result = new List<object>();
+            foreach (var item in values)
+            {
+                if (item.children.Count == 1 
+                    && ((ITerminalNode)item.children[0]).Symbol.Type == LGFileParser.EXPRESSION_IN_STRUCTURE_BODY)
+                {
+                    result.Add(EvalExpression(item.GetText()));
+                }
+                else
+                {
+                    var itemStringResult = new StringBuilder();
+                    foreach (ITerminalNode node in item.children)
+                    {
+                        switch (node.Symbol.Type)
+                        {
+                            case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
+                                itemStringResult.Append(EvalEscape(node.GetText()));
+                                break;
+                            case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
+                                itemStringResult.Append(EvalExpression(node.GetText()));
+                                break;
+                            default:
+                                itemStringResult.Append(node.GetText());
+                                break;
+                        }
+                    }
+
+                    result.Add(itemStringResult.ToString());
+                }
+            }
+
+            return result.Count == 1 ? result[0] : result;
         }
 
         private bool EvalCondition(LGFileParser.IfConditionContext condition)

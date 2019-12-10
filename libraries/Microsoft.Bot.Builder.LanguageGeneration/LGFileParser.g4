@@ -48,19 +48,32 @@ templateBody
     ;
 
 structuredTemplateBody
-    : structuredBodyNameLine structuredBodyContentLine? structuredBodyEndLine?
+    : structuredBodyNameLine structuredBodyContentLine+? structuredBodyEndLine?
     ;
 
 structuredBodyNameLine
-    : LEFT_SQUARE_BRACKET STRUCTURED_CONTENT
+    : LEFT_SQUARE_BRACKET STRUCTURE_NAME
     ;
 
 structuredBodyContentLine
-    : STRUCTURED_CONTENT+
+    : keyValueStructureLine
+    | objectStructureLine
+    ;
+
+keyValueStructureLine
+    : STRUCTURE_IDENTIFIER STRUCTURE_EQUALS keyValueStructureValue (STRUCTURE_OR_MARK keyValueStructureValue)*
+    ;
+
+keyValueStructureValue
+    : (STRUCTURE_IDENTIFIER|TEXT_IN_STRUCTURE_BODY|EXPRESSION_IN_STRUCTURE_BODY|ESCAPE_CHARACTER_IN_STRUCTURE_BODY)+
+    ;
+
+objectStructureLine
+    : EXPRESSION_IN_STRUCTURE_BODY
     ;
 
 structuredBodyEndLine
-    : STRUCTURED_TEMPLATE_BODY_END
+    : STRUCTURED_BODY_END
     ;
 
 normalTemplateBody

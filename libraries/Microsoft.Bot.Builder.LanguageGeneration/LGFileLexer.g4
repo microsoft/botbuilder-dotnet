@@ -70,7 +70,7 @@ DASH
   ;
 
 LEFT_SQUARE_BRACKET
-  : '[' { inTemplate && beginOfTemplateBody }? -> pushMode(STRUCTURED_TEMPLATE_BODY_MODE)
+  : '[' { inTemplate && beginOfTemplateBody }? -> pushMode(STRUCTURE_NAME_MODE)
   ;
 
 IMPORT
@@ -183,24 +183,59 @@ MULTILINE_TEXT
   : (('\r'? '\n') | ~[\r\n])+? -> type(TEXT)
   ;
 
-mode STRUCTURED_TEMPLATE_BODY_MODE;
+mode STRUCTURE_NAME_MODE;
 
-WS_IN_STRUCTURED
-  : WHITESPACE+
+WS_IN_STRUCTURE_NAME
+  : WHITESPACE+ -> skip
+  ;
+
+NEWLINE_IN_STRUCTURE_NAME
+  : '\r'? '\n' { ignoreWS = true;} -> skip, pushMode(STRUCTURE_BODY_MODE)
+  ;
+
+STRUCTURE_NAME
+  : (LETTER | NUMBER | '_') (LETTER | NUMBER | '-' | '_' | '.')*
   ;
 
 STRUCTURED_COMMENTS
   : ('>'|'$') ~[\r\n]* '\r'?'\n' -> skip
   ;
 
+mode STRUCTURE_BODY_MODE;
+
+WS_IN_STRUCTURE_BODY
+  : WHITESPACE+ {ignoreWS}? -> skip
+  ;
+
 STRUCTURED_NEWLINE
-  : '\r'? '\n' -> skip
+  : '\r'? '\n' { ignoreWS = true; } -> skip
   ;
 
-STRUCTURED_TEMPLATE_BODY_END
-  : WS_IN_STRUCTURED? ']' WS_IN_STRUCTURED? { inTemplate = false; beginOfTemplateBody = false;} -> popMode
+STRUCTURED_BODY_END
+  : ']' { inTemplate = false; beginOfTemplateBody = false;} -> popMode, popMode
   ;
 
-STRUCTURED_CONTENT
-  : ~[\r\n]+
+STRUCTURE_IDENTIFIER
+  : (LETTER | NUMBER | '_') (LETTER | NUMBER | '-' | '_' | '.')*
   ;
+
+STRUCTURE_EQUALS
+  : '='
+  ;
+
+STRUCTURE_OR_MARK
+  : '|'
+  ;
+
+ESCAPE_CHARACTER_IN_STRUCTURE_BODY
+  : ESCAPE_CHARACTER_FRAGMENT { ignoreWS = false; }
+  ;
+
+EXPRESSION_IN_STRUCTURE_BODY
+  : EXPRESSION_FRAGMENT { ignoreWS = false; }
+  ;
+
+TEXT_IN_STRUCTURE_BODY
+  : ~[\r\n]+? { ignoreWS = false; }
+  ;
+
