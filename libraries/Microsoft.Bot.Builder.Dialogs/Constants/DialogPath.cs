@@ -10,16 +10,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         public const string EventCounter = "dialog.eventCounter";
 
         /// <summary>
-        /// Information for tracking memory changes.
-        /// </summary>
-        public const string Tracker = "dialog.tracker";
-
-        /// <summary>
-        /// Information for tracking when trigger handlers last ran.
-        /// </summary>
-        public const string ConditionTracker = Tracker + ".conditions";
-
-        /// <summary>
         /// Currently expected properties.
         /// </summary>
         public const string ExpectedProperties = "dialog.expectedProperties";

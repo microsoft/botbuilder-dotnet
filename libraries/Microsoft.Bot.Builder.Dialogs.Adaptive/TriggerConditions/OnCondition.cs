@@ -127,10 +127,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                                     (expression, os) =>
                                     {
                                         var state = os as DialogStateManager;
-                                        var basePath = DialogPath.ConditionTracker + "." + Id.ToString() + ".";
+                                        var basePath = AdaptiveDialog.ConditionTracker + "." + Id.ToString() + ".";
                                         var lastRun = state.GetValue<uint>(basePath + "lastRun");
                                         var paths = state.GetValue<string[]>(basePath + "paths");
-                                        var changed = state.AnyChanged(lastRun, paths);
+                                        var changed = state.AnyPathChanged(lastRun, paths);
                                         return (changed, null);
                                     },
                                     ReturnType.Boolean,
@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             if (RunOnce)
             {
                 var count = planningContext.GetState().GetValue<uint>(DialogPath.EventCounter);
-                planningContext.GetState().SetValue(DialogPath.ConditionTracker + "." + Id.ToString() + ".lastRun", count);
+                planningContext.GetState().SetValue(AdaptiveDialog.ConditionTracker + "." + Id.ToString() + ".lastRun", count);
             }
 
             return await Task.FromResult(new List<ActionChangeList>()

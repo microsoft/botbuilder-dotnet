@@ -607,6 +607,47 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task TestChangeTracking()
+        {
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                var state = dc.GetState();
+                var dialogPaths = state.TrackPaths(new List<string> { "dialog.user.first", "dialog.user.last" });
+                var dialogScope = state.TrackScopes(new List<string> { "dialog" });
+                var userScope = state.TrackScopes(new List<string> { "user" });
+                var longScope = state.TrackScopes(new List<string> { "dialog.user" });
+
+                state.SetValue("dialog.eventCounter", 0);
+                Assert.IsFalse(state.AnyPathChanged(0, dialogPaths));
+                Assert.IsFalse(state.AnyScopeChanged(0, dialogScope));
+                Assert.IsFalse(state.AnyScopeChanged(0, longScope));
+
+                state.SetValue("dialog.eventCounter", 1);
+                state.SetValue("dialog.foo", 3);
+                Assert.IsFalse(state.AnyPathChanged(0, dialogPaths));
+                Assert.IsTrue(state.AnyScopeChanged(0, dialogScope));
+                Assert.IsFalse(state.AnyScopeChanged(0, longScope));
+
+                state.SetValue("dialog.eventCounter", 2);
+                state.SetValue("dialog.user.first", "bart");
+                Assert.IsTrue(state.AnyPathChanged(1, dialogPaths));
+                Assert.IsTrue(state.AnyScopeChanged(1, dialogScope));
+                Assert.IsTrue(state.AnyScopeChanged(1, longScope));
+
+                state.SetValue("dialog.eventCounter", 3);
+                state.SetValue("dialog.user", new Dictionary<string, object> { { "first", "tom" }, { "last", "starr" } });
+                Assert.IsTrue(state.AnyPathChanged(2, dialogPaths));
+                Assert.IsTrue(state.AnyScopeChanged(2, dialogScope));
+                Assert.IsTrue(state.AnyScopeChanged(2, longScope));
+
+                state.SetValue("dialog.eventCounter", 4);
+                Assert.IsFalse(state.AnyPathChanged(3, dialogPaths));
+                Assert.IsFalse(state.AnyScopeChanged(3, userScope));
+                Assert.IsFalse(state.AnyScopeChanged(3, longScope));
+            }).StartTestAsync();
+        }
+
         private TestFlow CreateFlow(Dialog dialog, ConversationState convoState = null, UserState userState = null, bool sendTrace = false)
         {
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)

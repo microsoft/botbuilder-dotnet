@@ -31,8 +31,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.AdaptiveDialog";
 
+        internal const string ConditionTracker = "dialog.tracker.conditions";     
+        
         private const string AdaptiveKey = "_adaptive";
-
+        
         // unique key for language generator turn property, (TURN STATE ONLY)
         private readonly string generatorTurnKey = Guid.NewGuid().ToString();
 
@@ -152,7 +154,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     dc.GetState().SetValue(DialogPath.EventCounter, 0u);
                 }
 
-                if (!dc.GetState().ContainsKey(DialogPath.ConditionTracker))
+                if (!dc.GetState().ContainsKey(ConditionTracker))
                 {
                     var parser = Selector.Parser;
                     foreach (var trigger in Triggers)
@@ -160,8 +162,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         if (trigger.RunOnce)
                         {
                             // TODO: Should probably use the full expression, but wrap things like event processing in ignore
-                            var paths = dc.GetState().Track(parser.Parse(trigger.Condition).References());
-                            var triggerPath = DialogPath.ConditionTracker + "." + trigger.Id + ".";
+                            var paths = dc.GetState().TrackPaths(parser.Parse(trigger.Condition).References());
+                            var triggerPath = ConditionTracker + "." + trigger.Id + ".";
                             dc.GetState().SetValue(triggerPath + "paths", paths);
                             dc.GetState().SetValue(triggerPath + "lastRun", 0u);
                         }

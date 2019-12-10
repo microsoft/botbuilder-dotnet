@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
@@ -23,6 +24,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
     /// </summary>
     public class DialogStateManager : IDictionary<string, object>, IMemory
     {
+        /// <summary>
+        /// Information for tracking when path was last modified.
+        /// </summary>
+        private const string PathTracker = "dialog._tracker.paths";
+
+        private const string ScopeTracker = "dialog._tracker.scopes";
+
         private readonly DialogContext dialogContext;
         private int version = 0;
 
@@ -429,10 +437,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
         }
 
-        public List<string> Track(IEnumerable<string> paths)
+        /// <summary>
+        /// Track when specific paths are changed.
+        /// </summary>
+        /// <param name="paths">Paths to track.</param>
+        /// <returns>Normalized paths to pass to <see cref="AnyPathChanged"/>.</returns>
+        public List<string> TrackPaths(IEnumerable<string> paths)
         {
             var allPaths = new List<string>();
-            var count = GetValue<uint>(DialogPath.EventCounter);
             foreach (var path in paths)
             {
                 var tpath = TransformPath(path);
@@ -440,28 +452,72 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 // Track any path that resolves to a constant path
                 if (ObjectPath.TryResolvePath(this, tpath, out var segments))
                 {
-                    var parts = tpath.ToLower().Split('.');
-
-                    // Don't track root memory scope
-                    var npath = parts[0];
-                    for (var i = 1; i < parts.Length; ++i)
-                    {
-                        npath += "_" + parts[i];
-                        SetValue(DialogPath.ConditionTracker + "." + npath, count);
-                        allPaths.Add(npath);
-                    }
+                    var npath = string.Join("_", segments);
+                    SetValue(PathTracker + "." + npath, 0);
+                    allPaths.Add(npath);
                 }
             }
 
             return allPaths;
         }
 
-        public bool AnyChanged(uint count, IEnumerable<string> paths)
+        /// <summary>
+        /// Check to see if any path has changed since watermark.
+        /// </summary>
+        /// <param name="counter">Time counter to compare to.</param>
+        /// <param name="paths">Paths from <see cref="TrackPaths"/> to check.</param>
+        /// <returns>True if any path has changed since counter.</returns>
+        public bool AnyPathChanged(uint counter, IEnumerable<string> paths)
         {
             var found = false;
             foreach (var path in paths)
             {
-                if (GetValue<uint>(DialogPath.ConditionTracker + "." + path) > count)
+                if (GetValue<uint>(PathTracker + "." + path) > counter)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            return found;
+        }
+
+        /// <summary>
+        /// Track if anything has changed below this scope.
+        /// </summary>
+        /// <param name="scopes">Scopes to track.</param>
+        /// <returns>Normalized scope names to pass to <see cref="AnyScopeChanged"/>.</returns>
+        public List<string> TrackScopes(IEnumerable<string> scopes)
+        {
+            var allScopes = new List<string>();
+            foreach (var scope in scopes)
+            {
+                var tscope = TransformPath(scope);
+
+                // Track any path that resolves to a constant path
+                if (ObjectPath.TryResolvePath(this, tscope, out var segments))
+                {
+                    var npath = string.Join("_", segments);
+                    SetValue(ScopeTracker + "." + npath, 0);
+                    allScopes.Add(npath);
+                }
+            }
+
+            return allScopes;
+        }
+
+        /// <summary>
+        /// Check to see if any scope has changed since watermark.
+        /// </summary>
+        /// <param name="counter">Time counter to compare to.</param>
+        /// <param name="scopes">Paths from <see cref="TrackScopes"/> to check.</param>
+        /// <returns>True if any scope has changed since counter.</returns>
+        public bool AnyScopeChanged(uint counter, IEnumerable<string> scopes)
+        {
+            var found = false;
+            foreach (var scope in scopes)
+            {
+                if (GetValue<uint>(ScopeTracker + "." + scope) > counter)
                 {
                     found = true;
                     break;
@@ -479,20 +535,63 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
         }
 
-        private string GetBadScopeMessage(string path)
-        {
-            return $"'{path}' does not match memory scopes:{string.Join(",", Configuration.MemoryScopes.Select(ms => ms.Name))}";
-        }
-
         private bool TrackChange(string path, object value)
         {
             var hasPath = false;
             if (ObjectPath.TryResolvePath(this, path, out var segments))
             {
-                var pathName = DialogPath.ConditionTracker + "." + string.Join("_", segments);
-                if (TryGetValue<uint>(pathName, out var lastChanged))
+                var root = segments.Count() > 1 ? segments[1] as string : string.Empty;
+
+                // Skip _* as first scope, i.e. _adaptive, _tracker, ...
+                if (!root.StartsWith("_"))
                 {
-                    SetValue(pathName, GetValue<uint>(DialogPath.EventCounter));
+                    var pathName = string.Join("_", segments);
+                    var trackedPath = PathTracker + "." + pathName;
+                    uint? counter = null;
+                    void Update()
+                    {
+                        if (TryGetValue<uint>(trackedPath, out var lastChanged))
+                        {
+                            if (!counter.HasValue)
+                            {
+                                counter = GetValue<uint>(DialogPath.EventCounter);
+                            }
+
+                            SetValue(trackedPath, counter.Value);
+                        }
+                    }
+
+                    Update();
+                    if (value is object obj)
+                    {
+                        // Track child paths
+                        void CheckChildren(string property, object value)
+                        {
+                            trackedPath += "_" + property.ToLower();
+                            Update();
+                            if (value is object child)
+                            {
+                                ObjectPath.ForEachProperty(child, CheckChildren);
+                            }
+
+                            trackedPath = trackedPath.Substring(0, trackedPath.LastIndexOf('_'));
+                        }
+
+                        ObjectPath.ForEachProperty(obj, CheckChildren);
+                    }
+
+                    // Update scopes if any
+                    if (TryGetValue<object>(ScopeTracker, out var scopes))
+                    {
+                        ObjectPath.ForEachProperty(scopes, (property, value) =>
+                        {
+                            if (pathName.StartsWith(property))
+                            {
+                                trackedPath = ScopeTracker + "." + property;
+                                Update();
+                            }
+                        });
+                    }
                 }
 
                 hasPath = true;

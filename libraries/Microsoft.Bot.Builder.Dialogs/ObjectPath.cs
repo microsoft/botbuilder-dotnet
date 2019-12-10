@@ -174,6 +174,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             SetObjectSegment(current, lastSegment, value, json);
         }
 
+        /// <summary>
+        /// Remove path from object.
+        /// </summary>
+        /// <param name="obj">Object to change.</param>
+        /// <param name="path">Path to remove.</param>
         public static void RemovePathValue(object obj, string path)
         {
             if (!TryResolvePath(obj, path, out var segments))
@@ -208,6 +213,39 @@ namespace Microsoft.Bot.Builder.Dialogs
                 else
                 {
                     current[(int)lastSegment] = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Apply an action to all properties in an object.
+        /// </summary>
+        /// <param name="obj">Object to map against.</param>
+        /// <param name="action">Action to take.</param>
+        public static void ForEachProperty(object obj, Action<string, object> action)
+        {
+            if (obj is IDictionary<string, object> dict)
+            {
+                foreach (var entry in dict)
+                {
+                    action(entry.Key, entry.Value);
+                }
+            }
+            else if (obj is JObject jobj)
+            {
+                foreach (var property in jobj.Properties())
+                {
+                    action(property.Name, property.Value);
+                }
+            }
+            else if (!(obj.GetType().IsPrimitive || obj is string))
+            {
+                foreach (var property in obj.GetType().GetProperties())
+                {
+                    if (property.GetIndexParameters().Length == 0)
+                    {
+                        action(property.Name, property.GetValue(obj));
+                    }
                 }
             }
         }
