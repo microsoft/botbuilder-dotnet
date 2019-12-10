@@ -2,7 +2,7 @@
 # This YAML build definition replaces the classic BotBuilder-DotNet-master-CI-PR
 #
 
-# "name" below defines the build number format. Its expanded value during a build is accessed via the var $(Build.BuildNumber)
+# "name" here defines the build number format. The build number is accessed via $(Build.BuildNumber)
 name: $(Build.BuildId)
 variables:
   ApiCompatVersion: 4.6.3
