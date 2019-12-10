@@ -48,7 +48,7 @@ templateBody
     ;
 
 structuredTemplateBody
-    : structuredBodyNameLine structuredBodyContentLine? structuredBodyEndLine
+    : structuredBodyNameLine structuredBodyContentLine? structuredBodyEndLine?
     ;
 
 structuredBodyNameLine
