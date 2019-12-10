@@ -1,38 +1,14 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
+using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
-    /// <summary>
-    /// Format to output text in.
-    /// </summary>
-    public enum TextOutputFormat
-    {
-        /// <summary>
-        /// No formatting.
-        /// </summary>
-        None,
-
-        /// <summary>
-        /// Trim leading, trailing spaces.
-        /// </summary>
-        Trim,
-
-        /// <summary>
-        /// All lower case.
-        /// </summary>
-        Lowercase,
-
-        /// <summary>
-        /// All upper case.
-        /// </summary>
-        UpperCase
-    }
-
     /// <summary>
     /// Declarative text input to gather text data from users.
     /// </summary>
@@ -47,23 +23,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         [JsonProperty("outputFormat")]
-        public TextOutputFormat OutputFormat { get; set; } = TextOutputFormat.None;
+        public string OutputFormat { get; set; }
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
             var input = dc.GetState().GetValue<string>(VALUE_PROPERTY);
 
-            switch (this.OutputFormat)
+            if (!string.IsNullOrEmpty(OutputFormat))
             {
-                case TextOutputFormat.Trim:
-                    input = input.Trim();
-                    break;
-                case TextOutputFormat.Lowercase:
-                    input = input.ToLower();
-                    break;
-                case TextOutputFormat.UpperCase:
-                    input = input.ToUpper();
-                    break;
+                var outputExpression = new ExpressionEngine().Parse(OutputFormat);
+                var (outputValue, error) = outputExpression.TryEvaluate(dc.GetState());
+                if (error == null)
+                {
+                    input = outputValue.ToString();
+                }
+                else
+                {
+                    throw new Exception($"In TextInput, OutputFormat Expression evaluation resulted in an error. Expression: {outputExpression.ToString()}. Error: {error}");
+                }
             }
 
             dc.GetState().SetValue(VALUE_PROPERTY, input);

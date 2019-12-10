@@ -41,12 +41,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <exception cref="ArgumentNullException">
         /// <paramref name="credentialProvider"/> is <c>null</c>.</exception>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
-        /// components in the constructor. Use the <see cref="BotAdapter.Use(IMiddleware)"/> method to
+        /// components in the constructor. Use the IMiddleware method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
         public BotFrameworkHttpAdapter(
             ICredentialProvider credentialProvider,
-            AuthenticationConfiguration authConfig = null,
+            AuthenticationConfiguration authConfig,
             IChannelProvider channelProvider = null,
             RetryPolicy connectorClientRetryPolicy = null,
             HttpClient customHttpClient = null,

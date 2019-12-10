@@ -10,6 +10,14 @@
         },
         {
             "properties": {
+                "outputFormat": {
+                    "$role": "expression",
+                    "title": "Output format",
+                    "description": "Expression to format the datetime output.",
+                    "examples": [
+                        "this.value[0].Value"
+                    ]
+                },
                 "defaultLocale": {
                     "type": "string",
                     "title": "Default locale",

@@ -19,9 +19,9 @@ namespace Microsoft.Bot.Builder.TestProtocol.Controllers
         private readonly BotFrameworkHttpClient _client;
         private readonly Uri _toUri;
         private readonly Uri _serviceUrl;
-        private readonly ISkillConversationIdFactory _factory;
+        private readonly SkillConversationIdFactoryBase _factory;
 
-        public ForwardController(BotFrameworkHttpClient client, IConfiguration configuration, ISkillConversationIdFactory factory)
+        public ForwardController(BotFrameworkHttpClient client, IConfiguration configuration, SkillConversationIdFactoryBase factory)
         {
             _client = client;
             _toUri = new Uri(configuration["Next"]);
@@ -33,12 +33,7 @@ namespace Microsoft.Bot.Builder.TestProtocol.Controllers
         public async Task PostAsync()
         {
             var inboundActivity = await HttpHelper.ReadRequestAsync<Activity>(Request);
-
-            var currentConversationId = inboundActivity.Conversation.Id;
-            var currentServiceUrl = inboundActivity.ServiceUrl;
-
-            var nextConversationId = await _factory.CreateSkillConversationIdAsync(currentConversationId, currentServiceUrl, CancellationToken.None);
-
+            var nextConversationId = await _factory.CreateSkillConversationIdAsync(inboundActivity.GetConversationReference(), CancellationToken.None);
             await _client.PostActivityAsync(null, null, _toUri, _serviceUrl, nextConversationId, inboundActivity);
 
             // ALTERNATIVE API IDEA...

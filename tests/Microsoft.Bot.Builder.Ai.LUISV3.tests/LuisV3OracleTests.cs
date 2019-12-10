@@ -21,6 +21,8 @@ using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
 {
+#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
     [TestClass]
 
     // The LUIS application used in these unit tests is in TestData/Contoso App.json
@@ -166,7 +168,9 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             var mockHttp = GetMockHttpClientHandlerObject((string)oracle["text"], mockResponse);
             var oracleOptions = response["options"];
             var options = (oracleOptions == null || oracleOptions.Type == JTokenType.Null)
+            #pragma warning disable CS0612 // Type or member is obsolete
                 ? new LuisPredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true, IncludeAPIResults = true }
+            #pragma warning restore CS0612 // Type or member is obsolete
                     : oracleOptions.ToObject<LuisPredictionOptions>();
             var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
             response["options"] = (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options, settings));
@@ -175,7 +179,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             var typedJson = Utils.Json(typedResult, version, oracle);
 
             // Threshold is 0.0 so when hitting endpoint get exact and when mocking isn't needed.
-            if (!Utils.WithinDelta(oracle, typedJson, 0.0) || !JToken.DeepEquals(typedJson[version], oldResponse))
+            if (!Utils.WithinDelta(oracle, typedJson, 0.0) && !JToken.DeepEquals(typedJson[version], oldResponse))
             {
                 using (var writer = new StreamWriter(newPath))
                 {
@@ -212,6 +216,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
                 {
                     var traceActivity = activity as ITraceActivity;
                     Assert.IsNotNull(traceActivity);
+                    #pragma warning disable CS0612 // Type or member is obsolete
                     Assert.AreEqual(LuisRecognizer.LuisTraceType, traceActivity.ValueType);
                     Assert.AreEqual(LuisRecognizer.LuisTraceLabel, traceActivity.Label);
 

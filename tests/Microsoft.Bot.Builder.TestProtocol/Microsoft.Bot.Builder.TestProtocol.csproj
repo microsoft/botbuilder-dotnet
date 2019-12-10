@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Skills\Microsoft.Bot.Builder.Skills.csproj" />
   </ItemGroup>
 
 </Project>
