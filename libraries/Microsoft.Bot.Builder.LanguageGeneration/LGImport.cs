@@ -54,8 +54,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public LGFileParser.ImportDefinitionContext ParseTree { get; }
 
-        private string ExtractDescription(LGFileParser.ImportDefinitionContext parseTree) => parseTree.IMPORT_DESC()?.GetText()?.Trim('[').Trim(']');
+        private string ExtractDescription(LGFileParser.ImportDefinitionContext parseTree)
+        {
+            // content: [xxx](yyy)
+            var content = parseTree.GetText();
+            var closeSquareBracketIndex = content.IndexOf(']');
+            return content.Substring(1, closeSquareBracketIndex - 1);
+        }
 
-        private string ExtractId(LGFileParser.ImportDefinitionContext parseTree) => parseTree.IMPORT_PATH()?.GetText()?.Trim('(').Trim(')');
+        private string ExtractId(LGFileParser.ImportDefinitionContext parseTree)
+        {
+            // content: [xxx](yyy)
+            var content = parseTree.GetText();
+            var lastOpenBracketIndex = content.LastIndexOf('(');
+            return content.Substring(lastOpenBracketIndex + 1, content.Length - lastOpenBracketIndex - 2);
+        }
     }
 }
