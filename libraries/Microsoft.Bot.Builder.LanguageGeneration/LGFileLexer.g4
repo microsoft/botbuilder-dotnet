@@ -78,7 +78,7 @@ IMPORT
   ;
 
 INVALID_TOKEN
-  : .
+  : . { inTemplate = false; beginOfTemplateBody = false; }
   ;
 
 mode TEMPLATE_NAME_MODE;
@@ -198,7 +198,7 @@ STRUCTURED_NEWLINE
   ;
 
 STRUCTURED_TEMPLATE_BODY_END
-  : WS_IN_STRUCTURED? ']' WS_IN_STRUCTURED? { inTemplate = false;} -> popMode
+  : WS_IN_STRUCTURED? ']' WS_IN_STRUCTURED? { inTemplate = false; beginOfTemplateBody = false;} -> popMode
   ;
 
 STRUCTURED_CONTENT
