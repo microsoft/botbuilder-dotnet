@@ -229,11 +229,11 @@ STRUCTURE_EQUALS
   ;
 
 STRUCTURE_OR_MARK
-  : '|' {inStructuredValue}? { ignoreWS = true; }
+  : '|' { ignoreWS = true; }
   ;
 
 ESCAPE_CHARACTER_IN_STRUCTURE_BODY
-  : ESCAPE_CHARACTER_FRAGMENT {inStructuredValue}? { ignoreWS = false; }
+  : ESCAPE_CHARACTER_FRAGMENT { ignoreWS = false; }
   ;
 
 EXPRESSION_IN_STRUCTURE_BODY
@@ -241,6 +241,6 @@ EXPRESSION_IN_STRUCTURE_BODY
   ;
 
 TEXT_IN_STRUCTURE_BODY
-  : ~[\r\n]+? {inStructuredValue}? { ignoreWS = false; }
+  : ~[\r\n]+?  { ignoreWS = false; }
   ;
 
