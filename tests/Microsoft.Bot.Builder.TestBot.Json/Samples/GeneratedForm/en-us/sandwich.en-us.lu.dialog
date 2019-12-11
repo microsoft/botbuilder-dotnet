@@ -2,5 +2,8 @@
     "$type": "Microsoft.LuisRecognizer",
     "applicationId": "{settings.luis.sandwich_en-us_lu}",
     "endpoint": "{settings.luis.endpoint}",
-    "endpointKey": "{settings.luis.endpointKey}"
+    "endpointKey": "{settings.luis.endpointKey}",
+    "predictionOptions": {
+        "includeInstanceData": true
+    }
 }

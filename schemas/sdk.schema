@@ -3996,6 +3996,29 @@
                 },
                 "endpointKey": {
                     "type": "string"
+                },
+                "predictionOptions": {
+                    "type": "object",
+                    "properties": {
+                        "includeAllIntents": {
+                            "type": "boolean"
+                        },
+                        "includeInstanceData": {
+                            "type": "boolean"
+                        },
+                        "log": {
+                            "type": "boolean"
+                        },
+                        "preferExternalEntities": {
+                            "type": "boolean"
+                        },
+                        "slot": {
+                            "type": "string"
+                        },
+                        "version": {
+                            "type": "string"
+                        }
+                    }
                 }
             },
             "patternProperties": {
@@ -6873,6 +6896,18 @@
                     "title": "Top",
                     "description": "The number of answers you want to retrieve.",
                     "default": 3
+                },
+                "isTest": {
+                    "type": "boolean",
+                    "title": "IsTest",
+                    "description": "True, if pointing to Test environment, else false.",
+                    "default": false
+                },
+                "rankerType": {
+                    "type": "string",
+                    "title": "RankerType",
+                    "description": "Type of Ranker.",
+                    "default": "Default"
                 }
             },
             "patternProperties": {

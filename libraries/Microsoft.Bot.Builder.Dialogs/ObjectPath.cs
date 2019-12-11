@@ -238,16 +238,20 @@ namespace Microsoft.Bot.Builder.Dialogs
                     action(property.Name, property.Value);
                 }
             }
-            else if (!(obj.GetType().IsPrimitive || obj is string))
+
+            /* For tracking purposes, only use pure dictionary/jobject.
+            else if (!(obj.GetType().IsPrimitive || obj.GetType().IsArray() || obj is string || obj is DateTime || obj is DateTimeOffset || obj is JValue || obj is JArray))
             {
                 foreach (var property in obj.GetType().GetProperties())
                 {
+                    // Check for indexer
                     if (property.GetIndexParameters().Length == 0)
                     {
                         action(property.Name, property.GetValue(obj));
                     }
                 }
             }
+            */
         }
 
         /// <summary>

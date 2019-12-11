@@ -14,11 +14,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public double Score { get; set; }
 
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
 
-        public string Role { get; set; }
+        public string Role { get; set; } = string.Empty;
 
-        public string Type { get; set; }
+        public string Type { get; set; } = string.Empty;
 
         public int Priority { get; set; }
 

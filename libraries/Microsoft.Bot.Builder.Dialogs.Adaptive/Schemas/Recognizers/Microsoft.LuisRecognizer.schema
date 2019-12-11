@@ -14,6 +14,29 @@
         },
         "endpointKey": {
             "type": "string"
+        },
+        "predictionOptions": {
+            "type": "object",
+            "properties": {
+                "includeAllIntents": {
+                    "type": "boolean"
+                },
+                "includeInstanceData": {
+                    "type": "boolean"
+                },
+                "log": {
+                    "type": "boolean"
+                },
+                "preferExternalEntities": {
+                    "type": "boolean"
+                },
+                "slot": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
         }
     },
     "required": [

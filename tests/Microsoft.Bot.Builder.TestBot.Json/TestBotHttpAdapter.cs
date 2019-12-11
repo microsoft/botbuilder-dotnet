@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
@@ -34,6 +35,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             this.UseResourceExplorer(resourceExplorer, registrations);
             this.UseAdaptiveDialogs();
+            this.UseQnAMaker();
             this.UseLanguageGeneration(resourceExplorer);
             this.UseDebugger(configuration.GetValue<int>("debugport", 4712), events: new Events<AdaptiveEvents>());
 

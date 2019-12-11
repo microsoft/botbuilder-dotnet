@@ -1062,11 +1062,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     if (!name.StartsWith("$"))
                     {
                         var values = entry.Value;
-                        var instances = metaData[name];
+                        var instances = metaData?[name];
                         for (var i = 0; i < values.Count; ++i)
                         {
                             var val = values[i];
-                            var instance = instances[i];
+                            var instance = instances?[i];
                             if (!entityToInfo.TryGetValue(name, out List<EntityInfo> infos))
                             {
                                 infos = new List<EntityInfo>();
@@ -1077,14 +1077,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             {
                                 Turn = turn,
                                 Name = name,
-                                Value = val,
-                                Start = (int)instance.startIndex,
-                                End = (int)instance.endIndex,
-                                Text = (string)instance.text,
-                                Type = (string)instance.type,
-                                Role = (string)instance.role,
-                                Score = (double)(instance.score ?? 0.0d),
+                                Value = val
                             };
+                            if (instance != null)
+                            {
+                                info.Start = (int)instance.startIndex;
+                                info.End = (int)instance.endIndex;
+                                info.Text = (string)instance.text;
+                                info.Type = (string)instance.type;
+                                info.Role = (string)instance.role;
+                                info.Score = (double)(instance.score ?? 0.0d);
+                            }
 
                             // Eventually this could be passed in
                             info.Priority = info.Role == null ? 1 : 0;
