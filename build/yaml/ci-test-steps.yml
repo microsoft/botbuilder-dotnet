@@ -1,0 +1,91 @@
+steps:
+- powershell: |
+   Remove-Item CodeCoverage -Force -Recurse -ErrorAction Ignore
+   New-Item CodeCoverage -ItemType Directory -Force
+  displayName: 'Create Code Coverage directory'
+
+- task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Build-InlinePowershell.Xpirit-Vsts-Build-InlinePowershell.InlinePowershell@1
+  displayName: 'Start CosmosDB Emulator'
+  inputs:
+    Script: |
+        Write-Host "Starting CosmosDB Emulator on Windows"
+        Import-Module "C:/Program Files/Azure Cosmos DB Emulator/PSModules/Microsoft.Azure.CosmosDB.Emulator"
+        Start-CosmosDbEmulator
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test (release)'
+  inputs:
+    command: test
+    projects: |
+     Tests/**/*Tests.csproj
+     
+    arguments: '-v n  --configuration release --no-build --no-restore --filter TestCategory!=IgnoreInAutomatedBuild --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
+  condition: eq(variables['BuildConfiguration'],'Release-Windows')
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test (debug)'
+  inputs:
+    command: test
+    projects: |
+     Tests/**/*Tests.csproj
+     
+    arguments: '-v n  --configuration debug --no-build --no-restore --filter TestCategory!=IgnoreInAutomatedBuild --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
+  condition: eq(variables['BuildConfiguration'],'Debug-Windows')
+
+- powershell: |
+   # This task copies the code coverage file created by dotnet test into a well known location. In all
+   # checks I've done, dotnet test ALWAYS outputs the coverage file to the temp directory. 
+   # My attempts to override this and have it go directly to the CodeCoverage directory have
+   # all failed, so I'm just doing the copy here.  (cmullins)
+   
+   Get-ChildItem -Path "D:\a\_temp" -Include "*.coverage" -Recurse | Copy-Item -Destination CodeCoverage
+  displayName: 'Copy .coverage Files to CodeCoverage folder'
+
+- task: PowerShell@2
+  displayName: 'Upload Coverage Files to Coveralls.io https://coveralls.io/github/Microsoft/botbuilder-dotnet'
+  inputs:
+    targetType: filePath
+    filePath: '$(Build.SourcesDirectory)\build\PublishToCoveralls.ps1'
+    arguments: '-pathToCoverageFiles "$(Build.SourcesDirectory)\CodeCoverage" -serviceName "master CI-PR"'
+  continueOnError: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: Coverage files'
+  inputs:
+    PathtoPublish: CodeCoverage
+    ArtifactName: CodeCoverage
+  enabled: false
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: build folder'
+  inputs:
+    PathtoPublish: build
+    ArtifactName: build
+  enabled: false
+
+- powershell: |
+   New-Item -ItemType directory -Path "outputLibraries\" -Force
+   
+   $buildTarget = $env:BuildConfiguration.Split("-")[0];
+   
+   $env:BotBuilderDll.Split(",") | ForEach {
+       $library = $_.Trim()
+       Write-Host $library
+   
+       Get-ChildItem -Path "*/$library/bin/$buildTarget/netstandard2.0/$library.dll" -Recurse | Copy-Item -Destination 'outputLibraries\' -Force
+       Get-ChildItem -Path "*/*/$library/bin/$buildTarget/netstandard2.0/$library.dll" -Recurse | Copy-Item -Destination 'outputLibraries\' -Force
+   }
+  displayName: 'Copy DLLs to outputLibraries folder'
+
+- task: PublishPipelineArtifact@0
+  displayName: 'Publish Microsoft.Bot.Builder DLLs artifact'
+  inputs:
+    artifactName: 'BotBuilderDLLs-$(BuildConfiguration)'
+    targetPath: outputLibraries
+
+- script: |
+   cd ..
+   dir *.* /s
+  displayName: 'Dir workspace'
+  continueOnError: true
+  condition: succeededOrFailed()

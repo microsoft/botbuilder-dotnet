@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// </summary>
         /// <param name="parameters">Parameters to create the conversation from.</param>
         /// <returns>TODO Document.</returns>
-        [HttpPost]
+        [HttpPost("v3/conversations")]
         public virtual async Task<IActionResult> CreateConversationAsync([FromBody] ConversationParameters parameters)
         {
             var result = await _handler.HandleCreateConversationAsync(HttpContext.Request.Headers["Authorization"], parameters).ConfigureAwait(false);
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// </summary>
         /// <param name="continuationToken">skip or continuation token.</param>
         /// <returns>TODO Document.</returns>
-        [HttpGet]
+        [HttpGet("v3/conversations")]
         public virtual async Task<IActionResult> GetConversationsAsync(string continuationToken = null)
         {
             var result = await _handler.HandleGetConversationsAsync(HttpContext.Request.Headers["Authorization"], continuationToken).ConfigureAwait(false);

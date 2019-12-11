@@ -93,5 +93,23 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty("qnaId")]
         public int QnAId { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether gets or sets environment of knowledgebase to be called. 
+        /// </summary>
+        /// <value>
+        /// A value indicating whether to call test or prod environment of knowledgebase. 
+        /// </value>
+        [JsonProperty("isTest")]
+        public bool IsTest { get; set; }
+
+        /// <summary>
+        /// Gets or sets ranker Types.
+        /// </summary>
+        /// <value>
+        /// Ranker Types.
+        /// </value>
+        [JsonProperty("rankerType")]
+        public string RankerType { get; set; }
     }
 }

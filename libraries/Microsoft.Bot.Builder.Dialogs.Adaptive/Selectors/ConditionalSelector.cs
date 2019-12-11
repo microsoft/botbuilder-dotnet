@@ -29,6 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// <value>
         /// Expression that determines which selector to use.
         /// </value>
+        [JsonProperty("condition")]
         public string Condition
         {
             get { return condition?.ToString(); }
