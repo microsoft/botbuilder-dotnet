@@ -713,7 +713,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="magicCode">(Optional) Optional user entered code to validate.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Token Response.</returns>
-        public virtual async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string magicCode, CancellationToken cancellationToken)
+        public virtual async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string magicCode, CancellationToken cancellationToken = default)
         {
             BotAssert.ContextNotNull(turnContext);
             if (turnContext.Activity.From == null || string.IsNullOrWhiteSpace(turnContext.Activity.From.Id))
@@ -738,7 +738,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="magicCode">(Optional) Optional user entered code to validate.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Token Response.</returns>
-        public virtual async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, string connectionName, string magicCode, CancellationToken cancellationToken)
+        public virtual async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, string connectionName, string magicCode, CancellationToken cancellationToken = default)
         {
             return await GetUserTokenAsync(turnContext, null, connectionName, magicCode, cancellationToken).ConfigureAwait(false);
         }
@@ -753,7 +753,7 @@ namespace Microsoft.Bot.Builder
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully, the result contains the raw signin link.</remarks>
-        public virtual async Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, CancellationToken cancellationToken)
+        public virtual async Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, CancellationToken cancellationToken = default)
         {
             BotAssert.ContextNotNull(turnContext);
             if (string.IsNullOrWhiteSpace(connectionName))
@@ -795,7 +795,7 @@ namespace Microsoft.Bot.Builder
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully, the result contains the raw signin link.</remarks>
-        public virtual async Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, string connectionName, CancellationToken cancellationToken)
+        public virtual async Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, string connectionName, CancellationToken cancellationToken = default)
         {
             return await GetOauthSignInLinkAsync(turnContext, null, connectionName, cancellationToken).ConfigureAwait(false);
         }
@@ -862,7 +862,7 @@ namespace Microsoft.Bot.Builder
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully, the result contains the raw signin link.</remarks>
-        public virtual async Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default)
         {
             return await GetOauthSignInLinkAsync(turnContext, null, connectionName, userId, finalRedirect, cancellationToken).ConfigureAwait(false);
         }
@@ -899,7 +899,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public virtual async Task SignOutUserAsync(ITurnContext turnContext, string connectionName = null, string userId = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task SignOutUserAsync(ITurnContext turnContext, string connectionName = null, string userId = null, CancellationToken cancellationToken = default)
         {
             await SignOutUserAsync(turnContext, null, connectionName, userId, cancellationToken).ConfigureAwait(false);
         }
@@ -935,7 +935,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="includeFilter">Optional comma separated list of connection's to include. Blank will return token status for all configured connections.</param>
         /// <param name="cancellationToken">The async operation cancellation token.</param>
         /// <returns>Array of TokenStatus.</returns>
-        public virtual async Task<TokenStatus[]> GetTokenStatusAsync(ITurnContext context, string userId, string includeFilter = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<TokenStatus[]> GetTokenStatusAsync(ITurnContext context, string userId, string includeFilter = null, CancellationToken cancellationToken = default)
         {
             return await GetTokenStatusAsync(context, null, userId, includeFilter, cancellationToken).ConfigureAwait(false);
         }
@@ -982,7 +982,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="userId">The user Id for which tokens are retrieved. If passing in null the userId is taken from the Activity in the ITurnContext.</param>
         /// <param name="cancellationToken">The async operation cancellation token.</param>
         /// <returns>Dictionary of resourceUrl to the corresponding TokenResponse.</returns>
-        public virtual async Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, string connectionName, string[] resourceUrls, string userId = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, string connectionName, string[] resourceUrls, string userId = null, CancellationToken cancellationToken = default)
         {
             return await GetAadTokensAsync(context, null, connectionName, resourceUrls, userId, cancellationToken).ConfigureAwait(false);
         }
