@@ -48,16 +48,25 @@ templateBody
     ;
 
 structuredTemplateBody
-    : structuredBodyNameLine (structuredBodyContentLine STRUCTURED_NEWLINE)+? structuredBodyEndLine?
+    : structuredBodyNameLine ((structuredBodyContentLine STRUCTURED_NEWLINE)+)? structuredBodyEndLine?
     ;
 
 structuredBodyNameLine
-    : LEFT_SQUARE_BRACKET STRUCTURE_NAME
+    : LEFT_SQUARE_BRACKET (STRUCTURE_NAME | errorStructuredName)
+    ;
+
+errorStructuredName
+    : (STRUCTURE_NAME|TEXT_IN_STRUCTURE_NAME)*
     ;
 
 structuredBodyContentLine
     : keyValueStructureLine
     | objectStructureLine
+    | errorStructureLine
+    ;
+
+errorStructureLine
+    : (STRUCTURE_IDENTIFIER|STRUCTURE_EQUALS|STRUCTURE_OR_MARK|TEXT_IN_STRUCTURE_BODY|EXPRESSION_IN_STRUCTURE_BODY|ESCAPE_CHARACTER_IN_STRUCTURE_BODY)+
     ;
 
 keyValueStructureLine

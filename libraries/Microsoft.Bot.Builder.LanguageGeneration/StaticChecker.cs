@@ -236,6 +236,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             public override List<Diagnostic> VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
             {
                 var result = new List<Diagnostic>();
+                
+                if (context.structuredBodyNameLine().errorStructuredName() != null)
+                {
+                    result.Add(BuildLGDiagnostic($"structured name format error.", context: context.structuredBodyNameLine()));
+                }
 
                 if (context.structuredBodyEndLine() == null)
                 {
@@ -243,6 +248,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
 
                 var bodys = context.structuredBodyContentLine();
+
                 if (bodys == null || bodys.Length == 0)
                 {
                     result.Add(BuildLGDiagnostic($"Structured content is empty", context: context));
@@ -250,10 +256,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 else
                 {
                     foreach (var body in bodys)
-                    {
-                        if (body.objectStructureLine() != null)
+                    {   
+                        if (body.errorStructureLine() != null)
                         {
-                            result.AddRange(CheckExpression(body.objectStructureLine().GetText(), context));
+                            result.Add(BuildLGDiagnostic($"structured body format error.", context: body.errorStructureLine()));
+                        }
+                        else if (body.objectStructureLine() != null)
+                        {
+                            result.AddRange(CheckExpression(body.objectStructureLine().GetText(), body.objectStructureLine()));
                         }
                         else
                         {

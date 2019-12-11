@@ -198,6 +198,10 @@ STRUCTURE_NAME
   : (LETTER | NUMBER | '_') (LETTER | NUMBER | '-' | '_' | '.')*
   ;
 
+TEXT_IN_STRUCTURE_NAME
+  : ~[\r\n]+?
+  ;
+
 mode STRUCTURE_BODY_MODE;
 
 STRUCTURED_COMMENTS
