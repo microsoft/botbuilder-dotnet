@@ -32,38 +32,33 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "hi"
         },
-        "script": [
-            {
-                "$kind": "Microsoft.Test.UserSays",
-                "text": "hi"
-            },
-            {
-                "$kind": "Microsoft.Test.AssertReply",
-                "text": "Please enter your age."
-            },
-            {
-                "$kind": "Microsoft.Test.UserSays",
-                "text": "1000"
-            },
-            {
-                "$kind": "Microsoft.Test.AssertReply",
-                "text": "The value entered must be greater than 0 and less than 150."
-            },
-            {
-                "$kind": "Microsoft.Test.UserSays",
-                "text": "15.3"
-            },
-            {
-                "$kind": "Microsoft.Test.AssertReply",
-                "text": "I have your age as 15."
-            },
-            {
-                "$kind": "Microsoft.Test.UserSays",
-                "text": "hi"
-            },
-            {
-                "$kind": "Microsoft.Test.AssertReply",
-                "text": "I have your age as 15."
-            }
-        ]
-    }
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Please enter your age."
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "1000"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "The value entered must be greater than 0 and less than 150."
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "15.3"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I have your age as 15."
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I have your age as 15."
+        }
+    ]
+}
