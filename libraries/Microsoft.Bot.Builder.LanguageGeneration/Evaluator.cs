@@ -21,7 +21,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         public const string LGType = "lgType";
         public static readonly Regex ExpressionRecognizeRegex = new Regex(@"(?<!\\)@{(((\'([^'\r\n])*?\')|(\""([^""\r\n])*?\""))|[^\r\n{}'""])*?}", RegexOptions.Compiled);
-        public static readonly Regex EscapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
         public Evaluator(List<LGTemplate> templates, ExpressionEngine expressionEngine)
@@ -38,18 +37,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public ExpressionEngine ExpressionEngine { get; }
 
         public Dictionary<string, LGTemplate> TemplateMap { get; }
-
-        public static bool IsPureExpression(string exp)
-        {
-            if (string.IsNullOrWhiteSpace(exp))
-            {
-                return false;
-            }
-
-            exp = exp.Trim();
-            var expressions = ExpressionRecognizeRegex.Matches(exp);
-            return expressions.Count == 1 && expressions[0].Value == exp;
-        }
 
         public object EvaluateTemplate(string templateName, object scope)
         {
@@ -114,17 +101,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var isKVPairBody = body.keyValueStructureLine() != null;
                 if (isKVPairBody)
                 {
-                    var property = body.keyValueStructureLine().STRUCTURE_IDENTIFIER().GetText();
+                    // make it insensitive
+                    var property = body.keyValueStructureLine().STRUCTURE_IDENTIFIER().GetText().ToLower();
                     var value = VisitStructureValue(body.keyValueStructureLine());
                     result[property] = JToken.FromObject(value);
                 }
                 else
                 {
-                    // [MyStruct
-                    // Text = foo
-                    // {ST2()}
-                    // ]
-
                     // When the same property exists in both the calling template as well as callee, the content in caller will trump any content in 
                     var propertyObject = JObject.FromObject(EvalExpression(body.objectStructureLine().GetText()));
 
@@ -277,10 +260,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var result = new List<object>();
             foreach (var item in values)
             {
-                if (item.children.Count == 1 
-                    && ((ITerminalNode)item.children[0]).Symbol.Type == LGFileParser.EXPRESSION_IN_STRUCTURE_BODY)
+                if (IsPureExpression(item, out var text))
                 {
-                    result.Add(EvalExpression(item.GetText()));
+                    result.Add(EvalExpression(text));
                 }
                 else
                 {
@@ -301,11 +283,44 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         }
                     }
 
-                    result.Add(itemStringResult.ToString());
+                    result.Add(itemStringResult.ToString().Trim());
                 }
             }
 
             return result.Count == 1 ? result[0] : result;
+        }
+
+        private bool IsPureExpression(LGFileParser.KeyValueStructureValueContext context, out string expression)
+        {
+            expression = context.GetText();
+
+            var hasExpression = false;
+            foreach (ITerminalNode node in context.children)
+            {
+                switch (node.Symbol.Type)
+                {
+                    case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
+                        return false;
+                    case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
+                        if (hasExpression)
+                        {
+                            return false;
+                        }
+
+                        hasExpression = true;
+                        expression = node.GetText();
+                        break;
+                    default:
+                        if (!string.IsNullOrWhiteSpace(node.GetText()))
+                        {
+                            return false;
+                        }
+
+                        break;
+                }
+            }
+
+            return hasExpression;
         }
 
         private bool EvalCondition(LGFileParser.IfConditionContext condition)
@@ -389,17 +404,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return exp;
             }
 
-            if (IsPureExpression(exp))
-            {
-                // @{} or {} text, get object result
-                return JToken.FromObject(EvalExpression(exp));
-            }
-            else
-            {
-                var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
-                var result = ExpressionRecognizeRegex.Replace(exp, evalutor);
-                return EvalEscape(result);
-            }
+            var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
+            var result = ExpressionRecognizeRegex.Replace(exp, evalutor);
+            return EvalEscape(result);
         }
 
         private (object value, string error) EvalByExpressionEngine(string exp, object scope)

@@ -19,6 +19,7 @@ lexer grammar LGFileLexer;
   bool beginOfTemplateBody = false; // whether we are at the begining of template body
   bool inMultiline = false; // whether we are in multiline
   bool beginOfTemplateLine = false;// weather we are at the begining of template string
+  bool inStructuredValue = false; // weather we are in the structure value
 }
 
 // fragments
@@ -197,18 +198,18 @@ STRUCTURE_NAME
   : (LETTER | NUMBER | '_') (LETTER | NUMBER | '-' | '_' | '.')*
   ;
 
+mode STRUCTURE_BODY_MODE;
+
 STRUCTURED_COMMENTS
   : ('>'|'$') ~[\r\n]* '\r'?'\n' -> skip
   ;
-
-mode STRUCTURE_BODY_MODE;
 
 WS_IN_STRUCTURE_BODY
   : WHITESPACE+ {ignoreWS}? -> skip
   ;
 
 STRUCTURED_NEWLINE
-  : '\r'? '\n' { ignoreWS = true; } -> skip
+  : '\r'? '\n' { ignoreWS = true; inStructuredValue = false;}
   ;
 
 STRUCTURED_BODY_END
@@ -216,15 +217,15 @@ STRUCTURED_BODY_END
   ;
 
 STRUCTURE_IDENTIFIER
-  : (LETTER | NUMBER | '_') (LETTER | NUMBER | '-' | '_' | '.')*
+  : (LETTER | NUMBER | '_') (LETTER | NUMBER | '-' | '_' | '.')* { !inStructuredValue }?
   ;
 
 STRUCTURE_EQUALS
-  : '='
+  : '=' {inStructuredValue = true;}
   ;
 
 STRUCTURE_OR_MARK
-  : '|'
+  : '|' { ignoreWS = true; }
   ;
 
 ESCAPE_CHARACTER_IN_STRUCTURE_BODY

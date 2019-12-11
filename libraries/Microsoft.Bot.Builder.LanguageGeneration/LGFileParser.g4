@@ -48,7 +48,7 @@ templateBody
     ;
 
 structuredTemplateBody
-    : structuredBodyNameLine structuredBodyContentLine+? structuredBodyEndLine?
+    : structuredBodyNameLine (structuredBodyContentLine STRUCTURED_NEWLINE)+? structuredBodyEndLine?
     ;
 
 structuredBodyNameLine
@@ -65,7 +65,7 @@ keyValueStructureLine
     ;
 
 keyValueStructureValue
-    : (STRUCTURE_IDENTIFIER|TEXT_IN_STRUCTURE_BODY|EXPRESSION_IN_STRUCTURE_BODY|ESCAPE_CHARACTER_IN_STRUCTURE_BODY)+
+    : (TEXT_IN_STRUCTURE_BODY|EXPRESSION_IN_STRUCTURE_BODY|ESCAPE_CHARACTER_IN_STRUCTURE_BODY)+
     ;
 
 objectStructureLine
