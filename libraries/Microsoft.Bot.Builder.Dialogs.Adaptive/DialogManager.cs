@@ -151,6 +151,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             DialogTurnResult turnResult = null;
 
+            // Loop as long as we are getting valid OnError handled we should continue executing the actions for the turn.
+            //
+            // NOTE: We loop around this block because each pass through we either complete the turn and break out of the loop
+            // or we have had an exception AND there was an OnError action which captured the error.  We need to continue the 
+            // turn based on the actions the OnError handler introduced.  
             while (true)
             {
                 try
@@ -173,6 +178,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         }
                     }
 
+                    // turn successfully completed, break the loop
                     break;
                 }
                 catch (Exception err)
@@ -182,12 +188,13 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                     if (!handled)
                     {
+                        // error was NOT handled, throw the exception and end the turn. (This will trigger the Adapter.OnError handler and end the entire dialog stack)
                         throw;
                     }
                 }
             }
 
-            // save all state scopes to their respective stores.
+            // save all state scopes to their respective botState locations.
             await dc.GetState().SaveAllChangesAsync(cancellationToken).ConfigureAwait(false);
 
             // save botstate changes
