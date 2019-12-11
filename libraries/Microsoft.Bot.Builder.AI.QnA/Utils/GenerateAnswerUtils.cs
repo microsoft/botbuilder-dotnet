@@ -143,6 +143,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
             {
                 options.MetadataBoost = new Metadata[] { };
             }
+
+            if (options.RankerType == null)
+            {
+                options.RankerType = RankerTypes.DefaultRankerType;
+            }
         }
 
         /// <summary>
