@@ -34,7 +34,7 @@ steps:
   inputs:
     solution: '$(Parameters.solution)'
     vsVersion: 16.0
-    msbuildArgs: '-p:SignAssembly=false -p:delaySign=false'
+    msbuildArgs: '$(MSBuildArguments)'
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
 
