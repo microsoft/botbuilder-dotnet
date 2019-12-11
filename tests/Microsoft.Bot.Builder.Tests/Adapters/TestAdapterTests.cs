@@ -200,7 +200,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             var token = await adapter.GetUserTokenAsync(turnContext, "myConnection", null, CancellationToken.None);
             Assert.IsNull(token);
 
-            var oAuthAppCredentials = new MicrosoftAppCredentials(string.Empty, string.Empty);
+            var oAuthAppCredentials = MicrosoftAppCredentials.Empty;
             token = await adapter.GetUserTokenAsync(turnContext, oAuthAppCredentials, "myConnection", null, CancellationToken.None);
             Assert.IsNull(token);
         }
@@ -222,7 +222,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             var token = await adapter.GetUserTokenAsync(turnContext, "myConnection", "abc123", CancellationToken.None);
             Assert.IsNull(token);
 
-            var oAuthAppCredentials = new MicrosoftAppCredentials(string.Empty, string.Empty);
+            var oAuthAppCredentials = MicrosoftAppCredentials.Empty;
             token = await adapter.GetUserTokenAsync(turnContext, oAuthAppCredentials, "myConnection", "abc123", CancellationToken.None);
             Assert.IsNull(token);
         }
@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             Assert.AreEqual(token, tokenResponse.Token);
             Assert.AreEqual(connectionName, tokenResponse.ConnectionName);
 
-            var oAuthAppCredentials = new MicrosoftAppCredentials(string.Empty, string.Empty);
+            var oAuthAppCredentials = MicrosoftAppCredentials.Empty;
             tokenResponse = await adapter.GetUserTokenAsync(turnContext, oAuthAppCredentials, connectionName, null, CancellationToken.None);
             Assert.IsNotNull(tokenResponse);
             Assert.AreEqual(token, tokenResponse.Token);
@@ -297,7 +297,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             Assert.AreEqual(connectionName, tokenResponse.ConnectionName);
 
             // Then can be retrieved using customized AppCredentials
-            var oAuthAppCredentials = new MicrosoftAppCredentials(string.Empty, string.Empty);
+            var oAuthAppCredentials = MicrosoftAppCredentials.Empty;
             tokenResponse = await adapter.GetUserTokenAsync(turnContext, oAuthAppCredentials, connectionName, null, CancellationToken.None);
             Assert.IsNotNull(tokenResponse);
             Assert.AreEqual(token, tokenResponse.Token);
@@ -325,7 +325,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             Assert.IsNotNull(link);
             Assert.IsTrue(link.Length > 0);
 
-            var oAuthAppCredentials = new MicrosoftAppCredentials(string.Empty, string.Empty);
+            var oAuthAppCredentials = MicrosoftAppCredentials.Empty;
             link = await adapter.GetOauthSignInLinkAsync(turnContext, oAuthAppCredentials, connectionName, userId, null, CancellationToken.None);
             Assert.IsNotNull(link);
             Assert.IsTrue(link.Length > 0);
@@ -352,7 +352,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             Assert.IsNotNull(link);
             Assert.IsTrue(link.Length > 0);
 
-            var oAuthAppCredentials = new MicrosoftAppCredentials(string.Empty, string.Empty);
+            var oAuthAppCredentials = MicrosoftAppCredentials.Empty;
             link = await adapter.GetOauthSignInLinkAsync(turnContext, oAuthAppCredentials, connectionName, CancellationToken.None);
             Assert.IsNotNull(link);
             Assert.IsTrue(link.Length > 0);
@@ -374,7 +374,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
                 },
             };
             TurnContext turnContext = new TurnContext(adapter, activity);
-            var oAuthAppCredentials = new MicrosoftAppCredentials(string.Empty, string.Empty);
+            var oAuthAppCredentials = MicrosoftAppCredentials.Empty;
 
             await adapter.SignOutUserAsync(turnContext);
             await adapter.SignOutUserAsync(turnContext, connectionName);
@@ -413,7 +413,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             Assert.IsNull(tokenResponse);
 
             adapter.AddUserToken(connectionName, channelId, userId, token);
-            var oAuthAppCredentials = new MicrosoftAppCredentials(string.Empty, string.Empty);
+            var oAuthAppCredentials = MicrosoftAppCredentials.Empty;
 
             tokenResponse = await adapter.GetUserTokenAsync(turnContext, oAuthAppCredentials, connectionName, null, CancellationToken.None);
             Assert.IsNotNull(tokenResponse);
@@ -464,7 +464,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             adapter.AddUserToken("ABC", channelId, userId, token);
             adapter.AddUserToken("DEF", channelId, userId, token);
 
-            var oAuthAppCredentials = new MicrosoftAppCredentials(string.Empty, string.Empty);
+            var oAuthAppCredentials = MicrosoftAppCredentials.Empty;
             tokenResponse = await adapter.GetUserTokenAsync(turnContext, oAuthAppCredentials, "ABC", null, CancellationToken.None);
             Assert.IsNotNull(tokenResponse);
             Assert.AreEqual(token, tokenResponse.Token);
@@ -506,7 +506,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             Assert.IsNotNull(status);
             Assert.AreEqual(2, status.Length);
 
-            var oAuthAppCredentials = new MicrosoftAppCredentials(string.Empty, string.Empty);
+            var oAuthAppCredentials = MicrosoftAppCredentials.Empty;
             status = await adapter.GetTokenStatusAsync(turnContext, oAuthAppCredentials, userId);
             Assert.IsNotNull(status);
             Assert.AreEqual(2, status.Length);
@@ -536,7 +536,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             Assert.IsNotNull(status);
             Assert.AreEqual(1, status.Length);
 
-            var oAuthAppCredentials = new MicrosoftAppCredentials(string.Empty, string.Empty);
+            var oAuthAppCredentials = MicrosoftAppCredentials.Empty;
             status = await adapter.GetTokenStatusAsync(turnContext, oAuthAppCredentials, userId, "DEF");
             Assert.IsNotNull(status);
             Assert.AreEqual(1, status.Length);

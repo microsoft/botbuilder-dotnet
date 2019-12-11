@@ -1089,7 +1089,7 @@ namespace Microsoft.Bot.Builder
         protected virtual async Task<OAuthClient> CreateOAuthApiClientAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials = null)
         {
             if (!OAuthClientConfig.EmulateOAuthCards &&
-                string.Equals(turnContext.Activity.ChannelId, "emulator", StringComparison.InvariantCultureIgnoreCase) &&
+                string.Equals(turnContext.Activity.ChannelId, Channels.Emulator, StringComparison.InvariantCultureIgnoreCase) &&
                 (await CredentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false)))
             {
                 OAuthClientConfig.EmulateOAuthCards = true;
@@ -1097,13 +1097,12 @@ namespace Microsoft.Bot.Builder
 
             var appId = GetBotAppId(turnContext);
 
-            var clientKey = appId;
-            clientKey += oAuthAppCredentials?.MicrosoftAppId;
+            var clientKey = $"{appId}:{oAuthAppCredentials?.MicrosoftAppId}";
 
             var appCredentials = oAuthAppCredentials ?? await GetAppCredentialsAsync(appId).ConfigureAwait(false);
 
             if (!OAuthClientConfig.EmulateOAuthCards &&
-                string.Equals(turnContext.Activity.ChannelId, "emulator", StringComparison.InvariantCultureIgnoreCase) &&
+                string.Equals(turnContext.Activity.ChannelId, Channels.Emulator, StringComparison.InvariantCultureIgnoreCase) &&
                 (await CredentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false)))
             {
                 OAuthClientConfig.EmulateOAuthCards = true;
@@ -1126,6 +1125,8 @@ namespace Microsoft.Bot.Builder
                 return oAuthClientInner;
             });
 
+            // adding the oAuthClient into the TurnState
+            // TokenResolver.cs will use it get the correct credentials to poll for token for streaming scenario
             if (turnContext.TurnState.Get<OAuthClient>() == null)
             {
                 turnContext.TurnState.Add(oAuthClient);
