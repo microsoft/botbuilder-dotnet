@@ -1,0 +1,210 @@
+steps:
+- task: CopyFiles@2
+  displayName: 'Copy packages to Signing'
+  inputs:
+    SourceFolder: '$(build.sourcesdirectory)'
+    Contents: |
+     outputpackages\*.nupkg
+     !outputpackages\*.symbols.nupkg
+    TargetFolder: '$(build.artifactstagingdirectory)\Signing'
+    flattenFolders: true
+
+- task: PowerShell@2
+  displayName: 'Unpack .nuget packages'
+  inputs:
+    targetType: filePath
+    filePath: ./build/ExtractCompressNuGet.ps1
+    arguments: '$(Build.ArtifactStagingDirectory)\Signing  -Extract'
+
+- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  displayName: 'ESRP Signing - strong name (CP-233863-SN)'
+  inputs:
+    ConnectedServiceName: 'ESRP Code Signing Connection 2019b'
+    FolderPath: '$(build.artifactstagingdirectory)\Signing'
+    signConfigType: inlineSignParams
+    inlineOperation: |
+     [
+         {
+             "keyCode": "CP-233863-SN",
+             "operationSetCode": "StrongNameSign",
+             "parameters": [],
+             "toolName": "sign",
+             "toolVersion": "1.0"
+         },
+         {
+             "keyCode": "CP-233863-SN",
+             "operationSetCode": "StrongNameVerify",
+             "parameters": [],
+             "toolName": "sign",
+             "toolVersion": "1.0"
+         }
+     ]
+     
+    SessionTimeout: 20
+
+- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  displayName: 'ESRP Signing - authenticode (CP-230012)'
+  inputs:
+    ConnectedServiceName: 'ESRP Code Signing Connection 2019b'
+    FolderPath: '$(build.artifactstagingdirectory)\Signing'
+    signConfigType: inlineSignParams
+    inlineOperation: |
+     [
+         {
+             "keyCode": "CP-230012",
+             "operationSetCode": "SigntoolSign",
+             "parameters": [
+             {
+                 "parameterName": "OpusName",
+                 "parameterValue": "Microsoft"
+             },
+             {
+                 "parameterName": "OpusInfo",
+                 "parameterValue": "http://www.microsoft.com"
+             },
+             {
+                 "parameterName": "PageHash",
+                 "parameterValue": "/NPH"
+             },
+             {
+                 "parameterName": "TimeStamp",
+                 "parameterValue": "/t \"http://ts4096.gtm.microsoft.com/TSS/AuthenticodeTS\""
+             }
+             ],
+             "toolName": "sign",
+             "toolVersion": "1.0"
+         },
+         {
+             "keyCode": "CP-230012",
+             "operationSetCode": "SigntoolVerify",
+             "parameters": [ ],
+             "toolName": "sign",
+             "toolVersion": "1.0"
+         }
+     ]
+    SessionTimeout: 20
+
+- script: |
+   cd ..
+   dir *.* /s
+  displayName: 'Dir workspace copy'
+
+- task: PowerShell@2
+  displayName: 'Repack .nuget packages'
+  inputs:
+    targetType: filePath
+    filePath: ./build/ExtractCompressNuGet.ps1
+    arguments: '$(Build.ArtifactStagingDirectory)\Signing -Compress'
+
+- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  displayName: 'ESRP Signing - .nupkg (CP-401405)'
+  inputs:
+    ConnectedServiceName: 'ESRP Code Signing Connection 2019b'
+    FolderPath: '$(build.artifactstagingdirectory)\Signing'
+    Pattern: '*.nupkg'
+    signConfigType: inlineSignParams
+    inlineOperation: |
+     [
+         {
+             "keyCode": "CP-401405",
+             "operationSetCode": "NuGetSign",
+             "parameters": [],
+             "toolName": "sign",
+             "toolVersion": "1.0"
+         },
+         {
+             "keyCode": "CP-401405",
+             "operationSetCode": "NuGetVerify",
+             "parameters": [],
+             "toolName": "sign",
+             "toolVersion": "1.0"
+         }
+     ]
+    SessionTimeout: 20
+
+- task: CopyFiles@2
+  displayName: 'Copy .nupkg files to publish'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\Signing'
+    Contents: |
+     *.nupkg
+     !*.symbols.nupkg
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\publish'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish .nupkgs to Build Artifacts'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\publish'
+
+- powershell: |
+   [string[]]$outvar = (Get-ChildItem *.nupkg -Path $(Build.ArtifactStagingDirectory)\publish ).BaseName;
+   
+   [int] $packageCount = $outvar.Length;
+   $PackagesDescription = "$packageCount packages";
+   Write-Host $PackagesDescription
+   "##vso[task.setvariable variable=PackagesDescription;]$PackagesDescription";
+   
+   ## Log the package names
+   for ($i = 0; $i -lt $packageCount; $i++ ) {
+       Write-Host $outvar[$i];
+   }
+   
+   if ($packageCount -gt 30) {
+       ## Too many packages for tags. Show this message instead
+       $message = "See the 'Get package names' log output for their names";
+       Write-Host "##vso[task.setvariable variable=pkg0;]$message";
+       $packageCount = 1;
+   } else {
+       ## Set package name variables for tags
+       for ($i = 0; $i -lt $packageCount; $i++ ) {
+           $p = $outvar[$i];
+           "##vso[task.setvariable variable=pkg$i;]$p";
+       }
+   }
+   
+   for ($i = $packageCount; $i -le 30; $i++ ) {
+       ## Set remaining variables to an empty string
+       "##vso[task.setvariable variable=pkg$i;]";
+   }
+  displayName: 'Get package names'
+
+- task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
+  displayName: 'Tag Build with package names'
+  inputs:
+    tags: |
+     $(PACKAGESDESCRIPTION)
+     $(PKG0)
+     $(PKG1)
+     $(PKG2)
+     $(PKG3)
+     $(PKG4)
+     $(PKG5)
+     $(PKG6)
+     $(PKG7)
+     $(PKG8)
+     $(PKG9)
+     $(PKG10)
+     $(PKG11)
+     $(PKG12)
+     $(PKG13)
+     $(PKG14)
+     $(PKG15)
+     $(PKG16)
+     $(PKG17)
+     $(PKG18)
+     $(PKG19)
+     $(PKG20)
+     $(PKG21)
+     $(PKG22)
+     $(PKG23)
+     $(PKG24)
+     $(PKG25)
+     $(PKG26)
+     $(PKG27)
+     $(PKG28)
+     $(PKG29)
+
+- script: |
+   cd ..
+   dir *.* /s
+  displayName: 'Dir workspace'
