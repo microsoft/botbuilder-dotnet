@@ -44,6 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <summary>
         /// Initializes a new instance of the <see cref="TestScript"/> class.
         /// </summary>
+        /// <remarks>If adapter is not provided a standard test adapter with all services will be registered.</remarks>
         public TestScript()
         {
         }

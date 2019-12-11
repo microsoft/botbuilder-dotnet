@@ -39,6 +39,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             var chatActivity = Activity.CreateMessageActivity();
+            chatActivity.Text = cardTitle;
             var buttonList = new List<CardAction>();
 
             // Add all suggestions
@@ -64,8 +65,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             var plCard = new HeroCard()
             {
-                Text = cardTitle,
-                Subtitle = string.Empty,
                 Buttons = buttonList
             };
 
@@ -96,6 +95,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             var chatActivity = Activity.CreateMessageActivity();
+            chatActivity.Text = result.Answer;
             var buttonList = new List<CardAction>();
 
             // Add all prompt
@@ -110,19 +110,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     });
             }
 
-            // Add No match text
-            buttonList.Add(
-                new CardAction()
-                {
-                    Value = cardNoMatchText,
-                    Type = "imBack",
-                    Title = cardNoMatchText
-                });
-
             var plCard = new HeroCard()
             {
-                Text = result.Answer,
-                Subtitle = string.Empty,
                 Buttons = buttonList
             };
 

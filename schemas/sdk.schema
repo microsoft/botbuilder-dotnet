@@ -1584,6 +1584,15 @@
                     ],
                     "type": "string"
                 },
+                "outputFormat": {
+                    "$role": "expression",
+                    "title": "Output format",
+                    "description": "Expression to format the confirm output.",
+                    "examples": [
+                        "concat('confirmation:', this.value)"
+                    ],
+                    "type": "string"
+                },
                 "defaultLocale": {
                     "type": "string",
                     "title": "Default locale",
@@ -2037,6 +2046,15 @@
                     "default": "true",
                     "examples": [
                         "true"
+                    ],
+                    "type": "string"
+                },
+                "outputFormat": {
+                    "$role": "expression",
+                    "title": "Output format",
+                    "description": "Expression to format the datetime output.",
+                    "examples": [
+                        "this.value[0].Value"
                     ],
                     "type": "string"
                 },
@@ -4524,14 +4542,13 @@
                     "type": "string"
                 },
                 "outputFormat": {
-                    "type": "string",
-                    "enum": [
-                        "float",
-                        "integer"
-                    ],
+                    "$role": "expression",
                     "title": "Output format",
-                    "description": "Number output format.",
-                    "default": "float"
+                    "description": "Expression to format the number output.",
+                    "examples": [
+                        "int(this.value)"
+                    ],
+                    "type": "string"
                 },
                 "defaultLocale": {
                     "type": "string",
@@ -8131,16 +8148,13 @@
                     "type": "string"
                 },
                 "outputFormat": {
-                    "type": "string",
-                    "enum": [
-                        "none",
-                        "trim",
-                        "lowercase",
-                        "uppercase"
-                    ],
+                    "$role": "expression",
                     "title": "Output format",
-                    "description": "Format of output.",
-                    "default": "none"
+                    "description": "Expression to format the output.",
+                    "examples": [
+                        "toUpper(this.value)"
+                    ],
+                    "type": "string"
                 }
             },
             "additionalProperties": false,

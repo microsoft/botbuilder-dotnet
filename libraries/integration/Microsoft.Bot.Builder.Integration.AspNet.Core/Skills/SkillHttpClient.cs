@@ -17,9 +17,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
     /// </summary>
     public class SkillHttpClient : BotFrameworkHttpClient
     {
-        private readonly ISkillConversationIdFactory _conversationIdFactory;
+        private readonly SkillConversationIdFactoryBase _conversationIdFactory;
 
-        public SkillHttpClient(HttpClient httpClient, ICredentialProvider credentialProvider, ISkillConversationIdFactory conversationIdFactory, IChannelProvider channelProvider = null, ILogger logger = null)
+        public SkillHttpClient(HttpClient httpClient, ICredentialProvider credentialProvider, SkillConversationIdFactoryBase conversationIdFactory, IChannelProvider channelProvider = null, ILogger logger = null)
             : base(httpClient, credentialProvider, channelProvider, logger)
         {
             _conversationIdFactory = conversationIdFactory;

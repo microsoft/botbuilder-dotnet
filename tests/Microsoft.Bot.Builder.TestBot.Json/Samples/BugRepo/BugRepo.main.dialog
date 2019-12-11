@@ -41,7 +41,8 @@
             "actions": [
                 {
                     "$kind": "Microsoft.BeginDialog",
-                    "dialog": "AskForName"
+                    "dialog": "AskForName",
+                    "resultProperty": "$name"
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
@@ -49,7 +50,8 @@
                 },
                 {
                     "$kind": "Microsoft.BeginDialog",
-                    "dialog": "AskForName"
+                    "dialog": "AskForName",
+                    "resultProperty": "$name"
                 },
                 {
                     "$kind": "Microsoft.SendActivity",

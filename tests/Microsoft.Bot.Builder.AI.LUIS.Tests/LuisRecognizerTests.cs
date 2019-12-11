@@ -13,6 +13,7 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
+#pragma warning disable CS0612 // Type or member is obsolete
     public class LuisRecognizerTests
     {
         private readonly LuisApplication _luisApp;
@@ -50,7 +51,12 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Staging = staging,
             };
 
-            var sut = new LuisRecognizer(_luisApp, expectedOptions, clientHandler: _mockHttpClientHandler);
+            var opts = new LuisRecognizerOptionsV2(_luisApp)
+            {
+                PredictionOptions = expectedOptions,
+            };
+
+            var sut = new LuisRecognizer(opts, clientHandler: _mockHttpClientHandler);
 
             // Act
             await sut.RecognizeAsync(BuildTurnContextForUtterance("hi"), CancellationToken.None);
@@ -92,6 +98,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Staging = staging,
             };
 
+#pragma warning disable CS0618 // Type or member is obsolete
+
             // Create combined options for assertion taking the test case value if not null or the constructor value if not null.
             var expectedOptions = new LuisPredictionOptions()
             {
@@ -104,13 +112,99 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 LogPersonalInformation = constructorOptions.LogPersonalInformation,
             };
 
-            var sut = new LuisRecognizer(_luisApp, constructorOptions, clientHandler: _mockHttpClientHandler);
+            var opts = new LuisRecognizerOptionsV2(_luisApp)
+            {
+                PredictionOptions = constructorOptions,
+                TelemetryClient = constructorOptions.TelemetryClient,
+            };
+
+            // var sut = new LuisRecognizer(_luisApp, constructorOptions, clientHandler: _mockHttpClientHandler);
+            var sut = new LuisRecognizer(opts, clientHandler: _mockHttpClientHandler);
 
             // Act/Assert RecognizeAsync override
             await sut.RecognizeAsync(BuildTurnContextForUtterance("hi"), overridenOptions, CancellationToken.None);
             AssertLuisRequest(_mockHttpClientHandler.RequestMessage, expectedOptions);
 
             // these values can't be overriden and should stay unchanged.
+            Console.WriteLine(constructorOptions.TelemetryClient == sut.TelemetryClient);
+            Assert.Equal(constructorOptions.TelemetryClient, sut.TelemetryClient);
+            Assert.Equal(constructorOptions.LogPersonalInformation, sut.LogPersonalInformation);
+
+            // Act/Assert RecognizeAsync<T> override
+            await sut.RecognizeAsync<Contoso_App>(BuildTurnContextForUtterance("hi"), overridenOptions, CancellationToken.None);
+            AssertLuisRequest(_mockHttpClientHandler.RequestMessage, expectedOptions);
+
+            // these values can't be overriden and should stay unchanged.
+            Assert.Equal(constructorOptions.TelemetryClient, sut.TelemetryClient);
+            Assert.Equal(constructorOptions.LogPersonalInformation, sut.LogPersonalInformation);
+#pragma warning restore CS0618 // Type or member is obsolete
+        }
+
+        [Theory]
+        [InlineData(false, null, null, null, null, null)]
+        [InlineData(null, 55, null, null, null, null)]
+        [InlineData(null, null, false, null, null, null)]
+        [InlineData(null, null, null, "Override-EC0A-472D-95B7-A7132D159E03", null, null)]
+        [InlineData(null, null, null, null, true, null)]
+        [InlineData(null, null, null, null, null, false)]
+        [InlineData(null, null, null, null, null, null)]
+        public async Task ShouldOverrideRecognizerOptionsIfProvided(bool? includeAllIntents, double? timezoneOffset, bool? spellCheck, string bingSpellCheckSubscriptionKey, bool? log, bool? staging)
+        {
+            // Arrange
+            // Initialize options with non default values so we can assert they have been overriden.
+            var constructorOptions = new LuisPredictionOptions()
+            {
+                IncludeAllIntents = true,
+                TimezoneOffset = 42,
+                SpellCheck = true,
+                BingSpellCheckSubscriptionKey = "Fake2806-EC0A-472D-95B7-A7132D159E03",
+                Log = false,
+                Staging = true,
+            };
+
+            // Create overriden options for call
+            var overridenOptions = new LuisRecognizerOptionsV2(_luisApp)
+            {
+                PredictionOptions = new LuisPredictionOptions()
+                {
+                    IncludeAllIntents = includeAllIntents,
+                    TimezoneOffset = timezoneOffset,
+                    SpellCheck = spellCheck,
+                    BingSpellCheckSubscriptionKey = bingSpellCheckSubscriptionKey,
+                    Log = log,
+                    Staging = staging
+                }
+            };
+
+            // Create combined options for assertion taking the test case value if not null or the constructor value if not null.
+            var expectedOptions = new LuisPredictionOptions()
+            {
+                IncludeAllIntents = includeAllIntents,
+                TimezoneOffset = timezoneOffset,
+                SpellCheck = spellCheck,
+                BingSpellCheckSubscriptionKey = bingSpellCheckSubscriptionKey,
+                Log = log ?? true,
+                Staging = staging,
+            };
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            var opts = new LuisRecognizerOptionsV2(_luisApp)
+            {
+                PredictionOptions = constructorOptions,
+                TelemetryClient = constructorOptions.TelemetryClient,
+            };
+
+            // var sut = new LuisRecognizer(_luisApp, constructorOptions, clientHandler: _mockHttpClientHandler);
+            var sut = new LuisRecognizer(opts, clientHandler: _mockHttpClientHandler);
+
+            // Act/Assert RecognizeAsync override
+            await sut.RecognizeAsync(BuildTurnContextForUtterance("hi"), overridenOptions, CancellationToken.None);
+            AssertLuisRequest(_mockHttpClientHandler.RequestMessage, expectedOptions);
+
+#pragma warning disable CS0618 // Type or member is obsolete
+
+            // these values can't be overriden and should stay unchanged.
+            Console.WriteLine(constructorOptions.TelemetryClient == sut.TelemetryClient);
             Assert.Equal(constructorOptions.TelemetryClient, sut.TelemetryClient);
             Assert.Equal(constructorOptions.LogPersonalInformation, sut.LogPersonalInformation);
 

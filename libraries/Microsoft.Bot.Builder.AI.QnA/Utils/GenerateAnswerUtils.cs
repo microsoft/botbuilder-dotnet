@@ -143,6 +143,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
             {
                 options.MetadataBoost = new Metadata[] { };
             }
+
+            if (options.RankerType == null)
+            {
+                options.RankerType = RankerTypes.DefaultRankerType;
+            }
         }
 
         /// <summary>
@@ -178,6 +183,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
                 hydratedOptions.Context = queryOptions.Context;
                 hydratedOptions.QnAId = queryOptions.QnAId;
+                hydratedOptions.IsTest = queryOptions.IsTest;
+
+                hydratedOptions.RankerType = queryOptions.RankerType != null ? queryOptions.RankerType : RankerTypes.DefaultRankerType;
             }
 
             return hydratedOptions;
@@ -196,6 +204,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     scoreThreshold = options.ScoreThreshold,
                     context = options.Context,
                     qnaId = options.QnAId,
+                    isTest = options.IsTest,
+                    rankerType = options.RankerType
                 }, Formatting.None);
 
             var httpRequestHelper = new HttpRequestUtils(httpClient);
@@ -219,6 +229,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 MetadataBoost = options.MetadataBoost,
                 Context = options.Context,
                 QnAId = options.QnAId,
+                IsTest = options.IsTest,
+                RankerType = options.RankerType
             };
             var traceActivity = Activity.CreateTraceActivity(QnAMaker.QnAMakerName, QnAMaker.QnAMakerTraceType, traceInfo, QnAMaker.QnAMakerTraceLabel);
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);
