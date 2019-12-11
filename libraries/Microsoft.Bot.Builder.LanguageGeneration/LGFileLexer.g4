@@ -205,7 +205,7 @@ TEXT_IN_STRUCTURE_NAME
 mode STRUCTURE_BODY_MODE;
 
 STRUCTURED_COMMENTS
-  : ('>'|'$') ~[\r\n]* '\r'?'\n' -> skip
+  : ('>'|'$') ~[\r\n]* '\r'?'\n' { !inStructuredValue }? -> skip
   ;
 
 WS_IN_STRUCTURE_BODY
@@ -217,7 +217,7 @@ STRUCTURED_NEWLINE
   ;
 
 STRUCTURED_BODY_END
-  : ']' { inTemplate = false; beginOfTemplateBody = false;} -> popMode, popMode
+  : ']' {!inStructuredValue}? { inTemplate = false; beginOfTemplateBody = false;} -> popMode, popMode
   ;
 
 STRUCTURE_IDENTIFIER
@@ -229,11 +229,11 @@ STRUCTURE_EQUALS
   ;
 
 STRUCTURE_OR_MARK
-  : '|' { ignoreWS = true; }
+  : '|' {inStructuredValue}? { ignoreWS = true; }
   ;
 
 ESCAPE_CHARACTER_IN_STRUCTURE_BODY
-  : ESCAPE_CHARACTER_FRAGMENT { ignoreWS = false; }
+  : ESCAPE_CHARACTER_FRAGMENT {inStructuredValue}? { ignoreWS = false; }
   ;
 
 EXPRESSION_IN_STRUCTURE_BODY
@@ -241,6 +241,6 @@ EXPRESSION_IN_STRUCTURE_BODY
   ;
 
 TEXT_IN_STRUCTURE_BODY
-  : ~[\r\n]+? { ignoreWS = false; }
+  : ~[\r\n]+? {inStructuredValue}? { ignoreWS = false; }
   ;
 
