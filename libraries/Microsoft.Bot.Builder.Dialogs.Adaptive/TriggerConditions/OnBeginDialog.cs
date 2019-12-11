@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnBeginDialog : OnDialogEvent
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.OnBeginDialog";
+        public new const string DeclarativeType = "Microsoft.OnBeginDialog";
 
         [JsonConstructor]
         public OnBeginDialog(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

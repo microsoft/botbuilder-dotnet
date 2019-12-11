@@ -38,18 +38,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         {
             Formatting = Formatting.Indented,
             NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore,
-            ContractResolver = new IgnoreEmptyEnumerablesResolver
-            {
-                NamingStrategy = new CamelCaseNamingStrategy()
-            }
+            DefaultValueHandling = DefaultValueHandling.Ignore
         };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestScript"/> class.
         /// </summary>
-        /// <param name="callback">The bot turn processing logic to test.</param>
-        /// <param name="adapter">The optional test adapter to use.</param>
         /// <remarks>If adapter is not provided a standard test adapter with all services will be registered.</remarks>
         public TestScript()
         {
@@ -114,7 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 resourceExplorer = new ResourceExplorer()
                     .AddFolder(GetProjectPath());
             }
-            
+
             if (adapter == null)
             {
                 TypeFactory.Configuration = configuration ?? new ConfigurationBuilder().Build();
@@ -134,14 +128,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             adapter.EnableTrace = this.EnableTrace;
             adapter.Locale = this.Locale;
 
-            DialogManager dm = new DialogManager(this.Dialog);
-            foreach (var testAction in this.Script)
+            if (callback != null)
             {
-                if (callback != null)
+                foreach (var testAction in this.Script)
                 {
                     await testAction.ExecuteAsync(adapter, callback).ConfigureAwait(false);
                 }
-                else
+            }
+            else
+            {
+                DialogManager dm = new DialogManager(this.Dialog);
+                foreach (var testAction in this.Script)
                 {
                     await testAction.ExecuteAsync(adapter, dm.OnTurnAsync).ConfigureAwait(false);
                 }
@@ -275,7 +272,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         }
 
         /// <summary>
-        /// Shortcut for calling <see cref="Send(string)"/> followed by <see cref="AssertReply(string, string, uint)"/>.
+        /// Shortcut for calling <see cref="Send(string, string, int)"/> followed by <see cref="AssertReply(string, string, uint, string[], string, int)"/>.
         /// </summary>
         /// <param name="userSays">The text of the message to send.</param>
         /// <param name="expected">The expected text of a message from the bot.</param>

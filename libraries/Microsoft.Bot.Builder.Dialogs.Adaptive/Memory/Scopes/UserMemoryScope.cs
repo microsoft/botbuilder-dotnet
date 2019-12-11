@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// <summary>
     /// UserMemoryScope represents User scoped memory.
     /// </summary>
-    /// <remarks>This relies on the UserState object being accessible from turnContext.TurnState.Get&lt;UserState&gt().</remarks>
+    /// <remarks>This relies on the UserState object being accessible from turnContext.TurnState.Get&lt;UserState&gt;().</remarks>
     public class UserMemoryScope : BotStateMemoryScope<UserState>
     {
         /// <summary>

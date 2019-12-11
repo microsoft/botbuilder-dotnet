@@ -76,6 +76,11 @@
             "$ref": "#/definitions/Microsoft.DebugBreak"
         },
         {
+            "title": "Microsoft.DeleteProperties",
+            "description": "Delete multiple properties and any value it holds.",
+            "$ref": "#/definitions/Microsoft.DeleteProperties"
+        },
+        {
             "title": "Microsoft.DeleteProperty",
             "description": "Delete a property and any value it holds.",
             "$ref": "#/definitions/Microsoft.DeleteProperty"
@@ -361,6 +366,11 @@
             "$ref": "#/definitions/Microsoft.SendActivity"
         },
         {
+            "title": "Microsoft.SetProperties",
+            "description": "Set one or more property values.",
+            "$ref": "#/definitions/Microsoft.SetProperties"
+        },
+        {
             "title": "Microsoft.SetProperty",
             "description": "Set property to a value.",
             "$ref": "#/definitions/Microsoft.SetProperty"
@@ -379,6 +389,11 @@
             "title": "Microsoft.TemperatureEntityRecognizer",
             "description": "Recognizer which recognizes temperatures.",
             "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
+        },
+        {
+            "title": "Microsoft.Test.AssertCondition",
+            "description": "Assert condition is true.",
+            "$ref": "#/definitions/Microsoft.Test.AssertCondition"
         },
         {
             "title": "Microsoft.Test.AssertReply",
@@ -880,6 +895,12 @@
                         "type": "string",
                         "title": "Options"
                     }
+                },
+                "includeActivity": {
+                    "type": "boolean",
+                    "title": "Include Activity",
+                    "description": "When set to true, dialog that is called can process the current activity.",
+                    "default": false
                 },
                 "resultProperty": {
                     "$role": "expression",
@@ -1481,6 +1502,15 @@
                     ],
                     "type": "string"
                 },
+                "outputFormat": {
+                    "$role": "expression",
+                    "title": "Output format",
+                    "description": "Expression to format the confirm output.",
+                    "examples": [
+                        "concat('confirmation:', this.value)"
+                    ],
+                    "type": "string"
+                },
                 "defaultLocale": {
                     "type": "string",
                     "title": "Default locale",
@@ -1880,6 +1910,15 @@
                     ],
                     "type": "string"
                 },
+                "outputFormat": {
+                    "$role": "expression",
+                    "title": "Output format",
+                    "description": "Expression to format the datetime output.",
+                    "examples": [
+                        "this.value[0].Value"
+                    ],
+                    "type": "string"
+                },
                 "defaultLocale": {
                     "type": "string",
                     "title": "Default locale",
@@ -1955,6 +1994,70 @@
                 {
                     "title": "Type",
                     "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.DeleteProperties": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Delete Properties",
+            "description": "Delete multiple properties and any value it holds.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.DeleteProperties"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "properties": {
+                    "type": "array",
+                    "title": "Properties",
+                    "description": "Properties to delete.",
+                    "items": {
+                        "$role": "expression",
+                        "title": "Property",
+                        "description": "Property to delete.",
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "properties",
                         "$kind"
                     ]
                 }
@@ -3072,6 +3175,11 @@
                     "$ref": "#/definitions/Microsoft.DebugBreak"
                 },
                 {
+                    "title": "Microsoft.DeleteProperties",
+                    "description": "Delete multiple properties and any value it holds.",
+                    "$ref": "#/definitions/Microsoft.DeleteProperties"
+                },
+                {
                     "title": "Microsoft.DeleteProperty",
                     "description": "Delete a property and any value it holds.",
                     "$ref": "#/definitions/Microsoft.DeleteProperty"
@@ -3162,6 +3270,11 @@
                     "$ref": "#/definitions/Microsoft.SendActivity"
                 },
                 {
+                    "title": "Microsoft.SetProperties",
+                    "description": "Set one or more property values.",
+                    "$ref": "#/definitions/Microsoft.SetProperties"
+                },
+                {
                     "title": "Microsoft.SetProperty",
                     "description": "Set property to a value.",
                     "$ref": "#/definitions/Microsoft.SetProperty"
@@ -3170,6 +3283,11 @@
                     "title": "Microsoft.SwitchCondition",
                     "description": "Execute different actions based on the value of a property.",
                     "$ref": "#/definitions/Microsoft.SwitchCondition"
+                },
+                {
+                    "title": "Microsoft.Test.AssertCondition",
+                    "description": "Assert condition is true.",
+                    "$ref": "#/definitions/Microsoft.Test.AssertCondition"
                 },
                 {
                     "title": "Microsoft.TextInput",
@@ -4137,14 +4255,13 @@
                     "type": "string"
                 },
                 "outputFormat": {
-                    "type": "string",
-                    "enum": [
-                        "float",
-                        "integer"
-                    ],
+                    "$role": "expression",
                     "title": "Output format",
-                    "description": "Number output format.",
-                    "default": "float"
+                    "description": "Expression to format the number output.",
+                    "examples": [
+                        "int(this.value)"
+                    ],
+                    "type": "string"
                 },
                 "defaultLocale": {
                     "type": "string",
@@ -5995,11 +6112,29 @@
                 },
                 "strictFilters": {
                     "type": "array",
-                    "title": "Strict Filter Property",
-                    "description": "Memory property that holds strict filters to use when calling the QnA Maker KB.",
+                    "title": "Strict Filters",
+                    "description": "Metadata filters to use when calling the QnA Maker KB.",
                     "items": {
-                        "type": "object"
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "title": "Name",
+                                "maximum": 100
+                            },
+                            "value": {
+                                "type": "string",
+                                "title": "Value",
+                                "maximum": 100
+                            }
+                        }
                     }
+                },
+                "top": {
+                    "type": "number",
+                    "title": "Top",
+                    "description": "The number of answers you want to retrieve.",
+                    "default": 3
                 }
             },
             "patternProperties": {
@@ -6255,6 +6390,21 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "options": {
+                    "type": "object",
+                    "title": "Options",
+                    "description": "One or more options that are passed to the dialog that is called.",
+                    "additionalProperties": {
+                        "type": "string",
+                        "title": "Options"
+                    }
+                },
+                "includeActivity": {
+                    "type": "boolean",
+                    "title": "Include Activity",
+                    "description": "When set to true, dialog that is called can process the current activity.",
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -6311,7 +6461,10 @@
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
                     "title": "Dialog name",
-                    "description": "Current dialog will be replaced by this dialog.",
+                    "description": "Name of the dialog to call.",
+                    "examples": [
+                        "AddToDoDialog"
+                    ],
                     "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "options": {
@@ -6322,6 +6475,12 @@
                         "type": "string",
                         "title": "Options"
                     }
+                },
+                "includeActivity": {
+                    "type": "boolean",
+                    "title": "Include Activity",
+                    "description": "When set to true, dialog that is called can process the current activity.",
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -6398,6 +6557,89 @@
                 {
                     "title": "Type",
                     "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.SetProperties": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Set property",
+            "description": "Set one or more property values.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.SetProperties"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "assignments": {
+                    "type": "array",
+                    "title": "Assignments",
+                    "description": "Property value assignments to set.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "property": {
+                                "$role": "expression",
+                                "title": "Property",
+                                "description": "Property (named location to store information).",
+                                "examples": [
+                                    "user.age"
+                                ],
+                                "type": "string"
+                            },
+                            "value": {
+                                "$role": "expression",
+                                "title": "Value",
+                                "description": "New value or expression.",
+                                "examples": [
+                                    "'milk'",
+                                    "dialog.favColor",
+                                    "dialog.favColor == 'red'"
+                                ],
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "assignments",
                         "$kind"
                     ]
                 }
@@ -6668,6 +6910,72 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.AssertCondition": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Assert Condition",
+            "description": "Assert condition is true.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.AssertCondition"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Expression to evalute",
+                    "examples": [
+                        "user.age > 10"
+                    ],
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "title": "Description",
+                    "description": "Description of what the condition is testing"
                 }
             },
             "additionalProperties": false,
@@ -7523,16 +7831,13 @@
                     "type": "string"
                 },
                 "outputFormat": {
-                    "type": "string",
-                    "enum": [
-                        "none",
-                        "trim",
-                        "lowercase",
-                        "uppercase"
-                    ],
+                    "$role": "expression",
                     "title": "Output format",
-                    "description": "Format of output.",
-                    "default": "none"
+                    "description": "Expression to format the output.",
+                    "examples": [
+                        "toUpper(this.value)"
+                    ],
+                    "type": "string"
                 }
             },
             "additionalProperties": false,

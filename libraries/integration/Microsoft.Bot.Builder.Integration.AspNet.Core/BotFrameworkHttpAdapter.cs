@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest.TransientFaultHandling;
@@ -40,12 +41,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <exception cref="ArgumentNullException">
         /// <paramref name="credentialProvider"/> is <c>null</c>.</exception>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
-        /// components in the constructor. Use the <see cref="Use(IMiddleware)"/> method to
+        /// components in the constructor. Use the IMiddleware method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
         public BotFrameworkHttpAdapter(
             ICredentialProvider credentialProvider,
-            AuthenticationConfiguration authConfig = null,
+            AuthenticationConfiguration authConfig,
             IChannelProvider channelProvider = null,
             RetryPolicy connectorClientRetryPolicy = null,
             HttpClient customHttpClient = null,
@@ -115,7 +116,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             else
             {
                 // Deserialize the incoming Activity
-                var activity = await HttpHelper.ReadRequestAsync(httpRequest).ConfigureAwait(false);
+                var activity = await HttpHelper.ReadRequestAsync<Activity>(httpRequest).ConfigureAwait(false);
 
                 if (string.IsNullOrEmpty(activity?.Type))
                 {

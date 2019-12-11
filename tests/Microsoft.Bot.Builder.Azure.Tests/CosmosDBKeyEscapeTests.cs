@@ -104,5 +104,41 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
             Assert.AreNotEqual(escaped1, escaped2);
         }
+
+        [TestMethod]
+        public void Long_Key_Should_Not_Be_Truncated_With_False_CompatibilityMode()
+        {
+            var tooLongKey = new string('a', CosmosDbKeyEscape.MaxKeyLength + 1);
+
+            var sanitizedKey = CosmosDbKeyEscape.EscapeKey(tooLongKey, string.Empty, false);
+            Assert.AreEqual(CosmosDbKeyEscape.MaxKeyLength + 1, sanitizedKey.Length, "Key should not have been truncated");
+
+            // The resulting key should be identical
+            Assert.AreEqual(tooLongKey, sanitizedKey);
+        }
+
+        [TestMethod]
+        public void Long_Key_With_Illegal_Characters_Should_Not_Be_Truncated_With_False_CompatibilityMode()
+        {
+            var longKeyWithIllegalCharacters = "?test?" + new string('A', 1000);
+            var sanitizedKey = CosmosDbKeyEscape.EscapeKey(longKeyWithIllegalCharacters, string.Empty, false);
+
+            // Verify the key was NOT truncated
+            Assert.AreEqual(1010, sanitizedKey.Length, "Key should not have been truncated");
+
+            // Make sure the escaping still happened
+            Assert.IsTrue(sanitizedKey.StartsWith("*3ftest*3f"));
+        }
+
+        [TestMethod]
+        public void KeySuffix_Is_Added_To_End_of_Key()
+        {
+            var suffix = "test suffix";
+            var key = "this is a test";
+            var sanitizedKey = CosmosDbKeyEscape.EscapeKey(key, suffix, false);
+
+            // Verify the suffix was added to the end of the key
+            Assert.AreEqual(sanitizedKey, $"{key}{suffix}", "Suffix was not added to end of key");
+        }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
@@ -58,6 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<CancelAllDialogs>(CancelAllDialogs.DeclarativeType);
             yield return new TypeRegistration<DebugBreak>(DebugBreak.DeclarativeType);
             yield return new TypeRegistration<DeleteProperty>(DeleteProperty.DeclarativeType);
+            yield return new TypeRegistration<DeleteProperties>(DeleteProperties.DeclarativeType);
             yield return new TypeRegistration<EditArray>(EditArray.DeclarativeType);
             yield return new TypeRegistration<EditActions>(EditActions.DeclarativeType);
             yield return new TypeRegistration<EmitEvent>(EmitEvent.DeclarativeType);
@@ -73,6 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<ReplaceDialog>(ReplaceDialog.DeclarativeType);
             yield return new TypeRegistration<SendActivity>(SendActivity.DeclarativeType);
             yield return new TypeRegistration<SetProperty>(SetProperty.DeclarativeType);
+            yield return new TypeRegistration<SetProperties>(SetProperties.DeclarativeType);
             yield return new TypeRegistration<SwitchCondition>(SwitchCondition.DeclarativeType);
             yield return new TypeRegistration<TraceActivity>(TraceActivity.DeclarativeType);
 
@@ -125,9 +128,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             // Dialogs
             yield return new TypeRegistration<AdaptiveDialog>(AdaptiveDialog.DeclarativeType);
-            yield return new TypeRegistration<QnAMakerDialog>(QnAMakerDialog.DeclarativeType);
 
-            // Testing
+            // test actions
+            yield return new TypeRegistration<AssertCondition>(AssertCondition.DeclarativeType);
             yield return new TypeRegistration<TestScript>(TestScript.DeclarativeType);
             yield return new TypeRegistration<UserSays>(UserSays.DeclarativeType);
             yield return new TypeRegistration<UserTyping>(UserTyping.DeclarativeType);

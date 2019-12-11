@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// WebexWebhookName: A name for the webhook subscription.
         /// </remarks>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        public WebexAdapter(IConfiguration configuration, ILogger logger)
+        public WebexAdapter(IConfiguration configuration, ILogger logger = null)
             : this(new WebexClientWrapper(new WebexAdapterOptions(configuration["WebexAccessToken"], new Uri(configuration["WebexPublicAddress"]), configuration["WebexSecret"], configuration["WebexWebhookName"])), logger)
         {
         }

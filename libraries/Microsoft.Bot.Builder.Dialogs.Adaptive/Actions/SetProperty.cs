@@ -58,10 +58,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
             var (value, valueError) = this.value.TryEvaluate(dc.GetState());
-            if (valueError == null)
+            if (valueError != null)
             {
-                dc.GetState().SetValue(this.Property, value);
+                throw new Exception($"Expression evaluation resulted in an error. Expression: {this.Value.ToString()}. Error: {valueError}");
             }
+
+            dc.GetState().SetValue(this.Property, value);
 
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }

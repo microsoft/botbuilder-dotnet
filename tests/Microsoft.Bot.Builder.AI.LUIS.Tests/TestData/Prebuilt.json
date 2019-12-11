@@ -304,7 +304,10 @@
             }
           ],
           "geographyV2": [
-            "seattle"
+            {
+              "type": "city",
+              "value": "seattle"
+            }
           ]
         },
         "intents": {

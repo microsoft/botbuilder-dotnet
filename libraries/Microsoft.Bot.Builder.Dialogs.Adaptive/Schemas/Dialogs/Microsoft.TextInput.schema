@@ -11,19 +11,12 @@
         {
             "properties": {
                 "outputFormat": {
-                    "type": "string",
-                    "enum": [
-                        "none",
-                        "trim",
-                        "lowercase",
-                        "uppercase"
-                    ],
+                    "$role": "expression",
                     "title": "Output format",
-                    "description": "Format of output.",
-                    "default": "none"
-                },
-                "allowInterruptions": {
-                    "default": "true"
+                    "description": "Expression to format the output.",
+                    "examples": [
+                        "toUpper(this.value)"
+                    ]
                 }
             }
         }

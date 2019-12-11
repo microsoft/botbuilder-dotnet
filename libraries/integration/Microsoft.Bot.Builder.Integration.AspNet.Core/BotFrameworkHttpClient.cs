@@ -19,26 +19,30 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
     public class BotFrameworkHttpClient
     {
-        // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)
-        // AppCredentials are cached using appId + scope (this last parameter is only used if the app credentials are used to call a skill)
-        private static readonly ConcurrentDictionary<string, AppCredentials> _appCredentialMapCache = new ConcurrentDictionary<string, AppCredentials>();
-        private readonly IChannelProvider _channelProvider;
-        private readonly ICredentialProvider _credentialProvider;
-        private readonly HttpClient _httpClient;
-        private readonly ILogger _logger;
-
         public BotFrameworkHttpClient(
             HttpClient httpClient,
             ICredentialProvider credentialProvider,
             IChannelProvider channelProvider = null,
             ILogger logger = null)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
-            _channelProvider = channelProvider;
-            _logger = logger ?? NullLogger.Instance;
-            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
+            HttpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            CredentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
+            ChannelProvider = channelProvider;
+            Logger = logger ?? NullLogger.Instance;
+            ConnectorClient.AddDefaultRequestHeaders(HttpClient);
         }
+
+        // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)
+        // AppCredentials are cached using appId + scope (this last parameter is only used if the app credentials are used to call a skill)
+        protected static ConcurrentDictionary<string, AppCredentials> AppCredentialMapCache { get; } = new ConcurrentDictionary<string, AppCredentials>();
+
+        protected IChannelProvider ChannelProvider { get; }
+
+        protected ICredentialProvider CredentialProvider { get; }
+
+        protected HttpClient HttpClient { get; }
+
+        protected ILogger Logger { get; }
 
         /// <summary>
         /// Forwards an activity to a skill (bot).
@@ -52,7 +56,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="activity">activity to forward.</param>
         /// <param name="cancellationToken">cancellation Token.</param>
         /// <returns>Async task with optional invokeResponse.</returns>
-        public async Task<InvokeResponse> PostActivityAsync(string fromBotId, string toBotId, Uri toUrl, Uri serviceUrl, string conversationId, Activity activity, CancellationToken cancellationToken)
+        public async Task<InvokeResponse> PostActivityAsync(string fromBotId, string toBotId, Uri toUrl, Uri serviceUrl, string conversationId, Activity activity, CancellationToken cancellationToken = default)
         {
             var appCredentials = await GetAppCredentialsAsync(fromBotId, toBotId).ConfigureAwait(false);
             if (appCredentials == null)
@@ -61,16 +65,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
 
             // Get token for the skill call
-            var token = await appCredentials.GetTokenAsync().ConfigureAwait(false);
+            var token = appCredentials == MicrosoftAppCredentials.Empty ? null : await appCredentials.GetTokenAsync().ConfigureAwait(false);
 
             // Capture current activity settings before changing them.
-            // TODO: DO we need to set the activity ID? (events that are created manually don't have it).
             var originalConversationId = activity.Conversation.Id;
             var originalServiceUrl = activity.ServiceUrl;
+            var originalCallerId = activity.CallerId;
             try
             {
                 activity.Conversation.Id = conversationId;
                 activity.ServiceUrl = serviceUrl.ToString();
+                activity.CallerId = fromBotId;
 
                 using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
                 {
@@ -78,16 +83,20 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     {
                         httpRequestMessage.Method = HttpMethod.Post;
                         httpRequestMessage.RequestUri = toUrl;
-                        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        if (token != null)
+                        {
+                            httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        }
+
                         httpRequestMessage.Content = jsonContent;
 
-                        var response = await _httpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
+                        var response = await HttpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
 
                         var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                         return new InvokeResponse
                         {
                             Status = (int)response.StatusCode,
-                            Body = content.Length > 0 ? JsonConvert.DeserializeObject(content) : null
+                            Body = content.Length > 0 ? GetBodyContent(content) : null
                         };
                     }
                 }
@@ -97,6 +106,32 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 // Restore activity properties.
                 activity.Conversation.Id = originalConversationId;
                 activity.ServiceUrl = originalServiceUrl;
+                activity.CallerId = originalCallerId;
+            }
+        }
+
+        /// <summary>
+        /// Logic to build an <see cref="AppCredentials"/> object to be used to acquire tokens
+        /// for this HttpClient.
+        /// </summary>
+        /// <param name="appId">The application id.</param>
+        /// <param name="oAuthScope">The optional OAuth scope.</param>
+        /// <returns>The app credentials to be used to acquire tokens.</returns>
+        protected virtual async Task<AppCredentials> BuildCredentialsAsync(string appId, string oAuthScope = null)
+        {
+            var appPassword = await CredentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
+            return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
+        }
+
+        private static object GetBodyContent(string content)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject(content);
+            }
+            catch (JsonException)
+            {
+                return content;
             }
         }
 
@@ -114,18 +149,18 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 return MicrosoftAppCredentials.Empty;
             }
 
+            // If the credentials are in the cache, retrieve them from there
             var cacheKey = $"{appId}{oAuthScope}";
-            if (_appCredentialMapCache.TryGetValue(cacheKey, out var appCredentials))
+            if (AppCredentialMapCache.TryGetValue(cacheKey, out var appCredentials))
             {
                 return appCredentials;
             }
 
-            // NOTE: we can't do async operations inside of a AddOrUpdate, so we split access pattern
-            var appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
-            appCredentials = _channelProvider != null && _channelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient, _logger) : new MicrosoftAppCredentials(appId, appPassword, _httpClient, _logger, oAuthScope);
+            // Credentials not found in cache, build them
+            appCredentials = await BuildCredentialsAsync(appId, oAuthScope).ConfigureAwait(false);
 
             // Cache the credentials for later use
-            _appCredentialMapCache[cacheKey] = appCredentials;
+            AppCredentialMapCache[cacheKey] = appCredentials;
             return appCredentials;
         }
     }

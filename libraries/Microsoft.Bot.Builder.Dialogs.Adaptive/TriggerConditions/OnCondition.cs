@@ -54,6 +54,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         [JsonProperty("actions")]
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
+        [JsonIgnore]
+        public virtual SourceRange Source => DebugSupport.SourceMap.TryGetValue(this, out var range) ? range : null;
+
         /// <summary>
         /// Get the expression for this rule by calling GatherConstraints().
         /// </summary>

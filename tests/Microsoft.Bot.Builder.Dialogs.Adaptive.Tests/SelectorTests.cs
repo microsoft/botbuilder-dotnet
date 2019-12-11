@@ -31,5 +31,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             await TestUtils.RunTestScript("SelectorTests_MostSpecificRandomSelector.test.dialog");
         }
+
+        [TestMethod]
+        public async Task SelectorTests_AdaptiveTrueSelector()
+        {
+            // only execute first selection
+            await TestUtils.RunTestScript("SelectorTests_TrueSelector.test.dialog");
+        }
+
+        [TestMethod]
+        public async Task SelectorTests_AdaptiveConditionalSelector()
+        {
+            await TestUtils.RunTestScript("SelectorTests_ConditionalSelector.test.dialog");
+        }
     }
 }

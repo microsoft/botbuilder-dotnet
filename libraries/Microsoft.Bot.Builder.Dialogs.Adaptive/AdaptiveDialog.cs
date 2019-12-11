@@ -136,12 +136,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             SetLocalGenerator(dc.Context);
 
+            // replace initial activeDialog.State with clone of options
+            if (options != null)
+            {
+                dc.ActiveDialog.State = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(options));
+            }
+
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
             activeDialogState[AdaptiveKey] = new AdaptiveDialogState();
             var state = activeDialogState[AdaptiveKey] as AdaptiveDialogState;
-
-            // Persist options to dialog state
-            dc.GetState().SetValue(ThisPath.OPTIONS, options);
 
             // Evaluate events and queue up step changes
             var dialogEvent = new DialogEvent
@@ -271,14 +274,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 switch (dialogEvent.Name)
                 {
                     case AdaptiveEvents.BeginDialog:
-                        // Emit leading ActivityReceived event
-                        var activityReceivedEvent = new DialogEvent
+                        if (sequenceContext.GetState().GetBoolValue(TurnPath.ACTIVITYPROCESSED) == false)
                         {
-                            Name = AdaptiveEvents.ActivityReceived,
-                            Value = sequenceContext.Context.Activity,
-                            Bubble = false
-                        };
-                        handled = await ProcessEventAsync(sequenceContext, dialogEvent: activityReceivedEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            // Emit leading ActivityReceived event
+                            var activityReceivedEvent = new DialogEvent()
+                            {
+                                Name = AdaptiveEvents.ActivityReceived,
+                                Value = sequenceContext.Context.Activity,
+                                Bubble = false
+                            };
+
+                            handled = await ProcessEventAsync(sequenceContext, dialogEvent: activityReceivedEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        }
+
                         break;
 
                     case AdaptiveEvents.ActivityReceived:
@@ -345,13 +353,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 switch (dialogEvent.Name)
                 {
                     case AdaptiveEvents.BeginDialog:
-                        var activityReceivedEvent = new DialogEvent
+                        if (sequenceContext.GetState().GetBoolValue(TurnPath.ACTIVITYPROCESSED) == false)
                         {
-                            Name = AdaptiveEvents.ActivityReceived,
-                            Value = sequenceContext.Context.Activity,
-                            Bubble = false
-                        };
-                        handled = await ProcessEventAsync(sequenceContext, dialogEvent: activityReceivedEvent, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            var activityReceivedEvent = new DialogEvent
+                            {
+                                Name = AdaptiveEvents.ActivityReceived,
+                                Value = sequenceContext.Context.Activity,
+                                Bubble = false
+                            };
+
+                            handled = await ProcessEventAsync(sequenceContext, dialogEvent: activityReceivedEvent, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        }
 
                         break;
 

@@ -10,10 +10,14 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.AI.QnA;
+using Microsoft.Bot.Builder.AI.QnA.Dialogs;
+using Microsoft.Bot.Builder.AI.QnA.Tests;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Configuration;
@@ -25,7 +29,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RichardSzalay.MockHttp;
 
-namespace Microsoft.Bot.Builder.AI.QnA.Tests
+namespace Microsoft.Bot.Builder.AI.Tests
 {
     [TestClass]
     public class QnAMakerTests
@@ -40,11 +44,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
                 .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
             mockHttp.When(HttpMethod.Post, GetTrainRequestUrl())
                 .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
@@ -107,10 +111,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_withPrompts.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1}")
-               .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_MultiTurnLevel1.json"));
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"isTest\":false,\"rankerType\":\"Default\"}")
+                .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_MultiTurnLevel1.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
         }
@@ -970,6 +974,64 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
+        public async Task QnaMaker_IsTest_True()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_IsTest_True.json"));
+
+            var qna = GetQnAMaker(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowledgeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
+                });
+
+            var qnaamkerOptions = new QnAMakerOptions
+            {
+                Top = 1,
+                IsTest = true
+            };
+
+            var results = await qna.GetAnswersAsync(GetContext("Q11"), qnaamkerOptions);
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Length, 0, "should get no results");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        public async Task QnaMaker_RankerType_QuestionOnly()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_RankerType_QuestionOnly.json"));
+
+            var qna = GetQnAMaker(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowledgeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
+                });
+
+            var qnamakerOptions = new QnAMakerOptions
+            {
+                Top = 1,
+                RankerType = "QuestionOnly"
+            };
+
+            var results = await qna.GetAnswersAsync(GetContext("Q11"), qnamakerOptions);
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Length, 2, "should get two results");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
         public async Task QnaMaker_Test_Options_Hydration()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -1584,19 +1646,26 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var host = "'https://dummy-hostname.azurewebsites.net/qnamaker'";
             var knowlegeBaseId = "'dummy-id'";
             var endpointKey = "'dummy-key'";
+            var activeLearningCardTitle = "QnAMaker Active Learning";
 
             var outerDialog = new AdaptiveDialog("outer")
             {
                 AutoEndDialog = false,
                 Triggers = new List<OnCondition>()
                 {
-                    new OnUnknownIntent()
+                    new OnBeginDialog()
                     {
                         Actions = new List<Dialog>()
                         {
-                            new QnAMakerDialog(knowledgeBaseId: knowlegeBaseId, hostName: host, endpointKey: endpointKey, httpClient: client)
+                            new QnAMakerDialog2()
                             {
-                                NoAnswer = noAnswerActivity
+                                KnowledgeBaseId = knowlegeBaseId,
+                                HostName = host,
+                                EndpointKey = endpointKey,
+                                HttpClient = client,
+                                NoAnswer = noAnswerActivity,
+                                ActiveLearningCardTitle = activeLearningCardTitle,
+                                CardNoMatchText = "None of the above.",
                             }
                         }
                     }
