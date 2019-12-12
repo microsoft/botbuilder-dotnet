@@ -20,6 +20,7 @@ lexer grammar LGFileLexer;
   bool inMultiline = false; // whether we are in multiline
   bool beginOfTemplateLine = false;// weather we are at the begining of template string
   bool inStructuredValue = false; // weather we are in the structure value
+  bool beginOfStructureProperty = false; // weather we are at the begining of structure property
 }
 
 // fragments
@@ -205,7 +206,7 @@ TEXT_IN_STRUCTURE_NAME
 mode STRUCTURE_BODY_MODE;
 
 STRUCTURED_COMMENTS
-  : ('>'|'$') ~[\r\n]* '\r'?'\n' { !inStructuredValue }? -> skip
+  : ('>'|'$') ~[\r\n]* '\r'?'\n' { !inStructuredValue && beginOfStructureProperty}? -> skip
   ;
 
 WS_IN_STRUCTURE_BODY
@@ -213,7 +214,7 @@ WS_IN_STRUCTURE_BODY
   ;
 
 STRUCTURED_NEWLINE
-  : '\r'? '\n' { ignoreWS = true; inStructuredValue = false;}
+  : '\r'? '\n' { ignoreWS = true; inStructuredValue = false; beginOfStructureProperty = true;}
   ;
 
 STRUCTURED_BODY_END
@@ -221,11 +222,11 @@ STRUCTURED_BODY_END
   ;
 
 STRUCTURE_IDENTIFIER
-  : (LETTER | NUMBER | '_') (LETTER | NUMBER | '-' | '_' | '.')* { !inStructuredValue }?
+  : (LETTER | NUMBER | '_') (LETTER | NUMBER | '-' | '_' | '.')* { !inStructuredValue && beginOfStructureProperty}? {beginOfStructureProperty = false;}
   ;
 
 STRUCTURE_EQUALS
-  : '=' {inStructuredValue = true;}
+  : '=' {inStructuredValue = true;} 
   ;
 
 STRUCTURE_OR_MARK
@@ -241,6 +242,6 @@ EXPRESSION_IN_STRUCTURE_BODY
   ;
 
 TEXT_IN_STRUCTURE_BODY
-  : ~[\r\n]+?  { ignoreWS = false; }
+  : ~[\r\n]+?  { ignoreWS = false; beginOfStructureProperty = false;}
   ;
 
