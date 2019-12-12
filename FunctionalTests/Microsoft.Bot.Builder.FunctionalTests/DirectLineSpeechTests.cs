@@ -20,12 +20,8 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 {
     [TestClass]
 
-    // When the active Ignore tag is removed un-comment this one so these tests remain gated behind the FUNCTIONALTESTS flag.
-    //#if !FUNCTIONALTESTS
-    //    [Ignore("These integration tests run only when FUNCTIONALTESTS is defined")]
-    //#endif
+    [TestCategory("FunctionalTests")]
     [Ignore("DirectLine Speech tests require updates to the REST API and CLI to be able to properly provision a bot.")]
-
     public class DirectLineSpeechTests
     {
         private static readonly string SoundFileMessage = "Tell me a joke";
