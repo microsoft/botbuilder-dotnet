@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class OAuthPromptSettings
     {
         /// <summary>
-        /// Gets or sets the AppCredentials instance for OAuthPrompt.
+        /// Gets or sets the OAuthAppCredentials for OAuthPrompt.
         /// </summary>
         /// <value>The AppCredentials for OAuthPrompt.</value>
         public AppCredentials OAuthAppCredentials { get; set; }
