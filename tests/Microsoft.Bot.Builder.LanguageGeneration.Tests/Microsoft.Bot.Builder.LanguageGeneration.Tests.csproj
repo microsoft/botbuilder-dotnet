@@ -26,6 +26,7 @@
     <None Remove="Examples\ExceptionCatch.lg" />
     <None Remove="Examples\import.lg" />
     <None Remove="Examples\import2.lg" />
+    <None Remove="Examples\IsTemplate.lg" />
     <None Remove="Examples\MultiFile-Part1.lg" />
     <None Remove="Examples\MultiFile-Part2.lg" />
     <None Remove="Examples\MultiFile-Part3.lg" />
@@ -160,6 +161,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\EvaluateOnce.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Examples\IsTemplate.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\ConditionFormatError.lg">

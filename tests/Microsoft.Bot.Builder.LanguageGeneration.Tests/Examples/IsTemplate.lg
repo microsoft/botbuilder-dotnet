@@ -1,0 +1,10 @@
+﻿[import](2.lg)
+
+# template1
+- hi
+
+# template2(templateName)
+- IF: @{isTemplate(templateName)}
+- template @{templateName} exists
+- ELSE:
+- template @{templateName} does not exist

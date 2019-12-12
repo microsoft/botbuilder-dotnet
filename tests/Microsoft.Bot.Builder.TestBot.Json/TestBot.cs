@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 Actions = new List<Dialog>()
                 {
                     choiceInput,
-                    new SendActivity("# Running {conversation.dialogChoice}.main.dialog"),
+                    new SendActivity("# Running @{conversation.dialogChoice}.main.dialog"),
                     handleChoice,
                     new RepeatDialog()
                 }

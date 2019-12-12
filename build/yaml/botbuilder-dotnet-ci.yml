@@ -1,0 +1,80 @@
+#
+# This YAML build definition replaces the classic BotBuilder-DotNet-master-CI-PR
+#
+
+# "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
+name: $(Build.BuildId)
+variables:
+  ApiCompatVersion: 4.6.3
+  BotBuilderDll: Microsoft.Bot.Builder.AI.Luis,Microsoft.Bot.Builder.AI.QnA,Microsoft.Bot.Builder.ApplicationInsights,Microsoft.Bot.Builder.Azure,Microsoft.Bot.Builder.Dialogs,Microsoft.Bot.Builder.Integration.ApplicationInsights.Core,Microsoft.Bot.Builder.Integration.AspNet.Core,Microsoft.Bot.Builder.TemplateManager,Microsoft.Bot.Builder.Testing,Microsoft.Bot.Builder,Microsoft.Bot.Configuration,Microsoft.Bot.Connector,Microsoft.Bot.Schema,Microsoft.Bot.Streaming
+  BuildConfiguration: Debug-Windows
+  BuildPlatform: any cpu
+  CoverallsToken: define this in Azure
+  GitHubCommentApiKey: define this in Azure
+  IsBuildServer: true # This is consumed by projects in Microsoft.Bot.Builder.sln.
+  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
+  Parameters.solution: Microsoft.Bot.Builder.sln
+  PreviewPackageVersion: 4.8.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
+  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
+pool:
+  name: Hosted Windows 2019 with VS2019
+  demands:
+  - msbuild
+  - visualstudio
+
+# The following 2 stages run multi-configuration, multi-agent parallel jobs
+stages:
+- stage: Build
+  jobs:
+  - job: Debug_Windows_Configuration
+    variables:
+      BuildConfiguration: Debug-Windows
+    steps:
+    - template: ci-build-steps.yml
+    - template: ci-test-steps.yml
+  - job: Release_Windows_Configuration
+    variables:
+      BuildConfiguration: Release-Windows
+    steps:
+    - template: ci-build-steps.yml
+    - template: ci-test-steps.yml
+
+- stage: API_Compatibility_Validation
+  dependsOn: Build
+  jobs:
+  - job: generate_multiconfig_var
+    steps:
+    - powershell: |
+       $multiconfig = '{';
+
+       $env:BotBuilderDll.Split(",") | ForEach {
+           $library = $_.Trim()
+           Write-Host $library
+
+           $threadName = $library.Split(".")[-1];
+           $multiconfig += "'" + $threadName + "':{'BotBuilderDll':'" + $library + "'}, ";
+         }
+       $multiconfig = $multiconfig.TrimEnd(' ').TrimEnd(',') + "}";
+       $multiconfig
+
+       "##vso[task.setVariable variable=MULTICONFIG;isOutput=true]$multiconfig"
+      name: generate_var
+    - script: echo $(generate_var.MULTICONFIG)
+
+  - job: check_api_for
+    dependsOn: generate_multiconfig_var
+    timeoutInMinutes: 10
+    strategy:
+      maxParallel: 10
+      matrix: $[ dependencies.generate_multiconfig_var.outputs['generate_var.MULTICONFIG'] ]
+    steps:
+    - template: ci-api-validation-steps.yml
+
+- stage: Post_Results_to_GitHub
+  dependsOn: API_Compatibility_Validation
+  jobs:
+  - job: Post_to_GitHub
+    variables:
+      BuildConfiguration: Release-Windows
+    steps:
+    - template: ci-post-to-github-steps.yml

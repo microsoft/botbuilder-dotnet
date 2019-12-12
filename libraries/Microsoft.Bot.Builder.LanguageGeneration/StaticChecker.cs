@@ -243,6 +243,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     result.Add(BuildLGDiagnostic($"Structured type {typeName} is invalid. Letter, number, '_', '-' and '.' is allowed.", context: context.structuredBodyContentLine()));
                 }
 
+                if (context.structuredBodyEndLine() == null)
+                {
+                    result.Add(BuildLGDiagnostic($"structured LG missing ending ']'", context: context.structuredBodyContentLine()));
+                }
+
                 var bodys = context.structuredBodyContentLine()?.STRUCTURED_CONTENT();
                 if (bodys == null || bodys.Length == 0 || bodys.All(u => string.IsNullOrEmpty(u.GetText())))
                 {
@@ -460,9 +465,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     result.AddRange(CheckExpression(expression.GetText(), context));
                 }
 
-                var multiLinePrefixNum = context.MULTILINE_PREFIX().Length;
-                var multiLineSuffixNum = context.MULTILINE_SUFFIX().Length;
-                if (multiLinePrefixNum > 0 && multiLinePrefixNum > multiLineSuffixNum)
+                var multiLinePrefix = context.MULTILINE_PREFIX();
+                var multiLineSuffix = context.MULTILINE_SUFFIX();
+
+                if (multiLinePrefix != null && multiLineSuffix == null)
                 {
                     result.Add(BuildLGDiagnostic("Close ``` is missing.", context: context));
                 }

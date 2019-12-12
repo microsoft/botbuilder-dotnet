@@ -19,9 +19,9 @@ namespace Microsoft.Bot.Builder.TestProtocol.Controllers
         private readonly BotFrameworkHttpClient _client;
         private readonly Uri _toUri;
         private readonly Uri _serviceUrl;
-        private readonly ISkillConversationIdFactory _factory;
+        private readonly SkillConversationIdFactoryBase _factory;
 
-        public ForwardController(BotFrameworkHttpClient client, IConfiguration configuration, ISkillConversationIdFactory factory)
+        public ForwardController(BotFrameworkHttpClient client, IConfiguration configuration, SkillConversationIdFactoryBase factory)
         {
             _client = client;
             _toUri = new Uri(configuration["Next"]);
