@@ -192,7 +192,7 @@ WS_IN_STRUCTURE_NAME
   ;
 
 NEWLINE_IN_STRUCTURE_NAME
-  : '\r'? '\n' { ignoreWS = true;} -> skip, pushMode(STRUCTURE_BODY_MODE)
+  : '\r'? '\n' { ignoreWS = true;} {beginOfStructureProperty = true;}-> skip, pushMode(STRUCTURE_BODY_MODE)
   ;
 
 STRUCTURE_NAME
