@@ -37,14 +37,21 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             {
                 facebookMessage = activity.GetChannelData<FacebookMessage>();
 
-                // make sure the quick reply has a type
-                if (activity.GetChannelData<FacebookMessage>().Message.QuickReplies.Any())
+                if (facebookMessage.SenderAction != null)
                 {
-                    foreach (var reply in facebookMessage.Message.QuickReplies)
+                    facebookMessage.Message = null;
+                }
+                else
+                {
+                    // make sure the quick reply has a type
+                    if (facebookMessage.Message.QuickReplies.Any())
                     {
-                        if (string.IsNullOrWhiteSpace(reply.ContentType))
+                        foreach (var reply in facebookMessage.Message.QuickReplies)
                         {
-                            reply.ContentType = "text";
+                            if (string.IsNullOrWhiteSpace(reply.ContentType))
+                            {
+                                reply.ContentType = "text";
+                            }
                         }
                     }
                 }
@@ -168,6 +175,19 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         }
 
         /// <summary>
+        /// Sends a message that will display a typing indicator as a placeholder while the message arrives.
+        /// </summary>
+        /// <param name="activity">The activity with the actual message to be sent.</param>
+        /// <param name="turnContext">The TurnContext that will send the activities.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>A task.</returns>
+        public static async Task SendMessage(IActivity activity, ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            var typingActivity = GenerateTypingActivity(turnContext.Activity.Conversation.Id);
+            await turnContext.SendActivitiesAsync(new[] { typingActivity, activity }, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Writes the HttpResponse.
         /// </summary>
         /// <param name="response">The httpResponse.</param>
@@ -199,6 +219,34 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             var data = encoding.GetBytes(text);
 
             await response.Body.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Generates a sender_action = typing_on to be sent in advance to the actual message.
+        /// </summary>
+        /// <param name="recipientId">The id of the recipient of the message.</param>
+        /// <returns>An activity with sender_action = typing_on.</returns>
+        private static Activity GenerateTypingActivity(string recipientId)
+        {
+            var activity = new Activity()
+            {
+                ChannelId = "facebook",
+                Conversation = new ConversationAccount()
+                {
+                    Id = recipientId,
+                },
+                ChannelData = new FacebookMessage(recipientId, null, string.Empty),
+                Type = ActivityTypes.Message,
+                Text = null,
+            };
+
+            // we need only the sender action (and the recipient id) to be present in the message
+            var message = activity.GetChannelData<FacebookMessage>();
+            message.SenderAction = "typing_on";
+            message.MessagingType = null;
+            message.Sender = null;
+
+            return activity;
         }
     }
 }
