@@ -13,10 +13,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.FunctionalTests
 {
+    //    #if !FUNCTIONALTESTS
+    //    [Ignore("These integration tests run only when FUNCTIONALTESTS is defined")]
+    //#endif
     [TestClass]
-    #if !FUNCTIONALTESTS
-    [Ignore("These integration tests run only when FUNCTIONALTESTS is defined")]
-    #endif
+    [TestCategory("FunctionalTests")]
     public class JwtTokenExtractorTests
     {
         private const string KeyId = "CtfQC8Le-8NsC7oC2zQkZpcrfOc";
