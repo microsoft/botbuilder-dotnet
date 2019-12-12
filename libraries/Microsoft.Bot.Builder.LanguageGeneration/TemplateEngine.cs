@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             foreach (var filePath in filePaths)
             {
                 var fullPath = Path.GetFullPath(ImportResolver.NormalizePath(filePath));
-                var rootResource = LGParser.Parse(File.ReadAllText(fullPath), fullPath);
+                var rootResource = LGParser_ex.Parse(File.ReadAllText(fullPath), fullPath);
                 var lgresources = rootResource.DiscoverDependencies(importResolver);
                 totalLGResources.AddRange(lgresources);
             }
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             CheckImportResolver(id, importResolver);
 
-            var rootResource = LGParser.Parse(content, id);
+            var rootResource = LGParser_ex.Parse(content, id);
             var lgresources = rootResource.DiscoverDependencies(importResolver);
             Templates.AddRange(lgresources.SelectMany(x => x.Templates));
             RunStaticCheck(Templates);
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    ? "```" + inlineStr + "```" : inlineStr;
             var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
 
-            var lgsource = LGParser.Parse(wrappedStr, "inline");
+            var lgsource = LGParser_ex.Parse(wrappedStr, "inline");
             var templates = Templates.Concat(lgsource.Templates).ToList();
             RunStaticCheck(templates);
 

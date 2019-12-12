@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var stopLine = template.ParseTree.Stop.Line - 1;
 
             var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
-            return LGParser.Parse(newContent, Id);
+            return LGParser_ex.Parse(newContent, Id);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
             var newContent = $"{Content}\r\n{templateNameLine}\r\n{newTemplateBody}";
-            return LGParser.Parse(newContent, Id);
+            return LGParser_ex.Parse(newContent, Id);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var stopLine = template.ParseTree.Stop.Line - 1;
 
             var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
-            return LGParser.Parse(newContent, Id);
+            return LGParser_ex.Parse(newContent, Id);
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 try
                 {
                     var (content, path) = importResolver(start.Id, id);
-                    var childResource = LGParser.Parse(content, path);
+                    var childResource = LGParser_ex.Parse(content, path);
                     if (!resourcesFound.Contains(childResource))
                     {
                         ResolveImportResources(childResource, importResolver, resourcesFound);

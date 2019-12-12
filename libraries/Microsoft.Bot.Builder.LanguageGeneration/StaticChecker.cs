@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     importResolver = importResolver ?? ImportResolver.FileResolver;
 
                     var fullPath = Path.GetFullPath(ImportResolver.NormalizePath(filePath));
-                    var rootResource = LGParser.Parse(File.ReadAllText(fullPath), fullPath);
+                    var rootResource = LGParser_ex.Parse(File.ReadAllText(fullPath), fullPath);
                     var resources = rootResource.DiscoverDependencies(importResolver);
                     totalLGResources.AddRange(resources);
                 }
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var isParseSuccess = true;
             try
             {
-                var rootResource = LGParser.Parse(content, id);
+                var rootResource = LGParser_ex.Parse(content, id);
                 var resources = rootResource.DiscoverDependencies(importResolver);
                 templates = resources.SelectMany(x => x.Templates).ToList();
             }

@@ -703,7 +703,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestLGResource()
         {
-            var lgResource = LGParser.Parse(File.ReadAllText(GetExampleFilePath("2.lg")));
+            var lgResource = LGParser_ex.Parse(File.ReadAllText(GetExampleFilePath("2.lg")));
 
             Assert.AreEqual(lgResource.Templates.Count, 1);
             Assert.AreEqual(lgResource.Imports.Count, 0);
