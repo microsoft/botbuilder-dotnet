@@ -10,9 +10,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.FunctionalTests
 {
-    //    #if !FUNCTIONALTESTS
-    //    [Ignore("These integration tests run only when FUNCTIONALTESTS is defined")]
-    //#endif
     [TestClass]
     [TestCategory("FunctionalTests")]
     public class GetTokenRefreshTests
