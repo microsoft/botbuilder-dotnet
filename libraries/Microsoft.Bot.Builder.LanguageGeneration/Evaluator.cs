@@ -397,18 +397,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // just don't want to write evaluationTargetStack.Peek() everywhere
             evaluationTargetStack.Peek();
 
-        private JToken EvalText(string exp)
-        {
-            if (string.IsNullOrEmpty(exp))
-            {
-                return exp;
-            }
-
-            var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
-            var result = ExpressionRecognizeRegex.Replace(exp, evalutor);
-            return EvalEscape(result);
-        }
-
         private (object value, string error) EvalByExpressionEngine(string exp, object scope)
         {
             var parse = this.ExpressionEngine.Parse(exp);
@@ -520,7 +508,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
            var filePath = ImportResolver.NormalizePath(args[0].ToString());
 
            var resourcePath = GetResourcePath(filePath);
-           return EvalText(File.ReadAllText(resourcePath));
+           var stringContent = File.ReadAllText(resourcePath);
+
+           var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
+           var result = ExpressionRecognizeRegex.Replace(stringContent, evalutor);
+           return EvalEscape(result);
        };
 
         private void ValidateFromFile(Expression expression)
