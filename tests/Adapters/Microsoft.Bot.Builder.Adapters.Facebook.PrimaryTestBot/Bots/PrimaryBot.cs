@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.Bots
                         content: attachment.Content);
 
                     activity.Attachments.Add(image);
-                    await FacebookHelper.SendMessage(activity, turnContext, cancellationToken);
+                    await FacebookHelper.SendActivityWithTypingIndicatorAsync(activity, turnContext, cancellationToken);
                 }
             }
             else if (turnContext.Activity.GetChannelData<FacebookMessage>().IsStandby)
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.Bots
                         break;
                 }
 
-                await FacebookHelper.SendMessage(activity, turnContext, cancellationToken);
+                await FacebookHelper.SendActivityWithTypingIndicatorAsync(activity, turnContext, cancellationToken);
             }
         }
 

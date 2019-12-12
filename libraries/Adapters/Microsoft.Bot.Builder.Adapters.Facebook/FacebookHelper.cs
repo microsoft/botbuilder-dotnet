@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <param name="turnContext">The TurnContext that will send the activities.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A task.</returns>
-        public static async Task SendMessage(IActivity activity, ITurnContext turnContext, CancellationToken cancellationToken)
+        public static async Task SendActivityWithTypingIndicatorAsync(IActivity activity, ITurnContext turnContext, CancellationToken cancellationToken)
         {
             var typingActivity = GenerateTypingActivity(turnContext.Activity.Conversation.Id);
             await turnContext.SendActivitiesAsync(new[] { typingActivity, activity }, cancellationToken).ConfigureAwait(false);
