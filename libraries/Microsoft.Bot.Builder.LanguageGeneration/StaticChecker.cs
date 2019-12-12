@@ -259,7 +259,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         if (body.errorStructureLine() != null)
                         {
-                            var error = body.errorStructureLine().GetText();
                             result.Add(BuildLGDiagnostic($"structured body format error.", context: body.errorStructureLine()));
                         }
                         else if (body.objectStructureLine() != null)
