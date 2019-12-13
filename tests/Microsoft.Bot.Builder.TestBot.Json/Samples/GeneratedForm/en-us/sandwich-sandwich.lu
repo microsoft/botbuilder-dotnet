@@ -1,12 +1,11 @@
 # sandwich
 - {number}
-- {DirectionsEntity}
-
 - {dimension}
+- {NameEntity}
+
 - {BreadEntity}
 - {CheeseEntity}
 - {MeatEntity}
-- {NameEntity}
 - {money}
 - {Confirmation}
 - {PROPERTYName}

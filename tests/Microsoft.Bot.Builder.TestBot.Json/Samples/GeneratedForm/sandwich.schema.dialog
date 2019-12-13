@@ -7,10 +7,6 @@
             "minimum": 1,
             "maximum": 10
         },
-        "Directions": {
-            "type": "string",
-            "$comment": "This indicates the whole string is what maps to this."
-        },
         "Length": {
             "type": "number",
             "$mappings": [
@@ -19,6 +15,9 @@
             ],
             "$comment": "This is used by the mapping to convert underlying dimensions to inches.",
             "$units": "inches"
+        },
+        "Name": {
+            "type": "string"
         },
         "Bread": {
             "type": "string",
@@ -55,9 +54,6 @@
                 "none"
             ]
         },
-        "Name": {
-            "type": "string"
-        },
         "Price": {
             "type": "object",
             "$mappings": [
@@ -89,12 +85,11 @@
             "type": "string",
             "enum": [
                 "Quantity",
-                "Directions",
                 "Length",
+                "Name",
                 "Bread",
                 "Cheese",
                 "Meat",
-                "Name",
                 "Price"
             ],
             "$mappings": [
@@ -104,8 +99,8 @@
     },
     "required": [
         "Name",
-        "Meat",
         "Bread",
+        "Meat",
         "Cheese"
     ],
     "$expectedOnly": [
@@ -115,12 +110,11 @@
     ],
     "$public": [
         "Quantity",
-        "Directions",
         "Length",
+        "Name",
         "Bread",
         "Cheese",
         "Meat",
-        "Name",
         "Price"
     ],
     "definitions": {
@@ -128,12 +122,11 @@
             "type": "string",
             "enum": [
                 "Quantity",
-                "Directions",
                 "Length",
+                "Name",
                 "Bread",
                 "Cheese",
                 "Meat",
-                "Name",
                 "Price"
             ],
             "$mappings": [
