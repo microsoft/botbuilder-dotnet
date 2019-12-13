@@ -9,6 +9,11 @@
         "actions"
     ],
     "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
         "changeType": {
             "type": "string",
             "title": "Type of change",

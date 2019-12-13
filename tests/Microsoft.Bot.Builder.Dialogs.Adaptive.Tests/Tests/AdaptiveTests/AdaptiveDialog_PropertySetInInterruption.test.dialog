@@ -141,7 +141,7 @@
         ]
       }
     ],
-    "AutoEndDialog": true,
+    "autoEndDialog": true,
     "defaultResultProperty": "dialog.result"
   },
   "script": [

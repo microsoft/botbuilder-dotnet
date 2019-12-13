@@ -8,6 +8,11 @@
         "property"
     ],
     "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
         "property": {
             "$role": "expression",
             "title": "Property",

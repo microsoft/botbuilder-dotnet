@@ -8,6 +8,11 @@
         "text"
     ],
     "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
         "text": {
             "type": "string",
             "title": "Text",
