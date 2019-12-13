@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IActivity"/>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>
-    public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IUserTokenProvider
+    public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, ICredentialTokenProvider
     {
         internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
         internal const string BotIdentityKey = "BotIdentity";
@@ -1081,12 +1081,12 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Creates an OAuth client for the bot.
+        /// Creates an OAuth client for the bot with the credentials.
         /// </summary>
         /// <param name="turnContext">The context object for the current turn.</param>
         /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
         /// <returns>An OAuth client for the bot.</returns>
-        protected virtual async Task<OAuthClient> CreateOAuthApiClientAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials = null)
+        protected virtual async Task<OAuthClient> CreateOAuthApiClientAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials)
         {
             if (!OAuthClientConfig.EmulateOAuthCards &&
                 string.Equals(turnContext.Activity.ChannelId, Channels.Emulator, StringComparison.InvariantCultureIgnoreCase) &&
@@ -1133,6 +1133,16 @@ namespace Microsoft.Bot.Builder
             }
 
             return oAuthClient;
+        }
+
+        /// <summary>
+        /// Creates an OAuth client for the bot.
+        /// </summary>
+        /// <param name="turnContext">The context object for the current turn.</param>
+        /// <returns>An OAuth client for the bot.</returns>
+        protected virtual async Task<OAuthClient> CreateOAuthApiClientAsync(ITurnContext turnContext)
+        {
+            return await CreateOAuthApiClientAsync(turnContext, null).ConfigureAwait(false);
         }
 
         /// <summary>
