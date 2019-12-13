@@ -48,6 +48,16 @@ namespace Microsoft.Bot.Expressions
         public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
         /// <summary>
+        /// Prefix for local variables.
+        /// </summary>
+        public static readonly string LocalVariablePrefix = "$local";
+
+        /// <summary>
+        /// Prefix for global variables.
+        /// </summary>
+        public static readonly string GlobalVariablePrefix = "$global";
+
+        /// <summary>
         /// Dictionary of built-in functions.
         /// </summary>
         private static readonly Dictionary<string, ExpressionEvaluator> _functions = BuildFunctionLookup();
@@ -1341,7 +1351,7 @@ namespace Microsoft.Bot.Expressions
             (instance, error) = expression.Children[0].TryEvaluate(state);
             if (error == null)
             {
-                // 2nd parameter has been rewrite to $local.item
+                // 2nd parameter has been rewrite to LocalVariablePrefix.item
                 var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
                 IList list = null;
                 if (TryParseList(instance, out IList ilist))
@@ -1372,8 +1382,8 @@ namespace Microsoft.Bot.Expressions
                         };
                         var newMemory = new Dictionary<string, IMemory>
                         {
-                            { "$global", state },
-                            { "$local", new SimpleObjectMemory(local) },
+                            { GlobalVariablePrefix, state },
+                            { LocalVariablePrefix, new SimpleObjectMemory(local) },
                         };
 
                         (var r, var e) = expression.Children[2].TryEvaluate(new ComposedMemory(newMemory));
@@ -1399,7 +1409,7 @@ namespace Microsoft.Bot.Expressions
             (instance, error) = expression.Children[0].TryEvaluate(state);
             if (error == null)
             {
-                // 2nd parameter has been rewrite to $local.item
+                // 2nd parameter has been rewrite to LocalVariablePrefix.item
                 var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
                 var isInstanceList = false;
                 IList list = null;
@@ -1432,8 +1442,8 @@ namespace Microsoft.Bot.Expressions
                         };
                         var newMemory = new Dictionary<string, IMemory>
                         {
-                            { "$global", state },
-                            { "$local", new SimpleObjectMemory(local) },
+                            { GlobalVariablePrefix, state },
+                            { LocalVariablePrefix, new SimpleObjectMemory(local) },
                         };
                         (var r, _) = expression.Children[2].TryEvaluate(new ComposedMemory(newMemory));
 
@@ -1517,10 +1527,15 @@ namespace Microsoft.Bot.Expressions
                 else
                 {
                     var str = expression.ToString();
-                    var prefix = "$global";
+                    var prefix = GlobalVariablePrefix;
                     if (str == localVarName || str.StartsWith(localVarName + "."))
                     {
-                        prefix = "$local";
+                        prefix = LocalVariablePrefix;
+                    }
+                    else if (str == LocalVariablePrefix)
+                    {
+                        // If it is already local, return directly
+                        return expression;
                     }
 
                     expression.Children = new Expression[]
