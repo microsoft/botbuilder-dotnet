@@ -5,25 +5,10 @@
     "condition":"!$Directions && contains(dialog.requiredProperties, 'Directions')",
     "actions": [
         {
-            "$kind": "Microsoft.IfCondition",
-            "condition": "contains(turn.schema.properties['Directions'].$mappings, 'utterance')",
-            "actions":[
-                {
-                    "$kind": "Microsoft.Ask",
-                    "activity": "@{AskDirections()}",
-                    "expectedProperties": [
-                         "utterance","Directions"
-                    ]
-                }
-            ],
-            "elseActions":[
-                {
-                    "$kind": "Microsoft.Ask",
-                    "activity": "@{AskDirections()}",
-                    "expectedProperties": [
-                        "Directions"
-                    ]
-                }
+            "$kind": "Microsoft.Ask",
+            "activity": "@{AskDirections()}",
+            "expectedProperties": [
+                "Directions"
             ]
         },
     ]

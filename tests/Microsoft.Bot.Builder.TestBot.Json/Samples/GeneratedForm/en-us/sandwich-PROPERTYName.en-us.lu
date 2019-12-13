@@ -12,3 +12,5 @@ $PROPERTYName:Meat=
 - meat
 $PROPERTYName:Name=
 - name
+$PROPERTYName:Price=
+- price

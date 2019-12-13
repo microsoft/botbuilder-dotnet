@@ -2,12 +2,12 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
     "$kind": "Microsoft.OnSetProperty",
-    "property": "PropertyToChange",
+    "property": "CompleteConfirmation",
     "entity": "PROPERTYName",
     "actions": [
         {
             "$kind": "Microsoft.DeleteProperty",
-            "property": "dialog[@PROPERTYName]"            
+            "property": "dialog[@PROPERTYName]"                        
         }
     ]
 }

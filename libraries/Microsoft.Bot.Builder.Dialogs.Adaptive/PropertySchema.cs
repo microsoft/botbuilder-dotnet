@@ -34,6 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 Children = new List<PropertySchema>();
             }
 
+            // TODO: Should we have this logic in here or should the generator always generate $mappings?
             var list = new List<string>();
             var mappings = schema["$mappings"]?.Value<JArray>();
             if (mappings == null)
@@ -48,6 +49,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     // We want to pick up generic numbers when expected.
                     list.Add("number");
+                }
+
+                if (Type == "string" && !IsEnum)
+                {
+                    list.Add("utterance");
                 }
             }
             else
@@ -88,10 +94,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         [Newtonsoft.Json.JsonIgnore]
         public PropertySchema Parent { get; private set; }
 
+        /// <summary>
+        /// Gets the JSON Schema type for this property.
+        /// </summary>
+        /// <value>JSON Schema type.</value>
         public string Type => Schema["type"].Value<string>();
 
+        /// <summary>
+        /// Gets a value indicating whether type is an array.
+        /// </summary>
+        /// <value>True if array.</value>
         public bool IsArray => Schema?.Parent?.Parent["type"]?.Value<string>() == "array";
 
+        /// <summary>
+        /// Gets a value indicating whether property is an enum.
+        /// </summary>
+        /// <value>True if enum.</value>
+        public bool IsEnum => Schema?.Parent?.Parent["enum"] != null;
+
+        /// <summary>
+        /// Gets mappings to possible entities for property.
+        /// </summary>
+        /// <value>List of entity names.</value>
         public IReadOnlyList<string> Mappings { get; }
 
         /// <summary>

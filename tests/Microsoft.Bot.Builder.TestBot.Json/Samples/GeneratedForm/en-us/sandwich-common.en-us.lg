@@ -23,9 +23,9 @@ Which value do you want for @{name(property)}?
 
 # askNumber(property)
 - IF: @{turn.schema.properties[property].minimum && turn.schema.properties[property].maximum}
-- Enter a number for @{name(property)} between @{turn.schema.properties[property].minimum} and @{turn.schema.properties[property].maximum}:
+- Enter a number for @{name(property)} between @{turn.schema.properties[property].minimum} and @{turn.schema.properties[property].maximum}
 - ELSE:
-- Enter a number for @{name(property)}:
+- Enter a number for @{name(property)}
 
 # askString(property)
 - ```
@@ -148,7 +148,7 @@ Please choose a value for @{name(property)} from \[@{join(foreach(turn.dialogEve
 - {"title": "@{name(property)}", "value": "@{value(property, dialog[property])}"}
 
 # confirmChange
-- Is there any property you want to change? (yes/no)
+- Is there any property you want to change? (no or the property name)
 
 # chooseProperty
 - Which property do you want to change?

@@ -2,14 +2,14 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
     "$kind": "Microsoft.OnAsk",
-    "condition":"!$Name && contains(dialog.requiredProperties, 'Name')",
-    "actions": [
+    "condition":"!$Length && contains(dialog.requiredProperties, 'Length')",
+    "actions": [        
         {
             "$kind": "Microsoft.Ask",
-            "activity": "@{AskName()}",
+            "activity": "@{AskLength()}",
             "expectedProperties": [
-                "Name"
+                "Length"
             ]
-        },
+        }
     ]
 }

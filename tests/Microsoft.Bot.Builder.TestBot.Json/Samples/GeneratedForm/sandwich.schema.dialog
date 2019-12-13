@@ -58,6 +58,20 @@
         "Name": {
             "type": "string"
         },
+        "Price": {
+            "type": "object",
+            "$mappings": [
+                "money"
+            ],
+            "properties": {
+                "quantity": {
+                    "type": "number"
+                },
+                "currency": {
+                    "type": "string"
+                }
+            }
+        },
         "CancelConfirmation": {
             "type": "string",
             "$mappings": [
@@ -67,7 +81,8 @@
         "CompleteConfirmation": {
             "type": "string",
             "$mappings": [
-                "Confirmation"
+                "Confirmation",
+                "PROPERTYName"
             ]
         },
         "PropertyToChange": {
@@ -79,7 +94,8 @@
                 "Bread",
                 "Cheese",
                 "Meat",
-                "Name"
+                "Name",
+                "Price"
             ],
             "$mappings": [
                 "PROPERTYName"
@@ -87,6 +103,7 @@
         }
     },
     "required": [
+        "Name",
         "Meat",
         "Bread",
         "Cheese"
@@ -103,7 +120,8 @@
         "Bread",
         "Cheese",
         "Meat",
-        "Name"
+        "Name",
+        "Price"
     ],
     "definitions": {
         "PROPERTYName": {
@@ -115,7 +133,8 @@
                 "Bread",
                 "Cheese",
                 "Meat",
-                "Name"
+                "Name",
+                "Price"
             ],
             "$mappings": [
                 "PROPERTYName"

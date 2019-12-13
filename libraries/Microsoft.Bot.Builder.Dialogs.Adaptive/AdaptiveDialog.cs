@@ -31,10 +31,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.AdaptiveDialog";
 
-        internal const string ConditionTracker = "dialog.tracker.conditions";     
-        
+        internal const string ConditionTracker = "dialog.tracker.conditions";
+
         private const string AdaptiveKey = "_adaptive";
-        
+
         // unique key for language generator turn property, (TURN STATE ONLY)
         private readonly string generatorTurnKey = Guid.NewGuid().ToString();
 
@@ -270,7 +270,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public IEnumerable<Dialog> GetDependencies()
         {
             EnsureDependenciesInstalled();
-            
+
             yield break;
         }
 
@@ -387,7 +387,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             sequenceContext.GetState().SetValue(TurnPath.RECOGNIZED, recognized);
 
                             var (name, score) = recognized.GetTopScoringIntent();
-                            sequenceContext.GetState().SetValue(TurnPath.TOPINTENT, name);                            
+                            sequenceContext.GetState().SetValue(TurnPath.TOPINTENT, name);
                             sequenceContext.GetState().SetValue(DialogPath.LastIntent, name);
                             sequenceContext.GetState().SetValue(TurnPath.TOPSCORE, score);
 
@@ -874,11 +874,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     expected = new string[0];
                 }
 
-                if (expected.Contains("utterance"))
-                {
-                    entities["utterance"] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = "utterance", Score = 0.0, Type = "string", Value = utterance, Text = utterance } };
-                }
-
+                entities["utterance"] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = "utterance", Score = 0.0, Type = "string", Value = utterance, Text = utterance } };
                 var updated = UpdateLastEvent(context, queues, entities, expected);
                 var newQueues = new EventQueues();
                 var recognized = AssignEntities(entities, expected, newQueues);
@@ -1158,7 +1154,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     foreach (var entityName in propSchema.Mappings)
                     {
-                        if (entities.TryGetValue(entityName, out var matches))
+                        // Utterance is only allowed if expected
+                        if (entities.TryGetValue(entityName, out var matches) && (entityName != "utterance" || isExpected))
                         {
                             foreach (var entity in matches)
                             {
@@ -1258,7 +1255,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 var candidate = candidates.First();
                 var alternatives = (from alt in candidates where candidate.Entity.Overlaps(alt.Entity) select alt).ToList();
                 candidates = candidates.Except(alternatives).ToList();
-                if (candidate.Expected)
+                if (candidate.Expected && candidate.Entity.Name != "utterance")
                 {
                     // If expected binds entity, drop alternatives
                     alternatives.RemoveAll(a => !a.Expected);

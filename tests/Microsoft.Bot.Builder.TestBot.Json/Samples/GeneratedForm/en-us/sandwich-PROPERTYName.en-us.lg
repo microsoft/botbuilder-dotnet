@@ -14,5 +14,7 @@
  - meat
 - CASE: @{'Name'} 
  - name
+- CASE: @{'Price'} 
+ - price
 - DEFAULT: 
  - I don't understand @{value}
