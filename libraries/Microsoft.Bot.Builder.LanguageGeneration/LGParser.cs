@@ -11,40 +11,99 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         public static LGFile ParseFile(string filePath, ImportResolverDelegate importResolver = null)
         {
-            var fullPath = Path.GetFullPath(ImportResolver.NormalizePath(filePath));
-            var lgFile = AntlrParse(File.ReadAllText(fullPath), fullPath);
+            var lgFile = new LGFile(importResolver: importResolver ?? ImportResolver.FileResolver);
+            var diagnostics = new List<Diagnostic>();
+            try
+            {
+                var fullPath = Path.GetFullPath(ImportResolver.NormalizePath(filePath));
+                var content = File.ReadAllText(fullPath);
+                lgFile.Id = fullPath;
+                lgFile.Content = content;
+                var (templates, imports, errorTemplatesDiagnostics) = AntlrParse(File.ReadAllText(fullPath), fullPath);
+                lgFile.Templates = templates;
+                lgFile.Imports = imports;
+                diagnostics.AddRange(errorTemplatesDiagnostics);
 
-            // TODO
-            List<LGFile> references = null;
-            lgFile.References = references;
+                lgFile.References = GetReferences(lgFile, importResolver);
+                var managedDiagnostics = new StaticChecker(lgFile.AllTemplates.ToList()).Check();
+                diagnostics.AddRange(managedDiagnostics);
+            }
+            catch (LGException ex)
+            {
+                diagnostics.AddRange(ex.Diagnostics);
+            }
+            catch (Exception err)
+            {
+                diagnostics.Add(new Diagnostic(new Range(new Position(0, 0), new Position(0, 0)), err.Message));
+            }
+
+            lgFile.Diagnostics = diagnostics;
+
             return lgFile;
         }
 
         public static LGFile ParseContent(string content, string id = "", ImportResolverDelegate importResolver = null)
         {
-            CheckImportResolver(id, importResolver);
-            var lgFile = AntlrParse(content, id);
+            var lgFile = new LGFile(content: content, id: id, importResolver: importResolver ?? ImportResolver.FileResolver);
+            var diagnostics = new List<Diagnostic>();
+            try
+            {
+                CheckImportResolver(id, importResolver);
+                var (templates, imports, errorTemplatesDiagnostics) = AntlrParse(content, id);
+                lgFile.Templates = templates;
+                lgFile.Imports = imports;
+                diagnostics.AddRange(errorTemplatesDiagnostics);
 
-            // TODO
-            List<LGFile> references = null;
-            lgFile.References = references;
+                lgFile.References = GetReferences(lgFile, importResolver);
+                var managedDiagnostics = new StaticChecker(lgFile.AllTemplates.ToList()).Check();
+                diagnostics.AddRange(managedDiagnostics);
+            }
+            catch (LGException ex)
+            {
+                diagnostics.AddRange(ex.Diagnostics);
+            }
+            catch (Exception err)
+            {
+                diagnostics.Add(new Diagnostic(new Range(new Position(0, 0), new Position(0, 0)), err.Message));
+            }
+
+            lgFile.Diagnostics = diagnostics;
+
             return lgFile;
         }
 
-        // do not throw exception
-        private static LGFile AntlrParse(string content, string id = "")
+        private static (IList<LGTemplate> templates, IList<LGImport> imports, IList<Diagnostic> diagnostics) AntlrParse(string content, string id = "")
         {
             var fileContext = GetFileContentContext(content, id);
             var templates = ExtractLGTemplates(fileContext, content, id);
             var imports = ExtractLGImports(fileContext, id);
 
-            // TODO how to handler it.
+            var diagnostics = GetErrorTemplatesDiagnostics(fileContext);
+
+            return (templates, imports, diagnostics);
+        }
+
+        private static IList<Diagnostic> GetErrorTemplatesDiagnostics(LGFileParser.FileContext fileContext)
+        {
             var errorTemplates = fileContext == null ? new List<LGFileParser.ErrorTemplateContext>() :
                    fileContext.paragraph()
                    .Select(x => x.errorTemplate());
 
-            // todo. trycatch to get diagnostic
-            return new LGFile(templates, imports, null, content: content);
+            var diagnostics = new List<Diagnostic>();
+
+            foreach (var errorTemplate in errorTemplates)
+            {
+                diagnostics.Add(BuildErrorContextDiagnostic(errorTemplate));
+            }
+
+            return diagnostics;
+        }
+
+        private static Diagnostic BuildErrorContextDiagnostic(ParserRuleContext context)
+        {
+            var startPosition = new Position(context.Start.Line, context.Start.Column);
+            var stopPosition = new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
+            return new Diagnostic(new Range(startPosition, stopPosition), "error context.");
         }
 
         /// <summary>
@@ -119,6 +178,37 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (!Path.IsPathRooted(importPath))
                 {
                     throw new Exception("[Error] id must be full path when importResolver is null");
+                }
+            }
+        }
+
+        private static List<LGFile> GetReferences(LGFile file, ImportResolverDelegate importResolver)
+        {
+            var resourcesFound = new HashSet<LGFile>();
+            ResolveImportResources(file, importResolver ?? ImportResolver.FileResolver, resourcesFound);
+
+            return resourcesFound.ToList();
+        }
+
+        private static void ResolveImportResources(LGFile start, ImportResolverDelegate importResolver, HashSet<LGFile> resourcesFound)
+        {
+            var resourceIds = start.Imports.Select(lg => lg.Id).ToList();
+            resourcesFound.Add(start);
+
+            foreach (var id in resourceIds)
+            {
+                try
+                {
+                    var (content, path) = importResolver(start.Id, id);
+                    var childResource = ParseContent(content, path, importResolver);
+                    if (!resourcesFound.Contains(childResource))
+                    {
+                        ResolveImportResources(childResource, importResolver, resourcesFound);
+                    }
+                }
+                catch (Exception err)
+                {
+                    throw new Exception($"[Error]{id}:{err.Message}", err);
                 }
             }
         }
