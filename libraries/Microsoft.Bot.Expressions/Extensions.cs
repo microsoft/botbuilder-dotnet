@@ -121,16 +121,9 @@ namespace Microsoft.Bot.Expressions
 
             var filteredReferences = new HashSet<string>();
 
-            references.Where(x => !x.StartsWith($"{BuiltInFunctions.LocalVariablePrefix}.")).ToList().ForEach(x =>
+            references.Where(x => !x.StartsWith(BuiltInFunctions.LocalVariablePrefix)).ToList().ForEach(x =>
             {
-                if (x.StartsWith($"{BuiltInFunctions.GlobalVariablePrefix}."))
-                {
-                    filteredReferences.Add(x.Substring(8));
-                }
-                else
-                {
-                    filteredReferences.Add(x);
-                }
+                filteredReferences.Add(x);
             });
 
             return filteredReferences.ToList();

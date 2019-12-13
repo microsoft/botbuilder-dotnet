@@ -12,22 +12,40 @@ namespace Microsoft.Bot.Expressions.Memory
     /// </summary>
     internal class ComposedMemory : IMemory
     {
-        private Dictionary<string, IMemory> memoryMap;
-
-        public ComposedMemory(Dictionary<string, IMemory> memoryMap)
+        public ComposedMemory(IMemory state, Dictionary<string, object> local)
         {
-            this.memoryMap = memoryMap;
+            if (state is ComposedMemory existingMemory)
+            {
+                var existingLocal = existingMemory.LocalMemory;
+                foreach (var pair in local)
+                {
+                    existingLocal.SetValue(pair.Key, pair.Value);
+                }
+
+                LocalMemory = existingLocal;
+                GlobalMemory = existingMemory.GlobalMemory;
+            }
+            else
+            {
+                LocalMemory = new SimpleObjectMemory(local);
+                GlobalMemory = state;
+            }
         }
+
+        public SimpleObjectMemory LocalMemory { get; set; }
+
+        public IMemory GlobalMemory { get; set; }
 
         public (object value, string error) GetValue(string path)
         {
-            var prefix = path.Split('.')[0];
-            if (memoryMap.TryGetValue(prefix, out var scope))
+            if (path.StartsWith(BuiltInFunctions.LocalVariablePrefix))
             {
-                return scope.GetValue(path.Substring(prefix.Length + 1)); // +1 to swallow the "."
+                return LocalMemory.GetValue(path);
             }
-
-            return (null, $"path not exists at {path}");
+            else
+            {
+                return GlobalMemory.GetValue(path);
+            }
         }
 
         public (object value, string error) SetValue(string path, object value)

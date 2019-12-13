@@ -50,12 +50,7 @@ namespace Microsoft.Bot.Expressions
         /// <summary>
         /// Prefix for local variables.
         /// </summary>
-        public static readonly string LocalVariablePrefix = "$local";
-
-        /// <summary>
-        /// Prefix for global variables.
-        /// </summary>
-        public static readonly string GlobalVariablePrefix = "$global";
+        public static readonly string LocalVariablePrefix = "local$";
 
         /// <summary>
         /// Dictionary of built-in functions.
@@ -1380,13 +1375,8 @@ namespace Microsoft.Bot.Expressions
                         {
                             { iteratorName, AccessIndex(list, idx).value },
                         };
-                        var newMemory = new Dictionary<string, IMemory>
-                        {
-                            { GlobalVariablePrefix, state },
-                            { LocalVariablePrefix, new SimpleObjectMemory(local) },
-                        };
 
-                        (var r, var e) = expression.Children[2].TryEvaluate(new ComposedMemory(newMemory));
+                        (var r, var e) = expression.Children[2].TryEvaluate(new ComposedMemory(state, local));
                         if (e != null)
                         {
                             return (null, e);
@@ -1438,14 +1428,10 @@ namespace Microsoft.Bot.Expressions
                     {
                         var local = new Dictionary<string, object>
                         {
-                            { iteratorName, AccessIndex(list, idx).value },
+                            { expression.Children[1].ToString(), AccessIndex(list, idx).value },
                         };
-                        var newMemory = new Dictionary<string, IMemory>
-                        {
-                            { GlobalVariablePrefix, state },
-                            { LocalVariablePrefix, new SimpleObjectMemory(local) },
-                        };
-                        (var r, _) = expression.Children[2].TryEvaluate(new ComposedMemory(newMemory));
+
+                        (var r, _) = expression.Children[2].TryEvaluate(new ComposedMemory(state, local));
 
                         if ((bool)r)
                         {
@@ -1527,22 +1513,15 @@ namespace Microsoft.Bot.Expressions
                 else
                 {
                     var str = expression.ToString();
-                    var prefix = GlobalVariablePrefix;
-                    if (str == localVarName || str.StartsWith(localVarName + "."))
+                    if (str == localVarName || str.EndsWith(LocalVariablePrefix + localVarName))
                     {
-                        prefix = LocalVariablePrefix;
-                    }
-                    else if (str == LocalVariablePrefix)
-                    {
-                        // If it is already local, return directly
-                        return expression;
+                        expression.Children = new Expression[]
+                        {
+                            new Constant(LocalVariablePrefix + str)
+                        };
                     }
 
-                    expression.Children = new Expression[]
-                    {
-                        expression.Children[0],
-                        Expression.MakeExpression(ExpressionType.Accessor, new Constant(prefix)),
-                    };
+                    return expression;
                 }
 
                 return expression;
