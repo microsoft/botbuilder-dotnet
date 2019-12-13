@@ -19,7 +19,7 @@ steps:
     projects: |
      Tests/**/*Tests.csproj
      
-    arguments: '-v n  --configuration release --no-build --no-restore --filter TestCategory!=IgnoreInAutomatedBuild --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
+    arguments: '-v n  --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
   condition: eq(variables['BuildConfiguration'],'Release-Windows')
 
 - task: DotNetCoreCLI@2

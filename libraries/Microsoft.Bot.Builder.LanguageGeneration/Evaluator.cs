@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -20,7 +21,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         public const string LGType = "lgType";
         public static readonly Regex ExpressionRecognizeRegex = new Regex(@"(?<!\\)@{(((\'([^'\r\n])*?\')|(\""([^""\r\n])*?\""))|[^\r\n{}'""])*?}", RegexOptions.Compiled);
-        public static readonly Regex EscapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
         public Evaluator(List<LGTemplate> templates, ExpressionEngine expressionEngine)
@@ -37,18 +37,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public ExpressionEngine ExpressionEngine { get; }
 
         public Dictionary<string, LGTemplate> TemplateMap { get; }
-
-        public static bool IsPureExpression(string exp)
-        {
-            if (string.IsNullOrWhiteSpace(exp))
-            {
-                return false;
-            }
-
-            exp = exp.Trim();
-            var expressions = ExpressionRecognizeRegex.Matches(exp);
-            return expressions.Count == 1 && expressions[0].Value == exp;
-        }
 
         public object EvaluateTemplate(string templateName, object scope)
         {
@@ -104,51 +92,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public override object VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
         {
             var result = new JObject();
-            var typeName = context.structuredBodyNameLine().STRUCTURED_CONTENT().GetText().Trim();
+            var typeName = context.structuredBodyNameLine().STRUCTURE_NAME().GetText();
             result[LGType] = typeName;
 
-            var bodys = context.structuredBodyContentLine().STRUCTURED_CONTENT();
+            var bodys = context.structuredBodyContentLine();
             foreach (var body in bodys)
             {
-                var line = body.GetText().Trim();
-
-                if (string.IsNullOrWhiteSpace(line))
-                {
-                    continue;
-                }
-
-                var start = line.IndexOf('=');
-                if (start > 0)
+                var isKVPairBody = body.keyValueStructureLine() != null;
+                if (isKVPairBody)
                 {
                     // make it insensitive
-                    var property = line.Substring(0, start).Trim().ToLower();
-                    var originValue = line.Substring(start + 1).Trim();
-
-                    var valueArray = EscapeSeperatorRegex.Split(originValue);
-                    if (valueArray.Length == 1)
-                    {
-                        result[property] = EvalText(originValue);
-                    }
-                    else
-                    {
-                        var valueList = new JArray();
-                        foreach (var item in valueArray)
-                        {
-                            valueList.Add(EvalText(item.Trim()));
-                        }
-
-                        result[property] = valueList;
-                    }
+                    var property = body.keyValueStructureLine().STRUCTURE_IDENTIFIER().GetText().ToLower();
+                    var value = VisitStructureValue(body.keyValueStructureLine());
+                    result[property] = JToken.FromObject(value);
                 }
-                else if (IsPureExpression(line))
+                else
                 {
-                    // [MyStruct
-                    // Text = foo
-                    // {ST2()}
-                    // ]
-
-                    // When the same property exists in both the calling template as well as callee, the content in caller will trump any content in the callee.
-                    var propertyObject = JObject.FromObject(EvalExpression(line));
+                    // When the same property exists in both the calling template as well as callee, the content in caller will trump any content in 
+                    var propertyObject = JObject.FromObject(EvalExpression(body.objectStructureLine().GetText()));
 
                     // Full reference to another structured template is limited to the structured template with same type 
                     if (propertyObject[LGType] != null && propertyObject[LGType].ToString() == typeName)
@@ -291,6 +252,76 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception("Scope is a LG customized memory");
             }
         }
+        
+        private object VisitStructureValue(LGFileParser.KeyValueStructureLineContext context)
+        {
+            var values = context.keyValueStructureValue();
+
+            var result = new List<object>();
+            foreach (var item in values)
+            {
+                if (IsPureExpression(item, out var text))
+                {
+                    result.Add(EvalExpression(text));
+                }
+                else
+                {
+                    var itemStringResult = new StringBuilder();
+                    foreach (ITerminalNode node in item.children)
+                    {
+                        switch (node.Symbol.Type)
+                        {
+                            case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
+                                itemStringResult.Append(EvalEscape(node.GetText()));
+                                break;
+                            case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
+                                itemStringResult.Append(EvalExpression(node.GetText()));
+                                break;
+                            default:
+                                itemStringResult.Append(node.GetText());
+                                break;
+                        }
+                    }
+
+                    result.Add(itemStringResult.ToString().Trim());
+                }
+            }
+
+            return result.Count == 1 ? result[0] : result;
+        }
+
+        private bool IsPureExpression(LGFileParser.KeyValueStructureValueContext context, out string expression)
+        {
+            expression = context.GetText();
+
+            var hasExpression = false;
+            foreach (ITerminalNode node in context.children)
+            {
+                switch (node.Symbol.Type)
+                {
+                    case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
+                        return false;
+                    case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
+                        if (hasExpression)
+                        {
+                            return false;
+                        }
+
+                        hasExpression = true;
+                        expression = node.GetText();
+                        break;
+                    default:
+                        if (!string.IsNullOrWhiteSpace(node.GetText()))
+                        {
+                            return false;
+                        }
+
+                        break;
+                }
+            }
+
+            return hasExpression;
+        }
 
         private bool EvalCondition(LGFileParser.IfConditionContext condition)
         {
@@ -365,26 +396,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             // just don't want to write evaluationTargetStack.Peek() everywhere
             evaluationTargetStack.Peek();
-
-        private JToken EvalText(string exp)
-        {
-            if (string.IsNullOrEmpty(exp))
-            {
-                return exp;
-            }
-
-            if (IsPureExpression(exp))
-            {
-                // @{} or {} text, get object result
-                return JToken.FromObject(EvalExpression(exp));
-            }
-            else
-            {
-                var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
-                var result = ExpressionRecognizeRegex.Replace(exp, evalutor);
-                return EvalEscape(result);
-            }
-        }
 
         private (object value, string error) EvalByExpressionEngine(string exp, object scope)
         {
@@ -497,7 +508,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
            var filePath = ImportResolver.NormalizePath(args[0].ToString());
 
            var resourcePath = GetResourcePath(filePath);
-           return EvalText(File.ReadAllText(resourcePath));
+           var stringContent = File.ReadAllText(resourcePath);
+
+           var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
+           var result = ExpressionRecognizeRegex.Replace(stringContent, evalutor);
+           return EvalEscape(result);
        };
 
         private void ValidateFromFile(Expression expression)
