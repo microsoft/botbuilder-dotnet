@@ -430,7 +430,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             // Assert 6.lg is imported only once when there are several relative paths which point to the same file.
             // Assert import cycle loop is handled well as expected when a file imports itself.
-            Assert.AreEqual(14, lgFile.Templates.Count());
+            Assert.AreEqual(14, lgFile.AllTemplates.Count());
 
             string evaled = lgFile.EvaluateTemplate("basicTemplate", null).ToString();
             Assert.IsTrue(evaled == "Hi" || evaled == "Hello");
@@ -454,7 +454,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             // Assert 6.lg of relative path is imported from text.
             lgFile = LGParser.ParseContent("# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./6.lg)", GetExampleFilePath("xx.lg"));
 
-            Assert.AreEqual(8, lgFile.Templates.Count());
+            Assert.AreEqual(8, lgFile.AllTemplates.Count());
             evaled = lgFile.EvaluateTemplate("basicTemplate", null).ToString();
             Assert.IsTrue(evaled == "Hi" || evaled == "Hello");
 

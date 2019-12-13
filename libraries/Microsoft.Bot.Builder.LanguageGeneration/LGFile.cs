@@ -171,6 +171,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return LGParser.ParseContent(newContent, Id, importResolver);
         }
 
+        public override string ToString() => Content;
+
         private string ReplaceRangeContent(string originString, int startLine, int stopLine, string replaceString)
         {
             var originList = originString.Split('\n');
