@@ -46,6 +46,26 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 result.Answers = answers;
             }
 
+            // Output for question only ranker.
+            if (query.Equals("What ranker do you want to use?") && options.RankerType.Equals(RankerTypes.QuestionOnly))
+            {
+                answers = new QueryResult[]
+                {
+                    new QueryResult { Answer = "We are using QuestionOnly ranker.", Context = null, Id = 25, Score = 0.80F, Questions = new string[] { "Question only ranker" }, Source = "Editorial" },
+                };
+                result.Answers = answers;
+            }
+
+            // Output for question only ranker.
+            if (query.Equals("Surface book 2 price") && options.IsTest)
+            {
+                answers = new QueryResult[]
+                {
+                    new QueryResult { Answer = "Surface book 2 price is $1400.", Context = null, Id = 26, Score = 0.80F, Questions = new string[] { "Price range for surface laptop" }, Source = "Editorial" },
+                };
+                result.Answers = answers;
+            }
+
             return Task.FromResult(result);
         }
 

@@ -11,14 +11,12 @@
         {
             "properties": {
                 "outputFormat": {
-                    "type": "string",
-                    "enum": [
-                        "float",
-                        "integer"
-                    ],
+                    "$role": "expression",
                     "title": "Output format",
-                    "description": "Number output format.",
-                    "default": "float"
+                    "description": "Expression to format the number output.",
+                    "examples": [
+                        "int(this.value)"
+                    ]
                 },
                 "defaultLocale": {
                     "type": "string",

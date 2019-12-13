@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.TestProtocol
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
 
             // Conversation Id factory
-            services.AddSingleton<ISkillConversationIdFactory, MyConversationIdFactory>();
+            services.AddSingleton<SkillConversationIdFactoryBase, MyConversationIdFactory>();
 
             // AuthConfiguration to enable custom claim validation
             services.AddSingleton<AuthenticationConfiguration>();
