@@ -1,25 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class LGFile
     {
-        public IList<LGTemplate> Templates { get; }
+        public LGFile(IList<LGTemplate> templates = null, IList<LGImport> imports = null, IList<Diagnostic> diagnostics = null, IList<LGFile> references = null, string content = null)
+        {
+            Templates = templates ?? new List<LGTemplate>();
+            Imports = imports ?? new List<LGImport>();
+            Diagnostics = diagnostics ?? new List<Diagnostic>();
+            References = references ?? new List<LGFile>();
+            Content = content ?? string.Empty;
+        }
 
-        public IList<LGImport> Imports { get; }
-
-        public IList<LGFile> Reference
+        public IList<LGTemplate> AllTemplates
         {
             get
-            {   
-                // TODO. From imports
-                return null; 
+            {
+                References.SelectMany
             }
         }
 
-        public IList<Diagnostic> Diagnostics { get;  }
+        public IList<LGTemplate> Templates { get; set; }
+
+        public IList<LGImport> Imports { get; set; }
+
+        public IList<LGFile> References { get; set; }
+
+        public IList<Diagnostic> Diagnostics { get; set; }
 
         public string Content { get;  }
 
