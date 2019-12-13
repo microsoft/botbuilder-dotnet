@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -70,113 +71,43 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [DynamicData(nameof(StaticCheckExceptionData))]
         public void ThrowExceptionTest(string input)
         {
-            var isFail = false;
-            try
-            {
-                new TemplateEngine().AddFile(GetExampleFilePath(input));
-                isFail = true;
-            }
-            catch (Exception e)
-            {
-                TestContext.WriteLine(e.Message);
-            }
-
-            if (isFail)
-            {
-                Assert.Fail("No exception is thrown.");
-            }
+            var lgFile = LGParser.ParseFile(GetExampleFilePath(input));
+            Assert.IsTrue(lgFile.Diagnostics.Any(u => u.Severity == DiagnosticSeverity.Error));
         }
 
         [DataTestMethod]
         [DynamicData(nameof(StaticCheckWariningData))]
         public void WariningTest(string input)
         {
-            var engine = new TemplateEngine().AddFile(GetExampleFilePath(input));
-
-            var report = new StaticChecker().CheckTemplates(engine.Templates);
-
-            TestContext.WriteLine(string.Join("\n", report));
+            var lgFile = LGParser.ParseFile(GetExampleFilePath(input));
+            Assert.IsTrue(lgFile.Diagnostics.Any(u => u.Severity == DiagnosticSeverity.Warning)
+                && lgFile.Diagnostics.All(u => u.Severity != DiagnosticSeverity.Error));
         }
 
         [DataTestMethod]
         [DynamicData(nameof(AnalyzerExceptionData))]
         public void AnalyzerThrowExceptionTest(string input, string templateName)
         {
-            var isFail = false;
-            var errorMessage = string.Empty;
-            TemplateEngine engine = null;
-            try
-            {
-                engine = new TemplateEngine().AddFile(GetExampleFilePath(input));
-            }
-            catch (Exception)
-            {
-                isFail = true;
-                errorMessage = "error occurs when parsing file";
-            }
+            var lgFile = LGParser.ParseFile(GetExampleFilePath(input));
+            Assert.IsTrue(lgFile.Diagnostics.All(u => u.Severity != DiagnosticSeverity.Error));
 
-            if (!isFail)
-            {
-                try
-                {
-                    engine.AnalyzeTemplate(templateName);
-                    isFail = true;
-                    errorMessage = "No exception is thrown.";
-                }
-                catch (Exception e)
-                {
-                    TestContext.WriteLine(e.Message);
-                }
-            }
-
-            if (isFail)
-            {
-                Assert.Fail(errorMessage);
-            }
+            Assert.ThrowsException<Exception>(() => lgFile.AnalyzeTemplate(templateName));
         }
 
         [DataTestMethod]
         [DynamicData(nameof(EvaluatorExceptionData))]
         public void EvaluatorThrowExceptionTest(string input, string templateName)
         {
-            var isFail = false;
-            var errorMessage = string.Empty;
-            TemplateEngine engine = null;
-            try
-            {
-                engine = new TemplateEngine().AddFile(GetExampleFilePath(input));
-            }
-            catch (Exception)
-            {
-                isFail = true;
-                errorMessage = "error occurs when parsing file";
-            }
-
-            if (!isFail)
-            {
-                try
-                {
-                    engine.EvaluateTemplate(templateName, null);
-                    isFail = true;
-                    errorMessage = "No exception is thrown.";
-                }
-                catch (Exception e)
-                {
-                    TestContext.WriteLine(e.Message);
-                }
-            }
-
-            if (isFail)
-            {
-                Assert.Fail(errorMessage);
-            }
+            var lgFile = LGParser.ParseFile(GetExampleFilePath(input));
+            Assert.IsTrue(lgFile.Diagnostics.All(u => u.Severity != DiagnosticSeverity.Error));
+            Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate(templateName));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
         public void AddTextWithWrongId()
         {
-            new TemplateEngine().AddText("# t \n - hi", "a.lg");
+            var lgFile = LGParser.ParseContent("# t \n - hi", "a.lg");
+            Assert.IsTrue(lgFile.Diagnostics.Any(u => u.Severity == DiagnosticSeverity.Error));
         }
 
         private string GetExampleFilePath(string fileName)

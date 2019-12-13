@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public object EvaluateTemplate(string templateName, object scope = null)
         {
-            CheckErrors();
+            CheckErrors(Diagnostics);
             if (!(scope is IMemory memory))
             {
                 memory = SimpleObjectMemory.Wrap(scope);
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Evaluate result.</returns>
         public object Evaluate(string inlineStr, object scope = null)
         {
-            CheckErrors();
+            CheckErrors(Diagnostics);
 
             // wrap inline string with "# name and -" to align the evaluation process
             var fakeTemplateId = "__temp__";
@@ -81,11 +81,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    ? "```" + inlineStr + "```" : inlineStr;
             var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
 
-            var lgFile = LGParser.ParseContent(wrappedStr, "inline");
+            var lgFile = LGParser.ParseContent(wrappedStr, "inline", importResolver);
             var templates = AllTemplates.Concat(lgFile.AllTemplates).ToList();
-            
-            // Static checker
-            // RunStaticCheck(templates);
+
+            CheckErrors(lgFile.Diagnostics);
 
             var evaluator = new Evaluator(templates, this.expressionEngine);
             return evaluator.EvaluateTemplate(fakeTemplateId, new CustomizedMemory(scope));
@@ -93,14 +92,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public IList<string> ExpandTemplate(string templateName, object scope = null)
         {
-            CheckErrors();
+            CheckErrors(Diagnostics);
             var expander = new Expander(AllTemplates.ToList(), this.expressionEngine);
             return expander.EvaluateTemplate(templateName, new CustomizedMemory(scope));
         }
 
         public AnalyzerResult AnalyzeTemplate(string templateName)
         {
-            CheckErrors();
+            CheckErrors(Diagnostics);
             var analyzer = new Analyzer(AllTemplates.ToList(), this.expressionEngine);
             return analyzer.AnalyzeTemplate(templateName);
         }
@@ -240,7 +239,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private void CheckErrors()
+        private void CheckErrors(IList<Diagnostic> diagnostics)
         {
             if (Diagnostics.Any(u => u.Severity == DiagnosticSeverity.Error))
             {

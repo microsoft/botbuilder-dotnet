@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var content = File.ReadAllText(fullPath);
                 lgFile.Id = fullPath;
                 lgFile.Content = content;
-                var (templates, imports, errorTemplatesDiagnostics) = AntlrParse(File.ReadAllText(fullPath), fullPath);
+                var (templates, imports, errorTemplatesDiagnostics) = AntlrParse(content, fullPath);
                 lgFile.Templates = templates;
                 lgFile.Imports = imports;
                 diagnostics.AddRange(errorTemplatesDiagnostics);
@@ -87,7 +87,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var errorTemplates = fileContext == null ? new List<LGFileParser.ErrorTemplateContext>() :
                    fileContext.paragraph()
-                   .Select(x => x.errorTemplate());
+                   .Select(x => x.errorTemplate())
+                   .Where(x => x != null);
 
             var diagnostics = new List<Diagnostic>();
 
@@ -187,6 +188,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var resourcesFound = new HashSet<LGFile>();
             ResolveImportResources(file, importResolver ?? ImportResolver.FileResolver, resourcesFound);
 
+            resourcesFound.Remove(file);
             return resourcesFound.ToList();
         }
 
