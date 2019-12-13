@@ -1,0 +1,29 @@
+steps:
+- task: DownloadBuildArtifacts@0
+  displayName: 'Download Compat Results artifact'
+  inputs:
+    downloadType: specific
+    itemPattern: '**\*.txt'
+    downloadPath: '$(System.ArtifactsDirectory)\ApiCompat'
+
+- task: SOUTHWORKS.github-pr-comment.custom-publish-comment-task.github-pr-comment@0
+  displayName: 'Publish Compat Results to Github'
+  inputs:
+    userToken: '$(GitHubCommentApiKey)'
+    bodyFilePath: '$(System.ArtifactsDirectory)\ApiCompat'
+    getSubFolders: true
+
+- task: Southworks-Pipelines-Test.github-pr-comment-multiple-files.custom-publish-comment-task.github-pr-comment-multiple-files@0
+  displayName: 'GitHub Comment Publisher -OLD'
+  inputs:
+    userToken: '$(GitHubCommentApiKey)'
+    bodyFilePath: '$(System.ArtifactsDirectory)\ApiCompat'
+    getSubFolders: true
+  enabled: false
+
+- script: |
+   cd ..
+   dir /s
+  displayName: 'Dir workspace'
+  continueOnError: true
+  condition: succeededOrFailed()

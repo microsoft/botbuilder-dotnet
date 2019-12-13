@@ -1337,21 +1337,38 @@ namespace Microsoft.Bot.Expressions
             object result = null;
             string error;
 
-            dynamic collection;
-            (collection, error) = expression.Children[0].TryEvaluate(state);
+            dynamic instance;
+            (instance, error) = expression.Children[0].TryEvaluate(state);
             if (error == null)
             {
                 // 2nd parameter has been rewrite to $local.item
                 var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
+                IList list = null;
+                if (TryParseList(instance, out IList ilist))
+                {
+                    list = ilist;
+                }
+                else if (instance is JObject jobj)
+                {
+                    list = Object2KVPairList(jobj);
+                }
+                else if (JToken.FromObject(instance) is JObject jobject)
+                {
+                    list = Object2KVPairList(jobject);
+                }
+                else
+                {
+                    error = $"{expression.Children[0]} is not a collection or structure object to run foreach";
+                }
 
-                if (TryParseList(collection, out IList ilist))
+                if (error == null)
                 {
                     result = new List<object>();
-                    for (var idx = 0; idx < ilist.Count; idx++)
+                    for (var idx = 0; idx < list.Count; idx++)
                     {
                         var local = new Dictionary<string, object>
                         {
-                            { iteratorName, AccessIndex(ilist, idx).value },
+                            { iteratorName, AccessIndex(list, idx).value },
                         };
                         var newMemory = new Dictionary<string, IMemory>
                         {
@@ -1368,10 +1385,6 @@ namespace Microsoft.Bot.Expressions
                         ((List<object>)result).Add(r);
                     }
                 }
-                else
-                {
-                    error = $"{expression.Children[0]} is not a collection to run foreach";
-                }
             }
 
             return (result, error);
@@ -1382,33 +1395,47 @@ namespace Microsoft.Bot.Expressions
             object result = null;
             string error;
 
-            dynamic collection;
-            (collection, error) = expression.Children[0].TryEvaluate(state);
+            dynamic instance;
+            (instance, error) = expression.Children[0].TryEvaluate(state);
             if (error == null)
             {
                 // 2nd parameter has been rewrite to $local.item
                 var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
+                var isInstanceList = false;
+                IList list = null;
+                if (TryParseList(instance, out IList ilist))
+                {
+                    isInstanceList = true;
+                    list = ilist;
+                }
+                else if (instance is JObject jobj)
+                {
+                    list = Object2KVPairList(jobj);
+                }
+                else if (JToken.FromObject(instance) is JObject jobject)
+                {
+                    list = Object2KVPairList(jobject);
+                }
+                else
+                {
+                    error = $"{expression.Children[0]} is not a collection or structure object to run foreach";
+                }
 
-                if (TryParseList(collection, out IList ilist))
+                if (error == null)
                 {
                     result = new List<object>();
-                    for (var idx = 0; idx < ilist.Count; idx++)
+                    for (var idx = 0; idx < list.Count; idx++)
                     {
                         var local = new Dictionary<string, object>
                         {
-                            { iteratorName, AccessIndex(ilist, idx).value },
+                            { iteratorName, AccessIndex(list, idx).value },
                         };
                         var newMemory = new Dictionary<string, IMemory>
                         {
                             { "$global", state },
                             { "$local", new SimpleObjectMemory(local) },
                         };
-
-                        (var r, var e) = expression.Children[2].TryEvaluate(new ComposedMemory(newMemory));
-                        if (e != null)
-                        {
-                            return (null, e);
-                        }
+                        (var r, _) = expression.Children[2].TryEvaluate(new ComposedMemory(newMemory));
 
                         if ((bool)r)
                         {
@@ -1416,14 +1443,33 @@ namespace Microsoft.Bot.Expressions
                             ((List<object>)result).Add(local[iteratorName]);
                         }
                     }
-                }
-                else
-                {
-                    error = $"{expression.Children[0]} is not a collection to run where";
+
+                    if (!isInstanceList)
+                    {
+                        // re-construct object
+                        var jobjResult = new JObject();
+                        foreach (var item in (List<object>)result)
+                        {
+                            jobjResult.Add(AccessProperty(item, "key").value.ToString(), JToken.FromObject(AccessProperty(item, "value").value));
+                        }
+
+                        result = jobjResult;
+                    }
                 }
             }
 
             return (result, error);
+        }
+
+        private static List<object> Object2KVPairList(JObject jobj)
+        {
+            var tempList = new List<object>();
+            foreach (var item in jobj)
+            {
+                tempList.Add(new { key = item.Key, value = item.Value });
+            }
+
+            return tempList;
         }
 
         private static void ValidateWhere(Expression expression) => ValidateForeach(expression);

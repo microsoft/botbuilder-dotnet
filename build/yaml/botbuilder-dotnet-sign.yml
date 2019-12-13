@@ -1,0 +1,25 @@
+#
+# This YAML build definition replaces the classic BotBuilder-DotNet-master-Signed-daily
+#
+
+# "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
+name: $(Build.BuildId)
+variables:
+  BuildConfiguration: Release-Windows
+  BuildPlatform: any cpu
+  IsBuildServer: true # Consumed by projects in Microsoft.Bot.Builder.sln.
+  MSBuildArguments: -p:IncludeSymbols=true -p:SourceLinkCreate=true -p:SymbolPackageFormat=snupkg
+  Parameters.solution: Microsoft.Bot.Builder.sln
+  PreviewPackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.
+  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.
+pool:
+  name: Hosted Windows 2019 with VS2019
+  demands:
+  - msbuild
+  - visualstudio
+
+jobs:
+- job: Build_and_Sign
+  steps:
+  - template: ci-build-steps.yml
+  - template: sign-steps.yml
