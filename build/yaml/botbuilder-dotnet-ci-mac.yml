@@ -6,7 +6,6 @@
 name: $(Build.BuildId)
 variables:
   BuildConfiguration: debug
-  #Parameters.solution: Microsoft.Bot.Builder-Standard.sln
 
 pool:
     vmImage: 'macOS-10.14'

@@ -5,6 +5,11 @@
     "title": "Repeat dialog",
     "description": "Repeat current dialog.",
     "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
         "options": {
             "type": "object",
             "title": "Options",

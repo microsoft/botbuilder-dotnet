@@ -19,6 +19,8 @@ lexer grammar LGFileLexer;
   bool beginOfTemplateBody = false; // whether we are at the begining of template body
   bool inMultiline = false; // whether we are in multiline
   bool beginOfTemplateLine = false;// weather we are at the begining of template string
+  bool inStructuredValue = false; // weather we are in the structure value
+  bool beginOfStructureProperty = false; // weather we are at the begining of structure property
 }
 
 // fragments
@@ -70,7 +72,7 @@ DASH
   ;
 
 LEFT_SQUARE_BRACKET
-  : '[' { inTemplate && beginOfTemplateBody }? -> pushMode(STRUCTURED_TEMPLATE_BODY_MODE)
+  : '[' { inTemplate && beginOfTemplateBody }? -> pushMode(STRUCTURE_NAME_MODE)
   ;
 
 IMPORT
@@ -183,24 +185,63 @@ MULTILINE_TEXT
   : (('\r'? '\n') | ~[\r\n])+? -> type(TEXT)
   ;
 
-mode STRUCTURED_TEMPLATE_BODY_MODE;
+mode STRUCTURE_NAME_MODE;
 
-WS_IN_STRUCTURED
-  : WHITESPACE+
+WS_IN_STRUCTURE_NAME
+  : WHITESPACE+ -> skip
   ;
 
+NEWLINE_IN_STRUCTURE_NAME
+  : '\r'? '\n' { ignoreWS = true;} {beginOfStructureProperty = true;}-> skip, pushMode(STRUCTURE_BODY_MODE)
+  ;
+
+STRUCTURE_NAME
+  : (LETTER | NUMBER | '_') (LETTER | NUMBER | '-' | '_' | '.')*
+  ;
+
+TEXT_IN_STRUCTURE_NAME
+  : ~[\r\n]+?
+  ;
+
+mode STRUCTURE_BODY_MODE;
+
 STRUCTURED_COMMENTS
-  : ('>'|'$') ~[\r\n]* '\r'?'\n' -> skip
+  : ('>'|'$') ~[\r\n]* '\r'?'\n' { !inStructuredValue && beginOfStructureProperty}? -> skip
+  ;
+
+WS_IN_STRUCTURE_BODY
+  : WHITESPACE+ {ignoreWS}? -> skip
   ;
 
 STRUCTURED_NEWLINE
-  : '\r'? '\n' -> skip
+  : '\r'? '\n' { ignoreWS = true; inStructuredValue = false; beginOfStructureProperty = true;}
   ;
 
-STRUCTURED_TEMPLATE_BODY_END
-  : WS_IN_STRUCTURED? ']' WS_IN_STRUCTURED? { inTemplate = false; beginOfTemplateBody = false;} -> popMode
+STRUCTURED_BODY_END
+  : ']' {!inStructuredValue}? { inTemplate = false; beginOfTemplateBody = false;} -> popMode, popMode
   ;
 
-STRUCTURED_CONTENT
-  : ~[\r\n]+
+STRUCTURE_IDENTIFIER
+  : (LETTER | NUMBER | '_') (LETTER | NUMBER | '-' | '_' | '.')* { !inStructuredValue && beginOfStructureProperty}? {beginOfStructureProperty = false;}
   ;
+
+STRUCTURE_EQUALS
+  : '=' {inStructuredValue = true;} 
+  ;
+
+STRUCTURE_OR_MARK
+  : '|' { ignoreWS = true; }
+  ;
+
+ESCAPE_CHARACTER_IN_STRUCTURE_BODY
+  : ESCAPE_CHARACTER_FRAGMENT { ignoreWS = false; }
+  ;
+
+EXPRESSION_IN_STRUCTURE_BODY
+  : EXPRESSION_FRAGMENT { ignoreWS = false; }
+  ;
+
+TEXT_IN_STRUCTURE_BODY
+  : ~[\r\n]+?  { ignoreWS = false; beginOfStructureProperty = false;}
+  ;
+
