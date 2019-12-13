@@ -236,58 +236,44 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             public override List<Diagnostic> VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
             {
                 var result = new List<Diagnostic>();
-
-                var typeName = context.structuredBodyNameLine().STRUCTURED_CONTENT().GetText().Trim();
-                if (!structuredNameRegex.IsMatch(typeName))
+                
+                if (context.structuredBodyNameLine().errorStructuredName() != null)
                 {
-                    result.Add(BuildLGDiagnostic($"Structured type {typeName} is invalid. Letter, number, '_', '-' and '.' is allowed.", context: context.structuredBodyContentLine()));
+                    result.Add(BuildLGDiagnostic($"structured name format error.", context: context.structuredBodyNameLine()));
                 }
 
                 if (context.structuredBodyEndLine() == null)
                 {
-                    result.Add(BuildLGDiagnostic($"structured LG missing ending ']'", context: context.structuredBodyContentLine()));
+                    result.Add(BuildLGDiagnostic($"structured LG missing ending ']'", context: context));
                 }
 
-                var bodys = context.structuredBodyContentLine()?.STRUCTURED_CONTENT();
-                if (bodys == null || bodys.Length == 0 || bodys.All(u => string.IsNullOrEmpty(u.GetText())))
+                var bodys = context.structuredBodyContentLine();
+
+                if (bodys == null || bodys.Length == 0)
                 {
-                    result.Add(BuildLGDiagnostic($"Structured content is empty", context: context.structuredBodyContentLine()));
+                    result.Add(BuildLGDiagnostic($"Structured content is empty", context: context));
                 }
                 else
                 {
                     foreach (var body in bodys)
                     {
-                        var line = body.GetText().Trim();
-                        if (!string.IsNullOrWhiteSpace(line))
+                        if (body.errorStructureLine() != null)
                         {
-                            var start = line.IndexOf('=');
-                            if (start < 0 && !Evaluator.IsPureExpression(line))
+                            result.Add(BuildLGDiagnostic($"structured body format error.", context: body.errorStructureLine()));
+                        }
+                        else if (body.objectStructureLine() != null)
+                        {
+                            result.AddRange(CheckExpression(body.objectStructureLine().GetText(), body.objectStructureLine()));
+                        }
+                        else
+                        {
+                            // KeyValueStructuredLine
+                            var structureValues = body.keyValueStructureLine().keyValueStructureValue();
+                            foreach (var structureValue in structureValues)
                             {
-                                result.Add(BuildLGDiagnostic($"Structured content does not support", context: context.structuredBodyContentLine()));
-                            }
-                            else 
-                            {
-                                if (start > 0)
+                                foreach (var expression in structureValue.EXPRESSION_IN_STRUCTURE_BODY())
                                 {
-                                    var property = line.Substring(0, start).Trim().ToLower();
-                                    var originValue = line.Substring(start + 1).Trim();
-                                    var valueArray = Evaluator.EscapeSeperatorRegex.Split(originValue);
-
-                                    if (valueArray.Length == 1)
-                                    {
-                                        result.AddRange(CheckText(originValue, context.structuredBodyContentLine()));
-                                    }
-                                    else
-                                    {
-                                        foreach (var item in valueArray)
-                                        {
-                                            result.AddRange(CheckText(item.Trim(), context.structuredBodyContentLine()));
-                                        }
-                                    }
-                                }
-                                else if (Evaluator.IsPureExpression(line))
-                                {
-                                    result.AddRange(CheckExpression(line, context.structuredBodyContentLine()));
+                                    result.AddRange(CheckExpression(expression.GetText(), context));
                                 }
                             }
                         }
@@ -471,20 +457,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (multiLinePrefix != null && multiLineSuffix == null)
                 {
                     result.Add(BuildLGDiagnostic("Close ``` is missing.", context: context));
-                }
-
-                return result;
-            }
-
-            private List<Diagnostic> CheckText(string exp, ParserRuleContext context)
-            {
-                var result = new List<Diagnostic>();
-
-                var mc = Evaluator.ExpressionRecognizeRegex.Matches(exp);
-
-                foreach (Match match in mc)
-                {
-                    result.AddRange(CheckExpression(match.Value, context));
                 }
 
                 return result;

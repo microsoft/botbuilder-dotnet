@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -138,61 +139,45 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override List<string> VisitStructuredBody([NotNull] LGFileParser.StructuredBodyContext context)
         {
-            var idToStringDict = new Dictionary<string, string>();
+            var templateRefValues = new Dictionary<string, List<string>>();
             var stb = context.structuredTemplateBody();
             var result = new JObject();
-            var typeName = stb.structuredBodyNameLine().STRUCTURED_CONTENT().GetText().Trim();
+            var typeName = stb.structuredBodyNameLine().STRUCTURE_NAME().GetText();
             result[Evaluator.LGType] = typeName;
             var expandedResult = new List<JObject>
             {
                 result
             };
-            var bodys = stb.structuredBodyContentLine().STRUCTURED_CONTENT();
+            var bodys = stb.structuredBodyContentLine();
             foreach (var body in bodys)
             {
-                var line = body.GetText().Trim();
-
-                if (string.IsNullOrWhiteSpace(line))
+                var isKVPairBody = body.keyValueStructureLine() != null;
+                if (isKVPairBody)
                 {
-                    continue;
-                }
-
-                var start = line.IndexOf('=');
-                if (start > 0)
-                {
-                    // make it insensitive
-                    var property = line.Substring(0, start).Trim().ToLower();
-                    var originValue = line.Substring(start + 1).Trim();
-
-                    var valueArray = Evaluator.EscapeSeperatorRegex.Split(originValue);
-                    if (valueArray.Length == 1)
-                    {
-                        var id = Guid.NewGuid().ToString();
-                        expandedResult.ForEach(x => x[property] = id);
-                        idToStringDict.Add(id, originValue);
-                    }
-                    else
+                    var property = body.keyValueStructureLine().STRUCTURE_IDENTIFIER().GetText().ToLower();
+                    var value = VisitStructureValue(body.keyValueStructureLine());
+                    if (value.Count > 1) 
                     {
                         var valueList = new JArray();
-                        foreach (var item in valueArray)
+                        foreach (var item in value)
                         {
                             var id = Guid.NewGuid().ToString();
                             valueList.Add(id);
-                            idToStringDict.Add(id, item.Trim());
+                            templateRefValues.Add(id, item);
                         }
 
                         expandedResult.ForEach(x => x[property] = valueList);
                     }
+                    else
+                    {
+                        var id = Guid.NewGuid().ToString();
+                        expandedResult.ForEach(x => x[property] = id);
+                        templateRefValues.Add(id, value[0]);
+                    }
                 }
-                else if (Evaluator.IsPureExpression(line))
+                else
                 {
-                    // [MyStruct
-                    // Text = foo
-                    // {ST2()}
-                    // ]
-
-                    // When the same property exists in both the calling template as well as callee, the content in caller will trump any content in the callee.
-                    var propertyObjects = EvalExpression(line).Select(x => JObject.Parse(x)).ToList();
+                    var propertyObjects = EvalExpression(body.objectStructureLine().GetText()).Select(x => JObject.Parse(x)).ToList();
                     var tempResult = new List<JObject>();
                     foreach (var res in expandedResult)
                     {
@@ -221,19 +206,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             var exps = expandedResult.Select(x => JsonConvert.SerializeObject(x)).ToList();
-            var templateRefValues = new Dictionary<string, List<string>>();
-            foreach (var idToString in idToStringDict)
-            {
-                // convert id text or expression to list of evaluated values
-                if (idToString.Value.StartsWith("@{") && idToString.Value.EndsWith("}"))
-                {
-                    templateRefValues.Add(idToString.Key, this.EvalExpression(idToString.Value));
-                }
-                else
-                {
-                    templateRefValues.Add(idToString.Key, this.EvalText(idToString.Value));
-                }
-            }
 
             var finalResult = new List<string>(exps);
             foreach (var templateRefValue in templateRefValues)
@@ -304,6 +276,76 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return false;
+        }
+
+        private List<List<string>> VisitStructureValue(LGFileParser.KeyValueStructureLineContext context)
+        {
+            var values = context.keyValueStructureValue();
+
+            var result = new List<List<string>>();
+            foreach (var item in values)
+            {
+                if (IsPureExpression(item, out var text))
+                {
+                    result.Add(EvalExpression(text));
+                }
+                else
+                {
+                    var itemStringResult = new List<string>() { string.Empty };
+                    foreach (ITerminalNode node in item.children)
+                    {
+                        switch (node.Symbol.Type)
+                        {
+                            case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
+                                itemStringResult = StringListConcat(itemStringResult, EvalEscape(node.GetText()));
+                                break;
+                            case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
+                                itemStringResult = StringListConcat(itemStringResult, EvalExpression(node.GetText()));
+                                break;
+                            default:
+                                itemStringResult = StringListConcat(itemStringResult, new List<string>() { node.GetText() });
+                                break;
+                        }
+                    }
+
+                    result.Add(itemStringResult);
+                }
+            }
+
+            return result;
+        }
+
+        private bool IsPureExpression(LGFileParser.KeyValueStructureValueContext context, out string expression)
+        {
+            expression = context.GetText();
+
+            var hasExpression = false;
+            foreach (ITerminalNode node in context.children)
+            {
+                switch (node.Symbol.Type)
+                {
+                    case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
+                        return false;
+                    case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
+                        if (hasExpression)
+                        {
+                            return false;
+                        }
+
+                        hasExpression = true;
+                        expression = node.GetText();
+                        break;
+                    default:
+                        if (!string.IsNullOrWhiteSpace(node.GetText()))
+                        {
+                            return false;
+                        }
+
+                        break;
+                }
+            }
+
+            return hasExpression;
         }
 
         private bool EvalExpressionInCondition(string exp)
@@ -479,54 +521,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return expanderExpression;
-        }
-
-        private List<string> EvalTextContainsExpression(string exp)
-        {
-            var templateRefValues = new Dictionary<string, List<string>>();
-            var matches = Evaluator.ExpressionRecognizeRegex.Matches(exp);
-            if (matches != null)
-            {
-                foreach (Match match in matches)
-                {
-                    templateRefValues.Add(match.Value, EvalExpression(match.Value));
-                }
-            }
-
-            var result = new List<string>() { exp };
-            foreach (var templateRefValue in templateRefValues)
-            {
-                var tempRes = new List<string>();
-                foreach (var res in result)
-                {
-                    foreach (var refValue in templateRefValue.Value)
-                    {
-                        tempRes.Add(res.Replace(templateRefValue.Key, refValue));
-                    }
-                }
-
-                result = tempRes;
-            }
-
-            return result;
-        }
-
-        private List<string> EvalText(string exp)
-        {
-            if (string.IsNullOrEmpty(exp))
-            {
-                return new List<string>() { exp };
-            }
-
-            if (Evaluator.IsPureExpression(exp))
-            {
-                // @{} or {} text, get object result
-                return EvalExpression(exp);
-            }
-            else
-            {
-                return EvalTextContainsExpression(exp).Select(x => Regex.Unescape(x)).ToList();
-            }
         }
     }
 }
