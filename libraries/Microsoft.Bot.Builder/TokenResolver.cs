@@ -9,6 +9,8 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -65,10 +67,11 @@ namespace Microsoft.Bot.Builder
             }
 
             var stopwatch = Stopwatch.StartNew();
+            var oauthClient = turnContext.TurnState.Get<OAuthClient>();
 
             while (stopwatch.Elapsed < pollingTimeout && !shouldEndPolling)
             {
-                tokenResponse = await adapter.GetUserTokenAsync(turnContext, connectionName, null, cancellationToken).ConfigureAwait(false);
+                tokenResponse = await adapter.GetUserTokenAsync(turnContext, oauthClient?.Credentials as AppCredentials, connectionName, null, cancellationToken).ConfigureAwait(false);
 
                 if (tokenResponse != null)
                 {
