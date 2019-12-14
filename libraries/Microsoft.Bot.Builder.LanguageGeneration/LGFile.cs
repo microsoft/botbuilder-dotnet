@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +10,9 @@ using Microsoft.Bot.Expressions.Memory;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
+    /// <summary>
+    /// LG entrance, including properties that LG file has, and evaluate functions.
+    /// </summary>
     public class LGFile
     {
         private readonly ExpressionEngine expressionEngine;
@@ -41,18 +47,60 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
+        /// <summary>
+        /// Gets or sets templates that this LG file contains directly.
+        /// </summary>
+        /// <value>
+        /// templates that this LG file contains directly.
+        /// </value>
         public IList<LGTemplate> Templates { get; set; }
 
+        /// <summary>
+        /// Gets or sets import elements that this LG file contains directly.
+        /// </summary>
+        /// <value>
+        /// import elements that this LG file contains directly.
+        /// </value>
         public IList<LGImport> Imports { get; set; }
 
+        /// <summary>
+        /// Gets or sets all references that this LG file has from <see cref="Imports"/>.
+        /// </summary>
+        /// <value>
+        /// import elements that this LG file contains directly.
+        /// </value>
         public IList<LGFile> References { get; set; }
 
+        /// <summary>
+        /// Gets or sets diagnostics.
+        /// </summary>
+        /// <value>
+        /// diagnostics.
+        /// </value>
         public IList<Diagnostic> Diagnostics { get; set; }
 
+        /// <summary>
+        /// Gets or sets LG content.
+        /// </summary>
+        /// <value>
+        /// LG content.
+        /// </value>
         public string Content { get; set; }
 
+        /// <summary>
+        /// Gets or sets id of this LG file.
+        /// </summary>
+        /// <value>
+        /// id of this lg source. For file, is full path.
+        /// </value>
         public string Id { get; set; }
 
+        /// <summary>
+        /// Evaluate a template with given name and scope.
+        /// </summary>
+        /// <param name="templateName">Template name to be evaluated.</param>
+        /// <param name="scope">The state visible in the evaluation.</param>
+        /// <returns>Evaluate result.</returns>
         public object EvaluateTemplate(string templateName, object scope = null)
         {
             CheckErrors(Diagnostics);
@@ -73,23 +121,35 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Evaluate result.</returns>
         public object Evaluate(string inlineStr, object scope = null)
         {
+            if (inlineStr == null)
+            {
+                throw new ArgumentException("inline string is null.");
+            }
+
             CheckErrors(Diagnostics);
 
             // wrap inline string with "# name and -" to align the evaluation process
-            var fakeTemplateId = "__temp__";
-            inlineStr = !inlineStr.Trim().StartsWith("```") && inlineStr.IndexOf('\n') >= 0
-                   ? "```" + inlineStr + "```" : inlineStr;
+            var fakeTemplateId = Guid.NewGuid().ToString();
+            var multiLineMark = "```";
+
+            inlineStr = !inlineStr.Trim().StartsWith(multiLineMark) && inlineStr.Contains('\n')
+                   ? $"{multiLineMark}{inlineStr}{multiLineMark}" : inlineStr;
+
             var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
 
-            var lgFile = LGParser.ParseContent(wrappedStr, "inline", importResolver);
-            var templates = AllTemplates.Concat(lgFile.AllTemplates).ToList();
+            var newContent = $"{Content}\r\n{wrappedStr}";
 
-            CheckErrors(lgFile.Diagnostics);
-
-            var evaluator = new Evaluator(templates, this.expressionEngine);
-            return evaluator.EvaluateTemplate(fakeTemplateId, new CustomizedMemory(scope));
+            var newLgFile = LGParser.ParseContent(newContent, Id, importResolver);
+            return newLgFile.EvaluateTemplate(fakeTemplateId, scope);
         }
 
+        /// <summary>
+        /// Expand a template with given name and scope.
+        /// Return all possible responses instead of random one.
+        /// </summary>
+        /// <param name="templateName">Template name to be evaluated.</param>
+        /// <param name="scope">The state visible in the evaluation.</param>
+        /// <returns>Expand result.</returns>
         public IList<string> ExpandTemplate(string templateName, object scope = null)
         {
             CheckErrors(Diagnostics);
@@ -97,6 +157,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return expander.EvaluateTemplate(templateName, new CustomizedMemory(scope));
         }
 
+        /// <summary>
+        /// (experimental)
+        /// Analyzer a template to get the static analyzer results including variables and template references.
+        /// </summary>
+        /// <param name="templateName">Template name to be evaluated.</param>
+        /// <returns>analyzer result.</returns>
         public AnalyzerResult AnalyzeTemplate(string templateName)
         {
             CheckErrors(Diagnostics);
@@ -122,7 +188,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var templateNameLine = BuildTemplateNameLine(newTemplateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
-            var content = $"{templateNameLine}\r\n{newTemplateBody}";
+            var content = $"{templateNameLine}\r\n{newTemplateBody}\r\n";
             var startLine = template.ParseTree.Start.Line - 1;
             var stopLine = template.ParseTree.Stop.Line - 1;
 
@@ -131,7 +197,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Add a new template and return LG resource.
+        /// Add a new template and return LG File.
         /// </summary>
         /// <param name="templateName">new template name.</param>
         /// <param name="parameters">new params.</param>
@@ -147,7 +213,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
-            var newContent = $"{Content}\r\n{templateNameLine}\r\n{newTemplateBody}";
+            var newContent = $"{Content.TrimEnd()}\r\n\r\n{templateNameLine}\r\n{newTemplateBody}\r\n";
             return LGParser.ParseContent(newContent, Id, importResolver);
         }
 
@@ -155,7 +221,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Delete an exist template.
         /// </summary>
         /// <param name="templateName">which template should delete.</param>
-        /// <returns>return the new lg resource.</returns>
+        /// <returns>return the new lg file.</returns>
         public LGFile DeleteTemplate(string templateName)
         {
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
@@ -177,21 +243,70 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var originList = originString.Split('\n');
             var destList = new List<string>();
-            if (startLine < 0 || startLine > stopLine || originList.Length <= stopLine)
+            if (startLine < 0 || startLine > stopLine || stopLine >= originList.Length)
             {
                 throw new Exception("index out of range.");
             }
 
-            destList.AddRange(originList.Take(startLine));
+            destList.AddRange(TrimList(originList.Take(startLine).ToList()));
 
-            if (!string.IsNullOrEmpty(replaceString))
+            if (stopLine < originList.Length - 1)
             {
-                destList.Add(replaceString);
+                destList.Add("\r\n");
+                if (!string.IsNullOrEmpty(replaceString))
+                {
+                    destList.Add(replaceString);
+                    destList.Add("\r\n");
+                }
+
+                destList.AddRange(TrimList(originList.Skip(stopLine + 1).ToList()));
+            }
+            else
+            {
+                // insert at the tail of the content
+                if (!string.IsNullOrEmpty(replaceString))
+                {
+                    destList.Add("\r\n");
+                    destList.Add(replaceString);
+                }
             }
 
-            destList.AddRange(originList.Skip(stopLine + 1));
+            return BuildNewLGContent(TrimList(destList));
+        }
 
-            return BuildNewLGContent(destList);
+        /// <summary>
+        /// trim the newlines at the beginning or at the tail of the array.
+        /// </summary>
+        /// <param name="input">input array.</param>
+        /// <returns>trimed list.</returns>
+        private List<string> TrimList(List<string> input)
+        {
+            if (input == null)
+            {
+                return null;
+            }
+
+            var startIndex = 0;
+            var endIndex = input.Count;
+            for (var i = 0; i < input.Count; i++)
+            {
+                if (!string.IsNullOrWhiteSpace(input[i]?.Trim()))
+                {
+                    startIndex = i;
+                    break;
+                }
+            }
+
+            for (var i = input.Count - 1; i >= 0; i--)
+            {
+                if (!string.IsNullOrWhiteSpace(input[i]?.Trim()))
+                {
+                    endIndex = i + 1;
+                    break;
+                }
+            }
+
+            return input.Skip(startIndex).Take(endIndex - startIndex).ToList();
         }
 
         private string BuildNewLGContent(List<string> destList)
@@ -205,7 +320,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     result.Append("\n");
                 }
-                else if (i < destList.Count - 1)
+                else if (i < destList.Count - 1 && !currentItem.EndsWith("\r\n"))
                 {
                     result.Append("\r\n");
                 }
@@ -243,9 +358,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private void CheckErrors(IList<Diagnostic> diagnostics)
         {
-            if (Diagnostics.Any(u => u.Severity == DiagnosticSeverity.Error))
+            if (diagnostics == null)
             {
-                throw new Exception("Please fix the error diagnostics first.");
+                throw new ArgumentException();
+            }
+
+            var errors = diagnostics.Where(u => u.Severity == DiagnosticSeverity.Error).ToList();
+            if (errors.Count != 0)
+            {
+                throw new Exception(string.Join("\n", errors));
             }
         }
     }

@@ -1,14 +1,25 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Antlr4.Runtime;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
+    /// <summary>
+    /// Parser to turn lg content into an <see cref="LGFile"/>.
+    /// </summary>
     public class LGParser
     {
+        /// <summary>
+        /// Parser to turn lg content into an <see cref="LGFile"/>.
+        /// </summary>
+        /// <param name="filePath">LG absolute file path.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <returns>new <see cref="LGFile"/> entity.</returns>
         public static LGFile ParseFile(string filePath, ImportResolverDelegate importResolver = null)
         {
             var lgFile = new LGFile(importResolver: importResolver ?? ImportResolver.FileResolver);
@@ -42,6 +53,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return lgFile;
         }
 
+        /// <summary>
+        /// Parser to turn lg content into an <see cref="LGFile"/>.
+        /// </summary>
+        /// <param name="content">Text content contains lg templates.</param>
+        /// <param name="id">id is the content identifier. If importResolver is null, id must be a full path string. </param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <returns>new <see cref="LGFile"/> entity.</returns>
         public static LGFile ParseContent(string content, string id = "", ImportResolverDelegate importResolver = null)
         {
             var lgFile = new LGFile(content: content, id: id, importResolver: importResolver ?? ImportResolver.FileResolver);
@@ -49,6 +67,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             try
             {
                 CheckImportResolver(id, importResolver);
+
                 var (templates, imports, errorTemplatesDiagnostics) = AntlrParse(content, id);
                 lgFile.Templates = templates;
                 lgFile.Imports = imports;

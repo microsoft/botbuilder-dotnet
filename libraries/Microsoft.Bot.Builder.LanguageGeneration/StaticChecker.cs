@@ -10,20 +10,22 @@ using Microsoft.Bot.Expressions;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
-    public class StaticChecker : LGFileParserBaseVisitor<List<Diagnostic>>
+    /// <summary>
+    /// LG managed code checker.
+    /// </summary>
+    internal class StaticChecker : LGFileParserBaseVisitor<List<Diagnostic>>
     {
         private string currentSource = string.Empty;
         private readonly ExpressionEngine baseExpressionEngine;
+        private readonly List<LGTemplate> templates;
 
         private IExpressionParser _expressionParser;
 
         public StaticChecker(List<LGTemplate> templates, ExpressionEngine expressionEngine = null)
         {
-            Templates = templates;
+            this.templates = templates;
             baseExpressionEngine = expressionEngine ?? new ExpressionEngine();
         }
-
-        public List<LGTemplate> Templates { get; }
 
         // Create a property because we want this to be lazy loaded
         private IExpressionParser ExpressionParser
@@ -33,7 +35,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (_expressionParser == null)
                 {
                     // create an evaluator to leverage it's customized function look up for checking
-                    var evaluator = new Evaluator(Templates, baseExpressionEngine);
+                    var evaluator = new Evaluator(templates, baseExpressionEngine);
                     _expressionParser = evaluator.ExpressionEngine;
                 }
 
@@ -50,7 +52,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var result = new List<Diagnostic>();
 
             // check dup first
-            var duplicatedTemplates = Templates
+            var duplicatedTemplates = templates
                                       .GroupBy(t => t.Name)
                                       .Where(g => g.Count() > 1)
                                       .ToList();
@@ -69,14 +71,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return result;
             }
 
-            if (Templates.Count == 0)
+            if (templates.Count == 0)
             {
                 result.Add(BuildLGDiagnostic(
                     "File must have at least one template definition ",
                     DiagnosticSeverity.Warning));
             }
 
-            Templates.ForEach(t =>
+            templates.ForEach(t =>
             {
                 currentSource = t.Source;
                 result.AddRange(Visit(t.ParseTree));

@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="parseTree">The parse tree of this template.</param>
         /// <param name="source">Source of this import.</param>
-        public LGImport(LGFileParser.ImportDefinitionContext parseTree, string source = "")
+        internal LGImport(LGFileParser.ImportDefinitionContext parseTree, string source = "")
         {
             ParseTree = parseTree;
             Source = source;
