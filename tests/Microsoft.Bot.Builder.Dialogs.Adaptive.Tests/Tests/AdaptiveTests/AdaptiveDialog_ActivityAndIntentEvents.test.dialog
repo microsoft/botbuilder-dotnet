@@ -1,4 +1,5 @@
 {
+    "$schema": "../../../../schemas/sdk.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",

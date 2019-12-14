@@ -19,21 +19,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public ExpressionEngine ExpressionEngine { get; set; } = new ExpressionEngine();
 
         [TestMethod]
-        public async Task OnIntent()
+        public async Task ConditionalsTests_OnIntent()
         {
-            await TestUtils.RunTestScript("ConditionalsTests_OnIntent.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
-        public async Task OnIntentWithEntities()
+        public async Task ConditionalsTests_OnIntentWithEntities()
         {
-            await TestUtils.RunTestScript("ConditionalsTests_OnIntentWithEntities.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
-        public async Task OnActivityTypes()
+        public async Task ConditionalsTests_OnActivityTypes()
         {
-            await TestUtils.RunTestScript("ConditionalsTests_OnActivityTypes.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         public void AssertExpression(OnCondition condition, string expectedExpression)

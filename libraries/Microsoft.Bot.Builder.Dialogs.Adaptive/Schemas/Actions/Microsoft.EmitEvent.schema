@@ -8,6 +8,11 @@
         "eventName"
     ],
     "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
         "eventName": {
             "title": "Event name",
             "description": "Name of the event to emit.",

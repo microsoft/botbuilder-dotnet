@@ -5,6 +5,11 @@
     "description": "End this dialog.",
     "type": "object",
     "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
         "value": {
             "$role": "expression",
             "title": "Value",

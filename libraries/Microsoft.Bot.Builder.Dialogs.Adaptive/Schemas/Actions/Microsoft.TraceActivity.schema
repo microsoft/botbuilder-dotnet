@@ -5,6 +5,11 @@
     "description": "Send a trace activity to the transcript logger and/ or Bot Framework Emulator.",
     "type": "object",
     "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
         "name": {
             "type": "string",
             "title": "Name",

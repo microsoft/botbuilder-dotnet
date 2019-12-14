@@ -8,12 +8,12 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
-    public class Case
+    public class Case : ActionScope
     {
         public Case(string value = null, IEnumerable<Dialog> actions = null)
+            : base(actions)
         {
             this.Value = value;
-            this.Actions = actions?.ToList() ?? this.Actions;
         }
 
         /// <summary>
@@ -24,15 +24,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </value>
         [JsonProperty("value")]
         public string Value { get; set; }
-
-        /// <summary>
-        /// Gets or sets set of actions to be executed given that the condition of the switch matches the value of this case.
-        /// </summary>
-        /// <value>
-        /// Set of actions to be executed given that the condition of the switch matches the value of this case.
-        /// </value>
-        [JsonProperty("actions")]
-        public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
         /// <summary>
         /// Creates an expression that returns the value in its primitive type. Still

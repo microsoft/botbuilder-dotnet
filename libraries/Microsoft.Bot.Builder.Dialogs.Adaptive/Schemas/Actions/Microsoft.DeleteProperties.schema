@@ -8,6 +8,11 @@
         "properties"
     ],
     "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
         "properties": {
             "type": "array",
             "title": "Properties",

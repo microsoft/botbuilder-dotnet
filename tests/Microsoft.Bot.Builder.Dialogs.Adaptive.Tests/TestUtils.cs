@@ -45,9 +45,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             }
         }
 
-        public static async Task RunTestScript(string resourceId, [CallerMemberName] string testName = null, IConfiguration configuration = null)
+        public static async Task RunTestScript(string resourceId = null, [CallerMemberName] string testName = null, IConfiguration configuration = null)
         {
-            var script = TestUtils.ResourceExplorer.LoadType<TestScript>(resourceId);
+            var script = TestUtils.ResourceExplorer.LoadType<TestScript>(resourceId ?? $"{testName}.test.dialog");
             script.Description = script.Description ?? resourceId;
             await script.ExecuteAsync(testName: testName, configuration: configuration).ConfigureAwait(false);
         }
