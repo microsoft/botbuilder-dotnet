@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.MockLuis
         /// <returns>Modified adapter.</returns>
         public static BotAdapter UseMockLuis(this BotAdapter botAdapter)
         {
-            DeclarativeTypeLoader.AddComponent(new MockLuisRegistration());
+            DeclarativeTypeLoader.AddComponent(new MockLuisComponentRegistration());
             return botAdapter;
         }
 

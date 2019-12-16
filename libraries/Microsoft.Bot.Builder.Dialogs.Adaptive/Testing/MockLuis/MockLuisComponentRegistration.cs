@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 
 namespace Microsoft.Bot.Builder.MockLuis
 {
-    public class MockLuisRegistration : ComponentRegistration
+    public class MockLuisComponentRegistration : ComponentRegistration
     {
         public override IEnumerable<TypeRegistration> GetTypes()
         {

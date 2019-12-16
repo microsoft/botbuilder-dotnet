@@ -63,19 +63,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         [JsonIgnore]
         public virtual SourceRange Source => DebugSupport.SourceMap.TryGetValue(this, out var range) ? range : null;
 
-        protected ActionScope ActionScope
-        {
-            get
-            {
-                if (actionScope == null)
-                {
-                    actionScope = new ActionScope() { Actions = this.Actions };
-                }
-
-                return actionScope;
-            }
-        }
-
         /// <summary>
         /// Gets or sets the rule priority where 0 is the highest.
         /// </summary>
@@ -96,6 +83,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <value>Id for condition.</value>
         [JsonIgnore]
         public uint Id { get; set; }
+
+        protected ActionScope ActionScope
+        {
+            get
+            {
+                if (actionScope == null)
+                {
+                    actionScope = new ActionScope() { Actions = this.Actions };
+                }
+
+                return actionScope;
+            }
+        }
 
         /// <summary>
         /// Get the expression for this rule by calling GatherConstraints().
