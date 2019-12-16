@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Microsoft.Bot.Expressions
 {
@@ -112,40 +114,25 @@ namespace Microsoft.Bot.Expressions
         /// <returns>Hash set of the static reference paths.</returns>
         public static IReadOnlyList<string> References(this Expression expression)
         {
-            var references = new HashSet<string>();
-            var path = ReferenceWalk(expression, references);
+            var (path, refs) = ReferenceWalk(expression);
             if (path != null)
             {
-                references.Add(path);
+                refs.Add(path);
             }
 
-            var filteredReferences = new HashSet<string>();
-
-            references.Where(x => !x.StartsWith("$local.")).ToList().ForEach(x =>
-            {
-                if (x.StartsWith("$global."))
-                {
-                    filteredReferences.Add(x.Substring(8));
-                }
-                else
-                {
-                    filteredReferences.Add(x);
-                }
-            });
-
-            return filteredReferences.ToList();
+            return refs.ToList();
         }
 
         /// <summary>
         /// Walking function for identifying static memory references in an expression.
         /// </summary>
         /// <param name="expression">Expression to analyze.</param>
-        /// <param name="references">Tracking for references found.</param>
         /// <param name="extension">If present, called to override lookup for things like template expansion.</param>
-        /// <returns>Accessor path of expression.</returns>
-        public static string ReferenceWalk(Expression expression, HashSet<string> references, Func<Expression, bool> extension = null)
+        /// <returns>Accessor path of expression which is a potential partial path and the fullpath found so far</returns>
+        public static (string path, HashSet<string> references) ReferenceWalk(Expression expression, Func<Expression, bool> extension = null)
         {
             string path = null;
+            var refs = new HashSet<string>();
             if (extension == null || !extension(expression))
             {
                 var children = expression.Children;
@@ -160,7 +147,7 @@ namespace Microsoft.Bot.Expressions
 
                     if (children.Length == 2)
                     {
-                        path = ReferenceWalk(children[1], references, extension);
+                        (path, refs) = ReferenceWalk(children[1], extension);
                         if (path != null)
                         {
                             path = path + "." + prop;
@@ -172,7 +159,7 @@ namespace Microsoft.Bot.Expressions
                 }
                 else if (expression.Type == ExpressionType.Element)
                 {
-                    path = ReferenceWalk(children[0], references, extension);
+                    (path, refs) = ReferenceWalk(children[0], extension);
                     if (path != null)
                     {
                         if (children[1] is Constant cnst)
@@ -188,30 +175,58 @@ namespace Microsoft.Bot.Expressions
                         }
                         else
                         {
-                            references.Add(path);
+                            refs.Add(path);
                         }
                     }
 
-                    var idxPath = ReferenceWalk(children[1], references, extension);
+                    var (idxPath, refs1) = ReferenceWalk(children[1], extension);
+                    refs.UnionWith(refs1);
+
                     if (idxPath != null)
                     {
-                        references.Add(idxPath);
+                        refs.Add(idxPath);
                     }
+                }
+                else if (expression.Type == ExpressionType.Foreach ||
+                         expression.Type == ExpressionType.Where ||
+                         expression.Type == ExpressionType.Select)
+                {
+                    var (child0Path, refs0) = ReferenceWalk(children[0], extension);
+                    if (child0Path != null)
+                    {
+                        refs0.Add(child0Path);
+                    }
+
+                    var (child2Path, refs2) = ReferenceWalk(children[2], extension);
+                    if (child2Path != null)
+                    {
+                        refs2.Add(child2Path);
+                    }
+
+                    var iteratorName = (string)(children[1].Children[0] as Constant).Value;
+
+                    // filter references found in children 2 with iterator name
+                    var nonLocalRefs2 = refs2.Where(x => !(x.Equals(iteratorName) || x.StartsWith(iteratorName + '.') || x.StartsWith(iteratorName + '[')))
+                                             .ToList();
+
+                    refs.UnionWith(refs0);
+                    refs.UnionWith(nonLocalRefs2);
                 }
                 else
                 {
                     foreach (var child in expression.Children)
                     {
-                        var childPath = ReferenceWalk(child, references, extension);
+                        var (childPath, refs0) = ReferenceWalk(child, extension);
+                        refs.UnionWith(refs0);
                         if (childPath != null)
                         {
-                            references.Add(childPath);
+                            refs.Add(childPath);
                         }
                     }
                 }
             }
 
-            return path;
+            return (path, refs);
         }
     }
 }
