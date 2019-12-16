@@ -1,0 +1,58 @@
+#
+# This YAML build definition replaces the classic BotBuilder-DotNet-master-CI-PR-(MacLinux)
+#
+
+# "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
+name: $(Build.BuildId)
+variables:
+  BuildConfiguration: debug
+
+pool:
+    vmImage: 'macOS-10.14'
+steps:
+- task: UseDotNet@2
+  displayName: 'Use .Net Core sdk 2.1.x'
+  inputs:
+    version: 2.1.x
+
+- task: UseDotNet@2
+  displayName: 'Use .Net Core sdk 3.0.x'
+  inputs:
+    version: 3.0.x
+
+- task: NuGetToolInstaller@0
+  displayName: 'Use NuGet 4.9.1'
+  inputs:
+    versionSpec: 4.9.1
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore'
+  inputs:
+    restoreSolution: Microsoft.Bot.Builder-Standard.sln
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build'
+  inputs:
+    projects: Microsoft.Bot.Builder.sln
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
+  inputs:
+    command: test
+    projects: |
+     Tests/**/*Tests.csproj
+     
+    arguments: '-v n  --configuration $(BuildConfiguration) --no-build --no-restore --filter TestCategory!=IgnoreInAutomatedBuild --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: build folder'
+  inputs:
+    PathtoPublish: build
+    ArtifactName: build
+
+- powershell: |
+   cd ..
+   ls -R
+  displayName: 'Dir workspace'
+  continueOnError: true
+  condition: succeededOrFailed()

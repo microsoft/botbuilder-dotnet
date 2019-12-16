@@ -26,13 +26,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task IfCondition_EndDialog()
         {
-            await TestUtils.RunTestScript("IfCondition_EndDialog.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
         public async Task Rule_Reprompt()
         {
-            await TestUtils.RunTestScript("Rule_Reprompt.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]

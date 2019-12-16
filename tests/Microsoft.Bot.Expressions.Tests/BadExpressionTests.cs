@@ -287,7 +287,7 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("join(hello, 'hi')"), // first param must list
             Test("join(items, 1)"), // second param must string 
             Test("join(items, '1', 2)"), // third param must string 
-            Test("foreach(hello, item, item)"), // first arg is not list
+            Test("foreach(hello, item, item)"), // first arg is not list or structure object
             Test("foreach(items, item)"), // should have three parameters
             Test("foreach(items, item, item2, item3)"), // should have three parameters
             Test("foreach(items, add(1), item)"), // Second paramter of foreach is not an identifier
@@ -299,7 +299,7 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("select(items, add(1), item)"), // Second paramter of foreach is not an identifier
             Test("select(items, 1, item)"), // Second paramter error
             Test("select(items, x, sum(x))"), // third paramter error
-            Test("where(hello, item, item)"), // first arg is not list
+            Test("where(hello, item, item)"), // first arg is not list or structure
             Test("where(items, item)"), // should have three parameters
             Test("where(items, item, item2, item3)"), // should have three parameters
             Test("where(items, add(1), item)"), // Second paramter of where is not an identifier

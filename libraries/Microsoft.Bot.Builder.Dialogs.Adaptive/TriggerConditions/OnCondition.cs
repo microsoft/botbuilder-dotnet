@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
@@ -24,6 +25,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.OnCondition";
+
+        private ActionScope actionScope;
 
         // constraints from Rule.AddConstraint()
         private List<Expression> extraConstraints = new List<Expression>();
@@ -59,6 +62,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
         [JsonIgnore]
         public virtual SourceRange Source => DebugSupport.SourceMap.TryGetValue(this, out var range) ? range : null;
+
+        protected ActionScope ActionScope
+        {
+            get
+            {
+                if (actionScope == null)
+                {
+                    actionScope = new ActionScope() { Actions = this.Actions };
+                }
+
+                return actionScope;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the rule priority where 0 is the highest.
@@ -198,12 +214,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
         public virtual IEnumerable<Dialog> GetDependencies()
         {
-            foreach (var action in this.Actions)
-            {
-                yield return action;
-            }
-
-            yield break;
+            yield return this.ActionScope;
         }
 
         protected virtual ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
@@ -211,24 +222,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             var changeList = new ActionChangeList()
             {
                 Actions = new List<ActionState>()
+                {
+                    new ActionState()
+                    {
+                        DialogId = this.ActionScope.Id,
+                        Options = dialogOptions
+                    }
+                },
             };
-
-            Actions.ForEach(s =>
-            {
-                var stepState = new ActionState()
-                {
-                    DialogStack = new List<DialogInstance>(),
-                    DialogId = s.Id
-                };
-
-                if (dialogOptions != null)
-                {
-                    stepState.Options = dialogOptions;
-                }
-
-                changeList.Actions.Add(stepState);
-            });
-
             return changeList;
         }
 

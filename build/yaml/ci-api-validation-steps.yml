@@ -1,0 +1,59 @@
+steps:
+- task: DownloadPipelineArtifact@1
+  displayName: 'Download BotBuilderDLLs artifact'
+  inputs:
+    artifactName: 'BotBuilderDLLs-Debug-Windows'
+    targetPath: '$(System.ArtifactsDirectory)/Artifacts'
+
+- task: NuGetCommand@2
+  displayName: 'NuGet Install of Compatability Target Package: $(BotBuilderDll)'
+  inputs:
+    command: custom
+    arguments: 'install $(BotBuilderDll) -Version $(ApiCompatVersion) -OutputDirectory $(System.DefaultWorkingDirectory)\DownloadedNuGet'
+
+- task: CmdLine@1
+  displayName: 'Run dir'
+  inputs:
+    filename: dir
+    arguments: '..\*.* /s'
+  enabled: false
+
+- task: SOUTHWORKS.binaries-comparer.custom-build-release-task.binaries-comparer@0
+  displayName: 'Compare Binaries'
+  inputs:
+    contractsRootFolder: 'DownloadedNuGet\$(BotBuilderDll).$(ApiCompatVersion)\lib\netstandard2.0'
+    contractsFileName: '$(BotBuilderDll).dll'
+    implFolder: '$(System.ArtifactsDirectory)/Artifacts'
+    failOnIssue: true
+    resolveFx: false
+    generateLog: true
+    outputFilename: '$(BotBuilderDll).$(ApiCompatVersion).CompatResults.txt'
+    outputFolder: '$(Build.ArtifactStagingDirectory)'
+    useBaseline: false
+
+- powershell: |
+   $FileName = "$(Build.ArtifactStagingDirectory)\$(BotBuilderDll).$(ApiCompatVersion).CompatResults.txt"
+   $FileContent = @(Get-Content $FileName)
+    
+   $FileContent[0] = $FileContent[0] + " compared against [version $(ApiCompatVersion)](https://www.nuget.org/packages/$(BotBuilderDll)/$(ApiCompatVersion))"
+    
+   if ($FileContent.Length -eq 1) {
+   [system.io.file]::WriteAllText($fileName,$FileContent)
+   } else {
+   Set-Content $fileName $FileContent
+   }
+   
+   Write-Host "The updated line 1: `n$FileContent[0]"
+  displayName: 'Insert nuget link into ApiCompat results file.'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Compat Results artifact'
+  inputs:
+    ArtifactName: '$(BotBuilderDll).$(ApiCompatVersion).CompatResults'
+
+- script: |
+   cd ..
+   dir /s
+  displayName: 'Dir workspace'
+  continueOnError: true
+  condition: succeededOrFailed()

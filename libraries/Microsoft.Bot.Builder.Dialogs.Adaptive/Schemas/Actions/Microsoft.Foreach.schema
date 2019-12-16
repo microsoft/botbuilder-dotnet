@@ -5,6 +5,11 @@
     "description": "Execute actions on each item in an a collection.",
     "type": "object",
     "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
         "itemsProperty": {
             "$role": "expression",
             "title": "Items property",

@@ -124,6 +124,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                     .UseLanguageGeneration(resourceExplorer)
                     .UseMockLuis()
                     .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+                adapter.OnTurnError += (context, err) => context.SendActivityAsync(err.Message);
             }
 
             adapter.EnableTrace = this.EnableTrace;

@@ -84,6 +84,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<SetProperties>(SetProperties.DeclarativeType);
             yield return new TypeRegistration<SwitchCondition>(SwitchCondition.DeclarativeType);
             yield return new TypeRegistration<TraceActivity>(TraceActivity.DeclarativeType);
+            yield return new TypeRegistration<GotoAction>(GotoAction.DeclarativeType);
+            yield return new TypeRegistration<BreakLoop>(BreakLoop.DeclarativeType);
+            yield return new TypeRegistration<ContinueLoop>(ContinueLoop.DeclarativeType);
 
             // Inputs
             yield return new TypeRegistration<AttachmentInput>(AttachmentInput.DeclarativeType);

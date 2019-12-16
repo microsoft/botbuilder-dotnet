@@ -27,6 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
         /// <value>
         /// Condition which must be true.
         /// </value>
+        [JsonProperty("condition")]
         public string Condition { get; set; }
 
         /// <summary>
@@ -35,6 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
         /// <value>
         /// Description of assertion.
         /// </value>
+        [JsonProperty("description")]
         public string Description { get; set; }
 
         public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)

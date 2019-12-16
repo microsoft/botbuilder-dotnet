@@ -36,6 +36,11 @@
             "$ref": "#/definitions/Microsoft.BeginDialog"
         },
         {
+            "title": "Microsoft.BreakLoop",
+            "description": "Stop executing this loop",
+            "$ref": "#/definitions/Microsoft.BreakLoop"
+        },
+        {
             "title": "Microsoft.CancelAllDialogs",
             "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
             "$ref": "#/definitions/Microsoft.CancelAllDialogs"
@@ -59,6 +64,11 @@
             "title": "Microsoft.ConfirmationEntityRecognizer",
             "description": "Recognizer which recognizes confirmation choices (yes/no).",
             "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
+        },
+        {
+            "title": "Microsoft.ContinueLoop",
+            "description": "Stop executing this template and continue with the next iteration of the loop.",
+            "$ref": "#/definitions/Microsoft.ContinueLoop"
         },
         {
             "title": "Microsoft.CurrencyEntityRecognizer",
@@ -139,6 +149,11 @@
             "title": "Microsoft.ForeachPage",
             "description": "Execute actions on each page (collection of items) in an array.",
             "$ref": "#/definitions/Microsoft.ForeachPage"
+        },
+        {
+            "title": "Microsoft.GotoAction",
+            "description": "Go to an an action by id.",
+            "$ref": "#/definitions/Microsoft.GotoAction"
         },
         {
             "title": "Microsoft.GuidEntityRecognizer",
@@ -988,6 +1003,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
                     "title": "Dialog name",
@@ -1043,6 +1063,63 @@
                 }
             ]
         },
+        "Microsoft.BreakLoop": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Break Loop",
+            "description": "Stop executing this loop",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.BreakLoop"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
         "Microsoft.CancelAllDialogs": {
             "$role": "union(Microsoft.IDialog)",
             "title": "Cancel all dialogs",
@@ -1072,6 +1149,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "eventName": {
                     "title": "Event name",
@@ -1772,6 +1854,63 @@
                 }
             ]
         },
+        "Microsoft.ContinueLoop": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Continune Loop",
+            "description": "Stop executing this template and continue with the next iteration of the loop.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.ContinueLoop"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
         "Microsoft.CurrencyEntityRecognizer": {
             "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Currency Entity Recognizer",
@@ -2086,6 +2225,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 }
             },
             "additionalProperties": false,
@@ -2138,6 +2282,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "properties": {
                     "type": "array",
@@ -2202,6 +2351,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "property": {
                     "$role": "expression",
@@ -2314,6 +2468,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "changeType": {
                     "type": "string",
                     "title": "Type of change",
@@ -2388,6 +2547,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "changeType": {
                     "type": "string",
@@ -2530,6 +2694,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "eventName": {
                     "title": "Event name",
                     "description": "Name of the event to emit.",
@@ -2619,6 +2788,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "value": {
                     "$role": "expression",
                     "title": "Value",
@@ -2680,6 +2854,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 }
             },
             "additionalProperties": false,
@@ -2883,6 +3062,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "itemsProperty": {
                     "$role": "expression",
                     "title": "Items property",
@@ -2955,6 +3139,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "itemsProperty": {
                     "$role": "expression",
                     "title": "Items property",
@@ -2998,6 +3187,69 @@
                     "required": [
                         "itemsProperty",
                         "actions",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.GotoAction": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Go to Action",
+            "description": "Go to an an action by id.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.GotoAction"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "actionId": {
+                    "type": "string",
+                    "title": "Action Id",
+                    "description": "Action Id to execute next"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actionId",
                         "$kind"
                     ]
                 }
@@ -3137,6 +3389,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "method": {
                     "type": "string",
                     "title": "HTTP method",
@@ -3265,6 +3522,11 @@
                     "$ref": "#/definitions/Microsoft.BeginDialog"
                 },
                 {
+                    "title": "Microsoft.BreakLoop",
+                    "description": "Stop executing this loop",
+                    "$ref": "#/definitions/Microsoft.BreakLoop"
+                },
+                {
                     "title": "Microsoft.CancelAllDialogs",
                     "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
                     "$ref": "#/definitions/Microsoft.CancelAllDialogs"
@@ -3278,6 +3540,11 @@
                     "title": "Microsoft.ConfirmInput",
                     "description": "Collect information - Ask for confirmation (yes or no).",
                     "$ref": "#/definitions/Microsoft.ConfirmInput"
+                },
+                {
+                    "title": "Microsoft.ContinueLoop",
+                    "description": "Stop executing this template and continue with the next iteration of the loop.",
+                    "$ref": "#/definitions/Microsoft.ContinueLoop"
                 },
                 {
                     "title": "Microsoft.DateTimeInput",
@@ -3333,6 +3600,11 @@
                     "title": "Microsoft.ForeachPage",
                     "description": "Execute actions on each page (collection of items) in an array.",
                     "$ref": "#/definitions/Microsoft.ForeachPage"
+                },
+                {
+                    "title": "Microsoft.GotoAction",
+                    "description": "Go to an an action by id.",
+                    "$ref": "#/definitions/Microsoft.GotoAction"
                 },
                 {
                     "title": "Microsoft.HttpRequest",
@@ -3667,6 +3939,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "condition": {
                     "$role": "expression",
                     "title": "Condition",
@@ -3747,6 +4024,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "property": {
                     "$role": "expression",
@@ -3922,6 +4204,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "text": {
                     "type": "string",
@@ -7182,6 +7469,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "options": {
                     "type": "object",
                     "title": "Options",
@@ -7248,6 +7540,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
@@ -7325,6 +7622,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "activity": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Activity",
@@ -7382,6 +7684,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "assignments": {
                     "type": "array",
@@ -7465,6 +7772,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "property": {
                     "$role": "expression",
@@ -7597,6 +7909,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "condition": {
                     "$role": "expression",
@@ -8739,6 +9056,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "name": {
                     "type": "string",
