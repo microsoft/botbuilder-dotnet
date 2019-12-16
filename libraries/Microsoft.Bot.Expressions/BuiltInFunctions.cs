@@ -1371,7 +1371,7 @@ namespace Microsoft.Bot.Expressions
                             { iteratorName, AccessIndex(list, idx).value },
                         };
 
-                        // the local interator is pushed as one memory layer in the memory stack
+                        // the local iterator is pushed as one memory layer in the memory stack
                         stackedMemory.Push(SimpleObjectMemory.Wrap(local));
                         (var r, var e) = expression.Children[2].TryEvaluate(stackedMemory);
                         stackedMemory.Pop();
@@ -1430,7 +1430,7 @@ namespace Microsoft.Bot.Expressions
                             { iteratorName, AccessIndex(list, idx).value },
                         };
 
-                        // the local interator is pushed as one memory layer in the memory stack
+                        // the local iterator is pushed as one memory layer in the memory stack
                         stackedMemory.Push(SimpleObjectMemory.Wrap(local));
                         (var r, _) = expression.Children[2].TryEvaluate(stackedMemory);
                         stackedMemory.Pop();
