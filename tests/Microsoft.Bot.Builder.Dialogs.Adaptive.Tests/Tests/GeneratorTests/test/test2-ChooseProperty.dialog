@@ -1,0 +1,12 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$kind": "Microsoft.OnChooseProperty",
+    "actions": [
+        {
+            "$kind": "Microsoft.Ask",
+            "activity": "@{chooseProperties()}",
+            "expectedProperties": ["PropertyToChange"]
+        }
+    ]
+}

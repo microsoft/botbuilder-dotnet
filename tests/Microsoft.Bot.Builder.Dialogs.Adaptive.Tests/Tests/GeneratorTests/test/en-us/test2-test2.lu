@@ -1,0 +1,18 @@
+# test2
+- {personName}
+- {age}
+- {ordinal}
+- {geographyV2}
+- {keyPhrase}
+- {money}
+- {percentage}
+- {temperature}
+- {url}
+- {number}
+
+- {dimension}
+- {BreadEntity}
+- {CheeseEntity}
+- {email}
+- {Confirmation}
+- {PROPERTYName}
