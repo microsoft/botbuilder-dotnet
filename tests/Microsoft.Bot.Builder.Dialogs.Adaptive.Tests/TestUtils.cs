@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.MockLuis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -55,6 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
                     DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
                     DeclarativeTypeLoader.AddComponent(new QnAMakerComponentRegistration());
+                    DeclarativeTypeLoader.AddComponent(new MockLuisRegistration());
                 }
 
                 script = TestUtils.ResourceExplorer.LoadType<TestScript>(resourceId);

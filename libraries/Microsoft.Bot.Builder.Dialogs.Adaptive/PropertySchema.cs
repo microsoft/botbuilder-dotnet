@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Gets a value indicating whether property is an enum.
         /// </summary>
         /// <value>True if enum.</value>
-        public bool IsEnum => Schema?.Parent?.Parent["enum"] != null;
+        public bool IsEnum => Schema["enum"] != null;
 
         /// <summary>
         /// Gets mappings to possible entities for property.

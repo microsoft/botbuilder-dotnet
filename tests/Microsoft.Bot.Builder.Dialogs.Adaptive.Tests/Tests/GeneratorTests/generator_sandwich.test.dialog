@@ -77,11 +77,11 @@
         },
         {
             "$kind": "Microsoft.Test.UserSays",
-            "text": "whole wheat with ham"
+            "text": "whole wheat with turkey"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "meat is changed from ham to ham."
+            "text": "meat is changed from ham to turkey."
         },
         {
             "$kind": "Microsoft.Test.AssertReplyActivity",
@@ -91,7 +91,7 @@
                 "attachments[0].content.type == 'AdaptiveCard'",
                 "count(attachments[0].content.body) == 2",
                 "count(attachments[0].content.body[1].facts) == 3",
-                "attachments[0].content.body[1].facts[0].value == 'ham'",
+                "attachments[0].content.body[1].facts[0].value == 'turkey'",
                 "attachments[0].content.body[1].facts[1].value == 'whole wheat'",
                 "attachments[0].content.body[1].facts[2].value == 'swiss'"
             ]
@@ -116,7 +116,7 @@
                 "attachments[0].content.type == 'AdaptiveCard'",
                 "count(attachments[0].content.body) == 2",
                 "count(attachments[0].content.body[1].facts) == 3",
-                "attachments[0].content.body[1].facts[0].value == 'ham'",
+                "attachments[0].content.body[1].facts[0].value == 'turkey'",
                 "attachments[0].content.body[1].facts[1].value == 'whole wheat'",
                 "attachments[0].content.body[1].facts[2].value == 'swiss'"
             ]
@@ -155,7 +155,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "meat is changed from ham to roast beef."
+            "text": "meat is changed from turkey to roast beef."
         },
         {
             "$kind": "Microsoft.Test.AssertReply",

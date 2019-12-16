@@ -1,16 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.Luis;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Configuration;
 using Newtonsoft.Json;
 using RichardSzalay.MockHttp;
 
@@ -24,9 +19,8 @@ namespace Microsoft.Bot.Builder.MockLuis
     /// </remarks>
     public class MockLuisRecognizer : IRecognizer
     {
-        private LuisApplication _application;
         private string _responseDir;
-        private LuisPredictionOptions _options;
+        private LuisRecognizerOptionsV3 _options;
         private string _name;
 
         /// <summary>
@@ -37,15 +31,14 @@ namespace Microsoft.Bot.Builder.MockLuis
         /// <param name="name">Name of the LUIS model.</param>
         /// <param name="options">LUIS options.</param>
         public MockLuisRecognizer(
-            LuisApplication application,
+            LuisRecognizerOptionsV3 options,
             string resourceDir,
-            string name,
-            LuisPredictionOptions options = null)
+            string name)
         {
-            _application = application;
             _responseDir = Path.Combine(resourceDir, "cachedResponses", name);
             _name = name;
             _options = options;
+            _options.IncludeAPIResults = true;
             if (!Directory.Exists(_responseDir))
             {
                 Directory.CreateDirectory(_responseDir);
@@ -64,7 +57,7 @@ namespace Microsoft.Bot.Builder.MockLuis
         {
             var utterance = context.Activity?.AsMessageActivity()?.Text;
             var client = GetMockedClient(utterance);
-            var recognizer = new LuisRecognizer(_application, _options, true, client);
+            var recognizer = new LuisRecognizer(_options, client);
             var result = await recognizer.RecognizeAsync(context, cancellationToken);
             if (client == null)
             {
@@ -91,7 +84,7 @@ namespace Microsoft.Bot.Builder.MockLuis
                 {
                     var handler = new MockHttpMessageHandler();
                     handler
-                        .When(_application.Endpoint + "*")
+                        .When(_options.Application.Endpoint + "*")
                         .WithPartialContent(utterance)
                         .Respond("application/json", File.OpenRead(response));
                     client = new MockedHttpClientHandler(handler.ToHttpClient());

@@ -27,24 +27,30 @@ namespace Microsoft.Bot.Builder.MockLuis
             // simpler json format
             if (obj["applicationId"]?.Type == JTokenType.String)
             {
-                var luisService = obj.ToObject<LuisApplication>();
-                var name = luisService.ApplicationId;
+                var luisApplication = obj.ToObject<LuisApplication>();
+                var name = luisApplication.ApplicationId;
                 if (name.StartsWith("{") && name.EndsWith("}"))
                 {
                     var start = name.LastIndexOf('.') + 1;
                     var end = name.LastIndexOf('}');
                     name = name.Substring(start, end - start);
+                }   
+                
+                luisApplication.ApplicationId = configuration.LoadSetting(luisApplication.ApplicationId);
+                luisApplication.Endpoint = configuration.LoadSetting(luisApplication.Endpoint);
+                luisApplication.EndpointKey = configuration.LoadSetting(luisApplication.EndpointKey);                
+
+                var options = new LuisRecognizerOptionsV3(luisApplication);
+                if (obj["predictionOptions"] != null)
+                {
+                    options.PredictionOptions = obj["predictionOptions"].ToObject<AI.LuisV3.LuisPredictionOptions>();
                 }
 
-                luisService.ApplicationId = configuration.LoadSetting(luisService.ApplicationId);
-                luisService.Endpoint = configuration.LoadSetting(luisService.Endpoint);
-                luisService.EndpointKey = configuration.LoadSetting(luisService.EndpointKey);
-
-                return new MockLuisRecognizer(luisService, configuration.GetValue<string>("luis:resources"), name);
+                return new MockLuisRecognizer(options, configuration.GetValue<string>("luis:resources"), name);
             }
 
             // Else, just assume it is the verbose structure with LuisService as inner object
-            return obj.ToObject<LuisRecognizer>(serializer);
+            return obj.ToObject<MockLuisRecognizer>(serializer);
         }
     }
 }

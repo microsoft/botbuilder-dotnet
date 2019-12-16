@@ -10,7 +10,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
@@ -881,11 +880,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 var unrecognized = SplitUtterance(utterance, recognized);
                 recognized.AddRange(updated);
 
+                // TODO: Is this actually useful information?
                 context.GetState().SetValue(TurnPath.UNRECOGNIZEDTEXT, unrecognized);
                 context.GetState().SetValue(TurnPath.RECOGNIZEDENTITIES, recognized);
-
-                // turn.unrecognizedText = [<text not consumed by entities>]
-                // turn.consumedEntities = [entityInfo] 
                 queues.Merge(newQueues);
                 var turn = context.GetState().GetValue<uint>(DialogPath.EventCounter);
                 CombineOldEntityToPropertys(queues, turn);
@@ -927,25 +924,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             context.GetState().RemoveValue(DialogPath.LastEvent);
                             var entityToProperty = queues.ClarifyEntity[0];
                             var ambiguousEntity = entityToProperty.Entity;
-                            var choices = ambiguousEntity.Value as JArray;
 
                             // TODO: There could be no way to resolve the ambiguity, i.e. wheat has synonym wheat and
                             // honeywheat has synonym wheat.  For now rely on the model to not have that issue.
                             if (entities.TryGetValue(ambiguousEntity.Name, out var infos) && infos.Count() == 1)
                             {
-                                var info = infos.First();
-                                var foundValues = info.Value as JArray;
-                                var common = choices.Intersect(foundValues);
-                                if (common.Count() == 1)
-                                {
-                                    // Resolve and move to SetProperty
-                                    recognized.Add(info);
-                                    infos.Clear();
-                                    entityToProperty.Entity = info;
-                                    entityToProperty.Expected = true;
-                                    queues.ClarifyEntity.Dequeue();
-                                    queues.SetProperty.Add(entityToProperty);
-                                }
+                                queues.ClarifyEntity.Dequeue();
                             }
 
                             break;
