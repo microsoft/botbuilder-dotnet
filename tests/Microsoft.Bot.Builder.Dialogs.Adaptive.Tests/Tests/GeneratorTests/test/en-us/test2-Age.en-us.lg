@@ -1,0 +1,7 @@
+# AskAge
+- @{askString('Age')}
+
+# AgeName
+- age
+
+[test2-common.lg](test2-common.lg)

@@ -1,0 +1,19 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$kind": "Microsoft.OnSetProperty",
+    "property": "Location",
+    "entity": "geographyV2",
+    "actions": [
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Location.type",
+            "value": "@geographyV2['type']"          
+        },
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Location.location",
+            "value": "@geographyV2['location']"          
+        }
+    ]               
+}

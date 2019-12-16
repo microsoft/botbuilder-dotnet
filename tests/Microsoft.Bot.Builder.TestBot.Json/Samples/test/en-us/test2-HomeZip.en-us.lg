@@ -1,0 +1,12 @@
+# AskHomeZip
+- @{askString('HomeZip')}
+
+# HomeZipName
+- home zip
+
+# HomeZip(val)
+- @{HomeZipEntity(val)}
+
+[test2-HomeZipEntity.lg](test2-HomeZipEntity.lg)
+
+[test2-common.lg](test2-common.lg)

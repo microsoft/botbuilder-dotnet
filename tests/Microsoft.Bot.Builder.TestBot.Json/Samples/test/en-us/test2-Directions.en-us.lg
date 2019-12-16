@@ -1,0 +1,12 @@
+# AskDirections
+- @{askString('Directions')}
+
+# DirectionsName
+- directions
+
+# Directions(val)
+- @{DirectionsEntity(val)}
+
+[test2-DirectionsEntity.lg](test2-DirectionsEntity.lg)
+
+[test2-common.lg](test2-common.lg)

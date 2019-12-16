@@ -1,0 +1,12 @@
+# AskHomeStreet
+- @{askString('HomeStreet')}
+
+# HomeStreetName
+- home street
+
+# HomeStreet(val)
+- @{HomeStreetEntity(val)}
+
+[test2-HomeStreetEntity.lg](test2-HomeStreetEntity.lg)
+
+[test2-common.lg](test2-common.lg)
