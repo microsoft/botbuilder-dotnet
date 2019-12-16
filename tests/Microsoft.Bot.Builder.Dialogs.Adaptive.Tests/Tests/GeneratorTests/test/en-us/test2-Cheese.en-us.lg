@@ -1,0 +1,12 @@
+# AskCheese
+- @{askEnum('Cheese')}
+
+# CheeseName
+- cheese
+
+# Cheese(val)
+- @{CheeseEntity(val)}
+
+[test2-CheeseEntity.lg](test2-CheeseEntity.lg)
+
+[test2-common.lg](test2-common.lg)

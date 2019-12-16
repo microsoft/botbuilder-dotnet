@@ -1,0 +1,40 @@
+$PROPERTYName:Name=
+- name
+$PROPERTYName:Age=
+- age
+$PROPERTYName:Ordinal=
+- ordinal
+$PROPERTYName:Location=
+- location
+$PROPERTYName:KeyPhrase=
+- key
+- phrase
+- key phrase
+$PROPERTYName:Money=
+- money
+$PROPERTYName:Percentage=
+- percentage
+$PROPERTYName:Temperature=
+- temperature
+$PROPERTYName:Url=
+- url
+$PROPERTYName:Quantity=
+- quantity
+$PROPERTYName:Directions=
+- directions
+$PROPERTYName:Length=
+- length
+$PROPERTYName:Bread=
+- bread
+$PROPERTYName:Cheese=
+- cheese
+$PROPERTYName:HomeStreet=
+- home
+- street
+- home street
+$PROPERTYName:HomeZip=
+- home
+- zip
+- home zip
+$PROPERTYName:Email=
+- email

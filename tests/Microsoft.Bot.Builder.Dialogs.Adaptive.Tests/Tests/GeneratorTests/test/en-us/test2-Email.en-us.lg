@@ -1,0 +1,12 @@
+# AskEmail
+- @{askString('Email')}
+
+# EmailName
+- email
+
+# Email(val)
+- @{EmailEntity(val)}
+
+[test2-EmailEntity.lg](test2-EmailEntity.lg)
+
+[test2-common.lg](test2-common.lg)
