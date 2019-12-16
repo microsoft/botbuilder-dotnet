@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [DynamicData(nameof(StaticCheckExceptionData))]
         public void ThrowExceptionTest(string input)
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath(input));
+            var lgFile = new LGParser().ParseFile(GetExampleFilePath(input));
             Assert.IsTrue(lgFile.Diagnostics.Any(u => u.Severity == DiagnosticSeverity.Error));
         }
 
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [DynamicData(nameof(StaticCheckWariningData))]
         public void WariningTest(string input)
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath(input));
+            var lgFile = new LGParser().ParseFile(GetExampleFilePath(input));
             Assert.IsTrue(lgFile.Diagnostics.Any(u => u.Severity == DiagnosticSeverity.Warning)
                 && lgFile.Diagnostics.All(u => u.Severity != DiagnosticSeverity.Error));
         }
@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [DynamicData(nameof(AnalyzerExceptionData))]
         public void AnalyzerThrowExceptionTest(string input, string templateName)
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath(input));
+            var lgFile = new LGParser().ParseFile(GetExampleFilePath(input));
             Assert.IsTrue(lgFile.Diagnostics.All(u => u.Severity != DiagnosticSeverity.Error));
 
             Assert.ThrowsException<Exception>(() => lgFile.AnalyzeTemplate(templateName));
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [DynamicData(nameof(EvaluatorExceptionData))]
         public void EvaluatorThrowExceptionTest(string input, string templateName)
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath(input));
+            var lgFile = new LGParser().ParseFile(GetExampleFilePath(input));
             Assert.IsTrue(lgFile.Diagnostics.All(u => u.Severity != DiagnosticSeverity.Error));
             Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate(templateName));
         }
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void AddTextWithWrongId()
         {
-            var lgFile = LGParser.ParseContent("# t \n - hi", "a.lg");
+            var lgFile = new LGParser().ParseContent("[import](xx.lg) \r\n # t \n - hi", "a.lg");
             Assert.IsTrue(lgFile.Diagnostics.Any(u => u.Severity == DiagnosticSeverity.Error));
         }
 

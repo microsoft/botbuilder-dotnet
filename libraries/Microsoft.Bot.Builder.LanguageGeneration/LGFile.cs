@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Content = content ?? string.Empty;
             Id = id ?? string.Empty;
             this.expressionEngine = expressionEngine ?? new ExpressionEngine();
-            this.importResolver = importResolver ?? ImportResolver.FileResolver;
+            this.importResolver = importResolver;
         }
 
         public IList<LGTemplate> AllTemplates
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var newContent = $"{Content}\r\n{wrappedStr}";
 
-            var newLgFile = LGParser.ParseContent(newContent, Id, importResolver);
+            var newLgFile = new LGParser(importResolver).ParseContent(newContent, Id);
             return newLgFile.EvaluateTemplate(fakeTemplateId, scope);
         }
 
@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var stopLine = template.ParseTree.Stop.Line - 1;
 
             var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
-            return LGParser.ParseContent(newContent, Id, importResolver);
+            return new LGParser(importResolver).ParseContent(newContent, Id);
         }
 
         /// <summary>
@@ -214,7 +214,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
             var newContent = $"{Content.TrimEnd()}\r\n\r\n{templateNameLine}\r\n{newTemplateBody}\r\n";
-            return LGParser.ParseContent(newContent, Id, importResolver);
+            return new LGParser(importResolver).ParseContent(newContent, Id);
         }
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var stopLine = template.ParseTree.Stop.Line - 1;
 
             var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
-            return LGParser.ParseContent(newContent, Id, importResolver);
+            return new LGParser(importResolver).ParseContent(newContent, Id);
         }
 
         public override string ToString() => Content;

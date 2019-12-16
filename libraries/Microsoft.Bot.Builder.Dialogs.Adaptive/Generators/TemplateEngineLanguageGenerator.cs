@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 // if locale is present, use that one
                 if (string.Equals(fallbackLocale, string.Empty) || string.Equals(fallbackLocale, mapping.Key))
                 {
-                    var engine = LGParser.ParseContent(lgText ?? string.Empty, Id, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
+                    var engine = new LGParser(LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping)).ParseContent(lgText ?? string.Empty, Id);
                     multiLangEngines.Add(mapping.Key, engine);
                 }
             }
@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 // if locale is present, use that one
                 if (string.Equals(fallbackLocale, string.Empty) || string.Equals(fallbackLocale, mapping.Key))
                 {
-                    var engine = LGParser.ParseFile(filePath, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
+                    var engine = new LGParser(LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping)).ParseFile(filePath);
                     multiLangEngines.Add(mapping.Key, engine);
                 }
             }

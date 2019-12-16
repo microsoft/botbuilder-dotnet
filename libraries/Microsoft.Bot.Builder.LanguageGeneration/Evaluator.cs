@@ -505,7 +505,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private Func<IReadOnlyList<object>, object> FromFile()
        => (IReadOnlyList<object> args) =>
        {
-           var filePath = ImportResolver.NormalizePath(args[0].ToString());
+           var filePath = PathUtil.NormalizePath(args[0].ToString());
 
            var resourcePath = GetResourcePath(filePath);
            var stringContent = File.ReadAllText(resourcePath);
@@ -540,7 +540,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             else
             {
                 var template = TemplateMap[CurrentTarget().TemplateName];
-                var sourcePath = ImportResolver.NormalizePath(template.Source);
+                var sourcePath = PathUtil.NormalizePath(template.Source);
                 var baseFolder = Environment.CurrentDirectory;
                 if (Path.IsPathRooted(sourcePath))
                 {
