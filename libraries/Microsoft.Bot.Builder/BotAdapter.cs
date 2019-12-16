@@ -30,6 +30,8 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IMiddleware"/>
     public abstract class BotAdapter
     {
+        public const string BotIdentityKey = "BotIdentity";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BotAdapter"/> class.
         /// </summary>
