@@ -10,10 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.FunctionalTests
 {
     [TestClass]
-    #if !FUNCTIONALTESTS
-    [Ignore("These integration tests run only when FUNCTIONALTESTS is defined")]
-    #endif
-
+    [TestCategory("FunctionalTests")]
     public class DirectLineClientTests
     {
         private static string directLineSecret = null;

@@ -26,55 +26,55 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task TestScriptTests_AssertReplyOneOf()
         {
-            await TestUtils.RunTestScript("TestScriptTests_AssertReplyOneOf.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
         public async Task TestScriptTests_AssertReplyOneOf_Assertions()
         {
-            await TestUtils.RunTestScript("TestScriptTests_AssertReplyOneOf_Assertions.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
         public async Task TestScriptTests_AssertReplyOneOf_exact()
         {
-            await TestUtils.RunTestScript("TestScriptTests_AssertReplyOneOf_exact.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
         public async Task TestScriptTests_AssertReplyOneOf_User()
         {
-            await TestUtils.RunTestScript("TestScriptTests_AssertReplyOneOf_User.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
         public async Task TestScriptTests_AssertReply_Assertions()
         {
-            await TestUtils.RunTestScript("TestScriptTests_AssertReply_Assertions.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
         public async Task TestScriptTests_AssertReply_Exact()
         {
-            await TestUtils.RunTestScript("TestScriptTests_AssertReply_Exact.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
         public async Task TestScriptTests_AssertReply_User()
         {
-            await TestUtils.RunTestScript("TestScriptTests_AssertReply_User.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
         public async Task TestScriptTests_UserConversationUpdate()
         {
-            await TestUtils.RunTestScript("TestScriptTests_UserConversationUpdate.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
         public async Task TestScriptTests_UserTyping()
         {
-            await TestUtils.RunTestScript("TestScriptTests_UserTyping.test.dialog");
+            await TestUtils.RunTestScript();
         }
     }
 }

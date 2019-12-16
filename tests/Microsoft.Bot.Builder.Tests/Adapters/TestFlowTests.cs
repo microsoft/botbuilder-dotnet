@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             const string exceptionDescription = "Description message";
             const string stringThatNotSubstring = "some string";
             var message = "Just a sample string".Replace(stringThatNotSubstring, string.Empty);
-            try
+            var exception = await Assert.ThrowsExceptionAsync<Exception>(async () =>
             {
                 await new TestFlow(new TestAdapter(), async (turnContext, cancellationToken) =>
                     {
@@ -41,14 +41,8 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
                     .Send("hello")
                     .AssertReplyContains(stringThatNotSubstring, exceptionDescription)
                     .StartTestAsync();
-            }
-            catch (Exception e)
-            {
-                if (!e.Message.Contains(exceptionDescription))
-                {
-                    throw;
-                }
-            }
+            });
+            Assert.IsTrue(exception.Message.Contains(exceptionDescription));
         }
 
         [TestMethod]
@@ -64,6 +58,46 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             sw.Stop();
 
             Assert.IsTrue(sw.Elapsed.TotalSeconds > 1, $"Delay broken, elapsed time {sw.Elapsed}?");
+        }
+
+        [TestMethod]
+        public async Task ValidateNoReply()
+        {
+            const string message = "Just a sample string";
+            await new TestFlow(new TestAdapter(), async (turnContext, cancellationToken) =>
+                {
+                    await turnContext.SendActivityAsync(
+                        message,
+                        cancellationToken: cancellationToken);
+                })
+                .Send("hello")
+                .AssertReply(message)
+                .AssertNoReply()
+                .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task ValidateNoReply_ExceptionWithDescription()
+        {
+            const string exceptionDescription = "Description message";
+            const string message = "Just a sample string";
+            var exception = await Assert.ThrowsExceptionAsync<Exception>(async () =>
+            {
+                await new TestFlow(new TestAdapter(), async (turnContext, cancellationToken) =>
+                    {
+                        await turnContext.SendActivityAsync(
+                            message,
+                            cancellationToken: cancellationToken);
+                        await turnContext.SendActivityAsync(
+                            message,
+                            cancellationToken: cancellationToken);
+                    })
+                    .Send("hello")
+                    .AssertReply(message)
+                    .AssertNoReply(exceptionDescription)
+                    .StartTestAsync();
+            });
+            Assert.IsTrue(exception.Message.Contains(exceptionDescription));
         }
     }
 }

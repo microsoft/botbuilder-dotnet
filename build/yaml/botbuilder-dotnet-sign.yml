@@ -18,10 +18,8 @@ pool:
   - msbuild
   - visualstudio
 
-stages:
-- stage: Build
-  jobs:
-  - job: Release_Windows_Configuration
-    steps:
-    - template: ci-build-steps.yml
-    - template: sign-steps.yml
+jobs:
+- job: Build_and_Sign
+  steps:
+  - template: ci-build-steps.yml
+  - template: sign-steps.yml

@@ -22,7 +22,7 @@ pool:
   - msbuild
   - visualstudio
 
-#The following 2 stages run multi-configuration, multi-agent parallel jobs
+# The following 2 stages run multi-configuration, multi-agent parallel jobs
 stages:
 - stage: Build
   jobs:
@@ -42,33 +42,32 @@ stages:
 - stage: API_Compatibility_Validation
   dependsOn: Build
   jobs:
-  - job: generate_multijob_vars
+  - job: generate_multiconfig_var
     steps:
     - powershell: |
-       $multijobs = '{';
+       $multiconfig = '{';
 
        $env:BotBuilderDll.Split(",") | ForEach {
            $library = $_.Trim()
            Write-Host $library
 
            $threadName = $library.Split(".")[-1];
-           $multijobs += "'" + $threadName + "':{'BotBuilderDll':'" + $library + "'}, ";
+           $multiconfig += "'" + $threadName + "':{'BotBuilderDll':'" + $library + "'}, ";
          }
-       $multijobs = $multijobs.TrimEnd(' ').TrimEnd(',') + "}";
-       $multijobs
+       $multiconfig = $multiconfig.TrimEnd(' ').TrimEnd(',') + "}";
+       $multiconfig
 
-       "##vso[task.setVariable variable=MULTIJOBS;isOutput=true]$multijobs"
-      name: generate_vars
-    - script: echo $(generate_vars.MULTIJOBS)
+       "##vso[task.setVariable variable=MULTICONFIG;isOutput=true]$multiconfig"
+      name: generate_var
+    - script: echo $(generate_var.MULTICONFIG)
 
   - job: check_api_for
-    dependsOn: generate_multijob_vars
+    dependsOn: generate_multiconfig_var
     timeoutInMinutes: 10
     strategy:
       maxParallel: 10
-      matrix: $[ dependencies.generate_multijob_vars.outputs['generate_vars.MULTIJOBS'] ]
+      matrix: $[ dependencies.generate_multiconfig_var.outputs['generate_var.MULTICONFIG'] ]
     steps:
-    - script: echo $(BotBuilderDll)
     - template: ci-api-validation-steps.yml
 
 - stage: Post_Results_to_GitHub
@@ -78,5 +77,4 @@ stages:
     variables:
       BuildConfiguration: Release-Windows
     steps:
-    #- script: echo Executing this 3
     - template: ci-post-to-github-steps.yml
