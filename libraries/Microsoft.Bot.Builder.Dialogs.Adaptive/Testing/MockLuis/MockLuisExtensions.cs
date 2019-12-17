@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Extensions.Configuration;
@@ -49,9 +50,21 @@ namespace Microsoft.Bot.Builder.MockLuis
 
             var host = new Uri(endpoint).Host;
             var region = host.Substring(0, host.IndexOf('.'));
+
+            // Find explicit settings file and fallback to any setting file assuming cached results are available
+            var settings = $"luis.settings.{environment}.{region}.json";
+            if (!File.Exists(Path.Combine(directory, settings)))
+            {
+                var settingFiles = Directory.GetFiles(directory, "luis.settings.*.json");
+                if (settingFiles.Any())
+                {
+                    settings = Path.GetFileName(settingFiles[0]);
+                }
+            }
+
             return builder
                 .SetBasePath(Path.GetFullPath(directory))
-                .AddJsonFile($"luis.settings.{environment}.{region}.json", optional: false)
+                .AddJsonFile(settings, optional: false)
                 .AddInMemoryCollection(new KeyValuePair<string, string>[]
                 {
                     new KeyValuePair<string, string>("luis:endpoint", endpoint),

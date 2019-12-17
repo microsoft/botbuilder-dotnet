@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection()
-                .UseLuisSettings(sandwichDirectory, "formTests")
+                .UseLuisSettings(sandwichDirectory, "generatorTests")
                 .Build();
             await TestUtils.RunTestScript("generator_sandwich.test.dialog", configuration: config);
         }
