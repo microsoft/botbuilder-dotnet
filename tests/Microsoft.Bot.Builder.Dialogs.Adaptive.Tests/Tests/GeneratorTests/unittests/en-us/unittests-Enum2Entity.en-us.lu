@@ -1,0 +1,25 @@
+$Enum2Entity:american=
+- american
+
+$Enum2Entity:cheddar=
+- cheddar
+
+$Enum2Entity:feta=
+- feta
+
+$Enum2Entity:gouda=
+- gouda
+
+$Enum2Entity:pepper jack=
+- pepper
+- jack
+- pepper jack
+
+$Enum2Entity:provolone=
+- provolone
+
+$Enum2Entity:swiss=
+- swiss
+
+$Enum2Entity:none=
+- none
