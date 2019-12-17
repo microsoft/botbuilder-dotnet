@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
     /// <summary>
-    /// ILanguageGenerator implementation which uses TemplateEngine. 
+    /// ILanguageGenerator implementation which uses LGFile. 
     /// </summary>
     public class TemplateEngineLanguageGenerator : ILanguageGenerator
     {
@@ -22,16 +22,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private const string DEFAULTLABEL = "Unknown";
 
-        private readonly Dictionary<string, LGFile> multiLangEngines = new Dictionary<string, LGFile>();
+        private readonly Dictionary<string, LGFile> multiLanglgFiles = new Dictionary<string, LGFile>();
 
-        private LGFile engine;      
+        private LGFile lgFile;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
         public TemplateEngineLanguageGenerator()
         {
-            this.engine = new LGFile();
+            this.lgFile = new LGFile();
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 if (string.Equals(fallbackLocale, string.Empty) || string.Equals(fallbackLocale, mapping.Key))
                 {
                     var engine = new LGParser(LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping)).ParseContent(lgText ?? string.Empty, Id);
-                    multiLangEngines.Add(mapping.Key, engine);
+                    multiLanglgFiles.Add(mapping.Key, engine);
                 }
             }
         }   
@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 if (string.Equals(fallbackLocale, string.Empty) || string.Equals(fallbackLocale, mapping.Key))
                 {
                     var engine = new LGParser(LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping)).ParseFile(filePath);
-                    multiLangEngines.Add(mapping.Key, engine);
+                    multiLanglgFiles.Add(mapping.Key, engine);
                 }
             }
         }
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="engine">template engine.</param>
         public TemplateEngineLanguageGenerator(LGFile engine)
         {
-            this.engine = engine;
+            this.lgFile = engine;
         }
 
         /// <summary>
@@ -110,11 +110,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>generated text.</returns>
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
-            engine = InitTemplateEngine(turnContext);
+            lgFile = InitLGFile(turnContext);
 
             try
             {
-                return await Task.FromResult(engine.Evaluate(template, data).ToString());
+                return await Task.FromResult(lgFile.Evaluate(template, data).ToString());
             }
             catch (Exception err)
             {
@@ -127,21 +127,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
         }
 
-        private LGFile InitTemplateEngine(ITurnContext turnContext)
+        private LGFile InitLGFile(ITurnContext turnContext)
         {
             var locale = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
-            if (multiLangEngines.Count > 0)
+            if (multiLanglgFiles.Count > 0)
             {
-                var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, multiLangEngines.Keys.ToList());
-                engine = multiLangEngines[fallbackLocale];
+                var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, multiLanglgFiles.Keys.ToList());
+                lgFile = multiLanglgFiles[fallbackLocale];
             }
             else
             {
                 // Do not rewrite to ??= (C# 8.0 new feature). It will break in linux/mac
-                engine = engine ?? new LGFile();
+                lgFile = lgFile ?? new LGFile();
             }
 
-            return engine;
+            return lgFile;
         }
     }
 }
