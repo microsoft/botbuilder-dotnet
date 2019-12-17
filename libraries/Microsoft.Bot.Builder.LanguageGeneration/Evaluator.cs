@@ -204,7 +204,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     case LGFileParser.MULTILINE_SUFFIX:
                         break;
                     case LGFileParser.ESCAPE_CHARACTER:
-                        result.Add(EvalEscape(node.GetText()));
+                        result.Add(node.GetText().Escape());
                         break;
                     case LGFileParser.EXPRESSION:
                         result.Add(EvalExpression(node.GetText()));
@@ -272,7 +272,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         switch (node.Symbol.Type)
                         {
                             case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
-                                itemStringResult.Append(EvalEscape(node.GetText()));
+                                itemStringResult.Append(node.GetText().Escape());
                                 break;
                             case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
                                 itemStringResult.Append(EvalExpression(node.GetText()));
@@ -325,21 +325,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 Debug.WriteLine(e.Message);
                 return false;
             }
-        }
-
-        private string EvalEscape(string exp)
-        {
-            return new Regex(@"\\[^\r\n]?").Replace(exp, new MatchEvaluator(m =>
-            {
-                var value = m.Value;
-                var commonEscapes = new List<string>() { "\\r", "\\n", "\\t" };
-                if (commonEscapes.Contains(value))
-                {
-                    return Regex.Unescape(value);
-                }
-
-                return value.Substring(1);
-            }));
         }
 
         private object EvalExpression(string exp)
@@ -479,7 +464,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
            var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
            var result = ExpressionRecognizeRegex.Replace(stringContent, evalutor);
-           return EvalEscape(result);
+           return result.Escape();
        };
 
         private void ValidateFromFile(Expression expression)

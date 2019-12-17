@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Antlr4.Runtime.Tree;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -10,6 +12,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public static partial class Extensions
     {
+        public static readonly Regex EscapeRegex = new Regex(@"\\[^\r\n]?");
+
+        /// <summary>
+        /// If a value is pure Expression.
+        /// </summary>
+        /// <param name="context">Key value structure value context.</param>
+        /// <param name="expression">string expressin.</param>
+        /// <returns>is pure expression or not.</returns>
         public static bool IsPureExpression(this LGFileParser.KeyValueStructureValueContext context, out string expression)
         {
             expression = context.GetText();
@@ -43,9 +53,29 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return hasExpression;
         }
 
+        /// <summary>
+        /// Escape \ from text.
+        /// </summary>
+        /// <param name="text">input text.</param>
+        /// <returns>escaped text.</returns>
         public static string Escape(this string text)
         {
+            if (text == null)
+            {
+                return string.Empty;
+            }
 
+            return EscapeRegex.Replace(text, new MatchEvaluator(m =>
+            {
+                var value = m.Value;
+                var commonEscapes = new List<string>() { "\\r", "\\n", "\\t" };
+                if (commonEscapes.Contains(value))
+                {
+                    return Regex.Unescape(value);
+                }
+
+                return value.Substring(1);
+            }));
         }
     }
 }

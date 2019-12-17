@@ -237,7 +237,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     case LGFileParser.MULTILINE_SUFFIX:
                         break;
                     case LGFileParser.ESCAPE_CHARACTER:
-                        result = StringListConcat(result, EvalEscape(node.GetText()));
+                        result = StringListConcat(result, new List<string>() { node.GetText().Escape() });
                         break;
                     case LGFileParser.EXPRESSION:
                         result = StringListConcat(result, EvalExpression(node.GetText()));
@@ -297,7 +297,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         switch (node.Symbol.Type)
                         {
                             case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
-                                itemStringResult = StringListConcat(itemStringResult, EvalEscape(node.GetText()));
+                                itemStringResult = StringListConcat(itemStringResult, new List<string>() { node.GetText().Escape() });
                                 break;
                             case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
                                 itemStringResult = StringListConcat(itemStringResult, EvalExpression(node.GetText()));
@@ -338,20 +338,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 Debug.WriteLine(e.Message);
                 return false;
             }
-        }
-
-        private List<string> EvalEscape(string exp)
-        {
-            var value = new List<string>();
-            var commonEscapes = new List<string>() { "\\r", "\\n", "\\t" };
-            if (commonEscapes.Contains(exp))
-            {
-                value.Add(Regex.Unescape(exp));
-            }
-
-            value.Add(exp.Substring(1));
-
-            return value;
         }
 
         private List<string> EvalExpression(string exp)
