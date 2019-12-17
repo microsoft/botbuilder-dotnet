@@ -8,17 +8,14 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    "$kind": "Microsoft.IntentPattern",
                     "intent": "start",
                     "pattern": "start"
                 },
                 {
-                    "$kind": "Microsoft.IntentPattern",
                     "intent": "cancel",
                     "pattern": "cancel"
                 },
                 {
-                    "$kind": "Microsoft.IntentPattern",
                     "intent": "set_name",
                     "pattern": "set name"
                 }

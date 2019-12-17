@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Recognizer for processing incoming user input.
         /// </value>
         [JsonProperty("recognizer")]
-        public IRecognizer Recognizer { get; set; }
+        public InputRecognizer Recognizer { get; set; }
 
         /// <summary>
         /// Gets or sets language Generator override.
@@ -553,7 +553,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (Recognizer != null)
             {
-                var result = await Recognizer.RecognizeAsync(context, cancellationToken).ConfigureAwait(false);
+                var result = await Recognizer.RecognizeAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
 
                 // only allow one intent
                 var topIntent = result.GetTopScoringIntent();

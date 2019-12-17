@@ -8,12 +8,12 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    "$kind": "Microsoft.IntentPattern",
+                    
                     "intent": "StartOuterIntent",
                     "pattern": "start"
                 },
                 {
-                    "$kind": "Microsoft.IntentPattern",
+                    
                     "intent": "RootIntent",
                     "pattern": "root"
                 }
@@ -31,12 +31,10 @@
                             "$kind": "Microsoft.RegexRecognizer",
                             "intents": [
                                 {
-                                    "$kind": "Microsoft.IntentPattern",
                                     "intent": "SideIntent",
                                     "pattern": "side"
                                 },
                                 {
-                                    "$kind": "Microsoft.IntentPattern",
                                     "intent": "CancelIntent",
                                     "pattern": "cancel"
                                 }

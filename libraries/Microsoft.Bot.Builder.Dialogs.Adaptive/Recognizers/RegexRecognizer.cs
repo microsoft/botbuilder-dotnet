@@ -15,11 +15,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// <summary>
     /// IRecognizer implementation which uses regex expressions to identify intents.
     /// </summary>
-    public class RegexRecognizer : IRecognizer
+    public class RegexRecognizer : InputRecognizer
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.RegexRecognizer";
 
+        [JsonConstructor]
         public RegexRecognizer()
         {
         }
@@ -42,16 +43,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         [JsonProperty("entities")]
         public List<EntityRecognizer> Entities { get; set; } = new List<EntityRecognizer>();
 
-        public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken)
         {
-            // Process only messages
-            if (turnContext.Activity.Type != ActivityTypes.Message)
-            {
-                return await Task.FromResult(new RecognizerResult() { Text = turnContext.Activity.Text });
-            }
-
             // Identify matched intents
-            var utterance = turnContext.Activity.Text ?? string.Empty;
+            var utterance = text ?? string.Empty;
 
             var result = new RecognizerResult()
             {
@@ -103,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             {
                 EntityRecognizerSet entitySet = new EntityRecognizerSet(this.Entities);
                 IList<Entity> entities2 = new List<Entity>();
-                entities2 = await entitySet.RecognizeEntities(turnContext, entities2).ConfigureAwait(false);
+                entities2 = await entitySet.RecognizeEntities(dialogContext, text, locale, entities2).ConfigureAwait(false);
                 foreach (var entity in entities2)
                 {
                     if (!entities.TryGetValue(entity.Type, out List<string> values))
@@ -125,13 +120,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             }
 
             return result;
-        }
-
-        public async Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken)
-            where T : IRecognizerConvert, new()
-        {
-            var result = await this.RecognizeAsync(turnContext, cancellationToken).ConfigureAwait(false);
-            return JObject.FromObject(result).ToObject<T>();
         }
     }
 }
