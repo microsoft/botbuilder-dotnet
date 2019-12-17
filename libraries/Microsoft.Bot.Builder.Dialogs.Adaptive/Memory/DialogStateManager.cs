@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
 
             remainingPath = string.Empty;
-            return GetMemoryScope(scope);
+            return GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(path));
         }
 
         /// <summary>
@@ -536,6 +536,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             {
                 yield return new KeyValuePair<string, object>(ms.Name, ms.GetMemory(dialogContext));
             }
+        }
+
+        private string GetBadScopeMessage(string path)
+        {
+            return $"'{path}' does not match memory scopes:{string.Join(",", Configuration.MemoryScopes.Select(ms => ms.Name))}";
         }
 
         private bool TrackChange(string path, object value)

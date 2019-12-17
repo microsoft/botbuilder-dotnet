@@ -761,6 +761,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "activity": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Activity",
