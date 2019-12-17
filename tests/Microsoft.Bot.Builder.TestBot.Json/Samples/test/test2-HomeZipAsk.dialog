@@ -1,0 +1,15 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$kind": "Microsoft.OnAsk",
+    "condition":"!$HomeZip && contains(dialog.requiredProperties, 'HomeZip')",
+    "actions": [
+        {
+            "$kind": "Microsoft.Ask",
+            "activity": "@{AskHomeZip()}",
+            "expectedProperties": [
+                "HomeZip"
+            ]
+        },
+    ]
+}

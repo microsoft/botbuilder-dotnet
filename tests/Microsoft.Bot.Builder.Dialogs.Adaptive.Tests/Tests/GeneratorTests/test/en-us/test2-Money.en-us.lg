@@ -1,0 +1,7 @@
+# AskMoney
+- @{askString('Money')}
+
+# MoneyName
+- money
+
+[test2-common.lg](test2-common.lg)

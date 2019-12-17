@@ -33,7 +33,9 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     .AddJsonFile($@"samples\contact\luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
                     .AddJsonFile($@"samples\contact\luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
                     .AddJsonFile($@"samples\opportunity\luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
-                    .AddJsonFile($@"samples\opportunity\luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false);
+                    .AddJsonFile($@"samples\opportunity\luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
+                    .AddJsonFile($@"samples\test\luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
+                    .AddJsonFile($@"samples\test\luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false);
             })
             .UseStartup<Startup>()
             .Build();

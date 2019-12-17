@@ -1,0 +1,12 @@
+# AskKeyPhrase
+- @{askString('KeyPhrase')}
+
+# KeyPhraseName
+- key phrase
+
+# KeyPhrase(val)
+- @{KeyPhraseEntity(val)}
+
+[test2-KeyPhraseEntity.lg](test2-KeyPhraseEntity.lg)
+
+[test2-common.lg](test2-common.lg)
