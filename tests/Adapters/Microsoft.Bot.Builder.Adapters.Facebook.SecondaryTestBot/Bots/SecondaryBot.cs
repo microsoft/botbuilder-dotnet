@@ -34,7 +34,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.Bots
                         content: attachment.Content);
 
                     activity.Attachments.Add(image);
-                    await FacebookHelper.SendActivityWithTypingIndicatorAsync(activity, turnContext, cancellationToken);
+
+                    // Generate an activity with typing indicator, then send it along the other to display the indicator
+                    // while the attachment is retrieved
+                    var typingActivity = FacebookHelper.GenerateTypingActivity(turnContext.Activity.Conversation.Id);
+                    await turnContext.SendActivitiesAsync(new[] { typingActivity, activity }, cancellationToken).ConfigureAwait(false);
                 }
             }
             else if (turnContext.Activity.GetChannelData<FacebookMessage>().IsStandby)
@@ -55,18 +59,20 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.Bots
             {
                 IActivity activity;
 
-                switch (turnContext.Activity.Text)
+                var messageText = turnContext.Activity.Text.ToLowerInvariant();
+
+                switch (messageText)
                 {
-                    case "Pass to primary":
+                    case "pass to primary":
                         activity = MessageFactory.Text("Redirecting to the primary bot...");
                         activity.Type = ActivityTypes.Event;
                         ((IEventActivity)activity).Name = HandoverConstants.PassThreadControl;
                         ((IEventActivity)activity).Value = PrimaryReceiverAppId;
                         break;
-                    case "Redirected to the bot":
+                    case "redirected to the bot":
                         activity = MessageFactory.Text("Hello, I'm the secondary bot. How can I help you?");
                         break;
-                    case "Invoke a take":
+                    case "invoke a take":
                         activity = MessageFactory.Text($"The Primary bot will take back the control");
                         break;
                     default:
@@ -74,7 +80,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.Bots
                         break;
                 }
 
-                await FacebookHelper.SendActivityWithTypingIndicatorAsync(activity, turnContext, cancellationToken);
+                await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -90,17 +96,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.Bots
                     await turnContext.SendActivityAsync(activity, cancellationToken);
                 }
             }
-        }
-
-        private static Attachment CreateTemplateAttachment(string filePath)
-        {
-            var templateAttachmentJson = File.ReadAllText(filePath);
-            var templateAttachment = new Attachment()
-            {
-                ContentType = "template",
-                Content = JsonConvert.DeserializeObject(templateAttachmentJson),
-            };
-            return templateAttachment;
         }
     }
 }

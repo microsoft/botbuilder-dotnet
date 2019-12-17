@@ -173,20 +173,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             return attachmentsList;
         }
-
-        /// <summary>
-        /// Sends a message that will display a typing indicator as a placeholder while the message arrives.
-        /// </summary>
-        /// <param name="activity">The activity with the actual message to be sent.</param>
-        /// <param name="turnContext">The TurnContext that will send the activities.</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A task.</returns>
-        public static async Task SendActivityWithTypingIndicatorAsync(IActivity activity, ITurnContext turnContext, CancellationToken cancellationToken)
-        {
-            var typingActivity = GenerateTypingActivity(turnContext.Activity.Conversation.Id);
-            await turnContext.SendActivitiesAsync(new[] { typingActivity, activity }, cancellationToken).ConfigureAwait(false);
-        }
-
+        
         /// <summary>
         /// Writes the HttpResponse.
         /// </summary>
@@ -222,11 +209,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         }
 
         /// <summary>
-        /// Generates a sender_action = typing_on to be sent in advance to the actual message.
+        /// Generates an activity that displays a typing indicator.
         /// </summary>
         /// <param name="recipientId">The id of the recipient of the message.</param>
-        /// <returns>An activity with sender_action = typing_on.</returns>
-        private static Activity GenerateTypingActivity(string recipientId)
+        /// <returns>An activity with sender_action equal to 'typing_on'.</returns>
+        public static Activity GenerateTypingActivity(string recipientId)
         {
             var activity = new Activity()
             {
