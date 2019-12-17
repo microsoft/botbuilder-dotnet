@@ -8,12 +8,14 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class InputRecognizer
+    public abstract class InputRecognizer 
     {
-        [JsonConstructor]
-        public InputRecognizer()
-        {
-        }
+        /// <summary>
+        /// Gets or sets id of the recognizer.
+        /// </summary>
+        /// <value>Id.</value>
+        [JsonProperty("id")]
+        public string Id { get; set; }
 
         /// <summary>
         /// Runs current DialogContext.TurnContext.Activity through a recognizer and returns a generic recognizer result.
@@ -21,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogContext">Dialog context.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Analysis of utterance.</returns>
-        public virtual Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken)
+        public virtual Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
         {
             return RecognizeAsync(dialogContext, dialogContext.Context.Activity, cancellationToken);
         }
@@ -33,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogContext">Dialog context.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Analysis of utterance.</returns>
-        public virtual async Task<T> RecognizeAsync<T>(DialogContext dialogContext, CancellationToken cancellationToken)
+        public virtual async Task<T> RecognizeAsync<T>(DialogContext dialogContext, CancellationToken cancellationToken = default)
             where T : IRecognizerConvert, new()
         {
             var result = new T();
@@ -48,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="activity">activity to recognize.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Analysis of utterance.</returns>
-        public virtual async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken)
+        public virtual async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default)
         {
             if (activity?.Type == ActivityTypes.Message)
             {
@@ -66,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="activity">activity to recognize.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Analysis of utterance.</returns>
-        public virtual async Task<T> RecognizeAsync<T>(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken)
+        public virtual async Task<T> RecognizeAsync<T>(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default)
             where T : IRecognizerConvert, new()
         {
             var result = new T();
@@ -82,10 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="locale">locale to use for recognition.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Analysis of utterance.</returns>
-        public virtual Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException("You must override RecognizerAsync(text, locale)");
-        }
+        public abstract Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Runs an utterance through a recognizer and returns a strongly-typed recognizer result using IRecognizerConvert.
@@ -96,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="locale">locale to use for recognition.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Analysis of utterance.</returns>
-        public virtual async Task<T> RecognizeAsync<T>(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken)
+        public virtual async Task<T> RecognizeAsync<T>(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken = default)
             where T : IRecognizerConvert, new()
         {
             var result = new T();

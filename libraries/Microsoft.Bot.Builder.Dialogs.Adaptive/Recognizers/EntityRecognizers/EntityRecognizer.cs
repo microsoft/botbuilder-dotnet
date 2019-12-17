@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
@@ -13,22 +14,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         {
         }
 
-        public Task<IList<Entity>> RecognizeEntities(DialogContext dialogContext, IEnumerable<Entity> entities)
+        public Task<IList<Entity>> RecognizeEntities(DialogContext dialogContext, IEnumerable<Entity> entities, CancellationToken cancellationToken = default)
         {
-            return this.RecognizeEntities(dialogContext, dialogContext.Context.Activity, entities);
+            return this.RecognizeEntities(dialogContext, dialogContext.Context.Activity, entities, cancellationToken);
         }
 
-        public async Task<IList<Entity>> RecognizeEntities(DialogContext dialogContext, Activity activity, IEnumerable<Entity> entities)
+        public async Task<IList<Entity>> RecognizeEntities(DialogContext dialogContext, Activity activity, IEnumerable<Entity> entities, CancellationToken cancellationToken = default)
         {
             if (activity.Type == ActivityTypes.Message)
             {
-                return await this.RecognizeEntities(dialogContext, activity.Text, activity.Locale, entities).ConfigureAwait(false);
+                return await this.RecognizeEntities(dialogContext, activity.Text, activity.Locale, entities, cancellationToken).ConfigureAwait(false);
             }
 
             return new List<Entity>();
         }
 
-        public Task<IList<Entity>> RecognizeEntities(DialogContext dialogContext, string text, string locale, IEnumerable<Entity> entities)
+        public Task<IList<Entity>> RecognizeEntities(DialogContext dialogContext, string text, string locale, IEnumerable<Entity> entities, CancellationToken cancellationToken = default)
         {
             List<Entity> newEntities = new List<Entity>();
             var culture = Culture.MapToNearestLanguage(locale ?? string.Empty);

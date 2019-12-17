@@ -233,7 +233,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public IEnumerable<Dialog> GetDependencies()
         {
             EnsureDependenciesInstalled();
-            
+
             yield break;
         }
 
@@ -555,10 +555,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 var result = await Recognizer.RecognizeAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
 
-                // only allow one intent
-                var topIntent = result.GetTopScoringIntent();
-                result.Intents.Clear();
-                result.Intents.Add(topIntent.intent, new IntentScore { Score = topIntent.score });
+                if (result.Intents.Any())
+                {
+                    // just deal with topIntent
+                    IntentScore topScore = null;
+                    var topIntent = string.Empty;
+                    foreach (var intent in result.Intents)
+                    {
+                        if (topScore == null || topScore.Score < intent.Value.Score)
+                        {
+                            topIntent = intent.Key;
+                            topScore = intent.Value;
+                        }
+                    }
+
+                    result.Intents.Clear();
+                    result.Intents.Add(topIntent, topScore);
+                }
+
                 return result;
             }
 

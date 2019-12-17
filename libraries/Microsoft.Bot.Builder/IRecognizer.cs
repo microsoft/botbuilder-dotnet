@@ -10,14 +10,6 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Interface for Recognizers.
     /// </summary>
-    /// <remarks>
-    /// This interface has been deprecated in favor for InputRecognizer abstract class. You can 
-    /// continue to use this interface if you wrap it in a LegacyInputRecognizer.  
-    /// <see cref="Microsoft.Bot.Builder.Dialogs.LegacyInputRecognizer"/>.
-    /// <code>
-    /// new LegacyInputRecognizer(legacyIRecognizerImplementation);
-    /// </code>
-    /// </remarks>
     public interface IRecognizer
     {
         /// <summary>

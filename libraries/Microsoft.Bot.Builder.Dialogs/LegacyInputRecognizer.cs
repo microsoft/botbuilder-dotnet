@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Recognizers
 {
@@ -11,6 +13,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
     /// </summary>
     public class LegacyInputRecognizer : InputRecognizer
     {
+        [JsonProperty("$kind")]
+        public const string DeclarativeType = "Microsoft.LegacyInputRecognizer";
+
+        [JsonConstructor]
         public LegacyInputRecognizer(IRecognizer recognizer = null)
         {
             this.Recognizer = recognizer;
@@ -25,7 +31,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
 
         public override Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException("This recognizer can only be used with a ITurnContext.");
+            // create turn context with fake message activity with text/locale in it
+            return this.Recognizer.RecognizeAsync(
+                new TurnContext(
+                    dialogContext.Context.Adapter,
+                    new Activity()
+                    {
+                        Type = ActivityTypes.Message,
+                        Text = text,
+                        Locale = locale
+                    }),
+                cancellationToken);
         }
     }
 }

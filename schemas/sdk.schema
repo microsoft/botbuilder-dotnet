@@ -186,6 +186,11 @@
             "$ref": "#/definitions/Microsoft.LanguagePolicy"
         },
         {
+            "title": "Microsoft.LegacyInputRecognizer",
+            "description": "Use regular expressions to recognize intents and entities from user input.",
+            "$ref": "#/definitions/Microsoft.LegacyInputRecognizer"
+        },
+        {
             "title": "Microsoft.LogAction",
             "description": "Log a message to the host application. Send a TraceActivity to Bot Framework Emulator (optional).",
             "$ref": "#/definitions/Microsoft.LogAction"
@@ -234,6 +239,11 @@
             "title": "Microsoft.OnActivity",
             "description": "Actions to perform on receipt of a generic activity.",
             "$ref": "#/definitions/Microsoft.OnActivity"
+        },
+        {
+            "title": "Microsoft.OnAmbigiousIntent",
+            "description": "Actions to perform on when an intent is ambigious.",
+            "$ref": "#/definitions/Microsoft.OnAmbigiousIntent"
         },
         {
             "title": "Microsoft.OnBeginDialog",
@@ -321,11 +331,6 @@
             "$ref": "#/definitions/Microsoft.OnRepromptDialog"
         },
         {
-            "title": "Microsoft.OnTypingActivity",
-            "description": "Actions to perform on receipt of an activity with type 'Typing'.",
-            "$ref": "#/definitions/Microsoft.OnTypingActivity"
-        },
-        {
             "title": "Microsoft.OnUnknownIntent",
             "description": "Action to perform when user input is unrecognized and if none of the 'on intent recognition' triggers match recognized intent.",
             "$ref": "#/definitions/Microsoft.OnUnknownIntent"
@@ -354,6 +359,11 @@
             "title": "Microsoft.RandomSelector",
             "description": "Select most specific true rule",
             "$ref": "#/definitions/Microsoft.RandomSelector"
+        },
+        {
+            "title": "Microsoft.RecognizerSet",
+            "description": "Run multiple recognizers and return intents based on consensus between the recognizers.",
+            "$ref": "#/definitions/Microsoft.RecognizerSet"
         },
         {
             "title": "Microsoft.RegExEntityRecognizer",
@@ -587,10 +597,10 @@
                     "default": "dialog.result"
                 },
                 "recognizer": {
-                    "$kind": "Microsoft.IRecognizer",
+                    "$kind": "Microsoft.InputRecognizer",
                     "title": "Recognizer",
-                    "description": "Language Understanding recognizer that interprets user input into intent and entities.",
-                    "$ref": "#/definitions/Microsoft.IRecognizer"
+                    "description": "Input recognizer that interprets user input into intent and entities.",
+                    "$ref": "#/definitions/Microsoft.InputRecognizer"
                 },
                 "generator": {
                     "$kind": "Microsoft.ILanguageGenerator",
@@ -3594,21 +3604,6 @@
             "$role": "union",
             "oneOf": [
                 {
-                    "title": "Microsoft.LuisRecognizer",
-                    "description": "LUIS recognizer.",
-                    "$ref": "#/definitions/Microsoft.LuisRecognizer"
-                },
-                {
-                    "title": "Microsoft.MultiLanguageRecognizer",
-                    "description": "Configure one recognizer per language and the specify the language fallback policy.",
-                    "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
-                },
-                {
-                    "title": "Microsoft.RegexRecognizer",
-                    "description": "Use regular expressions to recognize intents and entities from user input.",
-                    "$ref": "#/definitions/Microsoft.RegexRecognizer"
-                },
-                {
                     "type": "string",
                     "title": "string"
                 }
@@ -3639,6 +3634,11 @@
                     "title": "Microsoft.OnActivity",
                     "description": "Actions to perform on receipt of a generic activity.",
                     "$ref": "#/definitions/Microsoft.OnActivity"
+                },
+                {
+                    "title": "Microsoft.OnAmbigiousIntent",
+                    "description": "Actions to perform on when an intent is ambigious.",
+                    "$ref": "#/definitions/Microsoft.OnAmbigiousIntent"
                 },
                 {
                     "title": "Microsoft.OnBeginDialog",
@@ -3724,11 +3724,6 @@
                     "title": "Microsoft.OnRepromptDialog",
                     "description": "Actions to perform when 'RepromptDialog' event occurs.",
                     "$ref": "#/definitions/Microsoft.OnRepromptDialog"
-                },
-                {
-                    "title": "Microsoft.OnTypingActivity",
-                    "description": "Actions to perform on receipt of an activity with type 'Typing'.",
-                    "$ref": "#/definitions/Microsoft.OnTypingActivity"
                 },
                 {
                     "title": "Microsoft.OnUnknownIntent",
@@ -3932,6 +3927,42 @@
                 }
             ]
         },
+        "Microsoft.InputRecognizer": {
+            "title": "Microsoft InputRecognizer",
+            "description": "Union of components which implement the InputRecognizer abstract class",
+            "$role": "union",
+            "oneOf": [
+                {
+                    "title": "Microsoft.LegacyInputRecognizer",
+                    "description": "Use regular expressions to recognize intents and entities from user input.",
+                    "$ref": "#/definitions/Microsoft.LegacyInputRecognizer"
+                },
+                {
+                    "title": "Microsoft.LuisRecognizer",
+                    "description": "LUIS recognizer.",
+                    "$ref": "#/definitions/Microsoft.LuisRecognizer"
+                },
+                {
+                    "title": "Microsoft.MultiLanguageRecognizer",
+                    "description": "Configure one recognizer per language and the specify the language fallback policy.",
+                    "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
+                },
+                {
+                    "title": "Microsoft.RecognizerSet",
+                    "description": "Run multiple recognizers and return intents based on consensus between the recognizers.",
+                    "$ref": "#/definitions/Microsoft.RecognizerSet"
+                },
+                {
+                    "title": "Microsoft.RegexRecognizer",
+                    "description": "Use regular expressions to recognize intents and entities from user input.",
+                    "$ref": "#/definitions/Microsoft.RegexRecognizer"
+                },
+                {
+                    "type": "string",
+                    "title": "string"
+                }
+            ]
+        },
         "Microsoft.IpEntityRecognizer": {
             "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Ip Entity Recognizer",
@@ -4035,6 +4066,70 @@
                 }
             ]
         },
+        "Microsoft.LegacyInputRecognizer": {
+            "$role": "union(Microsoft.InputRecognizer)",
+            "title": "InputRecognizer for IRecognizer",
+            "description": "Use regular expressions to recognize intents and entities from user input.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.LegacyInputRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional unique id using with RecognizerSet.  Other recognizers should return 'DeferToRecognizer_{Id}' intent when cross training data for this recognizer."
+                },
+                "recognizer": {
+                    "$kind": "Microsoft.IRecognizer",
+                    "title": "recognizer",
+                    "description": "IRecognizer implementation.",
+                    "$ref": "#/definitions/Microsoft.IRecognizer"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "recognizer",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
         "Microsoft.LogAction": {
             "$role": "union(Microsoft.IDialog)",
             "title": "Log to console",
@@ -4105,7 +4200,7 @@
             ]
         },
         "Microsoft.LuisRecognizer": {
-            "$role": "union(Microsoft.IRecognizer)",
+            "$role": "union(Microsoft.InputRecognizer)",
             "title": "LUIS Recognizer",
             "description": "LUIS recognizer.",
             "type": "object",
@@ -4134,6 +4229,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional unique id using with RecognizerSet.  Other recognizers should return 'DeferToRecognizer_{Id}' intent when cross training data for this recognizer."
                 },
                 "applicationId": {
                     "type": "string"
@@ -4277,7 +4377,7 @@
             ]
         },
         "Microsoft.MultiLanguageRecognizer": {
-            "$role": "union(Microsoft.IRecognizer)",
+            "$role": "union(Microsoft.InputRecognizer)",
             "title": "Multi-language recognizer",
             "description": "Configure one recognizer per language and the specify the language fallback policy.",
             "type": "object",
@@ -4306,6 +4406,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional unique id using with RecognizerSet.  Other recognizers should return 'DeferToRecognizer_{Id}' intent when cross training data for this recognizer."
+                },
                 "languagePolicy": {
                     "$kind": "Microsoft.LanguagePolicy",
                     "type": "object",
@@ -4316,10 +4421,10 @@
                 "recognizers": {
                     "type": "object",
                     "title": "Recognizers",
-                    "description": "Map of language -> IRecognizer",
+                    "description": "Map of language -> InputRecognizer",
                     "additionalProperties": {
-                        "$kind": "Microsoft.IRecognizer",
-                        "$ref": "#/definitions/Microsoft.IRecognizer"
+                        "$kind": "Microsoft.InputRecognizer",
+                        "$ref": "#/definitions/Microsoft.InputRecognizer"
                     }
                 }
             },
@@ -4793,6 +4898,76 @@
                     "required": [
                         "actions",
                         "type",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnAmbigiousIntent": {
+            "$role": "union(Microsoft.ITriggerCondition)",
+            "title": "On ambigious intent",
+            "description": "Actions to perform on when an intent is ambigious.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnAmbigiousIntent"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition (expression).",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions to execute.",
+                    "items": {
+                        "$kind": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
                         "$kind"
                     ]
                 }
@@ -6014,76 +6189,6 @@
                 }
             ]
         },
-        "Microsoft.OnTypingActivity": {
-            "$role": "union(Microsoft.ITriggerCondition)",
-            "title": "On Typing activity",
-            "description": "Actions to perform on receipt of an activity with type 'Typing'.",
-            "type": "object",
-            "properties": {
-                "$kind": {
-                    "title": "$kind",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnTypingActivity"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "condition": {
-                    "$role": "expression",
-                    "title": "Condition",
-                    "description": "Condition (expression).",
-                    "examples": [
-                        "user.vip == true"
-                    ],
-                    "type": "string"
-                },
-                "actions": {
-                    "type": "array",
-                    "description": "Sequence of actions to execute.",
-                    "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "actions",
-                        "$kind"
-                    ]
-                }
-            ]
-        },
         "Microsoft.OnUnknownIntent": {
             "title": "On unknown intent",
             "description": "Action to perform when user input is unrecognized and if none of the 'on intent recognition' triggers match recognized intent.",
@@ -6422,6 +6527,18 @@
                     "title": "Top",
                     "description": "The number of answers you want to retrieve.",
                     "default": 3
+                },
+                "isTest": {
+                    "type": "boolean",
+                    "title": "IsTest",
+                    "description": "True, if pointing to Test environment, else false.",
+                    "default": false
+                },
+                "rankerType": {
+                    "type": "string",
+                    "title": "RankerType",
+                    "description": "Type of Ranker.",
+                    "default": "Default"
                 }
             },
             "patternProperties": {
@@ -6502,6 +6619,73 @@
                 }
             ]
         },
+        "Microsoft.RecognizerSet": {
+            "$role": "union(Microsoft.InputRecognizer)",
+            "title": "RecognizerSet",
+            "description": "Run multiple recognizers and return intents based on consensus between the recognizers.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RecognizerSet"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional unique id using with RecognizerSet.  Other recognizers should return 'DeferToRecognizer_{Id}' intent when cross training data for this recognizer."
+                },
+                "recognizers": {
+                    "type": "array",
+                    "title": "Recognizers",
+                    "description": "List of Recognizers defined for this set.",
+                    "items": {
+                        "$kind": "Microsoft.InputRecognizer",
+                        "$ref": "#/definitions/Microsoft.InputRecognizer"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "recognizers",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
         "Microsoft.RegExEntityRecognizer": {
             "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Regex Entity Recognizer",
@@ -6567,7 +6751,7 @@
             ]
         },
         "Microsoft.RegexRecognizer": {
-            "$role": "union(Microsoft.IRecognizer)",
+            "$role": "union(Microsoft.InputRecognizer)",
             "title": "Regex recognizer",
             "description": "Use regular expressions to recognize intents and entities from user input.",
             "type": "object",
@@ -6595,6 +6779,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional unique id using with RecognizerSet.  Other recognizers should return 'DeferToRecognizer_{Id}' intent when cross training data for this recognizer."
                 },
                 "intents": {
                     "type": "array",

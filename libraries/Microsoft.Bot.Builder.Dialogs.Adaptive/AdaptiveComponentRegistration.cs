@@ -21,6 +21,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
@@ -54,6 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<OnEndOfConversationActivity>(OnEndOfConversationActivity.DeclarativeType);
             yield return new TypeRegistration<OnTypingActivity>(OnTypingActivity.DeclarativeType);
             yield return new TypeRegistration<OnHandoffActivity>(OnHandoffActivity.DeclarativeType);
+            yield return new TypeRegistration<OnAmbigiousIntent>(OnAmbigiousIntent.DeclarativeType);
 
             // Actions
             yield return new TypeRegistration<BeginDialog>(BeginDialog.DeclarativeType);
@@ -96,6 +98,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<LuisRecognizer>(LuisRecognizer.DeclarativeType) { CustomDeserializer = new LuisRecognizerLoader(TypeFactory.Configuration) };
             yield return new TypeRegistration<RegexRecognizer>(RegexRecognizer.DeclarativeType);
             yield return new TypeRegistration<MultiLanguageRecognizer>(MultiLanguageRecognizer.DeclarativeType);
+            yield return new TypeRegistration<RecognizerSet>(RecognizerSet.DeclarativeType);
+            yield return new TypeRegistration<LegacyInputRecognizer>(LegacyInputRecognizer.DeclarativeType);
 
             // Entity recognizers
             yield return new TypeRegistration<AgeEntityRecognizer>(AgeEntityRecognizer.DeclarativeType);

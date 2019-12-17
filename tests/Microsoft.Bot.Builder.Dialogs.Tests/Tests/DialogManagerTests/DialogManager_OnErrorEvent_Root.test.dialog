@@ -37,6 +37,7 @@
                                 ]
                             },
                             {
+                                "$kind": "Microsoft.OnIntent",
                                 "intent": "throw",
                                 "actions": [
                                     {

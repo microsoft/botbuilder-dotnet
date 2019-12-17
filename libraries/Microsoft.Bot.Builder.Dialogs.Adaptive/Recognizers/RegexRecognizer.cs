@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
     /// <summary>
-    /// IRecognizer implementation which uses regex expressions to identify intents.
+    /// InputRecognizer implementation which uses regex expressions to identify intents.
     /// </summary>
     public class RegexRecognizer : InputRecognizer
     {
