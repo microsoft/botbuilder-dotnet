@@ -79,11 +79,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             var result = new List<int>();
             if (candidates.Count > 0)
             {
+                int selection;
                 lock (this)
                 {
-                    var selection = _rand.Next(candidates.Count);
-                    result.Add(candidates[selection]);
+                    selection = _rand.Next(candidates.Count);
                 }
+
+                result.Add(candidates[selection]);
             }
 
             return Task.FromResult((IReadOnlyList<int>)result);
