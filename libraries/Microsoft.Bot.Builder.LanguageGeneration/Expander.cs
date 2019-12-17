@@ -285,7 +285,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var result = new List<List<string>>();
             foreach (var item in values)
             {
-                if (IsPureExpression(item, out var text))
+                if (item.IsPureExpression(out var text))
                 {
                     result.Add(EvalExpression(text));
                 }
@@ -313,39 +313,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return result;
-        }
-
-        private bool IsPureExpression(LGFileParser.KeyValueStructureValueContext context, out string expression)
-        {
-            expression = context.GetText();
-
-            var hasExpression = false;
-            foreach (ITerminalNode node in context.children)
-            {
-                switch (node.Symbol.Type)
-                {
-                    case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
-                        return false;
-                    case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
-                        if (hasExpression)
-                        {
-                            return false;
-                        }
-
-                        hasExpression = true;
-                        expression = node.GetText();
-                        break;
-                    default:
-                        if (!string.IsNullOrWhiteSpace(node.GetText()))
-                        {
-                            return false;
-                        }
-
-                        break;
-                }
-            }
-
-            return hasExpression;
         }
 
         private bool EvalExpressionInCondition(string exp)
