@@ -3,7 +3,7 @@
 #
 
 # "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
-name: $(Build.BuildId)
+name: $(Date:yyMMdd)-$(Build.BuildId)
 variables:
   BuildConfiguration: Release-Windows
   BuildPlatform: any cpu
@@ -23,3 +23,4 @@ jobs:
   steps:
   - template: ci-build-steps.yml
   - template: sign-steps.yml
+  - template: functional-test-setup2-steps.yml
