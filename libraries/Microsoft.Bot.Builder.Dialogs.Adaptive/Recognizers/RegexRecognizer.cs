@@ -1,6 +1,7 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -54,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 Intents = new Dictionary<string, IntentScore>(),
             };
 
-            var entities = new Dictionary<string, List<string>>();
+            var entities = new JObject();
             foreach (var intentPattern in this.Intents)
             {
                 var matches = intentPattern.Regex.Matches(utterance);
@@ -77,14 +78,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                             var group = (Group)match.Groups[groupName];
                             if (group.Success)
                             {
-                                List<string> values;
+                                JToken values;
                                 if (!entities.TryGetValue(groupName, out values))
                                 {
-                                    values = new List<string>();
+                                    values = new JArray();
                                     entities.Add(groupName, values);
                                 }
 
-                                values.Add(group.Value);
+                                ((JArray)values).Add(group.Value);
+
+                                // get/create $instance
+                                JToken instanceRoot;
+                                if (!entities.TryGetValue("$instance", StringComparison.OrdinalIgnoreCase, out instanceRoot))
+                                {
+                                    instanceRoot = new JObject();
+                                    entities["$instance"] = instanceRoot;
+                                }
+
+                                // add instanceData
+                                JToken instanceData;
+                                if (!((JObject)instanceRoot).TryGetValue(groupName, StringComparison.OrdinalIgnoreCase, out instanceData))
+                                {
+                                    instanceData = new JArray();
+                                    instanceRoot[groupName] = instanceData;
+                                }
+
+                                dynamic instance = new JObject();
+                                instance.startIndex = group.Index;
+                                instance.endIndex = group.Index + group.Length;
+                                instance.score = (double)1.0;
+                                instance.text = (string)group.Value;
+                                instance.type = groupName;
+                                ((JArray)instanceData).Add(instance);
                             }
                         }
                     }
@@ -101,16 +126,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 entities2 = await entitySet.RecognizeEntities(dialogContext, text, locale, entities2).ConfigureAwait(false);
                 foreach (var entity in entities2)
                 {
-                    if (!entities.TryGetValue(entity.Type, out List<string> values))
+                    // add value
+                    JToken values;
+                    if (!entities.TryGetValue(entity.Type, StringComparison.OrdinalIgnoreCase, out values))
                     {
-                        values = new List<string>();
+                        values = new JArray();
                         entities[entity.Type] = values;
                     }
 
-                    values.Add((string)entity.Properties["Text"]);
+                    ((JArray)values).Add((string)entity.Properties["Text"]);
+
+                    // get/create $instance
+                    JToken instanceRoot;
+                    if (!entities.TryGetValue("$instance", StringComparison.OrdinalIgnoreCase, out instanceRoot))
+                    {
+                        instanceRoot = new JObject();
+                        entities["$instance"] = instanceRoot;
+                    }
+
+                    // add instanceData
+                    JToken instanceData;
+                    if (!((JObject)instanceRoot).TryGetValue(entity.Type, StringComparison.OrdinalIgnoreCase, out instanceData))
+                    {
+                        instanceData = new JArray();
+                        instanceRoot[entity.Type] = instanceData;
+                    }
+
+                    dynamic instance = new JObject();
+                    instance.startIndex = entity.Properties["Start"];
+                    instance.endIndex = entity.Properties["End"];
+                    instance.score = (double)1.0;
+                    instance.text = (string)entity.Properties["Text"];
+                    instance.type = entity.Type;
+                    instance.resolution = entity.Properties["Resolution"];
+                    ((JArray)instanceData).Add(instance);
                 }
             }
-
+            
             result.Entities = JObject.FromObject(entities);
 
             // if no match return None intent

@@ -57,7 +57,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Ambigious:@{turn.recognized.intent}"
+                        "activity": "Ambigious:@{join(turn.recognized.intent}"
                     }
                 ]
             },

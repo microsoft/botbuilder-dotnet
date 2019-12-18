@@ -68,6 +68,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             if (entitiesToProcess.Count == 0)
             {
                 var textEntity = new TextEntity(text);
+                textEntity.Properties["Start"] = 0;
+                textEntity.Properties["End"] = text.Length;
+                textEntity.Properties["Score"] = 1.0;
+                textEntity.Properties["Text"] = text;
                 allNewEntities.Add(textEntity);
                 entitiesToProcess.Add(textEntity);
             }
