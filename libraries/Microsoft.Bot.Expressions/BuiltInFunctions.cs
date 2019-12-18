@@ -481,7 +481,7 @@ namespace Microsoft.Bot.Expressions
         }
 
         // Apply -- these are helpers for adding functions to the expression library.
-        
+
         /// <summary>
         /// Generate an expression delegate that applies function after verifying all children.
         /// </summary>
@@ -1275,7 +1275,7 @@ namespace Microsoft.Bot.Expressions
             dynamic str;
             (str, error) = expression.Children[0].TryEvaluate(state);
             if (error == null)
-            {   
+            {
                 if (str == null)
                 {
                     result = string.Empty;
@@ -2625,7 +2625,7 @@ namespace Microsoft.Bot.Expressions
                         {
                             var builder = new StringBuilder();
                             foreach (var arg in args)
-                            {   
+                            {
                                 if (arg is string str)
                                 {
                                     builder.Append(str);
@@ -2641,9 +2641,9 @@ namespace Microsoft.Bot.Expressions
                     ReturnType.String,
                     ValidateString),
                 new ExpressionEvaluator(
-                    ExpressionType.Length, 
+                    ExpressionType.Length,
                     Apply(
-                        args => 
+                        args =>
                             {
                                 var result = 0;
                                 if (args[0] is string str)
@@ -2656,8 +2656,8 @@ namespace Microsoft.Bot.Expressions
                                     }
 
                                 return result;
-                            }, VerifyStringOrNull), 
-                    ReturnType.Number, 
+                            }, VerifyStringOrNull),
+                    ReturnType.Number,
                     ValidateAtLeastOne),
                 new ExpressionEvaluator(
                     ExpressionType.Replace,
@@ -2724,13 +2724,13 @@ namespace Microsoft.Bot.Expressions
                     ReturnType.String,
                     (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.String, ReturnType.Number)),
                 StringTransform(
-                                ExpressionType.ToLower, 
-                                args => 
+                                ExpressionType.ToLower,
+                                args =>
                                 {
                                     if (args[0] == null)
                                     {
                                         return string.Empty;
-                                    } 
+                                    }
                                     else
                                     {
                                         return args[0].ToLower();
@@ -2849,15 +2849,37 @@ namespace Microsoft.Bot.Expressions
                     (exprssion) => BuiltInFunctions.ValidateArityAndAnyType(exprssion, 0, 0)),
                 new ExpressionEvaluator(
                     ExpressionType.IndexOf,
-                    Apply(
-                        args =>
+                    (expression, state) =>
+                    {
+                        object result = -1;
+                        var (args, error) = EvaluateChildren(expression, state);
+                        if (error == null)
                         {
-                            string rawStr = ParseStringOrNull(args[0]);
-                            string seekStr = ParseStringOrNull(args[1]);
-                            return rawStr.IndexOf(seekStr);
-                        }, VerifyStringOrNull),
+                            if (args[0] is string || args[0] == null)
+                            {
+                                if (args[1] is string || args[1] == null)
+                                {
+                                    result = ParseStringOrNull(args[0]).IndexOf(ParseStringOrNull(args[1]));
+                                }
+                                else
+                                {
+                                    error = $"Can only look for indexof string in {expression}";
+                                }
+                            }
+                            else if (TryParseList(args[0], out IList list))
+                            {
+                                result = list.IndexOf(args[1]);
+                            }
+                            else
+                            {
+                                error = $"{expression} works only on string or list.";
+                            }
+                        }
+
+                        return (result, error);
+                    },
                     ReturnType.Number,
-                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
+                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String, ReturnType.Boolean, ReturnType.Number, ReturnType.Object)),
                 new ExpressionEvaluator(
                     ExpressionType.LastIndexOf,
                     Apply(

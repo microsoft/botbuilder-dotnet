@@ -48,7 +48,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task SelectorTests_RunOnce()
         {
-            await TestUtils.RunTestScript("SelectorTests_RunOnce.test.dialog");
+            await TestUtils.RunTestScript();
+        }
+
+        [TestMethod]
+        public async Task SelectorTests_Priority()
+        {
+            await TestUtils.RunTestScript();
         }
     }
 }

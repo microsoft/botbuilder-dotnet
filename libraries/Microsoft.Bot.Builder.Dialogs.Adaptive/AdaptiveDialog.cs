@@ -716,7 +716,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var selection = await Selector.Select(sequenceContext, cancellationToken).ConfigureAwait(false);
             if (selection.Any())
             {
-                var evt = (from conditional in selection orderby conditional.Priority ascending select conditional).First();
+                var evt = selection.First();
                 await sequenceContext.DebuggerStepAsync(evt, dialogEvent, cancellationToken).ConfigureAwait(false);
                 Trace.TraceInformation($"Executing Dialog: {Id} Rule[{selection}]: {evt.GetType().Name}: {evt.GetExpression(new ExpressionEngine())}");
                 var changes = await evt.ExecuteAsync(sequenceContext).ConfigureAwait(false);
@@ -740,9 +740,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     installedDependencies = true;
 
                     var id = 0u;
-                    var noActivity = 0;
-                    var activity = 1000;
-                    var input = 2000;
                     foreach (var trigger in Triggers)
                     {
                         if (trigger is IDialogDependencies depends)
@@ -758,38 +755,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             needsTracker = true;
                         }
 
-                        if (!trigger.Priority.HasValue)
+                        if (trigger.Priority == null)
                         {
-                            // Analyze actions to set default priorities
-                            // 0-999 Non-activity
-                            // 1000-1999 Sends activity
-                            // 2000+ Contains input action
-                            var foundActivity = false;
-                            var foundInput = false;
-                            foreach (var action in trigger.Actions)
-                            {
-                                if (action is InputDialog || action is Ask)
-                                {
-                                    foundInput = true;
-                                }
-                                else if (action is SendActivity)
-                                {
-                                    foundActivity = true;
-                                }
-                            }
-
-                            if (foundInput)
-                            {
-                                trigger.Priority = input++;
-                            }
-                            else if (foundActivity)
-                            {
-                                trigger.Priority = activity++;
-                            }
-                            else
-                            {
-                                trigger.Priority = noActivity++;
-                            }
+                            // Constant expression defined from order
+                            trigger.Priority = id.ToString();
                         }
 
                         trigger.Id = id++;

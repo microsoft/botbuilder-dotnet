@@ -31,8 +31,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         // constraints from Rule.AddConstraint()
         private List<Expression> extraConstraints = new List<Expression>();
 
+        private string priorityString = null;
+
         // cached expression representing all constraints (constraint AND extraConstraints AND childrenConstraints)
         private Expression fullConstraint = null;
+
+        // cached expression of parsed priority
+        private Expression priorityExpression = null;
 
         [JsonConstructor]
         public OnCondition(string condition = null, List<Dialog> actions = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -64,11 +69,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public virtual SourceRange Source => DebugSupport.SourceMap.TryGetValue(this, out var range) ? range : null;
 
         /// <summary>
-        /// Gets or sets the rule priority where 0 is the highest.
+        /// Gets or sets the rule priority expression where 0 is the highest and less than 0 is ignored.
         /// </summary>
-        /// <value>Priority of condition.</value>
+        /// <value>Priority of condition expression.</value>
         [JsonProperty("priority")]
-        public int? Priority { get; set; }
+        public string Priority
+        {
+            get => priorityString;
+            set
+            {
+                priorityExpression = null;
+                priorityString = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether rule should only run once per unique set of memory paths.
@@ -156,9 +169,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                                     BuiltInFunctions.ValidateUnary))));
                     }
                 }
+
+                if (priorityExpression == null)
+                {
+                    priorityExpression = parser.Parse(Priority);
+                }
             }
 
             return this.fullConstraint;
+        }
+
+        /// <summary>
+        /// Compute the current value of the priority expression and return it.
+        /// </summary>
+        /// <param name="context">Context to use for evaluation.</param>
+        /// <returns>Computed priority.</returns>
+        public int CurrentPriority(SequenceContext context)
+        {
+            var (priority, error) = priorityExpression.TryEvaluate(context.GetState());
+            if (error != null || !(priority is int))
+            {
+                priority = -1;
+            }
+
+            return (int)priority;
         }
 
         /// <summary>

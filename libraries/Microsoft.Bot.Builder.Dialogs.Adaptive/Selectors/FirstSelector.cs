@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
     /// <summary>
-    /// Select the first true triggerHandler implementation of <see cref="ITriggerSelector"/>.
+    /// Select the first ordered by priority true OnCondition.
     /// </summary>
     public class FirstSelector : ITriggerSelector
     {
@@ -27,17 +27,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// </summary>
         /// <value>Expression parser.</value>
         [Newtonsoft.Json.JsonIgnore]
-        public IExpressionParser Parser { get; set;  } = new ExpressionEngine();
+        public IExpressionParser Parser { get; set; } = new ExpressionEngine();
 
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
-            _conditionals = (from conditional in conditionals orderby conditional.Priority ascending select conditional).ToList();
+            _conditionals = conditionals.ToList();
             _evaluate = evaluate;
         }
 
         public Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel)
         {
             OnCondition selection = null;
+            var lowestPriority = int.MaxValue;
             if (_evaluate)
             {
                 for (var i = 0; i < _conditionals.Count; i++)
@@ -48,16 +49,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                     var eval = error == null && (bool)value;
                     if (eval == true)
                     {
-                        selection = conditional;
-                        break;
+                        var priority = conditional.CurrentPriority(context);
+                        if (priority >= 0 && priority < lowestPriority)
+                        {
+                            selection = conditional;
+                            lowestPriority = priority;
+                        }
                     }
                 }
             }
             else
             {
-                if (_conditionals.Count > 0)
+                foreach (var conditional in _conditionals)
                 {
-                    selection = _conditionals[0];
+                    var priority = conditional.CurrentPriority(context);
+                    if (priority >= 0 && priority < lowestPriority)
+                    {
+                        selection = conditional;
+                        lowestPriority = priority;
+                    }
                 }
             }
 

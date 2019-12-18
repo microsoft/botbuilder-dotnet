@@ -21,8 +21,9 @@
             }
         },
         "priority": {
-            "type": "integer",
-            "description": "Priority of rule with 0 being the most important"
+            "type": "string",
+            "description": "Priority expression of rule with 0 being the most important",
+            "$role": "expression"
         },
         "runOnce": {
             "type": "boolean",
