@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     public class GeneratorTests
     {
         private readonly string sandwichDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\GeneratorTests\sandwich\");
-        private readonly string testDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\GeneratorTests\unittests\");
+        private readonly string unitTestsDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\GeneratorTests\unittests\");
 
         [TestMethod]
         public async Task SandwichOrder()
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection()
-                .UseLuisSettings(testDirectory, "generatorTests")
+                .UseLuisSettings(unitTestsDirectory, "generatorTests")
                 .Build();
             await TestUtils.RunTestScript("generator_unittests.test.dialog", configuration: config);
         }
