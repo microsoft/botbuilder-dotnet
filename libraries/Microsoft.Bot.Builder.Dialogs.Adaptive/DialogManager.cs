@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Schema;
@@ -112,7 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             UserState userState = this.UserState ?? context.TurnState.Get<UserState>();
             if (conversationState != null)
             {
-                botStateSet.Add(conversationState); 
+                botStateSet.Add(conversationState);
             }
 
             if (userState != null)
@@ -149,25 +150,51 @@ namespace Microsoft.Bot.Builder.Dialogs
             await dc.GetState().LoadAllScopesAsync(cancellationToken).ConfigureAwait(false);
 
             DialogTurnResult turnResult = null;
-            if (dc.ActiveDialog == null)
-            {
-                // start root dialog
-                turnResult = await dc.BeginDialogAsync(this.rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                // Continue execution
-                // - This will apply any queued up interruptions and execute the current/next step(s).
-                turnResult = await dc.ContinueDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                if (turnResult.Status == DialogTurnStatus.Empty)
+            // Loop as long as we are getting valid OnError handled we should continue executing the actions for the turn.
+            //
+            // NOTE: We loop around this block because each pass through we either complete the turn and break out of the loop
+            // or we have had an exception AND there was an OnError action which captured the error.  We need to continue the 
+            // turn based on the actions the OnError handler introduced.  
+            while (true)
+            {
+                try
                 {
-                    // restart root dialog
-                    turnResult = await dc.BeginDialogAsync(this.rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    if (dc.ActiveDialog == null)
+                    {
+                        // start root dialog
+                        turnResult = await dc.BeginDialogAsync(this.rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        // Continue execution
+                        // - This will apply any queued up interruptions and execute the current/next step(s).
+                        turnResult = await dc.ContinueDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                        if (turnResult.Status == DialogTurnStatus.Empty)
+                        {
+                            // restart root dialog
+                            turnResult = await dc.BeginDialogAsync(this.rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        }
+                    }
+
+                    // turn successfully completed, break the loop
+                    break;
+                }
+                catch (Exception err)
+                {
+                    // fire error event, bubbling from the leaf.
+                    var handled = await dc.EmitEventAsync(DialogEvents.Error, err, bubble: true, fromLeaf: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                    if (!handled)
+                    {
+                        // error was NOT handled, throw the exception and end the turn. (This will trigger the Adapter.OnError handler and end the entire dialog stack)
+                        throw;
+                    }
                 }
             }
 
-            // save all state scopes to their respective stores.
+            // save all state scopes to their respective botState locations.
             await dc.GetState().SaveAllChangesAsync(cancellationToken).ConfigureAwait(false);
 
             // save botstate changes
