@@ -1,4 +1,5 @@
 {
+    "$schema": "../../../../schemas/sdk.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -42,7 +43,7 @@
                 ]
             }
         ],
-        "AutoEndDialog": true,
+        "autoEndDialog": true,
         "defaultResultProperty": "dialog.result"
     },
     "script": [

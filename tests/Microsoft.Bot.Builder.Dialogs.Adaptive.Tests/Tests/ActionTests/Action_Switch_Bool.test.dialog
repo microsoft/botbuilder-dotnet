@@ -1,61 +1,62 @@
 {
-  "$kind": "Microsoft.Test.Script",
-  "dialog": {
-    "$kind": "Microsoft.AdaptiveDialog",
-    "id": "planningTest",
-    "triggers": [
-      {
-        "$kind": "Microsoft.OnBeginDialog",
-        "actions": [
-          {
-            "$kind": "Microsoft.SetProperty",
-            "property": "user.isVip",
-            "value": "True"
-          },
-          {
-            "$kind": "Microsoft.SwitchCondition",
-            "condition": "user.isVip",
-            "default": [
-              {
-                "$kind": "Microsoft.SendActivity",
-                "activity": "Who are you?"
-              }
-            ],
-            "cases": [
-              {
-                "value": "True",
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
                 "actions": [
-                  {
-                    "$kind": "Microsoft.SendActivity",
-                    "activity": "User is VIP"
-                  }
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.isVip",
+                        "value": "True"
+                    },
+                    {
+                        "$kind": "Microsoft.SwitchCondition",
+                        "condition": "user.isVip",
+                        "default": [
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "Who are you?"
+                            }
+                        ],
+                        "cases": [
+                            {
+                                "value": "True",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "User is VIP"
+                                    }
+                                ]
+                            },
+                            {
+                                "value": "False",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "User is NOT VIP"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 ]
-              },
-              {
-                "value": "False",
-                "actions": [
-                  {
-                    "$kind": "Microsoft.SendActivity",
-                    "activity": "User is NOT VIP"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "AutoEndDialog": true,
-    "defaultResultProperty": "dialog.result"
-  },
-  "script": [
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "hi"
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
     },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "User is VIP"
-    }
-  ]
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "User is VIP"
+        }
+    ]
 }

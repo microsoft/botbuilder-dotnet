@@ -3,5 +3,12 @@
     "$role": "union(Microsoft.IDialog)",
     "title": "End turn",
     "description": "End the current turn without ending the dialog.",
-    "type": "object"
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        }
+    }
 }

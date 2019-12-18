@@ -4,13 +4,14 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
     public interface IUserTokenProvider
     {
-        /// <summary>Attempts to retrieve the token for a user that's in a login flow.
+        /// <summary>Attempts to retrieve the token for a user that's in a login flow, using the bot's AppCredentials.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="connectionName">Name of the auth connection to use.</param>
@@ -20,7 +21,7 @@ namespace Microsoft.Bot.Builder
         Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, string connectionName, string magicCode, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Get the raw signin link to be sent to the user for signin for a connection name.
+        /// Get the raw signin link to be sent to the user for signin for a connection name, using the bot's AppCredentials.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="connectionName">Name of the auth connection to use.</param>
@@ -31,7 +32,7 @@ namespace Microsoft.Bot.Builder
         Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, string connectionName, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Get the raw signin link to be sent to the user for signin for a connection name.
+        /// Get the raw signin link to be sent to the user for signin for a connection name, using the bot's AppCredentials.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="connectionName">Name of the auth connection to use.</param>
@@ -44,7 +45,7 @@ namespace Microsoft.Bot.Builder
         Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Signs the user out with the token server.
+        /// Signs the user out with the token server, using the bot's AppCredentials.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="connectionName">Name of the auth connection to use.</param>
@@ -55,7 +56,7 @@ namespace Microsoft.Bot.Builder
         Task SignOutUserAsync(ITurnContext turnContext, string connectionName = null, string userId = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Retrieves the token status for each configured connection for the given user.
+        /// Retrieves the token status for each configured connection for the given user, using the bot's AppCredentials.
         /// </summary>
         /// <param name="context">Context for the current turn of conversation with the user.</param>
         /// <param name="userId">The user Id for which token status is retrieved.</param>
@@ -66,7 +67,7 @@ namespace Microsoft.Bot.Builder
         Task<TokenStatus[]> GetTokenStatusAsync(ITurnContext context, string userId, string includeFilter = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Retrieves Azure Active Directory tokens for particular resources on a configured connection.
+        /// Retrieves Azure Active Directory tokens for particular resources on a configured connection, using the bot's AppCredentials.
         /// </summary>
         /// <param name="context">Context for the current turn of conversation with the user.</param>
         /// <param name="connectionName">The name of the Azure Active Directory connection configured with this bot.</param>

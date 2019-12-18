@@ -22,6 +22,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         private Expression condition;
 
+        private ActionScope trueScope;
+        private ActionScope falseScope;
+
         [JsonConstructor]
         public IfCondition([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
@@ -51,11 +54,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("elseActions")]
         public List<Dialog> ElseActions { get; set; } = new List<Dialog>();
 
+        protected ActionScope TrueScope
+        {
+            get
+            {
+                if (trueScope == null)
+                {
+                    trueScope = new ActionScope(this.Actions) { Id = $"True{this.Id}" };
+                }
+
+                return trueScope;
+            }
+        }
+
+        protected ActionScope FalseScope
+        {
+            get
+            {
+                if (falseScope == null)
+                {
+                    falseScope = new ActionScope(this.ElseActions) { Id = $"False{this.Id}" };
+                }
+
+                return falseScope;
+            }
+        }
+
         public virtual IEnumerable<Dialog> GetDependencies()
         {
-            var combined = new List<Dialog>(Actions);
-            combined.AddRange(ElseActions);
-            return combined;
+            yield return this.TrueScope;
+            yield return this.FalseScope;
         }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -70,31 +98,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 var (value, error) = condition.TryEvaluate(dc.GetState());
                 var conditionResult = error == null && value != null && (bool)value;
-
-                var actions = new List<Dialog>();
-                if (conditionResult == true)
+                if (conditionResult == true && TrueScope.Actions.Any())
                 {
-                    actions = this.Actions;
+                    // replace dialog with If True Action Scope
+                    return await dc.ReplaceDialogAsync(this.TrueScope.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
-                else
+                else if (conditionResult == false && FalseScope.Actions.Any())
                 {
-                    actions = this.ElseActions;
+                    return await dc.ReplaceDialogAsync(this.FalseScope.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
 
-                var planActions = actions.Select(s => new ActionState()
-                {
-                    DialogStack = new List<DialogInstance>(),
-                    DialogId = s.Id,
-                    Options = options
-                });
-
-                // Queue up actions that should run after current step
-                planning.QueueChanges(new ActionChangeList()
-                {
-                    ChangeType = ActionChangeType.InsertActions,
-                    Actions = planActions.ToList()
-                });
-
+                // end dialog since no triggered actions
                 return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else

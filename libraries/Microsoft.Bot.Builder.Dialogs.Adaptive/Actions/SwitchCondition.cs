@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private Dictionary<string, Expression> caseExpressions = null;
 
         private Expression condition;
+        private ActionScope defaultScope;
 
         [JsonConstructor]
         public SwitchCondition([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -62,23 +63,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("cases")]
         public List<Case> Cases { get; set; } = new List<Case>();
 
+        protected ActionScope DefaultScope
+        {
+            get
+            {
+                if (defaultScope == null)
+                {
+                    defaultScope = new ActionScope() { Actions = this.Default };
+                }
+
+                return defaultScope;
+            }
+        }
+
         public virtual IEnumerable<Dialog> GetDependencies()
         {
-            var dialogs = new List<Dialog>();
-            if (this.Default != null)
-            {
-                dialogs.AddRange(this.Default);
-            }
+            yield return this.DefaultScope;
 
             if (this.Cases != null)
             {
-                foreach (var conidtionalCase in this.Cases)
+                foreach (var caseScope in this.Cases)
                 {
-                    dialogs.AddRange(conidtionalCase.Actions);
+                    yield return caseScope;
                 }
             }
-
-            return dialogs;
         }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -108,41 +116,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     }
                 }
 
-                List<Dialog> actionsToRun = this.Default;
+                ActionScope actionScope = this.DefaultScope;
 
-                foreach (var caseCondition in this.Cases)
+                foreach (var caseScope in this.Cases)
                 {
-                    var (value, error) = this.caseExpressions[caseCondition.Value].TryEvaluate(dc.GetState());
+                    var (value, error) = this.caseExpressions[caseScope.Value].TryEvaluate(dc.GetState());
 
                     if (error != null)
                     {
-                        throw new Exception($"Expression evaluation resulted in an error. Expression: {caseExpressions[caseCondition.Value].ToString()}. Error: {error}");
+                        throw new Exception($"Expression evaluation resulted in an error. Expression: {caseExpressions[caseScope.Value].ToString()}. Error: {error}");
                     }
 
                     // Compare both expression results. The current switch case triggers if the comparison is true.
                     if (((bool)value) == true)
                     {
-                        actionsToRun = caseCondition.Actions;
+                        actionScope = caseScope;
                         break;
                     }
                 }
 
-                // run condition or default actions
-                var planActions = actionsToRun.Select(s => new ActionState()
-                {
-                    DialogStack = new List<DialogInstance>(),
-                    DialogId = s.Id,
-                    Options = options
-                });
-
-                // Queue up actions that should run after current step
-                planning.QueueChanges(new ActionChangeList()
-                {
-                    ChangeType = ActionChangeType.InsertActions,
-                    Actions = planActions.ToList()
-                });
-
-                return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+                return await dc.ReplaceDialogAsync(actionScope.Id, null, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {

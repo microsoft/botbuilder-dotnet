@@ -19,6 +19,24 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="lg\NormalStructuredLG.lg" />
+    <None Remove="adaptiveCard.json" />
+    <None Remove="lg\herocard.json" />
+  </ItemGroup>
+    
+  <ItemGroup>
+    <Content Include="lg\NormalStructuredLG.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="adaptiveCard.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lg\herocard.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+    
+  <ItemGroup>
     <Page Include="Fallback\test.dialog">
       <Generator>MSBuild:Compile</Generator>
     </Page>

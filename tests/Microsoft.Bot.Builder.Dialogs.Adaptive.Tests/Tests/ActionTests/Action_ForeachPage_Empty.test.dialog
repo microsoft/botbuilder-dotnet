@@ -1,0 +1,57 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+  "$kind": "Microsoft.Test.Script",
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "root",
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnBeginDialog",
+        "actions": [
+          {
+            "$kind": "Microsoft.InitProperty",
+            "property": "dialog.todo",
+            "type": "array"
+          },
+          {
+            "$kind": "Microsoft.ForeachPage",
+            "itemsProperty": "dialog.todo",
+            "pageSize": 3,
+            "actions": [
+              {
+                "$kind": "Microsoft.SendActivity",
+                "activity": "This page have @{count(dialog.ForeachPage)} items"
+              },
+              {
+                "$kind": "Microsoft.Foreach",
+                "itemsProperty": "dialog.foreach.page",
+                "actions": [
+                  {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "index is: @{dialog.foreach.index} and value is: @{dialog.foreach.value}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "done"
+          }
+        ]
+      }
+    ],
+    "autoEndDialog": true,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "done"
+    }
+  ]
+}
