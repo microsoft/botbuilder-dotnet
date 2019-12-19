@@ -511,46 +511,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         protected async Task<RecognizerResult> OnRecognize(SequenceContext sequenceContext, CancellationToken cancellationToken = default)
         {
             var context = sequenceContext.Context;
-            var noneIntent = new RecognizerResult
-            {
-                Text = context.Activity.Text ?? string.Empty,
-                Intents = new Dictionary<string, IntentScore> { { "None", new IntentScore { Score = 0.0 } } },
-                Entities = JObject.Parse("{}")
-            };
-            var text = context.Activity.Text;
-            if (context.Activity.Value != null)
-            {
-                var value = JObject.FromObject(context.Activity.Value);
-
-                // Check for submission of an adaptive card
-                if (string.IsNullOrEmpty(text) && value.Property("intent") != null)
-                {
-                    // Map submitted values to a recognizer result
-                    var recognized = new RecognizerResult { Text = string.Empty };
-
-                    foreach (var property in value.Properties())
-                    {
-                        if (property.Name.ToLower() == "intent")
-                        {
-                            recognized.Intents[property.Value.ToString()] = new IntentScore { Score = 1.0 };
-                        }
-                        else
-                        {
-                            if (recognized.Entities.Property(property.Name) == null)
-                            {
-                                recognized.Entities[property.Name] = new JArray(property.Value);
-                            }
-                            else
-                            {
-                                ((JArray)recognized.Entities[property.Name]).Add(property.Value);
-                            }
-                        }
-                    }
-
-                    return recognized;
-                }
-            }
-
             if (Recognizer != null)
             {
                 var result = await Recognizer.RecognizeAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
@@ -572,11 +532,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     result.Intents.Clear();
                     result.Intents.Add(topIntent, topScore);
                 }
+                else
+                {
+                    result.Intents.Add("None", new IntentScore { Score = 0.0 });
+                }
 
                 return result;
             }
 
-            return noneIntent;
+            // none intent if there is no recognizer
+            return new RecognizerResult
+            {
+                Text = context.Activity.Text ?? string.Empty,
+                Intents = new Dictionary<string, IntentScore> { { "None", new IntentScore { Score = 0.0 } } },
+                Entities = JObject.Parse("{}")
+            };
         }
 
         private string GetUniqueInstanceId(DialogContext dc)

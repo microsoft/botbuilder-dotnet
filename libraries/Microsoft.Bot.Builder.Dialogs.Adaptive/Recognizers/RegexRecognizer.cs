@@ -47,18 +47,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken)
         {
             // Identify matched intents
-            var utterance = text ?? string.Empty;
+            text = text ?? string.Empty;
 
             var result = new RecognizerResult()
             {
-                Text = utterance,
+                Text = text,
                 Intents = new Dictionary<string, IntentScore>(),
             };
 
             var entities = new JObject();
             foreach (var intentPattern in this.Intents)
             {
-                var matches = intentPattern.Regex.Matches(utterance);
+                var matches = intentPattern.Regex.Matches(text);
 
                 if (matches.Count > 0)
                 {

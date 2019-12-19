@@ -37,6 +37,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         [JsonProperty("recognizers")]
         public List<InputRecognizer> Recognizers { get; set; } = new List<InputRecognizer>();
 
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default)
+        {
+            if (dialogContext == null)
+            {
+                throw new ArgumentNullException(nameof(dialogContext));
+            }
+
+            if (activity == null)
+            {
+                throw new ArgumentNullException(nameof(activity));
+            }
+
+            // run all of the recognizers in parallel
+            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, activity, cancellationToken)));
+
+            // merge intents
+            return MergeResults(results);
+        }
+
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale = null, CancellationToken cancellationToken = default)
         {
             if (dialogContext == null)
@@ -52,11 +71,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             if (locale == null)
             {
                 locale = string.Empty;
-            }
-
-            if (this.Recognizers.Any(recognizer => string.IsNullOrEmpty(recognizer.Id)))
-            {
-                throw new ArgumentNullException("RecognizerSet requires that Recognizers in the set have an .Id set");
             }
 
             // run all of the recognizers in parallel

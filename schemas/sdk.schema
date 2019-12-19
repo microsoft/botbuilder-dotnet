@@ -11,6 +11,11 @@
             "$ref": "#/definitions/Microsoft.ActivityTemplate"
         },
         {
+            "title": "Microsoft.AdaptiveCardRecognizer",
+            "description": "InputRecognizer for detecting the value response from an Adaptive Card.",
+            "$ref": "#/definitions/Microsoft.AdaptiveCardRecognizer"
+        },
+        {
             "title": "Microsoft.AdaptiveDialog",
             "description": "Flexible, data driven dialog that can adapt to the conversation.",
             "$ref": "#/definitions/Microsoft.AdaptiveDialog"
@@ -331,6 +336,11 @@
             "$ref": "#/definitions/Microsoft.OnMessageUpdateActivity"
         },
         {
+            "title": "Microsoft.OnQnAMatch",
+            "description": "Actions to perform on when an match from QnAMaker is found.",
+            "$ref": "#/definitions/Microsoft.OnQnAMatch"
+        },
+        {
             "title": "Microsoft.OnRepromptDialog",
             "description": "Actions to perform when 'RepromptDialog' event occurs.",
             "$ref": "#/definitions/Microsoft.OnRepromptDialog"
@@ -549,6 +559,63 @@
                     "title": "Type",
                     "required": [
                         "template",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.AdaptiveCardRecognizer": {
+            "$role": "union(Microsoft.InputRecognizer)",
+            "title": "Cross-trained Recognizer Set",
+            "description": "InputRecognizer for detecting the value response from an Adaptive Card.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.AdaptiveCardRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional unique id using with RecognizerSet."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
                         "$kind"
                     ]
                 }
@@ -3793,6 +3860,11 @@
                     "$ref": "#/definitions/Microsoft.OnMessageUpdateActivity"
                 },
                 {
+                    "title": "Microsoft.OnQnAMatch",
+                    "description": "Actions to perform on when an match from QnAMaker is found.",
+                    "$ref": "#/definitions/Microsoft.OnQnAMatch"
+                },
+                {
                     "title": "Microsoft.OnRepromptDialog",
                     "description": "Actions to perform when 'RepromptDialog' event occurs.",
                     "$ref": "#/definitions/Microsoft.OnRepromptDialog"
@@ -4004,6 +4076,11 @@
             "description": "Union of components which implement the InputRecognizer abstract class",
             "$role": "union",
             "oneOf": [
+                {
+                    "title": "Microsoft.AdaptiveCardRecognizer",
+                    "description": "InputRecognizer for detecting the value response from an Adaptive Card.",
+                    "$ref": "#/definitions/Microsoft.AdaptiveCardRecognizer"
+                },
                 {
                     "title": "Microsoft.CrossTrainedRecognizerSet",
                     "description": "InputRecognizer for selecting between cross trained recognizers.",
@@ -6138,6 +6215,76 @@
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
                     "const": "Microsoft.OnMessageUpdateActivity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition (expression).",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions to execute.",
+                    "items": {
+                        "$kind": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnQnAMatch": {
+            "$role": "union(Microsoft.ITriggerCondition)",
+            "title": "On QnAMAker Match",
+            "description": "Actions to perform on when an match from QnAMaker is found.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnQnAMatch"
                 },
                 "$copy": {
                     "title": "$copy",

@@ -84,7 +84,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="locale">locale to use for recognition.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Analysis of utterance.</returns>
-        public abstract Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken = default);
+        public virtual Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException("This recognizer doesn't implement a recognizer for pure text/locale input.");
+        }
 
         /// <summary>
         /// Runs an utterance through a recognizer and returns a strongly-typed recognizer result using IRecognizerConvert.
