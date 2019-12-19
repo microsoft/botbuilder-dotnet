@@ -37,6 +37,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         [JsonProperty("recognizers")]
         public List<InputRecognizer> Recognizers { get; set; } = new List<InputRecognizer>();
 
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
+        {
+            if (dialogContext == null)
+            {
+                throw new ArgumentNullException(nameof(dialogContext));
+            }
+
+            // run all of the recognizers in parallel
+            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, cancellationToken)));
+
+            // merge intents
+            return MergeResults(results);
+        }
+
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default)
         {
             if (dialogContext == null)

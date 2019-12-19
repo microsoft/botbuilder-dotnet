@@ -51,6 +51,41 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         [JsonProperty("recognizers")]
         public List<InputRecognizer> Recognizers { get; set; } = new List<InputRecognizer>();
 
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
+        {
+            if (dialogContext == null)
+            {
+                throw new ArgumentNullException(nameof(dialogContext));
+            }
+
+            EnsureRecognizerIds();
+
+            // run all of the recognizers in parallel
+            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, cancellationToken)));
+
+            return ProcessResults(results);
+        }
+
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default)
+        {
+            if (dialogContext == null)
+            {
+                throw new ArgumentNullException(nameof(dialogContext));
+            }
+
+            if (activity == null)
+            {
+                throw new ArgumentNullException(nameof(activity));
+            }
+
+            EnsureRecognizerIds();
+
+            // run all of the recognizers in parallel
+            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, activity, cancellationToken)));
+
+            return ProcessResults(results);
+        }
+
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale = null, CancellationToken cancellationToken = default)
         {
             if (dialogContext == null)
@@ -63,23 +98,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 throw new ArgumentNullException(nameof(text));
             }
 
-            if (locale == null)
-            {
-                locale = string.Empty;
-            }
-
-            if (this.Recognizers.Any(recognizer => string.IsNullOrEmpty(recognizer.Id)))
-            {
-                throw new ArgumentNullException("RecognizerSet requires that Recognizers in the set have an .Id set");
-            }
+            EnsureRecognizerIds();
 
             // run all of the recognizers in parallel
             var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, text, locale, cancellationToken)));
 
+            return ProcessResults(results);
+        }
+
+        private RecognizerResult ProcessResults(RecognizerResult[] results)
+        {
             // put results into a dictionary for easier lookup while processing.
             Dictionary<string, RecognizerResult> recognizerResults = new Dictionary<string, RecognizerResult>(System.StringComparer.OrdinalIgnoreCase);
             Dictionary<string, string> intents = new Dictionary<string, string>(System.StringComparer.OrdinalIgnoreCase);
-
+            
+            string text = string.Empty;
             for (int iRecognizer = 0; iRecognizer < Recognizers.Count; iRecognizer++)
             {
                 var recognizer = Recognizers[iRecognizer];
@@ -87,6 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 recognizerResults[recognizer.Id] = result;
                 var (topIntent, score) = result.GetTopScoringIntent();
                 intents[recognizer.Id] = topIntent;
+                text = result.Text ?? string.Empty;
             }
 
             // this is the consensusRecognizer to use
@@ -174,6 +208,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         private string GetRedirectId(string intent)
         {
             return intent.Substring(DeferPrefix.Length);
+        }
+
+        private void EnsureRecognizerIds()
+        {
+            if (this.Recognizers.Any(recognizer => string.IsNullOrEmpty(recognizer.Id)))
+            {
+                throw new ArgumentNullException("RecognizerSet requires that Recognizers in the set have an .Id set");
+            }
         }
     }
 }

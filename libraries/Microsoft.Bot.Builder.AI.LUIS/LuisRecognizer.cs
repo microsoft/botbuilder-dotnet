@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Configuration;
 using Microsoft.Rest;
 using Newtonsoft.Json;
@@ -18,7 +19,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
     /// <summary>
     /// A LUIS based implementation of <see cref="ITelemetryRecognizer"/>.
     /// </summary>
-    public class LuisRecognizer : ITelemetryRecognizer
+    public class LuisRecognizer : InputRecognizer, ITelemetryRecognizer
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.LuisRecognizer";
@@ -194,6 +195,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
             var result = new T();
             result.Convert(await RecognizeInternalAsync(turnContext, null, null, null, cancellationToken).ConfigureAwait(false));
             return result;
+        }
+
+        public override Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
+        {
+            return this.RecognizeAsync(dialogContext.Context, cancellationToken);
         }
 
         /// <summary>

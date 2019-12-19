@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public abstract class InputRecognizer 
+    public class InputRecognizer 
     {
         /// <summary>
         /// Gets or sets id of the recognizer.

@@ -13,7 +13,6 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
-using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -43,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 return new AdaptiveDialog()
                 {
-                    Recognizer = new LegacyInputRecognizer(new CustomRecognizer()),
+                    Recognizer = new CustomRecognizer(),
                     Triggers = new List<Adaptive.Conditions.OnCondition>()
                     {
                         new OnUnknownIntent()
@@ -85,8 +84,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
     }
 
-    public class CustomRecognizer : IRecognizer
+    public class CustomRecognizer : InputRecognizer, IRecognizer
     {
+        public override Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
+        {
+            return this.RecognizeAsync(dialogContext.Context, cancellationToken);
+        }
+
         public Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             return Task.FromResult(new RecognizerResult());
