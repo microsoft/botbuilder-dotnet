@@ -5,7 +5,7 @@
         "$kind": "Microsoft.AdaptiveDialog",
         "recognizer": {
             "$schema": "../../../../schemas/sdk.schema",
-            "$kind": "Microsoft.RecognizerSet",
+            "$kind": "Microsoft.CrossTrainedRecognizerSet",
             "recognizers": [
                 {
                     "$kind": "Microsoft.RegexRecognizer",
@@ -26,7 +26,7 @@
                     "id": "y",
                     "intents": [
                         {
-                            "intent": "DeferToRecognizer_z",
+                            "intent": "foo",
                             "pattern": "test"
                         },
                         {
@@ -40,7 +40,7 @@
                     "id": "z",
                     "intents": [
                         {
-                            "intent": "DeferToRecognizer_x",
+                            "intent": "bar",
                             "pattern": "test"
                         },
                         {

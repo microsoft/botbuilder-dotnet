@@ -66,6 +66,11 @@
             "$ref": "#/definitions/Microsoft.ContinueLoop"
         },
         {
+            "title": "Microsoft.CrossTrainedRecognizerSet",
+            "description": "InputRecognizer for selecting between cross trained recognizers.",
+            "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
+        },
+        {
             "title": "Microsoft.CurrencyEntityRecognizer",
             "description": "Recognizer which recognizes currency.",
             "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
@@ -362,7 +367,7 @@
         },
         {
             "title": "Microsoft.RecognizerSet",
-            "description": "Run multiple recognizers and return intents based on consensus between the recognizers.",
+            "description": "Creates the union of the intents and entities of the recognizers in the set.",
             "$ref": "#/definitions/Microsoft.RecognizerSet"
         },
         {
@@ -1806,6 +1811,73 @@
                 {
                     "title": "Type",
                     "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.CrossTrainedRecognizerSet": {
+            "$role": "union(Microsoft.InputRecognizer)",
+            "title": "Cross-trained Recognizer Set",
+            "description": "InputRecognizer for selecting between cross trained recognizers.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.CrossTrainedRecognizerSet"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional unique id using with RecognizerSet."
+                },
+                "recognizers": {
+                    "type": "array",
+                    "title": "Recognizers",
+                    "description": "List of Recognizers defined for this set.",
+                    "items": {
+                        "$kind": "Microsoft.InputRecognizer",
+                        "$ref": "#/definitions/Microsoft.InputRecognizer"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "recognizers",
                         "$kind"
                     ]
                 }
@@ -3933,6 +4005,11 @@
             "$role": "union",
             "oneOf": [
                 {
+                    "title": "Microsoft.CrossTrainedRecognizerSet",
+                    "description": "InputRecognizer for selecting between cross trained recognizers.",
+                    "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
+                },
+                {
                     "title": "Microsoft.LegacyInputRecognizer",
                     "description": "Use regular expressions to recognize intents and entities from user input.",
                     "$ref": "#/definitions/Microsoft.LegacyInputRecognizer"
@@ -3949,7 +4026,7 @@
                 },
                 {
                     "title": "Microsoft.RecognizerSet",
-                    "description": "Run multiple recognizers and return intents based on consensus between the recognizers.",
+                    "description": "Creates the union of the intents and entities of the recognizers in the set.",
                     "$ref": "#/definitions/Microsoft.RecognizerSet"
                 },
                 {
@@ -6621,8 +6698,8 @@
         },
         "Microsoft.RecognizerSet": {
             "$role": "union(Microsoft.InputRecognizer)",
-            "title": "RecognizerSet",
-            "description": "Run multiple recognizers and return intents based on consensus between the recognizers.",
+            "title": "Recognizer Set",
+            "description": "Creates the union of the intents and entities of the recognizers in the set.",
             "type": "object",
             "properties": {
                 "$kind": {

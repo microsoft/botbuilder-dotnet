@@ -5,7 +5,7 @@
         "$kind": "Microsoft.AdaptiveDialog",
         "recognizer": {
             "$schema": "../../../../schemas/sdk.schema",
-            "$kind": "Microsoft.RecognizerSet",
+            "$kind": "Microsoft.CrossTrainedRecognizerSet",
             "recognizers": [
                 {
                     "$kind": "Microsoft.RegexRecognizer",
@@ -26,7 +26,7 @@
                     "id": "y",
                     "intents": [
                         {
-                            "intent": "foo",
+                            "intent": "DeferToRecognizer_z",
                             "pattern": "test"
                         },
                         {
@@ -40,7 +40,7 @@
                     "id": "z",
                     "intents": [
                         {
-                            "intent": "None",
+                            "intent": "DeferToRecognizer_x",
                             "pattern": "test"
                         },
                         {
@@ -84,16 +84,6 @@
             {
                 "$kind": "Microsoft.OnIntent",
                 "intent": "z",
-                "actions": [
-                    {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": "Intent:@{turn.recognized.intent}"
-                    }
-                ]
-            },
-            {
-                "$kind": "Microsoft.OnIntent",
-                "intent": "foo",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -153,7 +143,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Intent:foo"
+            "text": "Ambigious:AmbigiousIntent"
         }
     ]
 }

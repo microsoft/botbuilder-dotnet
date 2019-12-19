@@ -16,16 +16,12 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
     /// <summary>
-    /// IRecognizer implementation which uses regex expressions to identify intents.
+    /// RecognizerSet - InputRecognizer which is the union of of multiple recognizers into one RecognizerResult.
     /// </summary>
     public class RecognizerSet : InputRecognizer
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.RecognizerSet";
-
-        public const string DeferPrefix = "DeferToRecognizer_";
-        public const string AmbigiousIntent = "AmbigiousIntent";
-        public const string NoneIntent = "None";
 
         [JsonConstructor]
         public RecognizerSet()
@@ -66,104 +62,97 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             // run all of the recognizers in parallel
             var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, text, locale, cancellationToken)));
 
-            // put results into a dictionary for easier lookup while processing.
-            Dictionary<string, RecognizerResult> recognizerResults = new Dictionary<string, RecognizerResult>(System.StringComparer.OrdinalIgnoreCase);
-            Dictionary<string, string> intents = new Dictionary<string, string>(System.StringComparer.OrdinalIgnoreCase);
+            // merge intents
+            return MergeResults(results);
+        }
 
-            for (int iRecognizer = 0; iRecognizer < Recognizers.Count; iRecognizer++)
+        private RecognizerResult MergeResults(RecognizerResult[] results)
+        {
+            var recognizerResult = new RecognizerResult();
+            JObject instanceData = new JObject();
+            recognizerResult.Entities["$instance"] = instanceData;
+
+            foreach (var result in results)
             {
-                var recognizer = Recognizers[iRecognizer];
-                var result = results[iRecognizer];
-                recognizerResults[recognizer.Id] = result;
-                var (topIntent, score) = result.GetTopScoringIntent();
-                intents[recognizer.Id] = topIntent;
-            }
-
-            // this is the consensusRecognizer to use
-            string consensusRecognizerId = null;
-            foreach (var recognizer in Recognizers)
-            {
-                var intent = intents[recognizer.Id];
-
-                if (!IsRedirect(intent))
+                var (intent, score) = result.GetTopScoringIntent();
+                if (intent != "None")
                 {
-                    // we have a real intent and it's the first one we found.
-                    if (consensusRecognizerId == null)
+                    // merge text
+                    if (recognizerResult.Text == null)
                     {
-                        consensusRecognizerId = recognizer.Id;
+                        recognizerResult.Text = result.Text;
                     }
-                    else
+                    else if (result.Text != recognizerResult.Text)
                     {
-                        // we have a second recognizer with an intent
+                        recognizerResult.AlteredText = result.Text;
+                    }
 
-                        // if one of them is None intent, then go with the other one.
-                        if (intent == NoneIntent)
+                    // merge intents
+                    foreach (var intentPair in result.Intents)
+                    {
+                        if (recognizerResult.Intents.TryGetValue(intentPair.Key, out var prevScore))
                         {
-                            // then we are fine with the one we have, just ignore this one
-                            continue;
+                            if (intentPair.Value.Score < prevScore.Score)
+                            {
+                                continue; // we already have a higher score for this intent
+                            }
                         }
-                        else if (intents[consensusRecognizerId] == "None")
+
+                        recognizerResult.Intents[intentPair.Key] = intentPair.Value;
+                    }
+                }
+
+                // merge entities
+                // entities shape is:
+                //   { 
+                //      "name": ["value1","value2","value3"], 
+                //      "$instance": {
+                //          "name": [ { "startIndex" : 15, ... }, ... ] 
+                //      }
+                //   }
+                foreach (var entityProperty in result.Entities.Properties())
+                    {
+                        if (entityProperty.Name == "$instance")
                         {
-                            // then we can drop the old one and go with the new one instead
-                            consensusRecognizerId = recognizer.Id;
+                            // property is "$instance" so get the instance data
+                            JObject resultInstanceData = (JObject)entityProperty.Value;
+                            foreach (var name in resultInstanceData.Properties())
+                            {
+                                // merge sourceInstanceData[name] => instanceData[name]
+                                MergeArrayProperty(resultInstanceData, name, instanceData);
+                            }
                         }
                         else
                         {
-                            // ambigious because of 2 real intents, and neither are None so return AmbigiousIntent
-                            return CreateAmbigiousIntentResult(text, recognizerResults);
+                            // property is a "name" with values, 
+                            // merge result.Entities["name"] => recognizerResult.Entities["name"]
+                            MergeArrayProperty(result.Entities, entityProperty, recognizerResult.Entities);
                         }
                     }
-                }
-                else
-                {
-                    // get the redirectId and redirectIntent 
-                    var redirectId = GetRedirectId(intent);
-                    var redirectIntent = intents[redirectId];
-
-                    // if the redirectIntent is itself a redirect, then we have double redirect which means disagreement.
-                    if (IsRedirect(redirectIntent))
-                    {
-                        // we have ambiguity, return AmbigiousIntent
-                        return CreateAmbigiousIntentResult(text, recognizerResults);
-                    }
-                }
             }
 
-            // we have consensus for consensusRecognizer, return the results of that recognizer as the result.
-            return recognizerResults[consensusRecognizerId];
-        }
-
-        private RecognizerResult CreateAmbigiousIntentResult(string text, Dictionary<string, RecognizerResult> recognizerResults)
-        {
-            // create IntentScore with { "recognizerId" : { ...RecognizerResult.. } }
-            var ambigiousScore = new IntentScore()
+            if (!recognizerResult.Intents.Any())
             {
-                Score = 0.5F
-            };
-
-            foreach (var result in recognizerResults)
-            {
-                ambigiousScore.Properties[result.Key] = result.Value;
+                recognizerResult.Intents.Add("None", new IntentScore() { Score = 1.0d });
             }
 
-            return new RecognizerResult()
+            return recognizerResult;
+        }
+
+        private void MergeArrayProperty(JObject sourceObject, JProperty property, JObject targetObject)
+        {
+            // get elements from source object
+            var elements = (JArray)property.Value;
+            foreach (var element in elements)
             {
-                Text = text,
-                Intents = new Dictionary<string, IntentScore>()
+                if (!targetObject.TryGetValue(property.Name, out JToken target))
                 {
-                    { AmbigiousIntent, (IntentScore)ambigiousScore }
+                    target = new JArray();
+                    targetObject[property.Name] = target;
                 }
-            };
-        }
 
-        private bool IsRedirect(string intent)
-        {
-            return intent.StartsWith(DeferPrefix);
-        }
-
-        private string GetRedirectId(string intent)
-        {
-            return intent.Substring(DeferPrefix.Length);
+                ((JArray)target).Add(element);
+            }
         }
     }
 }

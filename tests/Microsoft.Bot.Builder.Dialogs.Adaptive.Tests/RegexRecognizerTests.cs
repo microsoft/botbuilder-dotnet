@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Tests;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -18,7 +19,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public async Task RegexRecognizer_Intent()
+        public async Task RegexRecognizerTests_Entities()
+        {
+            await TestUtils.RunTestScript();
+        }
+
+        [TestMethod]
+        public async Task RegexRecognizerTests_Intents()
         {
             var recognizer = new RegexRecognizer()
             {
@@ -55,11 +62,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             // test with DC
             var dc = CreateContext("intent a1 b2");
             var result = await recognizer.RecognizeAsync(dc, CancellationToken.None);
-            ValidateFirstResult(result);
+            ValidateCodeIntent(result);
 
             dc = CreateContext("I would like color red and orange");
             result = await recognizer.RecognizeAsync(dc, CancellationToken.None);
-            ValidateSecondResult(result);
+            ValidateColorIntent(result);
 
             dc = CreateContext(string.Empty);
 
@@ -68,21 +75,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             activity.Text = "intent a1 b2";
             activity.Locale = Culture.English;
             result = await recognizer.RecognizeAsync(dc,  (Activity)activity, CancellationToken.None);
-            ValidateFirstResult(result);
+            ValidateCodeIntent(result);
 
             activity.Text = "I would like color red and orange";
             result = await recognizer.RecognizeAsync(dc, (Activity)activity, CancellationToken.None);
-            ValidateSecondResult(result);
+            ValidateColorIntent(result);
 
             // test text, locale
             result = await recognizer.RecognizeAsync(dc, "intent a1 b2", Culture.English, CancellationToken.None);
-            ValidateFirstResult(result);
+            ValidateCodeIntent(result);
 
             result = await recognizer.RecognizeAsync(dc, "I would like color red and orange", Culture.English, CancellationToken.None);
-            ValidateSecondResult(result);
+            ValidateColorIntent(result);
         }
 
-        private static void ValidateSecondResult(RecognizerResult result)
+        private static void ValidateColorIntent(RecognizerResult result)
         {
             Assert.AreEqual(1, result.Intents.Count, "Should recognize one intent");
             Assert.AreEqual("colorIntent", result.Intents.Select(i => i.Key).First(), "Should recognize colorIntent");
@@ -96,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             Assert.AreEqual("orange", (string)entities.color[1], "should find orange");
         }
 
-        private static void ValidateFirstResult(RecognizerResult result)
+        private static void ValidateCodeIntent(RecognizerResult result)
         {
             // intent assertions
             Assert.AreEqual(1, result.Intents.Count, "Should recognize one intent");

@@ -5,7 +5,7 @@
         "$kind": "Microsoft.AdaptiveDialog",
         "recognizer": {
             "$schema": "../../../../schemas/sdk.schema",
-            "$kind": "Microsoft.RecognizerSet",
+            "$kind": "Microsoft.CrossTrainedRecognizerSet",
             "recognizers": [
                 {
                     "$kind": "Microsoft.RegexRecognizer",

@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
         [JsonConstructor]
         public OnAmbigiousIntent(List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(RecognizerSet.AmbigiousIntent, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine)
+            : base(CrossTrainedRecognizerSet.AmbigiousIntent, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine)
         {
         }
     }

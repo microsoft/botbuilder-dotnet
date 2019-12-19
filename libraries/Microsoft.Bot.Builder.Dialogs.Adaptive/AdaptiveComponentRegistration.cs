@@ -99,6 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<RegexRecognizer>(RegexRecognizer.DeclarativeType);
             yield return new TypeRegistration<MultiLanguageRecognizer>(MultiLanguageRecognizer.DeclarativeType);
             yield return new TypeRegistration<RecognizerSet>(RecognizerSet.DeclarativeType);
+            yield return new TypeRegistration<CrossTrainedRecognizerSet>(CrossTrainedRecognizerSet.DeclarativeType);
             yield return new TypeRegistration<LegacyInputRecognizer>(LegacyInputRecognizer.DeclarativeType);
 
             // Entity recognizers
@@ -118,6 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<OrdinalEntityRecognizer>(OrdinalEntityRecognizer.DeclarativeType);
             yield return new TypeRegistration<PercentageEntityRecognizer>(PercentageEntityRecognizer.DeclarativeType);
             yield return new TypeRegistration<PhoneNumberEntityRecognizer>(PhoneNumberEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<RegexEntityRecognizer>(RegexEntityRecognizer.DeclarativeType);
             yield return new TypeRegistration<TemperatureEntityRecognizer>(TemperatureEntityRecognizer.DeclarativeType);
             yield return new TypeRegistration<UrlEntityRecognizer>(UrlEntityRecognizer.DeclarativeType);
 

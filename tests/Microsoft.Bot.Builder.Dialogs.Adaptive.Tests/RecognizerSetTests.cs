@@ -13,25 +13,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public async Task RecognizerSetTests_DoubleDefer()
+        public async Task RecognizerSetTests_Merge()
         {
             await TestUtils.RunTestScript();
         }
 
         [TestMethod]
-        public async Task RecognizerSetTests_DoubleIntent()
-        {
-            await TestUtils.RunTestScript();
-        }
-
-        [TestMethod]
-        public async Task RecognizerSetTests_NoneWithIntent()
-        {
-            await TestUtils.RunTestScript();
-        }
-
-        [TestMethod]
-        public async Task RecognizerSetTests_AllNone()
+        public async Task RecognizerSetTests_None()
         {
             await TestUtils.RunTestScript();
         }
