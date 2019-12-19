@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.Bot.Expressions.Memory;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -10,7 +11,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// we want to make sure the global memory (the first memory passed in) can be
     /// accessible at any sub evaluation process. 
     /// </summary>
-    internal class CustomizedMemory : IMemory
+    internal class CustomizedMemory : MemoryBase
     {
         public CustomizedMemory(object scope)
         {
@@ -28,17 +29,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public IMemory LocalMemory { get; set; }
 
-        public (object value, string error) GetValue(string path)
+        public override object GetValue(string path)
         {
             object value = null;
-            var error = string.Empty;
-
             if (this.LocalMemory != null)
             {
-                (value, error) = this.LocalMemory.GetValue(path);
+                string error;
+                (value, error) = this.LocalMemory.TryGetValue(path);
                 if (error == null && value != null)
                 {
-                    return (value, error);
+                    return value;
                 }
             }
 
@@ -47,18 +47,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return this.GlobalMemory.GetValue(path);
             }
 
-            return (value, error);
+            return value;
         }
 
-        public (object value, string error) SetValue(string path, object value)
+        public override object SetValue(string path, object value)
         {
-            return (null, "LG memory are readonly");
-        }
-
-        public string Version()
-        {
-            // Read-only
-            return "0";
+            throw new Exception("LG memory are readonly");
         }
     }
 }

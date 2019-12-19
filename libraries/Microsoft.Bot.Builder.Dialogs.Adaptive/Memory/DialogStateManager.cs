@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public bool IsReadOnly => true;
 
-        public object this[string key] { get => GetValue<object>(key, () => null); set => SetValue(key, value); }
+        public object this[string key] { get => GetValue(key); set => SetValue(key, value); }
 
         public static DialogStateManagerConfiguration CreateStandardConfiguration(ConversationState conversationState = null, UserState userState = null)
         {
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// </summary>
         /// <param name="path">The path to get value for.</param>
         /// <returns>The value get.</returns>
-        (object value, string error) IMemory.GetValue(string path)
+        public (object value, string error) TryGetValue(string path)
         {
             if (this.TryGetValue<object>(path, out var result))
             {
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <param name="path">Path to set value.</param>
         /// <param name="value">Value to set.</param>
         /// <returns>Value set.</returns>
-        (object value, string error) IMemory.SetValue(string path, object value)
+        public (object value, string error) TrySetValue(string path, object value)
         {
             try
             {
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// Version help caller to identify the updates and decide cache or not.
         /// </summary>
         /// <returns>Current version.</returns>
-        string IMemory.Version()
+        public string Version()
         {
             return version.ToString();
         }
@@ -281,7 +281,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// </summary>
         /// <param name="path">Path to memory.</param>
         /// <param name="value">Object to set.</param>
-        public void SetValue(string path, object value)
+        /// <returns>value be set.</returns>
+        public object SetValue(string path, object value)
         {
             if (value is Task)
             {
@@ -306,6 +307,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
             // Every set will increase version
             version++;
+            return value;
         }
 
         /// <summary>
@@ -407,6 +409,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public bool Remove(string key)
         {
             throw new NotSupportedException();
+        }
+
+        public object GetValue(string path)
+        {
+            return GetValue<object>(path, () => null);
         }
 
         public bool TryGetValue(string key, out object value)

@@ -982,7 +982,7 @@ namespace Microsoft.Bot.Expressions
             if (left == null)
             {
                 // fully converted to path, so we just delegate to memory scope
-                return state.GetValue(path);
+                return state.TryGetValue(path);
             }
             else
             {
@@ -993,7 +993,7 @@ namespace Microsoft.Bot.Expressions
                     return (null, err);
                 }
 
-                return new SimpleObjectMemory(newScope).GetValue(path);
+                return new SimpleObjectMemory(newScope).TryGetValue(path);
             }
         }
 
@@ -1011,7 +1011,7 @@ namespace Microsoft.Bot.Expressions
                 (property, error) = children[1].TryEvaluate(state);
                 if (error == null)
                 {
-                    (value, error) = new SimpleObjectMemory(instance).GetValue((string)property);
+                    (value, error) = new SimpleObjectMemory(instance).TryGetValue((string)property);
                 }
             }
 
@@ -1096,7 +1096,7 @@ namespace Microsoft.Bot.Expressions
                 return (null, err);
             }
 
-            return state.SetValue(path, value);
+            return state.TrySetValue(path, value);
         }
 
         private static string ParseStringOrNull(object value)
