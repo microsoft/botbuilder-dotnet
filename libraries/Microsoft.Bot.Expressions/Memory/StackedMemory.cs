@@ -48,8 +48,7 @@ namespace Microsoft.Bot.Expressions.Memory
             while (it.MoveNext())
             {
                 var memory = it.Current;
-                (var value, var error) = memory.TryGetValue(path);
-                if (error == null && value != null)
+                if (memory.TryGetValue(path, out var value))
                 {
                     return value;
                 }
@@ -61,6 +60,26 @@ namespace Microsoft.Bot.Expressions.Memory
         public override object SetValue(string path, object value)
         {
             throw new Exception($"Can't set value to {path}, stacked memory is read-only");
+        }
+
+        public override bool ContainsPath(string path)
+        {
+            if (memoryList.Count == 0)
+            {
+                return false;
+            }
+
+            var it = memoryList.GetEnumerator();
+            while (it.MoveNext())
+            {
+                var memory = it.Current;
+                if (memory.TryGetValue(path, out var value))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

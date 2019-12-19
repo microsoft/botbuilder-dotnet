@@ -95,43 +95,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         }
 
         /// <summary>
-        /// IMemory.GetValue is simple wrapper on 'TryGetValue' now, and swallow error silently.
-        /// </summary>
-        /// <param name="path">The path to get value for.</param>
-        /// <returns>The value get.</returns>
-        public (object value, string error) TryGetValue(string path)
-        {
-            if (this.TryGetValue<object>(path, out var result))
-            {
-                return (result, null);
-            }
-            else
-            {
-                // We choose to swallow error here to let an invalid path evaluate to null
-                // Maybe we can log a warnning message like
-                // $"Get value for path: '{path}' failed".
-                return (null, null);
-            }
-        }
-
-        /// <summary>
-        /// IMemory.SetValue is a simpler wrapper on top of 'SetValue', which is been widely used across
+        /// TrySetValue is a simpler wrapper on top of 'SetValue', which is been widely used across
         /// AdaptiveDialog. We may consider let other part of AdaptiveDialog use IMemory interface instead of
         /// call `SetValue` directly.
         /// </summary>
         /// <param name="path">Path to set value.</param>
         /// <param name="value">Value to set.</param>
         /// <returns>Value set.</returns>
-        public (object value, string error) TrySetValue(string path, object value)
+        public bool TrySetValue(string path, object value)
         {
             try
             {
                 this.SetValue(path, value);
-                return (value, null);
+                return true;
             }
-            catch (Exception e)
+            catch
             {
-                return (value, $"Set value to path: '{path}' failed, Reason: {e.Message}");
+                return false;
             }
         }
 
@@ -404,6 +384,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public bool ContainsKey(string key)
         {
             return Configuration.MemoryScopes.Any(ms => ms.Name.ToLower() == key.ToLower());
+        }
+
+        public bool ContainsPath(string path)
+        {
+            return TryGetValue<object>(path, out _);
         }
 
         public bool Remove(string key)

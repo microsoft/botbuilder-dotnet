@@ -982,7 +982,7 @@ namespace Microsoft.Bot.Expressions
             if (left == null)
             {
                 // fully converted to path, so we just delegate to memory scope
-                return state.TryGetValue(path);
+                return WrapGetValue(state, path);
             }
             else
             {
@@ -993,7 +993,7 @@ namespace Microsoft.Bot.Expressions
                     return (null, err);
                 }
 
-                return new SimpleObjectMemory(newScope).TryGetValue(path);
+                return WrapGetValue(new SimpleObjectMemory(newScope), path);
             }
         }
 
@@ -1011,8 +1011,25 @@ namespace Microsoft.Bot.Expressions
                 (property, error) = children[1].TryEvaluate(state);
                 if (error == null)
                 {
-                    (value, error) = new SimpleObjectMemory(instance).TryGetValue((string)property);
+                    (value, error) = WrapGetValue(new SimpleObjectMemory(instance), (string)property);
                 }
+            }
+
+            return (value, error);
+        }
+
+        private static (object value, string error) WrapGetValue(IMemory memory, string property)
+        {
+            object value = default;
+            var error = string.Empty;
+
+            try
+            {
+                value = memory.GetValue(property);
+            }
+            catch (Exception e)
+            {
+                error = e.Message;
             }
 
             return (value, error);
@@ -1096,7 +1113,14 @@ namespace Microsoft.Bot.Expressions
                 return (null, err);
             }
 
-            return state.TrySetValue(path, value);
+            if (state.TrySetValue(path, value))
+            {
+                return (value, null);
+            }
+            else
+            {
+                return (null, $"path {path} set failed.");
+            }
         }
 
         private static string ParseStringOrNull(object value)

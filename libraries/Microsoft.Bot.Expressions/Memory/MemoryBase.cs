@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Microsoft.Bot.Expressions.Memory
 {
@@ -8,30 +10,26 @@ namespace Microsoft.Bot.Expressions.Memory
 
         public abstract object SetValue(string path, object value);
 
-        public (object value, string error) TryGetValue(string path)
+        public abstract bool ContainsPath(string path);
+
+        public virtual bool TryGetValue(string path, out object value)
         {
-            try
+            value = default;
+            if (ContainsPath(path))
             {
-                var value = GetValue(path);
-                return (value, null);
+                value = GetValue(path);
+                return true;
             }
-            catch (Exception e)
+            else
             {
-                return (null, e.Message);
+                return false;
             }
         }
 
-        public (object value, string error) TrySetValue(string path, object value)
+        public virtual bool TrySetValue(string path, object value)
         {
-            try
-            {
-                var result = SetValue(path, value);
-                return (result, null);
-            }
-            catch (Exception e)
-            {
-                return (null, e.Message);
-            }
+            SetValue(path, value);
+            return true;
         }
 
         public virtual string Version()
