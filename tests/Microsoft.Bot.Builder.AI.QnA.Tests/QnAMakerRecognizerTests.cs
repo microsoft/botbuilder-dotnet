@@ -148,7 +148,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                         {
                             new SendActivity()
                             {
-                                Activity = new ActivityTemplate("@{turn.recognized.entities.answer[0]}")
+                                Activity = new ActivityTemplate("@{@answer}")
                             },
                             new AssertCondition()
                             {
