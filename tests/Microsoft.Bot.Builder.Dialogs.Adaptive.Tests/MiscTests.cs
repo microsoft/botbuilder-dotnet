@@ -36,6 +36,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task PathResolver()
+        {
+            await TestUtils.RunTestScript();
+        }
+
+        [TestMethod]
         public async Task DialogManager_InitDialogsEnsureDependencies()
         {
             Dialog CreateDialog()

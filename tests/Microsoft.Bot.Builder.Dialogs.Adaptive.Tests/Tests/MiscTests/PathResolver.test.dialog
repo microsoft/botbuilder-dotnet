@@ -1,0 +1,33 @@
+﻿{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "turn.recognized.entities.objs",
+                        "value": "createArray(json(\"{'name': 'n0'}\"), json(\"{'name': 'n1'}\"))"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "@{@objs.name}"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserConversationUpdate"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "n0"
+        }
+    ]
+}
