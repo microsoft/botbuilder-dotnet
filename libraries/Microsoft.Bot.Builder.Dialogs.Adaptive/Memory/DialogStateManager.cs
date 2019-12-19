@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// </summary>
         private const string PathTracker = "dialog._tracker.paths";
 
-        private const string ScopeTracker = "dialog._tracker.scopes";
+        private static readonly char[] Separators = { ',', '[' };
 
         private readonly DialogContext dialogContext;
         private int version = 0;
@@ -50,7 +50,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public bool IsReadOnly => true;
 
-        public object this[string key] { get => GetValue<object>(key, () => null); set => SetValue(key, value); }
+        public object this[string key]
+        {
+            get => GetValue<object>(key, () => null);
+            set
+            {
+                if (key.IndexOfAny(Separators) == -1)
+                {
+                    // Root is handled by SetMemory rather than SetValue
+                    var scope = GetMemoryScope(key) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(key));
+                    scope.SetMemory(this.dialogContext, value);
+                }
+                else
+                {
+                    SetValue(key, value);
+                }
+            }
+        }
 
         public static DialogStateManagerConfiguration CreateStandardConfiguration(ConversationState conversationState = null, UserState userState = null)
         {
@@ -485,51 +501,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             return found;
         }
 
-        /// <summary>
-        /// Track if anything has changed below this scope.
-        /// </summary>
-        /// <param name="scopes">Scopes to track.</param>
-        /// <returns>Normalized scope names to pass to <see cref="AnyScopeChanged"/>.</returns>
-        public List<string> TrackScopes(IEnumerable<string> scopes)
-        {
-            var allScopes = new List<string>();
-            foreach (var scope in scopes)
-            {
-                var tscope = TransformPath(scope);
-
-                // Track any path that resolves to a constant path
-                if (ObjectPath.TryResolvePath(this, tscope, out var segments))
-                {
-                    var npath = string.Join("_", segments);
-                    SetValue(ScopeTracker + "." + npath, 0);
-                    allScopes.Add(npath);
-                }
-            }
-
-            return allScopes;
-        }
-
-        /// <summary>
-        /// Check to see if any scope has changed since watermark.
-        /// </summary>
-        /// <param name="counter">Time counter to compare to.</param>
-        /// <param name="scopes">Paths from <see cref="TrackScopes"/> to check.</param>
-        /// <returns>True if any scope has changed since counter.</returns>
-        public bool AnyScopeChanged(uint counter, IEnumerable<string> scopes)
-        {
-            var found = false;
-            foreach (var scope in scopes)
-            {
-                if (GetValue<uint>(ScopeTracker + "." + scope) > counter)
-                {
-                    found = true;
-                    break;
-                }
-            }
-
-            return found;
-        }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             foreach (var ms in Configuration.MemoryScopes)
@@ -586,19 +557,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                         }
 
                         ObjectPath.ForEachProperty(obj, CheckChildren);
-                    }
-
-                    // Update scopes if any
-                    if (TryGetValue<object>(ScopeTracker, out var scopes))
-                    {
-                        ObjectPath.ForEachProperty(scopes, (property, value) =>
-                        {
-                            if (pathName.StartsWith(property))
-                            {
-                                trackedPath = ScopeTracker + "." + property;
-                                Update();
-                            }
-                        });
                     }
                 }
 
