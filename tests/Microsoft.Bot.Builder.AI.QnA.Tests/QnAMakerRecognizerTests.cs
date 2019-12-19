@@ -155,6 +155,11 @@ namespace Microsoft.Bot.Builder.AI.Tests
                                 Condition = "count(turn.recognized.entities.answer) == 1",
                                 Description = "If there is a match there should only be 1 answer"
                             },
+                            new AssertCondition()
+                            {
+                                Condition = "turn.recognized.answers[0].answer != null",
+                                Description = "There should be answers object"
+                            },
                             new SendActivity()
                             {
                                 Activity = new ActivityTemplate("done")

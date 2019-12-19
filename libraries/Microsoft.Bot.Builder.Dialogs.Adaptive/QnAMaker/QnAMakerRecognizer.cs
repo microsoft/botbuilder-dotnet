@@ -136,11 +136,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
             if (externalMetadata != null)
             {
                 filters.AddRange(externalMetadata);
-
-                //foreach (var property in externalMetadata.Properties())
-                //{
-                //    filters.Add(new Metadata() { Name = property.Name, Value = property.Value.ToString() });
-                //}
             }
 
             // Calling QnAMaker to get response.
@@ -174,13 +169,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
 
                 var answerArray = new JArray();
                 answerArray.Add(topAnswer.Answer);
-                ObjectPath.SetPathValue(recognizerResult, "Entities.answer", answerArray);
+                ObjectPath.SetPathValue(recognizerResult, "entities.answer", answerArray);
 
                 var instance = new JArray();
                 instance.Add(JObject.FromObject(topAnswer));
-                ObjectPath.SetPathValue(recognizerResult, "Entities.$instance.answer", instance);
+                ObjectPath.SetPathValue(recognizerResult, "entities.$instance.answer", instance);
 
-                ObjectPath.SetPathValue(recognizerResult, "Properties.answers", answers);
+                recognizerResult.Properties["answers"] = answers;
             }
             else
             {
