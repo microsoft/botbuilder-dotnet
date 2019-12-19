@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Expressions.Memory
 {
     public class SimpleObjectMemory : MemoryBase
     {
-        private object memory = null;
+        private readonly object memory = null;
         private int version = 0;
 
         /// <summary>
@@ -175,40 +175,6 @@ namespace Microsoft.Bot.Expressions.Memory
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
-        }
-
-        public override bool ContainsPath(string path)
-        {
-            if (memory == null)
-            {
-                return false;
-            }
-
-            var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
-                            .Select(x => x.Trim('\'', '"'))
-                            .ToArray();
-            object value = null;
-            var curScope = memory;
-
-            foreach (var part in parts)
-            {
-                string error = null;
-                if (int.TryParse(part, out var idx) && BuiltInFunctions.TryParseList(curScope, out var li))
-                {
-                    (value, error) = BuiltInFunctions.AccessIndex(li, idx);
-                }
-                else
-                {
-                    (value, error) = BuiltInFunctions.AccessProperty(curScope, part);
-                }
-
-                if (value != null && error == null)
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
     }
 }

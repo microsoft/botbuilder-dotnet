@@ -41,13 +41,6 @@ namespace Microsoft.Bot.Expressions.Memory
         bool TrySetValue(string path, object value);
 
         /// <summary>
-        /// To see if the memory contains specific path.
-        /// </summary>
-        /// <param name="path">memory path.</param>
-        /// <returns>path exist or not.</returns>
-        bool ContainsPath(string path);
-
-        /// <summary>
         /// Version is used to identify whether the a particular memory instance has been updated or not.
         /// If version is not changed, the caller may choose to use the cached result instead of recomputing everything.
         /// </summary>

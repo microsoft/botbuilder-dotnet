@@ -386,11 +386,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             return Configuration.MemoryScopes.Any(ms => ms.Name.ToLower() == key.ToLower());
         }
 
-        public bool ContainsPath(string path)
-        {
-            return TryGetValue<object>(path, out _);
-        }
-
         public bool Remove(string key)
         {
             throw new NotSupportedException();

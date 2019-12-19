@@ -29,12 +29,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public IMemory LocalMemory { get; set; }
 
-        public override bool ContainsPath(string path)
-        {
-            return (this.LocalMemory != null && this.LocalMemory.TryGetValue(path, out _))
-                || (this.GlobalMemory != null && this.GlobalMemory.TryGetValue(path, out _));
-        }
-
         public override object GetValue(string path)
         {
             if (this.LocalMemory != null)

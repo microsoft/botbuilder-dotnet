@@ -1020,19 +1020,12 @@ namespace Microsoft.Bot.Expressions
 
         private static (object value, string error) WrapGetValue(IMemory memory, string property)
         {
-            object value = default;
-            var error = string.Empty;
-
-            try
+            if (memory.TryGetValue(property, out var result))
             {
-                value = memory.GetValue(property);
-            }
-            catch (Exception e)
-            {
-                error = e.Message;
+                return (result, null);
             }
 
-            return (value, error);
+            return (null, $"Can not access {property}");
         }
 
         private static (object value, string error) ExtractElement(Expression expression, IMemory state)

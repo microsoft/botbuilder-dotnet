@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-
-namespace Microsoft.Bot.Expressions.Memory
+﻿namespace Microsoft.Bot.Expressions.Memory
 {
     public abstract class MemoryBase : IMemory
     {
@@ -10,17 +6,15 @@ namespace Microsoft.Bot.Expressions.Memory
 
         public abstract object SetValue(string path, object value);
 
-        public abstract bool ContainsPath(string path);
-
         public virtual bool TryGetValue(string path, out object value)
         {
-            value = default;
-            if (ContainsPath(path))
+            value = null;
+            try
             {
                 value = GetValue(path);
                 return true;
             }
-            else
+            catch
             {
                 return false;
             }
@@ -28,8 +22,15 @@ namespace Microsoft.Bot.Expressions.Memory
 
         public virtual bool TrySetValue(string path, object value)
         {
-            SetValue(path, value);
-            return true;
+            try
+            {
+                SetValue(path, value);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public virtual string Version()
