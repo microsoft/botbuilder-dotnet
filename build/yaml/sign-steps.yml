@@ -5,6 +5,7 @@ steps:
     SourceFolder: '$(build.sourcesdirectory)'
     Contents: |
      outputpackages\*.nupkg
+     outputpackages\*.snupkg
      !outputpackages\*.symbols.nupkg
     TargetFolder: '$(build.artifactstagingdirectory)\Signing'
     flattenFolders: true
@@ -87,7 +88,7 @@ steps:
 - script: |
    cd ..
    dir *.* /s
-  displayName: 'Dir workspace copy'
+  displayName: 'Dir workspace'
 
 - task: PowerShell@2
   displayName: 'Repack .nuget packages'
@@ -97,11 +98,11 @@ steps:
     arguments: '$(Build.ArtifactStagingDirectory)\Signing -Compress'
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-  displayName: 'ESRP Signing - .nupkg (CP-401405)'
+  displayName: 'ESRP Signing - *.nupkg,*.snupkg (CP-401405)'
   inputs:
     ConnectedServiceName: 'ESRP Code Signing Connection 2019b'
     FolderPath: '$(build.artifactstagingdirectory)\Signing'
-    Pattern: '*.nupkg'
+    Pattern: '*.nupkg,*.snupkg'
     signConfigType: inlineSignParams
     inlineOperation: |
      [
@@ -123,18 +124,20 @@ steps:
     SessionTimeout: 20
 
 - task: CopyFiles@2
-  displayName: 'Copy .nupkg files to publish'
+  displayName: 'Copy *.nupkg,*.snupkg files to publish'
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\Signing'
     Contents: |
      *.nupkg
+     *.snupkg
      !*.symbols.nupkg
     TargetFolder: '$(Build.ArtifactStagingDirectory)\publish'
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish .nupkgs to Build Artifacts'
+  displayName: 'Push *.nupkg,*.snupkg files to Artifacts Packages'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\publish'
+    ArtifactName: Packages
 
 - powershell: |
    [string[]]$outvar = (Get-ChildItem *.nupkg -Path $(Build.ArtifactStagingDirectory)\publish ).BaseName;
@@ -167,6 +170,7 @@ steps:
        "##vso[task.setvariable variable=pkg$i;]";
    }
   displayName: 'Get package names'
+  continueOnError: true
 
 - task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
   displayName: 'Tag Build with package names'
@@ -203,8 +207,11 @@ steps:
      $(PKG27)
      $(PKG28)
      $(PKG29)
+  continueOnError: true
 
 - script: |
    cd ..
    dir *.* /s
   displayName: 'Dir workspace'
+  continueOnError: true
+  condition: succeededOrFailed()
