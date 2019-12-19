@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.AdaptiveDialog";
 
-        internal const string ConditionTracker = "dialog.tracker.conditions";
+        internal const string ConditionTracker = "dialog._tracker.conditions";
 
         private const string AdaptiveKey = "_adaptive";
 
