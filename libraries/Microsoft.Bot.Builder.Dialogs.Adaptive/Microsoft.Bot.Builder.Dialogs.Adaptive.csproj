@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <None Remove="Schemas\Recognizers\Microsoft.CrossTrainedRecognizerSet.schema" />
+    <None Remove="Schemas\TriggerConditions\Microsoft.OnQnAMatch.schema" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +24,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.QnAMakerRecognizer";
+
+        public const string QnAMatchIntent = "QnAMatch";
 
         private Expression knowledgebaseIdExpression;
         private Expression endpointkeyExpression;
@@ -109,6 +112,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         [JsonProperty("rankerType")]
         public string RankerType { get; set; } = RankerTypes.DefaultRankerType;
 
+        [JsonIgnore]
+        public HttpClient HttpClient { get; set; }
+
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken)
         {
             // Identify matched intents
@@ -120,14 +126,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                 Intents = new Dictionary<string, IntentScore>(),
             };
 
+            List<Metadata> filters = new List<Metadata>()
+            {
+                new Metadata() { Name = "dialogName", Value = dialogContext.ActiveDialog.Id }
+            };
+
+            // if there is $qna.metadata set add to filters
+            var externalMetadata = dialogContext.GetState().GetValue<Metadata[]>("$qna.metadata");
+            if (externalMetadata != null)
+            {
+                filters.AddRange(externalMetadata);
+
+                //foreach (var property in externalMetadata.Properties())
+                //{
+                //    filters.Add(new Metadata() { Name = property.Name, Value = property.Value.ToString() });
+                //}
+            }
+
             // Calling QnAMaker to get response.
             var qnaClient = await GetQnAMakerClientAsync(dialogContext).ConfigureAwait(false);
             var answers = await qnaClient.GetAnswersAsync(
                 dialogContext.Context,
                 new QnAMakerOptions
                 {
+                    Context = dialogContext.GetState().GetValue<QnARequestContext>("$qna.context"),
                     ScoreThreshold = this.Threshold,
-                    MetadataBoost = new Metadata[] { new Metadata() { Name = "dialogName", Value = string.Empty } },
+                    StrictFilters = filters.ToArray(),
                     Top = this.Top,
                     QnAId = 0,
                     RankerType = this.RankerType,
@@ -137,19 +161,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
 
             if (answers.Any())
             {
-                recognizerResult.Intents.Add("QnAMatch", new IntentScore() { Score = answers.First().Score });
-                var answerResults = new JArray();
-                var instance = new JArray();
-
+                QueryResult topAnswer = null;
                 foreach (var answer in answers)
                 {
-                    answerResults.Add(JValue.FromObject(answer.Answer));
-                    instance.Add(JObject.FromObject(answer));
+                    if ((topAnswer == null) || (answer.Score > topAnswer.Score))
+                    {
+                        topAnswer = answer;
+                    }
                 }
 
-                recognizerResult.Entities["answer"] = answerResults;
-                recognizerResult.Entities["$instance"] = instance;
-                recognizerResult.Properties["answer"] = answers;
+                recognizerResult.Intents.Add(QnAMatchIntent, new IntentScore() { Score = topAnswer.Score });
+
+                var answerArray = new JArray();
+                answerArray.Add(topAnswer.Answer);
+                ObjectPath.SetPathValue(recognizerResult, "Entities.answer", answerArray);
+
+                var instance = new JArray();
+                instance.Add(JObject.FromObject(topAnswer));
+                ObjectPath.SetPathValue(recognizerResult, "Entities.$instance.answer", instance);
+
+                ObjectPath.SetPathValue(recognizerResult, "Properties.answers", answers);
             }
             else
             {
@@ -179,7 +210,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                 KnowledgeBaseId = (string)kbId
             };
 
-            return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint));
+            return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint, httpClient: this.HttpClient));
         }
     }
 }

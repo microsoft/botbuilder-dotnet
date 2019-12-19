@@ -1,0 +1,15 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.ITriggerCondition)",
+    "title": "On QnAMAker Match",
+    "description": "Actions to perform on when an match from QnAMaker is found.",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./Microsoft.OnCondition.schema#"
+        }
+    ],
+    "required": [
+        "actions"
+    ]
+}
