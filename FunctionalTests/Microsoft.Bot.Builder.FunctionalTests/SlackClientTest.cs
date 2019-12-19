@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             var lastMessage = string.Empty;
             var i = 0;
 
-            while (!lastMessage.Contains("Echo") && i < 5)
+            while (!lastMessage.Contains("Echo") && i < 60)
             {
                 _client = new HttpClient();
                 var requestUri = $"{SlackUrlBase}/conversations.history?token={_slackBotToken}&channel={_slackChannel}";
