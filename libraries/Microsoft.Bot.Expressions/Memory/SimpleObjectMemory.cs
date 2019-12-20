@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Expressions.Memory
 {
     public class SimpleObjectMemory : IMemory
     {
-        private readonly object memory = null;
+        private object memory = null;
         private int version = 0;
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Expressions.Memory
 
                 if (error != null)
                 {
-                    throw new Exception(error);
+                    return true;
                 }
 
                 curScope = value;
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Expressions.Memory
         {
             if (memory == null)
             {
-                throw new Exception("Can't set value with in a null memory");
+                return;
             }
 
             var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
@@ -106,13 +106,13 @@ namespace Microsoft.Bot.Expressions.Memory
 
                 if (error != null)
                 {
-                    throw new Exception(error);
+                    return;
                 }
 
                 if (curScope == null)
                 {
                     curPath = curPath.TrimStart('.');
-                    throw new Exception($"Can't set value to path: '{path}', reason: '{curPath}' is null");
+                    return;
                 }
             }
 
@@ -147,7 +147,7 @@ namespace Microsoft.Bot.Expressions.Memory
 
                 if (error != null)
                 {
-                    throw new Exception(error);
+                    return;
                 }
             }
             else
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Expressions.Memory
                 (_, error) = BuiltInFunctions.SetProperty(curScope, parts.Last(), value);
                 if (error != null)
                 {
-                    throw new Exception($"Can set value to path: '{path}', reason: {error}");
+                    return;
                 }
             }
 
