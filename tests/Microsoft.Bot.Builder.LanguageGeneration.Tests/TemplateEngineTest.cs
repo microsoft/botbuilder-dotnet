@@ -345,7 +345,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     name = "coffee-to-go-order",
                     variableOptions = new string[] { "coffee", "userName", "size", "price" },
                     templateRefOptions = new string[] { "wPhrase", "LatteOrderConfirmation", "MochaOrderConfirmation", "CuppuccinoOrderConfirmation" }
-                }
+                },
+                new
+                {
+                    name = "structureTemplate",
+                    variableOptions = new string[] { "text", "newText" },
+                    templateRefOptions = new string[] { "ST2" }
+                },
             };
 
             foreach (var testItem in testData)
