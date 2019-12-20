@@ -18,6 +18,11 @@
             "title": "Text",
             "description": "Information to log."
         },
+        "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "Label for the trace activity (used to identify it in a list of trace activities.)"
+        },
         "traceActivity": {
             "type": "boolean",
             "title": "Send Trace Activity",

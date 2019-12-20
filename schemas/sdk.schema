@@ -4075,6 +4075,11 @@
                     "title": "Text",
                     "description": "Information to log."
                 },
+                "label": {
+                    "type": "string",
+                    "title": "Label",
+                    "description": "Label for the trace activity (used to identify it in a list of trace activities.)"
+                },
                 "traceActivity": {
                     "type": "boolean",
                     "title": "Send Trace Activity",
@@ -6468,6 +6473,18 @@
                     "title": "Top",
                     "description": "The number of answers you want to retrieve.",
                     "default": 3
+                },
+                "isTest": {
+                    "type": "boolean",
+                    "title": "IsTest",
+                    "description": "True, if pointing to Test environment, else false.",
+                    "default": false
+                },
+                "rankerType": {
+                    "type": "string",
+                    "title": "RankerType",
+                    "description": "Type of Ranker.",
+                    "default": "Default"
                 }
             },
             "patternProperties": {
@@ -8321,6 +8338,11 @@
                     "type": "string",
                     "title": "Name",
                     "description": "Name of the trace activity"
+                },
+                "label": {
+                    "type": "string",
+                    "title": "Label",
+                    "description": "Label for the trace activity (used to identify it in a list of trace activities.)"
                 },
                 "valueType": {
                     "type": "string",
