@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Expressions.Memory
             while (it.MoveNext())
             {
                 var memory = it.Current;
-                if (memory.TryGetValue(path, out var value))
+                if (memory.TryGetValue(path, out var value) && value != null)
                 {
                     return value;
                 }

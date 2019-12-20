@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public bool IsReadOnly => true;
 
-        public object this[string key] { get => GetValue(key); set => SetValue(key, value); }
+        public object this[string key] { get => GetValue<object>(key, () => null); set => SetValue(key, value); }
 
         public static DialogStateManagerConfiguration CreateStandardConfiguration(ConversationState conversationState = null, UserState userState = null)
         {
@@ -94,15 +94,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             return Configuration.MemoryScopes.FirstOrDefault(ms => string.Compare(ms.Name, name, ignoreCase: true) == 0);
         }
 
+        object IMemory.GetValue(string path)
+        {
+            if (this.TryGetValue<object>(path, out var result))
+            {
+                return result;
+            }
+            else
+            {
+                // We choose to swallow error here to let an invalid path evaluate to null
+                // Maybe we can log a warnning message like
+                // $"Get value for path: '{path}' failed".
+                return null;
+            }
+        }
+
         /// <summary>
-        /// TrySetValue is a simpler wrapper on top of 'SetValue', which is been widely used across
+        /// IMemory.SetValue is a simpler wrapper on top of 'SetValue', , which is been widely used across
         /// AdaptiveDialog. We may consider let other part of AdaptiveDialog use IMemory interface instead of
         /// call `SetValue` directly.
         /// </summary>
         /// <param name="path">Path to set value.</param>
         /// <param name="value">Value to set.</param>
         /// <returns>Value set.</returns>
-        public bool TrySetValue(string path, object value)
+        object IMemory.SetValue(string path, object value)
+        {
+            try
+            {
+                this.SetValue(path, value);
+                return value;
+            }
+            catch
+            {
+                return value;
+            }
+        }
+
+        bool IMemory.TrySetValue(string path, object value)
         {
             try
             {
@@ -119,7 +147,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// Version help caller to identify the updates and decide cache or not.
         /// </summary>
         /// <returns>Current version.</returns>
-        public string Version()
+        string IMemory.Version()
         {
             return version.ToString();
         }
@@ -261,8 +289,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// </summary>
         /// <param name="path">Path to memory.</param>
         /// <param name="value">Object to set.</param>
-        /// <returns>value be set.</returns>
-        public object SetValue(string path, object value)
+        public void SetValue(string path, object value)
         {
             if (value is Task)
             {
@@ -287,7 +314,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
             // Every set will increase version
             version++;
-            return value;
         }
 
         /// <summary>
@@ -389,11 +415,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public bool Remove(string key)
         {
             throw new NotSupportedException();
-        }
-
-        public object GetValue(string path)
-        {
-            return GetValue<object>(path, () => null);
         }
 
         public bool TryGetValue(string key, out object value)
