@@ -109,27 +109,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
         }
 
-        /// <summary>
-        /// IMemory.SetValue is a simpler wrapper on top of 'SetValue', which is been widely used across
-        /// AdaptiveDialog. We may consider let other part of AdaptiveDialog use IMemory interface instead of
-        /// call `SetValue` directly.
-        /// </summary>
-        /// <param name="path">Path to set value.</param>
-        /// <param name="value">Value to set.</param>
-        /// <returns>Value set.</returns>
-        object IMemory.SetValue(string path, object value)
-        {
-            try
-            {
-                this.SetValue(path, value);
-                return value;
-            }
-            catch
-            {
-                return value;
-            }
-        }
-
         bool IMemory.TrySetValue(string path, object value)
         {
             try
@@ -289,7 +268,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// </summary>
         /// <param name="path">Path to memory.</param>
         /// <param name="value">Object to set.</param>
-        public void SetValue(string path, object value)
+        /// <returns>the value be set.</returns>
+        public object SetValue(string path, object value)
         {
             if (value is Task)
             {
@@ -314,6 +294,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
             // Every set will increase version
             version++;
+            return value;
         }
 
         /// <summary>
