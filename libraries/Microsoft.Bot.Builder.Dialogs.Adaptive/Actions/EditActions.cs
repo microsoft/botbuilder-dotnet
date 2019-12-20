@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (this.disabled != null && (bool)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
