@@ -24,6 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private Expression value;
         private Expression itemsProperty;
         private Expression resultProperty;
+        private Expression disabled;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EditArray"/> class.
@@ -102,6 +103,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public ArrayChangeType ChangeType { get; set; }
 
         /// <summary>
+        /// Gets or sets an optional expression which if is true will disable this action.
+        /// </summary>
+        /// <example>
+        /// "user.age > 18".
+        /// </example>
+        /// <value>
+        /// A boolean expression. 
+        /// </value>
+        [JsonProperty("disabled")]
+        public string Disabled
+        {
+            get { return disabled?.ToString(); }
+            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
+        }
+
+        /// <summary>
         /// Gets or sets property path expression to the collection of items.
         /// </summary>
         /// <value>
@@ -145,6 +162,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             if (options is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
+            if (this.disabled != null && (bool)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            {
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             if (string.IsNullOrEmpty(ItemsProperty))
