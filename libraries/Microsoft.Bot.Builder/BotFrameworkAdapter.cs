@@ -45,7 +45,6 @@ namespace Microsoft.Bot.Builder
     public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, ICredentialTokenProvider
     {
         internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
-        internal const string BotIdentityKey = "BotIdentity";
 
         private static readonly HttpClient DefaultHttpClient = new HttpClient();
 

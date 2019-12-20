@@ -7,14 +7,16 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
-    public class OAuthInput : Dialog
+    public class OAuthInput : InputDialog
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.OAuthInput";
@@ -57,15 +59,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public int Timeout { get; set; } = 900000;
 
         /// <summary>
-        /// Gets or sets the memory property to use for token result.
-        /// </summary>
-        /// <value>
-        /// The memory property to use for token result.
-        /// </value>
-        [JsonProperty("tokenProperty")]
-        public string TokenProperty { get; set; }
-
-        /// <summary>
         /// Called when a prompt dialog is pushed onto the dialog stack and is being activated.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
@@ -106,6 +99,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
             }
 
+            var op = OnInitializeOptions(dc, options);
+            dc.GetState().SetValue(ThisPath.OPTIONS, op);
+            dc.GetState().SetValue(TURN_COUNT_PROPERTY, 0);
+
+            // If AlwaysPrompt is set to true, then clear Property value for turn 0.
+            if (!string.IsNullOrEmpty(this.Property) && this.AlwaysPrompt)
+            {
+                dc.GetState().SetValue(this.Property, null);
+            }
+
             // Initialize state
             var state = dc.ActiveDialog.State;
             state[PersistedOptions] = opt;
@@ -125,9 +128,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var output = await adapter.GetUserTokenAsync(dc.Context, ConnectionName, null, cancellationToken).ConfigureAwait(false);
             if (output != null)
             {
-                if (this.TokenProperty != null)
+                if (this.Property != null)
                 {
-                    dc.GetState().SetValue(this.TokenProperty, output);
+                    dc.GetState().SetValue(this.Property, output);
                 }
 
                 // Return token
@@ -135,6 +138,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
             else
             {
+                dc.GetState().SetValue(TURN_COUNT_PROPERTY, 1);
+
                 // Prompt user to login
                 await SendOAuthCardAsync(dc.Context, opt?.Prompt, cancellationToken).ConfigureAwait(false);
                 return Dialog.EndOfTurn;
@@ -159,6 +164,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 throw new ArgumentNullException(nameof(dc));
             }
 
+            var interrupted = dc.GetState().GetValue<bool>(TurnPath.INTERRUPTED, () => false);
+            var turnCount = dc.GetState().GetValue<int>(TURN_COUNT_PROPERTY, () => 0);
+
             // Recognize token
             var recognized = await RecognizeTokenAsync(dc.Context, cancellationToken).ConfigureAwait(false);
 
@@ -170,9 +178,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             if (hasTimedOut)
             {
-                if (this.TokenProperty != null)
+                if (this.Property != null)
                 {
-                    dc.GetState().SetValue(this.TokenProperty, null);
+                    dc.GetState().SetValue(this.Property, null);
                 }
 
                 // if the token fetch request times out, complete the prompt with no result.
@@ -188,31 +196,49 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 promptState[AttemptCountKey] = Convert.ToInt32(promptState[AttemptCountKey]) + 1;
 
                 // Validate the return value
-                var isValid = false;
+                var inputState = InputState.Invalid;
                 if (recognized.Succeeded)
                 {
-                    isValid = true;
+                    inputState = InputState.Valid;
                 }
 
                 // Return recognized value or re-prompt
-                if (isValid)
+                if (inputState == InputState.Valid)
                 {
-                    if (this.TokenProperty != null)
+                    if (this.Property != null)
                     {
-                        dc.GetState().SetValue(this.TokenProperty, recognized.Value);
+                        dc.GetState().SetValue(this.Property, recognized.Value);
                     }
 
                     return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
                 }
-                else
+                else if (this.MaxTurnCount == null || turnCount < this.MaxTurnCount)
                 {
-                    if (!dc.Context.Responded && isMessage && promptOptions != null && promptOptions.RetryPrompt != null)
-                    {
-                        await dc.Context.SendActivityAsync(promptOptions.RetryPrompt, cancellationToken).ConfigureAwait(false);
-                    }
-
+                    // increase the turnCount as last step
+                    dc.GetState().SetValue(TURN_COUNT_PROPERTY, turnCount + 1);
+                    var prompt = await this.OnRenderPrompt(dc, inputState).ConfigureAwait(false);
+                    await dc.Context.SendActivityAsync(prompt).ConfigureAwait(false);
+                    await SendOAuthCardAsync(dc.Context, promptOptions?.Prompt, cancellationToken).ConfigureAwait(false);
                     return Dialog.EndOfTurn;
                 }
+                else
+                {
+                    if (this.DefaultValue != null)
+                    {
+                        var (value, error) = new ExpressionEngine().Parse(this.DefaultValue).TryEvaluate(dc.GetState());
+                        if (this.DefaultValueResponse != null)
+                        {
+                            var response = await this.DefaultValueResponse.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
+                            await dc.Context.SendActivityAsync(response).ConfigureAwait(false);
+                        }
+
+                        // set output property
+                        dc.GetState().SetValue(this.Property, value);
+                        return await dc.EndDialogAsync(value).ConfigureAwait(false);
+                    }
+                }
+
+                return await dc.EndDialogAsync().ConfigureAwait(false);
             }
         }
 
@@ -251,6 +277,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             // Sign out user
             await adapter.SignOutUserAsync(turnContext, ConnectionName, turnContext.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
+        }
+
+        protected override Task<InputState> OnRecognizeInput(DialogContext dc)
+        {
+            throw new NotImplementedException();
         }
 
         private async Task SendOAuthCardAsync(ITurnContext turnContext, IMessageActivity prompt, CancellationToken cancellationToken = default(CancellationToken))

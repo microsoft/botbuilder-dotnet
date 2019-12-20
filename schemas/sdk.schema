@@ -4690,12 +4690,58 @@
                     "description": "Time out setting for the OAuth signin card.",
                     "default": "900000"
                 },
-                "tokenProperty": {
+                "property": {
                     "$role": "expression",
                     "title": "Token property",
                     "description": "Property to store the OAuth token result.",
                     "examples": [
                         "dialog.token"
+                    ],
+                    "type": "string"
+                },
+                "invalidPrompt": {
+                    "$kind": "Microsoft.IActivityTemplate",
+                    "title": "Invalid prompt",
+                    "description": "Message to send if user response is invalid.",
+                    "examples": [
+                        "Sorry, the login info you provided is not valid."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "defaultValueResponse": {
+                    "$kind": "Microsoft.IActivityTemplate",
+                    "title": "Default value response",
+                    "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "Login failed."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "maxTurnCount": {
+                    "type": "integer",
+                    "title": "Max turn count",
+                    "description": "Maximum number of re-prompt attempts to collect information.",
+                    "default": 3,
+                    "examples": [
+                        3
+                    ]
+                },
+                "defaultValue": {
+                    "$role": "expression",
+                    "title": "Default value",
+                    "description": "Expression to examine on each turn of the conversation as possible value to the property.",
+                    "examples": [
+                        "@token"
+                    ],
+                    "type": "string"
+                },
+                "allowInterruptions": {
+                    "$role": "expression",
+                    "title": "Allow Interruptions",
+                    "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
+                    "default": "true",
+                    "examples": [
+                        "true"
                     ],
                     "type": "string"
                 }
