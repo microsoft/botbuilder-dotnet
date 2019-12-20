@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         }
 
         /// <summary>
-        /// IMemory.SetValue is a simpler wrapper on top of 'SetValue', , which is been widely used across
+        /// IMemory.SetValue is a simpler wrapper on top of 'SetValue', which is been widely used across
         /// AdaptiveDialog. We may consider let other part of AdaptiveDialog use IMemory interface instead of
         /// call `SetValue` directly.
         /// </summary>
