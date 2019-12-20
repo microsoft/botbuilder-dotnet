@@ -34,6 +34,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task ActionScope_Goto_OnIntent()
+        {
+            await TestUtils.RunTestScript();
+        }
+
+        [TestMethod]
         public async Task ActionScope_Goto_Nowhere()
         {
             await TestUtils.RunTestScript();
