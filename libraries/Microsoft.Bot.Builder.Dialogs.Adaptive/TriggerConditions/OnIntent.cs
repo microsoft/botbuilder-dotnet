@@ -104,24 +104,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                             })
                         }
                     },
-                    Actions = Actions.Select(s => new ActionState()
+                    Actions = new List<ActionState>()
                     {
-                        DialogStack = new List<DialogInstance>(),
-                        DialogId = s.Id,
-                        Options = dialogOptions
-                    }).ToList()
+                        new ActionState()
+                        {
+                            DialogId = this.ActionScope.Id,
+                            Options = dialogOptions
+                        }
+                    }
                 };
             }
 
-            return new ActionChangeList()
-            {
-                Actions = Actions.Select(s => new ActionState()
-                {
-                    DialogStack = new List<DialogInstance>(),
-                    DialogId = s.Id,
-                    Options = dialogOptions
-                }).ToList()
-            };
+            return base.OnCreateChangeList(planning, dialogOptions);
         }
     }
 }
