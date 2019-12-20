@@ -47,6 +47,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         /// <param name="more">label.</param>
         /// <param name="cancellationToken">cancellation token for async operations.</param>
         /// <returns>async task.</returns>
+        public static async Task DebuggerStepAsync(this DialogContext context, IRecognizer recognizer, string more, CancellationToken cancellationToken)
+        {
+            await context.GetDebugger().StepAsync(context, recognizer, more, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Call into active IDialogDebugger and let it know that we are at given point in the Recognizer.
+        /// </summary>
+        /// <param name="context">dialogContext.</param>
+        /// <param name="recognizer">recognizer.</param>
+        /// <param name="more">label.</param>
+        /// <param name="cancellationToken">cancellation token for async operations.</param>
+        /// <returns>async task.</returns>
         public static async Task DebuggerStepAsync(this DialogContext context, InputRecognizer recognizer, string more, CancellationToken cancellationToken)
         {
             await context.GetDebugger().StepAsync(context, recognizer, more, cancellationToken).ConfigureAwait(false);
