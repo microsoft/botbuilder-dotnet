@@ -95,47 +95,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         }
 
         /// <summary>
-        /// IMemory.GetValue is simple wrapper on 'TryGetValue' now, and swallow error silently.
-        /// </summary>
-        /// <param name="path">The path to get value for.</param>
-        /// <returns>The value get.</returns>
-        (object value, string error) IMemory.GetValue(string path)
-        {
-            if (this.TryGetValue<object>(path, out var result))
-            {
-                return (result, null);
-            }
-            else
-            {
-                // We choose to swallow error here to let an invalid path evaluate to null
-                // Maybe we can log a warnning message like
-                // $"Get value for path: '{path}' failed".
-                return (null, null);
-            }
-        }
-
-        /// <summary>
-        /// IMemory.SetValue is a simpler wrapper on top of 'SetValue', which is been widely used across
-        /// AdaptiveDialog. We may consider let other part of AdaptiveDialog use IMemory interface instead of
-        /// call `SetValue` directly.
-        /// </summary>
-        /// <param name="path">Path to set value.</param>
-        /// <param name="value">Value to set.</param>
-        /// <returns>Value set.</returns>
-        (object value, string error) IMemory.SetValue(string path, object value)
-        {
-            try
-            {
-                this.SetValue(path, value);
-                return (value, null);
-            }
-            catch (Exception e)
-            {
-                return (value, $"Set value to path: '{path}' failed, Reason: {e.Message}");
-            }
-        }
-
-        /// <summary>
         /// Version help caller to identify the updates and decide cache or not.
         /// </summary>
         /// <returns>Current version.</returns>
@@ -412,7 +371,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public bool TryGetValue(string key, out object value)
         {
             value = default;
-            return TryGetValue<object>(key, out value);
+            if (this.TryGetValue<object>(key, out var result))
+            {
+                value = result;
+            }
+
+            return true;
         }
 
         public void Add(KeyValuePair<string, object> item)

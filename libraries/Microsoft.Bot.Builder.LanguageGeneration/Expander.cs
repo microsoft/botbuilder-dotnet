@@ -237,7 +237,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     case LGFileParser.MULTILINE_SUFFIX:
                         break;
                     case LGFileParser.ESCAPE_CHARACTER:
-                        result = StringListConcat(result, EvalEscape(node.GetText()));
+                        result = StringListConcat(result, new List<string>() { node.GetText().Escape() });
                         break;
                     case LGFileParser.EXPRESSION:
                         result = StringListConcat(result, EvalExpression(node.GetText()));
@@ -285,7 +285,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var result = new List<List<string>>();
             foreach (var item in values)
             {
-                if (IsPureExpression(item, out var text))
+                if (item.IsPureExpression(out var text))
                 {
                     result.Add(EvalExpression(text));
                 }
@@ -297,7 +297,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         switch (node.Symbol.Type)
                         {
                             case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
-                                itemStringResult = StringListConcat(itemStringResult, EvalEscape(node.GetText()));
+                                itemStringResult = StringListConcat(itemStringResult, new List<string>() { node.GetText().Escape() });
                                 break;
                             case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
                                 itemStringResult = StringListConcat(itemStringResult, EvalExpression(node.GetText()));
@@ -313,39 +313,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return result;
-        }
-
-        private bool IsPureExpression(LGFileParser.KeyValueStructureValueContext context, out string expression)
-        {
-            expression = context.GetText();
-
-            var hasExpression = false;
-            foreach (ITerminalNode node in context.children)
-            {
-                switch (node.Symbol.Type)
-                {
-                    case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
-                        return false;
-                    case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
-                        if (hasExpression)
-                        {
-                            return false;
-                        }
-
-                        hasExpression = true;
-                        expression = node.GetText();
-                        break;
-                    default:
-                        if (!string.IsNullOrWhiteSpace(node.GetText()))
-                        {
-                            return false;
-                        }
-
-                        break;
-                }
-            }
-
-            return hasExpression;
         }
 
         private bool EvalExpressionInCondition(string exp)
@@ -371,20 +338,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 Debug.WriteLine(e.Message);
                 return false;
             }
-        }
-
-        private List<string> EvalEscape(string exp)
-        {
-            var value = new List<string>();
-            var commonEscapes = new List<string>() { "\\r", "\\n", "\\t" };
-            if (commonEscapes.Contains(exp))
-            {
-                value.Add(Regex.Unescape(exp));
-            }
-
-            value.Add(exp.Substring(1));
-
-            return value;
         }
 
         private List<string> EvalExpression(string exp)

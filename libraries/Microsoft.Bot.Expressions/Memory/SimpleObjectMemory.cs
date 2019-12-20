@@ -33,17 +33,18 @@ namespace Microsoft.Bot.Expressions.Memory
             return new SimpleObjectMemory(obj);
         }
 
-        public (object value, string error) GetValue(string path)
+        public bool TryGetValue(string path, out object value)
         {
+            value = null;
             if (memory == null)
             {
-                return (null, null);
+                return true;
             }
 
             var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
                             .Select(x => x.Trim('\'', '"'))
                             .ToArray(); 
-            object value = null;
+
             var curScope = memory;
 
             foreach (string part in parts)
@@ -60,13 +61,13 @@ namespace Microsoft.Bot.Expressions.Memory
 
                 if (error != null)
                 {
-                    return (null, error);
+                    return true;
                 }
 
                 curScope = value;
             }
 
-            return (value, null);
+            return true;
         }
 
         // In this simple object scope, we don't allow you to set a path in which some parts in middle don't exist
@@ -74,11 +75,11 @@ namespace Microsoft.Bot.Expressions.Memory
         // if you set dialog.a.b = x, but dialog.a don't exist, this will result in an error
         // because we can't and shouldn't smart create structure in the middle
         // you can implement a customzied Scope that support such behavior
-        public (object value, string error) SetValue(string path, object value)
+        public void SetValue(string path, object value)
         {
             if (memory == null)
             {
-                return (null, "Can't set value with in a null memory");
+                return;
             }
 
             var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
@@ -105,13 +106,13 @@ namespace Microsoft.Bot.Expressions.Memory
 
                 if (error != null)
                 {
-                    return (null, error);
+                    return;
                 }
 
                 if (curScope == null)
                 {
                     curPath = curPath.TrimStart('.');
-                    return (null, $"Can't set value to path: '{path}', reason: '{curPath}' is null");
+                    return;
                 }
             }
 
@@ -146,7 +147,7 @@ namespace Microsoft.Bot.Expressions.Memory
 
                 if (error != null)
                 {
-                    return (null, error);
+                    return;
                 }
             }
             else
@@ -154,14 +155,12 @@ namespace Microsoft.Bot.Expressions.Memory
                 (_, error) = BuiltInFunctions.SetProperty(curScope, parts.Last(), value);
                 if (error != null)
                 {
-                    return (null, $"Can set value to path: '{path}', reason: {error}");
+                    return;
                 }
             }
 
             // Update the version once memory has been updated
             version++;
-
-            return (BuiltInFunctions.ResolveValue(value), null);
         }
 
         public string Version()

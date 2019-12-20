@@ -87,8 +87,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override AnalyzerResult VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
         {
-            // TODO
-            return base.VisitStructuredTemplateBody(context);
+            var result = new AnalyzerResult();
+
+            var bodys = context.structuredBodyContentLine();
+            foreach (var body in bodys)
+            {
+                var isKVPairBody = body.keyValueStructureLine() != null;
+                if (isKVPairBody)
+                {
+                    result.Union(VisitStructureValue(body.keyValueStructureLine()));
+                }
+                else
+                {
+                    result.Union(AnalyzeExpression(body.objectStructureLine().GetText()));
+                }
+            }
+
+            return result;
         }
 
         public override AnalyzerResult VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
@@ -140,6 +155,30 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             foreach (var expression in context.EXPRESSION())
             {
                 result.Union(AnalyzeExpression(expression.GetText()));
+            }
+
+            return result;
+        }
+
+        private AnalyzerResult VisitStructureValue(LGFileParser.KeyValueStructureLineContext context)
+        {
+            var values = context.keyValueStructureValue();
+
+            var result = new AnalyzerResult();
+            foreach (var item in values)
+            {
+                if (item.IsPureExpression(out var text))
+                {
+                    result.Union(AnalyzeExpression(text));
+                }
+                else
+                {
+                    var expressions = item.EXPRESSION_IN_STRUCTURE_BODY();
+                    foreach (var expression in expressions)
+                    {
+                        result.Union(AnalyzeExpression(expression.GetText()));
+                    }
+                }
             }
 
             return result;
