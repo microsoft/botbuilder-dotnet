@@ -196,11 +196,6 @@
             "$ref": "#/definitions/Microsoft.LanguagePolicy"
         },
         {
-            "title": "Microsoft.LegacyInputRecognizer",
-            "description": "Use regular expressions to recognize intents and entities from user input.",
-            "$ref": "#/definitions/Microsoft.LegacyInputRecognizer"
-        },
-        {
             "title": "Microsoft.LogAction",
             "description": "Log a message to the host application. Send a TraceActivity to Bot Framework Emulator (optional).",
             "$ref": "#/definitions/Microsoft.LogAction"
@@ -369,6 +364,11 @@
             "title": "Microsoft.QnAMakerDialog",
             "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
             "$ref": "#/definitions/Microsoft.QnAMakerDialog"
+        },
+        {
+            "title": "Microsoft.QnAMakerRecognizer",
+            "description": "InputRecognizer for generating QnAMatch intents from a KB.",
+            "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
         },
         {
             "title": "Microsoft.RandomSelector",
@@ -4087,11 +4087,6 @@
                     "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
                 },
                 {
-                    "title": "Microsoft.LegacyInputRecognizer",
-                    "description": "Use regular expressions to recognize intents and entities from user input.",
-                    "$ref": "#/definitions/Microsoft.LegacyInputRecognizer"
-                },
-                {
                     "title": "Microsoft.LuisRecognizer",
                     "description": "LUIS recognizer.",
                     "$ref": "#/definitions/Microsoft.LuisRecognizer"
@@ -4100,6 +4095,11 @@
                     "title": "Microsoft.MultiLanguageRecognizer",
                     "description": "Configure one recognizer per language and the specify the language fallback policy.",
                     "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
+                },
+                {
+                    "title": "Microsoft.QnAMakerRecognizer",
+                    "description": "InputRecognizer for generating QnAMatch intents from a KB.",
+                    "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
                 },
                 {
                     "title": "Microsoft.RecognizerSet",
@@ -4215,70 +4215,6 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$kind"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.LegacyInputRecognizer": {
-            "$role": "union(Microsoft.InputRecognizer)",
-            "title": "InputRecognizer for IRecognizer",
-            "description": "Use regular expressions to recognize intents and entities from user input.",
-            "type": "object",
-            "properties": {
-                "$kind": {
-                    "title": "$kind",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.LegacyInputRecognizer"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "Optional unique id using with RecognizerSet.  Other recognizers should return 'DeferToRecognizer_{Id}' intent when cross training data for this recognizer."
-                },
-                "recognizer": {
-                    "$kind": "Microsoft.IRecognizer",
-                    "title": "recognizer",
-                    "description": "IRecognizer implementation.",
-                    "$ref": "#/definitions/Microsoft.IRecognizer"
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "recognizer",
                         "$kind"
                     ]
                 }
@@ -6765,6 +6701,134 @@
                     "default": "Default"
                 }
             },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "knowledgeBaseId",
+                        "endpointKey",
+                        "hostname",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.QnAMakerRecognizer": {
+            "$role": "union(Microsoft.InputRecognizer)",
+            "title": "QnAMaker Recognizer",
+            "description": "InputRecognizer for generating QnAMatch intents from a KB.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.QnAMakerRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional unique id using with RecognizerSet."
+                },
+                "knowledgeBaseId": {
+                    "$role": "expression",
+                    "title": "KnowledgeBase Id",
+                    "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
+                    "default": "settings.qna.knowledgebaseid",
+                    "type": "string"
+                },
+                "endpointKey": {
+                    "$role": "expression",
+                    "title": "Endpoint Key",
+                    "description": "Endpoint key for the QnA Maker KB.",
+                    "default": "settings.qna.endpointkey",
+                    "type": "string"
+                },
+                "hostname": {
+                    "$role": "expression",
+                    "title": "Hostname",
+                    "description": "Hostname for your QnA Maker service.",
+                    "default": "settings.qna.hostname",
+                    "examples": [
+                        "https://yourserver.azurewebsites.net/qnamaker"
+                    ],
+                    "type": "string"
+                },
+                "threshold": {
+                    "type": "number",
+                    "title": "Threshold",
+                    "description": "Threshold score to filter results.",
+                    "default": 0.3
+                },
+                "strictFilters": {
+                    "type": "array",
+                    "title": "Strict Filters",
+                    "description": "Metadata filters to use when calling the QnA Maker KB.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "title": "Name",
+                                "maximum": 100
+                            },
+                            "value": {
+                                "type": "string",
+                                "title": "Value",
+                                "maximum": 100
+                            }
+                        }
+                    }
+                },
+                "top": {
+                    "type": "number",
+                    "title": "Top",
+                    "description": "The number of answers you want to retrieve.",
+                    "default": 3
+                },
+                "isTest": {
+                    "type": "boolean",
+                    "title": "IsTest",
+                    "description": "True, if pointing to Test environment, else false.",
+                    "default": false
+                },
+                "rankerType": {
+                    "type": "string",
+                    "title": "RankerType",
+                    "description": "Type of Ranker.",
+                    "default": "Default"
+                }
+            },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
