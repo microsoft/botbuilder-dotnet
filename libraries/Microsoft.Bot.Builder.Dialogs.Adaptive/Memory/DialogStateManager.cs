@@ -371,7 +371,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public bool TryGetValue(string key, out object value)
         {
             value = default;
-            return TryGetValue<object>(key, out value);
+            if (this.TryGetValue<object>(key, out var result))
+            {
+                value = result;
+            }
+
+            return true;
         }
 
         public void Add(KeyValuePair<string, object> item)
