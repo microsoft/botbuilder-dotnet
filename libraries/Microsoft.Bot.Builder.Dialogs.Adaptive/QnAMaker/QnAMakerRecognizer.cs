@@ -26,6 +26,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         public const string DeclarativeType = "Microsoft.QnAMakerRecognizer";
 
         public const string QnAMatchIntent = "QnAMatch";
+        
+        private const string IntentPrefix = "intent=";
 
         private Expression knowledgebaseIdExpression;
         private Expression endpointkeyExpression;
@@ -165,7 +167,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                     }
                 }
 
-                recognizerResult.Intents.Add(QnAMatchIntent, new IntentScore() { Score = topAnswer.Score });
+                if (topAnswer.Answer.Trim().ToLower().StartsWith(IntentPrefix))
+                {
+                    recognizerResult.Intents.Add(topAnswer.Answer.Trim().Substring(IntentPrefix.Length).Trim(), new IntentScore() { Score = topAnswer.Score });
+                }
+                else
+                {
+                    recognizerResult.Intents.Add(QnAMatchIntent, new IntentScore() { Score = topAnswer.Score });
+                }
 
                 var answerArray = new JArray();
                 answerArray.Add(topAnswer.Answer);

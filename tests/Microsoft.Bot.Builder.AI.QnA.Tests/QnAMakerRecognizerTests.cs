@@ -54,6 +54,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .WithContent("{\"question\":\"QnaMaker_TopNAnswer\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
                 .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .WithContent("{\"question\":\"QnaMaker_ReturnsAnswerWithIntent\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswerWithIntent.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
         }
@@ -97,6 +100,17 @@ namespace Microsoft.Bot.Builder.AI.Tests
             await CreateFlow(rootDialog)
             .Send("QnaMaker_ReturnsNoAnswer")
                 .AssertReply("Wha?")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task QnAMakerRecognizer_WithIntent()
+        {
+            var rootDialog = QnAMakerRecognizer_DialogBase();
+
+            await CreateFlow(rootDialog)
+            .Send("QnaMaker_ReturnsAnswerWithIntent")
+                .AssertReply("DeferToRecognizer_xxx")
             .StartTestAsync();
         }
 
@@ -163,6 +177,17 @@ namespace Microsoft.Bot.Builder.AI.Tests
                             new SendActivity()
                             {
                                 Activity = new ActivityTemplate("done")
+                            }
+                        }
+                    },
+                    new OnIntent()
+                    {
+                        Intent = "DeferToRecognizer_xxx",
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity()
+                            {
+                                Activity = new ActivityTemplate("DeferToRecognizer_xxx")
                             }
                         }
                     },
