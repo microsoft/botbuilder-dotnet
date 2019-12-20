@@ -1106,14 +1106,8 @@ namespace Microsoft.Bot.Expressions
                 return (null, err);
             }
 
-            if (state.TrySetValue(path, value))
-            {
-                return (value, null);
-            }
-            else
-            {
-                return (null, $"path {path} set failed.");
-            }
+            state.SetValue(path, value);
+            return (value, null);
         }
 
         private static string ParseStringOrNull(object value)

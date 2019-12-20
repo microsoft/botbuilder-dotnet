@@ -94,34 +94,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             return Configuration.MemoryScopes.FirstOrDefault(ms => string.Compare(ms.Name, name, ignoreCase: true) == 0);
         }
 
-        object IMemory.GetValue(string path)
-        {
-            if (this.TryGetValue<object>(path, out var result))
-            {
-                return result;
-            }
-            else
-            {
-                // We choose to swallow error here to let an invalid path evaluate to null
-                // Maybe we can log a warnning message like
-                // $"Get value for path: '{path}' failed".
-                return null;
-            }
-        }
-
-        bool IMemory.TrySetValue(string path, object value)
-        {
-            try
-            {
-                this.SetValue(path, value);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
         /// <summary>
         /// Version help caller to identify the updates and decide cache or not.
         /// </summary>
@@ -268,8 +240,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// </summary>
         /// <param name="path">Path to memory.</param>
         /// <param name="value">Object to set.</param>
-        /// <returns>the value be set.</returns>
-        public object SetValue(string path, object value)
+        public void SetValue(string path, object value)
         {
             if (value is Task)
             {
@@ -294,7 +265,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
             // Every set will increase version
             version++;
-            return value;
         }
 
         /// <summary>

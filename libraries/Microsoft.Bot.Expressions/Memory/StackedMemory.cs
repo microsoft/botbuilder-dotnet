@@ -6,15 +6,8 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Expressions.Memory
 {
-    public class StackedMemory : MemoryBase
+    public class StackedMemory : Stack<IMemory>, IMemory
     {
-        private readonly Stack<IMemory> memoryList;
-
-        public StackedMemory(params IMemory[] memory)
-        {
-            memoryList = new Stack<IMemory>(memory);
-        }
-
         public static StackedMemory Wrap(IMemory memory)
         {
             if (memory is StackedMemory sm)
@@ -23,43 +16,43 @@ namespace Microsoft.Bot.Expressions.Memory
             }
             else
             {
-                return new StackedMemory(memory);
+                var stackedMemory = new StackedMemory();
+                stackedMemory.Push(memory);
+                return stackedMemory;
             }
         }
 
-        public void Push(IMemory memory)
+        public bool TryGetValue(string path, out object value)
         {
-            memoryList.Push(memory);
-        }
-
-        public IMemory Pop()
-        {
-            return memoryList.Pop();
-        }
-
-        public override object GetValue(string path)
-        {
-            if (memoryList.Count == 0)
+            value = null;
+            if (this.Count == 0)
             {
-                throw new Exception("Invalid memory status, memory stack is empty");
+                return true;
             }
 
-            var it = memoryList.GetEnumerator();
+            var it = this.GetEnumerator();
             while (it.MoveNext())
             {
                 var memory = it.Current;
-                if (memory.TryGetValue(path, out var value) && value != null)
+
+                if (memory.TryGetValue(path, out var result) && result != null)
                 {
-                    return value;
+                    value = result;
+                    return true;
                 }
             }
 
-            return null;
+            return true;
         }
 
-        public override object SetValue(string path, object value)
+        public void SetValue(string path, object value)
         {
             throw new Exception($"Can't set value to {path}, stacked memory is read-only");
+        }
+
+        public string Version()
+        {
+            return "0"; // Read-only
         }
     }
 }

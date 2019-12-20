@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Expressions.Memory
 {
-    public class SimpleObjectMemory : MemoryBase
+    public class SimpleObjectMemory : IMemory
     {
         private readonly object memory = null;
         private int version = 0;
@@ -33,17 +33,18 @@ namespace Microsoft.Bot.Expressions.Memory
             return new SimpleObjectMemory(obj);
         }
 
-        public override object GetValue(string path)
+        public bool TryGetValue(string path, out object value)
         {
+            value = null;
             if (memory == null)
             {
-                return null;
+                return true;
             }
 
             var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
                             .Select(x => x.Trim('\'', '"'))
                             .ToArray(); 
-            object value = null;
+
             var curScope = memory;
 
             foreach (string part in parts)
@@ -66,7 +67,7 @@ namespace Microsoft.Bot.Expressions.Memory
                 curScope = value;
             }
 
-            return value;
+            return true;
         }
 
         // In this simple object scope, we don't allow you to set a path in which some parts in middle don't exist
@@ -74,7 +75,7 @@ namespace Microsoft.Bot.Expressions.Memory
         // if you set dialog.a.b = x, but dialog.a don't exist, this will result in an error
         // because we can't and shouldn't smart create structure in the middle
         // you can implement a customzied Scope that support such behavior
-        public override object SetValue(string path, object value)
+        public void SetValue(string path, object value)
         {
             if (memory == null)
             {
@@ -160,11 +161,9 @@ namespace Microsoft.Bot.Expressions.Memory
 
             // Update the version once memory has been updated
             version++;
-
-            return BuiltInFunctions.ResolveValue(value);
         }
 
-        public override string Version()
+        public string Version()
         {
             return version.ToString();
         }

@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// we want to make sure the global memory (the first memory passed in) can be
     /// accessible at any sub evaluation process. 
     /// </summary>
-    internal class CustomizedMemory : MemoryBase
+    internal class CustomizedMemory : IMemory
     {
         public CustomizedMemory(object scope)
         {
@@ -29,27 +29,35 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public IMemory LocalMemory { get; set; }
 
-        public override object GetValue(string path)
+        public bool TryGetValue(string path, out object value)
         {
+            value = null;
             if (this.LocalMemory != null)
             {
-                if (this.LocalMemory.TryGetValue(path, out var value) && value != null)
+                if (this.LocalMemory.TryGetValue(path, out var result) && result != null)
                 {
-                    return value;
+                    value = result;
+                    return true;
                 }
             }
 
             if (this.GlobalMemory != null)
             {
-                return this.GlobalMemory.GetValue(path);
+                this.GlobalMemory.TryGetValue(path, out var result);
+                value = result;
             }
 
-            return null;
+            return true;
         }
 
-        public override object SetValue(string path, object value)
+        public void SetValue(string path, object value)
         {
             throw new Exception("LG memory are readonly");
+        }
+
+        public string Version()
+        {
+            return "0";
         }
     }
 }
