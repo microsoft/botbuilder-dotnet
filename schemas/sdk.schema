@@ -2623,7 +2623,8 @@
                 "bubbleEvent": {
                     "type": "boolean",
                     "title": "Bubble event",
-                    "description": "If true this event is passed on to parent dialogs."
+                    "description": "If true this event is passed on to parent dialogs.",
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -6468,6 +6469,18 @@
                     "title": "Top",
                     "description": "The number of answers you want to retrieve.",
                     "default": 3
+                },
+                "isTest": {
+                    "type": "boolean",
+                    "title": "IsTest",
+                    "description": "True, if pointing to Test environment, else false.",
+                    "default": false
+                },
+                "rankerType": {
+                    "type": "string",
+                    "title": "RankerType",
+                    "description": "Type of Ranker.",
+                    "default": "Default"
                 }
             },
             "patternProperties": {

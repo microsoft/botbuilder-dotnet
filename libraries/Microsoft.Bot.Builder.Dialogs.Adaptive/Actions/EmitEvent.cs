@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private Expression eventValue;
 
         [JsonConstructor]
-        public EmitEvent(string eventName = null, string eventValue = null, bool bubble = true, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public EmitEvent(string eventName = null, string eventValue = null, bool bubble = false, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -53,10 +53,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether gets or sets whether the event should bubble or not.
+        /// Gets or sets a value indicating whether the event should bubble to parents or not.
         /// </summary>
         /// <value>
-        /// A value indicating whether gets or sets whether the event should bubble or not.
+        /// A value indicating whether gets or sets whether the event should bubble to parents or not.
         /// </value>
         [JsonProperty("bubbleEvent")]
         public bool BubbleEvent { get; set; }
