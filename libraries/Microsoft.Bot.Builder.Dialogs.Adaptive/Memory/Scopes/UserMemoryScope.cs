@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// <param name="userState">UserState to bind the UserMemory to.</param>
         /// <param name="propertyName">Optional alternate propertyName to store UserMemoryScope in.</param>
         public UserMemoryScope(UserState userState, string propertyName = null)
-            : base(ScopePath.USER, userState, propertyName)
+            : base(ScopePath.User, userState, propertyName)
         {
         }
     }

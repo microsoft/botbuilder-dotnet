@@ -8,10 +8,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// <summary>
     /// DialogMemoryScope maps "class" -> dc.ActiveDialog.Properties.
     /// </summary>
-    public class ClassMemoryScope : MemoryScope
+    public class DialogClassMemoryScope : MemoryScope
     {
-        public ClassMemoryScope()
-            : base(ScopePath.Class)
+        public DialogClassMemoryScope()
+            : base(ScopePath.DialogClass)
         {
             this.IncludeInSnapshot = false;
         }
@@ -23,17 +23,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            // if active dialog is a container dialog then "dialog" binds to it.
+            // if active dialog is a container dialog then "dialogclass" binds to it.
             if (dc.ActiveDialog != null)
             {
                 var dialog = dc.FindDialog(dc.ActiveDialog.Id);
-                if (dialog != null)
+                if (dialog is DialogContainer)
                 {
                     return dialog;
                 }
             }
 
-            return null;
+            // Otherwise we always bind to parent, or if there is no parent the active dialog
+            return dc.FindDialog(dc.Parent?.ActiveDialog?.Id ?? dc.ActiveDialog?.Id);
         }
 
         public override void SetMemory(DialogContext dc, object memory)

@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public const string ExpectedProperties = "dialog.expectedProperties";
 
         /// <summary>
-        /// Last surfaced event from a form dialog.
+        /// Last surfaced entity ambiguity event.
         /// </summary>
         public const string LastEvent = "dialog.lastEvent";
 

@@ -61,10 +61,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             if (!string.IsNullOrEmpty(responseJson))
             {
                 dynamic response = JsonConvert.DeserializeObject(responseJson);
-                dc.GetState().SetValue(ScopePath.USER, response.state.user);
-                dc.GetState().SetValue(ScopePath.CONVERSATION, response.state.conversation);
-                dc.GetState().SetValue(ScopePath.DIALOG, response.state.dialog);
-                dc.GetState().SetValue(ScopePath.TURN, response.state.turn);
+                dc.GetState().SetValue(ScopePath.User, response.state.user);
+                dc.GetState().SetValue(ScopePath.Conversation, response.state.conversation);
+                dc.GetState().SetValue(ScopePath.Dialog, response.state.dialog);
+                dc.GetState().SetValue(ScopePath.Turn, response.state.turn);
                 return dc.EndDialogAsync((object)response.result, cancellationToken: cancellationToken);
             }
 

@@ -22,10 +22,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private List<OnCondition> _conditionals;
         private bool _evaluate;
 
-        /// <summary>
-        /// Gets or sets the expression parser to use.
-        /// </summary>
-        /// <value>Expression parser.</value>
         [Newtonsoft.Json.JsonIgnore]
         public IExpressionParser Parser { get; set; } = new ExpressionEngine();
 

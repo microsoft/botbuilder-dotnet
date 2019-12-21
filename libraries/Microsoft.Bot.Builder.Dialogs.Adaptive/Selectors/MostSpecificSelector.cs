@@ -31,10 +31,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         [JsonProperty("selector")]
         public ITriggerSelector Selector { get; set; }
 
-        /// <summary>
-        /// Gets or sets the expression parser to use.
-        /// </summary>
-        /// <value>Expression parser.</value>
         [Newtonsoft.Json.JsonIgnore]
         public IExpressionParser Parser { get; set; } = new ExpressionEngine(TriggerTree.LookupFunction);
 

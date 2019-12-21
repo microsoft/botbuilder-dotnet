@@ -9,10 +9,13 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Triggered when a form needs to clear a slot.
+    /// Triggered to clear a property.
     /// </summary>
     public class OnClearProperty : OnDialogEvent
     {
+        [JsonProperty("$kind")]
+        public new const string DeclarativeType = "Microsoft.OnClearProperty";
+        
         [JsonConstructor]
         public OnClearProperty(string property = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
@@ -25,6 +28,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             this.Property = property;
         }
 
+        /// <summary>
+        /// Gets or sets the property being cleared to filter events.
+        /// </summary>
+        /// <value>Property name.</value>
         [JsonProperty("property")]
         public string Property { get; set; }
 
@@ -36,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             var expressions = new List<Expression> { base.GetExpression(factory) };
             if (this.Property != null)
             {
-                expressions.Add(factory.Parse($"{TurnPath.DIALOGEVENT}.value.property == '{this.Property}'"));
+                expressions.Add(factory.Parse($"{TurnPath.DialogEvent}.value.property == '{this.Property}'"));
             }
 
             return Expression.AndExpression(expressions.ToArray());

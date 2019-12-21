@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         {
             // add constraints for activity type
             return Expression.AndExpression(
-                factory.Parse($"{TurnPath.ACTIVITY}.type == '{this.Type}'"),
+                factory.Parse($"{TurnPath.Activity}.type == '{this.Type}'"),
                 base.GetExpression(factory));
         }
     }

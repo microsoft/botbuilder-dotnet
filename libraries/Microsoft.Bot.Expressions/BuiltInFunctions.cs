@@ -2822,7 +2822,7 @@ namespace Microsoft.Bot.Expressions
                             }
                             else if (TryParseList(args[0], out IList list))
                             {
-                                result = list.IndexOf(args[1]);
+                                result = ResolveListValue(list).IndexOf(args[1]);
                             }
                             else
                             {

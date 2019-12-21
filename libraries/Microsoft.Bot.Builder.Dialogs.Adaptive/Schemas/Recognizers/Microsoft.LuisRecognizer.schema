@@ -9,17 +9,20 @@
         "applicationId": {
             "type": "string",
             "title": "LUIS Application ID",
-            "description": "Application ID for your model from the LUIS service."
+            "description": "Application ID for your model from the LUIS service.",
+            "$role":  "expression"
         },
         "endpoint": {
             "type": "string",
             "title": "LUIS Endpoint",
-            "description": "Endpoint to use for LUIS service like https://westus.api.cognitive.microsoft.com."
+            "description": "Endpoint to use for LUIS service like https://westus.api.cognitive.microsoft.com.",
+            "$role": "expression"
         },
         "endpointKey": {
             "type": "string",
             "title": "LUIS prediction key",
-            "description": "LUIS prediction key used to call endpoint."
+            "description": "LUIS prediction key used to call endpoint.",
+            "$role": "expression"
         },
         "predictionOptions": {
             "type": "object",

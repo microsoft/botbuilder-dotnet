@@ -5,15 +5,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Expressions.Memory;
 using Newtonsoft.Json.Linq;
-using NuGet.Common;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory
 {
@@ -85,6 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                     new TurnMemoryScope(),
                     new SettingsMemoryScope(),
                     new DialogMemoryScope(),
+                    new DialogClassMemoryScope(),
                     new ClassMemoryScope(),
                     new ThisMemoryScope()
                 }
@@ -524,8 +522,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 // Skip _* as first scope, i.e. _adaptive, _tracker, ...
                 if (!root.StartsWith("_"))
                 {
+                    // Convert to a simple path with _ between segments
                     var pathName = string.Join("_", segments);
-                    var trackedPath = PathTracker + "." + pathName;
+                    var trackedPath = $"{PathTracker}.{pathName}";
                     uint? counter = null;
                     void Update()
                     {
@@ -543,9 +542,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                     Update();
                     if (value is object obj)
                     {
-                        // Track child paths
+                        // For an object we need to see if any children path are being tracked
                         void CheckChildren(string property, object value)
                         {
+                            // Add new child segment
                             trackedPath += "_" + property.ToLower();
                             Update();
                             if (value is object child)
@@ -553,6 +553,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                                 ObjectPath.ForEachProperty(child, CheckChildren);
                             }
 
+                            // Remove added child segment
                             trackedPath = trackedPath.Substring(0, trackedPath.LastIndexOf('_'));
                         }
 

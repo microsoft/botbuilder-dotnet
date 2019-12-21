@@ -10,11 +10,11 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 {
-    public class DialogSchemaConverter : JsonConverter
+    public class JObjectConverter : JsonConverter
     {
         private readonly IRefResolver refResolver;
 
-        public DialogSchemaConverter(IRefResolver refResolver)
+        public JObjectConverter(IRefResolver refResolver)
         {
             this.refResolver = refResolver ?? throw new ArgumentNullException(nameof(refResolver));
         }
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         public override bool CanRead => true;
 
         public override bool CanConvert(Type objectType)
-            => typeof(DialogSchema) == objectType;
+            => typeof(JObject) == objectType;
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
@@ -34,12 +34,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 jsonObject = refResolver.ResolveAsync(jsonObject).GetAwaiter().GetResult();
             }
 
-            return new DialogSchema(jsonObject as JObject);
+            return jsonObject as JObject;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            serializer.Serialize(writer, ((DialogSchema)value).Schema);
+            serializer.Serialize(writer, value);
         }
     }
 }

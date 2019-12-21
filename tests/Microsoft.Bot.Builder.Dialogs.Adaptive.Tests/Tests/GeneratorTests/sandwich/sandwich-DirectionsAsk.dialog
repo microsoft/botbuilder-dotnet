@@ -6,7 +6,7 @@
     "actions": [
         {
             "$kind": "Microsoft.IfCondition",
-            "condition": "contains(turn.schema.properties['Directions'].$mappings, 'utterance')",
+            "condition": "contains(dialogclass.schema.properties['Directions'].$mappings, 'utterance')",
             "actions":[
                 {
                     "$kind": "Microsoft.Ask",

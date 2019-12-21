@@ -6,7 +6,7 @@
     "definitions": {
         "role": {
             "title": "$role",
-            "description": "Defines the role played in the dialog schema [lg|expression|expression|union()].",
+            "description": "Defines the role played in the dialog schema [lg|expression|union()].",
             "type": "string",
             "pattern": "^((lg)|(expression)|(memoryPath)|(union)|(union\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
         },

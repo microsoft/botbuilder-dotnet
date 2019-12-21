@@ -9,9 +9,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
-    public class DialogSchema
+    internal class SchemaHelper
     {
-        public DialogSchema(JObject schema)
+        public SchemaHelper(JObject schema)
         {
             Schema = schema;
             Property = CreateProperty(Schema);
@@ -21,8 +21,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public PropertySchema Property { get; }
 
-        public static DialogSchema ReadSchema(string path)
-            => new DialogSchema(JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path)));
+        public static SchemaHelper ReadSchema(string path)
+            => new SchemaHelper(JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path)));
 
         public IEnumerable<PropertySchema> Properties()
             => Property.Children;

@@ -179,7 +179,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return Dialog.EndOfTurn;
             }
 
-            var interrupted = dc.GetState().GetValue<bool>(TurnPath.INTERRUPTED, () => false);
+            var interrupted = dc.GetState().GetValue<bool>(TurnPath.Interrupted, () => false);
             var turnCount = dc.GetState().GetValue<int>(TURN_COUNT_PROPERTY, () => 0);
 
             // Perform base recognition
@@ -379,7 +379,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             // Fallback to using activity
-            bool activityProcessed = dc.GetState().GetBoolValue(TurnPath.ACTIVITYPROCESSED);
+            bool activityProcessed = dc.GetState().GetBoolValue(TurnPath.ActivityProcessed);
             if (!activityProcessed && input == null && turnCount > 0)
             {
                 if (this.GetType().Name == nameof(AttachmentInput))
@@ -409,7 +409,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                         }
                     }
                     
-                    dc.GetState().SetValue(TurnPath.ACTIVITYPROCESSED, true);
+                    dc.GetState().SetValue(TurnPath.ActivityProcessed, true);
                     return InputState.Valid;
                 }
                 else

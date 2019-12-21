@@ -11,8 +11,20 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
+    /// <summary>
+    /// Ask for an open-ended response.
+    /// </summary>
+    /// <remarks>
+    /// This sends an activity and then terminates with <see cref="DialogTurnStatus.CompleteAndWait"/> in order to allow the parent
+    /// adaptive dialog to handle the user utterance.  
+    /// It also builds in a model of the properties that are expected in response through <see cref="DialogPath.ExpectedProperties"/>.
+    /// <see cref="DialogPath.Retries"/> is updated as the same question is asked multiple times.
+    /// </remarks>
     public class Ask : SendActivity
     {
+        [JsonProperty("$kind")]
+        public new const string DeclarativeType = "Microsoft.Ask";
+        
         [JsonConstructor]
         public Ask(
             string text = null,
@@ -21,17 +33,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             [CallerLineNumber] int callerLine = 0)
         : base(text, callerPath, callerLine)
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
             this.Activity = new ActivityTemplate(text ?? string.Empty);
             this.ExpectedProperties = expectedProperties;
         }
 
         /// <summary>
-        /// Gets or sets slots expected to be filled by response.
+        /// Gets or sets properties expected to be filled by response.
         /// </summary>
         /// <value>
-        /// Slots expected to be filled by response.
+        /// Properties expected to be filled by response.
         /// </value>
+        [JsonProperty("expectedProperties")]
         public List<string> ExpectedProperties { get; set; } = new List<string>();
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
@@ -42,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 retries = 0;
             }
 
-            dc.GetState().TryGetValue(TurnPath.DIALOGEVENT, out DialogEvent trigger);
+            dc.GetState().TryGetValue(TurnPath.DialogEvent, out DialogEvent trigger);
 
             if (ExpectedProperties != null
                 && dc.GetState().TryGetValue(DialogPath.ExpectedProperties, out List<string> lastExpectedProperties)

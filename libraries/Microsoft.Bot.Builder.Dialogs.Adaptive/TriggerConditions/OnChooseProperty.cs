@@ -9,10 +9,13 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Triggered when a form needs choose which property an entity goes to.
+    /// Triggered to choose which property an entity goes to.
     /// </summary>
     public class OnChooseProperty : OnDialogEvent
     {
+        [JsonProperty("$kind")]
+        public new const string DeclarativeType = "Microsoft.OnChooseProperty";
+        
         [JsonConstructor]
         public OnChooseProperty(List<string> properties = null, List<string> entities = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
@@ -26,9 +29,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             this.Entities = entities ?? new List<string>();
         }
 
+        /// <summary>
+        /// Gets or sets the properties being chosen between to filter events.
+        /// </summary>
+        /// <value>List of property names.</value>
         [JsonProperty("properties")]
         public List<string> Properties { get; set; }
 
+        /// <summary>
+        /// Gets or sets the entities being chosen between to filter events.
+        /// </summary>
+        /// <value>List of entity names.</value>
         [JsonProperty("entities")]
         public List<string> Entities { get; set; }
 
@@ -40,12 +51,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             var expressions = new List<Expression> { base.GetExpression(factory) };
             foreach (var property in this.Properties)
             {
-                expressions.Add(factory.Parse($"contains(foreach({TurnPath.DIALOGEVENT}.value, mapping, mapping.property), '{property}')"));
+                expressions.Add(factory.Parse($"contains(foreach({TurnPath.DialogEvent}.value, mapping, mapping.property), '{property}')"));
             }
 
             foreach (var entity in this.Entities)
             {
-                expressions.Add(factory.Parse($"contains(foreach({TurnPath.DIALOGEVENT}.value, mapping, mapping.entity.name), '{entity}')"));
+                expressions.Add(factory.Parse($"contains(foreach({TurnPath.DialogEvent}.value, mapping, mapping.entity.name), '{entity}')"));
             }
 
             return Expression.AndExpression(expressions.ToArray());

@@ -11,9 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public class SequenceContext : DialogContext
     {
-#pragma warning disable SA1310 // Field should not contain underscore.
-        private const string WAIT_FOR_INPUT_PATH = "turn.waitForInput";
-#pragma warning restore SA1310 // Field should not contain underscore.
+        private const string WaitForInput = "turn.waitForInput";
 
         private readonly string changeKey;
 

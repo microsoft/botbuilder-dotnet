@@ -91,11 +91,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public bool RunOnce { get; set; }
 
         /// <summary>
-        /// Gets or sets the value of the Unique id for this condition.
+        /// Gets or sets the value of the unique id for this condition.
         /// </summary>
         /// <value>Id for condition.</value>
         [JsonIgnore]
-        public uint Id { get; set; }
+        public string Id { get; set; }
 
         protected ActionScope ActionScope
         {
@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                                     (expression, os) =>
                                     {
                                         var state = os as DialogStateManager;
-                                        var basePath = AdaptiveDialog.ConditionTracker + "." + Id.ToString() + ".";
+                                        var basePath = $"{AdaptiveDialog.ConditionTracker}.{Id}.";
                                         var lastRun = state.GetValue<uint>(basePath + "lastRun");
                                         var paths = state.GetValue<string[]>(basePath + "paths");
                                         var changed = state.AnyPathChanged(lastRun, paths);
@@ -228,7 +228,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             if (RunOnce)
             {
                 var count = planningContext.GetState().GetValue<uint>(DialogPath.EventCounter);
-                planningContext.GetState().SetValue(AdaptiveDialog.ConditionTracker + "." + Id.ToString() + ".lastRun", count);
+                planningContext.GetState().SetValue($"{AdaptiveDialog.ConditionTracker}.{Id}.lastRun", count);
             }
 
             return await Task.FromResult(new List<ActionChangeList>()

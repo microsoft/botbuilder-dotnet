@@ -8,10 +8,13 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Triggered when a form needs to ask a prompt.
+    /// Triggered to ask for a any triggered prompt.
     /// </summary>
     public class OnAsk : OnDialogEvent
     {
+        [JsonProperty("$kind")]
+        public new const string DeclarativeType = "Microsoft.OnAsk";
+        
         [JsonConstructor]
         public OnAsk(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(

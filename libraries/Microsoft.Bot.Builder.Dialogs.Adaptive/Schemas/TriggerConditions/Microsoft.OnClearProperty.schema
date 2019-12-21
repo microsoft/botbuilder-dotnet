@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
     "$role": "union(Microsoft.ITriggerCondition)",
-    "title": "Form ClearSlot Event",
-    "description": "This defines the actions to take when a ClearSlot event is raised",
+    "title": "ClearProperty Event",
+    "description": "This defines the actions to take when a ClearProperty event is raised",
     "allOf": [
         {
             "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/TriggerConditions/Microsoft.OnCondition.schema#"
@@ -12,7 +12,7 @@
             "properties": {
                 "property": {
                     "type": "string",
-                    "title": "Property to be cleared",
+                    "title": "Property",
                     "description": "Property that will be cleared"
                 }
             }

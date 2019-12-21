@@ -11,8 +11,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public const string EndOfActions = "endOfActions";
         public const string Ask = "ask";
         public const string ChooseProperty = "chooseProperty";
-        public const string ClarifyEntity = "clarifyEntity";
+        public const string ChooseEntity = "chooseEntity";
         public const string ClearProperty = "clearProperty";
-        public const string SetProperty = "setProperty";
+        public const string AssignEntity = "assignEntity";
     }
 }
