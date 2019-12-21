@@ -70,6 +70,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Action_DeleteActivity()
+        {
+            await TestUtils.RunTestScript();
+        }
+
+        [TestMethod]
         public async Task Action_DoActions()
         {
             await TestUtils.RunTestScript();
@@ -118,6 +124,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Action_GetActivityMembers()
+        {
+            await TestUtils.RunTestScript();
+        }
+
+        [TestMethod]
+        public async Task Action_GetConversationMembers()
+        {
+            await TestUtils.RunTestScript();
+        }
+
+        [TestMethod]
         public async Task Action_IfCondition()
         {
             await TestUtils.RunTestScript();
@@ -149,6 +167,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         [TestMethod]
         public async Task Action_ReplaceDialog()
+        {
+            await TestUtils.RunTestScript();
+        }
+
+        [TestMethod]
+        public async Task Action_SignOutUser()
         {
             await TestUtils.RunTestScript();
         }
@@ -197,6 +221,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         [TestMethod]
         public async Task Action_TraceActivity()
+        {
+            await TestUtils.RunTestScript();
+        }
+
+        [TestMethod]
+        public async Task Action_UpdateActivity()
         {
             await TestUtils.RunTestScript();
         }

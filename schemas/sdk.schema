@@ -86,6 +86,11 @@
             "$ref": "#/definitions/Microsoft.DebugBreak"
         },
         {
+            "title": "Microsoft.DeleteActivity",
+            "description": "Delete an activity that was previously sent.",
+            "$ref": "#/definitions/Microsoft.DeleteActivity"
+        },
+        {
             "title": "Microsoft.DeleteProperties",
             "description": "Delete multiple properties and any value it holds.",
             "$ref": "#/definitions/Microsoft.DeleteProperties"
@@ -144,6 +149,16 @@
             "title": "Microsoft.ForeachPage",
             "description": "Execute actions on each page (collection of items) in an array.",
             "$ref": "#/definitions/Microsoft.ForeachPage"
+        },
+        {
+            "title": "Microsoft.GetActivityMembers",
+            "description": "Get the members who are participating in an activity. (BotFrameworkAdapter only)",
+            "$ref": "#/definitions/Microsoft.GetActivityMembers"
+        },
+        {
+            "title": "Microsoft.GetConversationMembers",
+            "description": "Get the members who are participating in an conversation. (BotFrameworkAdapter only)",
+            "$ref": "#/definitions/Microsoft.GetConversationMembers"
         },
         {
             "title": "Microsoft.GotoAction",
@@ -391,6 +406,11 @@
             "$ref": "#/definitions/Microsoft.SetProperty"
         },
         {
+            "title": "Microsoft.SignOutUser",
+            "description": "Sign a user out that was logged in previously using OAuthInput.",
+            "$ref": "#/definitions/Microsoft.SignOutUser"
+        },
+        {
             "title": "Microsoft.StaticActivityTemplate",
             "description": "This allows you to define a static Activity object",
             "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
@@ -474,6 +494,11 @@
             "title": "Microsoft.TrueSelector",
             "description": "Selector for all true events",
             "$ref": "#/definitions/Microsoft.TrueSelector"
+        },
+        {
+            "title": "Microsoft.UpdateActivity",
+            "description": "Respond with an activity.",
+            "$ref": "#/definitions/Microsoft.UpdateActivity"
         },
         {
             "title": "Microsoft.UrlEntityRecognizer",
@@ -2143,6 +2168,83 @@
                 }
             ]
         },
+        "Microsoft.DeleteActivity": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Delete Activity",
+            "description": "Delete an activity that was previously sent.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.DeleteActivity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "activityId": {
+                    "$role": "expression",
+                    "title": "ActivityId",
+                    "description": "expression to an activityId to delete",
+                    "examples": [
+                        "$lastActivity"
+                    ],
+                    "type": "string"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "property",
+                        "value",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
         "Microsoft.DeleteProperties": {
             "$role": "union(Microsoft.IDialog)",
             "title": "Delete Properties",
@@ -3082,6 +3184,147 @@
                 }
             ]
         },
+        "Microsoft.GetActivityMembers": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Get Activity Members",
+            "description": "Get the members who are participating in an activity. (BotFrameworkAdapter only)",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.GetActivityMembers"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "activityId": {
+                    "$role": "expression",
+                    "title": "ActivityId",
+                    "description": "expression to an activityId to get the members. If none is defined then the current activity id will be used.",
+                    "examples": [
+                        "$lastActivity"
+                    ],
+                    "type": "string"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.GetConversationMembers": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Get Converation Members",
+            "description": "Get the members who are participating in an conversation. (BotFrameworkAdapter only)",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.GetConversationMembers"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
         "Microsoft.GotoAction": {
             "$role": "union(Microsoft.IDialog)",
             "title": "Go to Action",
@@ -3442,6 +3685,11 @@
                     "$ref": "#/definitions/Microsoft.DebugBreak"
                 },
                 {
+                    "title": "Microsoft.DeleteActivity",
+                    "description": "Delete an activity that was previously sent.",
+                    "$ref": "#/definitions/Microsoft.DeleteActivity"
+                },
+                {
                     "title": "Microsoft.DeleteProperties",
                     "description": "Delete multiple properties and any value it holds.",
                     "$ref": "#/definitions/Microsoft.DeleteProperties"
@@ -3485,6 +3733,16 @@
                     "title": "Microsoft.ForeachPage",
                     "description": "Execute actions on each page (collection of items) in an array.",
                     "$ref": "#/definitions/Microsoft.ForeachPage"
+                },
+                {
+                    "title": "Microsoft.GetActivityMembers",
+                    "description": "Get the members who are participating in an activity. (BotFrameworkAdapter only)",
+                    "$ref": "#/definitions/Microsoft.GetActivityMembers"
+                },
+                {
+                    "title": "Microsoft.GetConversationMembers",
+                    "description": "Get the members who are participating in an conversation. (BotFrameworkAdapter only)",
+                    "$ref": "#/definitions/Microsoft.GetConversationMembers"
                 },
                 {
                     "title": "Microsoft.GotoAction",
@@ -3552,6 +3810,11 @@
                     "$ref": "#/definitions/Microsoft.SetProperty"
                 },
                 {
+                    "title": "Microsoft.SignOutUser",
+                    "description": "Sign a user out that was logged in previously using OAuthInput.",
+                    "$ref": "#/definitions/Microsoft.SignOutUser"
+                },
+                {
                     "title": "Microsoft.SwitchCondition",
                     "description": "Execute different actions based on the value of a property.",
                     "$ref": "#/definitions/Microsoft.SwitchCondition"
@@ -3570,6 +3833,11 @@
                     "title": "Microsoft.TraceActivity",
                     "description": "Send a trace activity to the transcript logger and/ or Bot Framework Emulator.",
                     "$ref": "#/definitions/Microsoft.TraceActivity"
+                },
+                {
+                    "title": "Microsoft.UpdateActivity",
+                    "description": "Respond with an activity.",
+                    "$ref": "#/definitions/Microsoft.UpdateActivity"
                 },
                 {
                     "type": "string",
@@ -6468,6 +6736,18 @@
                     "title": "Top",
                     "description": "The number of answers you want to retrieve.",
                     "default": 3
+                },
+                "isTest": {
+                    "type": "boolean",
+                    "title": "IsTest",
+                    "description": "True, if pointing to Test environment, else false.",
+                    "default": false
+                },
+                "rankerType": {
+                    "type": "string",
+                    "title": "RankerType",
+                    "description": "Type of Ranker.",
+                    "default": "Default"
                 }
             },
             "patternProperties": {
@@ -7072,6 +7352,86 @@
                     "required": [
                         "property",
                         "value",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.SignOutUser": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Sign Out User",
+            "description": "Sign a user out that was logged in previously using OAuthInput.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.SignOutUser"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "userId": {
+                    "$role": "expression",
+                    "title": "ActivityId",
+                    "description": "expression to an activityId to get the members. If none is defined then the current activity id will be used.",
+                    "examples": [
+                        "$lastActivity"
+                    ],
+                    "type": "string"
+                },
+                "connectionName": {
+                    "type": "string",
+                    "title": "Connection Name",
+                    "description": "Connection name that was used with OAuthInput to log a user in."
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
                         "$kind"
                     ]
                 }
@@ -8384,6 +8744,69 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.UpdateActivity": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Send an activity",
+            "description": "Respond with an activity.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.UpdateActivity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "activity": {
+                    "$kind": "Microsoft.IActivityTemplate",
+                    "title": "Activity",
+                    "description": "Activity to send.",
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 }
             },
             "additionalProperties": false,
