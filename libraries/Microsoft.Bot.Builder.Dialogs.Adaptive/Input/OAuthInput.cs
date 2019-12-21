@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            var interrupted = dc.GetState().GetValue<bool>(TurnPath.Interrupted, () => false);
+            var interrupted = dc.GetState().GetValue<bool>(TurnPath.INTERRUPTED, () => false);
             var turnCount = dc.GetState().GetValue<int>(TURN_COUNT_PROPERTY, () => 0);
 
             // Recognize token

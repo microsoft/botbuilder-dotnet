@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     public class TurnMemoryScope : MemoryScope
     {
         public TurnMemoryScope()
-            : base(ScopePath.Turn)
+            : base(ScopePath.TURN)
         {
         }
 
@@ -29,10 +29,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            if (!dc.Context.TurnState.TryGetValue(ScopePath.Turn, out object val))
+            if (!dc.Context.TurnState.TryGetValue(ScopePath.TURN, out object val))
             {
                 val = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-                dc.Context.TurnState[ScopePath.Turn] = val;
+                dc.Context.TurnState[ScopePath.TURN] = val;
             }
 
             return val;
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            dc.Context.TurnState[ScopePath.Turn] = memory;
+            dc.Context.TurnState[ScopePath.TURN] = memory;
         }
     }
 }

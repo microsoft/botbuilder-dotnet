@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             if (this.IncludeActivity)
             {
                 // reset this to false so that new dialog has opportunity to process the activity
-                dc.GetState().SetValue(TurnPath.ActivityProcessed, false);
+                dc.GetState().SetValue(TurnPath.ACTIVITYPROCESSED, false);
             }
 
             // start dialog with bound options passed in as the options

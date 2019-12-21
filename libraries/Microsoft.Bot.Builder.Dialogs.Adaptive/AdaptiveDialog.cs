@@ -304,7 +304,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         protected virtual async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Save into turn
-            sequenceContext.GetState().SetValue(TurnPath.DialogEvent, dialogEvent);
+            sequenceContext.GetState().SetValue(TurnPath.DIALOGEVENT, dialogEvent);
 
             EnsureDependenciesInstalled();
 
@@ -326,7 +326,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 switch (dialogEvent.Name)
                 {
                     case AdaptiveEvents.BeginDialog:
-                        if (sequenceContext.GetState().GetBoolValue(TurnPath.ActivityProcessed) == false)
+                        if (sequenceContext.GetState().GetBoolValue(TurnPath.ACTIVITYPROCESSED) == false)
                         {
                             // Emit leading ActivityReceived event
                             var activityReceivedEvent = new DialogEvent()
@@ -355,7 +355,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             await ProcessEventAsync(sequenceContext, dialogEvent: recognizeUtteranceEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                             // Emit leading RecognizedIntent event
-                            var recognized = sequenceContext.GetState().GetValue<RecognizerResult>(TurnPath.Recognized);
+                            var recognized = sequenceContext.GetState().GetValue<RecognizerResult>(TurnPath.RECOGNIZED);
                             var recognizedIntentEvent = new DialogEvent
                             {
                                 Name = AdaptiveEvents.RecognizedIntent,
@@ -372,7 +372,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         //   process the users uterrance when its continued.
                         if (handled)
                         {
-                            sequenceContext.GetState().SetValue(TurnPath.Interrupted, true);
+                            sequenceContext.GetState().SetValue(TurnPath.INTERRUPTED, true);
                         }
 
                         break;
@@ -384,12 +384,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             // Recognize utterance
                             var recognized = await OnRecognize(sequenceContext, cancellationToken).ConfigureAwait(false);
 
-                            sequenceContext.GetState().SetValue(TurnPath.Recognized, recognized);
+                            sequenceContext.GetState().SetValue(TurnPath.RECOGNIZED, recognized);
 
                             var (name, score) = recognized.GetTopScoringIntent();
-                            sequenceContext.GetState().SetValue(TurnPath.TopIntent, name);
+                            sequenceContext.GetState().SetValue(TurnPath.TOPINTENT, name);
                             sequenceContext.GetState().SetValue(DialogPath.LastIntent, name);
-                            sequenceContext.GetState().SetValue(TurnPath.TopScore, score);
+                            sequenceContext.GetState().SetValue(TurnPath.TOPSCORE, score);
 
                             if (Recognizer != null)
                             {
@@ -412,7 +412,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 switch (dialogEvent.Name)
                 {
                     case AdaptiveEvents.BeginDialog:
-                        if (sequenceContext.GetState().GetBoolValue(TurnPath.ActivityProcessed) == false)
+                        if (sequenceContext.GetState().GetBoolValue(TurnPath.ACTIVITYPROCESSED) == false)
                         {
                             var activityReceivedEvent = new DialogEvent
                             {
@@ -455,7 +455,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         //   process the users uterrance when its continued.
                         if (handled)
                         {
-                            sequenceContext.GetState().SetValue(TurnPath.Interrupted, true);
+                            sequenceContext.GetState().SetValue(TurnPath.INTERRUPTED, true);
                         }
 
                         break;
@@ -666,7 +666,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     entity = new object[] { entity };
                 }
 
-                sequenceContext.GetState().SetValue($"{TurnPath.Recognized}.entities.{val.Entity.Name}", entity);
+                sequenceContext.GetState().SetValue($"{TurnPath.RECOGNIZED}.entities.{val.Entity.Name}", entity);
             }
             else if (queues.ChooseProperties.Any())
             {
@@ -854,8 +854,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 recognized.AddRange(updated);
 
                 // TODO: Is this actually useful information?
-                context.GetState().SetValue(TurnPath.UnrecognizedText, unrecognized);
-                context.GetState().SetValue(TurnPath.RecognizedEntities, recognized);
+                context.GetState().SetValue(TurnPath.UNRECOGNIZEDTEXT, unrecognized);
+                context.GetState().SetValue(TurnPath.RECOGNIZEDENTITIES, recognized);
                 queues.Merge(newQueues);
                 var turn = context.GetState().GetValue<uint>(DialogPath.EventCounter);
                 CombineOldEntityToPropertys(queues, turn);
@@ -951,8 +951,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private Dictionary<string, List<EntityInfo>> NormalizeEntities(SequenceContext context)
         {
             var entityToInfo = new Dictionary<string, List<EntityInfo>>();
-            var text = context.GetState().GetValue<string>(TurnPath.Recognized + ".text");
-            if (context.GetState().TryGetValue<dynamic>(TurnPath.Recognized + ".entities", out var entities))
+            var text = context.GetState().GetValue<string>(TurnPath.RECOGNIZED + ".text");
+            if (context.GetState().TryGetValue<dynamic>(TurnPath.RECOGNIZED + ".entities", out var entities))
             {
                 var turn = context.GetState().GetValue<uint>(DialogPath.EventCounter);
                 var metaData = entities["$instance"];
