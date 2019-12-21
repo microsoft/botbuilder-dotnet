@@ -23,7 +23,7 @@
             "default": "dialog.result"
         },
         "recognizer": {
-            "$kind": "Microsoft.InputRecognizer",
+            "$kind": "Microsoft.Recognizer",
             "title": "Recognizer",
             "description": "Input recognizer that interprets user input into intent and entities."
         },

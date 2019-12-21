@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
     /// <summary>
     /// A LUIS based implementation of <see cref="ITelemetryRecognizer"/>.
     /// </summary>
-    public class LuisRecognizer : InputRecognizer, ITelemetryRecognizer
+    public class LuisRecognizer : Recognizer, ITelemetryRecognizer
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.LuisRecognizer";

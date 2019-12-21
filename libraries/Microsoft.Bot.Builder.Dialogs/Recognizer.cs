@@ -8,7 +8,19 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class InputRecognizer 
+    /// <summary>
+    /// Recognizer base class.
+    /// </summary>
+    /// <remarks>
+    /// Recognizers operate in a DialogContext environment to recognize user input into Intents and Entities. 
+    /// This class models 3 virtual methods around
+    /// * Pure DialogContext (where the recognition happens against current state dialogcontext
+    /// * Activity (where the recognition is from an Activity)
+    /// * Text/Locale (where the recognition is from text/locale)
+    /// The default implementation of DialogContext method is to use Context.Activity and call the activity method.
+    /// The default implementation of Activity method is to filter to Message activities and pull out text/locale and call the text/locale method.
+    /// </remarks>
+    public class Recognizer 
     {
         /// <summary>
         /// Gets or sets id of the recognizer.

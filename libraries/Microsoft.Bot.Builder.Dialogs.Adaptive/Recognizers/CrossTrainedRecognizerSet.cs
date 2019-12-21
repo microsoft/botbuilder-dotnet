@@ -16,10 +16,10 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
     /// <summary>
-    /// CrossTrainedRecognizerSet - InputRecognizer for selecting between cross trained recognizers.
+    /// CrossTrainedRecognizerSet - Recognizer for selecting between cross trained recognizers.
     /// </summary>
     /// <remarks>
-    /// InputRecognizer implementation which calls multiple recognizers that are cross trained and uses
+    /// Recognizer implementation which calls multiple recognizers that are cross trained and uses
     /// Intents called $"DefersToRecognizer_{Id}" to represent a cross-trained intent for another recognizer.
     /// 
     /// If there is consensus among the cross trained recognizers, the recognizerResult structure from
@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// In the case that there is conflicting or ambigious signals from the recognizers then an 
     /// intent of "AmbigiousIntent" will be returned with the results of all of the recognizers.
     /// </remarks>
-    public class CrossTrainedRecognizerSet : InputRecognizer
+    public class CrossTrainedRecognizerSet : Recognizer
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.CrossTrainedRecognizerSet";
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// The input recognizers.
         /// </value>
         [JsonProperty("recognizers")]
-        public List<InputRecognizer> Recognizers { get; set; } = new List<InputRecognizer>();
+        public List<Recognizer> Recognizers { get; set; } = new List<Recognizer>();
 
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
         {

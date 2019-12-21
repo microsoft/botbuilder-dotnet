@@ -16,14 +16,14 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
     /// <summary>
-    /// ValueRecognizer - InputRecognizer for mapping message activity .Value payload into intent/entities.
+    /// ValueRecognizer - Recognizer for mapping message activity .Value payload into intent/entities.
     /// </summary>
     /// <remarks>
     /// This recognizer will map MessageActivity Value payloads into intents and entities.
     ///     activity.Value.intent => RecognizerResult.Intents.
     ///     activity.Value.properties => RecognizerResult.Entities.
     /// </remarks>
-    public class ValueRecognizer : InputRecognizer
+    public class ValueRecognizer : Recognizer
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.ValueRecognizer";

@@ -16,9 +16,9 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
     /// <summary>
-    /// RecognizerSet - InputRecognizer which is the union of of multiple recognizers into one RecognizerResult.
+    /// RecognizerSet - Recognizer which is the union of of multiple recognizers into one RecognizerResult.
     /// </summary>
-    public class RecognizerSet : InputRecognizer
+    public class RecognizerSet : Recognizer
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.RecognizerSet";
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// The input recognizers.
         /// </value>
         [JsonProperty("recognizers")]
-        public List<InputRecognizer> Recognizers { get; set; } = new List<InputRecognizer>();
+        public List<Recognizer> Recognizers { get; set; } = new List<Recognizer>();
 
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
         {

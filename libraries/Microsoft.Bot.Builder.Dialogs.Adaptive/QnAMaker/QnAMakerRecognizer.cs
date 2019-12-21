@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
     /// <summary>
     /// IRecognizer implementation which uses QnAMaker KB to identify intents.
     /// </summary>
-    public class QnAMakerRecognizer : InputRecognizer
+    public class QnAMakerRecognizer : Recognizer
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.QnAMakerRecognizer";

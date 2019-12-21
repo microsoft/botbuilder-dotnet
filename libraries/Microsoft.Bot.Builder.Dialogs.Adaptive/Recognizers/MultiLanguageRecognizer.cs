@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// <summary>
     /// Defines map of languages -> recognizer.
     /// </summary>
-    public class MultiLanguageRecognizer : InputRecognizer
+    public class MultiLanguageRecognizer : Recognizer
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.MultiLanguageRecognizer";
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// Map of languages -> IRecognizer.
         /// </value>
         [JsonProperty("recognizers")]
-        public IDictionary<string, InputRecognizer> Recognizers { get; set; } = new Dictionary<string, InputRecognizer>();
+        public IDictionary<string, Recognizer> Recognizers { get; set; } = new Dictionary<string, Recognizer>();
 
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken)
         {

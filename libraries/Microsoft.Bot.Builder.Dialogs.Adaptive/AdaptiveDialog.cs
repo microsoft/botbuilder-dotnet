@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Recognizer for processing incoming user input.
         /// </value>
         [JsonProperty("recognizer")]
-        public InputRecognizer Recognizer { get; set; }
+        public Recognizer Recognizer { get; set; }
 
         /// <summary>
         /// Gets or sets language Generator override.

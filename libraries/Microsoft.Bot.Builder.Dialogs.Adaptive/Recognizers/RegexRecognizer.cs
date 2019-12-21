@@ -14,9 +14,9 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
     /// <summary>
-    /// InputRecognizer implementation which uses regex expressions to identify intents.
+    /// Recognizer implementation which uses regex expressions to identify intents.
     /// </summary>
-    public class RegexRecognizer : InputRecognizer
+    public class RegexRecognizer : Recognizer
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.RegexRecognizer";
