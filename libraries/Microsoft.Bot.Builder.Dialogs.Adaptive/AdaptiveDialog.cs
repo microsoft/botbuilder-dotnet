@@ -545,7 +545,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 Text = context.Activity.Text ?? string.Empty,
                 Intents = new Dictionary<string, IntentScore> { { "None", new IntentScore { Score = 0.0 } } },
-                Entities = JObject.Parse("{}")
             };
         }
 

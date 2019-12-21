@@ -19,8 +19,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// CrossTrainedRecognizerSet - Recognizer for selecting between cross trained recognizers.
     /// </summary>
     /// <remarks>
-    /// Recognizer implementation which calls multiple recognizers that are cross trained and uses
-    /// Intents called $"DefersToRecognizer_{Id}" to represent a cross-trained intent for another recognizer.
+    /// Recognizer implementation which calls multiple recognizers that are cross trained with intents
+    /// that model deferring to another recognizer. Each recognizer should have intents 
+    /// with special intent name pattern $"DefersToRecognizer_{Id}" to represent a cross-trained 
+    /// intent for another recognizer.
     /// 
     /// If there is consensus among the cross trained recognizers, the recognizerResult structure from
     /// the consensus recognizer is returned.
@@ -33,8 +35,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.CrossTrainedRecognizerSet";
 
+        /// <summary>
+        /// Standard cross trained intent name prefix.
+        /// </summary>
         public const string DeferPrefix = "DeferToRecognizer_";
+
+        /// <summary>
+        /// Intent name that will be produced by this recognizer if the child recognizers do not have consensus.
+        /// </summary>
         public const string AmbigiousIntent = "AmbigiousIntent";
+
+        /// <summary>
+        /// Standard none intent that means none of the recognizers recognize the intent.
+        /// </summary>
+        /// <remarks>
+        /// If each recognizer returns no intents or None intents, then this recognizer will return None intent.
+        /// </remarks>
         public const string NoneIntent = "None";
 
         [JsonConstructor]
@@ -109,8 +125,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         private RecognizerResult ProcessResults(RecognizerResult[] results)
         {
             // put results into a dictionary for easier lookup while processing.
-            Dictionary<string, RecognizerResult> recognizerResults = new Dictionary<string, RecognizerResult>(System.StringComparer.OrdinalIgnoreCase);
-            Dictionary<string, string> intents = new Dictionary<string, string>(System.StringComparer.OrdinalIgnoreCase);
+            var recognizerResults = new Dictionary<string, RecognizerResult>(System.StringComparer.OrdinalIgnoreCase);
+            var intents = new Dictionary<string, string>(System.StringComparer.OrdinalIgnoreCase);
             
             string text = string.Empty;
             for (int iRecognizer = 0; iRecognizer < Recognizers.Count; iRecognizer++)
@@ -214,7 +230,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         {
             if (this.Recognizers.Any(recognizer => string.IsNullOrEmpty(recognizer.Id)))
             {
-                throw new ArgumentNullException("RecognizerSet requires that Recognizers in the set have an .Id set");
+                throw new ArgumentNullException("This recognizer requires that each recognizer in the set have an .Id value.");
             }
         }
     }

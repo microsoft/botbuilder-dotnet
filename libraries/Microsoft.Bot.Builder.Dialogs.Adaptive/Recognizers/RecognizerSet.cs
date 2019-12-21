@@ -18,6 +18,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// <summary>
     /// RecognizerSet - Recognizer which is the union of of multiple recognizers into one RecognizerResult.
     /// </summary>
+    /// <remarks>
+    /// Intents will be merged by picking the intent with the MaxScore.
+    /// Entities are merged as a simple union of all of the Entities.
+    /// </remarks>
     public class RecognizerSet : Recognizer
     {
         [JsonProperty("$kind")]

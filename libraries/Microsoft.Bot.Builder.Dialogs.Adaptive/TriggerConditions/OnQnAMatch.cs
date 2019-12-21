@@ -10,10 +10,10 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Actions triggered when an Intent of "AmbigiousIntent" has been emitted by the recognizer.
+    /// Actions triggered when an Intent of "QnAMatch" has been emitted by the QnAMatchRecognizer.
     /// </summary>
     /// <remarks>
-    /// This trigger is run when the utterance has triggered ambiguity between multiple recognizers in a RecognizerSet.
+    /// This trigger is run when the QnAMakerRecognizer has returned a QnAMatch intent. The entity @answer will have the QnAMaker answer.
     /// </remarks>
     public class OnQnAMatch : OnIntent
     {

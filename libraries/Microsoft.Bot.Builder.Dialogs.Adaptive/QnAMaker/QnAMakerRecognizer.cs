@@ -1,6 +1,7 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -87,7 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         public int Top { get; set; } = 3;
 
         /// <summary>
-        /// Gets or sets the Threshold score to filter results.
+        /// Gets or sets the threshold score to filter results.
         /// </summary>
         /// <value>
         /// The threshold for the results.
@@ -106,10 +107,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         public bool IsTest { get; set; }
 
         /// <summary>
-        /// Gets or sets ranker Types.
+        /// Gets or sets ranker Type.
         /// </summary>
         /// <value>
-        /// Ranker Types.
+        /// The desired RankerType.
         /// </value>
         [JsonProperty("rankerType")]
         public string RankerType { get; set; } = RankerTypes.DefaultRankerType;
@@ -209,9 +210,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
 
             var endpoint = new QnAMakerEndpoint
             {
-                EndpointKey = (string)epKey,
-                Host = (string)hn,
-                KnowledgeBaseId = (string)kbId
+                EndpointKey = (string)epKey ?? throw new ArgumentNullException(nameof(EndpointKey), error),
+                Host = (string)hn ?? throw new ArgumentNullException(nameof(HostName), error2),
+                KnowledgeBaseId = (string)kbId ?? throw new ArgumentNullException(nameof(KnowledgeBaseId), error3)
             };
 
             return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint, httpClient: this.HttpClient));
