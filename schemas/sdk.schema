@@ -6164,7 +6164,7 @@
         },
         "Microsoft.OnQnAMatch": {
             "$role": "union(Microsoft.ITriggerCondition)",
-            "title": "On QnAMAker Match",
+            "title": "On QnAMaker Match",
             "description": "Actions to perform on when an match from QnAMaker is found.",
             "type": "object",
             "properties": {
