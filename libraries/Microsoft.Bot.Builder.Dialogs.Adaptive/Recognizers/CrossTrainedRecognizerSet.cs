@@ -41,9 +41,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public const string DeferPrefix = "DeferToRecognizer_";
 
         /// <summary>
-        /// Intent name that will be produced by this recognizer if the child recognizers do not have consensus.
+        /// Intent name that will be produced by this recognizer if the child recognizers do not have consensus for intents.
         /// </summary>
-        public const string AmbigiousIntent = "AmbigiousIntent";
+        public const string ChooseIntent = "ChooseIntent";
 
         /// <summary>
         /// Standard none intent that means none of the recognizers recognize the intent.
@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                         else
                         {
                             // ambigious because of 2 real intents, and neither are None so return AmbigiousIntent
-                            return CreateAmbigiousIntentResult(text, recognizerResults);
+                            return CreateChooseIntentResult(text, recognizerResults);
                         }
                     }
                 }
@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     if (IsRedirect(redirectIntent))
                     {
                         // we have ambiguity, return AmbigiousIntent
-                        return CreateAmbigiousIntentResult(text, recognizerResults);
+                        return CreateChooseIntentResult(text, recognizerResults);
                     }
                 }
             }
@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             return recognizerResults[consensusRecognizerId];
         }
 
-        private RecognizerResult CreateAmbigiousIntentResult(string text, Dictionary<string, RecognizerResult> recognizerResults)
+        private RecognizerResult CreateChooseIntentResult(string text, Dictionary<string, RecognizerResult> recognizerResults)
         {
             // create IntentScore with { "recognizerId" : { ...RecognizerResult.. } }
             var ambigiousScore = new IntentScore()
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 Text = text,
                 Intents = new Dictionary<string, IntentScore>()
                 {
-                    { AmbigiousIntent, (IntentScore)ambigiousScore }
+                    { ChooseIntent, (IntentScore)ambigiousScore }
                 }
             };
         }

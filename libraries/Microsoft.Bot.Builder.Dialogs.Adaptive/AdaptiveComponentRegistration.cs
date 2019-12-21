@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<OnEndOfConversationActivity>(OnEndOfConversationActivity.DeclarativeType);
             yield return new TypeRegistration<OnTypingActivity>(OnTypingActivity.DeclarativeType);
             yield return new TypeRegistration<OnHandoffActivity>(OnHandoffActivity.DeclarativeType);
-            yield return new TypeRegistration<OnAmbigiousIntent>(OnAmbigiousIntent.DeclarativeType);
+            yield return new TypeRegistration<OnChooseIntent>(OnChooseIntent.DeclarativeType);
 
             // Actions
             yield return new TypeRegistration<BeginDialog>(BeginDialog.DeclarativeType);

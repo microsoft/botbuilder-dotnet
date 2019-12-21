@@ -53,7 +53,7 @@
         },
         "triggers": [
             {
-                "$kind": "Microsoft.OnAmbigiousIntent",
+                "$kind": "Microsoft.OnChooseIntent",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
