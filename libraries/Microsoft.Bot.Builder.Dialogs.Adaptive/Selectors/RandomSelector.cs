@@ -77,7 +77,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             var result = new List<OnCondition>();
             if (candidates.Count > 0)
             {
-                var selection = _rand.Next(candidates.Count);
+                int selection;
+                lock (this)
+                {
+                    selection = _rand.Next(candidates.Count);
+                }
+
                 result.Add(candidates[selection]);
             }
 

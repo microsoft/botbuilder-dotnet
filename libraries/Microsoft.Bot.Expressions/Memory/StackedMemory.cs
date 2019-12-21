@@ -22,28 +22,30 @@ namespace Microsoft.Bot.Expressions.Memory
             }
         }
 
-        public (object value, string error) GetValue(string path)
+        public bool TryGetValue(string path, out object value)
         {
+            value = null;
             if (this.Count == 0)
             {
-                throw new Exception("Invalid memory status, memory stack is empty");
+                return true;
             }
 
             var it = this.GetEnumerator();
             while (it.MoveNext())
             {
                 var memory = it.Current;
-                (var value, var error) = memory.GetValue(path);
-                if (error == null && value != null)
+
+                if (memory.TryGetValue(path, out var result) && result != null)
                 {
-                    return (value, error);
+                    value = result;
+                    return true;
                 }
             }
 
-            return (null, null);
+            return true;
         }
 
-        public (object value, string error) SetValue(string path, object value)
+        public void SetValue(string path, object value)
         {
             throw new Exception($"Can't set value to {path}, stacked memory is read-only");
         }

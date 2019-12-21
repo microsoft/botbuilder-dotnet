@@ -53,6 +53,11 @@ namespace Microsoft.Bot.Expressions
         private static readonly Dictionary<string, ExpressionEvaluator> _functions = BuildFunctionLookup();
 
         /// <summary>
+        /// Object used to lock Randomizer.
+        /// </summary>
+        private static readonly object _randomizerLock = new object();
+
+        /// <summary>
         /// Verify the result of an expression is of the appropriate type and return a string if not.
         /// </summary>
         /// <param name="value">Value to verify.</param>
@@ -981,7 +986,7 @@ namespace Microsoft.Bot.Expressions
             if (left == null)
             {
                 // fully converted to path, so we just delegate to memory scope
-                return state.GetValue(path);
+                return WrapGetValue(state, path);
             }
             else
             {
@@ -992,7 +997,7 @@ namespace Microsoft.Bot.Expressions
                     return (null, err);
                 }
 
-                return new SimpleObjectMemory(newScope).GetValue(path);
+                return WrapGetValue(new SimpleObjectMemory(newScope), path);
             }
         }
 
@@ -1010,11 +1015,21 @@ namespace Microsoft.Bot.Expressions
                 (property, error) = children[1].TryEvaluate(state);
                 if (error == null)
                 {
-                    (value, error) = new SimpleObjectMemory(instance).GetValue((string)property);
+                    (value, error) = WrapGetValue(new SimpleObjectMemory(instance), (string)property);
                 }
             }
 
             return (value, error);
+        }
+
+        private static (object value, string error) WrapGetValue(IMemory memory, string property)
+        {
+            if (memory.TryGetValue(property, out var result))
+            {
+                return (result, null);
+            }
+
+            return (null, $"Can not access {property}");
         }
 
         private static (object value, string error) ExtractElement(Expression expression, IMemory state)
@@ -1095,7 +1110,8 @@ namespace Microsoft.Bot.Expressions
                 return (null, err);
             }
 
-            return state.SetValue(path, value);
+            state.SetValue(path, value);
+            return (value, null);
         }
 
         private static string ParseStringOrNull(object value)
@@ -3424,7 +3440,10 @@ namespace Microsoft.Bot.Expressions
                             }
                             else
                             {
-                                value = Randomizer.Next(min, max);
+                                lock (_randomizerLock)
+                                {
+                                    value = Randomizer.Next(min, max);
+                                }
                             }
 
                             return (value, error);
