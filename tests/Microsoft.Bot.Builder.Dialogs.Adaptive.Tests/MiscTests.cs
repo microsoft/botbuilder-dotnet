@@ -84,8 +84,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
     }
 
-    public class CustomRecognizer : IRecognizer
+    public class CustomRecognizer : Recognizer, IRecognizer
     {
+        public override Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
+        {
+            return this.RecognizeAsync(dialogContext.Context, cancellationToken);
+        }
+
         public Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             return Task.FromResult(new RecognizerResult());

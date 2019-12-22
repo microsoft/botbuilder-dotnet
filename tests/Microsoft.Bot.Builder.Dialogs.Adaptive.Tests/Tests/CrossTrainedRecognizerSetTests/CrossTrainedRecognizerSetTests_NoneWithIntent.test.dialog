@@ -1,0 +1,159 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "recognizer": {
+            "$schema": "../../../../schemas/sdk.schema",
+            "$kind": "Microsoft.CrossTrainedRecognizerSet",
+            "recognizers": [
+                {
+                    "$kind": "Microsoft.RegexRecognizer",
+                    "id": "x",
+                    "intents": [
+                        {
+                            "intent": "DeferToRecognizer_y",
+                            "pattern": "test"
+                        },
+                        {
+                            "intent": "x",
+                            "pattern": "x"
+                        }
+                    ]
+                },
+                {
+                    "$kind": "Microsoft.RegexRecognizer",
+                    "id": "y",
+                    "intents": [
+                        {
+                            "intent": "foo",
+                            "pattern": "test"
+                        },
+                        {
+                            "intent": "y",
+                            "pattern": "y"
+                        }
+                    ]
+                },
+                {
+                    "$kind": "Microsoft.RegexRecognizer",
+                    "id": "z",
+                    "intents": [
+                        {
+                            "intent": "None",
+                            "pattern": "test"
+                        },
+                        {
+                            "intent": "z",
+                            "pattern": "z"
+                        }
+                    ]
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnChooseIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Ambigious:@{turn.recognized.intent}"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "x",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Intent:@{turn.recognized.intent}"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "y",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Intent:@{turn.recognized.intent}"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "z",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Intent:@{turn.recognized.intent}"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "foo",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Intent:@{turn.recognized.intent}"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "UnknownIntent:@{turn.recognized.intent}"
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "locale": "",
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "UnknownIntent:None"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "x"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Intent:x"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "y"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Intent:y"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "z"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Intent:z"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "test"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Intent:foo"
+        }
+    ]
+}

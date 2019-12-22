@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         private string testAppId = null;
         private string testPassword = null;
 
-        public GetTokenRefreshTests()
+        public void EnsureSettings()
         {
             testAppId = EnvironmentConfig.TestAppId();
             testPassword = EnvironmentConfig.TestAppPassword();
@@ -26,6 +26,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         [TestMethod]
         public async Task TokenTests_GetCredentialsWorks()
         {
+            EnsureSettings();
             MicrosoftAppCredentials credentials = new MicrosoftAppCredentials(testAppId, testPassword);
             var result = await credentials.GetTokenAsync();
             Assert.IsNotNull(result);
@@ -34,6 +35,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         [TestMethod]
         public async Task TokenTests_RefreshTokenWorks()
         {
+            EnsureSettings();
             MicrosoftAppCredentials credentials = new MicrosoftAppCredentials(testAppId, testPassword);
             var result = await credentials.GetTokenAsync();
             Assert.IsNotNull(result);
@@ -47,6 +49,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         [TestMethod]
         public async Task TokenTests_RefreshTestLoad()
         {
+            EnsureSettings();
             MicrosoftAppCredentials credentials = new MicrosoftAppCredentials(testAppId, testPassword);
             List<Task<string>> tasks = new List<Task<string>>();
             for (int i = 0; i < 1000; i++)

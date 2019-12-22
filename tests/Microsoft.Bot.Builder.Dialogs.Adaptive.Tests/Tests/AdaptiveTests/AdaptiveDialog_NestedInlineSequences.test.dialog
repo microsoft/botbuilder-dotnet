@@ -9,17 +9,17 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    "$kind": "Microsoft.IntentPattern",
+                    
                     "intent": "JokeIntent",
                     "pattern": "joke"
                 },
                 {
-                    "$kind": "Microsoft.IntentPattern",
+                    
                     "intent": "GreetingIntemt",
                     "pattern": "hi|hello"
                 },
                 {
-                    "$kind": "Microsoft.IntentPattern",
+                    
                     "intent": "GoodbyeIntent",
                     "pattern": "bye|goodbye|seeya|see ya"
                 }

@@ -10,12 +10,10 @@
                     "$kind": "Microsoft.RegexRecognizer",
                     "intents": [
                         {
-                            "$kind": "Microsoft.IntentPattern",
                             "intent": "Greeting",
                             "pattern": "(?i)howdy"
                         },
                         {
-                            "$kind": "Microsoft.IntentPattern",
                             "intent": "Goodbye",
                             "pattern": "(?i)bye"
                         }
@@ -25,12 +23,10 @@
                     "$kind": "Microsoft.RegexRecognizer",
                     "intents": [
                         {
-                            "$kind": "Microsoft.IntentPattern",
                             "intent": "Greeting",
                             "pattern": "(?i)hiya"
                         },
                         {
-                            "$kind": "Microsoft.IntentPattern",
                             "intent": "Goodbye",
                             "pattern": "(?i)cheerio"
                         }
@@ -40,12 +36,10 @@
                     "$kind": "Microsoft.RegexRecognizer",
                     "intents": [
                         {
-                            "$kind": "Microsoft.IntentPattern",
                             "intent": "Greeting",
                             "pattern": "(?i)hello"
                         },
                         {
-                            "$kind": "Microsoft.IntentPattern",
                             "intent": "Goodbye",
                             "pattern": "(?i)goodbye"
                         }
@@ -55,12 +49,10 @@
                     "$kind": "Microsoft.RegexRecognizer",
                     "intents": [
                         {
-                            "$kind": "Microsoft.IntentPattern",
                             "intent": "Greeting",
                             "pattern": "(?i)salve"
                         },
                         {
-                            "$kind": "Microsoft.IntentPattern",
                             "intent": "Goodbye",
                             "pattern": "(?i)vale dicere"
                         }
@@ -101,11 +93,11 @@
         ],
         "defaultResultProperty": "dialog.result"
     },
-    "locale": "en",
+    "locale": "en-us",
     "script": [
         {
             "$kind": "Microsoft.Test.UserSays",
-            "text": "hello"
+            "text": "howdy"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
@@ -113,7 +105,7 @@
         },
         {
             "$kind": "Microsoft.Test.UserSays",
-            "text": "howdy"
+            "text": "cheerio"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
@@ -121,7 +113,7 @@
         },
         {
             "$kind": "Microsoft.Test.UserSays",
-            "text": "goodbye"
+            "text": "bye"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
