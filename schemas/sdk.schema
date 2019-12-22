@@ -246,11 +246,6 @@
             "$ref": "#/definitions/Microsoft.OnActivity"
         },
         {
-            "title": "Microsoft.OnAmbigiousIntent",
-            "description": "Actions to perform on when an intent is ambigious.",
-            "$ref": "#/definitions/Microsoft.OnAmbigiousIntent"
-        },
-        {
             "title": "Microsoft.OnBeginDialog",
             "description": "Actions to perform when this dialog begins.",
             "$ref": "#/definitions/Microsoft.OnBeginDialog"
@@ -259,6 +254,11 @@
             "title": "Microsoft.OnCancelDialog",
             "description": "Actions to perform on cancel dialog event.",
             "$ref": "#/definitions/Microsoft.OnCancelDialog"
+        },
+        {
+            "title": "Microsoft.OnChooseIntent",
+            "description": "Actions to perform on when an intent is ambigious.",
+            "$ref": "#/definitions/Microsoft.OnChooseIntent"
         },
         {
             "title": "Microsoft.OnCondition",
@@ -3769,11 +3769,6 @@
                     "$ref": "#/definitions/Microsoft.OnActivity"
                 },
                 {
-                    "title": "Microsoft.OnAmbigiousIntent",
-                    "description": "Actions to perform on when an intent is ambigious.",
-                    "$ref": "#/definitions/Microsoft.OnAmbigiousIntent"
-                },
-                {
                     "title": "Microsoft.OnBeginDialog",
                     "description": "Actions to perform when this dialog begins.",
                     "$ref": "#/definitions/Microsoft.OnBeginDialog"
@@ -3782,6 +3777,11 @@
                     "title": "Microsoft.OnCancelDialog",
                     "description": "Actions to perform on cancel dialog event.",
                     "$ref": "#/definitions/Microsoft.OnCancelDialog"
+                },
+                {
+                    "title": "Microsoft.OnChooseIntent",
+                    "description": "Actions to perform on when an intent is ambigious.",
+                    "$ref": "#/definitions/Microsoft.OnChooseIntent"
                 },
                 {
                     "title": "Microsoft.OnCondition",
@@ -4946,76 +4946,6 @@
                 }
             ]
         },
-        "Microsoft.OnAmbigiousIntent": {
-            "$role": "union(Microsoft.ITriggerCondition)",
-            "title": "On ambigious intent",
-            "description": "Actions to perform on when an intent is ambigious.",
-            "type": "object",
-            "properties": {
-                "$kind": {
-                    "title": "$kind",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnAmbigiousIntent"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "condition": {
-                    "$role": "expression",
-                    "title": "Condition",
-                    "description": "Condition (expression).",
-                    "examples": [
-                        "user.vip == true"
-                    ],
-                    "type": "string"
-                },
-                "actions": {
-                    "type": "array",
-                    "description": "Sequence of actions to execute.",
-                    "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "actions",
-                        "$kind"
-                    ]
-                }
-            ]
-        },
         "Microsoft.OnBeginDialog": {
             "$role": "union(Microsoft.ITriggerCondition)",
             "title": "On begin dialog",
@@ -5131,6 +5061,84 @@
                     "items": {
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnChooseIntent": {
+            "$role": "union(Microsoft.ITriggerCondition)",
+            "title": "On ambigious intent",
+            "description": "Actions to perform on when an intent is ambigious.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnChooseIntent"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition (expression).",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions to execute.",
+                    "items": {
+                        "$kind": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "intents": {
+                    "type": "array",
+                    "title": "Intents",
+                    "description": "Intents that must be in the ChooseIntent result for this conidtion to trigger.",
+                    "items": {
+                        "type": "string"
                     }
                 }
             },
@@ -5806,7 +5814,6 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "intent",
                         "$kind"
                     ]
                 }

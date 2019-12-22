@@ -19,6 +19,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [TestMethod]
+        public async Task CrossTrainedRecognizerSetTests_CircleDefer()
+        {
+            await TestUtils.RunTestScript();
+        }
+
+        [TestMethod]
         public async Task CrossTrainedRecognizerSetTests_DoubleIntent()
         {
             await TestUtils.RunTestScript();

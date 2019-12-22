@@ -26,7 +26,7 @@
                     "id": "y",
                     "intents": [
                         {
-                            "intent": "foo",
+                            "intent": "y",
                             "pattern": "test"
                         },
                         {
@@ -40,7 +40,7 @@
                     "id": "z",
                     "intents": [
                         {
-                            "intent": "bar",
+                            "intent": "z",
                             "pattern": "test"
                         },
                         {
@@ -57,7 +57,32 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Ambigious:@{turn.recognized.intent}"
+                        "activity": "ChooseIntent"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.intent.chooseintent.DeferToRecognizer_x == null",
+                        "description": "Should not have DeferToRecognizer_x intent"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.intent.chooseintent.DeferToRecognizer_y != null",
+                        "description": "Should have DeferToRecognizer_y intent"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.intent.chooseintent.DeferToRecognizer_z == null",
+                        "description": "Should not have DeferToRecognizer_z intent"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.intent.chooseintent.y != null",
+                        "description": "Should have y intent"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.intent.chooseintent.z != null",
+                        "description": "Should have z intent"
                     }
                 ]
             },
@@ -143,7 +168,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Ambigious:ChooseIntent"
+            "text": "ChooseIntent"
         }
     ]
 }

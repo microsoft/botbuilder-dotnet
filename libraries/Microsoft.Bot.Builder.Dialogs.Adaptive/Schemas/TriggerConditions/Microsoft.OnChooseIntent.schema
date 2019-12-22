@@ -7,7 +7,20 @@
     "allOf": [
         {
             "$ref": "./Microsoft.OnCondition.schema#"
+        },
+        {
+            "properties": {
+                "intents": {
+                    "type": "array",
+                    "title": "Intents",
+                    "description": "Intents that must be in the ChooseIntent result for this condition to trigger.",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
         }
+
     ],
     "required": [
         "actions"

@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// the consensus recognizer is returned.
     /// 
     /// In the case that there is conflicting or ambigious signals from the recognizers then an 
-    /// intent of "AmbigiousIntent" will be returned with the results of all of the recognizers.
+    /// intent of "ChooseIntent" will be returned with the results of all of the recognizers.
     /// </remarks>
     public class CrossTrainedRecognizerSet : Recognizer
     {
@@ -196,14 +196,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         private RecognizerResult CreateChooseIntentResult(string text, Dictionary<string, RecognizerResult> recognizerResults)
         {
             // create IntentScore with { "recognizerId" : { ...RecognizerResult.. } }
-            var ambigiousScore = new IntentScore()
+            var chooseIntentResult = new IntentScore()
             {
                 Score = 0.5F
             };
 
-            foreach (var result in recognizerResults)
+            var intents = new JObject();
+            foreach (var recognizerResult in recognizerResults.Values)
             {
-                ambigiousScore.Properties[result.Key] = result.Value;
+                var (topIntent, score) = recognizerResult.GetTopScoringIntent();
+                chooseIntentResult.Properties[topIntent] = recognizerResult;
             }
 
             return new RecognizerResult()
@@ -211,7 +213,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 Text = text,
                 Intents = new Dictionary<string, IntentScore>()
                 {
-                    { ChooseIntent, (IntentScore)ambigiousScore }
+                    { ChooseIntent, (IntentScore)chooseIntentResult }
                 }
             };
         }

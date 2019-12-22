@@ -26,7 +26,7 @@
                     "id": "y",
                     "intents": [
                         {
-                            "intent": "y",
+                            "intent": "DeferToRecognizer_z",
                             "pattern": "test"
                         },
                         {
@@ -56,28 +56,38 @@
                 "$kind": "Microsoft.OnChooseIntent",
                 "actions": [
                     {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "false",
+                        "description": "Empty condition should not trigger"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnChooseIntent",
+                "intents": [
+                    "DeferToRecognizer_x",
+                    "DeferToRecognizer_y",
+                    "DeferToRecognizer_z"
+                ],
+                "actions": [
+                    {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "ChooseIntent"
-                    },
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnChooseIntent",
+                "intents": [
+                    "x",
+                    "y",
+                    "z"
+                ],
+                "actions": [
                     {
                         "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "turn.recognized.intent.chooseintent.DeferToRecognizer_x != null",
-                        "description": "Should have DeferToRecognizer_x intent"
-                    },
-                    {
-                        "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "turn.recognized.intent.chooseintent.DeferToRecognizer_y != null",
-                        "description": "Should have DeferToRecognizer_y intent"
-                    },
-                    {
-                        "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "turn.recognized.intent.chooseintent.DeferToRecognizer_z == null",
-                        "description": "Should not have DeferToRecognizer_z intent"
-                    },
-                    {
-                        "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "turn.recognized.intent.chooseintent.y != null",
-                        "description": "Should not have y intent"
+                        "condition": "false",
+                        "description": "This should not trigger on x,y,z"
                     }
                 ]
             },

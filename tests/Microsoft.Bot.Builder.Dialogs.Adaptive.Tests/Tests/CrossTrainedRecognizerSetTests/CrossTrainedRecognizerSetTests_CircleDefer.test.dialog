@@ -26,7 +26,7 @@
                     "id": "y",
                     "intents": [
                         {
-                            "intent": "y",
+                            "intent": "DeferToRecognizer_z",
                             "pattern": "test"
                         },
                         {
@@ -71,13 +71,8 @@
                     },
                     {
                         "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "turn.recognized.intent.chooseintent.DeferToRecognizer_z == null",
-                        "description": "Should not have DeferToRecognizer_z intent"
-                    },
-                    {
-                        "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "turn.recognized.intent.chooseintent.y != null",
-                        "description": "Should not have y intent"
+                        "condition": "turn.recognized.intent.chooseintent.DeferToRecognizer_z != null",
+                        "description": "Should have DeferToRecognizer_z intent"
                     }
                 ]
             },
