@@ -199,52 +199,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
-        public void TestBasicInlineTemplate()
-        {
-            var lgFile = new LGFile();
-            Assert.AreEqual(lgFile.Evaluate("Hi"), "Hi");
-            Assert.AreEqual(lgFile.Evaluate("Hi", null), "Hi");
-            Assert.AreEqual(lgFile.Evaluate("Hi @{name}", new { name = "DL" }), "Hi DL");
-            Assert.AreEqual(lgFile.Evaluate("Hi @{name.FirstName}@{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
-            Assert.AreEqual(lgFile.Evaluate("Hi \n Hello", null), "Hi \n Hello");
-            Assert.AreEqual(lgFile.Evaluate("Hi \r\n Hello", null), "Hi \r\n Hello");
-            Assert.AreEqual(lgFile.Evaluate("Hi \r\n @{name}", new { name = "DL" }), "Hi \r\n DL");
-        }
-
-        [TestMethod]
-        public void TestInlineTemplateWithTemplateFile()
-        {
-            var lgFile = new LGParser().ParseFile(GetExampleFilePath("8.lg"));
-            Assert.AreEqual(lgFile.Evaluate("Hi"), "Hi");
-            Assert.AreEqual(lgFile.Evaluate("Hi", null), "Hi");
-            Assert.AreEqual(lgFile.Evaluate("Hi @{name}", new { name = "DL" }), "Hi DL");
-            Assert.AreEqual(lgFile.Evaluate("Hi @{name.FirstName}@{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
-            Assert.AreEqual(
-                lgFile.Evaluate(
-                "Hi @{name.FirstName}@{name.LastName} @{RecentTasks()}",
-                new
-                {
-                    name = new
-                    {
-                        FirstName = "D",
-                        LastName = "L"
-                    }
-                }), "Hi DL You don't have any tasks.");
-            Assert.AreEqual(
-                lgFile.Evaluate(
-                "Hi @{name.FirstName}@{name.LastName} @{RecentTasks()}",
-                new
-                {
-                    name = new
-                    {
-                        FirstName = "D",
-                        LastName = "L"
-                    },
-                    recentTasks = new[] { "task1" }
-                }), "Hi DL Your most recent task is task1. You can let me know if you want to add or complete a task.");
-        }
-
-        [TestMethod]
         public void TestMultiLine()
         {
             var lgFile = new LGParser().ParseFile(GetExampleFilePath("MultilineTextForAdaptiveCard.lg"));
