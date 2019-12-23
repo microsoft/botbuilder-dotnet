@@ -371,7 +371,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return baseLookup(name.Substring(prebuiltPrefix.Length));
             }
 
-            (var reExecute, var templateName) = ParseTemplateName(name);
+            var templateName = ParseTemplateName(name).pureTemplateName;
 
             if (this.TemplateMap.ContainsKey(templateName))
             {
@@ -586,19 +586,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (templateName == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("template name is null.");
             }
 
-            var reExecute = false;
-            var pureTemplateName = templateName;
-
-            if (templateName.EndsWith(ReExexuteSuffix))
-            {
-                reExecute = true;
-                pureTemplateName = templateName.Substring(0, templateName.Length - ReExexuteSuffix.Length);
-            }
-
-            return (reExecute, pureTemplateName);
+            return templateName.EndsWith(ReExexuteSuffix) ?
+                (true, templateName.Substring(0, templateName.Length - ReExexuteSuffix.Length))
+                : (false, templateName);
         }
     }
 }
