@@ -862,6 +862,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestReExecute()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("ReExecute.lg"));
+
+            // may be has different values
+            var evaled = engine.EvaluateTemplate("templateWithSameParams", new { param1 = "ms", param2 = "newms" });
+        }
+
+        [TestMethod]
         public void TestConditionExpression()
         {
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("ConditionExpression.lg"));

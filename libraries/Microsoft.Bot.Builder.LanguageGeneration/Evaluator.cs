@@ -21,6 +21,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         public const string LGType = "lgType";
         public static readonly Regex ExpressionRecognizeRegex = new Regex(@"(?<!\\)@{(((\'([^'\r\n])*?\')|(\""([^""\r\n])*?\""))|[^\r\n{}'""])*?}", RegexOptions.Compiled);
+        private const string ReExexuteSuffix = "!";
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
         public Evaluator(List<LGTemplate> templates, ExpressionEngine expressionEngine)
@@ -38,8 +39,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public Dictionary<string, LGTemplate> TemplateMap { get; }
 
-        public object EvaluateTemplate(string templateName, object scope)
+        public object EvaluateTemplate(string inputTemplateName, object scope)
         {
+            (var reExecute, var templateName) = ParseTemplateName(inputTemplateName);
+
             if (!TemplateMap.ContainsKey(templateName))
             {
                 throw new Exception($"[{templateName}] not found");
@@ -59,7 +62,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 previousEvaluateTarget = evaluationTargetStack.Peek();
 
-                if (previousEvaluateTarget.EvaluatedChildren.ContainsKey(currentEvaluateId))
+                if (!reExecute && previousEvaluateTarget.EvaluatedChildren.ContainsKey(currentEvaluateId))
                 {
                     return previousEvaluateTarget.EvaluatedChildren[currentEvaluateId];
                 }
@@ -70,7 +73,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var result = Visit(TemplateMap[templateName].ParseTree);
             if (previousEvaluateTarget != null)
             {
-                previousEvaluateTarget.EvaluatedChildren.Add(currentEvaluateId, result);
+                previousEvaluateTarget.EvaluatedChildren[currentEvaluateId] = result;
             }
 
             evaluationTargetStack.Pop();
@@ -223,8 +226,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return string.Join(string.Empty, result);
         }
 
-        public object ConstructScope(string templateName, List<object> args)
+        public object ConstructScope(string inputTemplateName, List<object> args)
         {
+            var templateName = ParseTemplateName(inputTemplateName).pureTemplateName;
+
             if (!TemplateMap.ContainsKey(templateName))
             {
                 throw new Exception($"No such template {templateName}");
@@ -366,9 +371,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return baseLookup(name.Substring(prebuiltPrefix.Length));
             }
 
-            if (this.TemplateMap.ContainsKey(name))
+            (var reExecute, var templateName) = ParseTemplateName(name);
+
+            if (this.TemplateMap.ContainsKey(templateName))
             {
-                return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
+                return new ExpressionEvaluator(templateName, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
             }
 
             const string template = "template";
@@ -573,6 +580,25 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 throw new Exception($"arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
             }
+        }
+
+        private (bool reExecute, string pureTemplateName) ParseTemplateName(string templateName)
+        {
+            if (templateName == null)
+            {
+                throw new ArgumentException();
+            }
+
+            var reExecute = false;
+            var pureTemplateName = templateName;
+
+            if (templateName.EndsWith(ReExexuteSuffix))
+            {
+                reExecute = true;
+                pureTemplateName = templateName.Substring(0, templateName.Length - ReExexuteSuffix.Length);
+            }
+
+            return (reExecute, pureTemplateName);
         }
     }
 }
