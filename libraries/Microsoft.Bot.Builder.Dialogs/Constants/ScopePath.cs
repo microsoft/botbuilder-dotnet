@@ -2,13 +2,13 @@
 {
     public class ScopePath
     {
-        public const string User = "user";
-        public const string Conversation = "conversation";
-        public const string Dialog = "dialog";
-        public const string DialogClass = "dialogclass";
-        public const string This = "this";
-        public const string Class = "class";
-        public const string Settings = "settings";
-        public const string Turn = "turn";
+        public const string USER = "user";
+        public const string CONVERSATION = "conversation";
+        public const string DIALOG = "dialog";
+        public const string DIALOGCLASS = "dialogclass";
+        public const string THIS = "this";
+        public const string CLASS = "class";
+        public const string SETTINGS = "settings";
+        public const string TURN = "turn";
     }
 }

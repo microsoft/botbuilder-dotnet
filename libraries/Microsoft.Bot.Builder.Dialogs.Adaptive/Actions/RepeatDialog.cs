@@ -34,19 +34,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             var targetDialogId = dc.Parent.ActiveDialog.Id;
 
-            var repeatedIds = dc.GetState().GetValue<List<string>>(TurnPath.RepeatedIds, () => new List<string>());
+            var repeatedIds = dc.GetState().GetValue<List<string>>(TurnPath.REPEATEDIDS, () => new List<string>());
             if (repeatedIds.Contains(targetDialogId))
             {
                 throw new ArgumentException($"Recursive loop detected, {targetDialogId} cannot be repeated twice in one turn.");
             }
 
             repeatedIds.Add(targetDialogId);
-            dc.GetState().SetValue(TurnPath.RepeatedIds, repeatedIds);
+            dc.GetState().SetValue(TurnPath.REPEATEDIDS, repeatedIds);
 
             if (this.IncludeActivity)
             {
                 // reset this to false so that new dialog has opportunity to process the activity
-                dc.GetState().SetValue(TurnPath.ActivityProcessed, false);
+                dc.GetState().SetValue(TurnPath.ACTIVITYPROCESSED, false);
             }
 
             var turnResult = await dc.Parent.ReplaceDialogAsync(dc.Parent.ActiveDialog.Id, boundOptions, cancellationToken).ConfigureAwait(false);
