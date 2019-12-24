@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
                     var (result, error) = engine.Parse(assertion).TryEvaluate(activity);
                     if ((bool)result != true)
                     {
-                        throw new Exception($"{this.Description} {assertion}");
+                        throw new Exception($"{this.Description} {assertion} {activity}");
                     }
                 }
             }

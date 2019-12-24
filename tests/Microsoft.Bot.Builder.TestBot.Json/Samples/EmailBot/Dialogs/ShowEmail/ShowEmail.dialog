@@ -6,25 +6,25 @@
     "intents": [
         {
 
-            "$kind": "Microsoft.IntentPattern",
+            
             "intent": "ForwardEmailIntent",
             "pattern": "(?i)forward" 
         },
         {
 
-            "$kind": "Microsoft.IntentPattern",
+            
             "intent": "ReplyEmailIntent",
             "pattern": "(?i)reply" 
         },
         {
 
-            "$kind": "Microsoft.IntentPattern",
+            
             "intent": "ShowNextPageIntent",
             "pattern": "(?i)next page" 
         },
         {
 
-            "$kind": "Microsoft.IntentPattern",
+            
             "intent": "ShowEmailIntent",
             "pattern": "(?i)show"
         }

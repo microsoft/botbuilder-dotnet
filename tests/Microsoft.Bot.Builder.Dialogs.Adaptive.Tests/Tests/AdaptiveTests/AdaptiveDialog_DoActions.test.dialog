@@ -9,12 +9,10 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    "$kind": "Microsoft.IntentPattern",
                     "intent": "JokeIntent",
                     "pattern": "joke"
                 },
                 {
-                    "$kind": "Microsoft.IntentPattern",
                     "intent": "HelloIntent",
                     "pattern": "hi|hello"
                 }

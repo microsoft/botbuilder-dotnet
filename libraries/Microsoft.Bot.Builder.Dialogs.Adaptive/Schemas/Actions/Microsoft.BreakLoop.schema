@@ -4,8 +4,7 @@
     "title": "Break Loop",
     "description": "Stop executing this loop",
     "type": "object",
-    "required": [
-    ],
+    "required": [],
     "properties": {
         "id": {
             "type": "string",

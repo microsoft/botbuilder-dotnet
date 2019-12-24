@@ -25,8 +25,19 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 config
                     .AddUserSecrets<Startup>()
                     .AddJsonFile($"luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
-                    .AddJsonFile($"luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false);
-            }).UseStartup<Startup>()
+                    .AddJsonFile($"luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
+                    .AddJsonFile($@"samples\GeneratedForm\luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
+                    .AddJsonFile($@"samples\GeneratedForm\luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
+                    .AddJsonFile($@"samples\activity\luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
+                    .AddJsonFile($@"samples\activity\luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
+                    .AddJsonFile($@"samples\contact\luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
+                    .AddJsonFile($@"samples\contact\luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
+                    .AddJsonFile($@"samples\opportunity\luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
+                    .AddJsonFile($@"samples\opportunity\luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
+                    .AddJsonFile($@"samples\test\luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
+                    .AddJsonFile($@"samples\test\luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false);
+            })
+            .UseStartup<Startup>()
             .Build();
     }
 }

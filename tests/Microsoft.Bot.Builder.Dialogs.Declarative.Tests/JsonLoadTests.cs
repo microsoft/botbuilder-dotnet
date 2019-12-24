@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -29,8 +28,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
     public class JsonLoadTests
     {
         private static ResourceExplorer resourceExplorer;
-
-        private readonly string samplesDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Samples\");
 
         public TestContext TestContext { get; set; }
 

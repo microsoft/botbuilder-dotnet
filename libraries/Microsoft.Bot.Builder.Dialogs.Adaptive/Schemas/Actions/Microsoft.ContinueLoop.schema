@@ -4,8 +4,7 @@
     "title": "Continune Loop",
     "description": "Stop executing this template and continue with the next iteration of the loop.",
     "type": "object",
-    "required": [
-    ],
+    "required": [],
     "properties": {
         "id": {
             "type": "string",

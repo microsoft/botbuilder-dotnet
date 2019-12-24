@@ -6,10 +6,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Expressions.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Expressions.Tests
@@ -662,6 +660,10 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("indexOf(nullObj, '-')", -1),
             Test("indexOf(hello, nullObj)", 0),
             Test("indexOf(hello, '-')", -1),
+            Test("indexOf(json('[\"a\", \"b\"]'), 'a')", 0),
+            Test("indexOf(json('[\"a\", \"b\"]'), 'c')", -1),
+            Test("indexOf(createArray('abc', 'def', 'ghi'), 'def')", 1),
+            Test("indexOf(createArray('abc', 'def', 'ghi'), 'klm')", -1),
             Test("lastIndexOf(newGuid(), '-')", 23),
             Test("lastIndexOf(hello, '-')", -1),
             Test("lastIndexOf(nullObj, '-')", -1),

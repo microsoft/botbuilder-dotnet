@@ -1,0 +1,123 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "recognizer": {
+            "$kind": "Microsoft.MultiLanguageRecognizer",
+            "recognizers": {
+                "en-us": {
+                    "$kind": "Microsoft.RegexRecognizer",
+                    "intents": [
+                        {
+                            "intent": "Greeting",
+                            "pattern": "(?i)howdy"
+                        },
+                        {
+                            "intent": "Goodbye",
+                            "pattern": "(?i)bye"
+                        }
+                    ]
+                },
+                "en-gb": {
+                    "$kind": "Microsoft.RegexRecognizer",
+                    "intents": [
+                        {
+                            "intent": "Greeting",
+                            "pattern": "(?i)hiya"
+                        },
+                        {
+                            "intent": "Goodbye",
+                            "pattern": "(?i)cheerio"
+                        }
+                    ]
+                },
+                "en": {
+                    "$kind": "Microsoft.RegexRecognizer",
+                    "intents": [
+                        {
+                            "intent": "Greeting",
+                            "pattern": "(?i)hello"
+                        },
+                        {
+                            "intent": "Goodbye",
+                            "pattern": "(?i)goodbye"
+                        }
+                    ]
+                },
+                "": {
+                    "$kind": "Microsoft.RegexRecognizer",
+                    "intents": [
+                        {
+                            "intent": "Greeting",
+                            "pattern": "(?i)salve"
+                        },
+                        {
+                            "intent": "Goodbye",
+                            "pattern": "(?i)vale dicere"
+                        }
+                    ]
+                }
+            }
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "Greeting",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "greeting intent"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "Goodbye",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "goodbye intent"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "default rule"
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "locale": "en",
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hello"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "greeting intent"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "howdy"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "default rule"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "goodbye"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "goodbye intent"
+        }
+    ]
+}

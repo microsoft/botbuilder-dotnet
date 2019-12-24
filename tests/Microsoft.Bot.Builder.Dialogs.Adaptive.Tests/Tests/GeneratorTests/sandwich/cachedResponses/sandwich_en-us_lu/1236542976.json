@@ -1,0 +1,1 @@
+{"query":"sure","prediction":{"topIntent":"sandwich","intents":{"sandwich":{"score":0.9999347}},"entities":{"Confirmation":[["yes"]],"$instance":{"Confirmation":[{"type":"Confirmation","text":"sure","startIndex":0,"length":4,"modelTypeId":5,"modelType":"List Entity Extractor","recognitionSources":["model"]}]}}}}

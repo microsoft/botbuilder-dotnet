@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
     /// <summary>
-    /// Select a random true rule implementation of IRuleSelector.
+    /// Select a random true triggerHandler implementation of IRuleSelector.
     /// </summary>
     public class RandomSelector : ITriggerSelector
     {
@@ -24,7 +24,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private bool _evaluate;
         private Random _rand;
         private int _seed = -1;
-        private IExpressionParser _parser = new ExpressionEngine();
 
         /// <summary>
         /// Gets or sets optional seed for random number generator.
@@ -44,6 +43,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
+        [Newtonsoft.Json.JsonIgnore]
+        public IExpressionParser Parser { get; set; } = new ExpressionEngine();
+
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
             _conditionals = conditionals.ToList();
@@ -54,29 +56,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
-        public Task<IReadOnlyList<int>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
+        public Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel = default)
         {
-            var candidates = new List<int>();
-            for (var i = 0; i < _conditionals.Count; ++i)
+            var candidates = _conditionals;
+            if (_evaluate)
             {
-                if (_evaluate)
+                candidates = new List<OnCondition>();
+                foreach (var conditional in _conditionals)
                 {
-                    var conditional = _conditionals[i];
-                    var expression = conditional.GetExpression(_parser);
+                    var expression = conditional.GetExpression(Parser);
                     var (value, error) = expression.TryEvaluate(context.GetState());
                     var eval = error == null && (bool)value;
                     if (eval == true)
                     {
-                        candidates.Add(i);
+                        candidates.Add(conditional);
                     }
-                }
-                else
-                {
-                    candidates.Add(i);
                 }
             }
 
-            var result = new List<int>();
+            var result = new List<OnCondition>();
             if (candidates.Count > 0)
             {
                 int selection;
@@ -88,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 result.Add(candidates[selection]);
             }
 
-            return Task.FromResult((IReadOnlyList<int>)result);
+            return Task.FromResult((IReadOnlyList<OnCondition>)result);
         }
     }
 }
