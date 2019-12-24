@@ -73,14 +73,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
-        public void TestErrorExpression()
-        {
-            var lgFile = GetLGFile("ErrorExpression.lg");
-            var exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("template1"));
-            Assert.IsTrue(exception.Message.Contains("Error occurs when evaluating expression"));
-        }
-
-        [TestMethod]
         public void TestErrorStructuredTemplate()
         {
             var diagnostics = GetDiagnostics("ErrorStructuredTemplate.lg");
@@ -131,17 +123,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(diagnostics[0].Message.Contains("does not have an evaluator"));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
             Assert.IsTrue(diagnostics[1].Message.Contains("arguments mismatch for template"));
-        }
-
-        [TestMethod]
-        public void TestLoopDetected()
-        {
-            var lgFile = GetLGFile("LoopDetected.lg");
-            var exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("wPhrase"));
-            Assert.IsTrue(exception.Message.Contains("Loop detected"));
-
-            exception = Assert.ThrowsException<Exception>(() => lgFile.AnalyzeTemplate("wPhrase"));
-            Assert.IsTrue(exception.Message.Contains("Loop detected"));
         }
 
         [TestMethod]
@@ -219,10 +200,38 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestLoopDetected()
+        {
+            var lgFile = GetLGFile("LoopDetected.lg");
+            var exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("wPhrase"));
+            Assert.IsTrue(exception.Message.Contains("Loop detected"));
+
+            exception = Assert.ThrowsException<Exception>(() => lgFile.AnalyzeTemplate("wPhrase"));
+            Assert.IsTrue(exception.Message.Contains("Loop detected"));
+        }
+
+        [TestMethod]
         public void AddTextWithWrongId()
         {
-            var lgFile = new LGParser().ParseContent("[import](xx.lg) \r\n # t \n - hi", "a.lg");
-            Assert.IsTrue(lgFile.Diagnostics.Any(u => u.Severity == DiagnosticSeverity.Error));
+            var diagnostics = new LGParser().ParseContent("[import](xx.lg) \r\n # t \n - hi", "a.lg").Diagnostics;
+            Assert.AreEqual(1, diagnostics.Count);
+            Assert.IsTrue(diagnostics[0].Message.Contains("Could not find file"));
+        }
+
+        [TestMethod]
+        public void TestErrorExpression()
+        {
+            var lgFile = GetLGFile("ErrorExpression.lg");
+            var exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("template1"));
+            Assert.IsTrue(exception.Message.Contains("Error occurs when evaluating expression"));
+        }
+
+        [TestMethod]
+        public void TestNoVariableMatch()
+        {
+            var lgFile = GetLGFile("NoVariableMatch.lg");
+            var exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("NoVariableMatch"));
+            Assert.IsTrue(exception.Message.Contains("Error occurs when evaluating expression 'Name': Name is evaluated to null"));
         }
 
         private string GetExceptionExampleFilePath(string fileName)

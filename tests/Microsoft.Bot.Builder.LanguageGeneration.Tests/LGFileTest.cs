@@ -370,20 +370,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
-        public void TestExceptionCatch()
-        {
-            var lgFile = new LGParser().ParseFile(GetExampleFilePath("ExceptionCatch.lg"));
-            try
-            {
-                lgFile.EvaluateTemplate("NoVariableMatch", null);
-            }
-            catch (Exception e)
-            {
-                TestContext.WriteLine(e.Message);
-            }
-        }
-
-        [TestMethod]
         public void TestImportLgFiles()
         {
             var lgFile = new LGParser().ParseFile(GetExampleFilePath("import.lg"));
