@@ -1,0 +1,15 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$kind": "Microsoft.OnEndOfActions",
+    "condition":"!$Temperature && contains(dialog.requiredProperties, 'Temperature')",
+    "actions": [
+        {
+            "$kind": "Microsoft.Ask",
+            "activity": "@{AskTemperature()}",
+            "expectedProperties": [
+                "Temperature"
+            ]
+        },
+    ]
+}

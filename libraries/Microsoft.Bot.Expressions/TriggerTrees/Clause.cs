@@ -5,12 +5,16 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.Serialization;
     using System.Text;
     using Microsoft.Bot.Expressions;
 
     public class Clause : Expression
     {
         private Dictionary<string, string> anyBindings = new Dictionary<string, string>();
+
+        // These are the ignored predicates
+        private Expression ignored;
 
         internal Clause()
             : base(ExpressionType.And)
@@ -20,6 +24,7 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
         internal Clause(Clause fromClause)
             : base(ExpressionType.And)
         {
+            Children = (Expression[])fromClause.Children.Clone();
             foreach (var pair in fromClause.AnyBindings)
             {
                 AnyBindings.Add(pair.Key, pair.Value);
@@ -72,6 +77,13 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
             }
 
             builder.Append(')');
+            if (ignored != null)
+            {
+                builder.Append(" ignored(");
+                builder.Append(ignored.ToString());
+                builder.Append(')');
+            }
+
             foreach (var binding in AnyBindings)
             {
                 builder.Append($" {binding.Key}->{binding.Value}");
@@ -82,9 +94,9 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
         {
             var soFar = RelationshipType.Incomparable;
             var shorter = this;
-            var shorterCount = shorter.PredicateCount();
+            var shorterCount = shorter.Children.Count();
             var longer = other;
-            var longerCount = longer.PredicateCount();
+            var longerCount = longer.Children.Count();
             var swapped = false;
             if (longerCount < shorterCount)
             {
@@ -109,53 +121,50 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
             }
             else
             {
-                // If every one of shorter predicates is equal or superset of one in longer, then shoter is a superset of longer
+                // If every one of shorter predicates is equal or superset of one in longer, then shorter is a superset of longer
                 foreach (var shortPredicate in shorter.Children)
                 {
                     var shorterRel = RelationshipType.Incomparable;
-                    if (shortPredicate.Type != TriggerTree.Ignore)
+                    foreach (var longPredicate in longer.Children)
                     {
-                        foreach (var longPredicate in longer.Children)
+                        shorterRel = Relationship(shortPredicate, longPredicate, comparers);
+                        if (shorterRel != RelationshipType.Incomparable)
                         {
-                            shorterRel = Relationship(shortPredicate, longPredicate, comparers);
-                            if (shorterRel != RelationshipType.Incomparable)
-                            {
-                                // Found related predicates
-                                break;
-                            }
-                        }
-
-                        if (shorterRel == RelationshipType.Incomparable)
-                        {
-                            // Predicate in shorter is incomparable so done
-                            soFar = RelationshipType.Incomparable;
+                            // Found related predicates
                             break;
                         }
-                        else
+                    }
+
+                    if (shorterRel == RelationshipType.Incomparable)
+                    {
+                        // Predicate in shorter is incomparable so done
+                        soFar = RelationshipType.Incomparable;
+                        break;
+                    }
+                    else
+                    {
+                        if (soFar == RelationshipType.Incomparable)
                         {
-                            if (soFar == RelationshipType.Incomparable)
+                            soFar = shorterRel;
+                        }
+
+                        if (soFar == RelationshipType.Equal)
+                        {
+                            if (shorterRel == RelationshipType.Generalizes
+                                || (shorterRel == RelationshipType.Specializes && shorterCount == longerCount)
+                                || shorterRel == RelationshipType.Equal)
                             {
                                 soFar = shorterRel;
                             }
-
-                            if (soFar == RelationshipType.Equal)
+                            else
                             {
-                                if (shorterRel == RelationshipType.Generalizes
-                                    || (shorterRel == RelationshipType.Specializes && shorterCount == longerCount)
-                                    || shorterRel == RelationshipType.Equal)
-                                {
-                                    soFar = shorterRel;
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-                            else if (soFar != shorterRel)
-                            {
-                                // Not continued with sub/super so incomparable
                                 break;
                             }
+                        }
+                        else if (soFar != shorterRel)
+                        {
+                            // Not continued with sub/super so incomparable
+                            break;
                         }
                     }
                 }
@@ -173,8 +182,47 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
                 soFar = BindingsRelationship(soFar, shorter, longer);
             }
 
-            soFar = IgnoreRelationship(soFar, shorter, longer);
             return swapped ? soFar.Swap() : soFar;
+        }
+
+        public bool Matches(Clause clause, object memory)
+        {
+            var matched = false;
+            if (clause.DeepEquals(this))
+            {
+                matched = true;
+                if (ignored != null)
+                {
+                    var (value, err) = ignored.TryEvaluate(memory);
+                    matched = err == null && value is bool match && match;
+                }
+            }
+
+            return matched;
+        }
+
+        internal void SplitIgnores()
+        {
+            var children = new List<Expression>();
+            var ignores = new List<Expression>();
+            foreach (var child in Children)
+            {
+                if (child.Type == TriggerTree.Ignore)
+                {
+                    ignores.Add(child.Children[0]);
+                }
+                else
+                {
+                    children.Add(child);
+                }
+
+                Children = children.ToArray();
+            }
+
+            if (ignores.Any())
+            {
+                ignored = Expression.AndExpression(ignores.ToArray());
+            }
         }
 
         private RelationshipType BindingsRelationship(RelationshipType soFar, Clause shorterClause, Clause longerClause)
@@ -235,58 +283,6 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
             return soFar;
         }
 
-        private RelationshipType IgnoreRelationship(RelationshipType soFar, Clause shorterClause, Clause longerClause)
-        {
-            if (soFar == RelationshipType.Equal)
-            {
-                var shortIgnores = shorterClause.Children.Where(p => p.Type == TriggerTree.Ignore);
-                var longIgnores = longerClause.Children.Where(p => p.Type == TriggerTree.Ignore);
-                var swapped = false;
-                if (longIgnores.Count() < shortIgnores.Count())
-                {
-                    var old = longIgnores;
-                    longIgnores = shortIgnores;
-                    shortIgnores = old;
-                    swapped = true;
-                }
-
-                foreach (var shortPredicate in shortIgnores)
-                {
-                    var found = false;
-                    foreach (var longPredicate in longIgnores)
-                    {
-                        if (shortPredicate.DeepEquals(longPredicate))
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (!found)
-                    {
-                        soFar = RelationshipType.Incomparable;
-                        break;
-                    }
-                }
-
-                if (soFar == RelationshipType.Equal)
-                {
-                    if (shorterClause.Children.Count() == 0 && longerClause.Children.Count() > 0)
-                    {
-                        soFar = RelationshipType.Generalizes;
-                    }
-                    else if (shortIgnores.Count() < longIgnores.Count())
-                    {
-                        soFar = RelationshipType.Incomparable;
-                    }
-                }
-
-                soFar = Swap(soFar, swapped);
-            }
-
-            return soFar;
-        }
-
         private RelationshipType Relationship(Expression expr, Expression other, Dictionary<string, IPredicateComparer> comparers)
         {
             var relationship = RelationshipType.Incomparable;
@@ -315,7 +311,5 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
 
             return relationship;
         }
-
-        private int PredicateCount() => Children.Count(e => e.Type != TriggerTree.Ignore);
     }
 }

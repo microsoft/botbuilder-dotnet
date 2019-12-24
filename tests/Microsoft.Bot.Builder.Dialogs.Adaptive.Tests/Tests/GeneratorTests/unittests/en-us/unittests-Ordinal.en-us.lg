@@ -1,0 +1,12 @@
+# AskOrdinal
+- @{askString('Ordinal')}
+
+# OrdinalName
+- ordinal
+
+# Ordinal(val)
+- @{OrdinalEntity(val)}
+
+[unittests-OrdinalEntity.lg](unittests-OrdinalEntity.lg)
+
+[unittests-common.lg](unittests-common.lg)

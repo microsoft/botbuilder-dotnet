@@ -153,3 +153,6 @@ csharp_space_after_dot = false
 # Wrapping preferences
 csharp_preserve_single_line_statements = true
 csharp_preserve_single_line_blocks = true
+
+# CS0618: Type or member is obsolete
+dotnet_diagnostic.CS0618.severity = none

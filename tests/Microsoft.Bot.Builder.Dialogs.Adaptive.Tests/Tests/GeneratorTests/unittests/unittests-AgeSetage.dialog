@@ -1,0 +1,19 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$kind": "Microsoft.OnAssignEntity",
+    "property": "Age",
+    "entity": "age",
+    "actions": [
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Age.number",
+            "value": "@age['number']"          
+        },
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Age.units",
+            "value": "@age['units']"          
+        }
+    ]               
+}

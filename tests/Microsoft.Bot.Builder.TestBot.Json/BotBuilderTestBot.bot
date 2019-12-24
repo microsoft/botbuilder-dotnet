@@ -19,19 +19,25 @@
         {
             "type": "endpoint",
             "endpoint": "http://localhost:3979/api/messages",
-            "name": "http://localhost:3979/api/messages",
-            "id": "98"
+            "id": "98",
+            "name": "http://localhost:3979/api/messages"
         },
         {
             "type": "endpoint",
             "endpoint": "http://localhost:3978/api/messages",
-            "name": "http://localhost:3978/api/messages",
-            "id": "161"
+            "id": "161",
+            "name": "http://localhost:3978/api/messages"
+        },
+        {
+            "type": "endpoint",
+            "endpoint": "http://localhost:51478/api/messages",
+            "name": "ddd",
+            "id": "244"
         }
     ],
     "padlock": "",
     "version": "2.0",
-    "path": "C:\\source\\GitHub\\botbuilder-dotnet\\samples\\Microsoft.Bot.Builder.TestBot.Json\\BotBuilderTestBot.bot",
     "overrides": null,
+    "path": "C:\\source\\GitHub\\botbuilder-dotnet\\tests\\Microsoft.Bot.Builder.TestBot.Json\\BotBuilderTestBot.bot",
     "secretKey": ""
 }

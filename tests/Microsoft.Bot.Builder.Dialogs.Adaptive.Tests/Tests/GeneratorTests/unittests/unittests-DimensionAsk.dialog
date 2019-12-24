@@ -1,0 +1,15 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$kind": "Microsoft.OnEndOfActions",
+    "condition":"!$Dimension && contains(dialog.requiredProperties, 'Dimension')",
+    "actions": [
+        {
+            "$kind": "Microsoft.Ask",
+            "activity": "@{AskDimension()}",
+            "expectedProperties": [
+                "Dimension"
+            ]
+        },
+    ]
+}

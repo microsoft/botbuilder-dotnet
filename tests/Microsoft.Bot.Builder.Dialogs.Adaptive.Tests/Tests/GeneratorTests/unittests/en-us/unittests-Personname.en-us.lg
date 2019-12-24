@@ -1,0 +1,12 @@
+# AskPersonname
+- @{askString('Personname')}
+
+# PersonnameName
+- personname
+
+# Personname(val)
+- @{PersonnameEntity(val)}
+
+[unittests-PersonnameEntity.lg](unittests-PersonnameEntity.lg)
+
+[unittests-common.lg](unittests-common.lg)

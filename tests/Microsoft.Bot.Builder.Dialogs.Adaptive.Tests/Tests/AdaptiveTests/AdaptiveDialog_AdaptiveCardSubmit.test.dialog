@@ -5,12 +5,19 @@
         "$kind": "Microsoft.AdaptiveDialog",
         "id": "planningTest",
         "recognizer": {
-            "$kind": "Microsoft.RegexRecognizer",
-            "intents": [
+            "$kind": "Microsoft.RecognizerSet",
+            "recognizers": [
                 {
-                    "$kind": "Microsoft.IntentPattern",
-                    "intent": "SubmitIntent",
-                    "pattern": "123123123"
+                    "$kind": "Microsoft.RegexRecognizer",
+                    "intents": [
+                        {
+                            "intent": "SubmitIntent",
+                            "pattern": "123123123"
+                        }
+                    ]
+                },
+                {
+                    "$kind": "Microsoft.ValueRecognizer",
                 }
             ]
         },
