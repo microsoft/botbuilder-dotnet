@@ -11,6 +11,5 @@
             "description": "Optional unique id using with RecognizerSet."
         }
     },
-    "required": [
-    ]
+    "required": []
 }

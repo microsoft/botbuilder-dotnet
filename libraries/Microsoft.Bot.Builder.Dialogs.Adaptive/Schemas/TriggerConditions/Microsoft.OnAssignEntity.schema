@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
     "$role": "union(Microsoft.ITriggerCondition)",
-    "title": "Assign an entity to a property",
-    "description": "This defines the actions to take when an entity should be assigned to a property",
+    "title": "On entity assignment",
+    "description": "Actions to take when an entity should be assigned to a property.",
     "allOf": [
         {
             "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/TriggerConditions/Microsoft.OnCondition.schema#"
@@ -22,7 +22,6 @@
                 },
                 "operation": {
                     "type": "string",
-                    "title": "Operation",
                     "title": "Operation to use for assigning entity"
                 }
             }

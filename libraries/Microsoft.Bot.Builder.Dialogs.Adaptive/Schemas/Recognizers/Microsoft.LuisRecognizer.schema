@@ -15,7 +15,7 @@
             "type": "string",
             "title": "LUIS Application ID",
             "description": "Application ID for your model from the LUIS service.",
-            "$role":  "expression"
+            "$role": "expression"
         },
         "endpoint": {
             "type": "string",

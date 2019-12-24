@@ -1,7 +1,7 @@
 
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
-    "$kind": "Microsoft.OnAsk",
+    "$kind": "Microsoft.OnEndOfActions",
     "condition":"!$Directions && contains(dialog.requiredProperties, 'Directions')",
     "actions": [
         {

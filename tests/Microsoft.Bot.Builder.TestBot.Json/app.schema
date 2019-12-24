@@ -241,9 +241,9 @@
             "$ref": "#/definitions/Microsoft.OnActivity"
         },
         {
-            "title": "Microsoft.OnAsk",
-            "description": "This defines the actions to take when an OnAsk event is raised",
-            "$ref": "#/definitions/Microsoft.OnAsk"
+            "title": "Microsoft.OnEndOfActions",
+            "description": "This defines the actions to take when an OnEndOfActions event is raised",
+            "$ref": "#/definitions/Microsoft.OnEndOfActions"
         },
         {
             "title": "Microsoft.OnAssignEntity",
@@ -3781,9 +3781,9 @@
                     "$ref": "#/definitions/Microsoft.OnActivity"
                 },
                 {
-                    "title": "Microsoft.OnAsk",
-                    "description": "This defines the actions to take when an OnAsk event is raised",
-                    "$ref": "#/definitions/Microsoft.OnAsk"
+                    "title": "Microsoft.OnEndOfActions",
+                    "description": "This defines the actions to take when an OnEndOfActions event is raised",
+                    "$ref": "#/definitions/Microsoft.OnEndOfActions"
                 },
                 {
                     "title": "Microsoft.OnAssignEntity",
@@ -5018,10 +5018,10 @@
                 }
             ]
         },
-        "Microsoft.OnAsk": {
+        "Microsoft.OnEndOfActions": {
             "$role": "union(Microsoft.ITriggerCondition)",
             "title": "Ask Event",
-            "description": "This defines the actions to take when an OnAsk event is raised",
+            "description": "This defines the actions to take when an OnEndOfActions event is raised",
             "type": "object",
             "properties": {
                 "$kind": {
@@ -5029,7 +5029,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnAsk"
+                    "const": "Microsoft.OnEndOfActions"
                 },
                 "$copy": {
                     "title": "$copy",

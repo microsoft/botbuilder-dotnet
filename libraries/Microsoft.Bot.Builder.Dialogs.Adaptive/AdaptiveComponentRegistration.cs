@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<OnHandoffActivity>(OnHandoffActivity.DeclarativeType);
             yield return new TypeRegistration<OnChooseIntent>(OnChooseIntent.DeclarativeType);
 
-            yield return new TypeRegistration<OnAsk>(OnAsk.DeclarativeType);
+            yield return new TypeRegistration<OnEndOfActions>(OnEndOfActions.DeclarativeType);
             yield return new TypeRegistration<OnChooseProperty>(OnChooseProperty.DeclarativeType);
             yield return new TypeRegistration<OnChooseEntity>(OnChooseEntity.DeclarativeType);
             yield return new TypeRegistration<OnClearProperty>(OnClearProperty.DeclarativeType);
