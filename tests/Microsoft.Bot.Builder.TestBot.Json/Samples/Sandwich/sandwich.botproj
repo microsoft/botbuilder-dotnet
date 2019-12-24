@@ -1,9 +1,0 @@
-{
-    "services": [
-    ],
-    "files": [
-       "*.dialog",
-       "*.lg"
-    ],
-    "entry": "Steps.main.dialog"
-}

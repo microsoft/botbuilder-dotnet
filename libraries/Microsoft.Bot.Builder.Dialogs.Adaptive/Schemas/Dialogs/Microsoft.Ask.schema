@@ -1,0 +1,24 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
+    "title": "Send Activity to Ask a question",
+    "description": "This is an action which sends an activity to the user when a response is expected",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "../Actions/Microsoft.SendActivity.schema#"
+        },
+        {
+            "properties": {
+                "expectedProperties": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "Expected Properties",
+                    "description": "Properties expected to be filled by entities from the user"
+                }
+            }
+        }
+    ]
+}

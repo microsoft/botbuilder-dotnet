@@ -21,8 +21,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public new const string DeclarativeType = "Microsoft.OnQnAMatch";
 
         [JsonConstructor]
-        public OnQnAMatch(List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(QnAMakerRecognizer.QnAMatchIntent, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine)
+        public OnQnAMatch(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(QnAMakerRecognizer.QnAMatchIntent, actions: actions, condition: condition, callerPath: callerPath, callerLine: callerLine)
         {
         }
     }
