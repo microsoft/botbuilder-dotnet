@@ -36,6 +36,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await TestUtils.RunTestScript();
         }
 
+        [TestMethod]
+        public async Task ConditionalsTests_OnChooseIntent()
+        {
+            await TestUtils.RunTestScript();
+        }
+
         public void AssertExpression(OnCondition condition, string expectedExpression)
         {
             var exp = condition.GetExpression(new ExpressionEngine());

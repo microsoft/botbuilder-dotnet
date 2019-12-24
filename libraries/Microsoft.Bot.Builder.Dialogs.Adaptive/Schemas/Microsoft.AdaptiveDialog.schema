@@ -23,9 +23,9 @@
             "default": "dialog.result"
         },
         "recognizer": {
-            "$kind": "Microsoft.IRecognizer",
+            "$kind": "Microsoft.Recognizer",
             "title": "Recognizer",
-            "description": "Language Understanding recognizer that interprets user input into intent and entities."
+            "description": "Input recognizer that interprets user input into intent and entities."
         },
         "generator": {
             "$kind": "Microsoft.ILanguageGenerator",

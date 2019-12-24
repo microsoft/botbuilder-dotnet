@@ -8,36 +8,36 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 {
     [TestClass]
-    public class RecognizerTests
+    public class MultiLanguageRecognizerTests
     {
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public async Task RecognizerTest_EnUsFallback()
+        public async Task MultiLanguageRecognizerTest_EnUsFallback()
         {
             await TestUtils.RunTestScript();
         }
 
         [TestMethod]
-        public async Task RecognizerTest_EnUsFallback_ActivityLocaleCasing()
+        public async Task MultiLanguageRecognizerTest_EnUsFallback_ActivityLocaleCasing()
         {
             await TestUtils.RunTestScript();
         }
 
         [TestMethod]
-        public async Task RecognizerTest_EnGbFallback()
+        public async Task MultiLanguageRecognizerTest_EnGbFallback()
         {
             await TestUtils.RunTestScript();
         }
 
         [TestMethod]
-        public async Task RecognizerTest_EnFallback()
+        public async Task MultiLanguageRecognizerTest_EnFallback()
         {
             await TestUtils.RunTestScript();
         }
 
         [TestMethod]
-        public async Task RecognizerTest_DefaultFallback()
+        public async Task MultiLanguageRecognizerTest_DefaultFallback()
         {
             await TestUtils.RunTestScript();
         }

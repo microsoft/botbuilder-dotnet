@@ -8,7 +8,7 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    "$kind": "Microsoft.IntentPattern",
+                    
                     "intent": "Test",
                     "pattern": "test"
                 }
