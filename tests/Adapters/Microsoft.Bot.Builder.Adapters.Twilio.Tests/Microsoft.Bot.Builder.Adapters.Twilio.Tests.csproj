@@ -28,10 +28,10 @@
     <None Update="Files\Activities.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="files\DictionaryMediaPayload.json">
+    <None Update="Files\DictionaryMediaPayload.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="files\DictionaryPayload.json">
+    <None Update="Files\DictionaryPayload.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Files\MediaPayload.txt">

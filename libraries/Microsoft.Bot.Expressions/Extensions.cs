@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Expressions
         /// but you might get other paths from the computed part as well.
         /// </remarks>
         /// <param name="expression">Expression to get references from.</param>
-        /// <returns>Hash set of the static reference paths.</returns>
+        /// <returns>List of the static reference paths.</returns>
         public static IReadOnlyList<string> References(this Expression expression)
         {
             var (path, refs) = ReferenceWalk(expression);

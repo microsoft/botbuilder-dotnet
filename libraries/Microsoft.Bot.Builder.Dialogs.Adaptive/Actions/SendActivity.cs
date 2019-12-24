@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -49,7 +50,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             var activity = await Activity.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
-            var response = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+            ResourceResponse response = null;
+            if (activity.Type != "message" 
+                || !string.IsNullOrEmpty(activity.Text)
+                || activity.Attachments?.Any() == true
+                || !string.IsNullOrEmpty(activity.Speak)
+                || activity.SuggestedActions != null)
+            {
+                response = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+            }
+
             return await dc.EndDialogAsync(response, cancellationToken).ConfigureAwait(false);
         }
 
@@ -70,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return text;
             }
 
-            int pos = text.IndexOf(" ", length);
+            var pos = text.IndexOf(" ", length);
 
             if (pos >= 0)
             {

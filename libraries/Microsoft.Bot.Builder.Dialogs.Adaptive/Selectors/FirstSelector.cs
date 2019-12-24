@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
     /// <summary>
-    /// Select the first true rule implementation of <see cref="ITriggerSelector"/>.
+    /// Select the first ordered by priority true OnCondition.
     /// </summary>
     public class FirstSelector : ITriggerSelector
     {
@@ -21,7 +21,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 
         private List<OnCondition> _conditionals;
         private bool _evaluate;
-        private readonly IExpressionParser _parser = new ExpressionEngine();
+
+        [Newtonsoft.Json.JsonIgnore]
+        public IExpressionParser Parser { get; set; } = new ExpressionEngine();
 
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
@@ -29,39 +31,49 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             _evaluate = evaluate;
         }
 
-        public Task<IReadOnlyList<int>> Select(SequenceContext context, CancellationToken cancel)
+        public Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel)
         {
-            var selection = -1;
+            OnCondition selection = null;
+            var lowestPriority = int.MaxValue;
             if (_evaluate)
             {
                 for (var i = 0; i < _conditionals.Count; i++)
                 {
                     var conditional = _conditionals[i];
-                    var expression = conditional.GetExpression(_parser);
+                    var expression = conditional.GetExpression(Parser);
                     var (value, error) = expression.TryEvaluate(context.GetState());
                     var eval = error == null && (bool)value;
                     if (eval == true)
                     {
-                        selection = i;
-                        break;
+                        var priority = conditional.CurrentPriority(context);
+                        if (priority >= 0 && priority < lowestPriority)
+                        {
+                            selection = conditional;
+                            lowestPriority = priority;
+                        }
                     }
                 }
             }
             else
             {
-                if (_conditionals.Count > 0)
+                foreach (var conditional in _conditionals)
                 {
-                    selection = 0;
+                    var priority = conditional.CurrentPriority(context);
+                    if (priority >= 0 && priority < lowestPriority)
+                    {
+                        selection = conditional;
+                        lowestPriority = priority;
+                    }
                 }
             }
 
-            var result = new List<int>();
-            if (selection != -1)
+            var result = new List<OnCondition>();
+            if (selection != null)
             {
                 result.Add(selection);
             }
 
-            return Task.FromResult((IReadOnlyList<int>)result);
+            return Task.FromResult((IReadOnlyList<OnCondition>)result);
         }
     }
 }

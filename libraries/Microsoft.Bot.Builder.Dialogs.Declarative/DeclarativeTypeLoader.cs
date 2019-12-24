@@ -20,6 +20,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
     {
         private static List<ComponentRegistration> components = new List<ComponentRegistration>();
 
+        public static void Reset()
+        {
+            components.Clear();
+            TypeFactory.Reset();
+        }
+
         public static void AddComponent(ComponentRegistration component)
         {
             if (!components.Any(c => c.GetType() == component.GetType()))

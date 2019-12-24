@@ -7,49 +7,49 @@
         "intents": [
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "ShowEmailIntent",
                 "pattern": "(?i)show email" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "SendEmailIntent",
                 "pattern": "(?i)send email" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "HelpIntent",
                 "pattern": "(?i)help" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "FindContactIntent",
                 "pattern": "(?i)find email contact" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "ShowNextPageIntent",
                 "pattern": "(?i)next page email" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "ForwardEmailIntent",
                 "pattern": "(?i)forward email" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "ReplyEmailIntent",
                 "pattern": "(?i)reply email" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel|never mind"
             }
