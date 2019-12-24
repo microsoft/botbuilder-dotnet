@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Expressions.TriggerTrees.Tests
             tree.AddTrigger("true", "root");
             var matches = tree.Matches(new Dictionary<string, object>());
             Assert.AreEqual(1, matches.Count());
-            Assert.AreEqual("root", matches.First().Triggers.First().Action);
+            Assert.AreEqual("root", matches.First().Action);
         }
 
         [TestMethod]
@@ -36,9 +36,22 @@ namespace Microsoft.Bot.Expressions.TriggerTrees.Tests
             var frame = new Dictionary<string, object> { { "blah", 1 }, { "woof", 3 } };
             var matches = tree.Matches(frame).ToList();
             Assert.AreEqual(2, matches.Count);
-            Assert.AreEqual(1, matches[0].AllTriggers.Count());
-            Assert.AreEqual(1, matches[1].AllTriggers.Count());
-            Assert.AreEqual(3, matches[1].AllTriggers.First().Action);
+            Assert.AreEqual(2, matches[0].Action);
+            Assert.AreEqual(3, matches[1].Action);
+        }
+
+        [TestMethod]
+        public void TestOr()
+        {
+            var tree = new TriggerTree();
+            tree.AddTrigger("exists(woof) || exists(blah)", 1);
+            tree.AddTrigger("exists(blah)", 2);
+            tree.AddTrigger("exists(blah) && exists(foo)", 3);
+            var frame = new Dictionary<string, object> { { "blah", 1 }, { "woof", 3 } };
+            var matches = tree.Matches(frame).ToList();
+            Assert.AreEqual(2, matches.Count);
+            Assert.AreEqual(1, matches[0].Action);
+            Assert.AreEqual(2, matches[1].Action);
         }
 
         [TestMethod]
@@ -54,17 +67,13 @@ namespace Microsoft.Bot.Expressions.TriggerTrees.Tests
 
             var matches = tree.Matches(memory).ToList();
             Assert.AreEqual(1, matches.Count);
-            var triggers = matches[0].Triggers;
-            Assert.AreEqual(1, triggers.Count);
-            Assert.AreEqual(4, triggers[0].Action);
+            Assert.AreEqual(4, matches[0].Action);
 
             memory.Add("blah", 1);
             matches = tree.Matches(memory).ToList();
-            Assert.AreEqual(1, matches.Count());
-            triggers = matches[0].Triggers;
-            Assert.AreEqual(2, triggers.Count);
-            Assert.AreEqual(1, triggers[0].Action);
-            Assert.AreEqual(3, triggers[1].Action);
+            Assert.AreEqual(2, matches.Count());
+            Assert.AreEqual(1, matches[0].Action);
+            Assert.AreEqual(3, matches[1].Action);
         }
 
         [TestMethod]
@@ -108,11 +117,11 @@ namespace Microsoft.Bot.Expressions.TriggerTrees.Tests
                 var trigger = tree.AddTrigger(conjunction.Expression, conjunction.Bindings);
                 var matches = tree.Matches(memory);
                 triggers.Add(trigger);
-                Assert.IsTrue(matches.Count() == 1);
-                var first = matches.First().Clause;
+                Assert.IsTrue(matches.Count() >= 1);
+                var first = matches.First().Clauses.First();
                 foreach (var match in matches)
                 {
-                    Assert.AreEqual(RelationshipType.Equal, first.Relationship(match.Clause, tree.Comparers));
+                    Assert.AreEqual(RelationshipType.Equal, first.Relationship(match.Clauses.First(), tree.Comparers));
                 }
             }
 
@@ -172,14 +181,42 @@ namespace Microsoft.Bot.Expressions.TriggerTrees.Tests
                 }
 
                 var matches = tree.Matches(memory).ToList();
+
+                // Clauses in every match must not generalize or specialize other matches
                 for (var i = 0; i < matches.Count; ++i)
                 {
                     var first = matches[i];
                     for (var j = i + 1; j < matches.Count; ++j)
                     {
                         var second = matches[j];
-                        var reln = first.Relationship(second);
-                        Assert.AreEqual(RelationshipType.Incomparable, reln);
+                        var found = false;
+                        foreach (var firstClause in first.Clauses)
+                        {
+                            var (value, error) = firstClause.TryEvaluate(memory);
+                            if (error == null && (value is bool match && match))
+                            {
+                                foreach (var secondClause in second.Clauses)
+                                {
+                                    (value, error) = firstClause.TryEvaluate(memory);
+                                    if (error == null && (value is bool match2 && match2))
+                                    {
+                                        var reln = firstClause.Relationship(secondClause, tree.Comparers);
+                                        if (reln == RelationshipType.Equal || reln == RelationshipType.Incomparable)
+                                        {
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (found)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+
+                        Assert.IsTrue(found);
                     }
                 }
             }

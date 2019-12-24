@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
@@ -36,7 +37,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             // auto reload dialogs when file changes
             this.resourceExplorer.Changed += (resources) =>
             {
-                if (resources.Any(resource => resource.Id.EndsWith(".dialog")))
+                if (resources.Any(resource => resource.Id.EndsWith(".dialog") || resource.Id.EndsWith(".lg")))
                 {
                     Task.Run(() => this.LoadDialogs());
                 }

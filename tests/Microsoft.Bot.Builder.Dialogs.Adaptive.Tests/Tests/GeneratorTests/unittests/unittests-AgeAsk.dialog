@@ -1,0 +1,15 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$kind": "Microsoft.OnEndOfActions",
+    "condition":"!$Age && contains(dialog.requiredProperties, 'Age')",
+    "actions": [
+        {
+            "$kind": "Microsoft.Ask",
+            "activity": "@{AskAge()}",
+            "expectedProperties": [
+                "Age"
+            ]
+        },
+    ]
+}

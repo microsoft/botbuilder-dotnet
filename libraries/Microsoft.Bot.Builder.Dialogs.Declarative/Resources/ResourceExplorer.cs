@@ -63,11 +63,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
             if (!File.Exists(projectFile))
             {
-                projectFile = Directory.EnumerateFiles(projectFile, "*.*proj").FirstOrDefault();
-                if (projectFile == null)
+                var foundProject = Directory.EnumerateFiles(projectFile, "*.*proj").FirstOrDefault();
+                if (foundProject == null)
                 {
                     explorer.AddFolder(Path.GetDirectoryName(projectFile));
                     return explorer;
+                }
+                else
+                {
+                    projectFile = foundProject;
                 }
             }
 

@@ -1,0 +1,19 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$kind": "Microsoft.OnAssignEntity",
+    "property": "Temperature",
+    "entity": "temperature",
+    "actions": [
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Temperature.number",
+            "value": "@temperature['number']"          
+        },
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Temperature.units",
+            "value": "@temperature['units']"          
+        }
+    ]               
+}

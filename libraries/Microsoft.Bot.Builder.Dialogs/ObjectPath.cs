@@ -2,10 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Text.RegularExpressions;
-using Microsoft.Extensions.Primitives;
+using System.Linq.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -17,8 +14,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public static class ObjectPath
     {
-        private const string SingleQuote = "\'";
-        private const string DoubleQuote = "\"";
         private static JsonSerializerSettings cloneSettings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
 
         private static JsonSerializerSettings expressionCaseSettings = new JsonSerializerSettings
@@ -101,33 +96,17 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return true;
             }
 
-            if (!TryResolveBracketValues(obj, ref path))
+            if (!TryResolvePath(obj, path, out var segments))
             {
                 return false;
             }
 
-            // at this point we have clean dotted path with numerical array indexers: user[user.name][user.age] ==> user['tom'][52]
-            dynamic current = obj;
-            var segments = SplitSegments(path).ToArray();
-            for (int i = 0; i < segments.Length - 1; i++)
-            {
-                var segment = segments[i];
-                var nextSegment = segments[i + 1];
-
-                current = ResolveSegment(current, segment, nextSegment);
-                if (current == null)
-                {
-                    return false;
-                }
-            }
-
-            current = ResolveSegment(current, segments.Last(), null);
-            if (current == null)
+            if (!ResolveSegments(obj, segments, out var result))
             {
                 return false;
             }
 
-            value = MapValueTo<T>(current);
+            value = MapValueTo<T>(result);
             return true;
         }
 
@@ -140,80 +119,139 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="json">if true, sets the value as primitive JSON objects.</param>
         public static void SetPathValue(object obj, string path, object value, bool json = true)
         {
-            if (!TryResolveBracketValues(obj, ref path))
+            if (!TryResolvePath(obj, path, out var segments))
             {
                 return;
             }
 
-            string[] segments = SplitSegments(path).ToArray();
             dynamic current = obj;
-            for (var i = 0; i < segments.Length - 1; i++)
+            for (var i = 0; i < segments.Count() - 1; i++)
             {
                 var segment = segments[i];
-                var nextSegment = segments[i + 1];
-                current = ResolveSegment(current, segment, nextSegment, addMissing: true);
-            }
-
-            var lastSegment = segments.Last();
-            SetObjectProperty(current, lastSegment, value);
-        }
-
-        public static void RemovePathValue(object obj, string path)
-        {
-            if (!TryResolveBracketValues(obj, ref path))
-            {
-                return;
-            }
-
-            string[] segments = SplitSegments(path).ToArray();
-            dynamic next = obj;
-            for (var i = 0; i < segments.Length - 1; i++)
-            {
-                var segment = segments[i];
-                var nextSegment = segments[i + 1];
-                next = ResolveSegment(next, segment, nextSegment);
-
-                if (next == null)
+                dynamic next;
+                if (segment is int index)
                 {
-                    return;
-                }
-            }
+                    next = current[index];
+                    if (next == null)
+                    {
+                        if (((ICollection)current).Count <= index)
+                        {
+                            // Expand array to index
+                            for (var idx = ((ICollection)current).Count; idx <= index; ++idx)
+                            {
+                                ((JArray)current)[idx] = null;
+                            }
 
-            if (next != null)
-            {
-                var lastSegment = segments.Last();
-                if (IsArraySegment(lastSegment))
-                {
-                    var indexArgs = GetIndexArg(lastSegment);
-                    if (int.TryParse(indexArgs, out int index))
-                    {
-                        next[index] = null;
-                        return;
-                    }
-                    else
-                    {
-                        try
-                        {
-                            next.Remove(indexArgs);
-                        }
-                        catch (Exception)
-                        {
-                            ObjectPath.SetObjectProperty(next, indexArgs, null);
+                            next = current[index];
                         }
                     }
                 }
                 else
                 {
+                    var ssegment = segment as string;
+                    next = GetObjectProperty(current, ssegment);
+                    if (next == null)
+                    {
+                        // Create object or array base on next segment
+                        var nextSegment = segments[i + 1];
+                        if (nextSegment is string snext)
+                        {
+                            SetObjectSegment(current, ssegment, new JObject());
+                            next = GetObjectProperty(current, ssegment);
+                        }
+                        else
+                        {
+                            SetObjectSegment(current, ssegment, new JArray());
+                            next = GetObjectProperty(current, ssegment);
+                        }
+                    }
+                }
+
+                current = next;
+            }
+
+            var lastSegment = segments.Last();
+            SetObjectSegment(current, lastSegment, value, json);
+        }
+
+        /// <summary>
+        /// Remove path from object.
+        /// </summary>
+        /// <param name="obj">Object to change.</param>
+        /// <param name="path">Path to remove.</param>
+        public static void RemovePathValue(object obj, string path)
+        {
+            if (!TryResolvePath(obj, path, out var segments))
+            {
+                return;
+            }
+
+            dynamic current = obj;
+            for (var i = 0; i < segments.Count() - 1; i++)
+            {
+                var segment = segments[i];
+                if (!ResolveSegment(ref current, segment))
+                {
+                    return;
+                }
+            }
+
+            if (current != null)
+            {
+                var lastSegment = segments.Last();
+                if (lastSegment is string property)
+                {
                     try
                     {
-                        next.Remove(lastSegment);
+                        current.Remove(property);
                     }
                     catch (Exception)
                     {
-                        ObjectPath.SetObjectProperty(next, lastSegment, null);
+                        ObjectPath.SetObjectSegment(current, property, null);
+                    }
+                }
+                else
+                {
+                    current[(int)lastSegment] = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Apply an action to all properties in an object.
+        /// </summary>
+        /// <param name="obj">Object to map against.</param>
+        /// <param name="action">Action to take.</param>
+        public static void ForEachProperty(object obj, Action<string, object> action)
+        {
+            if (obj is IDictionary<string, object> dict)
+            {
+                foreach (var entry in dict)
+                {
+                    action(entry.Key, entry.Value);
+                }
+            }
+            else if (obj is JObject jobj)
+            {
+                foreach (var property in jobj.Properties())
+                {
+                    action(property.Name, property.Value);
+                }
+            }
+
+            /* For tracking purposes, only use pure dictionary/jobject.
+            else if (!(obj.GetType().IsPrimitive || obj.GetType().IsArray() || obj is string || obj is DateTime || obj is DateTimeOffset || obj is JValue || obj is JArray))
+            {
+                foreach (var property in obj.GetType().GetProperties())
+                {
+                    // Check for indexer
+                    if (property.GetIndexParameters().Length == 0)
+                    {
+                        action(property.Name, property.GetValue(obj));
                     }
                 }
             }
+            */
         }
 
         /// <summary>
@@ -265,10 +303,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (startObject != null && overlayObject != null)
             {
                 // make a deep clone JObject of the startObject
-                JObject jsMerged = (startObject is JObject) ? (JObject)(startObject as JObject).DeepClone() : JObject.FromObject(startObject);
+                var jsMerged = (startObject is JObject) ? (JObject)(startObject as JObject).DeepClone() : JObject.FromObject(startObject);
 
                 // get a JObject of the overlay object
-                JObject jsOverlay = (overlayObject is JObject) ? (overlayObject as JObject) : JObject.FromObject(overlayObject);
+                var jsOverlay = (overlayObject is JObject) ? (overlayObject as JObject) : JObject.FromObject(overlayObject);
 
                 jsMerged.Merge(jsOverlay, new JsonMergeSettings
                 {
@@ -340,6 +378,160 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
+        /// Given an root object and property path, resolve to a constant if eval = true or a constant path otherwise.  
+        /// conversation[user.name][user.age] => ['conversation', 'joe', 32].
+        /// </summary>
+        /// <param name="obj">root object.</param>
+        /// <param name="propertyPath">property path to resolve.</param>
+        /// <param name="segments">Path segments.</param>
+        /// <param name="eval">True to evaluate resulting segments.</param>
+        /// <returns>True if it was able to resolve all nested references.</returns>
+        public static bool TryResolvePath(object obj, string propertyPath, out List<object> segments, bool eval = false)
+        {
+            var soFar = new List<object>();
+            segments = soFar;
+            var first = propertyPath.Length > 0 ? propertyPath[0] : ' ';
+            if (first == '\'' || first == '"')
+            {
+                if (!propertyPath.EndsWith(first.ToString()))
+                {
+                    return false;
+                }
+
+                soFar.Add(propertyPath.Substring(1, propertyPath.Length - 2));
+            }
+            else if (int.TryParse(propertyPath, out var number))
+            {
+                soFar.Add(number);
+            }
+            else
+            {
+                var start = 0;
+                int i;
+
+                // Emit current fragment
+                void Emit()
+                {
+                    var segment = propertyPath.Substring(start, i - start);
+                    if (!string.IsNullOrEmpty(segment))
+                    {
+                        soFar.Add(segment);
+                    }
+
+                    start = i + 1;
+                }
+
+                // Scan path evaluating as we go
+                for (i = 0; i < propertyPath.Length; ++i)
+                {
+                    var ch = propertyPath[i];
+                    if (ch == '.' || ch == '[')
+                    {
+                        Emit();
+                    }
+
+                    if (ch == '[')
+                    {
+                        // Bracket expression
+                        var nesting = 1;
+                        while (++i < propertyPath.Length)
+                        {
+                            ch = propertyPath[i];
+                            if (ch == '[')
+                            {
+                                ++nesting;
+                            }
+                            else if (ch == ']')
+                            {
+                                --nesting;
+                                if (nesting == 0)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (nesting > 0)
+                        {
+                            // Unbalanced brackets
+                            return false;
+                        }
+
+                        var expr = propertyPath.Substring(start, i - start);
+                        start = i + 1;
+                        if (!TryResolvePath(obj, expr, out List<object> indexer, true) || indexer.Count() != 1)
+                        {
+                            // Could not resolve bracket expression
+                            return false;
+                        }
+                        else
+                        {
+                            var result = MapValueTo<string>(indexer.First());
+                            if (int.TryParse(result, out var index))
+                            {
+                                soFar.Add(index);
+                            }
+                            else
+                            {
+                                soFar.Add(result);
+                            }
+                        }
+                    }
+                }
+
+                Emit();
+
+                if (eval)
+                {
+                    if (!ResolveSegments(obj, soFar, out var result))
+                    {
+                        return false;
+                    }
+
+                    soFar.Clear();
+                    soFar.Add(MapValueTo<string>(result));
+                }
+            }
+
+            return true;
+        }
+
+        private static bool ResolveSegment(ref dynamic current, object segment)
+        {
+            if (current != null)
+            {
+                if (segment is int index)
+                {
+                    current = current[index];
+                }
+                else
+                {
+                    current = GetObjectProperty(current, segment as string);
+                }
+
+                // TODO: We should make it so that a value can be present, but be null.
+                // This interprets any null value as not being present.
+                return current != null;
+            }
+
+            return false;
+        }
+
+        private static bool ResolveSegments(dynamic current, List<object> segments, out dynamic result)
+        {
+            result = current;
+            foreach (var segment in segments)
+            {
+                if (!ResolveSegment(ref result, segment))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Get a property or array element from an object.
         /// </summary>
         /// <param name="obj">object.</param>
@@ -388,31 +580,27 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Given an object, set a property or array element on it with a value.
         /// </summary>
         /// <param name="obj">object to modify.</param>
-        /// <param name="property">property or array segment to put the value in.</param>
+        /// <param name="segment">property or array segment to put the value in.</param>
         /// <param name="value">value to store.</param>
         /// <param name="json">if true, value will be normalized to JSON primitive objects.</param>
-        private static void SetObjectProperty(object obj, string property, object value, bool json = true)
+        private static void SetObjectSegment(object obj, object segment, object value, bool json = true)
         {
             object val;
 
             val = GetNormalizedValue(value, json);
-
-            if (IsArraySegment(property))
+            if (segment is int index)
             {
-                property = GetIndexArg(property);
-                if (int.TryParse(property, out int index))
+                var jar = obj as JArray;
+                for (int i = jar.Count; i <= index; i++)
                 {
-                    var jar = obj as JArray;
-                    for (int i = jar.Count; i <= index; i++)
-                    {
-                        jar.Add(null);
-                    }
-
-                    jar[index] = JToken.FromObject(val);
-                    return;
+                    jar.Add(null);
                 }
+
+                jar[index] = JToken.FromObject(val);
+                return;
             }
 
+            var property = segment as string;
             if (obj is IDictionary<string, object> dict)
             {
                 var key = dict.Keys.Where(k => k.ToLower() == property.ToLower()).FirstOrDefault() ?? property;
@@ -472,270 +660,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return val;
-        }
-
-        /// <summary>
-        /// Given an object and a property segment, remove the property segment from the object.
-        /// </summary>
-        /// <param name="obj">object.</param>
-        /// <param name="property">property or arraysegment.</param>
-        private static void RemoveObjectProperty(object obj, string property)
-        {
-            if (obj is IDictionary<string, object> dict)
-            {
-                var key = dict.Keys.Where(k => k.ToLower() == property.ToLower()).FirstOrDefault();
-                if (key != null)
-                {
-                    dict.Remove(key);
-                }
-
-                return;
-            }
-
-            if (obj is JObject jobj)
-            {
-                var key = jobj.Properties().Where(p => p.Name.ToLower() == property.ToLower()).FirstOrDefault();
-                if (key != null)
-                {
-                    jobj.Remove(key.Name);
-                }
-
-                return;
-            }
-
-            var prop = obj.GetType().GetProperties().Where(p => p.Name.ToLower() == property.ToLower()).FirstOrDefault();
-            if (prop != null)
-            {
-                try
-                {
-                    prop.SetValue(obj, null);
-                }
-                catch (Exception)
-                {
-                }
-            }
-        }
-
-        /// <summary>
-        /// Is the segment an array segment [xxxx].
-        /// </summary>
-        /// <param name="segment">segment.</param>
-        /// <returns>true if it has [].</returns>
-        private static bool IsArraySegment(string segment)
-        {
-            return segment.StartsWith("[") && segment.EndsWith("]");
-        }
-
-        /// <summary>
-        /// Get the indexArg from an array segment ['foo'] => foo, [0] => 0.
-        /// </summary>
-        /// <param name="segment">segment.</param>
-        /// <returns>normalized array argument as a string.</returns>
-        private static string GetIndexArg(string segment)
-        {
-            return segment.TrimStart('[').TrimEnd(']').Trim('\'', '\"');
-        }
-
-        /// <summary>
-        /// Given a node and a segment (and nextSegment if we are adding mising elemets) return the subproperty/element.
-        /// </summary>
-        /// <param name="node">current node.</param>
-        /// <param name="segment">oath segment.</param>
-        /// <param name="nextSegment">next segment (so we can initialize with JArray or JObject appropriately).</param>
-        /// <param name="addMissing">if true, missing path members will be initialized appropriately.</param>
-        /// <returns>leaf node.</returns>
-        private static dynamic ResolveSegment(dynamic node, string segment, string nextSegment, bool addMissing = false)
-        {
-            // if it is a [0] or a ['string'] or a ["string"]
-            if (IsArraySegment(segment))
-            {
-                var indexArg = GetIndexArg(segment);
-
-                if (int.TryParse(indexArg, out int index))
-                {
-                    if (((ICollection)node).Count <= index)
-                    {
-                        // then array is too small
-                        if (addMissing)
-                        {
-                            // expand nodes
-                            for (int i = ((ICollection)node).Count; i <= index; i++)
-                            {
-                                ((JArray)node)[i] = null;
-                            }
-                        }
-                        else
-                        {
-                            return null;
-                        }
-                    }
-
-                    // return x[0]
-                    return node[index];
-                }
-                else
-                {
-                    // return x['string']
-                    return GetObjectProperty(node, indexArg);
-                }
-            }
-            else
-            {
-                dynamic next = GetObjectProperty(node, segment);
-                if (next == null)
-                {
-                    if (addMissing)
-                    {
-                        if (IsArraySegment(nextSegment))
-                        {
-                            var indexArg = GetIndexArg(nextSegment);
-                            if (int.TryParse(indexArg, out int index))
-                            {
-                                SetObjectProperty(node, segment, new JArray());
-                                return GetObjectProperty(node, segment);
-                            }
-                        }
-
-                        SetObjectProperty(node, segment, new JObject());
-                        return GetObjectProperty(node, segment);
-                    }
-                }
-
-                return next;
-            }
-        }
-
-        /// <summary>
-        /// Given a path this will enumerate paired brackets, which is used to do the SplitSegments 
-        /// x[y[z]].blah[p] => "[y[z]]","[p]".
-        /// </summary>
-        /// <param name="path">path.</param>
-        /// <returns>collection of bracketed content.</returns>
-        private static IEnumerable<string> MatchBrackets(string path)
-        {
-            StringBuilder sb = new StringBuilder();
-            int nest = 0;
-            foreach (char ch in path)
-            {
-                if (ch == '[')
-                {
-                    nest++;
-                }
-                else if (ch == ']')
-                {
-                    nest--;
-                }
-
-                if (nest > 0)
-                {
-                    sb.Append(ch);
-                }
-                else if (sb.Length > 0)
-                {
-                    sb.Append(ch);
-                    yield return sb.ToString();
-                    sb.Clear();
-                }
-            }
-
-            yield break;
-        }
-
-        /// <summary>
-        /// Split path x.y.z[user.name][13] => "x","y","z","[user.name]","13".
-        /// </summary>
-        /// <param name="path">path to split.</param>
-        /// <returns>split segments.</returns>
-        private static IEnumerable<string> SplitSegments(string path)
-        {
-            StringBuilder sb = new StringBuilder();
-            bool inBracket = false;
-            foreach (char ch in path)
-            {
-                if (!inBracket)
-                {
-                    if (ch == '[')
-                    {
-                        yield return sb.ToString();
-                        sb.Clear();
-                        sb.Append(ch);
-                        inBracket = true;
-                    }
-                    else if (ch == '.')
-                    {
-                        if (sb.Length > 0)
-                        {
-                            yield return sb.ToString();
-                        }
-
-                        sb.Clear();
-                    }
-                    else
-                    {
-                        sb.Append(ch);
-                    }
-                }
-                else if (inBracket)
-                {
-                    if (ch == ']')
-                    {
-                        inBracket = false;
-                        sb.Append(ch);
-                        yield return sb.ToString();
-                        sb.Clear();
-                    }
-                    else
-                    {
-                        sb.Append(ch);
-                    }
-                }
-            }
-
-            if (sb.Length > 0)
-            {
-                yield return sb.ToString();
-            }
-        }
-
-        /// <summary>
-        /// Given an root object and property path, resolve any nested bracket values.  conversation[user.name][user.age] => conversation['joe'][32].
-        /// </summary>
-        /// <param name="obj">root object.</param>
-        /// <param name="propertyPath">property path to resolve.</param>
-        /// <returns>true if it was able to resolve all nested references.</returns>
-        private static bool TryResolveBracketValues(object obj, ref string propertyPath)
-        {
-            foreach (string bracket in MatchBrackets(propertyPath))
-            {
-                string bracketPath = bracket.Substring(1, bracket.Length - 2);
-
-                // if it's not a number, or quoted string
-                if (!int.TryParse(bracketPath, out int index) &&
-                    !(bracketPath.StartsWith(SingleQuote) && bracketPath.EndsWith(SingleQuote)) &&
-                    !(bracketPath.StartsWith(DoubleQuote) && bracketPath.EndsWith(DoubleQuote)))
-                {
-                    // then evaluate the path (NOTE: this is where nested [] will get resolved recursively)
-                    if (TryGetPathValue<string>(obj, bracketPath, out string bracketValue))
-                    {
-                        if (int.TryParse(bracketValue, out index))
-                        {
-                            // if it's an intent we keep array syntax [#]
-                            propertyPath = propertyPath.Replace(bracket, $"[{index}]");
-                        }
-                        else
-                        {
-                            // otherwise we replace with found property, meaning user[name] => user['tom']
-                            propertyPath = propertyPath.Replace(bracket, $"['{bracketValue}']");
-                        }
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
         }
     }
 }

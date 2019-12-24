@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Configuration;
+using Microsoft.Bot.Schema;
 using Microsoft.Rest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -33,9 +34,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// The context label for a LUIS trace activity.
         /// </summary>
         public const string LuisTraceLabel = "Luis Trace";
+
 #pragma warning disable CS0169 // Field is never used
         [Obsolete]
-        private readonly LuisApplication _application;     
+        private readonly LuisApplication _application;
         [Obsolete]
         private readonly LuisPredictionOptions _options;
         [Obsolete]
@@ -75,9 +77,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
         [Obsolete("Constructor is deprecated, please use LuisRecognizer(LuisRecognizerOptions recognizer).")]
         public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
-        #pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
         : this(application, telemetryClient: null, logPersonalInformation: false, predictionOptions: predictionOptions, includeApiResults: includeApiResults, clientHandler: clientHandler)
-        #pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
         {
         }
 
@@ -246,7 +248,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, LuisPredictionOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var overrideV2 = MergeDefaultOptionsWithProvidedOptionsV2(predictionOptions);
-            return await RecognizeInternalAsync(turnContext, overrideV2, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false); 
+            return await RecognizeInternalAsync(turnContext, overrideV2, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -351,6 +353,18 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return result;
         }
 
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken = default)
+        {
+            // TODO: Review how to better integrate this--it assumes the turn context contains the text/locale
+            var context = dialogContext.Context;
+            if (context.Activity == null || context.Activity.Type != ActivityTypes.Message || context.Activity.Text != text || context.Activity.Locale != locale)
+            {
+                throw new ArgumentException("TurnContext is different than text");
+            }
+
+            return await RecognizeAsync(dialogContext.Context, cancellationToken).ConfigureAwait(false);
+        }
+
         /// <summary>
         /// Invoked prior to a LuisResult being logged.
         /// </summary>
@@ -437,7 +451,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <returns>LuisRecognizerOptions object.</returns>
         private static LuisRecognizerOptions BuildLuisRecognizerOptionsV2(LuisApplication application, LuisPredictionOptions options, bool includeAPIResults)
         {
-            if (options == null) 
+            if (options == null)
             {
                 return new LuisRecognizerOptionsV3(application)
                 {
@@ -448,11 +462,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
             var luisVersionOptions = new LuisRecognizerOptionsV2(application)
             {
                 PredictionOptions = options,
-                #pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
                 TelemetryClient = options.TelemetryClient,
                 Timeout = options.Timeout,
                 LogPersonalInformation = options.LogPersonalInformation,
-                #pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
                 IncludeAPIResults = includeAPIResults
             };
 
@@ -470,7 +484,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, LuisRecognizerOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics, CancellationToken cancellationToken)
         {
             var recognizer = predictionOptions ?? _luisRecognizerOptions;
-            var result = await recognizer.RecognizeInternalAsync(turnContext, DefaultHttpClient,  cancellationToken).ConfigureAwait(false);
+            var result = await recognizer.RecognizeInternalAsync(turnContext, DefaultHttpClient, cancellationToken).ConfigureAwait(false);
             await OnRecognizerResultAsync(result, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
             return result;
         }

@@ -26,6 +26,11 @@
             "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
         },
         {
+            "title": "Microsoft.Ask",
+            "description": "This is an action which sends an activity to the user when a response is expected",
+            "$ref": "#/definitions/Microsoft.Ask"
+        },
+        {
             "title": "Microsoft.AttachmentInput",
             "description": "Collect information - Ask for a file or image.",
             "$ref": "#/definitions/Microsoft.AttachmentInput"
@@ -246,6 +251,11 @@
             "$ref": "#/definitions/Microsoft.OnActivity"
         },
         {
+            "title": "Microsoft.OnAssignEntity",
+            "description": "Actions to take when an entity should be assigned to a property.",
+            "$ref": "#/definitions/Microsoft.OnAssignEntity"
+        },
+        {
             "title": "Microsoft.OnBeginDialog",
             "description": "Actions to perform when this dialog begins.",
             "$ref": "#/definitions/Microsoft.OnBeginDialog"
@@ -256,9 +266,24 @@
             "$ref": "#/definitions/Microsoft.OnCancelDialog"
         },
         {
+            "title": "Microsoft.OnChooseEntity",
+            "description": "Actions to be performed when an entity value needs to be resolved.",
+            "$ref": "#/definitions/Microsoft.OnChooseEntity"
+        },
+        {
             "title": "Microsoft.OnChooseIntent",
             "description": "Actions to perform on when an intent is ambigious.",
             "$ref": "#/definitions/Microsoft.OnChooseIntent"
+        },
+        {
+            "title": "Microsoft.OnChooseProperty",
+            "description": "Actions to take when there are multiple possible mappings of entities to properties.",
+            "$ref": "#/definitions/Microsoft.OnChooseProperty"
+        },
+        {
+            "title": "Microsoft.OnClearProperty",
+            "description": "Actions to take when a property needs to be cleared.",
+            "$ref": "#/definitions/Microsoft.OnClearProperty"
         },
         {
             "title": "Microsoft.OnCondition",
@@ -279,6 +304,11 @@
             "title": "Microsoft.OnDialogEvent",
             "description": "Actions to perform when a specific dialog event occurs.",
             "$ref": "#/definitions/Microsoft.OnDialogEvent"
+        },
+        {
+            "title": "Microsoft.OnEndOfActions",
+            "description": "Actions to take when there are no more actions in the current dialog.",
+            "$ref": "#/definitions/Microsoft.OnEndOfActions"
         },
         {
             "title": "Microsoft.OnEndOfConversationActivity",
@@ -699,6 +729,20 @@
                         "$kind": "Microsoft.ITriggerCondition",
                         "$ref": "#/definitions/Microsoft.ITriggerCondition"
                     }
+                },
+                "schema": {
+                    "anyOf": [
+                        {
+                            "$comment": "Eventually we should allow at least some subset of JSON schema here.",
+                            "title": "The schema to be filled in.",
+                            "type": "object",
+                            "additionalProperties": true
+                        },
+                        {
+                            "type": "string",
+                            "title": "String pointing to schema file."
+                        }
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -751,6 +795,77 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Ask": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Send Activity to Ask a question",
+            "description": "This is an action which sends an activity to the user when a response is expected",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Ask"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "activity": {
+                    "$kind": "Microsoft.IActivityTemplate",
+                    "title": "Activity",
+                    "description": "Activity to send.",
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "expectedProperties": {
+                    "type": "array",
+                    "title": "Expected Properties",
+                    "description": "Properties expected to be filled by entities from the user",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             },
             "additionalProperties": false,
@@ -3551,6 +3666,11 @@
                     "$ref": "#/definitions/Microsoft.AdaptiveDialog"
                 },
                 {
+                    "title": "Microsoft.Ask",
+                    "description": "This is an action which sends an activity to the user when a response is expected",
+                    "$ref": "#/definitions/Microsoft.Ask"
+                },
+                {
                     "title": "Microsoft.AttachmentInput",
                     "description": "Collect information - Ask for a file or image.",
                     "$ref": "#/definitions/Microsoft.AttachmentInput"
@@ -3769,6 +3889,11 @@
                     "$ref": "#/definitions/Microsoft.OnActivity"
                 },
                 {
+                    "title": "Microsoft.OnAssignEntity",
+                    "description": "Actions to take when an entity should be assigned to a property.",
+                    "$ref": "#/definitions/Microsoft.OnAssignEntity"
+                },
+                {
                     "title": "Microsoft.OnBeginDialog",
                     "description": "Actions to perform when this dialog begins.",
                     "$ref": "#/definitions/Microsoft.OnBeginDialog"
@@ -3779,9 +3904,24 @@
                     "$ref": "#/definitions/Microsoft.OnCancelDialog"
                 },
                 {
+                    "title": "Microsoft.OnChooseEntity",
+                    "description": "Actions to be performed when an entity value needs to be resolved.",
+                    "$ref": "#/definitions/Microsoft.OnChooseEntity"
+                },
+                {
                     "title": "Microsoft.OnChooseIntent",
                     "description": "Actions to perform on when an intent is ambigious.",
                     "$ref": "#/definitions/Microsoft.OnChooseIntent"
+                },
+                {
+                    "title": "Microsoft.OnChooseProperty",
+                    "description": "Actions to take when there are multiple possible mappings of entities to properties.",
+                    "$ref": "#/definitions/Microsoft.OnChooseProperty"
+                },
+                {
+                    "title": "Microsoft.OnClearProperty",
+                    "description": "Actions to take when a property needs to be cleared.",
+                    "$ref": "#/definitions/Microsoft.OnClearProperty"
                 },
                 {
                     "title": "Microsoft.OnCondition",
@@ -3802,6 +3942,11 @@
                     "title": "Microsoft.OnDialogEvent",
                     "description": "Actions to perform when a specific dialog event occurs.",
                     "$ref": "#/definitions/Microsoft.OnDialogEvent"
+                },
+                {
+                    "title": "Microsoft.OnEndOfActions",
+                    "description": "Actions to take when there are no more actions in the current dialog.",
+                    "$ref": "#/definitions/Microsoft.OnEndOfActions"
                 },
                 {
                     "title": "Microsoft.OnEndOfConversationActivity",
@@ -4279,13 +4424,57 @@
                     "description": "Optional unique id using with RecognizerSet.  Other recognizers should return 'DeferToRecognizer_{Id}' intent when cross training data for this recognizer."
                 },
                 "applicationId": {
-                    "type": "string"
+                    "type": "string",
+                    "title": "LUIS Application ID",
+                    "description": "Application ID for your model from the LUIS service.",
+                    "$role": "expression"
                 },
                 "endpoint": {
-                    "type": "string"
+                    "type": "string",
+                    "title": "LUIS Endpoint",
+                    "description": "Endpoint to use for LUIS service like https://westus.api.cognitive.microsoft.com.",
+                    "$role": "expression"
                 },
                 "endpointKey": {
-                    "type": "string"
+                    "type": "string",
+                    "title": "LUIS prediction key",
+                    "description": "LUIS prediction key used to call endpoint.",
+                    "$role": "expression"
+                },
+                "predictionOptions": {
+                    "type": "object",
+                    "properties": {
+                        "includeAllIntents": {
+                            "type": "boolean",
+                            "title": "Include all intents",
+                            "description": "True for all intents, false for only top intent."
+                        },
+                        "includeInstanceData": {
+                            "type": "boolean",
+                            "title": "Include $instance",
+                            "description": "True to include $instance metadata in the LUIS response."
+                        },
+                        "log": {
+                            "type": "boolean",
+                            "title": "Log utterances",
+                            "description": "True to log utterances on LUIS service."
+                        },
+                        "preferExternalEntities": {
+                            "type": "boolean",
+                            "title": "Prefer External Entities",
+                            "description": "True to prefer external entities to those generated by LUIS models."
+                        },
+                        "slot": {
+                            "type": "string",
+                            "title": "Slot",
+                            "description": "Slot to use for talking to LUIS service like production or staging."
+                        },
+                        "version": {
+                            "type": "string",
+                            "title": "Version",
+                            "description": "LUIS application version to use."
+                        }
+                    }
                 }
             },
             "patternProperties": {
@@ -4963,6 +5152,17 @@
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
+                },
                 "type": {
                     "type": "string",
                     "title": "Activity type",
@@ -4987,6 +5187,101 @@
                     "required": [
                         "actions",
                         "type",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnAssignEntity": {
+            "$role": "union(Microsoft.ITriggerCondition)",
+            "title": "On entity assignment",
+            "description": "Actions to take when an entity should be assigned to a property.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnAssignEntity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition (expression).",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions to execute.",
+                    "items": {
+                        "$kind": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
+                },
+                "property": {
+                    "type": "string",
+                    "title": "Property",
+                    "description": "Property that will be set after entity is selected."
+                },
+                "entity": {
+                    "type": "string",
+                    "title": "Entity",
+                    "description": "Entity being put into property"
+                },
+                "operation": {
+                    "type": "string",
+                    "title": "Operation to use for assigning entity"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
                         "$kind"
                     ]
                 }
@@ -5038,6 +5333,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5108,6 +5414,108 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnChooseEntity": {
+            "$role": "union(Microsoft.ITriggerCondition)",
+            "title": "On choose entity",
+            "description": "Actions to be performed when an entity value needs to be resolved.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnChooseEntity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition (expression).",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions to execute.",
+                    "items": {
+                        "$kind": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
+                },
+                "property": {
+                    "type": "string",
+                    "title": "Property to be set",
+                    "description": "Property that will be set after entity is selected."
+                },
+                "entity": {
+                    "type": "string",
+                    "title": "Ambiguous entity",
+                    "description": "Ambiguous entity"
                 }
             },
             "additionalProperties": false,
@@ -5179,13 +5587,214 @@
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
+                },
                 "intents": {
                     "type": "array",
                     "title": "Intents",
-                    "description": "Intents that must be in the ChooseIntent result for this conidtion to trigger.",
+                    "description": "Intents that must be in the ChooseIntent result for this condition to trigger.",
                     "items": {
                         "type": "string"
                     }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnChooseProperty": {
+            "$role": "union(Microsoft.ITriggerCondition)",
+            "title": "On choose property",
+            "description": "Actions to take when there are multiple possible mappings of entities to properties.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnChooseProperty"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition (expression).",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions to execute.",
+                    "items": {
+                        "$kind": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
+                },
+                "entity": {
+                    "type": "string",
+                    "title": "Entity being assigned",
+                    "description": "Entity being assigned to property choice"
+                },
+                "properties": {
+                    "type": "array",
+                    "title": "Possible properties",
+                    "description": "Properties to be chosen between",
+                    "items": {
+                        "type": "string",
+                        "title": "Property name"
+                    }
+                },
+                "entities": {
+                    "type": "array",
+                    "title": "Possible properties",
+                    "description": "Entities being assigned",
+                    "items": {
+                        "type": "string",
+                        "title": "Entity name"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnClearProperty": {
+            "$role": "union(Microsoft.ITriggerCondition)",
+            "title": "On clear property",
+            "description": "Actions to take when a property needs to be cleared.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnClearProperty"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition (expression).",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions to execute.",
+                    "items": {
+                        "$kind": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
+                },
+                "property": {
+                    "type": "string",
+                    "title": "Property",
+                    "description": "Property that will be cleared"
                 }
             },
             "additionalProperties": false,
@@ -5256,6 +5865,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5326,6 +5946,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5396,6 +6027,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 },
                 "event": {
                     "type": "string",
@@ -5473,6 +6115,17 @@
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
+                },
                 "event": {
                     "type": "string",
                     "title": "Dialog event name",
@@ -5497,6 +6150,87 @@
                     "required": [
                         "actions",
                         "event",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnEndOfActions": {
+            "$role": "union(Microsoft.ITriggerCondition)",
+            "title": "On end of actions",
+            "description": "Actions to take when there are no more actions in the current dialog.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnEndOfActions"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition (expression).",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions to execute.",
+                    "items": {
+                        "$kind": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
                         "$kind"
                     ]
                 }
@@ -5548,6 +6282,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5618,6 +6363,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5688,6 +6444,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5758,6 +6525,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5828,6 +6606,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 },
                 "intent": {
                     "type": "string",
@@ -5911,6 +6700,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5981,6 +6781,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -6051,6 +6862,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -6121,6 +6943,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -6191,6 +7024,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -6261,6 +7105,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -6331,6 +7186,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -6401,6 +7267,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -6471,6 +7348,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,

@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await CreateDialogContext(async (dc, ct) =>
             {
                 var dsm = new DialogStateManager(dc);
-                foreach (var memoryScope in dsm.Configuration.MemoryScopes.Where(ms => !(ms is ThisMemoryScope || ms is DialogMemoryScope || ms is ClassMemoryScope)))
+                foreach (var memoryScope in dsm.Configuration.MemoryScopes.Where(ms => !(ms is ThisMemoryScope || ms is DialogMemoryScope || ms is ClassMemoryScope || ms is DialogClassMemoryScope)))
                 {
                     var memory = memoryScope.GetMemory(dc);
                     Assert.IsNotNull(memory, "should get memory without any set");

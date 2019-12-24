@@ -20,8 +20,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public new const string DeclarativeType = "Microsoft.OnIntent";
 
         [JsonConstructor]
-        public OnIntent(string intent = null, List<string> entities = null, List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(@event: AdaptiveEvents.RecognizedIntent, actions: actions, condition: constraint, callerPath: callerPath, callerLine: callerLine)
+        public OnIntent(string intent = null, List<string> entities = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(
+                @event: AdaptiveEvents.RecognizedIntent,
+                actions: actions,
+                condition: condition,
+                callerPath: callerPath,
+                callerLine: callerLine)
         {
             Intent = intent ?? null;
             Entities = entities ?? new List<string>();

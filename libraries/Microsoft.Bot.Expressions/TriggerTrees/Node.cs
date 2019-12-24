@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Microsoft.Bot.Expressions;
 
 namespace Microsoft.Bot.Expressions.TriggerTrees
 {
@@ -32,40 +31,17 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
             // In order to debug:
             // 1) Enable Count and VerifyTree
             // 2) Run your scenario
-            // 3) You will most likely get a beak on the error.
-            // 4) Enable TraceTree and set it hear to get the trace before count
+            // 3) You will most likely get a break on the error.
+            // 4) Enable TraceTree and set it here to get the trace before count
             // Node._count has the global count for breakpointd
             // ShowTrace = _count > 280000;
-            Clause = clause;
+
+            Clause = new Clause(clause);  // Drop ignored from node clause
             Tree = tree;
             if (trigger != null)
             {
                 _allTriggers.Add(trigger);
                 _triggers.Add(trigger);
-                if (Clause != null)
-                {
-                    var children = new List<Expression>();
-                    foreach (var child in Clause.Children)
-                    {
-                        var predicate = child;
-                        if (predicate.Type == TriggerTree.Ignore)
-                        {
-                            predicate = child.Children[0];
-                        }
-
-                        children.Add(predicate);
-                    }
-
-                    if (children.Any())
-                    {
-                        Expression = Expression.MakeExpression(ExpressionType.And, children.ToArray());
-                    }
-                }
-            }
-
-            if (Expression == null)
-            {
-                Expression = Expression.ConstantExpression(true);
             }
         }
 
@@ -121,14 +97,6 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
         public Clause Clause { get; }
 
         /// <summary>
-        /// Gets expression to evaluate for node.
-        /// </summary>
-        /// <value>
-        /// Expression to evaluate for node.
-        /// </value>
-        public Expression Expression { get; }
-
-        /// <summary>
         /// Gets the tree this node is found in.
         /// </summary>
         /// <value>
@@ -163,11 +131,11 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
         /// </summary>
         /// <param name="state">Frame to evaluate against.</param>
         /// <returns>List of the most specific matches found.</returns>
-        internal IReadOnlyList<Node> Matches(object state)
+        internal IReadOnlyList<Trigger> Matches(object state)
         {
-            var matches = new List<Node>();
+            var matches = new HashSet<Trigger>();
             Matches(state, matches, new Dictionary<Node, bool>());
-            return matches;
+            return matches.ToList();
         }
 
 #pragma warning disable IDE0022
@@ -615,7 +583,7 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
             }
         }
 
-        private bool Matches(object state, List<Node> matches, Dictionary<Node, bool> matched)
+        private bool Matches(object state, HashSet<Trigger> matches, Dictionary<Node, bool> matched)
         {
             if (!matched.TryGetValue(this, out var found))
             {
@@ -631,11 +599,17 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
                 // No child matched so we might
                 if (!found)
                 {
-                    var (value, error) = Expression.TryEvaluate(state);
-                    if (error == null && value is bool match && match && Triggers.Any())
+                    var (value, error) = Clause.TryEvaluate(state);
+                    if (error == null && value is bool match && match)
                     {
-                        matches.Add(this);
-                        found = true;
+                        foreach (var trigger in Triggers)
+                        {
+                            if (trigger.Matches(Clause, state))
+                            {
+                                matches.Add(trigger);
+                                found = true;
+                            }
+                        }
                     }
                 }
 
