@@ -1,0 +1,19 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$kind": "Microsoft.OnAssignEntity",
+    "property": "Dimension",
+    "entity": "dimension",
+    "actions": [
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Dimension.number",
+            "value": "@dimension['number']"          
+        },
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Dimension.units",
+            "value": "@dimension['units']"          
+        }
+    ]               
+}

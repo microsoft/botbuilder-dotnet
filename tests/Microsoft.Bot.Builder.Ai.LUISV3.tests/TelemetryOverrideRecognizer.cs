@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.AI.Luis;
 namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
 {
     #pragma warning disable CS0612 // Type or member is obsolete
+    #pragma warning disable CS0618 // Class is obsolete
     public class TelemetryOverrideRecognizer : LuisRecognizer
     {
         public TelemetryOverrideRecognizer(LuisApplication application, LuisRecognizerOptions recognizerOptions = null)

@@ -17,7 +17,7 @@
         /// </summary>
         public const string RECOGNIZED = "turn.recognized";
 
-        /// <summary>
+         /// <summary>
         /// Path to the top intent.
         /// </summary>
         public const string TOPINTENT = "turn.recognized.intent";
@@ -26,6 +26,21 @@
         /// Path to the top score.
         /// </summary>
         public const string TOPSCORE = "turn.recognized.score";
+
+        /// <summary>
+        /// Original text.
+        /// </summary>
+        public const string TEXT = "turn.recognized.text";
+
+        /// <summary>
+        /// Original utterance split into unrecognized strings.
+        /// </summary>
+        public const string UNRECOGNIZEDTEXT = "turn.unrecognizedText";
+
+        /// <summary>
+        /// Entities that were recognized from text.
+        /// </summary>
+        public const string RECOGNIZEDENTITIES = "turn.recognizedEntities";
 
         /// <summary>
         /// If true an interruption has occured.

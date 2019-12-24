@@ -8,7 +8,7 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    "$kind": "Microsoft.IntentPattern",
+                    
                     "intent": "addColor",
                     "pattern": "I want (?<color>(red|green|blue|yellow))*"
                 }

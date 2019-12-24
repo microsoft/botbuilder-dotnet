@@ -1,0 +1,9 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$kind": "Microsoft.MultiLanguageRecognizer",
+    "recognizers": {
+        "en-us": "sandwich.en-us.lu",
+        "": "sandwich.en-us.lu"
+    }
+}

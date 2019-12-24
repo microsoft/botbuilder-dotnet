@@ -1,0 +1,95 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "recognizer": {
+            "$kind": "Microsoft.RecognizerSet",
+            "recognizers": [
+                {
+                    "$kind": "Microsoft.ValueRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.RegexRecognizer",
+                    "id": "y",
+                    "intents": [
+                        {
+                            "intent": "None",
+                            "pattern": "none"
+                        },
+                        {
+                            "intent": "Test",
+                            "pattern": "test"
+                        }
+                    ]
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "card",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "CardResponse:@{@age}"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "Test",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Test"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "UnknownIntent:@{turn.recognized.intent}"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "test"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Test",
+            "description": "normal intent should fire with adaptivecardrecognizer active"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "message",
+                "value": {
+                    "intent": "card",
+                    "age": 15
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "CardResponse:15",
+            "description": "card intent should fire"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "blah"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "UnknownIntent:None",
+            "description": "none intent should fire with adativecardrecgonizer active"
+        }
+    ]
+}

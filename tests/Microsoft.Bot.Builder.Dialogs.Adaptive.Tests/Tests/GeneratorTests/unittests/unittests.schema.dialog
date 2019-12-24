@@ -1,0 +1,252 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "Personname": {
+            "type": "string",
+            "$mappings": [
+                "personName"
+            ]
+        },
+        "Age": {
+            "type": "object",
+            "$mappings": [
+                "age:Age",
+                "age"
+            ],
+            "required": [
+                "number",
+                "units"
+            ],
+            "properties": {
+                "number": {
+                    "type": "number"
+                },
+                "units": {
+                    "type": "string"
+                }
+            }
+        },
+        "Ordinal": {
+            "type": "string",
+            "$mappings": [
+                "ordinal"
+            ]
+        },
+        "Geographyv2": {
+            "type": "object",
+            "$mappings": [
+                "geographyV2:Geographyv2",
+                "geographyV2"
+            ],
+            "required": [
+                "type",
+                "location"
+            ],
+            "properties": {
+                "type": {
+                    "type": "type"
+                },
+                "location": {
+                    "type": "location"
+                }
+            }
+        },
+        "Keyphraseproperty": {
+            "type": "string",
+            "$mappings": [
+                "keyPhrase"
+            ]
+        },
+        "Money": {
+            "type": "object",
+            "$mappings": [
+                "money:Money",
+                "money"
+            ],
+            "required": [
+                "number",
+                "units"
+            ],
+            "properties": {
+                "number": {
+                    "type": "number"
+                },
+                "units": {
+                    "type": "string"
+                }
+            }
+        },
+        "Percentage": {
+            "type": "string",
+            "$mappings": [
+                "percentage"
+            ]
+        },
+        "Temperature": {
+            "type": "object",
+            "$mappings": [
+                "temperature:Temperature",
+                "temperature"
+            ],
+            "required": [
+                "number",
+                "units"
+            ],
+            "properties": {
+                "number": {
+                    "type": "number"
+                },
+                "units": {
+                    "type": "string"
+                }
+            }
+        },
+        "Url": {
+            "type": "string",
+            "$mappings": [
+                "url"
+            ]
+        },
+        "Quantity": {
+            "type": "number",
+            "$mappings": [
+                "number"
+            ],
+            "minimum": 1,
+            "maximum": 10
+        },
+        "Utteranceproperty": {
+            "type": "string",
+            "$mappings": [
+                "utterance"
+            ],
+            "$comment": "This indicates the whole string is what maps to this."
+        },
+        "Dimension": {
+            "type": "object",
+            "$mappings": [
+                "dimension:Dimension",
+                "dimension"
+            ],
+            "required": [
+                "number",
+                "units"
+            ],
+            "properties": {
+                "number": {
+                    "type": "number"
+                },
+                "units": {
+                    "type": "string"
+                }
+            }
+        },
+        "Enum1": {
+            "type": "string",
+            "enum": [
+                "multiGrainWheat",
+                "rye",
+                "white",
+                "wholeWheat"
+            ]
+        },
+        "Enum2": {
+            "type": "string",
+            "enum": [
+                "american",
+                "cheddar",
+                "feta",
+                "gouda",
+                "pepper jack",
+                "provolone",
+                "swiss",
+                "none"
+            ]
+        },
+        "Zipcodepattern": {
+            "type": "string",
+            "pattern": "^[0-9]{5}(?:-[0-9]{4})?$",
+            "$mappings": [
+                "utterance",
+                "number"
+            ]
+        },
+        "Email": {
+            "type": "string",
+            "$mappings": [
+                "email"
+            ]
+        },
+        "CancelConfirmation": {
+            "type": "string",
+            "$mappings": [
+                "Confirmation"
+            ]
+        },
+        "CompleteConfirmation": {
+            "type": "string",
+            "$mappings": [
+                "Confirmation",
+                "PROPERTYName"
+            ]
+        },
+        "PropertyToChange": {
+            "type": "string",
+            "enum": "properties",
+            "$mappings": [
+                "PROPERTYName"
+            ]
+        }
+    },
+    "required": [
+        "Personname",
+        "Age",
+        "Ordinal",
+        "Geographyv2",
+        "Keyphraseproperty",
+        "Money",
+        "Percentage",
+        "Temperature",
+        "Url",
+        "Quantity",
+        "Utteranceproperty",
+        "Dimension",
+        "Enum1",
+        "Enum2",
+        "Zipcodepattern",
+        "Email"
+    ],
+    "$expectedOnly": [
+        "CancelConfirmation",
+        "CompleteConfirmation",
+        "PropertyToChange"
+    ],
+    "$public": [
+        "Personname",
+        "Age",
+        "Ordinal",
+        "Geographyv2",
+        "Keyphraseproperty",
+        "Money",
+        "Percentage",
+        "Temperature",
+        "Url",
+        "Quantity",
+        "Utteranceproperty",
+        "Dimension",
+        "Enum1",
+        "Enum2",
+        "Zipcodepattern",
+        "Email"
+    ],
+    "definitions": {
+        "PROPERTYName": {
+            "type": "string",
+            "enum": "properties",
+            "$mappings": [
+                "PROPERTYName"
+            ]
+        }
+    }
+}

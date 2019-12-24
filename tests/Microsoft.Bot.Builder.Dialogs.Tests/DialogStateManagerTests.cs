@@ -672,6 +672,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task TestChangeTracking()
+        {
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                var state = dc.GetState();
+                var dialogPaths = state.TrackPaths(new List<string> { "dialog.user.first", "dialog.user.last" });
+
+                state.SetValue("dialog.eventCounter", 0);
+                Assert.IsFalse(state.AnyPathChanged(0, dialogPaths));
+
+                state.SetValue("dialog.eventCounter", 1);
+                state.SetValue("dialog.foo", 3);
+                Assert.IsFalse(state.AnyPathChanged(0, dialogPaths));
+
+                state.SetValue("dialog.eventCounter", 2);
+                state.SetValue("dialog.user.first", "bart");
+                Assert.IsTrue(state.AnyPathChanged(1, dialogPaths));
+
+                state.SetValue("dialog.eventCounter", 3);
+                state.SetValue("dialog.user", new Dictionary<string, object> { { "first", "tom" }, { "last", "starr" } });
+                Assert.IsTrue(state.AnyPathChanged(2, dialogPaths));
+
+                state.SetValue("dialog.eventCounter", 4);
+                Assert.IsFalse(state.AnyPathChanged(3, dialogPaths));
+            }).StartTestAsync();
+        }
+
         private TestFlow CreateFlow(Dialog dialog, ConversationState convoState = null, UserState userState = null, bool sendTrace = false)
         {
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
