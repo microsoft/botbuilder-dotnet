@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
@@ -16,6 +17,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         {
             // Dialogs
             yield return new TypeRegistration<QnAMakerDialog2>(QnAMakerDialog2.DeclarativeType);
+
+            // Recognizers
+            yield return new TypeRegistration<QnAMakerRecognizer>(QnAMakerRecognizer.DeclarativeType);
         }
 
         public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)

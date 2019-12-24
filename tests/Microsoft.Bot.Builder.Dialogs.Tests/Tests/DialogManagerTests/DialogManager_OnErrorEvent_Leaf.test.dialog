@@ -14,12 +14,10 @@
                             "$kind": "Microsoft.RegexRecognizer",
                             "intents":[
                                 {
-                                    "$kind": "Microsoft.IntentPattern",
                                     "intent": "throw",
                                     "pattern": "throw"
                                 },
                                 {
-                                    "$kind": "Microsoft.IntentPattern",
                                     "intent": "greeting",
                                     "pattern": "hi"
                                 }

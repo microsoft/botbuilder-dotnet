@@ -7,31 +7,31 @@
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "HelpIntent",
                 "pattern": "(?i)help" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "GreetingIntent",
                 "pattern": "(?i)hi|hello|hiya|greetings" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "JokeIntent",
                 "pattern": "(?i)joke" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "FortuneTellerIntent",
                 "pattern": "(?i)fortune|future" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel"
             }

@@ -65,6 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             dc.GetState().SetValue(this.Property, value);
 
+            dc.GetState().SetValue(DialogPath.Retries, 0);
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 

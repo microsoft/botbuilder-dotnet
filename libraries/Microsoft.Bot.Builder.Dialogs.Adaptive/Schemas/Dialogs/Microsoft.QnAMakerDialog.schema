@@ -1,104 +1,104 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-  "$role": "union(Microsoft.IDialog)",
-  "title": "QnAMaker Dialog",
-  "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
-  "type": "object",
-  "additionalProperties": false,
-  "properties": {
-    "knowledgeBaseId": {
-      "$role": "expression",
-      "title": "KnowledgeBase Id",
-      "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
-      "default": "settings.qna.knowledgebaseid"
-    },
-    "endpointKey": {
-      "$role": "expression",
-      "title": "Endpoint Key",
-      "description": "Endpoint key for the QnA Maker KB.",
-      "default": "settings.qna.endpointkey"
-    },
-    "hostname": {
-      "$role": "expression",
-      "title": "Hostname",
-      "description": "Hostname for your QnA Maker service.",
-      "default": "settings.qna.hostname",
-      "examples": [
-        "https://yourserver.azurewebsites.net/qnamaker"
-      ]
-    },
-    "noAnswer": {
-      "$kind": "Microsoft.IActivityTemplate",
-      "title": "Fallback answer",
-      "description": "Default answer to return when none found in KB.",
-      "default": "Sorry, I did not find an answer."
-    },
-    "threshold": {
-      "type": "number",
-      "title": "Threshold",
-      "description": "Threshold score to filter results.",
-      "default": 0.3
-    },
-    "activeLearningCardTitle": {
-      "type": "string",
-      "title": "Active learning card title",
-      "description": "Title for active learning suggestions card.",
-      "default": "Did you mean:"
-    },
-    "cardNoMatchText": {
-      "type": "string",
-      "title": "Card no match text",
-      "description": "Text for no match option.",
-      "default": "None of the above."
-    },
-    "cardNoMatchResponse ": {
-      "$kind": "Microsoft.IActivityTemplate",
-      "title": "Card no match response",
-      "description": "Custom response when no match option was selected.",
-      "default": "Thanks for the feedback."
-    },
-    "strictFilters": {
-      "type": "array",
-      "title": "Strict Filters",
-      "description": "Metadata filters to use when calling the QnA Maker KB.",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": {
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
+    "title": "QnAMaker Dialog",
+    "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "knowledgeBaseId": {
+            "$role": "expression",
+            "title": "KnowledgeBase Id",
+            "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
+            "default": "settings.qna.knowledgebaseid"
+        },
+        "endpointKey": {
+            "$role": "expression",
+            "title": "Endpoint Key",
+            "description": "Endpoint key for the QnA Maker KB.",
+            "default": "settings.qna.endpointkey"
+        },
+        "hostname": {
+            "$role": "expression",
+            "title": "Hostname",
+            "description": "Hostname for your QnA Maker service.",
+            "default": "settings.qna.hostname",
+            "examples": [
+                "https://yourserver.azurewebsites.net/qnamaker"
+            ]
+        },
+        "noAnswer": {
+            "$kind": "Microsoft.IActivityTemplate",
+            "title": "Fallback answer",
+            "description": "Default answer to return when none found in KB.",
+            "default": "Sorry, I did not find an answer."
+        },
+        "threshold": {
+            "type": "number",
+            "title": "Threshold",
+            "description": "Threshold score to filter results.",
+            "default": 0.3
+        },
+        "activeLearningCardTitle": {
             "type": "string",
-            "title": "Name",
-            "maximum": 100
-          },
-          "value": {
+            "title": "Active learning card title",
+            "description": "Title for active learning suggestions card.",
+            "default": "Did you mean:"
+        },
+        "cardNoMatchText": {
             "type": "string",
-            "title": "Value",
-            "maximum": 100
-          }
+            "title": "Card no match text",
+            "description": "Text for no match option.",
+            "default": "None of the above."
+        },
+        "cardNoMatchResponse ": {
+            "$kind": "Microsoft.IActivityTemplate",
+            "title": "Card no match response",
+            "description": "Custom response when no match option was selected.",
+            "default": "Thanks for the feedback."
+        },
+        "strictFilters": {
+            "type": "array",
+            "title": "Strict Filters",
+            "description": "Metadata filters to use when calling the QnA Maker KB.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name",
+                        "maximum": 100
+                    },
+                    "value": {
+                        "type": "string",
+                        "title": "Value",
+                        "maximum": 100
+                    }
+                }
+            }
+        },
+        "top": {
+            "type": "number",
+            "title": "Top",
+            "description": "The number of answers you want to retrieve.",
+            "default": 3
+        },
+        "isTest": {
+            "type": "boolean",
+            "title": "IsTest",
+            "description": "True, if pointing to Test environment, else false.",
+            "default": false
+        },
+        "rankerType": {
+            "type": "string",
+            "title": "RankerType",
+            "description": "Type of Ranker.",
+            "default": "Default"
         }
-      }
     },
-    "top": {
-      "type": "number",
-      "title": "Top",
-      "description": "The number of answers you want to retrieve.",
-      "default": 3
-    },
-    "isTest": {
-      "type": "boolean",
-      "title": "IsTest",
-      "description": "True, if pointing to Test environment, else false.",
-      "default": false
-    },
-    "rankerType": {
-      "type": "string",
-      "title": "RankerType",
-      "description": "Type of Ranker.",
-      "default": "Default"
-    }
-  },
-  "required": [
-    "knowledgeBaseId",
-    "endpointKey",
-    "hostname"
-  ]
+    "required": [
+        "knowledgeBaseId",
+        "endpointKey",
+        "hostname"
+    ]
 }

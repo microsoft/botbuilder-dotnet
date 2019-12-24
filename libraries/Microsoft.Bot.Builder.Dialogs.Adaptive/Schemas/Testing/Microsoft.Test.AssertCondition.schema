@@ -16,7 +16,7 @@
         "description": {
             "type": "string",
             "title": "Description",
-            "description": "Description of what the condition is testing",
+            "description": "Description of what the condition is testing"
         }
     }
 }

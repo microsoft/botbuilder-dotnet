@@ -1,0 +1,7 @@
+# AskName
+- @{askString('Name')}
+
+# NameName
+- name
+
+[sandwich-common.lg](sandwich-common.lg)

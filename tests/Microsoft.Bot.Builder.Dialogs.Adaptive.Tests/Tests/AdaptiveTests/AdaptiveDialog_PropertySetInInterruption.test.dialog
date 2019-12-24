@@ -7,32 +7,26 @@
       "$kind": "Microsoft.RegexRecognizer",
       "intents": [
         {
-          "$kind": "Microsoft.IntentPattern",
           "intent": "Interruption",
           "pattern": "(?i)interrupt"
         },
         {
-          "$kind": "Microsoft.IntentPattern",
           "intent": "Greeting",
           "pattern": "(?i)hi"
         },
         {
-          "$kind": "Microsoft.IntentPattern",
           "intent": "Start",
           "pattern": "(?i)start"
         },
         {
-          "$kind": "Microsoft.IntentPattern",
           "intent": "noage",
           "pattern": "(?i)no"
         },
         {
-          "$kind": "Microsoft.IntentPattern",
           "intent": "why",
           "pattern": "(?i)why"
         },
         {
-          "$kind": "Microsoft.IntentPattern",
           "intent": "reset",
           "pattern": "(?i)reset"
         }
@@ -57,7 +51,6 @@
       {
         "$kind": "Microsoft.OnIntent",
         "intent": "reset",
-        
         "actions": [
           {
             "$kind": "Microsoft.DeleteProperty",

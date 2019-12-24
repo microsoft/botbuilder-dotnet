@@ -1,0 +1,25 @@
+# Enum2Entity(value) 
+- SWITCH: @{value}
+- CASE: @{'american'} 
+ - american
+- CASE: @{'cheddar'} 
+ - cheddar
+- CASE: @{'feta'} 
+ - feta
+- CASE: @{'gouda'} 
+ - gouda
+- CASE: @{'pepper jack'} 
+ - pepper jack
+- CASE: @{'provolone'} 
+ - provolone
+- CASE: @{'swiss'} 
+ - swiss
+- CASE: @{'none'} 
+ - none
+- DEFAULT: 
+ - I don't understand @{value}
+
+# clarifyEnum2Entity
+- @{clarifyEnumEntity('Enum2')}
+
+[unittests-common.lg](unittests-common.lg)

@@ -9,7 +9,6 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    "$kind": "Microsoft.IntentPattern",
                     "intent": "JokeIntent",
                     "pattern": "joke"
                 }

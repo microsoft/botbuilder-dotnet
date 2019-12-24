@@ -17,8 +17,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public new const string DeclarativeType = "Microsoft.OnMessageReactionActivity";
 
         [JsonConstructor]
-        public OnMessageReactionActivity(List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(type: ActivityTypes.MessageReaction, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine)
+        public OnMessageReactionActivity(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(type: ActivityTypes.MessageReaction, actions: actions, condition: condition, callerPath: callerPath, callerLine: callerLine)
         {
         }
     }

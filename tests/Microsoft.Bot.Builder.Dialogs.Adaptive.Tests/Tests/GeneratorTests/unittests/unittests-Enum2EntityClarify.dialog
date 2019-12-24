@@ -1,0 +1,13 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$kind": "Microsoft.OnChooseEntity",
+    "entity": "Enum2Entity",
+    "actions": [
+        {
+            "$kind": "Microsoft.Ask",
+            "activity": "@{clarifyEnum2Entity()}",
+            "expectedProperties": ["Enum2"]
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+# PROPERTYName(value) 
+- SWITCH: @{value}
+- CASE: @{'Quantity'} 
+ - quantity
+- CASE: @{'Directions'} 
+ - directions
+- CASE: @{'Length'} 
+ - length
+- CASE: @{'Bread'} 
+ - bread
+- CASE: @{'Cheese'} 
+ - cheese
+- CASE: @{'Meat'} 
+ - meat
+- CASE: @{'Name'} 
+ - name
+- DEFAULT: 
+ - I don't understand @{value}

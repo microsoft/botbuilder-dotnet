@@ -43,14 +43,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
                 {
                     if (activity.AsMessageActivity()?.Text != this.Text)
                     {
-                        throw new Exception(this.Description ?? $"Text {activity.Text} didn't match expected text: {this.Text}");
+                        throw new Exception(this.Description ?? $"Text '{activity.Text}' didn't match expected text: {this.Text}'");
                     }
                 }
                 else
                 {
                     if (activity.AsMessageActivity()?.Text.ToLower().Trim().Contains(this.Text.ToLower().Trim()) == false)
                     {
-                        throw new Exception(this.Description ?? $"Text {activity.Text} didn't match expected text: {this.Text}");
+                        throw new Exception(this.Description ?? $"Text '{activity.Text}' didn't match expected text: '{this.Text}'");
                     }
                 }
             }

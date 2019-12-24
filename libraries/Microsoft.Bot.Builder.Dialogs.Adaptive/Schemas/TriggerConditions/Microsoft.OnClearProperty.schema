@@ -1,0 +1,21 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.ITriggerCondition)",
+    "title": "On clear property",
+    "description": "Actions to take when a property needs to be cleared.",
+    "allOf": [
+        {
+            "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/TriggerConditions/Microsoft.OnCondition.schema#"
+        },
+        {
+            "type": "object",
+            "properties": {
+                "property": {
+                    "type": "string",
+                    "title": "Property",
+                    "description": "Property that will be cleared"
+                }
+            }
+        }
+    ]
+}
