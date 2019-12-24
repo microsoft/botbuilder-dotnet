@@ -1,4 +1,0 @@
-﻿> Part 1 of 3 lg files
-
-# template1
-- hello from t1, ref template2: '@{template2()}' and ref template3: '@{template3()}'

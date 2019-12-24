@@ -55,6 +55,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var duplicatedTemplates = templates
                                       .GroupBy(t => t.Name)
                                       .Where(g => g.Count() > 1)
+                                      .Where(u => !string.IsNullOrEmpty(u.Key))
                                       .ToList();
 
             if (duplicatedTemplates.Count > 0)

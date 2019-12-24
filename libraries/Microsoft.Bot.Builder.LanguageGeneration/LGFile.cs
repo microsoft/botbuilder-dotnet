@@ -16,7 +16,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class LGFile
     {
         private readonly ExpressionEngine expressionEngine;
-        private readonly ImportResolverDelegate importResolver;
 
         public LGFile(
             IList<LGTemplate> templates = null,
@@ -35,7 +34,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Content = content ?? string.Empty;
             Id = id ?? string.Empty;
             this.expressionEngine = expressionEngine ?? new ExpressionEngine();
-            this.importResolver = importResolver;
+            this.ImportResolver = importResolver;
         }
 
         public IList<LGTemplate> AllTemplates
@@ -46,6 +45,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return Templates.Union(referenceTemplates).ToList();
             }
         }
+
+        /// <summary>
+        /// Gets or sets delegate for resolving resource id of imported lg file.
+        /// </summary>
+        /// <value>
+        /// Delegate for resolving resource id of imported lg file.
+        /// </value>
+        public ImportResolverDelegate ImportResolver { get; set; }
 
         /// <summary>
         /// Gets or sets templates that this LG file contains directly.
@@ -114,36 +121,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Use to evaluate an inline template str.
-        /// </summary>
-        /// <param name="inlineStr">inline string which will be evaluated.</param>
-        /// <param name="scope">scope object or JToken.</param>
-        /// <returns>Evaluate result.</returns>
-        public object Evaluate(string inlineStr, object scope = null)
-        {
-            if (inlineStr == null)
-            {
-                throw new ArgumentException("inline string is null.");
-            }
-
-            CheckErrors(Diagnostics);
-
-            // wrap inline string with "# name and -" to align the evaluation process
-            var fakeTemplateId = Guid.NewGuid().ToString();
-            var multiLineMark = "```";
-
-            inlineStr = !inlineStr.Trim().StartsWith(multiLineMark) && inlineStr.Contains('\n')
-                   ? $"{multiLineMark}{inlineStr}{multiLineMark}" : inlineStr;
-
-            var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
-
-            var newContent = $"{Content}\r\n{wrappedStr}";
-
-            var newLgFile = new LGParser(importResolver).ParseContent(newContent, Id);
-            return newLgFile.EvaluateTemplate(fakeTemplateId, scope);
-        }
-
-        /// <summary>
         /// Expand a template with given name and scope.
         /// Return all possible responses instead of random one.
         /// </summary>
@@ -193,7 +170,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var stopLine = template.ParseTree.Stop.Line - 1;
 
             var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
-            return new LGParser(importResolver).ParseContent(newContent, Id);
+            return new LGParser(ImportResolver).ParseContent(newContent, Id);
         }
 
         /// <summary>
@@ -214,7 +191,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
             var newContent = $"{Content.TrimEnd()}\r\n\r\n{templateNameLine}\r\n{newTemplateBody}\r\n";
-            return new LGParser(importResolver).ParseContent(newContent, Id);
+            return new LGParser(ImportResolver).ParseContent(newContent, Id);
         }
 
         /// <summary>
@@ -234,7 +211,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var stopLine = template.ParseTree.Stop.Line - 1;
 
             var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
-            return new LGParser(importResolver).ParseContent(newContent, Id);
+            return new LGParser(ImportResolver).ParseContent(newContent, Id);
         }
 
         public override string ToString() => Content;
