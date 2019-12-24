@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             // - We only want to use a single strategy for returning results to avoid issues where utterances
             //   like the "the third one" or "the red one" or "the first division book" would miss-recognize as
             //   a numerical index or ordinal as well.
-            var locale = options?.Locale ?? Recognizers.Text.Culture.English;
+            var locale = options?.Locale ?? Culture.English;
             var matched = Find.FindChoices(utterance, list, options);
             if (matched.Count == 0)
             {

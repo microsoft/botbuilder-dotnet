@@ -225,9 +225,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             Assert.AreEqual(results[2].Properties["Text"], "Blue", "should be Blue");
         }
 
-        private TurnContext GetTurnContext(string text, string locale = "en-us")
+        private DialogContext GetTurnContext(string text, string locale = "en-us")
         {
-            return new TurnContext(new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName)), new Schema.Activity(type: Schema.ActivityTypes.Message, text: text, locale: locale));
+            return new DialogContext(
+                new DialogSet(), 
+                new TurnContext(
+                    new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName)), 
+                    new Schema.Activity(type: Schema.ActivityTypes.Message, text: text, locale: locale)), 
+                new DialogState());
         }
     }
 }

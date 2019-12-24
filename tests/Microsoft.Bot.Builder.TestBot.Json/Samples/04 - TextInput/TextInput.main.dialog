@@ -5,7 +5,7 @@
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "Cancel",
                 "pattern": "(?i)cancel"
             }

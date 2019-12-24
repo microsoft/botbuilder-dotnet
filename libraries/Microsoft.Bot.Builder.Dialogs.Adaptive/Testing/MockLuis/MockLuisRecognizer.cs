@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.Dialogs;
 using Newtonsoft.Json;
 using RichardSzalay.MockHttp;
 
@@ -17,7 +18,7 @@ namespace Microsoft.Bot.Builder.MockLuis
     /// <remarks>
     /// This will either use a cached LUIS response or generate a new one by calling LUIS.
     /// </remarks>
-    public class MockLuisRecognizer : IRecognizer
+    public class MockLuisRecognizer : Recognizer
     {
         private string _responseDir;
         private LuisRecognizerOptionsV3 _options;
@@ -45,30 +46,19 @@ namespace Microsoft.Bot.Builder.MockLuis
             }
         }
 
-        public async Task<RecognizerResult> RecognizeAsync(ITurnContext context, CancellationToken cancellationToken)
-            => await InternalRecognize<RecognizerResult>(context, cancellationToken).ConfigureAwait(false);
-
-        public async Task<T> RecognizeAsync<T>(ITurnContext context, CancellationToken cancellationToken)
-            where T : IRecognizerConvert, new()
-         => await InternalRecognize<T>(context, cancellationToken).ConfigureAwait(false);
-
-        private async Task<T> InternalRecognize<T>(ITurnContext context, CancellationToken cancellationToken)
-          where T : IRecognizerConvert, new()
-        {
-            var utterance = context.Activity?.AsMessageActivity()?.Text;
-            var client = GetMockedClient(utterance);
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken = default)
+        { 
+            var client = GetMockedClient(text);
             var recognizer = new LuisRecognizer(_options, client);
-            var result = await recognizer.RecognizeAsync(context, cancellationToken);
+            var result = await recognizer.RecognizeAsync(dialogContext, text, locale, cancellationToken);
             if (client == null)
             {
                 // Save response
-                var outPath = ResponsePath(utterance);
+                var outPath = ResponsePath(text);
                 File.WriteAllText(outPath, JsonConvert.SerializeObject(result.Properties["luisResult"]));
             }
 
-            var finalResult = new T();
-            finalResult.Convert(result);
-            return finalResult;
+            return result;
         }
 
         private string ResponsePath(string utterance)
