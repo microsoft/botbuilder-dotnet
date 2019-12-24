@@ -22,36 +22,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private List<OnCondition> _conditionals;
         private bool _evaluate;
 
+        [Newtonsoft.Json.JsonIgnore]
+        public IExpressionParser Parser { get; set; } = new ExpressionEngine();
+
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate = true)
         {
             _conditionals = conditionals.ToList();
             _evaluate = evaluate;
         }
 
-        public Task<IReadOnlyList<int>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
+        public Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel = default)
         {
-            var candidates = new List<int>();
-            var parser = _evaluate ? new ExpressionEngine() : null;
-            for (var i = 0; i < _conditionals.Count; ++i)
+            var candidates = _conditionals;
+            if (_evaluate)
             {
-                if (_evaluate)
+                candidates = new List<OnCondition>();
+                foreach (var conditional in _conditionals)
                 {
-                    var conditional = _conditionals[i];
-                    var expression = conditional.GetExpression(parser);
+                    var expression = conditional.GetExpression(Parser);
                     var (value, error) = expression.TryEvaluate(context.GetState());
                     var result = error == null && (bool)value;
                     if (result == true)
                     {
-                        candidates.Add(i);
+                        candidates.Add(conditional);
                     }
-                }
-                else
-                {
-                    candidates.Add(i);
                 }
             }
 
-            return Task.FromResult((IReadOnlyList<int>)candidates);
+            return Task.FromResult((IReadOnlyList<OnCondition>)candidates);
         }
     }
 }

@@ -435,9 +435,8 @@ namespace Microsoft.Bot.Expressions
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
-        /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
-        public static string VerifyBoolean(object value, Expression expression, int number)
+        public static string VerifyBoolean(object value, Expression expression)
         {
             string error = null;
             if (!(value is bool))
@@ -487,7 +486,7 @@ namespace Microsoft.Bot.Expressions
         }
 
         // Apply -- these are helpers for adding functions to the expression library.
-        
+
         /// <summary>
         /// Generate an expression delegate that applies function after verifying all children.
         /// </summary>
@@ -932,7 +931,7 @@ namespace Microsoft.Bot.Expressions
                     }
                     else
                     {
-                        return (null, null, $"{left.Children[1].ToString()} dones't return a int or string");
+                        return (null, null, $"{left.Children[1].ToString()} doesn't return an int or string");
                     }
 
                     left = left.Children[0];
@@ -1195,7 +1194,7 @@ namespace Microsoft.Bot.Expressions
 
         private static (object value, string error) And(Expression expression, IMemory state)
         {
-            object result = false;
+            object result = true;
             string error = null;
             foreach (var child in expression.Children)
             {
@@ -1292,7 +1291,7 @@ namespace Microsoft.Bot.Expressions
             dynamic str;
             (str, error) = expression.Children[0].TryEvaluate(state);
             if (error == null)
-            {   
+            {
                 if (str == null)
                 {
                     result = string.Empty;
@@ -2084,7 +2083,7 @@ namespace Microsoft.Bot.Expressions
                     else if (products.Count() > 1)
                     {
                         var nodeList = new List<object>();
-                        foreach (JToken item in products)
+                        foreach (var item in products)
                         {
                             nodeList.Add(ResolveValue(item));
                         }
@@ -2583,7 +2582,7 @@ namespace Microsoft.Bot.Expressions
                     },
                     ReturnType.Boolean,
                     ValidateBinary),
-                Comparison(ExpressionType.Empty, args => IsEmpty(args[0]), ValidateUnary, VerifyNumberOrString),
+                Comparison(ExpressionType.Empty, args => IsEmpty(args[0]), ValidateUnary, VerifyContainer),
                 new ExpressionEvaluator(ExpressionType.And, (expression, state) => And(expression, state), ReturnType.Boolean, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.Or, (expression, state) => Or(expression, state), ReturnType.Boolean, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.Not, (expression, state) => Not(expression, state), ReturnType.Boolean, ValidateUnary),
@@ -2596,7 +2595,7 @@ namespace Microsoft.Bot.Expressions
                         {
                             var builder = new StringBuilder();
                             foreach (var arg in args)
-                            {   
+                            {
                                 if (arg is string str)
                                 {
                                     builder.Append(str);
@@ -2612,9 +2611,9 @@ namespace Microsoft.Bot.Expressions
                     ReturnType.String,
                     ValidateString),
                 new ExpressionEvaluator(
-                    ExpressionType.Length, 
+                    ExpressionType.Length,
                     Apply(
-                        args => 
+                        args =>
                             {
                                 var result = 0;
                                 if (args[0] is string str)
@@ -2627,8 +2626,8 @@ namespace Microsoft.Bot.Expressions
                                     }
 
                                 return result;
-                            }, VerifyStringOrNull), 
-                    ReturnType.Number, 
+                            }, VerifyStringOrNull),
+                    ReturnType.Number,
                     ValidateAtLeastOne),
                 new ExpressionEvaluator(
                     ExpressionType.Replace,
@@ -2695,13 +2694,13 @@ namespace Microsoft.Bot.Expressions
                     ReturnType.String,
                     (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.String, ReturnType.Number)),
                 StringTransform(
-                                ExpressionType.ToLower, 
-                                args => 
+                                ExpressionType.ToLower,
+                                args =>
                                 {
                                     if (args[0] == null)
                                     {
                                         return string.Empty;
-                                    } 
+                                    }
                                     else
                                     {
                                         return args[0].ToLower();
@@ -2820,15 +2819,37 @@ namespace Microsoft.Bot.Expressions
                     (exprssion) => BuiltInFunctions.ValidateArityAndAnyType(exprssion, 0, 0)),
                 new ExpressionEvaluator(
                     ExpressionType.IndexOf,
-                    Apply(
-                        args =>
+                    (expression, state) =>
+                    {
+                        object result = -1;
+                        var (args, error) = EvaluateChildren(expression, state);
+                        if (error == null)
                         {
-                            string rawStr = ParseStringOrNull(args[0]);
-                            string seekStr = ParseStringOrNull(args[1]);
-                            return rawStr.IndexOf(seekStr);
-                        }, VerifyStringOrNull),
+                            if (args[0] is string || args[0] == null)
+                            {
+                                if (args[1] is string || args[1] == null)
+                                {
+                                    result = ParseStringOrNull(args[0]).IndexOf(ParseStringOrNull(args[1]));
+                                }
+                                else
+                                {
+                                    error = $"Can only look for indexof string in {expression}";
+                                }
+                            }
+                            else if (TryParseList(args[0], out IList list))
+                            {
+                                result = ResolveListValue(list).IndexOf(args[1]);
+                            }
+                            else
+                            {
+                                error = $"{expression} works only on string or list.";
+                            }
+                        }
+
+                        return (result, error);
+                    },
                     ReturnType.Number,
-                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
+                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String, ReturnType.Boolean, ReturnType.Number, ReturnType.Object)),
                 new ExpressionEvaluator(
                     ExpressionType.LastIndexOf,
                     Apply(

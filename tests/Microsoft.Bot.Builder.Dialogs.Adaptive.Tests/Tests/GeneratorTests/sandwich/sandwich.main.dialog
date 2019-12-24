@@ -1,0 +1,33 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "recognizer": "sandwich.lu",
+    "generator": "sandwich.lg",
+    "schema": "sandwich.schema",
+    "triggers": [ 
+        "sandwich-DirectionsAsk",
+"sandwich-DirectionsSetDirectionsEntity",
+"sandwich-BreadAsk",
+"sandwich-BreadSetBreadEntity",
+"sandwich-BreadEntityClarify",
+"sandwich-CheeseAsk",
+"sandwich-CheeseSetCheeseEntity",
+"sandwich-CheeseEntityClarify",
+"sandwich-MeatAsk",
+"sandwich-MeatSetMeatEntity",
+"sandwich-MeatEntityClarify",
+"sandwich-NameAsk",
+"sandwich-NameSetNameEntity",
+"sandwich-CancelConfirmation",
+"sandwich-CancelConfirmationSet",
+"sandwich-CompleteConfirmation",
+"sandwich-CompleteConfirmationSet",
+"sandwich-PropertyToChangeSet",
+"sandwich-BeginDialog",
+"sandwich-ChooseProperty",
+"sandwich-HelpIntent",
+"sandwich-NotUnderstood",
+"sandwich-sandwichIntent" 
+        ]
+}

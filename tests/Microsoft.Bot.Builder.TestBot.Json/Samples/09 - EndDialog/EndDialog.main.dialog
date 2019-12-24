@@ -7,13 +7,13 @@
         "intents": [
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "JokeIntent",
                 "pattern": "(?i)joke" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel|never mind"
             }

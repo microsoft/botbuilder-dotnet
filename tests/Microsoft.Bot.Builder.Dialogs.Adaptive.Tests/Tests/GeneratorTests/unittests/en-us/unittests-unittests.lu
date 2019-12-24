@@ -1,0 +1,18 @@
+# unittests
+- {personName}
+- {age}
+- {ordinal}
+- {geographyV2}
+- {keyPhrase}
+- {money}
+- {percentage}
+- {temperature}
+- {url}
+- {number}
+
+- {dimension}
+- {Enum1Entity}
+- {Enum2Entity}
+- {email}
+- {Confirmation}
+- {PROPERTYName}

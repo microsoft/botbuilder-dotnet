@@ -2,8 +2,8 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
     "$id": "app.schema",
     "type": "object",
-    "title": "Component types",
-    "description": "These are all of the types that can be created by the loader.",
+    "title": "Component kinds",
+    "description": "These are all of the kinds that can be created by the loader.",
     "oneOf": [
         {
             "title": "Microsoft.ActivityTemplate",
@@ -21,6 +21,11 @@
             "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
         },
         {
+            "title": "Microsoft.Ask",
+            "description": "This is an action which sends an activity to the user when a response is expected",
+            "$ref": "#/definitions/Microsoft.Ask"
+        },
+        {
             "title": "Microsoft.AttachmentInput",
             "description": "Collect information - Ask for a file or image.",
             "$ref": "#/definitions/Microsoft.AttachmentInput"
@@ -29,6 +34,11 @@
             "title": "Microsoft.BeginDialog",
             "description": "Begin another dialog.",
             "$ref": "#/definitions/Microsoft.BeginDialog"
+        },
+        {
+            "title": "Microsoft.BreakLoop",
+            "description": "Stop executing this loop",
+            "$ref": "#/definitions/Microsoft.BreakLoop"
         },
         {
             "title": "Microsoft.CancelAllDialogs",
@@ -56,6 +66,11 @@
             "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
         },
         {
+            "title": "Microsoft.ContinueLoop",
+            "description": "Stop executing this template and continue with the next iteration of the loop.",
+            "$ref": "#/definitions/Microsoft.ContinueLoop"
+        },
+        {
             "title": "Microsoft.CurrencyEntityRecognizer",
             "description": "Recognizer which recognizes currency.",
             "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
@@ -74,6 +89,11 @@
             "title": "Microsoft.DebugBreak",
             "description": "If debugger is attached, stop the execution at this point in the conversation.",
             "$ref": "#/definitions/Microsoft.DebugBreak"
+        },
+        {
+            "title": "Microsoft.DeleteProperties",
+            "description": "Delete multiple properties and any value it holds.",
+            "$ref": "#/definitions/Microsoft.DeleteProperties"
         },
         {
             "title": "Microsoft.DeleteProperty",
@@ -129,6 +149,11 @@
             "title": "Microsoft.ForeachPage",
             "description": "Execute actions on each page (collection of items) in an array.",
             "$ref": "#/definitions/Microsoft.ForeachPage"
+        },
+        {
+            "title": "Microsoft.GotoAction",
+            "description": "Go to an an action by id.",
+            "$ref": "#/definitions/Microsoft.GotoAction"
         },
         {
             "title": "Microsoft.GuidEntityRecognizer",
@@ -216,6 +241,16 @@
             "$ref": "#/definitions/Microsoft.OnActivity"
         },
         {
+            "title": "Microsoft.OnEndOfActions",
+            "description": "This defines the actions to take when an OnEndOfActions event is raised",
+            "$ref": "#/definitions/Microsoft.OnEndOfActions"
+        },
+        {
+            "title": "Microsoft.OnAssignEntity",
+            "description": "This defines the actions to take when an entity should be assigned to a property",
+            "$ref": "#/definitions/Microsoft.OnAssignEntity"
+        },
+        {
             "title": "Microsoft.OnBeginDialog",
             "description": "Actions to perform when this dialog begins.",
             "$ref": "#/definitions/Microsoft.OnBeginDialog"
@@ -224,6 +259,21 @@
             "title": "Microsoft.OnCancelDialog",
             "description": "Actions to perform on cancel dialog event.",
             "$ref": "#/definitions/Microsoft.OnCancelDialog"
+        },
+        {
+            "title": "Microsoft.OnChooseEntity",
+            "description": "This defines the actions to take when a ChooseEntity event is raised",
+            "$ref": "#/definitions/Microsoft.OnChooseEntity"
+        },
+        {
+            "title": "Microsoft.OnChooseProperty",
+            "description": "This defines the actions to take when a ChooseProperty event is raised",
+            "$ref": "#/definitions/Microsoft.OnChooseProperty"
+        },
+        {
+            "title": "Microsoft.OnClearProperty",
+            "description": "This defines the actions to take when a ClearProperty event is raised",
+            "$ref": "#/definitions/Microsoft.OnClearProperty"
         },
         {
             "title": "Microsoft.OnCondition",
@@ -361,6 +411,11 @@
             "$ref": "#/definitions/Microsoft.SendActivity"
         },
         {
+            "title": "Microsoft.SetProperties",
+            "description": "Set one or more property values.",
+            "$ref": "#/definitions/Microsoft.SetProperties"
+        },
+        {
             "title": "Microsoft.SetProperty",
             "description": "Set property to a value.",
             "$ref": "#/definitions/Microsoft.SetProperty"
@@ -379,6 +434,56 @@
             "title": "Microsoft.TemperatureEntityRecognizer",
             "description": "Recognizer which recognizes temperatures.",
             "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
+        },
+        {
+            "title": "Microsoft.Test.AssertCondition",
+            "description": "Assert condition is true.",
+            "$ref": "#/definitions/Microsoft.Test.AssertCondition"
+        },
+        {
+            "title": "Microsoft.Test.AssertReply",
+            "description": "Asserts that a reply text is valid.",
+            "$ref": "#/definitions/Microsoft.Test.AssertReply"
+        },
+        {
+            "title": "Microsoft.Test.AssertReplyActivity",
+            "description": "Asserts that a reply activity is valid.",
+            "$ref": "#/definitions/Microsoft.Test.AssertReplyActivity"
+        },
+        {
+            "title": "Microsoft.Test.AssertReplyOneOf",
+            "description": "Asserts that a reply text is one of multiple optional responses.",
+            "$ref": "#/definitions/Microsoft.Test.AssertReplyOneOf"
+        },
+        {
+            "title": "Microsoft.Test.Script",
+            "description": "Defines a sequence of test actions to perform to validate the behavior of dialogs.",
+            "$ref": "#/definitions/Microsoft.Test.Script"
+        },
+        {
+            "title": "Microsoft.Test.UserActivity",
+            "description": "Sends activity to the bot.",
+            "$ref": "#/definitions/Microsoft.Test.UserActivity"
+        },
+        {
+            "title": "Microsoft.Test.UserConversationUpdate",
+            "description": "Sends ConversationUpdate activity to the bot.",
+            "$ref": "#/definitions/Microsoft.Test.UserConversationUpdate"
+        },
+        {
+            "title": "Microsoft.Test.UserDelay",
+            "description": "Delays text script for time period.",
+            "$ref": "#/definitions/Microsoft.Test.UserDelay"
+        },
+        {
+            "title": "Microsoft.Test.UserSays",
+            "description": "Sends text to the bot from the user.",
+            "$ref": "#/definitions/Microsoft.Test.UserSays"
+        },
+        {
+            "title": "Microsoft.Test.UserTyping",
+            "description": "Sends typing activity to the bot.",
+            "$ref": "#/definitions/Microsoft.Test.UserTyping"
         },
         {
             "title": "Microsoft.TextInput",
@@ -547,6 +652,20 @@
                         "$kind": "Microsoft.ITriggerCondition",
                         "$ref": "#/definitions/Microsoft.ITriggerCondition"
                     }
+                },
+                "schema": {
+                    "anyOf": [
+                        {
+                            "$comment": "Eventually we should allow at least some subset of JSON schema here.",
+                            "title": "The schema to be filled in.",
+                            "type": "object",
+                            "additionalProperties": true
+                        },
+                        {
+                            "type": "string",
+                            "title": "String pointing to schema file."
+                        }
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -599,6 +718,77 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Ask": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Send Activity to Ask a question",
+            "description": "This is an action which sends an activity to the user when a response is expected",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Ask"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "activity": {
+                    "$kind": "Microsoft.IActivityTemplate",
+                    "title": "Activity",
+                    "description": "Activity to send.",
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "expectedProperties": {
+                    "type": "array",
+                    "title": "Expected Properties",
+                    "description": "Properties expected to be filled by entities from the user",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             },
             "additionalProperties": false,
@@ -828,6 +1018,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
                     "title": "Dialog name",
@@ -846,6 +1041,12 @@
                         "title": "Options"
                     }
                 },
+                "includeActivity": {
+                    "type": "boolean",
+                    "title": "Include Activity",
+                    "description": "When set to true, dialog that is called can process the current activity.",
+                    "default": false
+                },
                 "resultProperty": {
                     "$role": "expression",
                     "title": "Property",
@@ -854,6 +1055,63 @@
                         "dialog.userName"
                     ],
                     "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.BreakLoop": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Break Loop",
+            "description": "Stop executing this loop",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.BreakLoop"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 }
             },
             "additionalProperties": false,
@@ -906,6 +1164,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "eventName": {
                     "title": "Event name",
@@ -1446,6 +1709,15 @@
                     ],
                     "type": "string"
                 },
+                "outputFormat": {
+                    "$role": "expression",
+                    "title": "Output format",
+                    "description": "Expression to format the confirm output.",
+                    "examples": [
+                        "concat('confirmation:', this.value)"
+                    ],
+                    "type": "string"
+                },
                 "defaultLocale": {
                     "type": "string",
                     "title": "Default locale",
@@ -1574,6 +1846,63 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.ContinueLoop": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Continune Loop",
+            "description": "Stop executing this template and continue with the next iteration of the loop.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.ContinueLoop"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 }
             },
             "additionalProperties": false,
@@ -1845,6 +2174,15 @@
                     ],
                     "type": "string"
                 },
+                "outputFormat": {
+                    "$role": "expression",
+                    "title": "Output format",
+                    "description": "Expression to format the datetime output.",
+                    "examples": [
+                        "this.value[0].Value"
+                    ],
+                    "type": "string"
+                },
                 "defaultLocale": {
                     "type": "string",
                     "title": "Default locale",
@@ -1902,6 +2240,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 }
             },
             "additionalProperties": false,
@@ -1920,6 +2263,75 @@
                 {
                     "title": "Type",
                     "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.DeleteProperties": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Delete Properties",
+            "description": "Delete multiple properties and any value it holds.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.DeleteProperties"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "properties": {
+                    "type": "array",
+                    "title": "Properties",
+                    "description": "Properties to delete.",
+                    "items": {
+                        "$role": "expression",
+                        "title": "Property",
+                        "description": "Property to delete.",
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "properties",
                         "$kind"
                     ]
                 }
@@ -1954,6 +2366,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "property": {
                     "$role": "expression",
@@ -2066,6 +2483,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "changeType": {
                     "type": "string",
                     "title": "Type of change",
@@ -2140,6 +2562,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "changeType": {
                     "type": "string",
@@ -2282,6 +2709,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "eventName": {
                     "title": "Event name",
                     "description": "Name of the event to emit.",
@@ -2308,10 +2740,10 @@
                     ]
                 },
                 "eventValue": {
-                    "type": "object",
+                    "$role": "expression",
                     "title": "Event value",
                     "description": "Value to emit with the event (optional).",
-                    "additionalProperties": true
+                    "type": "string"
                 },
                 "bubbleEvent": {
                     "type": "boolean",
@@ -2370,6 +2802,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "value": {
                     "$role": "expression",
@@ -2432,6 +2869,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 }
             },
             "additionalProperties": false,
@@ -2635,6 +3077,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "itemsProperty": {
                     "$role": "expression",
                     "title": "Items property",
@@ -2707,6 +3154,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "itemsProperty": {
                     "$role": "expression",
                     "title": "Items property",
@@ -2750,6 +3202,69 @@
                     "required": [
                         "itemsProperty",
                         "actions",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.GotoAction": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Go to Action",
+            "description": "Go to an an action by id.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.GotoAction"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "actionId": {
+                    "type": "string",
+                    "title": "Action Id",
+                    "description": "Action Id to execute next"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actionId",
                         "$kind"
                     ]
                 }
@@ -2889,6 +3404,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "method": {
                     "type": "string",
                     "title": "HTTP method",
@@ -3002,6 +3522,11 @@
                     "$ref": "#/definitions/Microsoft.AdaptiveDialog"
                 },
                 {
+                    "title": "Microsoft.Ask",
+                    "description": "This is an action which sends an activity to the user when a response is expected",
+                    "$ref": "#/definitions/Microsoft.Ask"
+                },
+                {
                     "title": "Microsoft.AttachmentInput",
                     "description": "Collect information - Ask for a file or image.",
                     "$ref": "#/definitions/Microsoft.AttachmentInput"
@@ -3010,6 +3535,11 @@
                     "title": "Microsoft.BeginDialog",
                     "description": "Begin another dialog.",
                     "$ref": "#/definitions/Microsoft.BeginDialog"
+                },
+                {
+                    "title": "Microsoft.BreakLoop",
+                    "description": "Stop executing this loop",
+                    "$ref": "#/definitions/Microsoft.BreakLoop"
                 },
                 {
                     "title": "Microsoft.CancelAllDialogs",
@@ -3027,6 +3557,11 @@
                     "$ref": "#/definitions/Microsoft.ConfirmInput"
                 },
                 {
+                    "title": "Microsoft.ContinueLoop",
+                    "description": "Stop executing this template and continue with the next iteration of the loop.",
+                    "$ref": "#/definitions/Microsoft.ContinueLoop"
+                },
+                {
                     "title": "Microsoft.DateTimeInput",
                     "description": "Collect information - Ask for date and/ or time",
                     "$ref": "#/definitions/Microsoft.DateTimeInput"
@@ -3035,6 +3570,11 @@
                     "title": "Microsoft.DebugBreak",
                     "description": "If debugger is attached, stop the execution at this point in the conversation.",
                     "$ref": "#/definitions/Microsoft.DebugBreak"
+                },
+                {
+                    "title": "Microsoft.DeleteProperties",
+                    "description": "Delete multiple properties and any value it holds.",
+                    "$ref": "#/definitions/Microsoft.DeleteProperties"
                 },
                 {
                     "title": "Microsoft.DeleteProperty",
@@ -3075,6 +3615,11 @@
                     "title": "Microsoft.ForeachPage",
                     "description": "Execute actions on each page (collection of items) in an array.",
                     "$ref": "#/definitions/Microsoft.ForeachPage"
+                },
+                {
+                    "title": "Microsoft.GotoAction",
+                    "description": "Go to an an action by id.",
+                    "$ref": "#/definitions/Microsoft.GotoAction"
                 },
                 {
                     "title": "Microsoft.HttpRequest",
@@ -3127,6 +3672,11 @@
                     "$ref": "#/definitions/Microsoft.SendActivity"
                 },
                 {
+                    "title": "Microsoft.SetProperties",
+                    "description": "Set one or more property values.",
+                    "$ref": "#/definitions/Microsoft.SetProperties"
+                },
+                {
                     "title": "Microsoft.SetProperty",
                     "description": "Set property to a value.",
                     "$ref": "#/definitions/Microsoft.SetProperty"
@@ -3135,6 +3685,11 @@
                     "title": "Microsoft.SwitchCondition",
                     "description": "Execute different actions based on the value of a property.",
                     "$ref": "#/definitions/Microsoft.SwitchCondition"
+                },
+                {
+                    "title": "Microsoft.Test.AssertCondition",
+                    "description": "Assert condition is true.",
+                    "$ref": "#/definitions/Microsoft.Test.AssertCondition"
                 },
                 {
                     "title": "Microsoft.TextInput",
@@ -3226,6 +3781,16 @@
                     "$ref": "#/definitions/Microsoft.OnActivity"
                 },
                 {
+                    "title": "Microsoft.OnEndOfActions",
+                    "description": "This defines the actions to take when an OnEndOfActions event is raised",
+                    "$ref": "#/definitions/Microsoft.OnEndOfActions"
+                },
+                {
+                    "title": "Microsoft.OnAssignEntity",
+                    "description": "This defines the actions to take when an entity should be assigned to a property",
+                    "$ref": "#/definitions/Microsoft.OnAssignEntity"
+                },
+                {
                     "title": "Microsoft.OnBeginDialog",
                     "description": "Actions to perform when this dialog begins.",
                     "$ref": "#/definitions/Microsoft.OnBeginDialog"
@@ -3234,6 +3799,21 @@
                     "title": "Microsoft.OnCancelDialog",
                     "description": "Actions to perform on cancel dialog event.",
                     "$ref": "#/definitions/Microsoft.OnCancelDialog"
+                },
+                {
+                    "title": "Microsoft.OnChooseEntity",
+                    "description": "This defines the actions to take when a ChooseEntity event is raised",
+                    "$ref": "#/definitions/Microsoft.OnChooseEntity"
+                },
+                {
+                    "title": "Microsoft.OnChooseProperty",
+                    "description": "This defines the actions to take when a ChooseProperty event is raised",
+                    "$ref": "#/definitions/Microsoft.OnChooseProperty"
+                },
+                {
+                    "title": "Microsoft.OnClearProperty",
+                    "description": "This defines the actions to take when a ClearProperty event is raised",
+                    "$ref": "#/definitions/Microsoft.OnClearProperty"
                 },
                 {
                     "title": "Microsoft.OnCondition",
@@ -3384,6 +3964,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "condition": {
                     "$role": "expression",
                     "title": "Condition",
@@ -3464,6 +4049,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "property": {
                     "$role": "expression",
@@ -3640,6 +4230,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "text": {
                     "type": "string",
                     "title": "Text",
@@ -3706,13 +4301,57 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "applicationId": {
-                    "type": "string"
+                    "type": "string",
+                    "title": "LUIS Application ID",
+                    "description": "Application ID for your model from the LUIS service.",
+                    "$role": "expression"
                 },
                 "endpoint": {
-                    "type": "string"
+                    "type": "string",
+                    "title": "LUIS Endpoint",
+                    "description": "Endpoint to use for LUIS service like https://westus.api.cognitive.microsoft.com.",
+                    "$role": "expression"
                 },
                 "endpointKey": {
-                    "type": "string"
+                    "type": "string",
+                    "title": "LUIS prediction key",
+                    "description": "LUIS prediction key used to call endpoint.",
+                    "$role": "expression"
+                },
+                "predictionOptions": {
+                    "type": "object",
+                    "properties": {
+                        "includeAllIntents": {
+                            "type": "boolean",
+                            "title": "Include all intents",
+                            "description": "True for all intents, false for only top intent."
+                        },
+                        "includeInstanceData": {
+                            "type": "boolean",
+                            "title": "Include $instance",
+                            "description": "True to include $instance metadata in the LUIS response."
+                        },
+                        "log": {
+                            "type": "boolean",
+                            "title": "Log utterances",
+                            "description": "True to log utterances on LUIS service."
+                        },
+                        "preferExternalEntities": {
+                            "type": "boolean",
+                            "title": "Prefer External Entities",
+                            "description": "True to prefer external entities to those generated by LUIS models."
+                        },
+                        "slot": {
+                            "type": "string",
+                            "title": "Slot",
+                            "description": "Slot to use for talking to LUIS service like production or staging."
+                        },
+                        "version": {
+                            "type": "string",
+                            "title": "Version",
+                            "description": "LUIS application version to use."
+                        }
+                    }
                 }
             },
             "patternProperties": {
@@ -4112,14 +4751,13 @@
                     "type": "string"
                 },
                 "outputFormat": {
-                    "type": "string",
-                    "enum": [
-                        "float",
-                        "integer"
-                    ],
+                    "$role": "expression",
                     "title": "Output format",
-                    "description": "Number output format.",
-                    "default": "float"
+                    "description": "Expression to format the number output.",
+                    "examples": [
+                        "int(this.value)"
+                    ],
+                    "type": "string"
                 },
                 "defaultLocale": {
                     "type": "string",
@@ -4340,6 +4978,17 @@
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
+                },
                 "type": {
                     "type": "string",
                     "title": "Activity type",
@@ -4364,6 +5013,182 @@
                     "required": [
                         "actions",
                         "type",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnEndOfActions": {
+            "$role": "union(Microsoft.ITriggerCondition)",
+            "title": "Ask Event",
+            "description": "This defines the actions to take when an OnEndOfActions event is raised",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnEndOfActions"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition (expression).",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions to execute.",
+                    "items": {
+                        "$kind": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnAssignEntity": {
+            "$role": "union(Microsoft.ITriggerCondition)",
+            "title": "Assign an entity to a property",
+            "description": "This defines the actions to take when an entity should be assigned to a property",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnAssignEntity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition (expression).",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions to execute.",
+                    "items": {
+                        "$kind": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
+                },
+                "property": {
+                    "type": "string",
+                    "title": "Property",
+                    "description": "Property that will be set after entity is selected."
+                },
+                "entity": {
+                    "type": "string",
+                    "title": "Entity",
+                    "description": "Entity being put into property"
+                },
+                "operation": {
+                    "type": "string",
+                    "title": "Operation to use for assigning entity"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
                         "$kind"
                     ]
                 }
@@ -4415,6 +5240,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -4485,6 +5321,298 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnChooseEntity": {
+            "$role": "union(Microsoft.ITriggerCondition)",
+            "title": "ChooseEntity Event",
+            "description": "This defines the actions to take when a ChooseEntity event is raised",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnChooseEntity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition (expression).",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions to execute.",
+                    "items": {
+                        "$kind": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
+                },
+                "property": {
+                    "type": "string",
+                    "title": "Property to be set",
+                    "description": "Property that will be set after entity is selected."
+                },
+                "entity": {
+                    "type": "string",
+                    "title": "Ambiguous entity",
+                    "description": "Ambiguous entity"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnChooseProperty": {
+            "$role": "union(Microsoft.ITriggerCondition)",
+            "title": "ChooseProperty Event",
+            "description": "This defines the actions to take when a ChooseProperty event is raised",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnChooseProperty"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition (expression).",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions to execute.",
+                    "items": {
+                        "$kind": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
+                },
+                "entity": {
+                    "type": "string",
+                    "title": "Entity being assigned",
+                    "description": "Entity being assigned to property choice"
+                },
+                "properties": {
+                    "type": "array",
+                    "title": "Possible properties",
+                    "description": "Properties to be chosen between",
+                    "items": {
+                        "type": "string",
+                        "title": "Property name"
+                    }
+                },
+                "entities": {
+                    "type": "array",
+                    "title": "Possible properties",
+                    "description": "Entities being assigned",
+                    "items": {
+                        "type": "string",
+                        "title": "Entity name"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnClearProperty": {
+            "$role": "union(Microsoft.ITriggerCondition)",
+            "title": "ClearProperty Event",
+            "description": "This defines the actions to take when a ClearProperty event is raised",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnClearProperty"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition (expression).",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions to execute.",
+                    "items": {
+                        "$kind": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
+                },
+                "property": {
+                    "type": "string",
+                    "title": "Property",
+                    "description": "Property that will be cleared"
                 }
             },
             "additionalProperties": false,
@@ -4555,6 +5683,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -4625,6 +5764,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -4695,6 +5845,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 },
                 "event": {
                     "type": "string",
@@ -4772,6 +5933,17 @@
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
+                },
                 "event": {
                     "type": "string",
                     "title": "Dialog event name",
@@ -4847,6 +6019,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -4917,6 +6100,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -4987,6 +6181,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5057,6 +6262,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5127,6 +6343,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 },
                 "intent": {
                     "type": "string",
@@ -5211,6 +6438,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5281,6 +6519,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5351,6 +6600,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5421,6 +6681,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5491,6 +6762,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5561,6 +6843,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5631,6 +6924,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5701,6 +7005,17 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "string",
+                    "title": "priority",
+                    "description": "Priority expression of rule with 0 being the most important",
+                    "$role": "expression"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "title": "Run Once",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5968,7 +7283,7 @@
                     "default": "Thanks for the feedback.",
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
-                 "strictFilters": {
+                "strictFilters": {
                     "type": "array",
                     "title": "Strict Filters",
                     "description": "Metadata filters to use when calling the QnA Maker KB.",
@@ -5993,6 +7308,18 @@
                     "title": "Top",
                     "description": "The number of answers you want to retrieve.",
                     "default": 3
+                },
+                "isTest": {
+                    "type": "boolean",
+                    "title": "IsTest",
+                    "description": "True, if pointing to Test environment, else false.",
+                    "default": false
+                },
+                "rankerType": {
+                    "type": "string",
+                    "title": "RankerType",
+                    "description": "Type of Ranker.",
+                    "default": "Default"
                 }
             },
             "patternProperties": {
@@ -6248,6 +7575,26 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "options": {
+                    "type": "object",
+                    "title": "Options",
+                    "description": "One or more options that are passed to the dialog that is called.",
+                    "additionalProperties": {
+                        "type": "string",
+                        "title": "Options"
+                    }
+                },
+                "includeActivity": {
+                    "type": "boolean",
+                    "title": "Include Activity",
+                    "description": "When set to true, dialog that is called can process the current activity.",
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -6301,10 +7648,18 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
                     "title": "Dialog name",
-                    "description": "Current dialog will be replaced by this dialog.",
+                    "description": "Name of the dialog to call.",
+                    "examples": [
+                        "AddToDoDialog"
+                    ],
                     "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "options": {
@@ -6315,6 +7670,12 @@
                         "type": "string",
                         "title": "Options"
                     }
+                },
+                "includeActivity": {
+                    "type": "boolean",
+                    "title": "Include Activity",
+                    "description": "When set to true, dialog that is called can process the current activity.",
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -6368,6 +7729,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "activity": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Activity",
@@ -6391,6 +7757,94 @@
                 {
                     "title": "Type",
                     "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.SetProperties": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Set property",
+            "description": "Set one or more property values.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.SetProperties"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "assignments": {
+                    "type": "array",
+                    "title": "Assignments",
+                    "description": "Property value assignments to set.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "property": {
+                                "$role": "expression",
+                                "title": "Property",
+                                "description": "Property (named location to store information).",
+                                "examples": [
+                                    "user.age"
+                                ],
+                                "type": "string"
+                            },
+                            "value": {
+                                "$role": "expression",
+                                "title": "Value",
+                                "description": "New value or expression.",
+                                "examples": [
+                                    "'milk'",
+                                    "dialog.favColor",
+                                    "dialog.favColor == 'red'"
+                                ],
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "assignments",
                         "$kind"
                     ]
                 }
@@ -6425,6 +7879,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "property": {
                     "$role": "expression",
@@ -6558,6 +8017,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
                 "condition": {
                     "$role": "expression",
                     "title": "Condition",
@@ -6661,6 +8125,759 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.AssertCondition": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Assert Condition",
+            "description": "Assert condition is true.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.AssertCondition"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Expression to evalute",
+                    "examples": [
+                        "user.age > 10"
+                    ],
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "title": "Description",
+                    "description": "Description of what the condition is testing"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.AssertReply": {
+            "$role": "union(Microsoft.Test.ITestAction)",
+            "title": "Assert Reply",
+            "description": "Asserts that a reply text is valid.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.AssertReply"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "text": {
+                    "type": "string",
+                    "title": "Reply Text",
+                    "description": "Expected reply text"
+                },
+                "exact": {
+                    "type": "boolean",
+                    "title": "Exact Match",
+                    "description": "If true then an exact match must happen, if false then the reply activity.text must contain the reply text. [Default:false]"
+                },
+                "description": {
+                    "type": "string",
+                    "title": "Description",
+                    "description": "The description of what the assertion is testing"
+                },
+                "timeout": {
+                    "type": "number",
+                    "title": "Timeout",
+                    "description": "The amount of time in milliseconds to wait for a reply (default is 3000)"
+                },
+                "assertions": {
+                    "type": "array",
+                    "title": "Assertions to perform to validate Activity that is sent by the dialog",
+                    "description": "Sequence of expressions which must evaluate to true.",
+                    "items": {
+                        "$role": "expression",
+                        "title": "Assertion",
+                        "description": "Assertion as an expression, which must evaluate to true or it will fail the test script.",
+                        "examples": [
+                            "user.vip == true"
+                        ],
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "text",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.AssertReplyActivity": {
+            "$role": "union(Microsoft.Test.ITestAction)",
+            "title": "Assert Reply Activity",
+            "description": "Asserts that a reply activity is valid.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.AssertReplyActivity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "description": {
+                    "type": "string",
+                    "title": "Description",
+                    "description": "The description of what the assertion is testing"
+                },
+                "timeout": {
+                    "type": "number",
+                    "title": "Timeout",
+                    "description": "The amount of time in milliseconds to wait for a reply (default is 3000)"
+                },
+                "assertions": {
+                    "type": "array",
+                    "title": "Assertions to perform to validate Activity that is sent by the dialog",
+                    "description": "Sequence of expressions which must evaluate to true.",
+                    "items": {
+                        "$role": "expression",
+                        "title": "Assertion",
+                        "description": "Assertion as an expression, which must evaluate to true or it will fail the test script.",
+                        "examples": [
+                            "user.vip == true"
+                        ],
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "assertions",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.AssertReplyOneOf": {
+            "$role": "union(Microsoft.Test.ITestAction)",
+            "title": "Assert Reply OneOf",
+            "description": "Asserts that a reply text is one of multiple optional responses.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.AssertReplyOneOf"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "text": {
+                    "type": "array",
+                    "title": "Replies",
+                    "description": "Expected replies (one of which must match",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "exact": {
+                    "type": "boolean",
+                    "title": "Exact Match",
+                    "description": "If true then an exact match must happen, if false then the reply activity.text must contain the reply text. [Default:false]"
+                },
+                "description": {
+                    "type": "string",
+                    "title": "Description",
+                    "description": "The description of what the assertion is testing"
+                },
+                "timeout": {
+                    "type": "number",
+                    "title": "Timeout",
+                    "description": "The amount of time in milliseconds to wait for a reply (default is 3000)"
+                },
+                "assertions": {
+                    "type": "array",
+                    "title": "Assertions to perform to validate Activity that is sent by the dialog",
+                    "description": "Sequence of expressions which must evaluate to true.",
+                    "items": {
+                        "$role": "expression",
+                        "title": "Assertion",
+                        "description": "Assertion as an expression, which must evaluate to true or it will fail the test script.",
+                        "examples": [
+                            "user.vip == true"
+                        ],
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "replies",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.ITestAction": {
+            "title": "Microsoft Test ITestAction",
+            "description": "Union of components which implement the Test.ITestAction interface",
+            "$role": "union",
+            "oneOf": [
+                {
+                    "title": "Microsoft.Test.AssertReply",
+                    "description": "Asserts that a reply text is valid.",
+                    "$ref": "#/definitions/Microsoft.Test.AssertReply"
+                },
+                {
+                    "title": "Microsoft.Test.AssertReplyActivity",
+                    "description": "Asserts that a reply activity is valid.",
+                    "$ref": "#/definitions/Microsoft.Test.AssertReplyActivity"
+                },
+                {
+                    "title": "Microsoft.Test.AssertReplyOneOf",
+                    "description": "Asserts that a reply text is one of multiple optional responses.",
+                    "$ref": "#/definitions/Microsoft.Test.AssertReplyOneOf"
+                },
+                {
+                    "title": "Microsoft.Test.UserActivity",
+                    "description": "Sends activity to the bot.",
+                    "$ref": "#/definitions/Microsoft.Test.UserActivity"
+                },
+                {
+                    "title": "Microsoft.Test.UserConversationUpdate",
+                    "description": "Sends ConversationUpdate activity to the bot.",
+                    "$ref": "#/definitions/Microsoft.Test.UserConversationUpdate"
+                },
+                {
+                    "title": "Microsoft.Test.UserDelay",
+                    "description": "Delays text script for time period.",
+                    "$ref": "#/definitions/Microsoft.Test.UserDelay"
+                },
+                {
+                    "title": "Microsoft.Test.UserSays",
+                    "description": "Sends text to the bot from the user.",
+                    "$ref": "#/definitions/Microsoft.Test.UserSays"
+                },
+                {
+                    "title": "Microsoft.Test.UserTyping",
+                    "description": "Sends typing activity to the bot.",
+                    "$ref": "#/definitions/Microsoft.Test.UserTyping"
+                }
+            ]
+        },
+        "Microsoft.Test.Script": {
+            "title": "Test Script",
+            "description": "Defines a sequence of test actions to perform to validate the behavior of dialogs.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.Script"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "dialog": {
+                    "$kind": "Microsoft.IDialog",
+                    "title": "Dialog",
+                    "description": "The root dialog to execute the test script against.",
+                    "$ref": "#/definitions/Microsoft.IDialog"
+                },
+                "description": {
+                    "type": "string",
+                    "title": "Description",
+                    "description": "Description of the test script"
+                },
+                "script": {
+                    "type": "array",
+                    "description": "Sequence of test actions to execute.",
+                    "items": {
+                        "$kind": "Microsoft.Test.ITestAction",
+                        "$ref": "#/definitions/Microsoft.Test.ITestAction"
+                    }
+                },
+                "enableTrace": {
+                    "type": "boolean",
+                    "title": "Enable Trace Activity",
+                    "description": "Enable trace activities in the unit test (default is false)",
+                    "default": false
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "dialog",
+                        "testActions",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.UserActivity": {
+            "$role": "union(Microsoft.Test.ITestAction)",
+            "title": "Send Activity",
+            "description": "Sends activity to the bot.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.UserActivity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "activity": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "user": {
+                    "type": "string",
+                    "title": "User Name",
+                    "description": "The activity.from.id and activity.from.name will be this if specified."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "activity",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.UserConversationUpdate": {
+            "$role": "union(Microsoft.Test.ITestAction)",
+            "title": "Send ConversationUpdate",
+            "description": "Sends ConversationUpdate activity to the bot.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.UserConversationUpdate"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "membersAdded": {
+                    "type": "array",
+                    "title": "Members Added",
+                    "description": "Names of the members to add",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "membersRemoved": {
+                    "type": "array",
+                    "title": "Members Removed",
+                    "description": "Names of the members to remove",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.UserDelay": {
+            "$role": "union(Microsoft.Test.ITestAction)",
+            "title": "Delay Execution",
+            "description": "Delays text script for time period.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.UserDelay"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "timespan": {
+                    "type": "number",
+                    "title": "Timespan",
+                    "description": "The amount of time in milliseconds to delay the execution of the test script"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "timespan",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.UserSays": {
+            "$role": "union(Microsoft.Test.ITestAction)",
+            "title": "User Text",
+            "description": "Sends text to the bot from the user.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.UserSays"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "text": {
+                    "type": "string",
+                    "title": "Text",
+                    "description": "Text to send to the bot."
+                },
+                "user": {
+                    "type": "string",
+                    "title": "User Name",
+                    "description": "The activity.from.id and activity.from.name will be this if specified."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "text",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Test.UserTyping": {
+            "$role": "union(Microsoft.Test.ITestAction)",
+            "title": "Send Typing",
+            "description": "Sends typing activity to the bot.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Test.UserTyping"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "user": {
+                    "type": "string",
+                    "title": "User Name",
+                    "description": "The activity.from.id and activity.from.name will be this if specified."
                 }
             },
             "additionalProperties": false,
@@ -6829,16 +9046,13 @@
                     "type": "string"
                 },
                 "outputFormat": {
-                    "type": "string",
-                    "enum": [
-                        "none",
-                        "trim",
-                        "lowercase",
-                        "uppercase"
-                    ],
+                    "$role": "expression",
                     "title": "Output format",
-                    "description": "Format of output.",
-                    "default": "none"
+                    "description": "Expression to format the output.",
+                    "examples": [
+                        "toUpper(this.value)"
+                    ],
+                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -6949,6 +9163,11 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
                 },
                 "name": {
                     "type": "string",

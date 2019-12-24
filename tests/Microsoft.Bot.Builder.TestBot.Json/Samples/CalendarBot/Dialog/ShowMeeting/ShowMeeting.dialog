@@ -5,38 +5,26 @@
     "$kind": "Microsoft.RegexRecognizer",
     "intents": [
         {
-
-            "$kind": "Microsoft.IntentPattern",
             "intent": "CreateMeetingIntent",
             "pattern": "(?i)create meeting" 
         },
         {
-
-            "$kind": "Microsoft.IntentPattern",
             "intent": "HelpIntent",
             "pattern": "(?i)help" 
         },
         {
-
-            "$kind": "Microsoft.IntentPattern",
             "intent": "ShowNextPageIntent",
             "pattern": "(?i)next page meeting" 
         },
         {
-
-            "$kind": "Microsoft.IntentPattern",
             "intent": "UpdateMeetingIntent",
             "pattern": "(?i)update meeting" 
         },
         {
-
-            "$kind": "Microsoft.IntentPattern",
             "intent": "AcceptMeetingIntent",
             "pattern": "(?i)accept meeting" 
         },
         {
-
-            "$kind": "Microsoft.IntentPattern",
             "intent": "DeclineMeetingIntent",
             "pattern": "(?i)decline meeting"
         }

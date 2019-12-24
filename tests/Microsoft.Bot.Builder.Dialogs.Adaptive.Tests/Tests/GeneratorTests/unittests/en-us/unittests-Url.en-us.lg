@@ -1,0 +1,12 @@
+# AskUrl
+- @{askString('Url')}
+
+# UrlName
+- url
+
+# Url(val)
+- @{UrlEntity(val)}
+
+[unittests-UrlEntity.lg](unittests-UrlEntity.lg)
+
+[unittests-common.lg](unittests-common.lg)

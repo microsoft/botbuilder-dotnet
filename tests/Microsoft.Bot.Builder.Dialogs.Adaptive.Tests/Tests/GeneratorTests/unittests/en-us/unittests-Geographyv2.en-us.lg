@@ -1,0 +1,7 @@
+# AskGeographyv2
+- @{askString('Geographyv2')}
+
+# Geographyv2Name
+- geographyv2
+
+[unittests-common.lg](unittests-common.lg)

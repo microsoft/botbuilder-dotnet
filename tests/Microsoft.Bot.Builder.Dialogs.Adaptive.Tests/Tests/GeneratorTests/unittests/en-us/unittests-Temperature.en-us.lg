@@ -1,0 +1,7 @@
+# AskTemperature
+- @{askString('Temperature')}
+
+# TemperatureName
+- temperature
+
+[unittests-common.lg](unittests-common.lg)
