@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.AI.Luis;
-using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
@@ -56,6 +55,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<OnHandoffActivity>(OnHandoffActivity.DeclarativeType);
             yield return new TypeRegistration<OnChooseIntent>(OnChooseIntent.DeclarativeType);
 
+            yield return new TypeRegistration<OnEndOfActions>(OnEndOfActions.DeclarativeType);
+            yield return new TypeRegistration<OnChooseProperty>(OnChooseProperty.DeclarativeType);
+            yield return new TypeRegistration<OnChooseEntity>(OnChooseEntity.DeclarativeType);
+            yield return new TypeRegistration<OnClearProperty>(OnClearProperty.DeclarativeType);
+            yield return new TypeRegistration<OnAssignEntity>(OnAssignEntity.DeclarativeType);
+
             // Actions
             yield return new TypeRegistration<BeginDialog>(BeginDialog.DeclarativeType);
             yield return new TypeRegistration<CancelAllDialogs>(CancelAllDialogs.DeclarativeType);
@@ -92,6 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<ChoiceInput>(ChoiceInput.DeclarativeType);
             yield return new TypeRegistration<DateTimeInput>(DateTimeInput.DeclarativeType);
             yield return new TypeRegistration<OAuthInput>(OAuthInput.DeclarativeType);
+            yield return new TypeRegistration<Ask>(Ask.DeclarativeType);
 
             // Recognizers
             yield return new TypeRegistration<LuisRecognizer>(LuisRecognizer.DeclarativeType) { CustomDeserializer = new LuisRecognizerLoader(TypeFactory.Configuration) };
@@ -158,6 +164,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new InterfaceConverter<ITriggerSelector>(refResolver, sourceMap, paths);
             yield return new ExpressionPropertyConverter<ChoiceSet>();
             yield return new ActivityTemplateConverter();
+            yield return new JObjectConverter(refResolver);
         }
     }
 }

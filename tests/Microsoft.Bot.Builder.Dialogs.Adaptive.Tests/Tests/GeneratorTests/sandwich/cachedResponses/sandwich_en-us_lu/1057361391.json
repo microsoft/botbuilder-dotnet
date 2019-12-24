@@ -1,0 +1,1 @@
+{"query":"bread","prediction":{"topIntent":"sandwich","intents":{"sandwich":{"score":0.9999347}},"entities":{"PROPERTYName":[["Bread"]],"$instance":{"PROPERTYName":[{"type":"PROPERTYName","text":"bread","startIndex":0,"length":5,"modelTypeId":5,"modelType":"List Entity Extractor","recognitionSources":["model"]}]}}}}

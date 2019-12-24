@@ -1,0 +1,36 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$kind": "Microsoft.OnAssignEntity",
+    "property": "Name",
+    "entity": "NameEntity",
+    "actions": [
+        {
+            "$kind": "Microsoft.IfCondition",
+            "condition": "!turn.dialogevent.value.expected",
+            "actions":[               
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "!$Name",
+                    "actions":[
+                        {
+                            "$kind": "Microsoft.SendActivity",
+                            "activity": "@{unexpectedPropertySet('Name', @NameEntity)}"
+                        }
+                    ],
+                    "elseActions":[
+                        {
+                            "$kind": "Microsoft.SendActivity",
+                            "activity": "@{unexpectedPropertyChange('Name', @NameEntity, $Name)}"
+                        }
+                    ]
+                }                
+            ]           
+        },
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Name",
+            "value": "@NameEntity"
+        }
+    ]
+}

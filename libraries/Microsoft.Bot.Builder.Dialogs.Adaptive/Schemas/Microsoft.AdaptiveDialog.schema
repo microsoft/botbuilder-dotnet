@@ -44,6 +44,20 @@
             "items": {
                 "$kind": "Microsoft.ITriggerCondition"
             }
+        },
+        "schema": {
+            "anyOf": [
+                {
+                    "$comment": "Eventually we should allow at least some subset of JSON schema here.",
+                    "title": "The schema to be filled in.",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                {
+                    "type": "string",
+                    "title": "String pointing to schema file."
+                }
+            ]
         }
     }
 }

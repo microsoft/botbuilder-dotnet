@@ -1,0 +1,26 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.ITriggerCondition)",
+    "title": "On choose entity",
+    "description": "Actions to be performed when an entity value needs to be resolved.",
+    "allOf": [
+        {
+            "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/TriggerConditions/Microsoft.OnCondition.schema#"
+        },
+        {
+            "type": "object",
+            "properties": {
+                "property": {
+                    "type": "string",
+                    "title": "Property to be set",
+                    "description": "Property that will be set after entity is selected."
+                },
+                "entity": {
+                    "type": "string",
+                    "title": "Ambiguous entity",
+                    "description": "Ambiguous entity"
+                }
+            }
+        }
+    ]
+}

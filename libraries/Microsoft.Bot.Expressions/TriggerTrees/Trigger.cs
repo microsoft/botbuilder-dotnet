@@ -40,6 +40,7 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
                 ExpandQuantifiers();
                 RemoveDuplicates();
                 MarkSubsumedClauses();
+                SplitIgnores();
             }
             else
             {
@@ -115,6 +116,21 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
             }
 
             return result;
+        }
+
+        public bool Matches(Clause nodeClause, object state)
+        {
+            var found = false;
+            foreach (var clause in Clauses)
+            {
+                if (clause.Matches(nodeClause, state))
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            return found;
         }
 
         protected void ToString(StringBuilder builder, int indent = 0)
@@ -346,6 +362,14 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
                         }
                     }
                 }
+            }
+        }
+
+        private void SplitIgnores()
+        {
+            foreach (var clause in _clauses)
+            {
+                clause.SplitIgnores();
             }
         }
 
