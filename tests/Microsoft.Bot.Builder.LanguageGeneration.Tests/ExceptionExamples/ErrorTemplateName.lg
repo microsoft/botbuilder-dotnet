@@ -1,0 +1,20 @@
+﻿> This exception is thrown by Antlr error listener
+# template(param1; param2)
+- hello 
+
+> This exception is thrown by Antlr error listener
+# template2(param1 param2)
+- hello 
+
+> Error template parameters
+# template3(errorparams
+- hello 
+
+> Template names must not have () in them, Exception is thrown by Antlr tool
+# t1(a)test(param1) 
+- hi
+
+> Parameters for template must not contain any special characters
+# t2($%^)
+- hi
+

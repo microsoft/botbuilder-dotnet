@@ -15,7 +15,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
     [TestClass]
-    public class TemplateEngineTest
+    public class LGFileTest
     {
         public TestContext TestContext { get; set; }
 
