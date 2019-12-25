@@ -2372,6 +2372,33 @@ namespace Microsoft.Bot.Expressions
                return (result, error);
            };
 
+        private static (object, string) IndicesAndValues(Expression expression, object state)
+        {
+            object result = null;
+            string error;
+            object arr;
+            (arr, error) = expression.Children[0].TryEvaluate(state);
+            if (error == null)
+            {
+                if (TryParseList(arr, out var list))
+                {
+                    var tempList = new List<object>();
+                    for (var i = 0; i < list.Count; i++)
+                    {
+                        tempList.Add(new { index = i, value = list[i] });
+                    }
+
+                    result = tempList;
+                }
+                else
+                {
+                    error = $"{expression.Children[0]} is not array.";
+                }
+            }
+
+            return (result, error);
+        }
+
         private static bool IsSameDay(DateTime date1, DateTime date2) => date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day;
 
         private static Dictionary<string, ExpressionEvaluator> BuildFunctionLookup()
@@ -2543,6 +2570,7 @@ namespace Microsoft.Bot.Expressions
                     SortBy(true),
                     ReturnType.Object,
                     (expression) => BuiltInFunctions.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
+                new ExpressionEvaluator(ExpressionType.IndicesAndValues, IndicesAndValues, ReturnType.Object, ValidateUnary),
 
                 // Booleans
                 Comparison(ExpressionType.LessThan, args => args[0] < args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
