@@ -256,7 +256,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="input">input array.</param>
         /// <returns>trimed list.</returns>
-        private List<string> TrimList(List<string> input)
+        private IList<string> TrimList(IList<string> input)
         {
             if (input == null)
             {
@@ -286,7 +286,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return input.Skip(startIndex).Take(endIndex - startIndex).ToList();
         }
 
-        private string BuildNewLGContent(List<string> destList)
+        private string BuildNewLGContent(IList<string> destList)
         {
             var result = new StringBuilder();
             for (var i = 0; i < destList.Count; i++)

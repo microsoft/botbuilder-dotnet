@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>new <see cref="LGFile"/> entity.</returns>
         public static LGFile ParseFile(string filePath, ImportResolverDelegate importResolver = null)
         {
-            var fullPath = Path.GetFullPath(PathUtil.NormalizePath(filePath));
+            var fullPath = Path.GetFullPath(filePath.NormalizePath());
             var content = File.ReadAllText(fullPath);
 
             return ParseContent(content, fullPath, importResolver);
@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             // import paths are in resource files which can be executed on multiple OS environments
             // normalize to map / & \ in importPath -> OSPath
-            var importPath = PathUtil.NormalizePath(id);
+            var importPath = id.NormalizePath();
 
             if (!Path.IsPathRooted(importPath))
             {
@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    .ToList();
         }
 
-        private static List<LGFile> GetReferences(LGFile file, ImportResolverDelegate importResolver)
+        private static IList<LGFile> GetReferences(LGFile file, ImportResolverDelegate importResolver)
         {
             var resourcesFound = new HashSet<LGFile>();
             ResolveImportResources(file, resourcesFound, importResolver);
@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private static void ResolveImportResources(LGFile start, HashSet<LGFile> resourcesFound, ImportResolverDelegate importResolver)
         {
-            var resourceIds = start.Imports.Select(lg => lg.Id).ToList();
+            var resourceIds = start.Imports.Select(lg => lg.Id);
             resourcesFound.Add(start);
 
             foreach (var id in resourceIds)
