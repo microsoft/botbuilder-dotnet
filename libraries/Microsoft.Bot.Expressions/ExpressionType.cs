@@ -71,6 +71,7 @@ namespace Microsoft.Bot.Expressions
         public const string SubArray = "subArray";
         public const string SortBy = "sortBy";
         public const string SortByDescending = "sortByDescending";
+        public const string IndicesAndValues = "indicesAndValues";
 
         // DateTime
         public const string AddDays = "addDays";
