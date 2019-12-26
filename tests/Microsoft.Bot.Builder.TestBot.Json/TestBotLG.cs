@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         public TestBotLG(TestBotAccessors accessors)
         {
             // load LG file into engine
-            engine = new LGParser().ParseFile(GetLGResourceFile("8.LG"));
+            engine = LGParser.ParseFile(GetLGResourceFile("8.LG"));
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))

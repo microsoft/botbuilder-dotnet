@@ -659,7 +659,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private LGFile GetLGFile()
         {
             var path = Path.Combine(AppContext.BaseDirectory, "lg", "NormalStructuredLG.lg");
-            return new LGParser().ParseFile(path);
+            return LGParser.ParseFile(path);
         }
     }
 }
