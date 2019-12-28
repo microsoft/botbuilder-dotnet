@@ -60,9 +60,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             var entityPool = new List<Entity>();
 
             var textEntity = new TextEntity(text);
-            textEntity.Properties["Start"] = 0;
-            textEntity.Properties["End"] = text.Length;
-            textEntity.Properties["Score"] = 1.0;
+            textEntity.Properties["start"] = 0;
+            textEntity.Properties["end"] = text.Length;
+            textEntity.Properties["score"] = 1.0;
 
             entityPool.Add(textEntity);
 
@@ -90,9 +90,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                             {
                                 // add as entity to entity pool
                                 Entity entity = new Entity(groupName);
-                                entity.Properties["Text"] = group.Value;
-                                entity.Properties["Start"] = group.Index;
-                                entity.Properties["End"] = group.Index + group.Length;
+                                entity.Properties["text"] = group.Value;
+                                entity.Properties["start"] = group.Index;
+                                entity.Properties["end"] = group.Index + group.Length;
                                 entityPool.Add(entity);
                             }
                         }
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
                 // The Entity type names are not consistent, map everything to camelcase so we can process them cleaner.
                 dynamic entity = JObject.FromObject(entityResult);
-                ((JArray)values).Add(entity.Text);
+                ((JArray)values).Add(entity.text);
 
                 // get/create $instance
                 JToken instanceRoot;
@@ -148,12 +148,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 }
 
                 dynamic instance = new JObject();
-                instance.startIndex = entity.Start;
-                instance.endIndex = entity.End;
+                instance.startIndex = entity.start;
+                instance.endIndex = entity.end;
                 instance.score = (double)1.0;
-                instance.text = entity.Text;
-                instance.type = entityResult.Type;
-                instance.resolution = entity.Resolution;
+                instance.text = entity.text;
+                instance.type = entity.type;
+                instance.resolution = entity.resolution;
                 ((JArray)instanceData).Add(instance);
             }
 

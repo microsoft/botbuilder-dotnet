@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
@@ -13,6 +15,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </summary>
     public abstract class TextEntityRecognizer : EntityRecognizer
     {
+        private static JsonSerializer serializer = new JsonSerializer() { ContractResolver = new CamelCasePropertyNamesContractResolver() };
+
         public TextEntityRecognizer()
         {
         }
@@ -28,9 +32,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 var results = Recognize(entity.Text, culture);
                 foreach (var result in results)
                 {
-                    var newEntity = new Entity();
-                    newEntity.SetAs(result);
+                    var newEntity = JObject.FromObject(result, serializer).ToObject<Entity>();
                     newEntity.Type = result.TypeName;
+                    newEntity.Properties.Remove("TypeName");
                     newEntities.Add(newEntity);
                 }
             }
