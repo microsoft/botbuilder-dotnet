@@ -5,6 +5,7 @@ steps:
     downloadType: specific
     itemPattern: '**\*.txt'
     downloadPath: '$(System.ArtifactsDirectory)\ApiCompat'
+  condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
 
 - task: SOUTHWORKS.github-pr-comment.custom-publish-comment-task.github-pr-comment@0
   displayName: 'Publish Compat Results to Github'
@@ -12,14 +13,55 @@ steps:
     userToken: '$(GitHubCommentApiKey)'
     bodyFilePath: '$(System.ArtifactsDirectory)\ApiCompat'
     getSubFolders: true
+  condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
 
-- task: Southworks-Pipelines-Test.github-pr-comment-multiple-files.custom-publish-comment-task.github-pr-comment-multiple-files@0
-  displayName: 'GitHub Comment Publisher -OLD'
-  inputs:
-    userToken: '$(GitHubCommentApiKey)'
-    bodyFilePath: '$(System.ArtifactsDirectory)\ApiCompat'
-    getSubFolders: true
-  enabled: false
+- powershell: |
+   # Check for string in the logs in the current fuselabs DevOps pipeline run.
+   # 
+   # Calls the Azure DevOps REST API.
+   
+   $stringToCheckFor = '201 Created';
+   
+   # Get the current build ID.
+   $buildId = "$env:BUILD_BUILDID";
+   Write-Host 'Build ID = ' $buildId;
+   
+   $personalToken = "$(PersonalAccessToken)";
+   Write-Host '$personalToken =' $personalToken;
+   
+   $token = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$($personalToken)"));
+   $header = @{authorization = "Basic $token"};
+   
+   # Get the log containers for the run.
+   $uri = "https://fuselabs.visualstudio.com/86659c66-c9df-418a-a371-7de7aed35064/_apis/build/builds/$buildId/logs";
+   
+   $runLogContainers = Invoke-RestMethod "$uri" -Method Get -ContentType "application/json" -Headers $header;
+   
+   # Get the logs from the containers.
+   $found = $false;
+   foreach ($container in $runLogContainers.value) {
+       $container.id;
+       $uri = $container.url;
+       $uri;
+       $log = Invoke-RestMethod "$uri" -Method Get -ContentType "application/json" -Headers $header;
+       if (!$found -and $log.Contains($stringToCheckFor)) {
+           $found = $true;
+           $log;
+           Write-Host 'String [' $stringToCheckFor '] found in log' $container.id;
+       } else {
+           ($log -split '\r?\n')[0];  # Print first line
+       }
+   }
+   
+   if (!$found) {
+       Write-Host 
+       $mess =  'Publish Compat Results failed. Is there a PR associated with this build? String [' + $stringToCheckFor + '] not found in the logs';
+       throw $mess;
+   }
+   
+  displayName: 'Verify Publish Compat Results success'
+  continueOnError: true
+  condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
 
 - script: |
    cd ..
