@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var fullPath = Path.GetFullPath(filePath.NormalizePath());
             var content = File.ReadAllText(fullPath);
 
-            return ParseContent(content, fullPath, importResolver);
+            return ParseText(content, fullPath, importResolver);
         }
 
         /// <summary>
@@ -43,21 +43,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="id">id is the content identifier. If importResolver is null, id must be a full path string. </param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <returns>new <see cref="LGFile"/> entity.</returns>
-        public static LGFile ParseContent(string content, string id = "", ImportResolverDelegate importResolver = null)
+        public static LGFile ParseText(string content, string id = "", ImportResolverDelegate importResolver = null)
         {
             importResolver = importResolver ?? DefaultFileResolver;
             var lgFile = new LGFile(content: content, id: id, importResolver: importResolver);
             var diagnostics = new List<Diagnostic>();
             try
             {
-                var (templates, imports, errorTemplatesDiagnostics) = AntlrParse(content, id);
+                var (templates, imports, invalidTemplateErrors) = AntlrParse(content, id);
                 lgFile.Templates = templates;
                 lgFile.Imports = imports;
-                diagnostics.AddRange(errorTemplatesDiagnostics);
+                diagnostics.AddRange(invalidTemplateErrors);
 
                 lgFile.References = GetReferences(lgFile, importResolver);
-                var managedDiagnostics = new StaticChecker(lgFile.AllTemplates.ToList()).Check();
-                diagnostics.AddRange(managedDiagnostics);
+                var semanticErrors = new StaticChecker(lgFile.AllTemplates.ToList()).Check();
+                diagnostics.AddRange(semanticErrors);
             }
             catch (LGException ex)
             {
@@ -73,16 +73,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return lgFile;
         }
 
-        private static (string content, string id) DefaultFileResolver(string filePath, string id)
+        /// <summary>
+        /// Default import resolver, using relative/absolute file path to access the file content.
+        /// </summary>
+        /// <param name="sourceId">default is file path.</param>
+        /// <param name="resourceId">import path.</param>
+        /// <returns>target content id.</returns>
+        private static (string content, string id) DefaultFileResolver(string sourceId, string resourceId)
         {
             // import paths are in resource files which can be executed on multiple OS environments
             // normalize to map / & \ in importPath -> OSPath
-            var importPath = id.NormalizePath();
+            var importPath = resourceId.NormalizePath();
 
             if (!Path.IsPathRooted(importPath))
             {
                 // get full path for importPath relative to path which is doing the import.
-                importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), id));
+                importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(sourceId), resourceId));
             }
 
             return (File.ReadAllText(importPath), importPath);
@@ -94,12 +100,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var templates = ExtractLGTemplates(fileContext, content, id);
             var imports = ExtractLGImports(fileContext, id);
 
-            var diagnostics = GetErrorTemplatesDiagnostics(fileContext);
+            var diagnostics = GetInvalidTemplateErrors(fileContext);
 
             return (templates, imports, diagnostics);
         }
 
-        private static IList<Diagnostic> GetErrorTemplatesDiagnostics(LGFileParser.FileContext fileContext)
+        private static IList<Diagnostic> GetInvalidTemplateErrors(LGFileParser.FileContext fileContext)
         {
             var errorTemplates = fileContext == null ? new List<LGFileParser.ErrorTemplateContext>() :
                    fileContext.paragraph()
@@ -195,7 +201,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var (content, path) = importResolver(start.Id, id);
                     if (resourcesFound.All(u => u.Id != path))
                     {
-                        var childResource = ParseContent(content, path);
+                        var childResource = ParseText(content, path);
                         ResolveImportResources(childResource, resourcesFound, importResolver);
                     }
                 }

@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             var newContent = $"{lgFile.Content}\r\n{wrappedStr}";
 
-            var newLgFile = LGParser.ParseContent(newContent, lgFile.Id, lgFile.ImportResolver);
+            var newLgFile = LGParser.ParseText(newContent, lgFile.Id, lgFile.ImportResolver);
             return newLgFile.EvaluateTemplate(fakeTemplateId, scope);
         }
 

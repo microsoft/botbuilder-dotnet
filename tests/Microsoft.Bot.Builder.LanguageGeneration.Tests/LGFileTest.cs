@@ -398,7 +398,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(evaled == "Hi 2" || evaled == "Hello 2");
 
             // Assert 6.lg of relative path is imported from text.
-            lgFile = LGParser.ParseContent("# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./6.lg)", GetExampleFilePath("xx.lg"));
+            lgFile = LGParser.ParseText("# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./6.lg)", GetExampleFilePath("xx.lg"));
 
             Assert.AreEqual(8, lgFile.AllTemplates.Count());
             evaled = lgFile.EvaluateTemplate("basicTemplate", null).ToString();

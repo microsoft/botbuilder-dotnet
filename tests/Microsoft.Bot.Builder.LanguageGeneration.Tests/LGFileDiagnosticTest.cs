@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void AddTextWithWrongId()
         {
-            var diagnostics = LGParser.ParseContent("[import](xx.lg) \r\n # t \n - hi", "a.lg").Diagnostics;
+            var diagnostics = LGParser.ParseText("[import](xx.lg) \r\n # t \n - hi", "a.lg").Diagnostics;
             Assert.AreEqual(1, diagnostics.Count);
             Assert.IsTrue(diagnostics[0].Message.Contains("Could not find file"));
         }

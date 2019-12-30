@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var stopLine = template.ParseTree.Stop.Line - 1;
 
             var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
-            return LGParser.ParseContent(newContent, Id, ImportResolver);
+            return LGParser.ParseText(newContent, Id, ImportResolver);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
             var newContent = $"{Content.TrimEnd()}\r\n\r\n{templateNameLine}\r\n{newTemplateBody}\r\n";
-            return LGParser.ParseContent(newContent, Id, ImportResolver);
+            return LGParser.ParseText(newContent, Id, ImportResolver);
         }
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var stopLine = template.ParseTree.Stop.Line - 1;
 
             var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
-            return LGParser.ParseContent(newContent, Id, ImportResolver);
+            return LGParser.ParseText(newContent, Id, ImportResolver);
         }
 
         public override string ToString() => Content;
