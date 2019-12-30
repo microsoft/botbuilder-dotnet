@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var stopLine = template.ParseTree.Stop.Line - 1;
 
             var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
-            return new LGParser(ImportResolver).ParseContent(newContent, Id);
+            return LGParser.ParseText(newContent, Id, ImportResolver);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
             var newContent = $"{Content.TrimEnd()}\r\n\r\n{templateNameLine}\r\n{newTemplateBody}\r\n";
-            return new LGParser(ImportResolver).ParseContent(newContent, Id);
+            return LGParser.ParseText(newContent, Id, ImportResolver);
         }
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var stopLine = template.ParseTree.Stop.Line - 1;
 
             var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
-            return new LGParser(ImportResolver).ParseContent(newContent, Id);
+            return LGParser.ParseText(newContent, Id, ImportResolver);
         }
 
         public override string ToString() => Content;
@@ -256,7 +256,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="input">input array.</param>
         /// <returns>trimed list.</returns>
-        private List<string> TrimList(List<string> input)
+        private IList<string> TrimList(IList<string> input)
         {
             if (input == null)
             {
@@ -286,7 +286,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return input.Skip(startIndex).Take(endIndex - startIndex).ToList();
         }
 
-        private string BuildNewLGContent(List<string> destList)
+        private string BuildNewLGContent(IList<string> destList)
         {
             var result = new StringBuilder();
             for (var i = 0; i < destList.Count; i++)
@@ -340,8 +340,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new ArgumentException();
             }
 
-            var errors = diagnostics.Where(u => u.Severity == DiagnosticSeverity.Error).ToList();
-            if (errors.Count != 0)
+            var errors = diagnostics.Where(u => u.Severity == DiagnosticSeverity.Error);
+            if (errors.Count() != 0)
             {
                 throw new Exception(string.Join("\n", errors));
             }

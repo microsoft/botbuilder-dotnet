@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void AddTextWithWrongId()
         {
-            var diagnostics = new LGParser().ParseContent("[import](xx.lg) \r\n # t \n - hi", "a.lg").Diagnostics;
+            var diagnostics = LGParser.ParseText("[import](xx.lg) \r\n # t \n - hi", "a.lg").Diagnostics;
             Assert.AreEqual(1, diagnostics.Count);
             Assert.IsTrue(diagnostics[0].Message.Contains("Could not find file"));
         }
@@ -242,13 +242,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         private LGFile GetLGFile(string fileName)
         {
             var filePath = GetExceptionExampleFilePath(fileName);
-            return new LGParser().ParseFile(filePath);
+            return LGParser.ParseFile(filePath);
         }
 
         private IList<Diagnostic> GetDiagnostics(string fileName)
         {
             var filePath = GetExceptionExampleFilePath(fileName);
-            return new LGParser().ParseFile(filePath).Diagnostics;
+            return LGParser.ParseFile(filePath).Diagnostics;
         }
     }
 }
