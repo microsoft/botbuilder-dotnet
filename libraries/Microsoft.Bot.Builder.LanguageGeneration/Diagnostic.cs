@@ -74,8 +74,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public DiagnosticSeverity Severity { get; set; }
 
         /// <summary>
-        /// Gets or sets a human-readable string describing the source of this
-        /// diagnostic
+        /// Gets or sets a human-readable string describing the source of this diagnostic.
         /// </summary>
         /// <value>
         /// A human-readable string describing the source.
