@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             catch (Exception err)
             {
-                diagnostics.Add(BuildDiagnostic(err.Message));
+                diagnostics.Add(BuildDiagnostic(err.Message, id));
             }
 
             lgFile.Diagnostics = diagnostics;
@@ -100,26 +100,26 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var templates = ExtractLGTemplates(fileContext, content, id);
             var imports = ExtractLGImports(fileContext, id);
 
-            var diagnostics = GetInvalidTemplateErrors(fileContext);
+            var diagnostics = GetInvalidTemplateErrors(fileContext, id);
 
             return (templates, imports, diagnostics);
         }
 
-        private static IList<Diagnostic> GetInvalidTemplateErrors(LGFileParser.FileContext fileContext)
+        private static IList<Diagnostic> GetInvalidTemplateErrors(LGFileParser.FileContext fileContext, string id)
         {
             var errorTemplates = fileContext == null ? new List<LGFileParser.ErrorTemplateContext>() :
                    fileContext.paragraph()
                    .Select(x => x.errorTemplate())
                    .Where(x => x != null);
 
-            return errorTemplates.Select(u => BuildDiagnostic("error context.", u)).ToList();
+            return errorTemplates.Select(u => BuildDiagnostic("error context.", id, u)).ToList();
         }
 
-        private static Diagnostic BuildDiagnostic(string errorMessage, ParserRuleContext context = null)
+        private static Diagnostic BuildDiagnostic(string errorMessage, string source = null, ParserRuleContext context = null)
         {
             var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line, context.Start.Column);
             var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
-            return new Diagnostic(new Range(startPosition, stopPosition), errorMessage);
+            return new Diagnostic(new Range(startPosition, stopPosition), errorMessage, source: source);
         }
 
         /// <summary>
@@ -205,9 +205,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         ResolveImportResources(childResource, resourcesFound, importResolver);
                     }
                 }
+                catch (LGException err)
+                {
+                    throw err;
+                }
                 catch (Exception err)
                 {
-                    throw new LGException(err.Message, new List<Diagnostic> { BuildDiagnostic(err.Message) });
+                    throw new LGException(err.Message, new List<Diagnostic> { BuildDiagnostic(err.Message, start.Id) });
                 }
             }
         }
