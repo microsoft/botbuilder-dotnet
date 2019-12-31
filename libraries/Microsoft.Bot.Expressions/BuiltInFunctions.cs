@@ -2401,6 +2401,21 @@ namespace Microsoft.Bot.Expressions
 
         private static bool IsSameDay(DateTime date1, DateTime date2) => date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day;
 
+        private static bool IsEqual(IReadOnlyList<dynamic> args)
+        {
+            if (args[0] is IDictionary d0 && args[1] is IDictionary d1 && d0.Count == 0 && d1.Count == 0)
+            {
+                return true;
+            }
+
+            if (args[0] is IList l0 && args[1] is IList l1 && l0.Count == 0 && l1.Count == 0)
+            {
+                return true;
+            }
+
+            return args[0] == args[1];
+        }
+
         private static Dictionary<string, ExpressionEvaluator> BuildFunctionLookup()
         {
             var functions = new List<ExpressionEvaluator>
@@ -2575,8 +2590,9 @@ namespace Microsoft.Bot.Expressions
                 // Booleans
                 Comparison(ExpressionType.LessThan, args => args[0] < args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
                 Comparison(ExpressionType.LessThanOrEqual, args => args[0] <= args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
-                Comparison(ExpressionType.Equal, args => args[0] == args[1], ValidateBinary),
-                Comparison(ExpressionType.NotEqual, args => args[0] != args[1], ValidateBinary),
+
+                Comparison(ExpressionType.Equal, IsEqual, ValidateBinary),
+                Comparison(ExpressionType.NotEqual, args => !IsEqual(args), ValidateBinary),
                 Comparison(ExpressionType.GreaterThan, args => args[0] > args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
                 Comparison(ExpressionType.GreaterThanOrEqual, args => args[0] >= args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
                 Comparison(ExpressionType.Exists, args => args[0] != null, ValidateUnary, VerifyNotNull),

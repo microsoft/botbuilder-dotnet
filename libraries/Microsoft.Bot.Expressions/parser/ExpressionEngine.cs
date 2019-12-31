@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Expressions
 {
@@ -168,6 +169,20 @@ namespace Microsoft.Bot.Expressions
                 {
                     // start with "
                     return Expression.ConstantExpression(Regex.Unescape(text.Trim('"')));
+                }
+            }
+
+            public override Expression VisitConstantAtom([NotNull] ExpressionParser.ConstantAtomContext context)
+            {
+                var text = context.GetText();
+                switch (text)
+                {
+                    case "[]":
+                        return Expression.ConstantExpression(new JArray());
+                    case "{}":
+                        return Expression.ConstantExpression(new JObject());
+                    default:
+                        throw new Exception($"Unregonized constant: {text}");
                 }
             }
 
