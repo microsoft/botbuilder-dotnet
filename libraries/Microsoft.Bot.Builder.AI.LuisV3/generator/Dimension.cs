@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <param name="number">Number.</param>
         /// <param name="units">Units for number.</param>
-        public Dimension(double number, string units)
+        public Dimension(double? number, string units)
             : base(number, units)
         {
         }

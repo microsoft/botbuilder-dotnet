@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <param name="money">Money amount.</param>
         /// <param name="units">Currency units.</param>
-        public Money(double money, string units)
+        public Money(double? money, string units)
             : base(money, units)
         {
         }

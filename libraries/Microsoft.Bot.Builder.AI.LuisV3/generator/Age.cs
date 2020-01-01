@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <param name="age">Age.</param>
         /// <param name="units">Units for age.</param>
-        public Age(double age, string units)
+        public Age(double? age, string units)
             : base(age, units)
         {
         }

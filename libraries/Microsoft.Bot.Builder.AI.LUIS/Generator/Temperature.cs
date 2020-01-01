@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <param name="temperature">Temperature.</param>
         /// <param name="units">Units.</param>
-        public Temperature(double temperature, string units)
+        public Temperature(double? temperature, string units)
             : base(temperature, units)
         {
         }
