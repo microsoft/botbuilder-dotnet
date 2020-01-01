@@ -1,0 +1,50 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "$p1",
+                        "value": "'val1'"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "@{$p1}"
+                    },
+                    {
+                        "$kind": "Microsoft.DeleteProperty",
+                        "property": "$p1"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "$p1 == null",
+                        "description": "$p1 should be null"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "done"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserConversationUpdate"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "val1"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "done"
+        }
+    ]
+}

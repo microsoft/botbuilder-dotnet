@@ -1,0 +1,52 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
+    "title": "Emit a custom event",
+    "description": "Emit an event. Capture this event with a trigger.",
+    "type": "object",
+    "required": [
+        "eventName"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "eventName": {
+            "title": "Event name",
+            "description": "Name of the event to emit.",
+            "anyOf": [
+                {
+                    "enum": [
+                        "beginDialog",
+                        "resumeDialog",
+                        "repromptDialog",
+                        "cancelDialog",
+                        "endDialog",
+                        "activityReceived",
+                        "recognizedIntent",
+                        "unknownIntent",
+                        "actionsStarted",
+                        "actionsSaved",
+                        "actionsEnded",
+                        "actionsResumed"
+                    ]
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "eventValue": {
+            "$role": "expression",
+            "title": "Event value",
+            "description": "Value to emit with the event (optional)."
+        },
+        "bubbleEvent": {
+            "type": "boolean",
+            "title": "Bubble event",
+            "description": "If true this event is passed on to parent dialogs."
+        }
+    }
+}

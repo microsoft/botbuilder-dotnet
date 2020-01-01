@@ -7,11 +7,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Microsoft.Rest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -19,6 +17,8 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("Middleware")]
     public class TurnContextTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void ConstructorNullAdapter()
@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void ConstructorNullActivity()
         {
-            var a = new TestAdapter();
+            var a = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             var c = new TurnContext(a, null);
             Assert.Fail("Should Fail due to null Activity");
         }
@@ -39,21 +39,21 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public void Constructor()
         {
-            var c = new TurnContext(new TestAdapter(), new Activity());
+            var c = new TurnContext(new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName)), new Activity());
             Assert.IsNotNull(c);
         }
 
         [TestMethod]
         public void RespondedIsFalse()
         {
-            var c = new TurnContext(new TestAdapter(), new Activity());
+            var c = new TurnContext(new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName)), new Activity());
             Assert.IsFalse(c.Responded);
         }
 
         [TestMethod]
         public async Task CacheValueUsingSetAndGet()
         {
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             await new TestFlow(adapter, MyBotLogic)
                     .Send("TestResponded")
                     .StartTestAsync();
@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Builder.Tests
             var c = new TurnContext(a, new Activity());
             Assert.IsFalse(c.Responded);
 
-            // Send a Trace Activity, and make sure responded is NOT set.
+            // Send a Trace Activity, and make sure responded is NOT set. 
             var trace = Activity.CreateTraceActivity("trace");
             await c.SendActivityAsync(trace);
             Assert.IsFalse(c.Responded);
@@ -200,9 +200,9 @@ namespace Microsoft.Bot.Builder.Tests
             int count = 0;
             c.OnSendActivities(async (context, activities, next) =>
             {
-               Assert.IsNotNull(activities, "Null Array passed in");
-               count = activities.Count();
-               return await next();
+                Assert.IsNotNull(activities, "Null Array passed in");
+                count = activities.Count();
+                return await next();
             });
 
             await c.SendActivityAsync(TestMessage.Message());
@@ -289,6 +289,37 @@ namespace Microsoft.Bot.Builder.Tests
 
             Assert.IsTrue(foundActivity);
             Assert.IsTrue(updateResult.Id == "test");
+        }
+
+        [TestMethod]
+        public async Task UpdateActivityWithMessageFactory()
+        {
+            const string ACTIVITY_ID = "activity ID";
+            const string CONVERSATION_ID = "conversation ID";
+
+            var foundActivity = false;
+
+            void ValidateUpdate(Activity activity)
+            {
+                Assert.IsNotNull(activity);
+                Assert.IsTrue(activity.Id == ACTIVITY_ID);
+                Assert.IsTrue(activity.Conversation.Id == CONVERSATION_ID);
+                foundActivity = true;
+            }
+
+            var a = new SimpleAdapter(ValidateUpdate);
+            var c = new TurnContext(a, new Activity(conversation: new ConversationAccount(id: CONVERSATION_ID)));
+
+            var message = MessageFactory.Text("test text");
+
+            message.Id = ACTIVITY_ID;
+
+            var updateResult = await c.UpdateActivityAsync(message);
+
+            Assert.IsTrue(foundActivity);
+            Assert.IsTrue(updateResult.Id == ACTIVITY_ID);
+
+            c.Dispose();
         }
 
         [TestMethod]
@@ -485,49 +516,6 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Assert.IsTrue(ex.Message == "test");
             }
-        }
-
-        [TestMethod]
-        public void TurnContextStateNoDispose()
-        {
-            // Verify any ConnectorClient in TurnContextCollection doesn't get disposed.
-            // - Adapter caches ConnectorClient.
-            // - Adapter lifetime is singleton.
-            // - ConnectorClient implements IDisposable.
-            // - ConnectorClient added in turnContet.TurnCollection.
-            // - TurnContextCollection disposes elements after each turn.
-            var connector = new ConnectorClientThrowExceptionOnDispose();
-            Assert.IsTrue(connector is IDisposable);
-            Assert.IsTrue(connector is IConnectorClient);
-
-            var stateCollection = new TurnContextStateCollection();
-            stateCollection.Add("connector", connector);
-            stateCollection.Dispose();
-        }
-
-        [TestMethod]
-        public void TurnContextStateDisposeNonConnectorClient()
-        {
-            var disposableObject1 = new TrackDisposed();
-            var disposableObject2 = new TrackDisposed();
-            var disposableObject3 = new TrackDisposed();
-            Assert.IsFalse(disposableObject1.Disposed);
-            Assert.IsTrue(disposableObject1 is IDisposable);
-
-            var connector = new ConnectorClientThrowExceptionOnDispose();
-            Assert.IsTrue(connector is IDisposable);
-            Assert.IsTrue(connector is IConnectorClient);
-
-            var stateCollection = new TurnContextStateCollection();
-            stateCollection.Add("disposable1", disposableObject1);
-            stateCollection.Add("disposable2", disposableObject2);
-            stateCollection.Add("disposable3", disposableObject3);
-            stateCollection.Add("connector", connector);
-            stateCollection.Dispose();
-
-            Assert.IsTrue(disposableObject1.Disposed);
-            Assert.IsTrue(disposableObject2.Disposed);
-            Assert.IsTrue(disposableObject3.Disposed);
         }
 
         public async Task MyBotLogic(ITurnContext turnContext, CancellationToken cancellationToken)

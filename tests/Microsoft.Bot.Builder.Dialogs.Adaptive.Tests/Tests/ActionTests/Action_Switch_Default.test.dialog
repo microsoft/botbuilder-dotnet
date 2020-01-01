@@ -1,0 +1,71 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.name",
+                        "value": "'Zoidberg'"
+                    },
+                    {
+                        "$kind": "Microsoft.SwitchCondition",
+                        "condition": "user.name",
+                        "default": [
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "Who are you?"
+                            }
+                        ],
+                        "cases": [
+                            {
+                                "value": "susan",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "hi susan"
+                                    }
+                                ]
+                            },
+                            {
+                                "value": "bob",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "hi bob"
+                                    }
+                                ]
+                            },
+                            {
+                                "value": "frank",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "hi frank"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Who are you?"
+        }
+    ]
+}

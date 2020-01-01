@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder
 {
@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Gets a value indicating whether determines whether to log personal information that came from the user.
+        /// Gets a value indicating whether to log personal information that came from the user.
         /// </summary>
         /// <value>If true, will log personal information into the IBotTelemetryClient.TrackEvent method; otherwise the properties will be filtered.</value>
         public bool LogPersonalInformation { get; }
@@ -39,6 +39,7 @@ namespace Microsoft.Bot.Builder
         /// <value>
         /// The <see cref="IBotTelemetryClient"/> being used to log events.
         /// </value>
+        [JsonIgnore]
         public IBotTelemetryClient TelemetryClient { get; }
 
         /// <summary>
@@ -118,7 +119,7 @@ namespace Microsoft.Bot.Builder
         /// This event name used is "BotMessageReceived".
         /// </summary>
         /// <param name="activity">Current activity sent from user.</param>
-        /// <param name="cancellation"> cancellation token that can be used by other objects
+        /// <param name="cancellation">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual async Task OnReceiveActivityAsync(Activity activity, CancellationToken cancellation)
@@ -133,7 +134,7 @@ namespace Microsoft.Bot.Builder
         /// This event name used is "BotMessageSend".
         /// </summary>
         /// <param name="activity">Current activity sent from user.</param>
-        /// <param name="cancellation"> cancellation token that can be used by other objects
+        /// <param name="cancellation">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual async Task OnSendActivityAsync(Activity activity, CancellationToken cancellation)
@@ -148,7 +149,7 @@ namespace Microsoft.Bot.Builder
         /// This event name used is "BotMessageUpdate".
         /// </summary>
         /// <param name="activity">Current activity sent from user.</param>
-        /// <param name="cancellation"> cancellation token that can be used by other objects
+        /// <param name="cancellation">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual async Task OnUpdateActivityAsync(Activity activity, CancellationToken cancellation)
@@ -163,7 +164,7 @@ namespace Microsoft.Bot.Builder
         /// This event name used is "BotMessageDelete".
         /// </summary>
         /// <param name="activity">Current activity sent from user.</param>
-        /// <param name="cancellation"> cancellation token that can be used by other objects
+        /// <param name="cancellation">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual async Task OnDeleteActivityAsync(Activity activity, CancellationToken cancellation)

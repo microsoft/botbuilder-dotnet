@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.FunctionalTests.Configuration
 {
@@ -14,7 +15,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests.Configuration
             var testAppId = Environment.GetEnvironmentVariable("TESTAPPID");
             if (string.IsNullOrWhiteSpace(testAppId))
             {
-                throw new Exception("Environment variable 'TestAppId' not found.");
+                Assert.Inconclusive("Environment variable 'TestAppId' not found.");
             }
 
             return testAppId;
@@ -26,7 +27,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests.Configuration
 
             if (string.IsNullOrWhiteSpace(testPassword))
             {
-                throw new Exception("Environment variable 'TestPassword' not found.");
+                Assert.Inconclusive("Environment variable 'TestPassword' not found.");
             }
 
             return testPassword;

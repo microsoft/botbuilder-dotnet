@@ -1,0 +1,17 @@
+# Enum1Entity(value) 
+- SWITCH: @{value}
+- CASE: @{'multiGrainWheat'} 
+ - multi grain wheat
+- CASE: @{'rye'} 
+ - rye
+- CASE: @{'white'} 
+ - white
+- CASE: @{'wholeWheat'} 
+ - whole wheat
+- DEFAULT: 
+ - I don't understand @{value}
+
+# clarifyEnum1Entity
+- @{clarifyEnumEntity('Enum1')}
+
+[unittests-common.lg](unittests-common.lg)

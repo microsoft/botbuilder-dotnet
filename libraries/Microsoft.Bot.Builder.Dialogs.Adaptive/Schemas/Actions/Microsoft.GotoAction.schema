@@ -1,0 +1,22 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
+    "title": "Go to Action",
+    "description": "Go to an an action by id.",
+    "type": "object",
+    "required": [
+        "actionId"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "actionId": {
+            "type": "string",
+            "title": "Action Id",
+            "description": "Action Id to execute next"
+        }
+    }
+}

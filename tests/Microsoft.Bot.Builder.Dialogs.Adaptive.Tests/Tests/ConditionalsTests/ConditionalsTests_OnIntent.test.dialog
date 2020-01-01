@@ -1,0 +1,74 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    
+                    "intent": "JokeIntent",
+                    "pattern": "joke"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "I'm a joke bot. To get started say 'tell me a joke'"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "JokeIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Why did the chicken cross the road?"
+                    },
+                    {
+                        "$kind": "Microsoft.EndTurn",
+                        "id": "EndTurn"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "To get to the other side"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": false,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserConversationUpdate"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I'm a joke bot. To get started say 'tell me a joke'"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Do you know a joke?"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Why did the chicken cross the road?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Why?"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "To get to the other side"
+        }
+    ]
+}

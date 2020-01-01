@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
@@ -22,6 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <value>
         /// The value to return when selected.
         /// </value>
+        [JsonProperty("value")]
         public string Value { get; set; }
 
         /// <summary>
@@ -31,6 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <value>
         /// The action to use when rendering the choice as a suggested action or hero card.
         /// </value>
+        [JsonProperty("action")]
         public CardAction Action { get; set; }
 
         /// <summary>
@@ -39,6 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <value>
         /// The list of synonyms to recognize in addition to the value.
         /// </value>
+        [JsonProperty("synonyms")]
         public List<string> Synonyms { get; set; }
     }
 }

@@ -1,0 +1,14 @@
+# TemplateA
+- Hi
+- Hello
+
+# TemplateB(a)
+- Hi @{a}
+- Hello @{a}
+
+
+# TemplateC
+- @{TemplateA()}
+
+#TemplateD
+- @{TemplateB(b)}

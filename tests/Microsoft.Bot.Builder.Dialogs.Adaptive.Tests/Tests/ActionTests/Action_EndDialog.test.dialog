@@ -1,0 +1,96 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "EndIntent",
+                    "pattern": "end"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "includeActivity": true,
+                        "options": {},
+                        "dialog": {
+                            "$kind": "Microsoft.AdaptiveDialog",
+                            "id": "TellJokeDialog",
+                            "recognizer": {
+                                "$kind": "Microsoft.RegexRecognizer",
+                                "intents": [
+                                    {
+                                        "intent": "EndIntent",
+                                        "pattern": "end"
+                                    }
+                                ]
+                            },
+                            "triggers": [
+                                {
+                                    "$kind": "Microsoft.OnIntent",
+                                    "intent": "EndIntent",
+                                    "actions": [
+                                        {
+                                            "$kind": "Microsoft.EndDialog"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "$kind": "Microsoft.OnUnknownIntent",
+                                    "actions": [
+                                        {
+                                            "$kind": "Microsoft.SendActivity",
+                                            "activity": "Why did the chicken cross the road?"
+                                        },
+                                        {
+                                            "$kind": "Microsoft.EndTurn",
+                                            "id": "EndTurn"
+                                        },
+                                        {
+                                            "$kind": "Microsoft.SendActivity",
+                                            "activity": "To get to the other side"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "autoEndDialog": true,
+                            "defaultResultProperty": "dialog.result"
+                        }
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "You went out from ask name dialog."
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Why did the chicken cross the road?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "end"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "You went out from ask name dialog."
+        }
+    ]
+}

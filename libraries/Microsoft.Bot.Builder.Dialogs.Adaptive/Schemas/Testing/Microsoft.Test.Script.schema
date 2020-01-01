@@ -1,0 +1,35 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "title": "Test Script",
+    "description": "Defines a sequence of test actions to perform to validate the behavior of dialogs.",
+    "type": "object",
+    "properties": {
+        "dialog": {
+            "$kind": "Microsoft.IDialog",
+            "title": "Dialog",
+            "description": "The root dialog to execute the test script against."
+        },
+        "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Description of the test script"
+        },
+        "script": {
+            "type": "array",
+            "description": "Sequence of test actions to execute.",
+            "items": {
+                "$kind": "Microsoft.Test.ITestAction"
+            }
+        },
+        "enableTrace": {
+            "type": "boolean",
+            "title": "Enable Trace Activity",
+            "description": "Enable trace activities in the unit test (default is false)",
+            "default": false
+        }
+    },
+    "required": [
+        "dialog",
+        "testActions"
+    ]
+}

@@ -1,0 +1,27 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
+    "title": "Delete Properties",
+    "description": "Delete multiple properties and any value it holds.",
+    "type": "object",
+    "required": [
+        "properties"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "properties": {
+            "type": "array",
+            "title": "Properties",
+            "description": "Properties to delete.",
+            "items": {
+                "$role": "expression",
+                "title": "Property",
+                "description": "Property to delete."
+            }
+        }
+    }
+}

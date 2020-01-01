@@ -1,0 +1,66 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.DateTimeInput",
+                        "property": "user.date",
+                        "prompt": "Please enter a date.",
+                        "outputFormat": "this.value[0].Value"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "You entered @{user.date}"
+                    },
+                    {
+                        "$kind": "Microsoft.DateTimeInput",
+                        "property": "user.date",
+                        "alwaysPrompt": true,
+                        "prompt": "Please enter a date."
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "You entered @{user.date[0].Value}"
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Please enter a date."
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "June 1st 2019"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "You entered 2019-06-01"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Please enter a date."
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "July 1st 2019"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "You entered 2019-07-01"
+        }
+    ]
+}

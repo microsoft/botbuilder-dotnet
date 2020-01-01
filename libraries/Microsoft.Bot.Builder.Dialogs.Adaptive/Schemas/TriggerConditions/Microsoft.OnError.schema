@@ -1,0 +1,12 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.ITriggerCondition)",
+    "title": "On Error",
+    "description": "Action to perform when an 'Error' dialog event occurs.",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./Microsoft.OnCondition.schema#"
+        }
+    ]
+}

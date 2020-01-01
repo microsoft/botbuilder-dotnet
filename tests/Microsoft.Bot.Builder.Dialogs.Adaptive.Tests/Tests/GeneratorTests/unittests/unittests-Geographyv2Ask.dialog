@@ -1,0 +1,15 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$kind": "Microsoft.OnEndOfActions",
+    "condition":"!$Geographyv2 && contains(dialog.requiredProperties, 'Geographyv2')",
+    "actions": [
+        {
+            "$kind": "Microsoft.Ask",
+            "activity": "@{AskGeographyv2()}",
+            "expectedProperties": [
+                "Geographyv2"
+            ]
+        },
+    ]
+}

@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder
             {
                 turnContext.OnSendActivities(async (ctx, activities, nextSend) =>
                 {
-                    var traceActivities = activities.Select(a => a.TraceActivity("SentActivity", "Sent Activity"));
+                    var traceActivities = activities.Select(a => a.Type == ActivityTypes.Trace ? a.CloneTraceActivity() : a.TraceActivity("SentActivity", "Sent Activity"));
                     await InvokeOutboundAsync(ctx, traceActivities, cancellationToken).ConfigureAwait(false);
                     return await nextSend().ConfigureAwait(false);
                 });

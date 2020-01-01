@@ -1,0 +1,137 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "Quantity": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 10
+        },
+        "Length": {
+            "type": "number",
+            "$mappings": [
+                "dimension",
+                "number"
+            ],
+            "$comment": "This is used by the mapping to convert underlying dimensions to inches.",
+            "$units": "inches"
+        },
+        "Name": {
+            "type": "string"
+        },
+        "Bread": {
+            "type": "string",
+            "enum": [
+                "multiGrainWheat",
+                "rye",
+                "white",
+                "wholeWheat"
+            ]
+        },
+        "Cheese": {
+            "type": "string",
+            "enum": [
+                "american",
+                "cheddar",
+                "feta",
+                "gouda",
+                "pepper jack",
+                "provolone",
+                "swiss",
+                "none"
+            ]
+        },
+        "Meat": {
+            "type": "string",
+            "enum": [
+                "bacon",
+                "chicken",
+                "ham",
+                "pulled pork",
+                "roast beef",
+                "salami",
+                "turkey",
+                "none"
+            ]
+        },
+        "Price": {
+            "type": "object",
+            "$mappings": [
+                "money"
+            ],
+            "properties": {
+                "quantity": {
+                    "type": "number"
+                },
+                "currency": {
+                    "type": "string"
+                }
+            }
+        },
+        "CancelConfirmation": {
+            "type": "string",
+            "$mappings": [
+                "Confirmation"
+            ]
+        },
+        "CompleteConfirmation": {
+            "type": "string",
+            "$mappings": [
+                "Confirmation",
+                "PROPERTYName"
+            ]
+        },
+        "PropertyToChange": {
+            "type": "string",
+            "enum": [
+                "Quantity",
+                "Length",
+                "Name",
+                "Bread",
+                "Cheese",
+                "Meat",
+                "Price"
+            ],
+            "$mappings": [
+                "PROPERTYName"
+            ]
+        }
+    },
+    "required": [
+        "Name",
+        "Bread",
+        "Meat",
+        "Cheese"
+    ],
+    "$expectedOnly": [
+        "CancelConfirmation",
+        "CompleteConfirmation",
+        "PropertyToChange"
+    ],
+    "$public": [
+        "Quantity",
+        "Length",
+        "Name",
+        "Bread",
+        "Cheese",
+        "Meat",
+        "Price"
+    ],
+    "definitions": {
+        "PROPERTYName": {
+            "type": "string",
+            "enum": [
+                "Quantity",
+                "Length",
+                "Name",
+                "Bread",
+                "Cheese",
+                "Meat",
+                "Price"
+            ],
+            "$mappings": [
+                "PROPERTYName"
+            ]
+        }
+    }
+}
