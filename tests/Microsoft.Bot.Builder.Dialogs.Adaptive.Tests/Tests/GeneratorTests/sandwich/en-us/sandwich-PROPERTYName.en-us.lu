@@ -1,0 +1,14 @@
+$PROPERTYName:Quantity=
+- quantity
+$PROPERTYName:Directions=
+- directions
+$PROPERTYName:Length=
+- length
+$PROPERTYName:Bread=
+- bread
+$PROPERTYName:Cheese=
+- cheese
+$PROPERTYName:Meat=
+- meat
+$PROPERTYName:Name=
+- name

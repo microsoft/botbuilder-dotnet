@@ -1,0 +1,52 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "entities": [
+                {
+                    "$kind": "Microsoft.AgeEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.NumberEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.DateTimeEntityRecognizer"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.NumberInput",
+                        "property": "turn.age",
+                        "value": "@number",
+                        "prompt": "What is your age?",
+                        "maxTurnCount": 1
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "You said @{turn.age}"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi, I'm 10"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "You said 10"
+        }
+    ]
+}

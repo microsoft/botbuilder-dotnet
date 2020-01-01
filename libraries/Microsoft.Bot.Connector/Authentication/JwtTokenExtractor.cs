@@ -195,11 +195,6 @@ namespace Microsoft.Bot.Connector.Authentication
             return false;
         }
 
-        private async Task<ClaimsPrincipal> ValidateTokenAsync(string jwtToken, string channelId)
-        {
-            return await ValidateTokenAsync(jwtToken, channelId, new string[] { }).ConfigureAwait(false);
-        }
-
         private async Task<ClaimsPrincipal> ValidateTokenAsync(string jwtToken, string channelId, string[] requiredEndorsements)
         {
             if (requiredEndorsements == null)
@@ -226,7 +221,6 @@ namespace Microsoft.Bot.Connector.Authentication
 
             // Update the signing tokens from the last refresh
             _tokenValidationParameters.IssuerSigningKeys = config.SigningKeys;
-
             var tokenHandler = new JwtSecurityTokenHandler();
 
             try

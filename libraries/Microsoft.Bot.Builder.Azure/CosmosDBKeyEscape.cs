@@ -10,8 +10,10 @@ namespace Microsoft.Bot.Builder.Azure
 {
     public static class CosmosDbKeyEscape
     {
-        // Per the CosmosDB Docs, there is a max key length of 255.
-        // https://docs.microsoft.com/en-us/azure/cosmos-db/faq#table
+        // Older libraries had a max key length of 255.
+        // The limit is now 1023. In this library, 255 remains the default for backwards compat.
+        // To override this behavior, and use the longer limit, set CosmosDbPartitionedStorageOptions.CompatibilityMode to false.
+        // https://docs.microsoft.com/en-us/azure/cosmos-db/concepts-limits#per-item-limits
         public const int MaxKeyLength = 255;
 
         // The list of illegal characters for Cosmos DB Keys comes from this list on
@@ -34,6 +36,24 @@ namespace Microsoft.Bot.Builder.Azure
         /// <returns>An escaped key that can be used safely with CosmosDB.</returns>
         public static string EscapeKey(string key)
         {
+            return EscapeKey(key, string.Empty, true);
+        }
+
+        /// <summary>
+        /// Converts the key into a DocumentID that can be used safely with Cosmos DB.
+        /// The following characters are restricted and cannot be used in the Id property: '/', '\', '?', and '#'.
+        /// More information at <see cref="Microsoft.Azure.Documents.Resource.Id"/>.
+        /// </summary>
+        /// <param name="key">The key to escape.</param>
+        /// <param name="suffix">The string to add at the end of all row keys.</param>
+        /// <param name="compatibilityMode ">True if running in compatability mode and keys should
+        /// be truncated in order to support previous CosmosDb max key length of 255. 
+        /// This behavior can be overridden by setting
+        /// <see cref="CosmosDbPartitionedStorageOptions.CompatibilityMode"/> to false.
+        /// </param>
+        /// <returns>An escaped key that can be used safely with CosmosDB.</returns>
+        public static string EscapeKey(string key, string suffix, bool compatibilityMode)
+        {
             if (string.IsNullOrWhiteSpace(key))
             {
                 throw new ArgumentNullException(nameof(key));
@@ -41,11 +61,11 @@ namespace Microsoft.Bot.Builder.Azure
 
             var firstIllegalCharIndex = key.IndexOfAny(_illegalKeys);
 
-            // If there are no illegal characters, and tkey is within length costraints,
+            // If there are no illegal characters, and the key is within length costraints,
             // return immediately and avoid any further processing/allocations
             if (firstIllegalCharIndex == -1)
             {
-                return TruncateKeyIfNeeded(key);
+                return TruncateKeyIfNeeded($"{key}{suffix}", compatibilityMode);
             }
 
             // Allocate a builder that assumes that all remaining characters might be replaced to avoid any extra allocations
@@ -75,12 +95,21 @@ namespace Microsoft.Bot.Builder.Azure
                 }
             }
 
-            var sanitizedKey = sanitizedKeyBuilder.ToString();
-            return TruncateKeyIfNeeded(sanitizedKey);
+            if (!string.IsNullOrWhiteSpace(suffix)) 
+            {
+                sanitizedKeyBuilder.Append(suffix);
+            }
+
+            return TruncateKeyIfNeeded(sanitizedKeyBuilder.ToString(), compatibilityMode);
         }
 
-        private static string TruncateKeyIfNeeded(string key)
+        private static string TruncateKeyIfNeeded(string key, bool truncateKeysForCompatibility)
         {
+            if (!truncateKeysForCompatibility)
+            {
+                return key;
+            }
+
             if (key.Length > MaxKeyLength)
             {
                 var hash = key.GetHashCode().ToString("x");

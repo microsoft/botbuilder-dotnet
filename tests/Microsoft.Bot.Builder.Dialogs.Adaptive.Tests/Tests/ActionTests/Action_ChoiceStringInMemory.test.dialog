@@ -1,0 +1,103 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.choices",
+                        "value": "json('[\"red\", \"green\", \"blue\"]')"
+                    },
+                    {
+                        "$kind": "Microsoft.ChoiceInput",
+                        "choices": {
+                            "expression": "user.choices"
+                        },
+                        "styles": 2,
+                        "property": "user.color",
+                        "prompt": "Please select a color:",
+                        "unrecognizedPrompt": "Not a color. Please select a color:"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "@{user.color}"
+                    },
+                    {
+                        "$kind": "Microsoft.ChoiceInput",
+                        "choices": {
+                            "expression": "user.choices"
+                        },
+                        "styles": 2,
+                        "alwaysPrompt": true,
+                        "property": "user.color",
+                        "prompt": "Please select a color:",
+                        "unrecognizedPrompt": "Please select a color:"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "@{user.color}"
+                    },
+                    {
+                        "$kind": "Microsoft.ChoiceInput",
+                        "choices": {
+                            "expression": "user.choices"
+                        },
+                        "styles": 2,
+                        "alwaysPrompt": true,
+                        "property": "user.color",
+                        "prompt": "Please select a color:",
+                        "unrecognizedPrompt": "Please select a color:"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "@{user.color}"
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Please select a color: (1) red, (2) green, or (3) blue"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "asdasd"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Not a color. Please select a color: (1) red, (2) green, or (3) blue"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "3"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "blue"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Please select a color: (1) red, (2) green, or (3) blue"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "red"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "red"
+        }
+    ]
+}

@@ -1,0 +1,64 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.NumberInput",
+                        "outputFormat": "int(this.value)",
+                        "property": "user.userProfile.Age",
+                        "prompt": "Please enter your age.",
+                        "unrecognizedPrompt": "The value entered must be greater than 0 and less than 150.",
+                        "validations": [
+                            "this.value > 0 && this.value < 150"
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "I have your age as @{user.userProfile.Age}."
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Please enter your age."
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "1000"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "The value entered must be greater than 0 and less than 150."
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "15.3"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I have your age as 15."
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I have your age as 15."
+        }
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.ITriggerCondition)",
+    "title": "On begin dialog",
+    "description": "Actions to perform when this dialog begins.",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./Microsoft.OnCondition.schema#"
+        }
+    ]
+}

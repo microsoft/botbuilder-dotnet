@@ -1,0 +1,50 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
+    "title": "Edit array",
+    "description": "Modify an array in memory",
+    "type": "object",
+    "required": [
+        "changeType",
+        "itemsProperty"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "changeType": {
+            "type": "string",
+            "title": "Type of change",
+            "description": "Type of change to the array in memory.",
+            "enum": [
+                "Push",
+                "Pop",
+                "Take",
+                "Remove",
+                "Clear"
+            ]
+        },
+        "itemsProperty": {
+            "$role": "expression",
+            "title": "Items property",
+            "description": "Property that holds the array to update."
+        },
+        "resultProperty": {
+            "$role": "expression",
+            "title": "Result Property",
+            "description": "Property to store the result of this action."
+        },
+        "value": {
+            "$role": "expression",
+            "title": "Value",
+            "description": "New value or expression.",
+            "examples": [
+                "'milk'",
+                "dialog.favColor",
+                "dialog.favColor == 'red'"
+            ]
+        }
+    }
+}

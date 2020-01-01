@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -18,7 +20,7 @@ namespace Microsoft.Bot.Connector.Authentication
         // Whenever a token expires, we want only one request to retrieve a token.
         // Cached requests take less than 0.1 millisecond to resolve, so the semaphore doesn't hurt performance under load tests
         // unless we have more than 10,000 requests per second, but in that case other things would break first.
-        private static Semaphore tokenRefreshSemaphore = new Semaphore(1, 1);
+        private static SemaphoreSlim tokenRefreshSemaphore = new SemaphoreSlim(1, 1);
         private static readonly TimeSpan SemaphoreTimeout = TimeSpan.FromSeconds(10);
 
         // Depending on the responses we get from the service, we update a shared retry policy with the RetryAfter header
@@ -30,32 +32,48 @@ namespace Microsoft.Bot.Connector.Authentication
         private static volatile RetryParams currentRetryPolicy;
 
         // Our ADAL context. Acquires tokens and manages token caching for us.
-        private readonly AuthenticationContext authContext;
+        private AuthenticationContext authContext;
 
         private readonly ClientCredential clientCredential;
-        private readonly OAuthConfiguration _oAuthConfig;
+        private readonly ClientAssertionCertificate clientCertificate;
+        private readonly OAuthConfiguration authConfig;
+        private readonly ILogger logger;
 
         public AdalAuthenticator(ClientCredential clientCredential, OAuthConfiguration configurationOAuth, HttpClient customHttpClient = null)
+            : this(clientCredential, configurationOAuth, customHttpClient, null)
         {
-            this._oAuthConfig = configurationOAuth ?? throw new ArgumentNullException(nameof(configurationOAuth));
-            this.clientCredential = clientCredential ?? throw new ArgumentNullException(nameof(clientCredential));
+        }
 
-            if (customHttpClient != null)
-            {
-                var httpClientFactory = new ConstantHttpClientFactory(customHttpClient);
-                this.authContext = new AuthenticationContext(configurationOAuth.Authority, true, new TokenCache(), httpClientFactory);
-            }
-            else
-            {
-                this.authContext = new AuthenticationContext(configurationOAuth.Authority);
-            }
+        public AdalAuthenticator(ClientCredential clientCredential, OAuthConfiguration configurationOAuth, HttpClient customHttpClient = null, ILogger logger = null)
+        {
+            this.authConfig = configurationOAuth ?? throw new ArgumentNullException(nameof(configurationOAuth));
+            this.clientCredential = clientCredential ?? throw new ArgumentNullException(nameof(clientCredential));
+            this.logger = logger;
+
+            Initialize(configurationOAuth, customHttpClient);
+        }
+
+        public AdalAuthenticator(ClientAssertionCertificate clientCertificate, OAuthConfiguration configurationOAuth, HttpClient customHttpClient = null, ILogger logger = null)
+        {
+            this.authConfig = configurationOAuth ?? throw new ArgumentNullException(nameof(configurationOAuth));
+            this.clientCertificate = clientCertificate ?? throw new ArgumentNullException(nameof(clientCertificate));
+            this.logger = logger;
+
+            Initialize(configurationOAuth, customHttpClient);
         }
 
         public async Task<AuthenticationResult> GetTokenAsync(bool forceRefresh = false)
         {
-            return await Retry.Run(
+            var watch = Stopwatch.StartNew();
+
+            var result = await Retry.Run(
                 task: () => AcquireTokenAsync(forceRefresh),
                 retryExceptionHandler: (ex, ct) => HandleAdalException(ex, ct)).ConfigureAwait(false);
+
+            watch.Stop();
+            logger?.LogInformation($"GetTokenAsync: Acquired token using ADAL in {watch.ElapsedMilliseconds}.");
+
+            return result;
         }
 
         private async Task<AuthenticationResult> AcquireTokenAsync(bool forceRefresh = false)
@@ -74,7 +92,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 // with and without the semaphore (and different configs for the semaphore), not limiting concurrency actually
                 // results in higher response times overall. Without the use of this semaphore calls to AcquireTokenAsync can take up
                 // to 5 seconds under high concurrency scenarios.
-                acquired = tokenRefreshSemaphore.WaitOne(SemaphoreTimeout);
+                acquired = tokenRefreshSemaphore.Wait(SemaphoreTimeout);
 
                 // If we are allowed to enter the semaphore, acquire the token.
                 if (acquired)
@@ -84,7 +102,19 @@ namespace Microsoft.Bot.Connector.Authentication
                     // Given that this is a ClientCredential scenario, it will use the cache without the
                     // need to call AcquireTokenSilentAsync (which is only for user credentials).
                     // Scenario details: https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/Client-credential-flows#it-uses-the-application-token-cache
-                    var res = await authContext.AcquireTokenAsync(_oAuthConfig.Scope, this.clientCredential).ConfigureAwait(false);
+                    AuthenticationResult authResult = null;
+
+                    // Password based auth
+                    if (clientCredential != null)
+                    {
+                        authResult = await authContext.AcquireTokenAsync(authConfig.Scope, this.clientCredential).ConfigureAwait(false);
+                    }
+
+                    // Certificate based auth
+                    else if (clientCertificate != null)
+                    {
+                        authResult = await authContext.AcquireTokenAsync(authConfig.Scope, clientCertificate).ConfigureAwait(false);
+                    }
 
                     // This means we acquired a valid token successfully. We can make our retry policy null.
                     // Note that the retry policy is set under the semaphore so no additional synchronization is needed.
@@ -93,7 +123,7 @@ namespace Microsoft.Bot.Connector.Authentication
                         currentRetryPolicy = null;
                     }
 
-                    return res;
+                    return authResult;
                 }
                 else
                 {
@@ -120,9 +150,25 @@ namespace Microsoft.Bot.Connector.Authentication
                 // Always release the semaphore if we acquired it.
                 if (acquired)
                 {
-                    tokenRefreshSemaphore.Release();
+                    ReleaseSemaphore();
                 }
             }
+        }
+
+        private void ReleaseSemaphore()
+        {
+            try
+            {
+                tokenRefreshSemaphore.Release();
+            }
+            catch (SemaphoreFullException)
+            {
+                // We should not be hitting this after switching to SemaphoreSlim, but if we do hit it everything will keep working.
+                // Logging to have clear knowledge of whether this is happening.
+                logger?.LogWarning("Attempted to release a full semaphore.");
+            }
+
+            // Any exception other than SemaphoreFullException should be thrown right away
         }
 
         private RetryParams HandleAdalException(Exception ex, int currentRetryCount)
@@ -189,6 +235,24 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             return RetryParams.DefaultBackOff(0);
+        }
+
+        private void Initialize(OAuthConfiguration configurationOAuth, HttpClient customHttpClient)
+        {
+            if (customHttpClient != null)
+            {
+                var httpClientFactory = new ConstantHttpClientFactory(customHttpClient);
+                this.authContext = new AuthenticationContext(configurationOAuth.Authority, true, new TokenCache(), httpClientFactory);
+            }
+            else
+            {
+                this.authContext = new AuthenticationContext(configurationOAuth.Authority);
+            }
+        }
+
+        private bool UseCertificate()
+        {
+            return this.clientCertificate != null;
         }
     }
 }

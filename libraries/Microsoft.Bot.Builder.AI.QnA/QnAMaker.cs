@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// Provides access to a QnA Maker knowledge base.
     /// </summary>
-    public class QnAMaker : ITelemetryQnAMaker
+    public class QnAMaker : IQnAMakerClient, ITelemetryQnAMaker
     {
         public static readonly string QnAMakerName = nameof(QnAMaker);
         public static readonly string QnAMakerTraceType = "https://www.qnamaker.ai/schemas/trace";
@@ -127,6 +127,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Gets the currently configured <see cref="IBotTelemetryClient"/> that logs the QnaMessage event.
         /// </summary>
         /// <value>The <see cref="IBotTelemetryClient"/> being used to log events.</value>
+        [JsonIgnore]
         public IBotTelemetryClient TelemetryClient { get; }
 
         /// <summary>
@@ -154,6 +155,25 @@ namespace Microsoft.Bot.Builder.AI.QnA
                                         Dictionary<string, string> telemetryProperties,
                                         Dictionary<string, double> telemetryMetrics = null)
         {
+            var result = await GetAnswersRawAsync(turnContext, options, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
+
+            return result.Answers;
+        }
+
+        /// <summary>
+        /// Generates an answer from the knowledge base.
+        /// </summary>
+        /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
+        /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
+        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the QnaMessage event.</param>
+        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the QnaMessage event.</param>
+        /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
+        public async Task<QueryResults> GetAnswersRawAsync(
+                                        ITurnContext turnContext,
+                                        QnAMakerOptions options,
+                                        Dictionary<string, string> telemetryProperties = null,
+                                        Dictionary<string, double> telemetryMetrics = null)
+        {
             if (turnContext == null)
             {
                 throw new ArgumentNullException(nameof(turnContext));
@@ -175,9 +195,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException("Null or empty text");
             }
 
-            var result = await this.generateAnswerHelper.GetAnswersAsync(turnContext, messageActivity, options).ConfigureAwait(false);
+            var result = await this.generateAnswerHelper.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
 
-            await OnQnaResultsAsync(result, turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
+            await OnQnaResultsAsync(result.Answers, turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
 
             return result;
         }

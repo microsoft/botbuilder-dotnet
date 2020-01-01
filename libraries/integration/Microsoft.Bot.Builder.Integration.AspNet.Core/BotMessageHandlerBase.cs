@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -72,15 +73,21 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 {
                     response.StatusCode = invokeResponse.Status;
 
-                    if (response.Body != null)
+                    if (invokeResponse.Body != null)
                     {
                         response.ContentType = "application/json";
-                        using (var writer = new StreamWriter(response.Body))
+                        using (var memoryStream = new MemoryStream())
                         {
-                            using (var jsonWriter = new JsonTextWriter(writer))
+                            using (var writer = new StreamWriter(memoryStream, Encoding.UTF8, 1024, true))
                             {
-                                BotMessageSerializer.Serialize(jsonWriter, invokeResponse.Body);
+                                using (var jsonWriter = new JsonTextWriter(writer))
+                                {
+                                    BotMessageSerializer.Serialize(jsonWriter, invokeResponse.Body);
+                                }
                             }
+
+                            memoryStream.Seek(0, SeekOrigin.Begin);
+                            await memoryStream.CopyToAsync(response.Body).ConfigureAwait(false);
                         }
                     }
                 }

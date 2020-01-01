@@ -1,0 +1,35 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
+    "title": "Initialize property",
+    "description": "Define and initialize a property to be an array or object.",
+    "type": "object",
+    "required": [
+        "property",
+        "type"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "property": {
+            "$role": "expression",
+            "title": "Property",
+            "description": "Property (named location to store information).",
+            "examples": [
+                "user.age"
+            ]
+        },
+        "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "Type of value.",
+            "enum": [
+                "object",
+                "array"
+            ]
+        }
+    }
+}

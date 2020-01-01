@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.Number;
+using Microsoft.Recognizers.Text.NumberWithUnit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
@@ -43,12 +45,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             // - We only want to use a single strategy for returning results to avoid issues where utterances
             //   like the "the third one" or "the red one" or "the first division book" would miss-recognize as
             //   a numerical index or ordinal as well.
-            var locale = options?.Locale ?? Recognizers.Text.Culture.English;
+            var locale = options?.Locale ?? Culture.English;
             var matched = Find.FindChoices(utterance, list, options);
             if (matched.Count == 0)
             {
                 // Next try finding by ordinal
-                var matches = RecognizeOrdinal(utterance, locale);
+                var matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale, NumberOptions.SuppressExtendedTypes).GetOrdinalModel(locale));
                 if (matches.Any())
                 {
                     foreach (var match in matches)
@@ -58,8 +60,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 }
                 else
                 {
-                    // Finally try by numerical index
-                    matches = RecognizeNumber(utterance, locale);
+                    // Then try by numerical index
+                    matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale, NumberOptions.SuppressExtendedTypes).GetNumberModel(locale));
 
                     foreach (var match in matches)
                     {
@@ -104,26 +106,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             }
         }
 
-        private static List<ModelResult<FoundChoice>> RecognizeOrdinal(string utterance, string culture)
+        private static List<ModelResult<FoundChoice>> RecognizeNumbers(string utterance, string culture, IModel model)
         {
-            var model = new NumberRecognizer(culture, NumberOptions.SuppressExtendedTypes).GetOrdinalModel(culture);
-            var result = model.Parse(utterance);
-            return result.Select(r =>
-                new ModelResult<FoundChoice>
-                {
-                    Start = r.Start,
-                    End = r.End,
-                    Text = r.Text,
-                    Resolution = new FoundChoice
-                    {
-                        Value = r.Resolution["value"].ToString(),
-                    },
-                }).ToList();
-        }
-
-        private static List<ModelResult<FoundChoice>> RecognizeNumber(string utterance, string culture)
-        {
-            var model = new NumberRecognizer(culture, NumberOptions.SuppressExtendedTypes).GetNumberModel(culture);
             var result = model.Parse(utterance);
             return result.Select(r =>
                 new ModelResult<FoundChoice>

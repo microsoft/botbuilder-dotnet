@@ -1,0 +1,30 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
+    "title": "Date/time input dialog",
+    "description": "Collect information - Ask for date and/ or time",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./Microsoft.InputDialog.json#"
+        },
+        {
+            "properties": {
+                "outputFormat": {
+                    "$role": "expression",
+                    "title": "Output format",
+                    "description": "Expression to format the datetime output.",
+                    "examples": [
+                        "this.value[0].Value"
+                    ]
+                },
+                "defaultLocale": {
+                    "type": "string",
+                    "title": "Default locale",
+                    "description": "Default locale.",
+                    "default": "en-us"
+                }
+            }
+        }
+    ]
+}

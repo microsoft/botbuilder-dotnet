@@ -1,0 +1,125 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "Quantity": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 10
+        },
+        "Directions": {
+            "type": "string",
+            "$comment": "This indicates the whole string is what maps to this."
+        },
+        "Length": {
+            "type": "number",
+            "$mappings": [
+                "dimension",
+                "number"
+            ],
+            "$comment": "This is used by the mapping to convert underlying dimensions to inches.",
+            "$units": "inches"
+        },
+        "Bread": {
+            "type": "string",
+            "enum": [
+                "multiGrainWheat",
+                "rye",
+                "white",
+                "wholeWheat"
+            ]
+        },
+        "Cheese": {
+            "type": "string",
+            "enum": [
+                "american",
+                "cheddar",
+                "feta",
+                "gouda",
+                "pepper jack",
+                "provolone",
+                "swiss",
+                "none"
+            ]
+        },
+        "Meat": {
+            "type": "string",
+            "enum": [
+                "bacon",
+                "chicken",
+                "ham",
+                "pulled pork",
+                "roast beef",
+                "salami",
+                "turkey",
+                "none"
+            ]
+        },
+        "Name": {
+            "type": "string"
+        },
+        "CancelConfirmation": {
+            "type": "string",
+            "$mappings": [
+                "Confirmation"
+            ]
+        },
+        "CompleteConfirmation": {
+            "type": "string",
+            "$mappings": [
+                "Confirmation"
+            ]
+        },
+        "PropertyToChange": {
+            "type": "string",
+            "enum": [
+                "Quantity",
+                "Directions",
+                "Length",
+                "Bread",
+                "Cheese",
+                "Meat",
+                "Name"
+            ],
+            "$mappings": [
+                "PROPERTYName"
+            ]
+        }
+    },
+    "required": [
+        "Meat",
+        "Bread",
+        "Cheese"
+    ],
+    "$expectedOnly": [
+        "CancelConfirmation",
+        "CompleteConfirmation",
+        "PropertyToChange"
+    ],
+    "$public": [
+        "Quantity",
+        "Directions",
+        "Length",
+        "Bread",
+        "Cheese",
+        "Meat",
+        "Name"
+    ],
+    "definitions": {
+        "PROPERTYName": {
+            "type": "string",
+            "enum": [
+                "Quantity",
+                "Directions",
+                "Length",
+                "Bread",
+                "Cheese",
+                "Meat",
+                "Name"
+            ],
+            "$mappings": [
+                "PROPERTYName"
+            ]
+        }
+    }
+}

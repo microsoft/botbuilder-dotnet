@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -15,6 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     {
         private readonly IStatePropertyAccessor<DialogState> _dialogState;
         private readonly IDictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
+
         private IBotTelemetryClient _telemetryClient;
 
         /// <summary>
@@ -28,14 +30,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </remarks>
         public DialogSet(IStatePropertyAccessor<DialogState> dialogState)
         {
-            _dialogState = dialogState ?? throw new ArgumentNullException($"missing {nameof(dialogState)}");
+            _dialogState = dialogState ?? throw new ArgumentNullException(nameof(dialogState));
             _telemetryClient = NullBotTelemetryClient.Instance;
         }
 
-        internal DialogSet()
+        public DialogSet()
         {
-            // TODO: This is only used by ComponentDialog and future release
-            // will refactor to use IStatePropertyAccessor from context
             _dialogState = null;
             _telemetryClient = NullBotTelemetryClient.Instance;
         }
@@ -46,6 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>The <see cref="IBotTelemetryClient"/> to use for logging.</value>
         /// <remarks>When this property is set, it sets the <see cref="Dialog.TelemetryClient"/> of each
         /// dialog in the set to the new value.</remarks>
+        [JsonIgnore]
         public IBotTelemetryClient TelemetryClient
         {
             get
@@ -64,7 +65,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Adds a new <see cref="Dialog"/> to the set and returns the updated set.
+        /// Adds a new dialog to the set and returns the set to allow fluent chaining.
+        /// If the Dialog.Id being added already exists in the set, the dialogs id will be updated to 
+        /// include a suffix which makes it unique. So adding 2 dialogs named "duplicate" to the set
+        /// would result in the first one having an id of "duplicate" and the second one having an id
+        /// of "duplicate2".
         /// </summary>
         /// <param name="dialog">The dialog to add.</param>
         /// <returns>The dialog set after the operation is complete.</returns>
@@ -79,11 +84,35 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (_dialogs.ContainsKey(dialog.Id))
             {
-                throw new ArgumentException($"DialogSet.Add(): A dialog with an id of '{dialog.Id}' already added.");
+                var nextSuffix = 2;
+
+                while (true)
+                {
+                    var suffixId = dialog.Id + nextSuffix.ToString();
+
+                    if (!_dialogs.ContainsKey(suffixId))
+                    {
+                        dialog.Id = suffixId;
+                        break;
+                    }
+                    else
+                    {
+                        nextSuffix++;
+                    }
+                }
             }
 
             dialog.TelemetryClient = _telemetryClient;
             _dialogs[dialog.Id] = dialog;
+
+            // Automatically add any dependencies the dialog might have
+            if (dialog is IDialogDependencies dialogWithDependencies)
+            {
+                foreach (var dependencyDialog in dialogWithDependencies.GetDependencies())
+                {
+                    Add(dependencyDialog);
+                }
+            }
 
             return this;
         }
@@ -134,6 +163,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return null;
+        }
+
+        public IEnumerable<Dialog> GetDialogs()
+        {
+            return _dialogs.Values;
         }
     }
 }

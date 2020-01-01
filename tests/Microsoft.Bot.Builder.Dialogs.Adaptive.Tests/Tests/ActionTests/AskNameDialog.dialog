@@ -1,0 +1,31 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "AskNameDialog",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "(user.name == null)",
+                    "actions": [
+                        {
+                            "$kind": "Microsoft.TextInput",
+                            "property": "user.name",
+                            "prompt": "Hello, what is your name?",
+                            "unrecognizedPrompt": "How should I call you?",
+                            "invalidPrompt": "That does not soud like a name"
+                        }
+                    ]
+                },
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Hello @{user.name}, nice to meet you!"
+                }
+            ]
+        }
+    ],
+    "autoEndDialog": true,
+    "defaultResultProperty": "dialog.result"
+}
