@@ -1,9 +1,10 @@
 
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition":"!$Enum2 && contains(dialog.requiredProperties, 'Enum2')",
-    "actions": [        
+    "condition":"!$Enum2",
+    "priority": "indexOf(dialog.requiredProperties, 'Enum2')",
+    "actions": [       
         {
             "$kind": "Microsoft.Ask",
             "activity": "@{AskEnum2()}",
