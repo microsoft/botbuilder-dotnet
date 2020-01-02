@@ -48,6 +48,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(diagnostics[0].Message.Contains("Duplicated definitions found for template: template1"));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
             Assert.IsTrue(diagnostics[1].Message.Contains("Duplicated definitions found for template: template1"));
+
+            var lgFile = GetLGFile("DuplicatedTemplates.lg");
+            var allDiagnostics = lgFile.AllDiagnostics;
+
+            Assert.AreEqual(4, allDiagnostics.Count);
+            Assert.AreEqual(DiagnosticSeverity.Error, allDiagnostics[0].Severity);
+            Assert.IsTrue(allDiagnostics[0].Message.Contains("Duplicated definitions found for template: template1"));
+            Assert.AreEqual(DiagnosticSeverity.Error, allDiagnostics[1].Severity);
+            Assert.IsTrue(allDiagnostics[1].Message.Contains("Duplicated definitions found for template: template1"));
+            Assert.AreEqual(DiagnosticSeverity.Error, allDiagnostics[2].Severity);
+            Assert.IsTrue(allDiagnostics[2].Message.Contains("Duplicated definitions found for template: basicTemplate"));
+            Assert.AreEqual(DiagnosticSeverity.Error, allDiagnostics[3].Severity);
+            Assert.IsTrue(allDiagnostics[3].Message.Contains("Duplicated definitions found for template: basicTemplate2"));
         }
 
         [TestMethod]
