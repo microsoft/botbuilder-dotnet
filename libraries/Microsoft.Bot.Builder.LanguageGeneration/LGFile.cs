@@ -37,23 +37,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.ImportResolver = importResolver;
         }
 
-        public IList<LGTemplate> AllTemplates
-        {
-            get
-            {
-                var referenceTemplates = References.GroupBy(x => x.Id).Select(x => x.First()).SelectMany(x => x.Templates);
-                return Templates.Union(referenceTemplates).ToList();
-            }
-        }
+        public IList<LGTemplate> AllTemplates => new List<LGFile> { this }.Union(References).SelectMany(x => x.Templates).ToList();
 
-        public IList<Diagnostic> AllDiagnostics
-        {
-            get
-            {
-                var referenceDiagnostics = References.GroupBy(x => x.Id).Select(x => x.First()).SelectMany(x => x.Diagnostics);
-                return Diagnostics.Union(referenceDiagnostics).ToList();
-            }
-        }
+        public IList<Diagnostic> AllDiagnostics => new List<LGFile> { this }.Union(References).SelectMany(x => x.Diagnostics).ToList();
 
         /// <summary>
         /// Gets or sets delegate for resolving resource id of imported lg file.
@@ -224,6 +210,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         public override string ToString() => Content;
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is LGFile lgFileObj))
+            {
+                return false;
+            }
+
+            return this.Id == lgFileObj.Id && this.Content == lgFileObj.Content;
+        }
+
+        public override int GetHashCode() => (Id, Content).GetHashCode();
 
         private string ReplaceRangeContent(string originString, int startLine, int stopLine, string replaceString)
         {
