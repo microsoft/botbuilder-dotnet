@@ -15,15 +15,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     internal class StaticChecker : LGFileParserBaseVisitor<List<Diagnostic>>
     {
-        private string currentSource = string.Empty;
         private readonly ExpressionEngine baseExpressionEngine;
-        private readonly List<LGTemplate> templates;
+        private readonly LGFile lgFile;
+        private IList<string> visitedTemplateNames;
 
         private IExpressionParser _expressionParser;
 
-        public StaticChecker(List<LGTemplate> templates, ExpressionEngine expressionEngine = null)
+        public StaticChecker(LGFile lgFile, ExpressionEngine expressionEngine = null)
         {
-            this.templates = templates;
+            this.lgFile = lgFile;
             baseExpressionEngine = expressionEngine ?? new ExpressionEngine();
         }
 
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (_expressionParser == null)
                 {
                     // create an evaluator to leverage it's customized function look up for checking
-                    var evaluator = new Evaluator(templates, baseExpressionEngine);
+                    var evaluator = new Evaluator(lgFile.AllTemplates.ToList(), baseExpressionEngine);
                     _expressionParser = evaluator.ExpressionEngine;
                 }
 
@@ -49,39 +49,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>report result.</returns>
         public List<Diagnostic> Check()
         {
+            visitedTemplateNames = new List<string>();
             var result = new List<Diagnostic>();
 
-            // check dup first
-            var duplicatedTemplates = templates
-                                      .GroupBy(t => t.Name)
-                                      .Where(g => g.Count() > 1)
-                                      .Where(u => !string.IsNullOrEmpty(u.Key))
-                                      .ToList();
-
-            if (duplicatedTemplates.Count > 0)
-            {
-                duplicatedTemplates.ForEach(g =>
-                {
-                    var name = g.Key;
-                    var sources = string.Join(":", g.Select(x => x.Source));
-
-                    var msg = $"Duplicated definitions found for template: {name} in {sources}";
-                    result.Add(BuildLGDiagnostic(msg));
-                });
-
-                return result;
-            }
-
-            if (templates.Count == 0)
+            if (lgFile.AllTemplates.Count == 0)
             {
                 result.Add(BuildLGDiagnostic(
                     "File must have at least one template definition ",
                     DiagnosticSeverity.Warning));
+
+                return result;
             }
 
-            templates.ForEach(t =>
+            lgFile.Templates.ToList().ForEach(t =>
             {
-                currentSource = t.Source;
                 result.AddRange(Visit(t.ParseTree));
             });
 
@@ -101,13 +82,38 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 var templateName = context.templateNameLine().templateName().GetText();
 
-                if (context.templateBody() == null)
+                if (visitedTemplateNames.Contains(templateName))
                 {
-                    result.Add(BuildLGDiagnostic($"There is no template body in template {templateName}", DiagnosticSeverity.Warning, context.templateNameLine()));
+                    result.Add(BuildLGDiagnostic($"Duplicated definitions found for template: {templateName}", context: templateNameLine));
                 }
                 else
                 {
-                    result.AddRange(Visit(context.templateBody()));
+                    visitedTemplateNames.Add(templateName);
+                    foreach (var reference in lgFile.References)
+                    {
+                        var sameTemplates = reference.AllTemplates.Where(u => u.Name == templateName);
+                        foreach (var sameTemplate in sameTemplates)
+                        {
+                            result.Add(BuildLGDiagnostic(
+                            $"Duplicated definitions found for template: {sameTemplate.Name} in {sameTemplate.Source}", context: templateNameLine));
+                        }
+                    }
+
+                    if (result.Count > 0)
+                    {
+                        return result;
+                    }
+                    else
+                    {
+                        if (context.templateBody() == null)
+                        {
+                            result.Add(BuildLGDiagnostic($"There is no template body in template {templateName}", DiagnosticSeverity.Warning, context.templateNameLine()));
+                        }
+                        else
+                        {
+                            result.AddRange(Visit(context.templateBody()));
+                        }
+                    }
                 }
             }
 
@@ -396,7 +402,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line, context.Start.Column);
             var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
             var range = new Range(startPosition, stopPosition);
-            return new Diagnostic(range, message, severity, currentSource);
+            return new Diagnostic(range, message, severity);
         }
     }
 }

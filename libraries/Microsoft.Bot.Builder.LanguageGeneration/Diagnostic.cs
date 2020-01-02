@@ -38,15 +38,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public Diagnostic(
             Range range,
             string message,
-            DiagnosticSeverity severity = DiagnosticSeverity.Error,
-            string source = null,
-            string code = null)
+            DiagnosticSeverity severity = DiagnosticSeverity.Error)
         {
             Message = message;
             Range = range;
             Severity = severity;
-            Source = source;
-            Code = code;
         }
 
         /// <summary>

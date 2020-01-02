@@ -46,6 +46,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
+        public IList<Diagnostic> AllDiagnostics
+        {
+            get
+            {
+                var referenceDiagnostics = References.GroupBy(x => x.Id).Select(x => x.First()).SelectMany(x => x.Diagnostics);
+                return Diagnostics.Union(referenceDiagnostics).ToList();
+            }
+        }
+
         /// <summary>
         /// Gets or sets delegate for resolving resource id of imported lg file.
         /// </summary>
