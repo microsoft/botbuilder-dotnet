@@ -20,7 +20,8 @@ steps:
    # 
    # Note: The task immediately before this one may not get checked because its log may not yet be available.
    # Calls the Azure DevOps REST API.
-   
+   # Enable OAuth token access in the pipeline agent job for $(System.Accesstoken) to populate.
+
    $stringToCheckFor = '201 Created';
    
    Start-Sleep -Milliseconds 1000 # Give time for the last log to become available
@@ -35,10 +36,7 @@ steps:
    # Get the log containers for the run.
    $uri = "$collectionUri/$teamProjectId/_apis/build/builds/$buildId/logs";
    
-   $personalToken = "$(PersonalAccessToken)";
-   Write-Host '$personalToken =' $personalToken;
-   
-   $token = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$($personalToken)"));
+   $token = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$(System.AccessToken)"));
    $header = @{authorization = "Basic $token"};
    
    $runLogContainers = Invoke-RestMethod "$uri" -Method Get -ContentType "application/json" -Headers $header;
