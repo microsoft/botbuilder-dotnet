@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             catch (Exception err)
             {
-                diagnostics.Add(BuildDiagnostic(err.Message));
+                diagnostics.Add(BuildDiagnostic(err.Message, source: id));
             }
 
             lgFile.Diagnostics = diagnostics;
@@ -112,14 +112,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    .Select(x => x.errorTemplate())
                    .Where(x => x != null);
 
-            return errorTemplates.Select(u => BuildDiagnostic("error context.", u)).ToList();
+            return errorTemplates.Select(u => BuildDiagnostic("error context.", u, id)).ToList();
         }
 
-        private static Diagnostic BuildDiagnostic(string errorMessage, ParserRuleContext context = null)
+        private static Diagnostic BuildDiagnostic(string errorMessage, ParserRuleContext context = null, string source = null)
         {
             var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line, context.Start.Column);
             var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
-            return new Diagnostic(new Range(startPosition, stopPosition), errorMessage);
+            return new Diagnostic(new Range(startPosition, stopPosition), errorMessage, source: source);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var tokens = new CommonTokenStream(lexer);
             var parser = new LGFileParser(tokens);
             parser.RemoveErrorListeners();
-            var listener = new ErrorListener();
+            var listener = new ErrorListener(id);
 
             parser.AddErrorListener(listener);
             parser.BuildParseTree = true;
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 catch (Exception err)
                 {
-                    throw new LGException(err.Message, new List<Diagnostic> { BuildDiagnostic(err.Message) });
+                    throw new LGException(err.Message, new List<Diagnostic> { BuildDiagnostic(err.Message, source: start.Id) });
                 }
             }
         }

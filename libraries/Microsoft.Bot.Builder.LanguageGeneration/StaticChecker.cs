@@ -402,7 +402,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line, context.Start.Column);
             var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
             var range = new Range(startPosition, stopPosition);
-            return new Diagnostic(range, message, severity);
+            return new Diagnostic(range, message, severity, lgFile.Id);
         }
     }
 }
