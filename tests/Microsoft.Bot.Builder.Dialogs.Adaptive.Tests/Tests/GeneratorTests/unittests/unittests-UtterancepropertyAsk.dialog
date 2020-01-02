@@ -1,8 +1,9 @@
 
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition":"!$Utteranceproperty && contains(dialog.requiredProperties, 'Utteranceproperty')",
+    "condition":"!$Utteranceproperty",
+    "priority": "indexOf(dialog.requiredProperties, 'Utteranceproperty')",
     "actions": [
         {
             "$kind": "Microsoft.Ask",
@@ -10,6 +11,6 @@
             "expectedProperties": [
                 "Utteranceproperty"
             ]
-        },
+        }
     ]
 }
