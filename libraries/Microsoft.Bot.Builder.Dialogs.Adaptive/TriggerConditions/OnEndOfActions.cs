@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         [JsonConstructor]
         public OnEndOfActions(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
-                @event: AdaptiveEvents.Ask,
+                @event: AdaptiveEvents.EndOfActions,
                 actions: actions,
                 condition: condition,
                 callerPath: callerPath,

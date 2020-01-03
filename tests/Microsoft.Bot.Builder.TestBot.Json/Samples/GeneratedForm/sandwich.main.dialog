@@ -1,6 +1,6 @@
 
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "recognizer": "sandwich.lu",
     "generator": "sandwich.lg",
@@ -12,7 +12,7 @@
 "sandwich-LengthSetdimension",
 "sandwich-LengthSetnumber",
 "sandwich-NameAsk",
-"sandwich-NameSetNameEntity",
+"sandwich-NameSetpersonName",
 "sandwich-NameSetutterance",
 "sandwich-BreadAsk",
 "sandwich-BreadSetBreadEntity",
@@ -23,6 +23,8 @@
 "sandwich-MeatAsk",
 "sandwich-MeatSetMeatEntity",
 "sandwich-MeatEntityClarify",
+"sandwich-PriceAsk",
+"sandwich-PriceSetmoney",
 "sandwich-CancelConfirmation",
 "sandwich-CancelConfirmationSet",
 "sandwich-CompleteConfirmation",

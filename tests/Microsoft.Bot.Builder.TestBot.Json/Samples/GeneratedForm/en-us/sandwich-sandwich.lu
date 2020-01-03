@@ -1,7 +1,7 @@
 # sandwich
 - {number}
 - {dimension}
-- {NameEntity}
+- {personName}
 
 - {BreadEntity}
 - {CheeseEntity}
