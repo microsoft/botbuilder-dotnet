@@ -2,8 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -19,12 +21,16 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         private const string WebexUrlBase = "https://api.ciscospark.com/v1/messages";
         private string _targetBotEmail;
         private string _roomId;
-        private string _personalAccessToken;
+        private string _userAccessToken;
+        private string _refreshToken;
+        private string _integrationClientId;
+        private string _integrationClientSecret;
 
         [TestMethod]
         public async Task SendAndReceiveWebexMessageShouldSucceed()
         {
             GetEnvironmentVars();
+            await RefreshAccessToken();
             var echoGuid = Guid.NewGuid().ToString();
             await SendMessageAsync(echoGuid);
 
@@ -45,7 +51,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
             using (var client = new WebClient())
             {
-                client.Headers[HttpRequestHeader.Authorization] = "Bearer " + _personalAccessToken;
+                client.Headers[HttpRequestHeader.Authorization] = "Bearer " + _userAccessToken;
                 await client.UploadValuesTaskAsync(WebexUrlBase, "POST", data);
             }
         }
@@ -54,7 +60,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         {
             using (var client = new WebClient())
             {
-                client.Headers[HttpRequestHeader.Authorization] = "Bearer " + _personalAccessToken;
+                client.Headers[HttpRequestHeader.Authorization] = "Bearer " + _userAccessToken;
 
                 client.QueryString.Add("roomId", _roomId);
 
@@ -76,27 +82,58 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             }
         }
 
+        private async Task RefreshAccessToken()
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("grant_type", "refresh_token");
+            parameters.Add("client_id", _integrationClientId);
+            parameters.Add("client_secret", _integrationClientSecret);
+            parameters.Add("refresh_token", _refreshToken);
+            
+            var client = new HttpClient();
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.ciscospark.com/v1/access_token")
+            {
+                Content = new FormUrlEncodedContent(parameters)
+            };
+
+            var httpResponse = await client.SendAsync(request);
+            var response = httpResponse.Content.ReadAsStringAsync().Result;
+            var kvPairs = JsonConvert.DeserializeObject<Dictionary<string, string>>(response);
+
+            _userAccessToken = kvPairs["access_token"];
+        }
+
         private void GetEnvironmentVars()
         {
-            if (string.IsNullOrWhiteSpace(_roomId) || string.IsNullOrWhiteSpace(_personalAccessToken) || string.IsNullOrWhiteSpace(_targetBotEmail))
+            _roomId = Environment.GetEnvironmentVariable("WEBEX_ROOM_ID");
+            if (string.IsNullOrWhiteSpace(_roomId))
             {
-                _roomId = Environment.GetEnvironmentVariable("WEBEX_ROOM_ID");
-                if (string.IsNullOrWhiteSpace(_roomId))
-                {
-                    throw new Exception("Environment variable 'WEBEX_ROOM_ID' not found.");
-                }
+                throw new Exception("Environment variable 'WEBEX_ROOM_ID' not found.");
+            }
 
-                _personalAccessToken = Environment.GetEnvironmentVariable("PERSONAL_ACCESS_TOKEN");
-                if (string.IsNullOrWhiteSpace(_personalAccessToken))
-                {
-                    throw new Exception("Environment variable 'PERSONAL_ACCESS_TOKEN' not found.");
-                }
+            _refreshToken = Environment.GetEnvironmentVariable("REFRESH_TOKEN");
+            if (string.IsNullOrWhiteSpace(_refreshToken))
+            {
+                throw new Exception("Environment variable 'REFRESH_TOKEN' not found.");
+            }
 
-                _targetBotEmail = Environment.GetEnvironmentVariable("Webex-BotUserName");
-                if (string.IsNullOrWhiteSpace(_targetBotEmail))
-                {
-                    throw new Exception("Environment variable 'Webex-BotUserName' not found.");
-                }
+            _integrationClientId = Environment.GetEnvironmentVariable("WebexIntegrationClientId");
+            if (string.IsNullOrWhiteSpace(_integrationClientId))
+            {
+                throw new Exception("Environment variable 'WebexIntegrationClientId' not found.");
+            }
+
+            _integrationClientSecret = Environment.GetEnvironmentVariable("INTEGRATION_CLIENT_SECRET");
+            if (string.IsNullOrWhiteSpace(_integrationClientSecret))
+            {
+                throw new Exception("Environment variable 'INTEGRATION_CLIENT_SECRET' not found.");
+            }
+
+            _targetBotEmail = Environment.GetEnvironmentVariable("WebexBotUserName");
+            if (string.IsNullOrWhiteSpace(_targetBotEmail))
+            {
+                throw new Exception("Environment variable 'WebexBotUserName' not found.");
             }
         }
     }
