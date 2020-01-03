@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     visitedTemplateNames.Add(templateName);
                     foreach (var reference in lgFile.References)
                     {
-                        var sameTemplates = reference.AllTemplates.Where(u => u.Name == templateName);
+                        var sameTemplates = reference.Templates.Where(u => u.Name == templateName);
                         foreach (var sameTemplate in sameTemplates)
                         {
                             result.Add(BuildLGDiagnostic(

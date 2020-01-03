@@ -201,7 +201,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var (content, path) = importResolver(start.Id, id);
                     if (resourcesFound.All(u => u.Id != path))
                     {
-                        var childResource = ParseText(content, path);
+                        var childResource = ParseText(content, path, importResolver);
                         ResolveImportResources(childResource, resourcesFound, importResolver);
                     }
                 }

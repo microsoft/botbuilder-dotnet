@@ -79,9 +79,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         /// <summary>
         /// Gets or sets all references that this LG file has from <see cref="Imports"/>.
+        /// Notice: reference includs all child imports from the lg file,
+        /// not only the children belong to this lgfile directly.
+        /// so, reference count may >= imports count. 
         /// </summary>
         /// <value>
-        /// import elements that this LG file contains directly.
+        /// all references that this LG file has from <see cref="Imports"/>.
         /// </value>
         public IList<LGFile> References { get; set; }
 
