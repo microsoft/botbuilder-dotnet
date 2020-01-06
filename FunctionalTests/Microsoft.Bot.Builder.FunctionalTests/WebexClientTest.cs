@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
     [TestCategory("FunctionalTests")]
     public class WebexClientTest
     {        
-        private const string WebexUrlBase = "https://api.ciscospark.com/v1/messages";
+        private const string WebexUrlBase = "https://api.ciscospark.com/v1";
         private string _targetBotEmail;
         private string _roomId;
         private string _userAccessToken;
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             using (var client = new WebClient())
             {
                 client.Headers[HttpRequestHeader.Authorization] = "Bearer " + _userAccessToken;
-                await client.UploadValuesTaskAsync(WebexUrlBase, "POST", data);
+                await client.UploadValuesTaskAsync($"{WebexUrlBase}/messages", "POST", data);
             }
         }
 
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
                 client.QueryString.Add("roomId", _roomId);
 
-                var response = await client.DownloadStringTaskAsync(new Uri(WebexUrlBase));
+                var response = await client.DownloadStringTaskAsync(new Uri($"{WebexUrlBase}/messages"));
                 var jObject = JObject.Parse(response);
 
                 var result = JsonConvert.DeserializeObject<Message[]>(jObject["items"].ToString());
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             
             var client = new HttpClient();
 
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.ciscospark.com/v1/access_token")
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{WebexUrlBase}/access_token")
             {
                 Content = new FormUrlEncodedContent(parameters)
             };
