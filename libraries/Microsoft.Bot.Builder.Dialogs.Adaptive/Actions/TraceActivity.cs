@@ -70,6 +70,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("value")]
         public string Value { get; set; }
 
+        /// <summary>
+        /// Gets or sets a label to use when describing a trace activity.
+        /// </summary>
+        /// <value>The label to use. (default will use Name or parent dialog.id).</value>
+        [JsonProperty]
+        public string Label { get; set; }
+
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
@@ -92,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 value = dc.GetState().GetMemorySnapshot();
             }
 
-            var traceActivity = Activity.CreateTraceActivity(this.Name ?? "Trace", valueType: this.ValueType ?? "State", value: value);
+            var traceActivity = Activity.CreateTraceActivity(this.Name ?? "Trace", valueType: this.ValueType ?? "State", value: value, label: this.Label ?? this.Name ?? dc.Parent?.ActiveDialog?.Id);
             await dc.Context.SendActivityAsync(traceActivity, cancellationToken).ConfigureAwait(false);
             return await dc.EndDialogAsync(traceActivity, cancellationToken: cancellationToken).ConfigureAwait(false);
         }

@@ -23,6 +23,11 @@
             "title": "Name",
             "description": "Name of the trace activity"
         },
+        "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "Label for the trace activity (used to identify it in a list of trace activities.)"
+        },
         "valueType": {
             "type": "string",
             "title": "Value type",
