@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Gets or sets a value indicating whether to have the new dialog include activity.
         /// </summary>
         /// <value>If this flag is true, then the activity is flagged to be processed by the new dialog.</value>
-        [JsonProperty("includeProperty")]
+        [JsonProperty("includeActivity")]
         public bool IncludeActivity { get; set; }
 
         public virtual IEnumerable<Dialog> GetDependencies()
