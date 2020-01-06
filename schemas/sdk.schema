@@ -924,6 +924,15 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Initial prompt",
@@ -1100,6 +1109,15 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                },
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
                     "title": "Dialog name",
@@ -1189,6 +1207,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -1246,6 +1273,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 },
                 "eventName": {
                     "title": "Event name",
@@ -1314,6 +1350,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -1677,6 +1722,15 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Initial prompt",
@@ -1980,6 +2034,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -2209,6 +2272,15 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Initial prompt",
@@ -2389,6 +2461,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -2446,6 +2527,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 },
                 "properties": {
                     "type": "array",
@@ -2515,6 +2605,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 },
                 "property": {
                     "$role": "expression",
@@ -2632,6 +2731,15 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                },
                 "changeType": {
                     "type": "string",
                     "title": "Type of change",
@@ -2723,6 +2831,15 @@
                         "Remove",
                         "Clear"
                     ]
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 },
                 "itemsProperty": {
                     "$role": "expression",
@@ -2858,6 +2975,15 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                },
                 "eventName": {
                     "title": "Event name",
                     "description": "Name of the event to emit.",
@@ -2952,6 +3078,15 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                },
                 "value": {
                     "$role": "expression",
                     "title": "Value",
@@ -3018,6 +3153,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -3226,6 +3370,15 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                },
                 "itemsProperty": {
                     "$role": "expression",
                     "title": "Items property",
@@ -3302,6 +3455,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 },
                 "itemsProperty": {
                     "$role": "expression",
@@ -3385,6 +3547,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 },
                 "actionId": {
                     "type": "string",
@@ -3552,6 +3723,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 },
                 "method": {
                     "type": "string",
@@ -4096,6 +4276,15 @@
                     ],
                     "type": "string"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                },
                 "actions": {
                     "type": "array",
                     "title": "Actions",
@@ -4172,6 +4361,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 },
                 "property": {
                     "$role": "expression",
@@ -4352,6 +4550,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 },
                 "text": {
                     "type": "string",
@@ -4769,6 +4976,15 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Initial prompt",
@@ -5004,6 +5220,15 @@
                     "examples": [
                         "msgraphOAuthConnection"
                     ]
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 },
                 "text": {
                     "type": "string",
@@ -8170,6 +8395,15 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                },
                 "options": {
                     "type": "object",
                     "title": "Options",
@@ -8241,6 +8475,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 },
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
@@ -8323,6 +8566,15 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                },
                 "activity": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Activity",
@@ -8385,6 +8637,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 },
                 "assignments": {
                     "type": "array",
@@ -8473,6 +8734,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 },
                 "property": {
                     "$role": "expression",
@@ -8617,6 +8887,15 @@
                     "description": "Property to evaluate.",
                     "examples": [
                         "user.favColor"
+                    ],
+                    "type": "string"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
                     ],
                     "type": "string"
                 },
@@ -9525,6 +9804,15 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Initial prompt",
@@ -9757,6 +10045,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
                 },
                 "name": {
                     "type": "string",

@@ -214,6 +214,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Action_SendActivity()
+        {
+            await TestUtils.RunTestScript();
+        }
+
+        [TestMethod]
         public async Task Action_SetProperty()
         {
             await TestUtils.RunTestScript();
