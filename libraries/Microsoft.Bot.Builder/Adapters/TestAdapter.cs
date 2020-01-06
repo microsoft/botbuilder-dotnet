@@ -573,6 +573,11 @@ namespace Microsoft.Bot.Builder.Adapters
             return GetOauthSignInLinkAsync(turnContext, null, connectionName, userId, finalRedirect, cancellationToken);
         }
 
+        public Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string emulatorUrl, CancellationToken cancellationToken)
+        {
+            return Task.FromResult($"https://fake.com/oauthsignin/{connectionName}/{turnContext.Activity.ChannelId}");
+        }
+
         /// <summary>
         /// Signs a user out by remove the user's token(s) from mock storage, using customized AppCredentials.
         /// </summary>

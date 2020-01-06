@@ -2,11 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
@@ -33,10 +35,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var connectionName = "myConnection";
             var token = "abc123";
+            var botUrl = "http://bot.com/api/messages";
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in" }));
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in", BotUrl = botUrl }));
 
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
@@ -68,6 +71,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
 
                 Assert.AreEqual(InputHints.AcceptingInput, ((Activity)activity).InputHint);
+
+                Assert.AreEqual(((Dictionary<string, string>)activity.ChannelData)["botUrl"], botUrl);
 
                 // Prepare an EventActivity with a TokenResponse and send it to the botCallbackHandler
                 var eventActivity = CreateEventResponse(adapter, activity, connectionName, token);

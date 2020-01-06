@@ -17,6 +17,16 @@ namespace Microsoft.Bot.Builder.Dialogs
         public AppCredentials OAuthAppCredentials { get; set; }
 
         /// <summary>
+        /// Gets or sets the BotUrl for OAuthPrompt.
+        /// </summary>
+        /// <value>The url of the bot.</value>
+        /// <remarks>
+        /// This url is used when emulator needs to send the token
+        /// directly to a bot/skill.
+        /// </remarks>
+        public string BotUrl { get; set; }
+
+        /// <summary>
         /// Gets or sets the name of the OAuth connection.
         /// </summary>
         /// <value>The name of the OAuth connection.</value>

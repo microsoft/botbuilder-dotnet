@@ -4,13 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -58,6 +57,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
         private const string PersistedExpires = "expires";
+        private const string EmulatorUrl = "emulatorUrl";
+        private const string BotUrl = "botUrl";
 
         // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
         private readonly Regex _magicCodeRegex = new Regex(@"(\d{6})");
@@ -96,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result indicates whether the prompt is still
         /// active after the turn has been processed by the prompt.</remarks>
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             if (dc == null)
             {
@@ -171,7 +172,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// active after the turn has been processed by the dialog.
         /// <para>The prompt generally continues to receive the user's replies until it accepts the
         /// user's reply as valid input for the prompt.</para></remarks>
-        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             if (dc == null)
             {
@@ -235,7 +236,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task is successful and user already has a token or the user successfully signs in,
         /// the result contains the user's token.</remarks>
-        public async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
             if (!(turnContext.Adapter is ICredentialTokenProvider adapter))
             {
@@ -252,7 +253,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task SignOutUserAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task SignOutUserAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
             if (!(turnContext.Adapter is ICredentialTokenProvider adapter))
             {
@@ -289,7 +290,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return true;
         }
 
-        private async Task SendOAuthCardAsync(ITurnContext turnContext, IMessageActivity prompt, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task SendOAuthCardAsync(ITurnContext turnContext, IMessageActivity prompt, CancellationToken cancellationToken = default)
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -336,18 +337,18 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else if (!prompt.Attachments.Any(a => a.Content is OAuthCard))
             {
-                var cardActionType = ActionTypes.Signin;
                 string signInLink = null;
 
-                if (turnContext.Activity.IsFromStreamingConnection())
+                var activity = turnContext.Activity;
+                if (activity.ChannelId == Channels.Emulator)
+                {
+                    var channelData = JsonConvert.DeserializeObject<Dictionary<string, string>>(activity.ChannelData.ToString());
+                    var emulatorUrl = channelData[EmulatorUrl];
+                    signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, emulatorUrl, cancellationToken).ConfigureAwait(false);
+                }
+                else
                 {
                     signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
-                }
-                else if (turnContext.TurnState.Get<ClaimsIdentity>("BotIdentity") is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
-                {
-                    // Force magic code for Skills (to be addressed in R8)
-                    signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
-                    cardActionType = ActionTypes.OpenUrl;
                 }
 
                 prompt.Attachments.Add(new Attachment
@@ -363,12 +364,23 @@ namespace Microsoft.Bot.Builder.Dialogs
                             {
                                 Title = _settings.Title,
                                 Text = _settings.Text,
-                                Type = cardActionType,
+                                Type = ActionTypes.Signin,
                                 Value = signInLink
                             }
                         }
                     }
                 });
+            }
+
+            // add BotUrl into ChannelData if it's not empty
+            if (!string.IsNullOrWhiteSpace(_settings.BotUrl))
+            {
+                prompt.ChannelData = new Dictionary<string, string> 
+                {
+                    {
+                        BotUrl, _settings.BotUrl
+                    }
+                };
             }
 
             // Add the login timeout specified in OAuthPromptSettings to TurnState so it can be referenced if polling is needed
@@ -386,7 +398,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             await turnContext.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<PromptRecognizerResult<TokenResponse>> RecognizeTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<PromptRecognizerResult<TokenResponse>> RecognizeTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
             var result = new PromptRecognizerResult<TokenResponse>();
             if (IsTokenResponseEvent(turnContext))
