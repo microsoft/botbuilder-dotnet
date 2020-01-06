@@ -15,8 +15,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class LGFile
     {
-        private readonly ExpressionEngine expressionEngine;
-
         public LGFile(
             IList<LGTemplate> templates = null,
             IList<LGImport> imports = null,
@@ -34,7 +32,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Content = content ?? string.Empty;
             ImportResolver = importResolver;
             Id = id ?? string.Empty;
-            this.expressionEngine = expressionEngine ?? new ExpressionEngine();
+            ExpressionEngine = expressionEngine ?? new ExpressionEngine();
         }
 
         /// <summary>
@@ -68,6 +66,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// templates that this LG file contains directly.
         /// </value>
         public IList<LGTemplate> Templates { get; set; }
+
+        /// <summary>
+        /// Gets or sets expression parser.
+        /// </summary>
+        /// <value>
+        /// expression parser.
+        /// </value>
+        public ExpressionEngine ExpressionEngine { get; set; }
 
         /// <summary>
         /// Gets or sets import elements that this LG file contains directly.
@@ -126,7 +132,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 memory = SimpleObjectMemory.Wrap(scope);
             }
 
-            var evaluator = new Evaluator(AllTemplates.ToList(), this.expressionEngine);
+            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionEngine);
             return evaluator.EvaluateTemplate(templateName, new CustomizedMemory(memory));
         }
 
@@ -140,7 +146,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public IList<string> ExpandTemplate(string templateName, object scope = null)
         {
             CheckErrors(AllDiagnostics);
-            var expander = new Expander(AllTemplates.ToList(), this.expressionEngine);
+            var expander = new Expander(AllTemplates.ToList(), ExpressionEngine);
             return expander.EvaluateTemplate(templateName, new CustomizedMemory(scope));
         }
 
@@ -153,7 +159,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public AnalyzerResult AnalyzeTemplate(string templateName)
         {
             CheckErrors(AllDiagnostics);
-            var analyzer = new Analyzer(AllTemplates.ToList(), this.expressionEngine);
+            var analyzer = new Analyzer(AllTemplates.ToList(), ExpressionEngine);
             return analyzer.AnalyzeTemplate(templateName);
         }
 
