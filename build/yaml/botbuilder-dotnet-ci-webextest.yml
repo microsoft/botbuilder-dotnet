@@ -1,4 +1,5 @@
 pool:
+  vmImage: 'windows-2019'
   name: Azure Pipelines
   demands:
   - msbuild
