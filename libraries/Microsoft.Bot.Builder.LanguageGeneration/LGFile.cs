@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Evaluate result.</returns>
         public object EvaluateTemplate(string templateName, object scope = null)
         {
-            CheckErrors(AllDiagnostics);
+            CheckErrors();
             if (!(scope is IMemory memory))
             {
                 memory = SimpleObjectMemory.Wrap(scope);
@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Expand result.</returns>
         public IList<string> ExpandTemplate(string templateName, object scope = null)
         {
-            CheckErrors(AllDiagnostics);
+            CheckErrors();
             var expander = new Expander(AllTemplates.ToList(), ExpressionEngine);
             return expander.EvaluateTemplate(templateName, new CustomizedMemory(scope));
         }
@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>analyzer result.</returns>
         public AnalyzerResult AnalyzeTemplate(string templateName)
         {
-            CheckErrors(AllDiagnostics);
+            CheckErrors();
             var analyzer = new Analyzer(AllTemplates.ToList(), ExpressionEngine);
             return analyzer.AnalyzeTemplate(templateName);
         }
@@ -370,17 +370,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private void CheckErrors(IList<Diagnostic> diagnostics)
+        private void CheckErrors()
         {
-            if (diagnostics == null)
+            if (AllDiagnostics != null)
             {
-                throw new ArgumentException();
-            }
-
-            var errors = diagnostics.Where(u => u.Severity == DiagnosticSeverity.Error);
-            if (errors.Count() != 0)
-            {
-                throw new Exception(string.Join("\n", errors));
+                var errors = AllDiagnostics.Where(u => u.Severity == DiagnosticSeverity.Error);
+                if (errors.Count() != 0)
+                {
+                    throw new Exception(string.Join("\n", errors));
+                }
             }
         }
     }

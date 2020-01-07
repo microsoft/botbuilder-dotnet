@@ -44,15 +44,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         private static void CheckErrors(IList<Diagnostic> diagnostics)
         {
-            if (diagnostics == null)
+            if (diagnostics != null)
             {
-                throw new ArgumentException();
-            }
-
-            var errors = diagnostics.Where(u => u.Severity == DiagnosticSeverity.Error).ToList();
-            if (errors.Count != 0)
-            {
-                throw new Exception(string.Join("\n", errors));
+                var errors = diagnostics.Where(u => u.Severity == DiagnosticSeverity.Error).ToList();
+                if (errors.Count != 0)
+                {
+                    throw new Exception(string.Join("\n", errors));
+                }
             }
         }
     }

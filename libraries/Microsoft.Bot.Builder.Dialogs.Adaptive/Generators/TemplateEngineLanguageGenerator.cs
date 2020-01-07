@@ -77,8 +77,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 // if locale is present, use that one
                 if (string.Equals(fallbackLocale, string.Empty) || string.Equals(fallbackLocale, mapping.Key))
                 {
-                    var engine = LGParser.ParseFile(filePath, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
-                    multiLanglgFiles.Add(mapping.Key, engine);
+                    var lgFile = LGParser.ParseFile(filePath, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
+                    multiLanglgFiles.Add(mapping.Key, lgFile);
                 }
             }
         }
