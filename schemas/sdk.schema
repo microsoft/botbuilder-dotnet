@@ -878,6 +878,15 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "type": "string"
+                },
                 "activity": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Activity",
@@ -4922,9 +4931,53 @@
                     "description": "LUIS prediction key used to call endpoint.",
                     "$role": "expression"
                 },
+                "externalEntityRecognizer": {
+                    "title": "External Entity Recognizer",
+                    "description": "Entities recognized by this recognizer will be passed to LUIS as external entities.",
+                    "$kind": "Microsoft.Recognizer",
+                    "$ref": "#/definitions/Microsoft.Recognizer"
+                },
                 "predictionOptions": {
                     "type": "object",
                     "properties": {
+                        "dynamicLists": {
+                            "title": "Dynamic lists",
+                            "description": "Runtime defined entity lists.",
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "entity": {
+                                        "title": "Entity",
+                                        "description": "Entity to extend with a dynamic list.",
+                                        "type": "string"
+                                    },
+                                    "list": {
+                                        "title": "Dynamic list",
+                                        "description": "List of canonical forms and synonyms.",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "canonicalForm": {
+                                                    "title": "Canonical form",
+                                                    "description": "Resolution if any synonym matches.",
+                                                    "type": "string"
+                                                },
+                                                "synonyms": {
+                                                    "title": "Synonyms",
+                                                    "description": "List of synonyms for a canonical form.",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "includeAllIntents": {
                             "type": "boolean",
                             "title": "Include all intents",

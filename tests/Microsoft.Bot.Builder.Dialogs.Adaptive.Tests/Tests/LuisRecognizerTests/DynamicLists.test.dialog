@@ -1,0 +1,160 @@
+﻿{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "recognizer": {
+            "$kind":"Microsoft.LuisRecognizer",
+            "applicationId": "{settings.luis.dynamiclists_lu}",
+            "endpoint": "{settings.luis.endpoint}",
+            "endpointKey": "{settings.luis.endpointKey}",
+            "predictionOptions": {}
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "codeIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "@{join(turn.recognized.entities.code, ',')}"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "count(turn.recognized.intents) == 1"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "count(turn.recognized.entities.code) == 2"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "count(turn.recognized.entities.code) == count(turn.recognized.entities.$instance.code)"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ok"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "colorIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "@{join(turn.recognized.entities.color, ',')}"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "count(turn.recognized.intents) == 1"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "count(turn.recognized.entities.color) == 2"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "count(turn.recognized.entities.color) == count(turn.recognized.entities.$instance.color)"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ok"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "sameIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "count(turn.recognized.intents) == 1"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.entities.code == null"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.entities.$instance.code == null"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.entities.color == null"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.entities.$instance.color == null"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ok"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "UnknownIntent:@{turn.recognized.intent}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "@{join(turn.recognized.entities.age,',')}"
+                    }
+                ]
+            }
+        ]
+    },
+    "locale": "en-us",
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "intent a1 b2"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "a1,b2"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "ok"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "I would like color red and orange"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "red,orange"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "ok"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "same"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "ok"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "I am 14 years old"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "UnknownIntent:None",
+            "description": "Should have returned none intent"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "14 years old",
+            "description": "Should have returned age entity"
+        }
+    ]
+}
