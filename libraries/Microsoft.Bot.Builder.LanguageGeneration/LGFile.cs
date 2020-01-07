@@ -119,6 +119,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public string Id { get; set; }
 
         /// <summary>
+        /// use an existing LGFile to override current object.
+        /// </summary>
+        /// <param name="lgFile">Existing LGFile.</param>
+        public void Initialization(LGFile lgFile)
+        {
+            Templates = lgFile.Templates;
+            Imports = lgFile.Imports;
+            Diagnostics = lgFile.Diagnostics;
+            References = lgFile.References;
+            Content = lgFile.Content;
+            ImportResolver = lgFile.ImportResolver;
+            Id = lgFile.Id;
+            ExpressionEngine = lgFile.ExpressionEngine;
+        }
+
+        /// <summary>
         /// Evaluate a template with given name and scope.
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
@@ -170,23 +186,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="newTemplateName">new template Name.</param>
         /// <param name="parameters">new params.</param>
         /// <param name="templateBody">new template body.</param>
-        /// <returns>new LG resource.</returns>
-        public LGFile UpdateTemplate(string templateName, string newTemplateName, List<string> parameters, string templateBody)
+        public void UpdateTemplate(string templateName, string newTemplateName, List<string> parameters, string templateBody)
         {
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
-            if (template == null)
+            if (template != null)
             {
-                return this;
+                var templateNameLine = BuildTemplateNameLine(newTemplateName, parameters);
+                var newTemplateBody = ConvertTemplateBody(templateBody);
+                var content = $"{templateNameLine}\r\n{newTemplateBody}\r\n";
+                var startLine = template.ParseTree.Start.Line - 1;
+                var stopLine = template.ParseTree.Stop.Line - 1;
+
+                var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
+                Initialization(LGParser.ParseText(newContent, Id, ImportResolver));
             }
-
-            var templateNameLine = BuildTemplateNameLine(newTemplateName, parameters);
-            var newTemplateBody = ConvertTemplateBody(templateBody);
-            var content = $"{templateNameLine}\r\n{newTemplateBody}\r\n";
-            var startLine = template.ParseTree.Start.Line - 1;
-            var stopLine = template.ParseTree.Stop.Line - 1;
-
-            var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
-            return LGParser.ParseText(newContent, Id, ImportResolver);
         }
 
         /// <summary>
@@ -195,8 +208,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="templateName">new template name.</param>
         /// <param name="parameters">new params.</param>
         /// <param name="templateBody">new  template body.</param>
-        /// <returns>new lg resource.</returns>
-        public LGFile AddTemplate(string templateName, List<string> parameters, string templateBody)
+        public void AddTemplate(string templateName, List<string> parameters, string templateBody)
         {
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
@@ -207,27 +219,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
             var newContent = $"{Content.TrimEnd()}\r\n\r\n{templateNameLine}\r\n{newTemplateBody}\r\n";
-            return LGParser.ParseText(newContent, Id, ImportResolver);
+            Initialization(LGParser.ParseText(newContent, Id, ImportResolver));
         }
 
         /// <summary>
         /// Delete an exist template.
         /// </summary>
         /// <param name="templateName">which template should delete.</param>
-        /// <returns>return the new lg file.</returns>
-        public LGFile DeleteTemplate(string templateName)
+        public void DeleteTemplate(string templateName)
         {
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
-            if (template == null)
+            if (template != null)
             {
-                return this;
+                var startLine = template.ParseTree.Start.Line - 1;
+                var stopLine = template.ParseTree.Stop.Line - 1;
+
+                var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
+                Initialization(LGParser.ParseText(newContent, Id, ImportResolver));
             }
-
-            var startLine = template.ParseTree.Start.Line - 1;
-            var stopLine = template.ParseTree.Stop.Line - 1;
-
-            var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
-            return LGParser.ParseText(newContent, Id, ImportResolver);
         }
 
         public override string ToString() => Content;
