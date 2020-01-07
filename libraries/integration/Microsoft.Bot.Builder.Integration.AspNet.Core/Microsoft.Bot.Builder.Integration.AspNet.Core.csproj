@@ -33,6 +33,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.0" />
     <PackageReference Include="Microsoft.Net.Http.Headers" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
