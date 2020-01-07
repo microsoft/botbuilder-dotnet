@@ -26,6 +26,14 @@
                 "Clear"
             ]
         },
+        "disabled": {
+            "$role": "expression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
         "itemsProperty": {
             "$role": "expression",
             "title": "Items property",

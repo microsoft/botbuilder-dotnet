@@ -5,6 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -18,10 +19,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.TraceActivity";
 
+        private Expression disabled;
+
         [JsonConstructor]
         public TraceActivity([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
+        }
+
+        /// <summary>
+        /// Gets or sets an optional expression which if is true will disable this action.
+        /// </summary>
+        /// <example>
+        /// "user.age > 18".
+        /// </example>
+        /// <value>
+        /// A boolean expression. 
+        /// </value>
+        [JsonProperty("disabled")]
+        public string Disabled
+        {
+            get { return disabled?.ToString(); }
+            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
         }
 
         /// <summary>
@@ -51,11 +70,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("value")]
         public string Value { get; set; }
 
+        /// <summary>
+        /// Gets or sets a label to use when describing a trace activity.
+        /// </summary>
+        /// <value>The label to use. (default will use Name or parent dialog.id).</value>
+        [JsonProperty]
+        public string Label { get; set; }
+
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
+            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            {
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             object value = null;
@@ -68,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 value = dc.GetState().GetMemorySnapshot();
             }
 
-            var traceActivity = Activity.CreateTraceActivity(this.Name ?? "Trace", valueType: this.ValueType ?? "State", value: value);
+            var traceActivity = Activity.CreateTraceActivity(this.Name ?? "Trace", valueType: this.ValueType ?? "State", value: value, label: this.Label ?? this.Name ?? dc.Parent?.ActiveDialog?.Id);
             await dc.Context.SendActivityAsync(traceActivity, cancellationToken).ConfigureAwait(false);
             return await dc.EndDialogAsync(traceActivity, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
