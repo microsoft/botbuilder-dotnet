@@ -83,7 +83,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </value>
         public JObject Schema { get; }
 
-        [Newtonsoft.Json.JsonIgnore]
+        /// <summary>
+        /// Gets parent schema.
+        /// </summary>
+        /// <value>Parent property schema if any.</value>
         public PropertySchema Parent { get; private set; }
 
         /// <summary>

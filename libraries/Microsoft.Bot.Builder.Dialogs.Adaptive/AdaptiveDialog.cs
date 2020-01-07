@@ -400,11 +400,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         }
 
                         break;
-
-                    case AdaptiveEvents.EndOfPlan:
-                        // Completed actions so continue processing entity queues
-                        handled = await ProcessQueuesAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
-                        break;
                 }
             }
             else
@@ -560,13 +555,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Is the current dialog still on the stack?
             if (sequenceContext.ActiveDialog != null)
             {
-                // Raise EndOfActions event
-                var endOfActionsEvent = new DialogEvent() { Name = AdaptiveEvents.EndOfPlan, Bubble = false };
-                var handled = await OnDialogEventAsync(sequenceContext, endOfActionsEvent, cancellationToken).ConfigureAwait(false);
+                // Completed actions so continue processing entity queues
+                var handled = await ProcessQueuesAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
 
                 if (handled)
                 {
-                    // EndOfActions event was handled
+                    // Still processing queues
                     return await ContinueActionsAsync(sequenceContext, null, cancellationToken).ConfigureAwait(false);
                 }
                 else if (ShouldEnd(sequenceContext))
