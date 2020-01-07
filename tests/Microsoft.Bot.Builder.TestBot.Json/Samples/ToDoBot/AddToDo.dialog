@@ -29,7 +29,7 @@
                 },
                 {
                     "$kind": "Microsoft.EditArray",
-                    "changeType": "Push",
+                    "changeType": "push",
                     "itemsProperty": "user.todos",
                     "value": "dialog.todo"
                 },

@@ -28,12 +28,12 @@
         },
         {
           "$kind": "Microsoft.EditArray",
-          "changeType": "Clear",
+          "changeType": "clear",
           "itemsProperty": "user.meetings"
         },
         {
           "$kind": "Microsoft.EditArray",
-          "changeType": "Clear",
+          "changeType": "clear",
           "itemsProperty": "user.attendees"
         },
         {
