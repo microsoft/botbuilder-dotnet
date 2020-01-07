@@ -8,8 +8,8 @@ pool:
 variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'debug'
-  BotGroup: 'TestWebexBot-Group-CI-Build'
-  BotName: 'TestWebexBot-Echo-CI-Build'
+  ResourceGroupName: 'TestWebexBot-Group-CI-Build'
+  AzureBotName: 'TestWebexBot-Echo-CI-Build'
 
 steps:
 - task: UseDotNet@2
