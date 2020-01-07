@@ -34,6 +34,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Action_BeginDialogWithoutActivity()
+        {
+            await TestUtils.RunTestScript();
+        }
+
+        [TestMethod]
         public async Task Action_ChoiceInput()
         {
             await TestUtils.RunTestScript();

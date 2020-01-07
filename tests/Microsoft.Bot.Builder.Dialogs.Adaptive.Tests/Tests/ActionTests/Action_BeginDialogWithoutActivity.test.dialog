@@ -29,7 +29,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.BeginDialog",
-                        "activityProcessed": false,
+                        "activityProcessed": true,
                         "dialog": {
                             "$kind": "Microsoft.AdaptiveDialog",
                             "autoEndDialog": false,
@@ -38,7 +38,11 @@
                                 "intents": [
                                     {
                                         "intent": "test",
-                                        "pattern": "test"
+                                        "pattern": ".*test.*"
+                                    },
+                                    {
+                                        "intent": "moo",
+                                        "pattern": ".*moo.*"
                                     }
                                 ]
                             },
@@ -48,8 +52,19 @@
                                     "intent": "test",
                                     "actions": [
                                         {
+                                            "$kind": "Microsoft.Test.AssertCondition",
+                                            "condition": "false",
+                                            "description": "Should not trigger"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "$kind": "Microsoft.OnIntent",
+                                    "intent": "moo",
+                                    "actions": [
+                                        {
                                             "$kind": "Microsoft.SendActivity",
-                                            "activity": "test intent"
+                                            "activity": "moo"
                                         }
                                     ]
                                 },
@@ -57,9 +72,8 @@
                                     "$kind": "Microsoft.OnUnknownIntent",
                                     "actions": [
                                         {
-                                            "$kind": "Microsoft.Test.AssertCondition",
-                                            "condition": "false",
-                                            "description": "Should not fire test intent"
+                                            "$kind": "Microsoft.SendActivity",
+                                            "activity": "inner unknown"
                                         }
                                     ]
                                 }
@@ -85,8 +99,20 @@
             "text": "test"
         },
         {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "moo"
+        },
+        {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "test intent"
+            "text": "moo"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "foo"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "inner unknown"
         }
     ]
 }
