@@ -45,6 +45,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             Entities = list;
+
+            list = new List<string>();
+            var expected = schema["$expectedOnly"]?.Value<JArray>();
+            if (expected != null)
+            {
+                foreach (var entity in expected)
+                {
+                    list.Add(entity.Value<string>());
+                }
+
+                ExpectedOnly = list;
+            }
         }
 
         /// <summary>
@@ -97,6 +109,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         /// <value>List of entity names.</value>
         public IReadOnlyList<string> Entities { get; }
+
+        /// <summary>
+        /// Gets list of entities that are only recognized for this property when expected.
+        /// </summary>
+        /// <value>List of expected only entity names.</value>
+        public IReadOnlyList<string> ExpectedOnly { get; }
 
         /// <summary>
         /// Gets child properties if there are any.

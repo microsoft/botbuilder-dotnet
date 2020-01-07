@@ -835,7 +835,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                 // Utterance is a special entity that corresponds to the full utterance
                 entities["utterance"] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = "utterance", Score = 0.0, Type = "string", Value = utterance, Text = utterance } };
-                var recognized = AssignEntities(entities, expected, queues, lastEvent);
+                var recognized = AssignEntities(context, entities, expected, queues, lastEvent);
                 var unrecognized = SplitUtterance(utterance, recognized);
 
                 // TODO: Is this actually useful information?
@@ -980,29 +980,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         // Generate possible entity to property mappings
         private IEnumerable<EntityAssignment> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected)
         {
-            var expectedOnly = dialogSchema.Schema["$expectedOnly"]?.ToObject<List<string>>() ?? new List<string>();
+            var globalExpectedOnly = dialogSchema.Schema["$expectedOnly"]?.ToObject<List<string>>() ?? new List<string>();
             foreach (var propSchema in dialogSchema.Property.Children)
             {
                 var isExpected = expected.Contains(propSchema.Path);
-                if (isExpected || !expectedOnly.Contains(propSchema.Path))
+                var expectedOnly = propSchema.ExpectedOnly;
+                foreach (var entityName in propSchema.Entities)
                 {
-                    foreach (var entityName in propSchema.Entities)
+                    if (entities.TryGetValue(entityName, out var matches) && (isExpected || !(expectedOnly != null ? expectedOnly : globalExpectedOnly).Contains(entityName)))
                     {
-                        // Utterance is only allowed if expected
-                        if (entities.TryGetValue(entityName, out var matches) && (entityName != "utterance" || isExpected))
+                        foreach (var entity in matches)
                         {
-                            foreach (var entity in matches)
+                            yield return new EntityAssignment
                             {
-                                yield return new EntityAssignment
-                                {
-                                    Entity = entity,
-                                    Property = propSchema.Path,
+                                Entity = entity,
+                                Property = propSchema.Path,
 
-                                    // TODO: Eventually we should be able to pick up an add/remove composite here as an alternative
-                                    Operation = AssignEntityOperations.Add,
-                                    IsExpected = isExpected
-                                };
-                            }
+                                // TODO: Eventually we should be able to pick up an add/remove composite here as an alternative
+                                Operation = AssignEntityOperations.Add,
+                                IsExpected = isExpected
+                            };
                         }
                     }
                 }
@@ -1077,7 +1074,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        private List<EntityInfo> AddToQueues(Dictionary<string, List<EntityInfo>> entities, string[] expected, EntityEvents queues, string lastEvent)
+        private List<EntityInfo> AddToQueues(SequenceContext context, Dictionary<string, List<EntityInfo>> entities, string[] expected, EntityEvents queues, string lastEvent)
         {
             var candidates = (from candidate in RemoveOverlappingPerProperty(Candidates(entities, expected))
                               orderby candidate.IsExpected descending
@@ -1112,6 +1109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     {
                         // Resolve choice and add to queues
                         queues.ChooseProperties.Dequeue();
+                        context.GetState().SetValue(DialogPath.ExpectedProperties, new List<string> { choice.Property });
                         choice.IsExpected = true;
                         AddMappingToQueue(choice, queues);
                         mapped = true;
@@ -1257,9 +1255,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
 
         // Assign entities to queues
-        private List<EntityInfo> AssignEntities(Dictionary<string, List<EntityInfo>> entities, string[] expected, EntityEvents queues, string lastEvent)
+        private List<EntityInfo> AssignEntities(SequenceContext context, Dictionary<string, List<EntityInfo>> entities, string[] expected, EntityEvents queues, string lastEvent)
         {
-            var recognized = AddToQueues(entities, expected, queues, lastEvent);
+            var recognized = AddToQueues(context, entities, expected, queues, lastEvent);
             CombineNewEntityProperties(queues);
             return recognized;
         }

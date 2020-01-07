@@ -39,22 +39,6 @@
                 "BreadEntity"
             ]
         },
-        "Cheese": {
-            "type": "string",
-            "enum": [
-                "american",
-                "cheddar",
-                "feta",
-                "gouda",
-                "pepper jack",
-                "provolone",
-                "swiss",
-                "none"
-            ],
-            "$entities": [
-                "CheeseEntity"
-            ]
-        },
         "Meat": {
             "type": "string",
             "enum": [
@@ -69,6 +53,22 @@
             ],
             "$entities": [
                 "MeatEntity"
+            ]
+        },
+        "Cheese": {
+            "type": "string",
+            "enum": [
+                "american",
+                "cheddar",
+                "feta",
+                "gouda",
+                "pepper jack",
+                "provolone",
+                "swiss",
+                "none"
+            ],
+            "$entities": [
+                "CheeseEntity"
             ]
         },
         "Price": {
@@ -114,23 +114,24 @@
     "required": [
         "Name",
         "Bread",
-        "Meat",
         "Cheese",
+        "Meat",
         "Price"
     ],
     "$expectedOnly": [
-        "CancelConfirmation",
-        "CompleteConfirmation",
-        "PropertyToChange",
-        "Name"
+        "Confirmation",
+        "PROPERTYName",
+        "utterance",
+        "keyPhrase",
+        "personName"
     ],
     "$public": [
         "Quantity",
         "Length",
         "Name",
         "Bread",
-        "Cheese",
         "Meat",
+        "Cheese",
         "Price"
     ],
     "definitions": {

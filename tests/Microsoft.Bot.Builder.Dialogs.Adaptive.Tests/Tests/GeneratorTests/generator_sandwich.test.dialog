@@ -65,8 +65,8 @@
                 "count(attachments[0].content.body[1].facts) == 5",
                 "attachments[0].content.body[1].facts[0].value == 'chris'",
                 "attachments[0].content.body[1].facts[1].value == 'rye'",
-                "attachments[0].content.body[1].facts[2].value == 'ham'",
-                "attachments[0].content.body[1].facts[3].value == 'swiss'",
+                "attachments[0].content.body[1].facts[2].value == 'swiss'",
+                "attachments[0].content.body[1].facts[3].value == 'ham'",
                 "attachments[0].content.body[1].facts[4].value == '3.25 Dollar'"
             ]
         },
@@ -111,8 +111,8 @@
                 "count(attachments[0].content.body[1].facts) == 5",
                 "attachments[0].content.body[1].facts[0].value == 'chris'",
                 "attachments[0].content.body[1].facts[1].value == 'whole wheat'",
-                "attachments[0].content.body[1].facts[2].value == 'turkey'",
-                "attachments[0].content.body[1].facts[3].value == 'swiss'",
+                "attachments[0].content.body[1].facts[2].value == 'swiss'",
+                "attachments[0].content.body[1].facts[3].value == 'turkey'",
                 "attachments[0].content.body[1].facts[4].value == '3.25 Dollar'"
             ]
         },
@@ -138,8 +138,8 @@
                 "count(attachments[0].content.body[1].facts) == 5",
                 "attachments[0].content.body[1].facts[0].value == 'chris'",
                 "attachments[0].content.body[1].facts[1].value == 'whole wheat'",
-                "attachments[0].content.body[1].facts[2].value == 'turkey'",
-                "attachments[0].content.body[1].facts[3].value == 'swiss'",
+                "attachments[0].content.body[1].facts[2].value == 'swiss'",
+                "attachments[0].content.body[1].facts[3].value == 'turkey'",
                 "attachments[0].content.body[1].facts[4].value == '3.25 Dollar'"
             ]
         },
@@ -172,7 +172,7 @@
 
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Did you mean \"none\" as cheese or \"none\" as meat"
+            "text": "Did you mean \"none\" as meat or \"none\" as cheese"
         },
         {
             "$kind": "Microsoft.Test.UserSays",
@@ -202,8 +202,8 @@
                 "count(attachments[0].content.body[1].facts) == 5",
                 "attachments[0].content.body[1].facts[0].value == 'chris'",
                 "attachments[0].content.body[1].facts[1].value == 'rye'",
-                "attachments[0].content.body[1].facts[2].value == 'turkey'",
-                "attachments[0].content.body[1].facts[3].value == 'swiss'",
+                "attachments[0].content.body[1].facts[2].value == 'none'",
+                "attachments[0].content.body[1].facts[3].value == 'roast beef'",
                 "attachments[0].content.body[1].facts[4].value == '3.25 Dollar'"
             ]
         },

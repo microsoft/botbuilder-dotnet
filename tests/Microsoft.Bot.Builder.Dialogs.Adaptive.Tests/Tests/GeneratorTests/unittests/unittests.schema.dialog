@@ -149,6 +149,9 @@
                 "rye",
                 "white",
                 "wholeWheat"
+            ],
+            "$entities": [
+                "Enum1Entity"
             ]
         },
         "Enum2": {
@@ -162,6 +165,9 @@
                 "provolone",
                 "swiss",
                 "none"
+            ],
+            "$entities": [
+                "Enum2Entity"
             ]
         },
         "Zipcodepattern": {
@@ -218,9 +224,11 @@
         "Email"
     ],
     "$expectedOnly": [
-        "CancelConfirmation",
-        "CompleteConfirmation",
-        "PropertyToChange"
+        "Confirmation",
+        "PROPERTYName",
+        "utterance",
+        "keyPhrase",
+        "personName"
     ],
     "$public": [
         "Personname",

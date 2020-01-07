@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             value = null;
             if (this.LocalMemory != null)
             {
-                if (this.LocalMemory.TryGetValue(path, out var result) && result != null)
+                if (this.LocalMemory.TryGetValue(path, out var result))
                 {
                     value = result;
                     return true;
