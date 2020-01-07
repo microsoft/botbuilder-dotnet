@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Triggered to ask for a any triggered prompt.
+    /// Triggered when all actions and ambiguity events have been processed.
     /// </summary>
     public class OnEndOfActions : OnDialogEvent
     {
