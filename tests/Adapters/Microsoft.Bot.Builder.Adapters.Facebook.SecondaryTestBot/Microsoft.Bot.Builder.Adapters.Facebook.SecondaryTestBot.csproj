@@ -4,7 +4,7 @@
     <TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
