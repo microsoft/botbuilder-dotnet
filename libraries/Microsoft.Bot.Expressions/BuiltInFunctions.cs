@@ -2403,17 +2403,40 @@ namespace Microsoft.Bot.Expressions
 
         private static bool IsEqual(IReadOnlyList<dynamic> args)
         {
-            if (args[0] is IDictionary d0 && args[1] is IDictionary d1 && d0.Count == 0 && d1.Count == 0)
+            if (GetPropertyNumber(args[0]) == 0 && GetPropertyNumber(args[1]) == 0)
             {
                 return true;
             }
 
-            if (args[0] is IList l0 && args[1] is IList l1 && l0.Count == 0 && l1.Count == 0)
+            if (TryParseList(args[0], out IList l0) && l0.Count == 0 && (TryParseList(args[1], out IList l1) && l1.Count == 0))
             {
                 return true;
             }
 
-            return args[0] == args[1];
+            if (args[0] == null)
+            {
+                return args[1] == null;
+            }
+            else
+            {
+                return args[0].Equals(args[1]);
+            }
+        }
+
+        private static int GetPropertyNumber(dynamic obj)
+        {
+            if (obj is IDictionary &&
+               obj.GetType().IsGenericType &&
+               obj.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(Dictionary<,>)))
+            {
+                return (obj as IDictionary).Count;
+            }
+            else if (obj is JObject jobj)
+            {
+                return jobj.Properties().Count();
+            }
+
+            return -1;
         }
 
         private static Dictionary<string, ExpressionEvaluator> BuildFunctionLookup()
