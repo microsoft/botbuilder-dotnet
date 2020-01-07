@@ -21,6 +21,14 @@
                 "user.favColor"
             ]
         },
+        "disabled": {
+            "$role": "expression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
         "cases": {
             "type": "array",
             "title": "Cases",
