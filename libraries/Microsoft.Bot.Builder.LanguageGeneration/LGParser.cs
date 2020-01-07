@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 diagnostics.AddRange(invalidTemplateErrors);
 
                 lgFile.References = GetReferences(lgFile, importResolver);
-                var semanticErrors = new StaticChecker(lgFile.AllTemplates.ToList()).Check();
+                var semanticErrors = new StaticChecker(lgFile).Check();
                 diagnostics.AddRange(semanticErrors);
             }
             catch (LGException ex)
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             catch (Exception err)
             {
-                diagnostics.Add(BuildDiagnostic(err.Message, id));
+                diagnostics.Add(BuildDiagnostic(err.Message, source: id));
             }
 
             lgFile.Diagnostics = diagnostics;
@@ -112,10 +112,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    .Select(x => x.errorTemplate())
                    .Where(x => x != null);
 
-            return errorTemplates.Select(u => BuildDiagnostic("error context.", id, u)).ToList();
+            return errorTemplates.Select(u => BuildDiagnostic("error context.", u, id)).ToList();
         }
 
-        private static Diagnostic BuildDiagnostic(string errorMessage, string source = null, ParserRuleContext context = null)
+        private static Diagnostic BuildDiagnostic(string errorMessage, ParserRuleContext context = null, string source = null)
         {
             var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line, context.Start.Column);
             var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
@@ -201,7 +201,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var (content, path) = importResolver(start.Id, id);
                     if (resourcesFound.All(u => u.Id != path))
                     {
-                        var childResource = ParseText(content, path);
+                        var childResource = ParseText(content, path, importResolver);
                         ResolveImportResources(childResource, resourcesFound, importResolver);
                     }
                 }
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 catch (Exception err)
                 {
-                    throw new LGException(err.Message, new List<Diagnostic> { BuildDiagnostic(err.Message, start.Id) });
+                    throw new LGException(err.Message, new List<Diagnostic> { BuildDiagnostic(err.Message, source: start.Id) });
                 }
             }
         }

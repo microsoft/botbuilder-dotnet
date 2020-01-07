@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 throw new ArgumentException("inline string is null.");
             }
 
-            CheckErrors(lgFile.Diagnostics);
+            CheckErrors(lgFile.AllDiagnostics);
 
             // wrap inline string with "# name and -" to align the evaluation process
             var fakeTemplateId = Guid.NewGuid().ToString();

@@ -1,4 +1,6 @@
-﻿# template1
+﻿[import](DuplicatedTemplatesInImportFiles.lg)
+
+# template1
  - hi
 
 # template1(name)
@@ -6,13 +8,3 @@
 
 # template1
  - hi
-
-# basicTemplate
-- Hi
-- Hello
-
-[import](ImportFile.lg)
-
-# basicTemplate2
-- Hi 2
-- Hello 2
