@@ -19,7 +19,7 @@
 - DEFAULT: 
  - I don't understand @{value}
 
-# clarifyMeatEntity
-- @{clarifyEnumEntity('Meat')}
+# chooseMeatEntity
+- @{chooseEnumEntity('Meat')}
 
 [sandwich-common.lg](sandwich-common.lg)

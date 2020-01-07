@@ -768,57 +768,57 @@ namespace Microsoft.Bot.Expressions
         /// </summary>
         /// <param name="instance">Instance with property.</param>
         /// <param name="property">Property to lookup.</param>
-        /// <returns>Value and error information if any.</returns>
-        public static (object value, string error) AccessProperty(object instance, string property)
+        /// <param name="value">Value of property.</param>
+        /// <returns>True if property is present and binds value.</returns>
+        public static bool TryAccessProperty(object instance, string property, out object value)
         {
-            // NOTE: This returns null rather than an error if property is not present
-            if (instance == null)
+            var isPresent = false;
+            value = null;
+            if (instance != null)
             {
-                return (null, null);
-            }
+                property = property.ToLower();
 
-            object value = null;
-            string error = null;
-            property = property.ToLower();
-
-            // NOTE: what about other type of TKey, TValue?
-            if (instance is IDictionary<string, object> idict)
-            {
-                if (!idict.TryGetValue(property, out value))
+                // NOTE: what about other type of TKey, TValue?
+                if (instance is IDictionary<string, object> idict)
                 {
-                    // fall back to case insensitive
-                    var prop = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();
-                    if (prop != null)
+                    if (!idict.TryGetValue(property, out value))
                     {
-                        idict.TryGetValue(prop, out value);
+                        // fall back to case insensitive
+                        var prop = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();
+                        if (prop != null)
+                        {
+                            isPresent = idict.TryGetValue(prop, out value);
+                        }
+                    }
+                    else
+                    {
+                        isPresent = true;
                     }
                 }
-            }
-            else if (instance is IDictionary dict)
-            {
-                foreach (var p in dict.Keys)
+                else if (instance is JObject jobj)
                 {
-                    value = dict[property];
+                    value = jobj.GetValue(property, StringComparison.CurrentCultureIgnoreCase);
+                    isPresent = value != null;
                 }
-            }
-            else if (instance is JObject jobj)
-            {
-                value = jobj.GetValue(property, StringComparison.CurrentCultureIgnoreCase);
-            }
-            else
-            {
-                // Use reflection
-                var type = instance.GetType();
-                var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
-                if (prop != null)
+                else
                 {
-                    value = prop.GetValue(instance);
+                    // Use reflection
+                    var type = instance.GetType();
+                    var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
+                    if (prop != null)
+                    {
+                        value = prop.GetValue(instance);
+                        isPresent = true;
+                    }
+                }
+
+                if (isPresent)
+                {
+                    value = ResolveValue(value);
                 }
             }
 
-            value = ResolveValue(value);
-
-            return (value, error);
+            return isPresent;
         }
 
         public static (object result, string error) SetProperty(object instance, string property, object value)
@@ -1029,7 +1029,7 @@ namespace Microsoft.Bot.Expressions
                 return (result, null);
             }
 
-            return (null, $"Can not access {property}");
+            return (null, null);
         }
 
         private static (object value, string error) ExtractElement(Expression expression, IMemory state)
@@ -1052,7 +1052,7 @@ namespace Microsoft.Bot.Expressions
                     }
                     else if (idxValue is string idxStr)
                     {
-                        (value, error) = AccessProperty(inst, idxStr);
+                        TryAccessProperty(inst, idxStr, out value);
                     }
                     else
                     {
@@ -1390,7 +1390,7 @@ namespace Microsoft.Bot.Expressions
                         stackedMemory.Push(SimpleObjectMemory.Wrap(local));
                         (var r, var e) = expression.Children[2].TryEvaluate(stackedMemory);
                         stackedMemory.Pop();
-                        
+
                         if (e != null)
                         {
                             return (null, e);
@@ -1463,7 +1463,9 @@ namespace Microsoft.Bot.Expressions
                         var jobjResult = new JObject();
                         foreach (var item in (List<object>)result)
                         {
-                            jobjResult.Add(AccessProperty(item, "key").value.ToString(), JToken.FromObject(AccessProperty(item, "value").value));
+                            TryAccessProperty(item, "key", out var keyVal);
+                            TryAccessProperty(item, "value", out var val);
+                            jobjResult.Add(keyVal as string, JToken.FromObject(val));
                         }
 
                         result = jobjResult;
@@ -2600,9 +2602,7 @@ namespace Microsoft.Bot.Expressions
                             }
                             else if (args[1] is string string2)
                             {
-                                object value;
-                                (value, error) = AccessProperty((object)args[0], string2);
-                                found = error == null && value != null;
+                                found = TryAccessProperty((object)args[0], string2, out var _);
                             }
                         }
 

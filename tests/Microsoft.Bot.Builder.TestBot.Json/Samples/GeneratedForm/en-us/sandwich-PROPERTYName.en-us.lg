@@ -8,10 +8,10 @@
  - name
 - CASE: @{'Bread'} 
  - bread
-- CASE: @{'Cheese'} 
- - cheese
 - CASE: @{'Meat'} 
  - meat
+- CASE: @{'Cheese'} 
+ - cheese
 - CASE: @{'Price'} 
  - price
 - DEFAULT: 
