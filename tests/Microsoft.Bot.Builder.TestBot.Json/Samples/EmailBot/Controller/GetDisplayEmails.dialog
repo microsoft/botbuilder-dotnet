@@ -5,7 +5,7 @@
     "GetEmails",
     {
       "$kind": "Microsoft.EditArray",
-      "changeType": "Clear",
+      "changeType": "clear",
       "itemsProperty": "user.emails"
     },
     {
@@ -27,19 +27,19 @@
 
         //{
         //  "$kind": "Microsoft.EditArray",
-        //  "changeType": "Push",
+        //  "changeType": "push",
         //  "itemsProperty": "user.emails",
         //  "itemProperty": "user.getGraphEmails.value[user.showIndex*user.pageSize+0]"
         //},
         //{
         //  "$kind": "Microsoft.EditArray",
-        //  "changeType": "Push",
+        //  "changeType": "push",
         //  "itemsProperty": "user.emails",
         //  "itemProperty": "user.getGraphEmails.value[user.showIndex*user.pageSize+1]"
         //},
         //{
         //  "$kind": "Microsoft.EditArray",
-        //  "changeType": "Push",
+        //  "changeType": "push",
         //  "itemsProperty": "user.emails",
         //  "itemProperty": "user.getGraphEmails.value[user.showIndex*user.pageSize+2]"
         //}
@@ -50,19 +50,19 @@
           "actions": [
             {
               "$kind": "Microsoft.EditArray",
-              "changeType": "Push",
+              "changeType": "push",
               "itemsProperty": "user.emails",
               "itemProperty": "user.getGraphEmails.value[0]"
             },
             {
               "$kind": "Microsoft.EditArray",
-              "changeType": "Push",
+              "changeType": "push",
               "itemsProperty": "user.emails",
               "itemProperty": "user.getGraphEmails.value[1]"
             },
             {
               "$kind": "Microsoft.EditArray",
-              "changeType": "Push",
+              "changeType": "push",
               "itemsProperty": "user.emails",
               "itemProperty": "user.getGraphEmails.value[2]"
             }
@@ -70,19 +70,19 @@
           "elseActions": [
             {
               "$kind": "Microsoft.EditArray",
-              "changeType": "Push",
+              "changeType": "push",
               "itemsProperty": "user.emails",
               "itemProperty": "user.getGraphEmails.value[3]"
             },
             {
               "$kind": "Microsoft.EditArray",
-              "changeType": "Push",
+              "changeType": "push",
               "itemsProperty": "user.emails",
               "itemProperty": "user.getGraphEmails.value[4]"
             },
             {
               "$kind": "Microsoft.EditArray",
-              "changeType": "Push",
+              "changeType": "push",
               "itemsProperty": "user.emails",
               "itemProperty": "user.getGraphEmails.value[5]"
             }

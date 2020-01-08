@@ -16,31 +16,31 @@
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "changeType": "Push",
+            "changeType": "push",
             "value": "1"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "changeType": "Push",
+            "changeType": "push",
             "value": "2"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "changeType": "Push",
+            "changeType": "push",
             "value": "3"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "changeType": "Push",
+            "changeType": "push",
             "value": "4"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "changeType": "Push",
+            "changeType": "push",
             "value": "5"
           },
           {

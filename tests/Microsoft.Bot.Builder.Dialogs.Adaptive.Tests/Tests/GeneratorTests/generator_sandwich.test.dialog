@@ -12,12 +12,22 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for name"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "chris"
+        },
+
+        {
+            "$kind": "Microsoft.Test.AssertReply",
             "text": "Which value do you want for bread?"
         },
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "rye"
         },
+
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Which value do you want for cheese?"
@@ -26,6 +36,7 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "swiss"
         },
+
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Which value do you want for meat?"
@@ -34,6 +45,16 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "ham"
         },
+
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for price"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "$3.25"
+        },
+
         {
             "$kind": "Microsoft.Test.AssertReplyActivity",
             "assertions": [
@@ -41,28 +62,23 @@
                 "count(attachments) == 1",
                 "attachments[0].content.type == 'AdaptiveCard'",
                 "count(attachments[0].content.body) == 2",
-                "count(attachments[0].content.body[1].facts) == 3",
-                "attachments[0].content.body[1].facts[0].value == 'ham'",
+                "count(attachments[0].content.body[1].facts) == 5",
+                "attachments[0].content.body[1].facts[0].value == 'chris'",
                 "attachments[0].content.body[1].facts[1].value == 'rye'",
-                "attachments[0].content.body[1].facts[2].value == 'swiss'"
+                "attachments[0].content.body[1].facts[2].value == 'swiss'",
+                "attachments[0].content.body[1].facts[3].value == 'ham'",
+                "attachments[0].content.body[1].facts[4].value == '3.25 Dollar'"
             ]
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Is there any property you want to change? (yes/no)"
-        },
-        {
-            "$kind": "Microsoft.Test.UserSays",
-            "text": "yes"
-        },
-        {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "Which property do you want to change?"
+            "text": "Is there any property you want to change? (no or the property name)"
         },
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "bread"
         },
+
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Which value do you want for bread?"
@@ -71,6 +87,7 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "wheat"
         },
+
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Please choose a value for bread from [multi grain wheat, whole wheat]"
@@ -83,6 +100,7 @@
             "$kind": "Microsoft.Test.AssertReply",
             "text": "meat is changed from ham to turkey."
         },
+
         {
             "$kind": "Microsoft.Test.AssertReplyActivity",
             "assertions": [
@@ -90,15 +108,17 @@
                 "count(attachments) == 1",
                 "attachments[0].content.type == 'AdaptiveCard'",
                 "count(attachments[0].content.body) == 2",
-                "count(attachments[0].content.body[1].facts) == 3",
-                "attachments[0].content.body[1].facts[0].value == 'turkey'",
+                "count(attachments[0].content.body[1].facts) == 5",
+                "attachments[0].content.body[1].facts[0].value == 'chris'",
                 "attachments[0].content.body[1].facts[1].value == 'whole wheat'",
-                "attachments[0].content.body[1].facts[2].value == 'swiss'"
+                "attachments[0].content.body[1].facts[2].value == 'swiss'",
+                "attachments[0].content.body[1].facts[3].value == 'turkey'",
+                "attachments[0].content.body[1].facts[4].value == '3.25 Dollar'"
             ]
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Is there any property you want to change? (yes/no)"
+            "text": "Is there any property you want to change? (no or the property name)"
         },
         {
             "$kind": "Microsoft.Test.UserSays",
@@ -115,20 +135,23 @@
                 "count(attachments) == 1",
                 "attachments[0].content.type == 'AdaptiveCard'",
                 "count(attachments[0].content.body) == 2",
-                "count(attachments[0].content.body[1].facts) == 3",
-                "attachments[0].content.body[1].facts[0].value == 'turkey'",
+                "count(attachments[0].content.body[1].facts) == 5",
+                "attachments[0].content.body[1].facts[0].value == 'chris'",
                 "attachments[0].content.body[1].facts[1].value == 'whole wheat'",
-                "attachments[0].content.body[1].facts[2].value == 'swiss'"
+                "attachments[0].content.body[1].facts[2].value == 'swiss'",
+                "attachments[0].content.body[1].facts[3].value == 'turkey'",
+                "attachments[0].content.body[1].facts[4].value == '3.25 Dollar'"
             ]
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Is there any property you want to change? (yes/no)"
+            "text": "Is there any property you want to change? (no or the property name)"
         },
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "sure"
         },
+
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Which property do you want to change?"
@@ -137,6 +160,7 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "bread"
         },
+
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Which value do you want for bread?"
@@ -145,9 +169,10 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "none"
         },
+
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Did you mean \"none\" as cheese or \"none\" as meat"
+            "text": "Did you mean \"none\" as meat or \"none\" as cheese"
         },
         {
             "$kind": "Microsoft.Test.UserSays",
@@ -157,6 +182,7 @@
             "$kind": "Microsoft.Test.AssertReply",
             "text": "meat is changed from turkey to roast beef."
         },
+
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Which value do you want for bread?"
@@ -165,6 +191,7 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "rye"
         },
+
         {
             "$kind": "Microsoft.Test.AssertReplyActivity",
             "assertions": [
@@ -172,15 +199,17 @@
                 "count(attachments) == 1",
                 "attachments[0].content.type == 'AdaptiveCard'",
                 "count(attachments[0].content.body) == 2",
-                "count(attachments[0].content.body[1].facts) == 3",
-                "attachments[0].content.body[1].facts[0].value == 'roast beef'",
+                "count(attachments[0].content.body[1].facts) == 5",
+                "attachments[0].content.body[1].facts[0].value == 'chris'",
                 "attachments[0].content.body[1].facts[1].value == 'rye'",
-                "attachments[0].content.body[1].facts[2].value == 'none'"
+                "attachments[0].content.body[1].facts[2].value == 'none'",
+                "attachments[0].content.body[1].facts[3].value == 'roast beef'",
+                "attachments[0].content.body[1].facts[4].value == '3.25 Dollar'"
             ]
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Is there any property you want to change? (yes/no)"
+            "text": "Is there any property you want to change? (no or the property name)"
         },
         {
             "$kind": "Microsoft.Test.UserSays",

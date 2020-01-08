@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -47,11 +48,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public Dialog Dialog { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to have the new dialog include activity.
+        /// Gets or sets a value indicating whether to have the new dialog should process the activity.
         /// </summary>
-        /// <value>If this flag is true, then the activity is flagged to be processed by the new dialog.</value>
-        [JsonProperty("includeProperty")]
-        public bool IncludeActivity { get; set; }
+        /// <value>The default for this will be true, which means the new dialog should not look the activity.  You can set this to false to dispatch the activity to the new dialog.</value>
+        [DefaultValue(true)]
+        [JsonProperty("activityProcessed")]
+        public bool ActivityProcessed { get; set; } = true;
 
         public virtual IEnumerable<Dialog> GetDependencies()
         {

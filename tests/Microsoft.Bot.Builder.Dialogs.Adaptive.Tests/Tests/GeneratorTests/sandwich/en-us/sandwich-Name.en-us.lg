@@ -4,4 +4,9 @@
 # NameName
 - name
 
+# Name(val)
+- @{NameEntity(val)}
+
+[sandwich-NameEntity.lg](sandwich-NameEntity.lg)
+
 [sandwich-common.lg](sandwich-common.lg)

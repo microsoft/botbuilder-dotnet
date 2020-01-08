@@ -2,17 +2,17 @@
 - SWITCH: @{value}
 - CASE: @{'Quantity'} 
  - quantity
-- CASE: @{'Directions'} 
- - directions
 - CASE: @{'Length'} 
  - length
-- CASE: @{'Bread'} 
- - bread
-- CASE: @{'Cheese'} 
- - cheese
-- CASE: @{'Meat'} 
- - meat
 - CASE: @{'Name'} 
  - name
+- CASE: @{'Bread'} 
+ - bread
+- CASE: @{'Meat'} 
+ - meat
+- CASE: @{'Cheese'} 
+ - cheese
+- CASE: @{'Price'} 
+ - price
 - DEFAULT: 
  - I don't understand @{value}

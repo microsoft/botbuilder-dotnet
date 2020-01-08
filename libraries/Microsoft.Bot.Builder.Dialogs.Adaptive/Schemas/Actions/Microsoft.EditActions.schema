@@ -14,16 +14,24 @@
             "title": "Id",
             "description": "Optional id for the dialog"
         },
+        "disabled": {
+            "$role": "expression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
         "changeType": {
             "type": "string",
             "title": "Type of change",
             "description": "Type of change to apply to the current actions.",
             "enum": [
-                "InsertActions",
-                "InsertActionsBeforeTags",
-                "AppendActions",
-                "EndSequence",
-                "ReplaceSequence"
+                "insertActions",
+                "insertActionsBeforeTags",
+                "appendActions",
+                "endSequence",
+                "replaceSequence"
             ]
         },
         "actions": {

@@ -20,7 +20,7 @@
                 },
                 {
                     "$kind": "Microsoft.EditArray",
-                    "changeType": "Remove",
+                    "changeType": "remove",
                     "itemsProperty": "user.todos",
                     "value": "dialog.todo",
                     "resultProperty": "dialog.removed"
