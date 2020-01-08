@@ -7,6 +7,7 @@ namespace Microsoft.Bot.Configuration
     using System.IO;
     using System.Linq;
 
+    [Obsolete("This class is deprecated.  See https://aka.ms/bot-file-basics for more information.", false)]
     public static class BotConfigurationExtensions
     {
         /// <summary>
