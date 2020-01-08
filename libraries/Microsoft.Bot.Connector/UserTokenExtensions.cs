@@ -105,5 +105,27 @@ namespace Microsoft.Bot.Connector
                 }
             }
 
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='userId'>
+            /// </param>
+            /// <param name='connectionName'>
+            /// </param>
+            /// <param name='channelId'>
+            /// </param>
+            /// <param name='exchangeRequest'>
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<object> ExchangeAsyncAsync(this IUserToken operations, string userId, string connectionName, string channelId, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.ExchangeAsyncWithHttpMessagesAsync(userId, connectionName, channelId, exchangeRequest, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
     }
 }
