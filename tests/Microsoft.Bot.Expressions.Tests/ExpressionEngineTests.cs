@@ -26,6 +26,9 @@ namespace Microsoft.Bot.Expressions.Tests
                 "emptyObject", new Dictionary<string, object>()
             },
             {
+                "emptyAnonymousObject", new { }
+            },
+            {
                 "path", new Dictionary<string, object>()
                 {
                     {
@@ -477,6 +480,9 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("emptyObject == {}", true),
             Test("emptyObject != {}", false),
             Test("emptyObject == []", false),
+            Test("emptyAnonymousObject == {}", true),
+            Test("emptyAnonymousObject != {}", false),
+            Test("emptyAnonymousObject == []", false),
             #endregion
 
             #region  Conversion functions test

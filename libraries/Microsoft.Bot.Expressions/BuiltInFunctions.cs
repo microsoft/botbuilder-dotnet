@@ -2403,9 +2403,9 @@ namespace Microsoft.Bot.Expressions
 
         private static bool IsEqual(IReadOnlyList<dynamic> args)
         {
-            if (GetPropertyNumber(args[0]) == 0 && GetPropertyNumber(args[1]) == 0)
+            if (args[0] == null)
             {
-                return true;
+                return args[1] == null;
             }
 
             if (TryParseList(args[0], out IList l0) && l0.Count == 0 && (TryParseList(args[1], out IList l1) && l1.Count == 0))
@@ -2413,13 +2413,18 @@ namespace Microsoft.Bot.Expressions
                 return true;
             }
 
-            if (args[0] == null)
+            if (GetPropertyNumber(args[0]) == 0 && GetPropertyNumber(args[1]) == 0)
             {
-                return args[1] == null;
+                return true;
             }
-            else
+
+            try
             {
-                return args[0].Equals(args[1]);
+                return args[0] == args[1];
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -2434,6 +2439,10 @@ namespace Microsoft.Bot.Expressions
             else if (obj is JObject jobj)
             {
                 return jobj.Properties().Count();
+            }
+            else if (obj.GetType().Namespace != "System")
+            {
+                return obj.GetType().GetProperties().Length;
             }
 
             return -1;
