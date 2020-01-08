@@ -2447,6 +2447,7 @@ namespace Microsoft.Bot.Expressions
             }
             else if (obj.GetType().Namespace != "System")
             {
+                // exclude constant type: Int32, Int64, Single, String, Double...
                 return obj.GetType().GetProperties().Length;
             }
 
