@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                 return (T)result;
             }
 
-            return JObject.FromObject(result).ToObject<T>();
+            return JToken.FromObject(result).ToObject<T>();
         }
     }
 }
