@@ -76,7 +76,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<ForeachPage>(ForeachPage.DeclarativeType);
             yield return new TypeRegistration<HttpRequest>(HttpRequest.DeclarativeType);
             yield return new TypeRegistration<IfCondition>(IfCondition.DeclarativeType);
-            yield return new TypeRegistration<InitProperty>(InitProperty.DeclarativeType);
             yield return new TypeRegistration<LogAction>(LogAction.DeclarativeType);
             yield return new TypeRegistration<RepeatDialog>(RepeatDialog.DeclarativeType);
             yield return new TypeRegistration<ReplaceDialog>(ReplaceDialog.DeclarativeType);

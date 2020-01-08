@@ -9,9 +9,9 @@
         "$kind": "Microsoft.OnBeginDialog",
         "actions": [
           {
-            "$kind": "Microsoft.InitProperty",
+            "$kind": "Microsoft.SetProperty",
             "property": "dialog.todo",
-            "type": "Array"
+            "value": "[]"
           },
           {
             "$kind": "Microsoft.EditArray",

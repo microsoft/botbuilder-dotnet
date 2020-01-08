@@ -21,9 +21,9 @@
                     "condition": "user.todos == null",
                     "actions": [
                         {
-                            "$kind": "Microsoft.InitProperty",
+                            "$kind": "Microsoft.SetProperty",
                             "property": "user.todos",
-                            "type": "array"
+                            "value": "[]"
                         }
                     ]
                 },

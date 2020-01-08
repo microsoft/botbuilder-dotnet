@@ -34,9 +34,9 @@
                     "condition": "user.lists == null",
                     "actions": [
                         {
-                            "$kind": "Microsoft.InitProperty",
+                            "$kind": "Microsoft.SetProperty",
                             "property": "user.lists",
-                            "type": "object"
+                            "value": "{}"
                         }
                     ]
                 },
@@ -99,9 +99,9 @@
                     "condition": "(dialog.listName == \"shopping\" && user.lists.shopping == null) || (dialog.listName == \"grocery\" && user.lists.grocery == null) || (dialog.listName == \"todo\" && user.lists.todo == null)",
                     "actions": [
                         {
-                            "$kind": "Microsoft.InitProperty",
+                            "$kind": "Microsoft.SetProperty",
                             "property": "user.lists[dialog.listName]",
-                            "type": "array"
+                            "value": "[]"
                         }
                     ]
                 },
