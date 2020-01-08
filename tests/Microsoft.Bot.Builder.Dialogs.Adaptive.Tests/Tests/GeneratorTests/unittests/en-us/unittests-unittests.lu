@@ -1,9 +1,7 @@
 # unittests
-- {personName}
 - {age}
 - {ordinal}
 - {geographyV2}
-- {keyPhrase}
 - {money}
 - {percentage}
 - {temperature}

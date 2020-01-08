@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
     /// Controls the way that choices for a `ChoicePrompt` or yes/no options for a `ConfirmPrompt` are
     /// presented to a user.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
+    [JsonConverter(typeof(StringEnumConverter), /*camelCase*/ true)]
     public enum ListStyle
     {
         /// <summary>

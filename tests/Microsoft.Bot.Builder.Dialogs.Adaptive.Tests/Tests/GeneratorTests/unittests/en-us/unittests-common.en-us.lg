@@ -74,7 +74,7 @@ Enter a value for @{name(property)}
 # possibleValues(property)
 - @{foreach(dialogClass.schema.properties[property].enum, enum, value(property, enum))}
 
-# clarifyEnumEntity(property)
+# chooseEnumEntity(property)
 - ```
 @{askHelp()}
 Please choose a value for @{name(property)} from \[@{join(foreach(turn.dialogEvent.value.entity.value, val, enumEntityValue(property, val)), ', ')}\]
