@@ -46,6 +46,6 @@ NEWLINE : '\r'? '\n' -> skip;
 
 STRING : ('\'' (~'\'')* '\'') | ('"' (~'"')* '"');
 
-CONSTANT : ('[' ']') | ('{' '}');
+CONSTANT : ('[' WHITESPACE* ']') | ('{' WHITESPACE* '}');
 
 INVALID_TOKEN_DEFAULT_MODE : . ;

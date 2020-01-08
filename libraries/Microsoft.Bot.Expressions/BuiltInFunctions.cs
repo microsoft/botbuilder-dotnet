@@ -2413,7 +2413,7 @@ namespace Microsoft.Bot.Expressions
                 return true;
             }
 
-            if (GetPropertyNumber(args[0]) == 0 && GetPropertyNumber(args[1]) == 0)
+            if (GetPropertyCount(args[0]) == 0 && GetPropertyCount(args[1]) == 0)
             {
                 return true;
             }
@@ -2428,13 +2428,16 @@ namespace Microsoft.Bot.Expressions
             }
         }
 
-        private static int GetPropertyNumber(dynamic obj)
+        /// <summary>
+        /// Get the property count of an object.
+        /// </summary>
+        /// <param name="obj">input object.</param>
+        /// <returns>property count.</returns>
+        private static int GetPropertyCount(dynamic obj)
         {
-            if (obj is IDictionary &&
-               obj.GetType().IsGenericType &&
-               obj.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(Dictionary<,>)))
+            if (obj is IDictionary dictionary)
             {
-                return (obj as IDictionary).Count;
+                return dictionary.Count;
             }
             else if (obj is JObject jobj)
             {

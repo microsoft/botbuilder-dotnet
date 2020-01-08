@@ -77,5 +77,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return value.Substring(1);
             }));
         }
+
+        /// <summary>
+        /// trim expression. @{abc} => abc,  @{a == {}} => a == {}.
+        /// </summary>
+        /// <param name="expression">input expression string.</param>
+        /// <returns>pure expression string.</returns>
+        public static string TrimExpression(this string expression)
+        {
+            var result = expression.Trim().TrimStart('@').Trim();
+
+            if (result.StartsWith("{") && result.EndsWith("}"))
+            {
+                result = result.Substring(1, result.Length - 2);
+            }
+
+            return result;
+        }
     }
 }

@@ -26,6 +26,9 @@ namespace Microsoft.Bot.Expressions.Tests
                 "emptyObject", new Dictionary<string, object>()
             },
             {
+                "emptyJObject", new JObject()
+            },
+            {
                 "emptyAnonymousObject", new { }
             },
             {
@@ -255,6 +258,7 @@ namespace Microsoft.Bot.Expressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
+            Test("emptyList == [ ]", true),
             #region SetPathToProperty test
             Test("setPathToValue(path.simple, 3) + path.simple", 6),
             Test("setPathToValue(path.simple, 5) + path.simple", 10),
@@ -480,9 +484,16 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("emptyObject == {}", true),
             Test("emptyObject != {}", false),
             Test("emptyObject == []", false),
+            Test("emptyJObject == {}", true),
+            Test("emptyJObject != {}", false),
+            Test("emptyJObject == []", false),
             Test("emptyAnonymousObject == {}", true),
             Test("emptyAnonymousObject != {}", false),
             Test("emptyAnonymousObject == []", false),
+            Test("emptyList == [ ]", true),
+            Test("emptyList == {  }", false),
+            Test("emptyObject == {  }", true),
+            Test("emptyObject == [  ]", false),
             #endregion
 
             #region  Conversion functions test

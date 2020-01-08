@@ -175,15 +175,17 @@ namespace Microsoft.Bot.Expressions
             public override Expression VisitConstantAtom([NotNull] ExpressionParser.ConstantAtomContext context)
             {
                 var text = context.GetText();
-                switch (text)
+                if (string.IsNullOrWhiteSpace(text.TrimStart('[').TrimEnd(']')))
                 {
-                    case "[]":
-                        return Expression.ConstantExpression(new JArray());
-                    case "{}":
-                        return Expression.ConstantExpression(new JObject());
-                    default:
-                        throw new Exception($"Unregonized constant: {text}");
+                    return Expression.ConstantExpression(new JArray());
                 }
+
+                if (string.IsNullOrWhiteSpace(text.TrimStart('{').TrimEnd('}')))
+                {
+                    return Expression.ConstantExpression(new JObject());
+                }
+
+                throw new Exception($"Unregonized constant: {text}");
             }
 
             private Expression MakeExpression(string type, params Expression[] children)

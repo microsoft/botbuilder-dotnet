@@ -1020,6 +1020,30 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual("template xxx does not exist", evaled);
         }
 
+        [TestMethod]
+        public void TestEmptyArratAndObject()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("EmptyArratAndObject.lg"));
+
+            var evaled = engine.EvaluateTemplate("template", new { list = new List<string> { }, obj = new { } });
+            Assert.AreEqual("list and obj are both empty", evaled);
+
+            evaled = engine.EvaluateTemplate("template", new { list = new List<string> { }, obj = new Dictionary<string, object>() });
+            Assert.AreEqual("list and obj are both empty", evaled);
+
+            evaled = engine.EvaluateTemplate("template", new { list = new List<string> { "hi" }, obj = new { } });
+            Assert.AreEqual("obj is empty", evaled);
+
+            evaled = engine.EvaluateTemplate("template", new { list = new List<string> { }, obj = new { a = "a" } });
+            Assert.AreEqual("list is empty", evaled);
+
+            evaled = engine.EvaluateTemplate("template", new { list = new List<string> { }, obj = new Dictionary<string, object> { { "a", "b" } } });
+            Assert.AreEqual("list is empty", evaled);
+
+            evaled = engine.EvaluateTemplate("template", new { list = new JArray() { new JObject() }, obj = new JObject { ["a"] = "b" } });
+            Assert.AreEqual("list and obj are both not empty.", evaled);
+        }
+
         public class LoopClass
         {
             public string Name { get; set; }
