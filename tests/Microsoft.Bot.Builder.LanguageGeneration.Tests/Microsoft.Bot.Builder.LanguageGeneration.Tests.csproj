@@ -38,11 +38,8 @@
     <None Remove="Examples\EvaluateOnce.lg" />
     <None Remove="Examples\LoopScope.lg" />
     <None Remove="Examples\ExpressionExtract.lg" />
-<<<<<<< HEAD
     <None Remove="Examples\StringInterpolation.lg" />
-=======
     <None Remove="ExceptionExamples\NoVariableMatch.lg" />
->>>>>>> master
     <None Remove="ExceptionExamples\ConditionFormatError.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplates.lg" />
     <None Remove="ExceptionExamples\EmptyLGFile.lg" />

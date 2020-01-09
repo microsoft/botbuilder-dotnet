@@ -842,24 +842,24 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestStringInterpolation()
         {
-            var engine = new TemplateEngine().AddFile(GetExampleFilePath("StringInterpolation.lg"));
+            var lgFile = LGParser.ParseFile(GetExampleFilePath("StringInterpolation.lg"));
 
-            var evaled = engine.EvaluateTemplate("simpleStringTemplate");
+            var evaled = lgFile.EvaluateTemplate("simpleStringTemplate");
             Assert.AreEqual("say hi", evaled);
 
-            evaled = engine.EvaluateTemplate("StringTemplateWithVariable", new { w = "world" });
+            evaled = lgFile.EvaluateTemplate("StringTemplateWithVariable", new { w = "world" });
             Assert.AreEqual("hello world", evaled);
 
-            evaled = engine.EvaluateTemplate("StringTemplateWithMixing", new { name = "jack" });
+            evaled = lgFile.EvaluateTemplate("StringTemplateWithMixing", new { name = "jack" });
             Assert.AreEqual("I know your name is jack", evaled);
 
-            evaled = engine.EvaluateTemplate("StringTemplateWithJson", new { h = "hello", w = "world" });
+            evaled = lgFile.EvaluateTemplate("StringTemplateWithJson", new { h = "hello", w = "world" });
             Assert.AreEqual("get 'h' value : hello", evaled);
 
-            evaled = engine.EvaluateTemplate("StringTemplateWithEscape");
+            evaled = lgFile.EvaluateTemplate("StringTemplateWithEscape");
             Assert.AreEqual("just want to output @{bala`bala}", evaled);
 
-            evaled = engine.EvaluateTemplate("StringTemplateWithTemplateRef");
+            evaled = lgFile.EvaluateTemplate("StringTemplateWithTemplateRef");
             Assert.AreEqual("hello jack , welcome. nice weather!", evaled);
         }
 
