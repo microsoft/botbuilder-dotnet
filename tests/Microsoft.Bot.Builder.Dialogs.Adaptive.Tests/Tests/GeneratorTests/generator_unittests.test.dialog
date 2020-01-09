@@ -16,7 +16,43 @@
     },
     {
       "$kind": "Microsoft.Test.UserSays",
-      "text": "value of geographyV2"
+      "text": "Harry Potter"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Enter a value for age"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "value of personname"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "The value of personname is Harry Potter."
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Do you want to change the value of personname? (yes or no)"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "yes"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Enter a value for personname"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "John Smith"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Enter a value for age"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "value of geographyv2"
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
@@ -40,11 +76,7 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "geographyv2 is set as city Seattle."
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for personname"
+      "text": "Enter a value for age"
     },
     {
       "$kind": "Microsoft.Test.UserSays",
@@ -72,31 +104,15 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "geographyv2 is changed from city Seattle to city Bellevue."
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for personname"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "John Smith"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
       "text": "Enter a value for age"
     },
     {
       "$kind": "Microsoft.Test.UserSays",
-      "text": "21 years old"
+      "text": "21 years old and third"
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for ordinal"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "third"
+      "text": "ordinal is set as 3."
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
