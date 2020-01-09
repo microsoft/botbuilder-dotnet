@@ -6,6 +6,7 @@
 name: $(Build.BuildId)
 variables:
   BuildConfiguration: Debug-Windows
+  TestConfiguration: Debug
   BuildPlatform: any cpu
   IsBuildServer: true # Consumed by projects in Microsoft.Bot.Builder.sln.
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false

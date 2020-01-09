@@ -29,12 +29,12 @@
     },
     {
       "$kind": "Microsoft.EditArray",
-      "changeType": "Clear",
+      "changeType": "clear",
       "itemsProperty": "user.emails"
     },
     {
       "$kind": "Microsoft.EditArray",
-      "changeType": "Clear",
+      "changeType": "clear",
       "itemsProperty": "user.recipients"
     },
     {

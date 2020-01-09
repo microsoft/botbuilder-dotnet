@@ -196,14 +196,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 return true;
             }
 
-            // HACK to support .First() retrieval on turn.recognized.entities.foo, replace with Expressions once expression ship
-            var iFirst = path.ToLower().LastIndexOf(".first()");
+            // TODO: HACK to support .First() retrieval on turn.recognized.entities.foo, replace with Expressions once expression ship
+            const string first = ".first()";
+            var iFirst = path.ToLower().LastIndexOf(first);
             if (iFirst >= 0)
             {
+                remainingPath = path.Substring(iFirst + first.Length);
                 path = path.Substring(0, iFirst);
-                memoryScope = ResolveMemoryScope(path, out remainingPath);
-                var memory = memoryScope.GetMemory(dialogContext);
-                return TryGetFirstNestedValue(ref value, ref remainingPath, memory);
+                if (TryGetFirstNestedValue(ref value, ref path, this))
+                {
+                    if (string.IsNullOrEmpty(remainingPath))
+                    {
+                        return true;
+                    }
+
+                    return ObjectPath.TryGetPathValue(value, remainingPath, out value);
+                }
+
+                return false;
             }
 
             return ObjectPath.TryGetPathValue(this, path, out value);
@@ -533,7 +543,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         private bool TryGetFirstNestedValue<T>(ref T value, ref string remainingPath, object memory)
         {
-            if (ObjectPath.TryGetPathValue<JArray>(memory, $"{remainingPath}", out var array))
+            if (ObjectPath.TryGetPathValue<JArray>(memory, remainingPath, out var array))
             {
                 if (array != null && array.Count > 0)
                 {

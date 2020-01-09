@@ -38,5 +38,15 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Last trigger event: defined in FormEvent, ask, clarifyEntity etc..
         /// </summary>
         public const string LastTriggerEvent = "dialog.lastTriggerEvent";
+
+        /// <summary>
+        /// Utility function to get just the property name without the memory scope prefix.
+        /// </summary>
+        /// <param name="property">memory scope property path.</param>
+        /// <returns>name of the property without the prefix.</returns>
+        public static string GetPropertyName(string property)
+        {
+            return property.Replace("dialog.", string.Empty);
+        }
     }
 }

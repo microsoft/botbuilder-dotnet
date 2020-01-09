@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -18,12 +19,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.DeleteProperties";
+        
+        private Expression disabled;
 
         [JsonConstructor]
         public DeleteProperties([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
+        }
+
+        /// <summary>
+        /// Gets or sets an optional expression which if is true will disable this action.
+        /// </summary>
+        /// <example>
+        /// "user.age > 18".
+        /// </example>
+        /// <value>
+        /// A boolean expression. 
+        /// </value>
+        [JsonProperty("disabled")]
+        public string Disabled
+        {
+            get { return disabled?.ToString(); }
+            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
         }
 
         /// <summary>
@@ -43,6 +62,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             if (options is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
+            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            {
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             // Ensure planning context

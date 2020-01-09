@@ -12,23 +12,6 @@ using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
-    /// <summary>
-    /// What format to output the number in.
-    /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum NumberOutputFormat
-    {
-        /// <summary>
-        /// Floating point.
-        /// </summary>
-        Float,
-
-        /// <summary>
-        /// Long.
-        /// </summary>
-        Integer
-    }
-
     public class NumberInput : InputDialog
     {
         [JsonProperty("$kind")]
@@ -56,13 +39,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 // Try to parse value based on type
                 var text = results[0].Resolution["value"].ToString();
 
-                if (float.TryParse(text, out var value))
+                if (int.TryParse(text, out var intValue))
                 {
-                    input = value;
+                    input = intValue;
                 }
                 else
                 {
-                    return Task.FromResult(InputState.Unrecognized);
+                    if (float.TryParse(text, out var value))
+                    {
+                        input = value;
+                    }
+                    else
+                    {
+                        return Task.FromResult(InputState.Unrecognized);
+                    }
                 }
             }
             else

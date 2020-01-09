@@ -13,6 +13,14 @@
             "title": "Id",
             "description": "Optional id for the dialog"
         },
+        "disabled": {
+            "$role": "expression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
         "eventName": {
             "title": "Event name",
             "description": "Name of the event to emit.",
@@ -46,7 +54,8 @@
         "bubbleEvent": {
             "type": "boolean",
             "title": "Bubble event",
-            "description": "If true this event is passed on to parent dialogs."
+            "description": "If true this event is passed on to parent dialogs.",
+            "default": false
         }
     }
 }

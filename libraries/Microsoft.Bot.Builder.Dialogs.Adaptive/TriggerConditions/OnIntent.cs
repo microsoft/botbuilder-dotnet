@@ -97,7 +97,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                     // proposed turn state changes
                     Turn = new Dictionary<string, object>()
                     {
-                        { "recognized", recognizerResult }
                     },
                     Actions = new List<ActionState>()
                     {

@@ -49,20 +49,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             var matched = Find.FindChoices(utterance, list, options);
             if (matched.Count == 0)
             {
-                // Next try finding by ordinal
-                var matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale, NumberOptions.SuppressExtendedTypes).GetOrdinalModel(locale));
-                if (matches.Any())
+                var matches = new List<ModelResult<FoundChoice>>();
+                if (options == null || options.RecognizeOrdinals)
                 {
+                    // Next try finding by ordinal
+                    matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale, NumberOptions.SuppressExtendedTypes).GetOrdinalModel(locale));
                     foreach (var match in matches)
                     {
                         MatchChoiceByIndex(list, matched, match);
                     }
                 }
-                else
+
+                if (matches.Count == 0 && (options == null || options.RecognizeNumbers))
                 {
                     // Then try by numerical index
                     matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale, NumberOptions.SuppressExtendedTypes).GetNumberModel(locale));
-
                     foreach (var match in matches)
                     {
                         MatchChoiceByIndex(list, matched, match);
