@@ -80,6 +80,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
+            if (this.Disabled != null && (bool)new ExpressionEngine().Parse(this.Disabled).TryEvaluate(dc.GetState()).value == true)
+            {
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
             PromptOptions opt = null;
             if (options != null)
             {

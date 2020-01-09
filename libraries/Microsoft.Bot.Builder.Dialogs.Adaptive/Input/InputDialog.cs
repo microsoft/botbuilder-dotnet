@@ -22,6 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 #pragma warning restore SA1310 // Field should not contain underscore.
 
         private Expression allowInterruptions;
+        private Expression disabled;
 
         /// <summary>
         /// Gets or sets a value indicating whether the input should always prompt the user regardless of there being a value or not.
@@ -46,6 +47,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         {
             get { return allowInterruptions?.ToString(); }
             set { allowInterruptions = value != null ? new ExpressionEngine().Parse(value) : null; }
+        }
+
+        /// <summary>
+        /// Gets or sets an optional expression which if is true will disable this action.
+        /// </summary>
+        /// <example>
+        /// "user.age > 18".
+        /// </example>
+        /// <value>
+        /// A boolean expression. 
+        /// </value>
+        [JsonProperty("disabled")]
+        public string Disabled
+        {
+            get { return disabled?.ToString(); }
+            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
         }
 
         /// <summary>
@@ -138,6 +155,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             if (dc == null)
             {
                 throw new ArgumentNullException(nameof(dc));
+            }
+
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
+            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            {
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             var op = OnInitializeOptions(dc, options);

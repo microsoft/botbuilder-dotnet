@@ -7,7 +7,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
-    public class RegexEntityRecognizer : EntityRecognizer
+    public class RegexEntityRecognizer : TextEntityRecognizer
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.RegexEntityRecognizer";

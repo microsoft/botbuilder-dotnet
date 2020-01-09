@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
@@ -464,7 +463,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private Func<IReadOnlyList<object>, object> FromFile()
        => (IReadOnlyList<object> args) =>
        {
-           var filePath = ImportResolver.NormalizePath(args[0].ToString());
+           var filePath = args[0].ToString().NormalizePath();
 
            var resourcePath = GetResourcePath(filePath);
            var stringContent = File.ReadAllText(resourcePath);
@@ -499,7 +498,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             else
             {
                 var template = TemplateMap[CurrentTarget().TemplateName];
-                var sourcePath = ImportResolver.NormalizePath(template.Source);
+                var sourcePath = template.Source.NormalizePath();
                 var baseFolder = Environment.CurrentDirectory;
                 if (Path.IsPathRooted(sourcePath))
                 {

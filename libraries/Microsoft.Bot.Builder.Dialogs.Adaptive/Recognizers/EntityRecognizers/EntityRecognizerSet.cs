@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <param name="dialogContext">Context for the current turn of conversation.</param>
         /// <param name="entities">if no entities are passed in, it will generate a <see cref="TextEntity"/> for turnContext.Activity.Text and then generate entities off of that.</param>
         /// <returns><see cref="Entity"/> list.</returns>
-        public Task<IList<Entity>> RecognizeEntities(DialogContext dialogContext, IEnumerable<Entity> entities = null)
+        public virtual Task<IList<Entity>> RecognizeEntities(DialogContext dialogContext, IEnumerable<Entity> entities = null)
         {
             return this.RecognizeEntities(dialogContext, dialogContext.Context.Activity, entities);
         }
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <param name="activity">activity to recognize against.</param>
         /// <param name="entities">if no entities are passed in, it will generate a <see cref="TextEntity"/> for turnContext.Activity.Text and then generate entities off of that.</param>
         /// <returns><see cref="Entity"/> list.</returns>
-        public async Task<IList<Entity>> RecognizeEntities(DialogContext dialogContext, Activity activity, IEnumerable<Entity> entities = null)
+        public virtual async Task<IList<Entity>> RecognizeEntities(DialogContext dialogContext, Activity activity, IEnumerable<Entity> entities = null)
         {
             if (activity.Type == ActivityTypes.Message)
             {
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <param name="locale">locale to use.</param>
         /// <param name="entities">if no entities are passed in, it will generate a <see cref="TextEntity"/> for turnContext.Activity.Text and then generate entities off of that.</param>
         /// <returns><see cref="Entity"/> list.</returns>
-        public async Task<IList<Entity>> RecognizeEntities(DialogContext dialogContext, string text, string locale, IEnumerable<Entity> entities = null)
+        public virtual async Task<IList<Entity>> RecognizeEntities(DialogContext dialogContext, string text, string locale, IEnumerable<Entity> entities = null)
         {
             List<Entity> allNewEntities = new List<Entity>();
             List<Entity> entitiesToProcess = new List<Entity>(entities ?? Array.Empty<Entity>());
@@ -68,10 +68,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             if (entitiesToProcess.Count == 0)
             {
                 var textEntity = new TextEntity(text);
-                textEntity.Properties["Start"] = 0;
-                textEntity.Properties["End"] = text.Length;
-                textEntity.Properties["Score"] = 1.0;
-                textEntity.Properties["Text"] = text;
+                textEntity.Properties["start"] = 0;
+                textEntity.Properties["end"] = text.Length;
+                textEntity.Properties["score"] = 1.0;
                 allNewEntities.Add(textEntity);
                 entitiesToProcess.Add(textEntity);
             }

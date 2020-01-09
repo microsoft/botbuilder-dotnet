@@ -52,7 +52,7 @@
                                 "prompt": "What's your name?"
                             }
                         ],
-                        "changeType": "ReplaceSequence"
+                        "changeType": "replaceSequence"
                     }
                 ]
             }

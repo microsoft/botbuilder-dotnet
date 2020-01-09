@@ -11,12 +11,19 @@
         {
             "properties": {
                 "expectedProperties": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "title": "Expected Properties",
-                    "description": "Properties expected to be filled by entities from the user"
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "title": "Expected Properties",
+                            "description": "Properties expected to be filled by entities from the user"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
                 }
             }
         }

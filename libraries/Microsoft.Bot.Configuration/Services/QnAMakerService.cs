@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Configuration
 {
+    [Obsolete("This class is deprecated.  See https://aka.ms/bot-file-basics for more information.", false)]
     public class QnAMakerService : ConnectedService
     {
         private string _hostname;

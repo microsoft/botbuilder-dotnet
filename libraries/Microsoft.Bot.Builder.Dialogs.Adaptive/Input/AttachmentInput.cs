@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// <summary>
     /// Format specifier for outputs.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
+    [JsonConverter(typeof(StringEnumConverter), /*camelCase*/ true)]
     public enum AttachmentOutputFormat
     {
         /// <summary>

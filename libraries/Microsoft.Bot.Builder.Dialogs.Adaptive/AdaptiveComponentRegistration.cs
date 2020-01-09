@@ -88,6 +88,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<GotoAction>(GotoAction.DeclarativeType);
             yield return new TypeRegistration<BreakLoop>(BreakLoop.DeclarativeType);
             yield return new TypeRegistration<ContinueLoop>(ContinueLoop.DeclarativeType);
+            yield return new TypeRegistration<UpdateActivity>(UpdateActivity.DeclarativeType);
+            yield return new TypeRegistration<DeleteActivity>(DeleteActivity.DeclarativeType);
+            yield return new TypeRegistration<GetActivityMembers>(GetActivityMembers.DeclarativeType);
+            yield return new TypeRegistration<GetConversationMembers>(GetConversationMembers.DeclarativeType);
+            yield return new TypeRegistration<SignOutUser>(SignOutUser.DeclarativeType);
 
             // Inputs
             yield return new TypeRegistration<AttachmentInput>(AttachmentInput.DeclarativeType);
@@ -163,6 +168,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new InterfaceConverter<EntityRecognizer>(refResolver, sourceMap, paths);
             yield return new InterfaceConverter<ITriggerSelector>(refResolver, sourceMap, paths);
             yield return new ExpressionPropertyConverter<ChoiceSet>();
+            yield return new ExpressionPropertyConverter<ExpressionProperty<List<string>>>();
             yield return new ActivityTemplateConverter();
             yield return new JObjectConverter(refResolver);
         }

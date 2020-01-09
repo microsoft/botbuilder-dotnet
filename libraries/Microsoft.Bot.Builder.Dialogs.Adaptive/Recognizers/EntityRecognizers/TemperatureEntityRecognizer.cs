@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
-    public class TemperatureEntityRecognizer : EntityRecognizer
+    public class TemperatureEntityRecognizer : TextEntityRecognizer
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.TemperatureEntityRecognizer";

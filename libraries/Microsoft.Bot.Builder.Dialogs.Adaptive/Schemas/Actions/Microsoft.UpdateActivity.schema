@@ -1,0 +1,19 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
+    "title": "Send an activity",
+    "description": "Respond with an activity.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "activity": {
+            "$kind": "Microsoft.IActivityTemplate",
+            "title": "Activity",
+            "description": "Activity to send."
+        }
+    }
+}
