@@ -66,3 +66,15 @@
     - output2
 - DEFAULT: default2
     -output 3
+
+#template9
+-SWITCH:@{'case'}
+- DEFAULT:
+   - final output
+
+#template10
+-SWITCH:@{'case'}
+- CASE: @{'case1'}
+    - output1
+- CASE: @{'case2'}
+    - output2

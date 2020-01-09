@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
     /// <summary>
-    /// ILanguageGenerator implementation which uses TemplateEngine. 
+    /// ILanguageGenerator implementation which uses LGFile. 
     /// </summary>
     public class TemplateEngineLanguageGenerator : ILanguageGenerator
     {
@@ -22,16 +22,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private const string DEFAULTLABEL = "Unknown";
 
-        private readonly Dictionary<string, TemplateEngine> multiLangEngines = new Dictionary<string, TemplateEngine>();
+        private readonly Dictionary<string, LGFile> multiLanglgFiles = new Dictionary<string, LGFile>();
 
-        private TemplateEngine engine;      
+        private LGFile lgFile;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
         public TemplateEngineLanguageGenerator()
         {
-            this.engine = new TemplateEngine();
+            this.lgFile = new LGFile();
         }
 
         /// <summary>
@@ -52,8 +52,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 // if locale is present, use that one
                 if (string.Equals(fallbackLocale, string.Empty) || string.Equals(fallbackLocale, mapping.Key))
                 {
-                    var engine = new TemplateEngine().AddText(lgText ?? string.Empty, Id, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
-                    multiLangEngines.Add(mapping.Key, engine);
+                    var engine = LGParser.ParseText(lgText ?? string.Empty, Id, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
+                    multiLanglgFiles.Add(mapping.Key, engine);
                 }
             }
         }   
@@ -77,8 +77,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 // if locale is present, use that one
                 if (string.Equals(fallbackLocale, string.Empty) || string.Equals(fallbackLocale, mapping.Key))
                 {
-                    var engine = new TemplateEngine().AddFile(filePath, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
-                    multiLangEngines.Add(mapping.Key, engine);
+                    var lgFile = LGParser.ParseFile(filePath, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
+                    multiLanglgFiles.Add(mapping.Key, lgFile);
                 }
             }
         }
@@ -86,10 +86,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
-        /// <param name="engine">template engine.</param>
-        public TemplateEngineLanguageGenerator(TemplateEngine engine)
+        /// <param name="lgFile">template engine.</param>
+        public TemplateEngineLanguageGenerator(LGFile lgFile)
         {
-            this.engine = engine;
+            this.lgFile = lgFile;
         }
 
         /// <summary>
@@ -110,11 +110,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>generated text.</returns>
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
-            engine = InitTemplateEngine(turnContext);
+            lgFile = InitLGFile(turnContext);
 
             try
             {
-                return await Task.FromResult(engine.Evaluate(template, data).ToString());
+                return await Task.FromResult(lgFile.Evaluate(template, data).ToString());
             }
             catch (Exception err)
             {
@@ -127,21 +127,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
         }
 
-        private TemplateEngine InitTemplateEngine(ITurnContext turnContext)
+        private LGFile InitLGFile(ITurnContext turnContext)
         {
             var locale = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
-            if (multiLangEngines.Count > 0)
+            if (multiLanglgFiles.Count > 0)
             {
-                var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, multiLangEngines.Keys.ToList());
-                engine = multiLangEngines[fallbackLocale];
+                var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, multiLanglgFiles.Keys.ToList());
+                lgFile = multiLanglgFiles[fallbackLocale];
             }
             else
             {
                 // Do not rewrite to ??= (C# 8.0 new feature). It will break in linux/mac
-                engine = engine ?? new TemplateEngine();
+                lgFile = lgFile ?? new LGFile();
             }
 
-            return engine;
+            return lgFile;
         }
     }
 }

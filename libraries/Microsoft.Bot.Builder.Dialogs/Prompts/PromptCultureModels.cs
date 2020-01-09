@@ -14,6 +14,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
     {
         private static readonly string[] SupportedLocales = GetSupportedCultures().Select(c => c.Locale).ToArray();
 
+        public static PromptCultureModel Bulgarian =>
+            new PromptCultureModel
+            {
+                InlineOr = " или ",
+                InlineOrMore = ", или ",
+                Locale = Culture.Bulgarian,
+                NoInLanguage = "Не",
+                Separator = ", ",
+                YesInLanguage = "да",
+            };
+
         public static PromptCultureModel Chinese =>
             new PromptCultureModel
             {
@@ -69,6 +80,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 YesInLanguage = "Ja",
             };
 
+        public static PromptCultureModel Hindi =>
+            new PromptCultureModel
+            {
+                InlineOr = " या ",
+                InlineOrMore = ", या ",
+                Locale = Culture.Hindi,
+                NoInLanguage = "नहीं",
+                Separator = ", ",
+                YesInLanguage = "हां",
+            };
+
+        public static PromptCultureModel Italian =>
+            new PromptCultureModel
+            {
+                InlineOr = " o ",
+                InlineOrMore = " o ",
+                Locale = Culture.Italian,
+                NoInLanguage = "No",
+                Separator = ", ",
+                YesInLanguage = "Si",
+            };
+
         public static PromptCultureModel Japanese =>
             new PromptCultureModel
             {
@@ -78,6 +111,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 NoInLanguage = "いいえ",
                 Separator = "、 ",
                 YesInLanguage = "はい",
+            };
+
+        public static PromptCultureModel Korean =>
+            new PromptCultureModel
+            {
+                InlineOr = " 또는 ",
+                InlineOrMore = " 또는 ",
+                Locale = Culture.Korean,
+                NoInLanguage = "아니",
+                Separator = ", ",
+                YesInLanguage = "예",
             };
 
         public static PromptCultureModel Portuguese =>
@@ -100,6 +144,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 NoInLanguage = "No",
                 Separator = ", ",
                 YesInLanguage = "Sí",
+            };
+
+        public static PromptCultureModel Swedish =>
+            new PromptCultureModel
+            {
+                InlineOr = " eller ",
+                InlineOrMore = " eller ",
+                Locale = Culture.Swedish,
+                NoInLanguage = "Nej",
+                Separator = ", ",
+                YesInLanguage = "Ja",
+            };
+
+        public static PromptCultureModel Turkish =>
+            new PromptCultureModel
+            {
+                InlineOr = " veya ",
+                InlineOrMore = " veya ",
+                Locale = Culture.Turkish,
+                NoInLanguage = "Hayır",
+                Separator = ", ",
+                YesInLanguage = "Evet",
             };
 
         /// <summary>
@@ -143,14 +209,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
 
         public static PromptCultureModel[] GetSupportedCultures() => new PromptCultureModel[]
         {
+            Bulgarian,
             Chinese,
             Dutch,
             English,
             French,
             German,
+            Hindi,
+            Italian,
             Japanese,
+            Korean,
             Portuguese,
             Spanish,
+            Swedish,
+            Turkish
         };
     }
 }
