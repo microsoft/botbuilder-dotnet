@@ -22,7 +22,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private const string DEFAULTLABEL = "Unknown";
 
-        private readonly LGFile lgFile;
+        private readonly Dictionary<string, LGFile> multiLanglgFiles = new Dictionary<string, LGFile>();
+
+        private LGFile lgFile;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
@@ -30,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="engine">template engine.</param>
         public TemplateEngineLanguageGenerator(LGFile engine = null)
         {
-            this.lgFile = engine ?? new LGFile();
+            this.lgFile = new LGFile();
         }
 
         /// <summary>

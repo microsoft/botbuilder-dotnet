@@ -119,22 +119,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public string Id { get; set; }
 
         /// <summary>
-        /// use an existing LGFile to override current object.
-        /// </summary>
-        /// <param name="lgFile">Existing LGFile.</param>
-        public void Initialization(LGFile lgFile)
-        {
-            Templates = lgFile.Templates;
-            Imports = lgFile.Imports;
-            Diagnostics = lgFile.Diagnostics;
-            References = lgFile.References;
-            Content = lgFile.Content;
-            ImportResolver = lgFile.ImportResolver;
-            Id = lgFile.Id;
-            ExpressionEngine = lgFile.ExpressionEngine;
-        }
-
-        /// <summary>
         /// Evaluate a template with given name and scope.
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
@@ -142,12 +126,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Evaluate result.</returns>
         public object EvaluateTemplate(string templateName, object scope = null)
         {
-            CheckErrors(AllDiagnostics);
-            if (!(scope is IMemory memory))
-            {
-                memory = SimpleObjectMemory.Wrap(scope);
-            }
+            CheckErrors();
 
+            var memory = SimpleObjectMemory.Wrap(scope);
             var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionEngine);
             return evaluator.EvaluateTemplate(templateName, new CustomizedMemory(memory));
         }
@@ -161,7 +142,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Expand result.</returns>
         public IList<string> ExpandTemplate(string templateName, object scope = null)
         {
-            CheckErrors(AllDiagnostics);
+            CheckErrors();
             var expander = new Expander(AllTemplates.ToList(), ExpressionEngine);
             return expander.EvaluateTemplate(templateName, new CustomizedMemory(scope));
         }
@@ -174,7 +155,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>analyzer result.</returns>
         public AnalyzerResult AnalyzeTemplate(string templateName)
         {
-            CheckErrors(AllDiagnostics);
+            CheckErrors();
             var analyzer = new Analyzer(AllTemplates.ToList(), ExpressionEngine);
             return analyzer.AnalyzeTemplate(templateName);
         }
@@ -186,7 +167,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="newTemplateName">new template Name.</param>
         /// <param name="parameters">new params.</param>
         /// <param name="templateBody">new template body.</param>
-        public void UpdateTemplate(string templateName, string newTemplateName, List<string> parameters, string templateBody)
+        /// <returns>updated lgfile.</returns>
+        public LGFile UpdateTemplate(string templateName, string newTemplateName, List<string> parameters, string templateBody)
         {
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
@@ -198,8 +180,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var stopLine = template.ParseTree.Stop.Line - 1;
 
                 var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
-                Initialization(LGParser.ParseText(newContent, Id, ImportResolver));
+                Initialize(LGParser.ParseText(newContent, Id, ImportResolver));
             }
+
+            return this;
         }
 
         /// <summary>
@@ -208,7 +192,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="templateName">new template name.</param>
         /// <param name="parameters">new params.</param>
         /// <param name="templateBody">new  template body.</param>
-        public void AddTemplate(string templateName, List<string> parameters, string templateBody)
+        /// <returns>updated lgfile.</returns>
+        public LGFile AddTemplate(string templateName, List<string> parameters, string templateBody)
         {
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
@@ -219,14 +204,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
             var newContent = $"{Content.TrimEnd()}\r\n\r\n{templateNameLine}\r\n{newTemplateBody}\r\n";
-            Initialization(LGParser.ParseText(newContent, Id, ImportResolver));
+            Initialize(LGParser.ParseText(newContent, Id, ImportResolver));
+
+            return this;
         }
 
         /// <summary>
         /// Delete an exist template.
         /// </summary>
         /// <param name="templateName">which template should delete.</param>
-        public void DeleteTemplate(string templateName)
+        /// <returns>updated lgfile.</returns>
+        public LGFile DeleteTemplate(string templateName)
         {
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
@@ -235,8 +223,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var stopLine = template.ParseTree.Stop.Line - 1;
 
                 var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
-                Initialization(LGParser.ParseText(newContent, Id, ImportResolver));
+                Initialize(LGParser.ParseText(newContent, Id, ImportResolver));
             }
+
+            return this;
         }
 
         public override string ToString() => Content;
@@ -370,17 +360,31 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private void CheckErrors(IList<Diagnostic> diagnostics)
+        /// <summary>
+        /// use an existing LGFile to override current object.
+        /// </summary>
+        /// <param name="lgFile">Existing LGFile.</param>
+        private void Initialize(LGFile lgFile)
         {
-            if (diagnostics == null)
-            {
-                throw new ArgumentException();
-            }
+            Templates = lgFile.Templates;
+            Imports = lgFile.Imports;
+            Diagnostics = lgFile.Diagnostics;
+            References = lgFile.References;
+            Content = lgFile.Content;
+            ImportResolver = lgFile.ImportResolver;
+            Id = lgFile.Id;
+            ExpressionEngine = lgFile.ExpressionEngine;
+        }
 
-            var errors = diagnostics.Where(u => u.Severity == DiagnosticSeverity.Error);
-            if (errors.Count() != 0)
+        private void CheckErrors()
+        {
+            if (AllDiagnostics != null)
             {
-                throw new Exception(string.Join("\n", errors));
+                var errors = AllDiagnostics.Where(u => u.Severity == DiagnosticSeverity.Error);
+                if (errors.Count() != 0)
+                {
+                    throw new Exception(string.Join("\n", errors));
+                }
             }
         }
     }

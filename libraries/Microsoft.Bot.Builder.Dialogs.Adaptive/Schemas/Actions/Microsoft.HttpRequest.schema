@@ -14,6 +14,14 @@
             "title": "Id",
             "description": "Optional id for the dialog"
         },
+        "disabled": {
+            "$role": "expression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
         "method": {
             "type": "string",
             "title": "HTTP method",
@@ -54,7 +62,7 @@
         },
         "headers": {
             "type": "object",
-            "additionProperties": true,
+            "additionalProperties": true,
             "title": "Headers",
             "description": "One or more headers to include in the request (supports data binding)."
         },

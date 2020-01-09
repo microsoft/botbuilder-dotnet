@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
-    public class PhoneNumberEntityRecognizer : EntityRecognizer
+    public class PhoneNumberEntityRecognizer : TextEntityRecognizer
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.PhoneNumberEntityRecognizer";

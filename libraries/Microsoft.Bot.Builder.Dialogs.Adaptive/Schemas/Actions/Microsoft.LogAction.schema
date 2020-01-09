@@ -13,10 +13,23 @@
             "title": "Id",
             "description": "Optional id for the dialog"
         },
+        "disabled": {
+            "$role": "expression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
         "text": {
             "type": "string",
             "title": "Text",
             "description": "Information to log."
+        },
+        "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "Label for the trace activity (used to identify it in a list of trace activities.)"
         },
         "traceActivity": {
             "type": "boolean",

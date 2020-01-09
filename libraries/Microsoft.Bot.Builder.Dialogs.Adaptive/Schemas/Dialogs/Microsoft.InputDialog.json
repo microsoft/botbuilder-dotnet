@@ -7,6 +7,14 @@
       "title": "Id",
       "description": "Optional id for the dialog"
     },
+    "disabled": {
+      "$role": "expression",
+      "title": "Disabled",
+      "description": "Optional condition which if true will disable this action.",
+      "examples": [
+        "user.age > 3"
+      ]
+    },
     "prompt": {
       "$kind": "Microsoft.IActivityTemplate",
       "title": "Initial prompt",
