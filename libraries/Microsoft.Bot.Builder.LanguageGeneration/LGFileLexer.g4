@@ -43,7 +43,7 @@ fragment NUMBER: '0'..'9';
 
 fragment WHITESPACE : ' '|'\t'|'\ufeff'|'\u00a0';
 
-fragment STRING_LITERAL :  ('\'' (~['\r\n])* '\'') | ('"' (~["\r\n])* '"');
+fragment STRING_LITERAL : ('\'' (~['\r\n])* '\'') | ('"' (~["\r\n])* '"');
 
 fragment STRING_INTERPOLATION : '`' ('\\`' | ~'`')* '`';
 
