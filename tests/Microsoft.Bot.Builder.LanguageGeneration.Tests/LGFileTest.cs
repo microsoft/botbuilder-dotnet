@@ -893,24 +893,24 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestEmptyArratAndObject()
         {
-            var engine = new TemplateEngine().AddFile(GetExampleFilePath("EmptyArratAndObject.lg"));
+            var lgFile = LGParser.ParseFile(GetExampleFilePath("EmptyArrayAndObject.lg"));
 
-            var evaled = engine.EvaluateTemplate("template", new { list = new List<string> { }, obj = new { } });
+            var evaled = lgFile.EvaluateTemplate("template", new { list = new List<string> { }, obj = new { } });
             Assert.AreEqual("list and obj are both empty", evaled);
 
-            evaled = engine.EvaluateTemplate("template", new { list = new List<string> { }, obj = new Dictionary<string, object>() });
+            evaled = lgFile.EvaluateTemplate("template", new { list = new List<string> { }, obj = new Dictionary<string, object>() });
             Assert.AreEqual("list and obj are both empty", evaled);
 
-            evaled = engine.EvaluateTemplate("template", new { list = new List<string> { "hi" }, obj = new { } });
+            evaled = lgFile.EvaluateTemplate("template", new { list = new List<string> { "hi" }, obj = new { } });
             Assert.AreEqual("obj is empty", evaled);
 
-            evaled = engine.EvaluateTemplate("template", new { list = new List<string> { }, obj = new { a = "a" } });
+            evaled = lgFile.EvaluateTemplate("template", new { list = new List<string> { }, obj = new { a = "a" } });
             Assert.AreEqual("list is empty", evaled);
 
-            evaled = engine.EvaluateTemplate("template", new { list = new List<string> { }, obj = new Dictionary<string, object> { { "a", "b" } } });
+            evaled = lgFile.EvaluateTemplate("template", new { list = new List<string> { }, obj = new Dictionary<string, object> { { "a", "b" } } });
             Assert.AreEqual("list is empty", evaled);
 
-            evaled = engine.EvaluateTemplate("template", new { list = new JArray() { new JObject() }, obj = new JObject { ["a"] = "b" } });
+            evaled = lgFile.EvaluateTemplate("template", new { list = new JArray() { new JObject() }, obj = new JObject { ["a"] = "b" } });
             Assert.AreEqual("list and obj are both not empty.", evaled);
         }
 
