@@ -734,10 +734,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestReExecute()
         {
-            var engine = new TemplateEngine().AddFile(GetExampleFilePath("ReExecute.lg"));
+            var lgFile = LGParser.ParseFile(GetExampleFilePath("ReExecute.lg"));
 
             // may be has different values
-            var evaled = engine.EvaluateTemplate("templateWithSameParams", new { param1 = "ms", param2 = "newms" });
+            var evaled = lgFile.EvaluateTemplate("templateWithSameParams", new { param1 = "ms", param2 = "newms" });
         }
 
         [TestMethod]
