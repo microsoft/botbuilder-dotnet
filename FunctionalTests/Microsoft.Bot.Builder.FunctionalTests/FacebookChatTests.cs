@@ -14,6 +14,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
     [TestCategory("FunctionalTests")]
     public class FacebookChatTests
     {
+        private const string FacebookUrlBase = "https://graph.facebook.com/v5.0";
         private string _appSecret;
         private string _accessToken;
         private string _botEndpoint;
@@ -23,19 +24,22 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         public async Task SendAndReceiveFacebookMessageShouldSucceed()
         {
             GetEnvironmentVars();
-            string echoGuid = Guid.NewGuid().ToString();
+
+            var echoGuid = Guid.NewGuid().ToString();
             await SendMessageAsync(echoGuid);
-            string response = await ReceiveMessageAsync();
+
+            var response = await ReceiveMessageAsync();
 
             Assert.AreEqual($"Echo: {echoGuid}", response);
         }
 
         private async Task SendMessageAsync(string echoGuid)
         {
-            string bodyMessage = CreateBodyMessage(echoGuid);
-            string hubSignature = CreateHubSignature(bodyMessage);
+            var bodyMessage = CreateBodyMessage(echoGuid);
+            var hubSignature = CreateHubSignature(bodyMessage);
             var client = new HttpClient();
             var request = new HttpRequestMessage();
+
             request.Headers.Add("user-agent", "facebookexternalua");
             request.Headers.Add("x-hub-signature", hubSignature);
             request.Content = new StringContent(bodyMessage, Encoding.UTF8, "application/json");
@@ -48,28 +52,32 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         private async Task<string> ReceiveMessageAsync()
         {
             await Task.Delay(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
-            string retrieveMessgesUri = $"https://graph.facebook.com/v5.0/me/conversations?fields=messages{{message}}&user_id={_senderId}&access_token={_accessToken}";
-            var client = new HttpClient();
-            var request = new HttpRequestMessage();
-            request.Method = HttpMethod.Get;
-            request.RequestUri = new Uri(retrieveMessgesUri);
-            var httpResponse = await client.GetAsync(retrieveMessgesUri);
-            var response = httpResponse.Content.ReadAsStringAsync().Result;
-            JObject messages = JObject.Parse(response);
-            var result = messages.SelectToken("data[0].messages.data[0].message").ToString();
+
+            var retrieveMessagesUri = $"{FacebookUrlBase}/me/conversations?fields=messages{{message}}&user_id={_senderId}&access_token={_accessToken}";
+            var result = string.Empty;
+
+            using (var client = new HttpClient())
+            {
+                var httpResponse = await client.GetAsync(retrieveMessagesUri);
+                var response = httpResponse.Content.ReadAsStringAsync().Result;
+                var messages = JObject.Parse(response);
+
+                result = messages.SelectToken("data[0].messages.data[0].message").ToString();
+            }
 
             return result;
         }
 
         private string CreateHubSignature(string bodyMessage)
         {
-            string hashResult;
+            var hashResult = string.Empty;
 
             using (var hmac = new System.Security.Cryptography.HMACSHA1(Encoding.UTF8.GetBytes(_appSecret)))
             {
                 hmac.Initialize();
                 var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(bodyMessage));
                 var hash = $"SHA1={BitConverter.ToString(hashArray).Replace("-", string.Empty)}";
+
                 hashResult = hash;
             }
 
