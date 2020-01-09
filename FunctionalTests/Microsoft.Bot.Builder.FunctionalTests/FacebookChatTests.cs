@@ -34,19 +34,21 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         }
 
         private async Task SendMessageAsync(string echoGuid)
-        {
-            var bodyMessage = CreateBodyMessage(echoGuid);
-            var hubSignature = CreateHubSignature(bodyMessage);
-            var client = new HttpClient();
-            var request = new HttpRequestMessage();
+        {            
+            using (var client = new HttpClient())
+            using (var request = new HttpRequestMessage())
+            {
+                var bodyMessage = CreateBodyMessage(echoGuid);
+                var hubSignature = CreateHubSignature(bodyMessage);
 
-            request.Headers.Add("user-agent", "facebookexternalua");
-            request.Headers.Add("x-hub-signature", hubSignature);
-            request.Content = new StringContent(bodyMessage, Encoding.UTF8, "application/json");
-            request.Method = HttpMethod.Post;
-            request.RequestUri = new Uri(_botEndpoint);
+                request.Headers.Add("user-agent", "facebookexternalua");
+                request.Headers.Add("x-hub-signature", hubSignature);
+                request.Content = new StringContent(bodyMessage, Encoding.UTF8, "application/json");
+                request.Method = HttpMethod.Post;
+                request.RequestUri = new Uri(_botEndpoint);
 
-            await client.SendAsync(request);
+                await client.SendAsync(request);
+            }            
         }
 
         private async Task<string> ReceiveMessageAsync()
