@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             // use LG file as entrance
             var lgResourceGroup = LGResourceLoader.GroupByLocale(resourceExplorer);
 
-            var resource = resourceExplorer.GetResource("a.en-us.lg") as FileResource;
+            var resource = resourceExplorer.GetResource("a.en-US.lg") as FileResource;
             var generator = new TemplateEngineLanguageGenerator(resource.FullName, lgResourceGroup);
             var result = await generator.Generate(GetTurnContext(), "@{templatea()}", null);
             Assert.AreEqual("from a.en-us.lg", result);
