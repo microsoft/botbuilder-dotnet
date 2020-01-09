@@ -8,7 +8,7 @@
             "actions": [
                 {
                     "$kind": "Microsoft.EditArray",
-                    "changeType": "Clear",
+                    "changeType": "clear",
                     "itemsProperty": "user.todos",
                     "resultProperty": "dialog.cleared"
                 },

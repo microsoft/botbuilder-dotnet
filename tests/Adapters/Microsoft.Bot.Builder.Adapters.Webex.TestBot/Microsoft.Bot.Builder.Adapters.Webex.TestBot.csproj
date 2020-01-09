@@ -4,9 +4,10 @@
     <TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
     <!-- The WebExTeams package isn't signed, so supress the warning. -->
     <NoWarn>$(NoWarn),CS8002</NoWarn>
+    <UserSecretsId>63730bc1-f7d4-4b32-8efe-ce03907b3e0a</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 

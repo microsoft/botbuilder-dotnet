@@ -305,6 +305,8 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("where(items, add(1), item)"), // Second paramter of where is not an identifier
             Test("where(items, 1, item)"), // Second paramter error
             Test("where(items, x, sum(x))"), // third paramter error
+            Test("indicesAndValues(items, 1)"), // only one param
+            Test("indicesAndValues(1)"), // shoud have array param
             Test("union(one, two)"), // should have collection param
             Test("intersection(one, two)"), // should have collection param
             Test("skip(one, two)"), // should have collection param

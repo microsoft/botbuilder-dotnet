@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 {

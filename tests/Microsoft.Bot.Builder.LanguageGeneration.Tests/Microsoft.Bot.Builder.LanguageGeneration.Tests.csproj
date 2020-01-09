@@ -23,13 +23,9 @@
     <None Remove="Examples\BasicList.lg" />
     <None Remove="Examples\CaseInsensitive.lg" />
     <None Remove="Examples\EscapeCharacter.lg" />
-    <None Remove="Examples\ExceptionCatch.lg" />
     <None Remove="Examples\import.lg" />
     <None Remove="Examples\import2.lg" />
     <None Remove="Examples\IsTemplate.lg" />
-    <None Remove="Examples\MultiFile-Part1.lg" />
-    <None Remove="Examples\MultiFile-Part2.lg" />
-    <None Remove="Examples\MultiFile-Part3.lg" />
     <None Remove="Examples\MultilineTextForAdaptiveCard.lg" />
     <None Remove="Examples\NonAdaptiveCardActivity.lg" />
     <None Remove="Examples\switchcase.lg" />
@@ -42,31 +38,24 @@
     <None Remove="Examples\EvaluateOnce.lg" />
     <None Remove="Examples\LoopScope.lg" />
     <None Remove="Examples\ExpressionExtract.lg" />
+    <None Remove="ExceptionExamples\NoVariableMatch.lg" />
     <None Remove="ExceptionExamples\ConditionFormatError.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplates.lg" />
-    <None Remove="ExceptionExamples\DuplicatedTemplatesInImportFiles.lg" />
     <None Remove="ExceptionExamples\EmptyLGFile.lg" />
     <None Remove="ExceptionExamples\EmptyTemplate.lg" />
     <None Remove="ExceptionExamples\ErrorExpression.lg" />
-    <None Remove="ExceptionExamples\ErrorSeperateChar.lg" />
-    <None Remove="ExceptionExamples\ErrorSeperateChar2.lg" />
-    <None Remove="ExceptionExamples\ErrorTemplateParameters.lg" />
+    <None Remove="ExceptionExamples\ErrorTemplateName.lg" />
     <None Remove="ExceptionExamples\ImportFile.lg" />
     <None Remove="ExceptionExamples\InvalidLGFileImportPath.lg" />
-    <None Remove="ExceptionExamples\InvalidTemplateName.lg" />
-    <None Remove="ExceptionExamples\InvalidTemplateName2.lg" />
     <None Remove="ExceptionExamples\LgTemplateFunctionError.lg" />
     <None Remove="ExceptionExamples\LoopDetected.lg" />
     <None Remove="ExceptionExamples\MultiLineVariation.lg" />
-    <None Remove="ExceptionExamples\NoMatchRule.lg" />
     <None Remove="ExceptionExamples\NoNormalTemplateBody.lg" />
     <None Remove="ExceptionExamples\NoTemplateRef.lg" />
-    <None Remove="ExceptionExamples\OnlyNoMatchRule.lg" />
     <None Remove="ExceptionExamples\SwitchCaseFormatError.lg" />
-    <None Remove="ExceptionExamples\SwitchCaseWarning.lg" />
-    <None Remove="ExceptionExamples\TemplateParamsNotMatchArgsNum.lg" />
     <None Remove="ExceptionExamples\TemplateAsFunction.lg" />
     <None Remove="ExceptionExamples\ErrorStructuredTemplate.lg" />
+    <None Remove="ExceptionExamples\DuplicatedTemplatesInImportFiles.lg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -118,22 +107,10 @@
     <Content Include="Examples\EscapeCharacter.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Examples\ExceptionCatch.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Examples\import2.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\import.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Examples\MultiFile-Part1.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Examples\MultiFile-Part2.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Examples\MultiFile-Part3.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\MultilineTextForAdaptiveCard.lg">
@@ -167,6 +144,9 @@
     <Content Include="Examples\IsTemplate.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="ExceptionExamples\NoVariableMatch.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="ExceptionExamples\ConditionFormatError.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -185,25 +165,10 @@
     <Content Include="ExceptionExamples\ErrorExpression.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ExceptionExamples\ErrorSeperateChar.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ExceptionExamples\ErrorSeperateChar2.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ExceptionExamples\ErrorTemplateParameters.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ExceptionExamples\DuplicatedTemplatesInImportFiles.lg">
+    <Content Include="ExceptionExamples\ErrorTemplateName.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\InvalidLGFileImportPath.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ExceptionExamples\InvalidTemplateName.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ExceptionExamples\InvalidTemplateName2.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\LgTemplateFunctionError.lg">
@@ -215,31 +180,22 @@
     <Content Include="ExceptionExamples\MultiLineVariation.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ExceptionExamples\NoMatchRule.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="ExceptionExamples\NoNormalTemplateBody.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\NoTemplateRef.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ExceptionExamples\OnlyNoMatchRule.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="ExceptionExamples\SwitchCaseFormatError.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ExceptionExamples\SwitchCaseWarning.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ExceptionExamples\TemplateParamsNotMatchArgsNum.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\import\import3.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\ErrorStructuredTemplate.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ExceptionExamples\DuplicatedTemplatesInImportFiles.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

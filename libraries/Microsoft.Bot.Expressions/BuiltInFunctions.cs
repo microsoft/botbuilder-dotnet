@@ -53,6 +53,11 @@ namespace Microsoft.Bot.Expressions
         private static readonly Dictionary<string, ExpressionEvaluator> _functions = BuildFunctionLookup();
 
         /// <summary>
+        /// Object used to lock Randomizer.
+        /// </summary>
+        private static readonly object _randomizerLock = new object();
+
+        /// <summary>
         /// Verify the result of an expression is of the appropriate type and return a string if not.
         /// </summary>
         /// <param name="value">Value to verify.</param>
@@ -430,9 +435,8 @@ namespace Microsoft.Bot.Expressions
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
-        /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
-        public static string VerifyBoolean(object value, Expression expression, int number)
+        public static string VerifyBoolean(object value, Expression expression)
         {
             string error = null;
             if (!(value is bool))
@@ -482,7 +486,7 @@ namespace Microsoft.Bot.Expressions
         }
 
         // Apply -- these are helpers for adding functions to the expression library.
-        
+
         /// <summary>
         /// Generate an expression delegate that applies function after verifying all children.
         /// </summary>
@@ -764,57 +768,57 @@ namespace Microsoft.Bot.Expressions
         /// </summary>
         /// <param name="instance">Instance with property.</param>
         /// <param name="property">Property to lookup.</param>
-        /// <returns>Value and error information if any.</returns>
-        public static (object value, string error) AccessProperty(object instance, string property)
+        /// <param name="value">Value of property.</param>
+        /// <returns>True if property is present and binds value.</returns>
+        public static bool TryAccessProperty(object instance, string property, out object value)
         {
-            // NOTE: This returns null rather than an error if property is not present
-            if (instance == null)
+            var isPresent = false;
+            value = null;
+            if (instance != null)
             {
-                return (null, null);
-            }
+                property = property.ToLower();
 
-            object value = null;
-            string error = null;
-            property = property.ToLower();
-
-            // NOTE: what about other type of TKey, TValue?
-            if (instance is IDictionary<string, object> idict)
-            {
-                if (!idict.TryGetValue(property, out value))
+                // NOTE: what about other type of TKey, TValue?
+                if (instance is IDictionary<string, object> idict)
                 {
-                    // fall back to case insensitive
-                    var prop = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();
-                    if (prop != null)
+                    if (!idict.TryGetValue(property, out value))
                     {
-                        idict.TryGetValue(prop, out value);
+                        // fall back to case insensitive
+                        var prop = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();
+                        if (prop != null)
+                        {
+                            isPresent = idict.TryGetValue(prop, out value);
+                        }
+                    }
+                    else
+                    {
+                        isPresent = true;
                     }
                 }
-            }
-            else if (instance is IDictionary dict)
-            {
-                foreach (var p in dict.Keys)
+                else if (instance is JObject jobj)
                 {
-                    value = dict[property];
+                    value = jobj.GetValue(property, StringComparison.CurrentCultureIgnoreCase);
+                    isPresent = value != null;
                 }
-            }
-            else if (instance is JObject jobj)
-            {
-                value = jobj.GetValue(property, StringComparison.CurrentCultureIgnoreCase);
-            }
-            else
-            {
-                // Use reflection
-                var type = instance.GetType();
-                var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
-                if (prop != null)
+                else
                 {
-                    value = prop.GetValue(instance);
+                    // Use reflection
+                    var type = instance.GetType();
+                    var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
+                    if (prop != null)
+                    {
+                        value = prop.GetValue(instance);
+                        isPresent = true;
+                    }
+                }
+
+                if (isPresent)
+                {
+                    value = ResolveValue(value);
                 }
             }
 
-            value = ResolveValue(value);
-
-            return (value, error);
+            return isPresent;
         }
 
         public static (object result, string error) SetProperty(object instance, string property, object value)
@@ -927,7 +931,7 @@ namespace Microsoft.Bot.Expressions
                     }
                     else
                     {
-                        return (null, null, $"{left.Children[1].ToString()} dones't return a int or string");
+                        return (null, null, $"{left.Children[1].ToString()} doesn't return an int or string");
                     }
 
                     left = left.Children[0];
@@ -982,7 +986,7 @@ namespace Microsoft.Bot.Expressions
             if (left == null)
             {
                 // fully converted to path, so we just delegate to memory scope
-                return state.GetValue(path);
+                return WrapGetValue(state, path);
             }
             else
             {
@@ -993,7 +997,7 @@ namespace Microsoft.Bot.Expressions
                     return (null, err);
                 }
 
-                return new SimpleObjectMemory(newScope).GetValue(path);
+                return WrapGetValue(new SimpleObjectMemory(newScope), path);
             }
         }
 
@@ -1011,11 +1015,21 @@ namespace Microsoft.Bot.Expressions
                 (property, error) = children[1].TryEvaluate(state);
                 if (error == null)
                 {
-                    (value, error) = new SimpleObjectMemory(instance).GetValue((string)property);
+                    (value, error) = WrapGetValue(new SimpleObjectMemory(instance), (string)property);
                 }
             }
 
             return (value, error);
+        }
+
+        private static (object value, string error) WrapGetValue(IMemory memory, string property)
+        {
+            if (memory.TryGetValue(property, out var result))
+            {
+                return (result, null);
+            }
+
+            return (null, null);
         }
 
         private static (object value, string error) ExtractElement(Expression expression, IMemory state)
@@ -1038,7 +1052,7 @@ namespace Microsoft.Bot.Expressions
                     }
                     else if (idxValue is string idxStr)
                     {
-                        (value, error) = AccessProperty(inst, idxStr);
+                        TryAccessProperty(inst, idxStr, out value);
                     }
                     else
                     {
@@ -1096,7 +1110,8 @@ namespace Microsoft.Bot.Expressions
                 return (null, err);
             }
 
-            return state.SetValue(path, value);
+            state.SetValue(path, value);
+            return (value, null);
         }
 
         private static string ParseStringOrNull(object value)
@@ -1179,7 +1194,7 @@ namespace Microsoft.Bot.Expressions
 
         private static (object value, string error) And(Expression expression, IMemory state)
         {
-            object result = false;
+            object result = true;
             string error = null;
             foreach (var child in expression.Children)
             {
@@ -1276,7 +1291,7 @@ namespace Microsoft.Bot.Expressions
             dynamic str;
             (str, error) = expression.Children[0].TryEvaluate(state);
             if (error == null)
-            {   
+            {
                 if (str == null)
                 {
                     result = string.Empty;
@@ -1341,8 +1356,6 @@ namespace Microsoft.Bot.Expressions
             (instance, error) = expression.Children[0].TryEvaluate(state);
             if (error == null)
             {
-                // 2nd parameter has been rewrite to $local.item
-                var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
                 IList list = null;
                 if (TryParseList(instance, out IList ilist))
                 {
@@ -1363,6 +1376,8 @@ namespace Microsoft.Bot.Expressions
 
                 if (error == null)
                 {
+                    var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
+                    var stackedMemory = StackedMemory.Wrap(state);
                     result = new List<object>();
                     for (var idx = 0; idx < list.Count; idx++)
                     {
@@ -1370,13 +1385,12 @@ namespace Microsoft.Bot.Expressions
                         {
                             { iteratorName, AccessIndex(list, idx).value },
                         };
-                        var newMemory = new Dictionary<string, IMemory>
-                        {
-                            { "$global", state },
-                            { "$local", new SimpleObjectMemory(local) },
-                        };
 
-                        (var r, var e) = expression.Children[2].TryEvaluate(new ComposedMemory(newMemory));
+                        // the local iterator is pushed as one memory layer in the memory stack
+                        stackedMemory.Push(SimpleObjectMemory.Wrap(local));
+                        (var r, var e) = expression.Children[2].TryEvaluate(stackedMemory);
+                        stackedMemory.Pop();
+
                         if (e != null)
                         {
                             return (null, e);
@@ -1399,8 +1413,6 @@ namespace Microsoft.Bot.Expressions
             (instance, error) = expression.Children[0].TryEvaluate(state);
             if (error == null)
             {
-                // 2nd parameter has been rewrite to $local.item
-                var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
                 var isInstanceList = false;
                 IList list = null;
                 if (TryParseList(instance, out IList ilist))
@@ -1423,6 +1435,8 @@ namespace Microsoft.Bot.Expressions
 
                 if (error == null)
                 {
+                    var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
+                    var stackedMemory = StackedMemory.Wrap(state);
                     result = new List<object>();
                     for (var idx = 0; idx < list.Count; idx++)
                     {
@@ -1430,12 +1444,11 @@ namespace Microsoft.Bot.Expressions
                         {
                             { iteratorName, AccessIndex(list, idx).value },
                         };
-                        var newMemory = new Dictionary<string, IMemory>
-                        {
-                            { "$global", state },
-                            { "$local", new SimpleObjectMemory(local) },
-                        };
-                        (var r, _) = expression.Children[2].TryEvaluate(new ComposedMemory(newMemory));
+
+                        // the local iterator is pushed as one memory layer in the memory stack
+                        stackedMemory.Push(SimpleObjectMemory.Wrap(local));
+                        (var r, _) = expression.Children[2].TryEvaluate(stackedMemory);
+                        stackedMemory.Pop();
 
                         if ((bool)r)
                         {
@@ -1450,7 +1463,9 @@ namespace Microsoft.Bot.Expressions
                         var jobjResult = new JObject();
                         foreach (var item in (List<object>)result)
                         {
-                            jobjResult.Add(AccessProperty(item, "key").value.ToString(), JToken.FromObject(AccessProperty(item, "value").value));
+                            TryAccessProperty(item, "key", out var keyVal);
+                            TryAccessProperty(item, "value", out var val);
+                            jobjResult.Add(keyVal as string, JToken.FromObject(val));
                         }
 
                         result = jobjResult;
@@ -1487,12 +1502,6 @@ namespace Microsoft.Bot.Expressions
             {
                 throw new Exception($"Second parameter of foreach is not an identifier : {second}");
             }
-
-            var iteratorName = second.ToString();
-
-            // rewrite the 2nd, 3rd paramater
-            expression.Children[1] = RewriteAccessor(expression.Children[1], iteratorName);
-            expression.Children[2] = RewriteAccessor(expression.Children[2], iteratorName);
         }
 
         private static void ValidateIsMatch(Expression expression)
@@ -1503,44 +1512,6 @@ namespace Microsoft.Bot.Expressions
             if (second.ReturnType == ReturnType.String && second.Type == ExpressionType.Constant)
             {
                 CommonRegex.CreateRegex((second as Constant).Value.ToString());
-            }
-        }
-
-        private static Expression RewriteAccessor(Expression expression, string localVarName)
-        {
-            if (expression.Type == ExpressionType.Accessor)
-            {
-                if (expression.Children.Count() == 2)
-                {
-                    expression.Children[1] = RewriteAccessor(expression.Children[1], localVarName);
-                }
-                else
-                {
-                    var str = expression.ToString();
-                    var prefix = "$global";
-                    if (str == localVarName || str.StartsWith(localVarName + "."))
-                    {
-                        prefix = "$local";
-                    }
-
-                    expression.Children = new Expression[]
-                    {
-                        expression.Children[0],
-                        Expression.MakeExpression(ExpressionType.Accessor, new Constant(prefix)),
-                    };
-                }
-
-                return expression;
-            }
-            else
-            {
-                // rewite children if have any
-                for (var idx = 0; idx < expression.Children.Count(); idx++)
-                {
-                    expression.Children[idx] = RewriteAccessor(expression.Children[idx], localVarName);
-                }
-
-                return expression;
             }
         }
 
@@ -2114,7 +2085,7 @@ namespace Microsoft.Bot.Expressions
                     else if (products.Count() > 1)
                     {
                         var nodeList = new List<object>();
-                        foreach (JToken item in products)
+                        foreach (var item in products)
                         {
                             nodeList.Add(ResolveValue(item));
                         }
@@ -2403,6 +2374,33 @@ namespace Microsoft.Bot.Expressions
                return (result, error);
            };
 
+        private static (object, string) IndicesAndValues(Expression expression, object state)
+        {
+            object result = null;
+            string error;
+            object arr;
+            (arr, error) = expression.Children[0].TryEvaluate(state);
+            if (error == null)
+            {
+                if (TryParseList(arr, out var list))
+                {
+                    var tempList = new List<object>();
+                    for (var i = 0; i < list.Count; i++)
+                    {
+                        tempList.Add(new { index = i, value = list[i] });
+                    }
+
+                    result = tempList;
+                }
+                else
+                {
+                    error = $"{expression.Children[0]} is not array.";
+                }
+            }
+
+            return (result, error);
+        }
+
         private static bool IsSameDay(DateTime date1, DateTime date2) => date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day;
 
         private static Dictionary<string, ExpressionEvaluator> BuildFunctionLookup()
@@ -2574,6 +2572,7 @@ namespace Microsoft.Bot.Expressions
                     SortBy(true),
                     ReturnType.Object,
                     (expression) => BuiltInFunctions.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
+                new ExpressionEvaluator(ExpressionType.IndicesAndValues, IndicesAndValues, ReturnType.Object, ValidateUnary),
 
                 // Booleans
                 Comparison(ExpressionType.LessThan, args => args[0] < args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
@@ -2603,9 +2602,7 @@ namespace Microsoft.Bot.Expressions
                             }
                             else if (args[1] is string string2)
                             {
-                                object value;
-                                (value, error) = AccessProperty((object)args[0], string2);
-                                found = error == null && value != null;
+                                found = TryAccessProperty((object)args[0], string2, out var _);
                             }
                         }
 
@@ -2613,7 +2610,7 @@ namespace Microsoft.Bot.Expressions
                     },
                     ReturnType.Boolean,
                     ValidateBinary),
-                Comparison(ExpressionType.Empty, args => IsEmpty(args[0]), ValidateUnary, VerifyNumberOrString),
+                Comparison(ExpressionType.Empty, args => IsEmpty(args[0]), ValidateUnary, VerifyContainer),
                 new ExpressionEvaluator(ExpressionType.And, (expression, state) => And(expression, state), ReturnType.Boolean, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.Or, (expression, state) => Or(expression, state), ReturnType.Boolean, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.Not, (expression, state) => Not(expression, state), ReturnType.Boolean, ValidateUnary),
@@ -2626,7 +2623,7 @@ namespace Microsoft.Bot.Expressions
                         {
                             var builder = new StringBuilder();
                             foreach (var arg in args)
-                            {   
+                            {
                                 if (arg is string str)
                                 {
                                     builder.Append(str);
@@ -2642,9 +2639,9 @@ namespace Microsoft.Bot.Expressions
                     ReturnType.String,
                     ValidateString),
                 new ExpressionEvaluator(
-                    ExpressionType.Length, 
+                    ExpressionType.Length,
                     Apply(
-                        args => 
+                        args =>
                             {
                                 var result = 0;
                                 if (args[0] is string str)
@@ -2657,8 +2654,8 @@ namespace Microsoft.Bot.Expressions
                                     }
 
                                 return result;
-                            }, VerifyStringOrNull), 
-                    ReturnType.Number, 
+                            }, VerifyStringOrNull),
+                    ReturnType.Number,
                     ValidateAtLeastOne),
                 new ExpressionEvaluator(
                     ExpressionType.Replace,
@@ -2725,13 +2722,13 @@ namespace Microsoft.Bot.Expressions
                     ReturnType.String,
                     (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.String, ReturnType.Number)),
                 StringTransform(
-                                ExpressionType.ToLower, 
-                                args => 
+                                ExpressionType.ToLower,
+                                args =>
                                 {
                                     if (args[0] == null)
                                     {
                                         return string.Empty;
-                                    } 
+                                    }
                                     else
                                     {
                                         return args[0].ToLower();
@@ -2850,15 +2847,37 @@ namespace Microsoft.Bot.Expressions
                     (exprssion) => BuiltInFunctions.ValidateArityAndAnyType(exprssion, 0, 0)),
                 new ExpressionEvaluator(
                     ExpressionType.IndexOf,
-                    Apply(
-                        args =>
+                    (expression, state) =>
+                    {
+                        object result = -1;
+                        var (args, error) = EvaluateChildren(expression, state);
+                        if (error == null)
                         {
-                            string rawStr = ParseStringOrNull(args[0]);
-                            string seekStr = ParseStringOrNull(args[1]);
-                            return rawStr.IndexOf(seekStr);
-                        }, VerifyStringOrNull),
+                            if (args[0] is string || args[0] == null)
+                            {
+                                if (args[1] is string || args[1] == null)
+                                {
+                                    result = ParseStringOrNull(args[0]).IndexOf(ParseStringOrNull(args[1]));
+                                }
+                                else
+                                {
+                                    error = $"Can only look for indexof string in {expression}";
+                                }
+                            }
+                            else if (TryParseList(args[0], out IList list))
+                            {
+                                result = ResolveListValue(list).IndexOf(args[1]);
+                            }
+                            else
+                            {
+                                error = $"{expression} works only on string or list.";
+                            }
+                        }
+
+                        return (result, error);
+                    },
                     ReturnType.Number,
-                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
+                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String, ReturnType.Boolean, ReturnType.Number, ReturnType.Object)),
                 new ExpressionEvaluator(
                     ExpressionType.LastIndexOf,
                     Apply(
@@ -3449,7 +3468,10 @@ namespace Microsoft.Bot.Expressions
                             }
                             else
                             {
-                                value = Randomizer.Next(min, max);
+                                lock (_randomizerLock)
+                                {
+                                    value = Randomizer.Next(min, max);
+                                }
                             }
 
                             return (value, error);

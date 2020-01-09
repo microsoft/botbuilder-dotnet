@@ -1,0 +1,42 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.GetConversationMembers",
+                        "property": "$members"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "@{join($members, ',')}"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnError",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "error"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "error"
+        }
+    ]
+}

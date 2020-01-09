@@ -65,9 +65,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Adds a new dialog to the set and returns the added dialog.
+        /// Adds a new dialog to the set and returns the set to allow fluent chaining.
         /// If the Dialog.Id being added already exists in the set, the dialogs id will be updated to 
-        /// include a suffix which makes it unique.So adding 2 dialogs named "duplicate" to the set
+        /// include a suffix which makes it unique. So adding 2 dialogs named "duplicate" to the set
         /// would result in the first one having an id of "duplicate" and the second one having an id
         /// of "duplicate2".
         /// </summary>

@@ -3,12 +3,12 @@
 
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.AI.Luis;
-using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
@@ -53,6 +53,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<OnEndOfConversationActivity>(OnEndOfConversationActivity.DeclarativeType);
             yield return new TypeRegistration<OnTypingActivity>(OnTypingActivity.DeclarativeType);
             yield return new TypeRegistration<OnHandoffActivity>(OnHandoffActivity.DeclarativeType);
+            yield return new TypeRegistration<OnChooseIntent>(OnChooseIntent.DeclarativeType);
+
+            yield return new TypeRegistration<OnEndOfActions>(OnEndOfActions.DeclarativeType);
+            yield return new TypeRegistration<OnChooseProperty>(OnChooseProperty.DeclarativeType);
+            yield return new TypeRegistration<OnChooseEntity>(OnChooseEntity.DeclarativeType);
+            yield return new TypeRegistration<OnClearProperty>(OnClearProperty.DeclarativeType);
+            yield return new TypeRegistration<OnAssignEntity>(OnAssignEntity.DeclarativeType);
 
             // Actions
             yield return new TypeRegistration<BeginDialog>(BeginDialog.DeclarativeType);
@@ -78,6 +85,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<SetProperties>(SetProperties.DeclarativeType);
             yield return new TypeRegistration<SwitchCondition>(SwitchCondition.DeclarativeType);
             yield return new TypeRegistration<TraceActivity>(TraceActivity.DeclarativeType);
+            yield return new TypeRegistration<GotoAction>(GotoAction.DeclarativeType);
+            yield return new TypeRegistration<BreakLoop>(BreakLoop.DeclarativeType);
+            yield return new TypeRegistration<ContinueLoop>(ContinueLoop.DeclarativeType);
+            yield return new TypeRegistration<UpdateActivity>(UpdateActivity.DeclarativeType);
+            yield return new TypeRegistration<DeleteActivity>(DeleteActivity.DeclarativeType);
+            yield return new TypeRegistration<GetActivityMembers>(GetActivityMembers.DeclarativeType);
+            yield return new TypeRegistration<GetConversationMembers>(GetConversationMembers.DeclarativeType);
+            yield return new TypeRegistration<SignOutUser>(SignOutUser.DeclarativeType);
 
             // Inputs
             yield return new TypeRegistration<AttachmentInput>(AttachmentInput.DeclarativeType);
@@ -87,12 +102,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<ChoiceInput>(ChoiceInput.DeclarativeType);
             yield return new TypeRegistration<DateTimeInput>(DateTimeInput.DeclarativeType);
             yield return new TypeRegistration<OAuthInput>(OAuthInput.DeclarativeType);
+            yield return new TypeRegistration<Ask>(Ask.DeclarativeType);
 
             // Recognizers
             yield return new TypeRegistration<LuisRecognizer>(LuisRecognizer.DeclarativeType) { CustomDeserializer = new LuisRecognizerLoader(TypeFactory.Configuration) };
             yield return new TypeRegistration<RegexRecognizer>(RegexRecognizer.DeclarativeType);
-            yield return new TypeRegistration<IntentPattern>(IntentPattern.DeclarativeType);
             yield return new TypeRegistration<MultiLanguageRecognizer>(MultiLanguageRecognizer.DeclarativeType);
+            yield return new TypeRegistration<RecognizerSet>(RecognizerSet.DeclarativeType);
+            yield return new TypeRegistration<CrossTrainedRecognizerSet>(CrossTrainedRecognizerSet.DeclarativeType);
+            yield return new TypeRegistration<ValueRecognizer>(ValueRecognizer.DeclarativeType);
 
             // Entity recognizers
             yield return new TypeRegistration<AgeEntityRecognizer>(AgeEntityRecognizer.DeclarativeType);
@@ -111,6 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<OrdinalEntityRecognizer>(OrdinalEntityRecognizer.DeclarativeType);
             yield return new TypeRegistration<PercentageEntityRecognizer>(PercentageEntityRecognizer.DeclarativeType);
             yield return new TypeRegistration<PhoneNumberEntityRecognizer>(PhoneNumberEntityRecognizer.DeclarativeType);
+            yield return new TypeRegistration<RegexEntityRecognizer>(RegexEntityRecognizer.DeclarativeType);
             yield return new TypeRegistration<TemperatureEntityRecognizer>(TemperatureEntityRecognizer.DeclarativeType);
             yield return new TypeRegistration<UrlEntityRecognizer>(UrlEntityRecognizer.DeclarativeType);
 
@@ -149,7 +168,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new InterfaceConverter<EntityRecognizer>(refResolver, sourceMap, paths);
             yield return new InterfaceConverter<ITriggerSelector>(refResolver, sourceMap, paths);
             yield return new ExpressionPropertyConverter<ChoiceSet>();
+            yield return new ExpressionPropertyConverter<ExpressionProperty<List<string>>>();
             yield return new ActivityTemplateConverter();
+            yield return new JObjectConverter(refResolver);
         }
     }
 }

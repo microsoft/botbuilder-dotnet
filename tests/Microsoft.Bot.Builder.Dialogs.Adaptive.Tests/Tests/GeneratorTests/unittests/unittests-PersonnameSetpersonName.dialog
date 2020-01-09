@@ -1,0 +1,14 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$kind": "Microsoft.OnAssignEntity",
+    "property": "Personname",
+    "entity": "personName", 
+    "actions": [
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Personname",
+            "value": "@personName"          
+        }
+    ]               
+}

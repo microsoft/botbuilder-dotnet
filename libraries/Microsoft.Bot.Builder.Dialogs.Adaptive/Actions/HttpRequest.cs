@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.HttpRequest";
 
-        private static readonly HttpClient Client = new HttpClient();
+        private Expression disabled;
 
         public HttpRequest(HttpMethod method, string url, string inputProperty, Dictionary<string, string> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
@@ -101,6 +101,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             DELETE
         }
 
+        /// <summary>
+        /// Gets or sets an optional expression which if is true will disable this action.
+        /// </summary>
+        /// <example>
+        /// "user.age > 18".
+        /// </example>
+        /// <value>
+        /// A boolean expression. 
+        /// </value>
+        [JsonProperty("disabled")]
+        public string Disabled
+        {
+            get { return disabled?.ToString(); }
+            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
+        }
+
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("method")]
         public HttpMethod Method { get; set; }
@@ -138,8 +154,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
+            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            {
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
+            var client = new HttpClient();
+
             // Single command running with a copy of the original data
-            Client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Clear();
 
             JToken instanceBody = null;
             if (this.Body != null)
@@ -163,7 +186,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 foreach (var unit in instanceHeaders)
                 {
-                    Client.DefaultRequestHeaders.Add(
+                    client.DefaultRequestHeaders.Add(
                         await new TextTemplate(unit.Key).BindToData(dc.Context, dc.GetState()),
                         await new TextTemplate(unit.Value).BindToData(dc.Context, dc.GetState()));
                 }
@@ -182,14 +205,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 case HttpMethod.POST:
                     if (instanceBody == null)
                     {
-                        response = await Client.PostAsync(instanceUrl, null);
+                        response = await client.PostAsync(instanceUrl, null);
                     }
                     else
                     {
                         var postContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
                         traceInfo.request.content = instanceBody.ToString();
                         traceInfo.request.headers = JObject.FromObject(postContent?.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                        response = await Client.PostAsync(instanceUrl, postContent);
+                        response = await client.PostAsync(instanceUrl, postContent);
                     }
 
                     break;
@@ -198,7 +221,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     if (instanceBody == null)
                     {
                         var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
-                        response = await Client.SendAsync(request);
+                        response = await client.SendAsync(request);
                     }
                     else
                     {
@@ -206,7 +229,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
                         traceInfo.request.content = instanceBody.ToString();
                         traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                        response = await Client.SendAsync(request);
+                        response = await client.SendAsync(request);
                     }
 
                     break;
@@ -214,24 +237,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 case HttpMethod.PUT:
                     if (instanceBody == null)
                     {
-                        response = await Client.PutAsync(instanceUrl, null);
+                        response = await client.PutAsync(instanceUrl, null);
                     }
                     else
                     {
                         var putContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
                         traceInfo.request.content = instanceBody.ToString();
                         traceInfo.request.headers = JObject.FromObject(putContent.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                        response = await Client.PutAsync(instanceUrl, putContent);
+                        response = await client.PutAsync(instanceUrl, putContent);
                     }
 
                     break;
 
                 case HttpMethod.DELETE:
-                    response = await Client.DeleteAsync(instanceUrl);
+                    response = await client.DeleteAsync(instanceUrl);
                     break;
 
                 case HttpMethod.GET:
-                    response = await Client.GetAsync(instanceUrl);
+                    response = await client.GetAsync(instanceUrl);
                     break;
             }
 

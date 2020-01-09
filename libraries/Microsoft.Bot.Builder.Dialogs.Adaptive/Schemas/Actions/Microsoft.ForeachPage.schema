@@ -5,6 +5,19 @@
     "description": "Execute actions on each page (collection of items) in an array.",
     "type": "object",
     "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$role": "expression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
         "itemsProperty": {
             "$role": "expression",
             "title": "Items property",

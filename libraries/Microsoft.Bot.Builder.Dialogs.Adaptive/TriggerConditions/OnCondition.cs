@@ -7,8 +7,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Memory;
+using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Expressions;
+using Microsoft.Bot.Expressions.TriggerTrees;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
@@ -22,11 +26,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.OnCondition";
 
+        private ActionScope actionScope;
+
         // constraints from Rule.AddConstraint()
         private List<Expression> extraConstraints = new List<Expression>();
 
+        private string priorityString = null;
+
         // cached expression representing all constraints (constraint AND extraConstraints AND childrenConstraints)
         private Expression fullConstraint = null;
+
+        // cached expression of parsed priority
+        private Expression priorityExpression = null;
 
         [JsonConstructor]
         public OnCondition(string condition = null, List<Dialog> actions = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -58,6 +69,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public virtual SourceRange Source => DebugSupport.SourceMap.TryGetValue(this, out var range) ? range : null;
 
         /// <summary>
+        /// Gets or sets the rule priority expression where 0 is the highest and less than 0 is ignored.
+        /// </summary>
+        /// <value>Priority of condition expression.</value>
+        [JsonProperty("priority")]
+        public string Priority
+        {
+            get => priorityString;
+            set
+            {
+                priorityExpression = null;
+                priorityString = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether rule should only run once per unique set of memory paths.
+        /// </summary>
+        /// <value>Boolean if should run once per unique values.</value>
+        [JsonProperty("runOnce")]
+        public bool RunOnce { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the unique id for this condition.
+        /// </summary>
+        /// <value>Id for condition.</value>
+        [JsonIgnore]
+        public string Id { get; set; }
+
+        protected ActionScope ActionScope
+        {
+            get
+            {
+                if (actionScope == null)
+                {
+                    actionScope = new ActionScope() { Actions = this.Actions };
+                }
+
+                return actionScope;
+            }
+        }
+
+        /// <summary>
         /// Get the expression for this rule by calling GatherConstraints().
         /// </summary>
         /// <param name="parser">Expression parser.</param>
@@ -68,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             {
                 if (this.fullConstraint == null)
                 {
-                    List<Expression> allExpressions = new List<Expression>();
+                    var allExpressions = new List<Expression>();
                     if (!string.IsNullOrWhiteSpace(this.Condition))
                     {
                         try
@@ -88,16 +141,58 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
                     if (allExpressions.Any())
                     {
-                        return Expression.AndExpression(allExpressions.ToArray());
+                        this.fullConstraint = Expression.AndExpression(allExpressions.ToArray());
                     }
                     else
                     {
-                        return Expression.ConstantExpression(true);
+                        this.fullConstraint = Expression.ConstantExpression(true);
                     }
+
+                    if (RunOnce)
+                    {
+                        this.fullConstraint = Expression.AndExpression(
+                            this.fullConstraint,
+                            new Expression(
+                                TriggerTree.LookupFunction("ignore"),
+                                new Expression(new ExpressionEvaluator(
+                                    $"runOnce{Id}",
+                                    (expression, os) =>
+                                    {
+                                        var state = os as DialogStateManager;
+                                        var basePath = $"{AdaptiveDialog.ConditionTracker}.{Id}.";
+                                        var lastRun = state.GetValue<uint>(basePath + "lastRun");
+                                        var paths = state.GetValue<string[]>(basePath + "paths");
+                                        var changed = state.AnyPathChanged(lastRun, paths);
+                                        return (changed, null);
+                                    },
+                                    ReturnType.Boolean,
+                                    BuiltInFunctions.ValidateUnary))));
+                    }
+                }
+
+                if (priorityExpression == null)
+                {
+                    priorityExpression = parser.Parse(Priority);
                 }
             }
 
             return this.fullConstraint;
+        }
+
+        /// <summary>
+        /// Compute the current value of the priority expression and return it.
+        /// </summary>
+        /// <param name="context">Context to use for evaluation.</param>
+        /// <returns>Computed priority.</returns>
+        public int CurrentPriority(SequenceContext context)
+        {
+            var (priority, error) = priorityExpression.TryEvaluate(context.GetState());
+            if (error != null || !(priority is int))
+            {
+                priority = -1;
+            }
+
+            return (int)priority;
         }
 
         /// <summary>
@@ -130,6 +225,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <returns>A <see cref="Task"/> with plan change list.</returns>
         public virtual async Task<List<ActionChangeList>> ExecuteAsync(SequenceContext planningContext)
         {
+            if (RunOnce)
+            {
+                var count = planningContext.GetState().GetValue<uint>(DialogPath.EventCounter);
+                planningContext.GetState().SetValue($"{AdaptiveDialog.ConditionTracker}.{Id}.lastRun", count);
+            }
+
             return await Task.FromResult(new List<ActionChangeList>()
             {
                 this.OnCreateChangeList(planningContext)
@@ -147,12 +248,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
         public virtual IEnumerable<Dialog> GetDependencies()
         {
-            foreach (var action in this.Actions)
-            {
-                yield return action;
-            }
-
-            yield break;
+            yield return this.ActionScope;
         }
 
         protected virtual ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
@@ -160,24 +256,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             var changeList = new ActionChangeList()
             {
                 Actions = new List<ActionState>()
+                {
+                    new ActionState()
+                    {
+                        DialogId = this.ActionScope.Id,
+                        Options = dialogOptions
+                    }
+                },
             };
-
-            Actions.ForEach(s =>
-            {
-                var stepState = new ActionState()
-                {
-                    DialogStack = new List<DialogInstance>(),
-                    DialogId = s.Id
-                };
-
-                if (dialogOptions != null)
-                {
-                    stepState.Options = dialogOptions;
-                }
-
-                changeList.Actions.Add(stepState);
-            });
-
             return changeList;
         }
 

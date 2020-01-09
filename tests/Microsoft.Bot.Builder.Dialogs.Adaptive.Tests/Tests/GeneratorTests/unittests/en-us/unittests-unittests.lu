@@ -1,0 +1,16 @@
+# unittests
+- {age}
+- {ordinal}
+- {geographyV2}
+- {money}
+- {percentage}
+- {temperature}
+- {url}
+- {number}
+
+- {dimension}
+- {Enum1Entity}
+- {Enum2Entity}
+- {email}
+- {Confirmation}
+- {PROPERTYName}

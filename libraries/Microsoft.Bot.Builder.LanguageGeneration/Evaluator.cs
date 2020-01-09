@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
@@ -204,7 +203,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     case LGFileParser.MULTILINE_SUFFIX:
                         break;
                     case LGFileParser.ESCAPE_CHARACTER:
-                        result.Add(EvalEscape(node.GetText()));
+                        result.Add(node.GetText().Escape());
                         break;
                     case LGFileParser.EXPRESSION:
                         result.Add(EvalExpression(node.GetText()));
@@ -260,7 +259,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var result = new List<object>();
             foreach (var item in values)
             {
-                if (IsPureExpression(item, out var text))
+                if (item.IsPureExpression(out var text))
                 {
                     result.Add(EvalExpression(text));
                 }
@@ -272,7 +271,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         switch (node.Symbol.Type)
                         {
                             case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
-                                itemStringResult.Append(EvalEscape(node.GetText()));
+                                itemStringResult.Append(node.GetText().Escape());
                                 break;
                             case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
                                 itemStringResult.Append(EvalExpression(node.GetText()));
@@ -288,39 +287,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return result.Count == 1 ? result[0] : result;
-        }
-
-        private bool IsPureExpression(LGFileParser.KeyValueStructureValueContext context, out string expression)
-        {
-            expression = context.GetText();
-
-            var hasExpression = false;
-            foreach (ITerminalNode node in context.children)
-            {
-                switch (node.Symbol.Type)
-                {
-                    case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
-                        return false;
-                    case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
-                        if (hasExpression)
-                        {
-                            return false;
-                        }
-
-                        hasExpression = true;
-                        expression = node.GetText();
-                        break;
-                    default:
-                        if (!string.IsNullOrWhiteSpace(node.GetText()))
-                        {
-                            return false;
-                        }
-
-                        break;
-                }
-            }
-
-            return hasExpression;
         }
 
         private bool EvalCondition(LGFileParser.IfConditionContext condition)
@@ -358,21 +324,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 Debug.WriteLine(e.Message);
                 return false;
             }
-        }
-
-        private string EvalEscape(string exp)
-        {
-            return new Regex(@"\\[^\r\n]?").Replace(exp, new MatchEvaluator(m =>
-            {
-                var value = m.Value;
-                var commonEscapes = new List<string>() { "\\r", "\\n", "\\t" };
-                if (commonEscapes.Contains(value))
-                {
-                    return Regex.Unescape(value);
-                }
-
-                return value.Substring(1);
-            }));
         }
 
         private object EvalExpression(string exp)
@@ -505,14 +456,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private Func<IReadOnlyList<object>, object> FromFile()
        => (IReadOnlyList<object> args) =>
        {
-           var filePath = ImportResolver.NormalizePath(args[0].ToString());
+           var filePath = args[0].ToString().NormalizePath();
 
            var resourcePath = GetResourcePath(filePath);
            var stringContent = File.ReadAllText(resourcePath);
 
            var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
            var result = ExpressionRecognizeRegex.Replace(stringContent, evalutor);
-           return EvalEscape(result);
+           return result.Escape();
        };
 
         private void ValidateFromFile(Expression expression)
@@ -540,7 +491,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             else
             {
                 var template = TemplateMap[CurrentTarget().TemplateName];
-                var sourcePath = ImportResolver.NormalizePath(template.Source);
+                var sourcePath = template.Source.NormalizePath();
                 var baseFolder = Environment.CurrentDirectory;
                 if (Path.IsPathRooted(sourcePath))
                 {

@@ -1,0 +1,18 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$kind": "Microsoft.OnAssignEntity",
+    "property": "Meat",
+    "entity": "MeatEntity",
+    "actions": [
+        {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "@{setPropertyMessage('Meat', @MeatEntity)}"
+        },    
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Meat",
+            "value": "@MeatEntity"
+        }
+    ]
+}

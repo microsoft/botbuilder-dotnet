@@ -1,0 +1,103 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "root",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.InitProperty",
+                        "property": "dialog.todo",
+                        "type": "array"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "changeType": "push",
+                        "value": "1"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "changeType": "push",
+                        "value": "2"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "changeType": "push",
+                        "value": "3"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "changeType": "push",
+                        "value": "4"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "changeType": "push",
+                        "value": "5"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "changeType": "push",
+                        "value": "6"
+                    },
+                    {
+                        "$kind": "Microsoft.Foreach",
+                        "itemsProperty": "dialog.todo",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.IfCondition",
+                                "condition": "dialog.foreach.index > 2",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.BreakLoop"
+                                    }
+                                ]
+                            },
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "index is: @{dialog.foreach.index} and value is: @{dialog.foreach.value}"
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "done"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "index is: 0 and value is: 1"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "index is: 1 and value is: 2"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "index is: 2 and value is: 3"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "done"
+        }
+    ]
+}

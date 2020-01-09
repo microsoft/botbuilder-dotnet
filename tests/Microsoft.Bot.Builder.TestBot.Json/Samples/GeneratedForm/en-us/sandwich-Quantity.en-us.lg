@@ -1,0 +1,12 @@
+# AskQuantity
+- @{askNumber('Quantity')}
+
+# QuantityName
+- quantity
+
+# Quantity(val)
+- @{QuantityEntity(val)}
+
+[sandwich-QuantityEntity.lg](sandwich-QuantityEntity.lg)
+
+[sandwich-common.lg](sandwich-common.lg)

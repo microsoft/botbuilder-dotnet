@@ -1,7 +1,7 @@
 {
     "$schema": "../../app.schema",
     "$kind": "Microsoft.AdaptiveDialog",
-    "generator": "GithubIssueBot.main.lg",
+    "generator": "show.lg",
     "triggers": [
         {
             "$kind": "Microsoft.OnBeginDialog",

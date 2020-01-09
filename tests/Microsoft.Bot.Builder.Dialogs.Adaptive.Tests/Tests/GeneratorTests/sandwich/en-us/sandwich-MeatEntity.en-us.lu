@@ -1,0 +1,27 @@
+$MeatEntity:bacon=
+- bacon
+
+$MeatEntity:chicken=
+- chicken
+
+$MeatEntity:ham=
+- ham
+
+$MeatEntity:pulled pork=
+- pulled
+- pork
+- pulled pork
+
+$MeatEntity:roast beef=
+- roast
+- beef
+- roast beef
+
+$MeatEntity:salami=
+- salami
+
+$MeatEntity:turkey=
+- turkey
+
+$MeatEntity:none=
+- none

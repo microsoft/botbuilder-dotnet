@@ -1,4 +1,5 @@
 {
+    "$schema": "../../../../schemas/sdk.schema",
   "$kind": "Microsoft.Test.Script",
   "dialog": {
     "$kind": "Microsoft.AdaptiveDialog",
@@ -10,36 +11,42 @@
           {
             "$kind": "Microsoft.InitProperty",
             "property": "dialog.todo",
-            "type": "Array"
+            "type": "array"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
+            "changeType": "push",
             "value": "1"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
+            "changeType": "push",
             "value": "2"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
+            "changeType": "push",
             "value": "3"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
+            "changeType": "push",
             "value": "4"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
+            "changeType": "push",
             "value": "5"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
+            "changeType": "push",
             "value": "6"
           },
           {
@@ -49,7 +56,7 @@
             "actions": [
               {
                 "$kind": "Microsoft.SendActivity",
-                "activity": "This page have 3 items"
+                "activity": "This page have @{count(dialog.foreach.page)} items"
               },
               {
                 "$kind": "Microsoft.Foreach",
@@ -62,11 +69,15 @@
                 ]
               }
             ]
+          },
+          {
+              "$kind":"Microsoft.SendActivity",
+              "activity":"done"
           }
         ]
       }
     ],
-    "AutoEndDialog": true,
+    "autoEndDialog": true,
     "defaultResultProperty": "dialog.result"
   },
   "script": [
@@ -105,6 +116,10 @@
     {
       "$kind": "Microsoft.Test.AssertReply",
       "text": "index is: 2 and value is: 6"
-    }
-  ]
+    },
+    {
+        "$kind": "Microsoft.Test.AssertReply",
+        "text": "done"
+      }
+    ]
 }

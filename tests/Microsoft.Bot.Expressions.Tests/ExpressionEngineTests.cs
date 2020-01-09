@@ -6,10 +6,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Expressions.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Expressions.Tests
@@ -197,6 +195,21 @@ namespace Microsoft.Bot.Expressions.Tests
                     },
                     title = "Dialog Title",
                     subTitle = "Dialog Sub Title"
+                }
+            },
+            {
+                "doubleNestedItems",
+                new object[][]
+                {
+                    new object[]
+                    {
+                        new { x = 1 },
+                        new { x = 2 }
+                    },
+                    new object[]
+                    {
+                        new { x = 3 }
+                    }
                 }
             },
             {
@@ -609,6 +622,7 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("join(foreach(dialog, item, item.key), ',')", "x,instance,options,title,subTitle"),
             Test("foreach(dialog, item, item.value)[1].xxx", "instance"),
             Test("join(foreach(items, item, item), ',')", "zero,one,two"),
+            Test("join(foreach(indicesAndValues(items), item, item.value), ',')", "zero,one,two"),
             Test("join(foreach(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string> { "nestedItems" }),
             Test("join(foreach(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string> { "items" }),
             Test("join(select(items, item, item), ',')", "zero,one,two"),
@@ -616,7 +630,12 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("join(select(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string> { "items" }),
             Test("join(where(items, item, item == 'two'), ',')", "two"),
             Test("string(where(dialog, item, item.value=='Dialog Title'))", "{\"title\":\"Dialog Title\"}"),
+            Test("first(where(indicesAndValues(items), elt, elt.index > 1)).value", "two"),
             Test("join(foreach(where(nestedItems, item, item.x > 1), result, result.x), ',')", "2,3", new HashSet<string> { "nestedItems" }),
+            Test("join(foreach(doubleNestedItems, items, join(foreach(items, item, concat(y, string(item.x))), ',')), ',')", "y1,y2,y3"),
+            Test("join(foreach(doubleNestedItems, items, join(foreach(items, item, items[0].x), ',')), ',')", "1,1,3"),
+            Test("count(where(doubleNestedItems, items, count(where(items, item, item.x == 1)) == 1))", 1),
+            Test("count(where(doubleNestedItems, items, count(where(items, item, count(items) == 1)) == 1))", 1),
             Test("last(items)", "two"),
             Test("last('hello')", "o"),
             Test("last(createArray(0, 1, 2))", 2),
@@ -633,6 +652,10 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("indexOf(nullObj, '-')", -1),
             Test("indexOf(hello, nullObj)", 0),
             Test("indexOf(hello, '-')", -1),
+            Test("indexOf(json('[\"a\", \"b\"]'), 'a')", 0),
+            Test("indexOf(json('[\"a\", \"b\"]'), 'c')", -1),
+            Test("indexOf(createArray('abc', 'def', 'ghi'), 'def')", 1),
+            Test("indexOf(createArray('abc', 'def', 'ghi'), 'klm')", -1),
             Test("lastIndexOf(newGuid(), '-')", 23),
             Test("lastIndexOf(hello, '-')", -1),
             Test("lastIndexOf(nullObj, '-')", -1),

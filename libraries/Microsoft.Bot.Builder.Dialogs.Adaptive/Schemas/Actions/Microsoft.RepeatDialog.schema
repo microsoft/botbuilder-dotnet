@@ -5,6 +5,19 @@
     "title": "Repeat dialog",
     "description": "Repeat current dialog.",
     "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$role": "expression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
         "options": {
             "type": "object",
             "title": "Options",
@@ -14,11 +27,11 @@
                 "title": "Options"
             }
         },
-        "includeActivity": {
+        "activityProcessed": {
             "type": "boolean",
-            "title": "Include Activity",
-            "description": "When set to true, dialog that is called can process the current activity.",
-            "default": false
+            "title": "Activity Processed",
+            "description": "When set to false, the dialog that is called can process the current activity.",
+            "default": true
         }
     }
 }

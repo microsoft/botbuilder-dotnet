@@ -1,0 +1,12 @@
+# AskZipcodepattern
+- @{askString('Zipcodepattern')}
+
+# ZipcodepatternName
+- zipcodepattern
+
+# Zipcodepattern(val)
+- @{ZipcodepatternEntity(val)}
+
+[unittests-ZipcodepatternEntity.lg](unittests-ZipcodepatternEntity.lg)
+
+[unittests-common.lg](unittests-common.lg)

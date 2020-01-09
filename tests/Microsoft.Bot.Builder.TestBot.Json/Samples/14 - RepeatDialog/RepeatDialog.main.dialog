@@ -1,13 +1,12 @@
 {
     "$schema": "../../app.schema",
     "$kind": "Microsoft.AdaptiveDialog",
-    "$id": "root",
     "recognizer": {
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "cancel",
                 "pattern": "cancel"
             }

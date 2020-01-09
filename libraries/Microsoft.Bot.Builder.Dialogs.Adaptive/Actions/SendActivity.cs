@@ -2,10 +2,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
+using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -19,6 +21,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.SendActivity";
 
+        private Expression disabled;
+
         public SendActivity(Activity activity, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -30,6 +34,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             this.RegisterSourceLocation(callerPath, callerLine);
             this.Activity = new ActivityTemplate(text ?? string.Empty);
+        }
+
+        /// <summary>
+        /// Gets or sets an optional expression which if is true will disable this action.
+        /// </summary>
+        /// <example>
+        /// "user.age > 18".
+        /// </example>
+        /// <value>
+        /// A boolean expression. 
+        /// </value>
+        [JsonProperty("disabled")]
+        public string Disabled
+        {
+            get { return disabled?.ToString(); }
+            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
         }
 
         /// <summary>
@@ -48,8 +68,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
+            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            {
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
             var activity = await Activity.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
-            var response = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+            ResourceResponse response = null;
+            if (activity.Type != "message" 
+                || !string.IsNullOrEmpty(activity.Text)
+                || activity.Attachments?.Any() == true
+                || !string.IsNullOrEmpty(activity.Speak)
+                || activity.SuggestedActions != null)
+            {
+                response = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+            }
+
             return await dc.EndDialogAsync(response, cancellationToken).ConfigureAwait(false);
         }
 
@@ -70,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return text;
             }
 
-            int pos = text.IndexOf(" ", length);
+            var pos = text.IndexOf(" ", length);
 
             if (pos >= 0)
             {
