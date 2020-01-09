@@ -294,7 +294,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             BotAssert.ContextNotNull(turnContext);
 
-            if (!(turnContext.Adapter is ICredentialTokenProvider adapter))
+            if (!(turnContext.Adapter is ICredentialTokenProviderWithEmulator adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.Prompt(): not supported by the current adapter");
             }
