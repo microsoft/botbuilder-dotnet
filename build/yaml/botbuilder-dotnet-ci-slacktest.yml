@@ -39,7 +39,6 @@ steps:
   inputs:
     solution: Microsoft.Bot.Builder.sln
     vsVersion: 16.0
-    msbuildArgs: '-p:DefineConstants="FUNCTIONALTESTS"'
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
 
