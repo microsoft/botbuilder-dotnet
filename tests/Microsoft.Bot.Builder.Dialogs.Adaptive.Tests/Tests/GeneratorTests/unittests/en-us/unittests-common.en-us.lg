@@ -59,7 +59,7 @@ Enter a value for @{name(property)}
 
 # requiredProperties
 - IF: @{count(dialogClass.schema.required) > 0}
-- Required properties include: @{join(foreach(where(dialogClass.schema.required, property, !contains(dialogClass.schema.$expectedOnly, property)), property, name(property)), ',')}\n
+- Required properties include: @{join(foreach(dialogClass.schema.required, property, name(property)), ',')}\n
 - ELSE:
 - 
 

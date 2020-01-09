@@ -1,8 +1,12 @@
 # ReadProperty
 - what's my current selection of {PROPERTYName}
-- what's the curernt value of {PROPERTYName}
+- what's the current value of {PROPERTYName}
 - what's the value of {PROPERTYName}
 - value of {PROPERTYName}
 - the value of {PROPERTYName}
 - selection of {PROPERTYName}
 - current selection of {PROPERTYName}
+- value for {PROPERTYName}
+- the value for {PROPERTYName}
+- selection for {PROPERTYName}
+- current selection for {PROPERTYName}

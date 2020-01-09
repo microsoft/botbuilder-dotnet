@@ -17,9 +17,9 @@
                 {
                     "$kind": "Microsoft.Ask",
                     "activity": "@{template(concat('Ask',$PropertyToRemember))}",
-                    "expectedProperties": [
-                        "$PropertyToRemember"
-                    ]
+                    "expectedProperties": 
+                        "createArray($PropertyToRemember)"
+                    
                 }
             ]
         }
