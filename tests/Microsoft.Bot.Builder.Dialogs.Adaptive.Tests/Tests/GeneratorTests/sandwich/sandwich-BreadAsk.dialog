@@ -8,9 +8,7 @@
         {
             "$kind": "Microsoft.Ask",
             "activity": "@{AskBread()}",
-            "expectedProperties": [
-                "Bread"
-            ]
+            "expectedProperties": "createArray('Bread')"
         }
     ]
 }
