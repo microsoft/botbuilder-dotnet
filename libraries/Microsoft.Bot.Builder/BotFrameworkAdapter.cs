@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IActivity"/>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>
-    public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, ICredentialTokenProvider
+    public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, ICredentialTokenProviderWithEmulator
     {
         internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
 
