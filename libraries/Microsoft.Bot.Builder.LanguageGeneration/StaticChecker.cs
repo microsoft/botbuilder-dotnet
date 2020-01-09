@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Return error messaages list.
+        /// Return error messages list.
         /// </summary>
         /// <returns>report result.</returns>
         public List<Diagnostic> Check()
@@ -388,7 +388,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Build LG diagnostic with antlr tree node context.
+        /// Build LG diagnostic with ANTLR tree node context.
         /// </summary>
         /// <param name="message">error/warning message. <see cref="Diagnostic.Message"/>.</param>
         /// <param name="severity">diagnostic Severity <see cref="DiagnosticSeverity"/> to get more info.</param>

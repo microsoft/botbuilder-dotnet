@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public void SetValue(string path, object value)
         {
-            throw new Exception("LG memory are readonly");
+            throw new Exception("LG memory is read-only");
         }
 
         public string Version()

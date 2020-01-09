@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
 
-            // generate a new customzied expression engine by injecting the template as functions
+            // generate a new customized expression engine by injecting the template as functions
             ExpressionEngine = new ExpressionEngine(CustomizedEvaluatorLookup(expressionEngine.EvaluatorLookup));
         }
 
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
 
-            // Using a stack to track the evalution trace
+            // Using a stack to track the evaluation trace
             evaluationTargetStack.Push(templateTarget);
             var result = Visit(TemplateMap[templateName].ParseTree);
             if (previousEvaluateTarget != null)
@@ -354,7 +354,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return parse.TryEvaluate(scope);
         }
 
-        // Genearte a new lookup function based on one lookup function
+        // Generate a new lookup function based on one lookup function
         private EvaluatorLookup CustomizedEvaluatorLookup(EvaluatorLookup baseLookup)
         => (string name) =>
         {
@@ -443,7 +443,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var children0 = expression.Children[0];
             if (children0.ReturnType != ReturnType.Object)
             {
-                throw new Exception($"{children0} can't be used as a json file");
+                throw new Exception($"{children0} can't be used as a JSON file");
             }
 
             var children1 = expression.Children[1];

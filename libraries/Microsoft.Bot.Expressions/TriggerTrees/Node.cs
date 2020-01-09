@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
             // 2) Run your scenario
             // 3) You will most likely get a break on the error.
             // 4) Enable TraceTree and set it here to get the trace before count
-            // Node._count has the global count for breakpointd
+            // Node._count has the global count for breakpoint
             // ShowTrace = _count > 280000;
 
             Clause = new Clause(clause);  // Drop ignored from node clause
