@@ -67,7 +67,7 @@ steps:
     overrideParameters: '-botName "$(BotName)" -appId "$(AppId)" -appSecret "$(AppSecret)"'
 
 - task: AzureCLI@1
-  displayName: 'Azure CLI '
+  displayName: 'Create Azure DirectLine channel for test bot'
   inputs:
     azureSubscription: '$(AzureSubscription)'
     scriptLocation: inlineScript
@@ -108,7 +108,7 @@ steps:
      !**/Microsoft.Bot.Builder.Classic.Tests.csproj
      !**/Microsoft.Bot.ApplicationInsights.WebApi.Tests.csproj
      !**/Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests.csproj
-    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter TestCategory!=IgnoreInAutomatedBuild'
+    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests"'
     workingDirectory: tests
 
 - task: AzureCLI@1
