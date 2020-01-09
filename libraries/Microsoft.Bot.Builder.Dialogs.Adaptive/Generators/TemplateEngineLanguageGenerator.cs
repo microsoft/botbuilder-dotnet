@@ -29,10 +29,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
+        public TemplateEngineLanguageGenerator()
+        {
+            this.lgFile = new LGFile();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
+        /// </summary>
         /// <param name="engine">template engine.</param>
         public TemplateEngineLanguageGenerator(LGFile engine = null)
         {
-            this.lgFile = new LGFile();
+            this.lgFile = engine ?? new LGFile();
         }
 
         /// <summary>
