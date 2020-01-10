@@ -1207,8 +1207,9 @@ namespace Microsoft.Bot.Builder
         {
             // Ensure we have a default ConnectorClient and MSAppCredentials instance for the audience.
             var audience = claimsIdentity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
-            if (string.IsNullOrWhiteSpace(audience) || !AuthenticationConstants.ToBotFromChannelTokenIssuer.Equals(audience, StringComparison.InvariantCulture))
+            if (string.IsNullOrWhiteSpace(audience) || !AuthenticationConstants.ToBotFromChannelTokenIssuer.Equals(audience, StringComparison.InvariantCultureIgnoreCase))
             {
+                // We create a default connector for audiences that are not coming from the default https://api.botframework.com audience.
                 var defaultConnectorClaims = new List<Claim> { new Claim(AuthenticationConstants.AudienceClaim, audience) };
                 var connectorClaimsIdentity = new ClaimsIdentity(defaultConnectorClaims);
                 await CreateConnectorClientAsync(serviceUrl, connectorClaimsIdentity, cancellationToken).ConfigureAwait(false);
