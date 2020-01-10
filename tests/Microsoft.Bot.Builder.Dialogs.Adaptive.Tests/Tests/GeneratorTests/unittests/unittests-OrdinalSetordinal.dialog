@@ -6,6 +6,10 @@
     "entity":"ordinal",
     "actions": [
         {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "@{setPropertyMessage('Ordinal', @ordinal)}"
+        }, 
+        {
             "$kind": "Microsoft.SetProperty",
             "property": "$Ordinal",
             "value": "@ordinal"          
