@@ -41,12 +41,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception($"[{templateName}] not found");
+                throw new Exception(LGErrors.TemplateNotExist(templateName));
             }
 
             if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"Loop detected: {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"{LGErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             var templateTarget = new EvaluationTarget(templateName, scope);
@@ -248,7 +248,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             else
             {
-                throw new Exception("Scope is a LG customized memory");
+                throw new Exception("Scope is not a LG customized memory");
             }
         }
         

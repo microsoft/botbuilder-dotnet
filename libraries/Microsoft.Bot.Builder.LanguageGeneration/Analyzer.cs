@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
 
-            throw new Exception("template name match failed");
+            return new AnalyzerResult();
         }
 
         public override AnalyzerResult VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context) => Visit(context.normalTemplateBody());

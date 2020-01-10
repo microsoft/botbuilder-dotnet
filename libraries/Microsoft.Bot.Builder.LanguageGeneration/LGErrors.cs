@@ -69,5 +69,7 @@
         public static string ArgumentMismatch(string templateName, int expectedCount, int actualCount) => $"arguments mismatch for template {templateName}, expect {expectedCount} actual {actualCount}";
 
         public static string ErrorTemplateNameformat(string templateName) => $"{templateName} can't be used as a template name, must be a string value";
+
+        public static string TemplateExist(string templateName) => $"template {templateName} already exists.";
     }
 }

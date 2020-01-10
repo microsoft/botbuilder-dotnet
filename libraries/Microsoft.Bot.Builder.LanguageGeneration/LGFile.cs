@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
             {
-                throw new Exception($"template {templateName} already exists.");
+                throw new Exception(LGErrors.TemplateExist(templateName));
             }
 
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
