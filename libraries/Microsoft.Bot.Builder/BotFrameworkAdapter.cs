@@ -1210,12 +1210,16 @@ namespace Microsoft.Bot.Builder
             if (string.IsNullOrWhiteSpace(audience) || !AuthenticationConstants.ToBotFromChannelTokenIssuer.Equals(audience, StringComparison.InvariantCultureIgnoreCase))
             {
                 // We create a default connector for audiences that are not coming from the default https://api.botframework.com audience.
+                // We create a default claim that contains only the desired audience.
                 var defaultConnectorClaims = new List<Claim> { new Claim(AuthenticationConstants.AudienceClaim, audience) };
                 var connectorClaimsIdentity = new ClaimsIdentity(defaultConnectorClaims);
+                
+                // The CreateConnectorClientAsync will create a ConnectorClient with an associated MicrosoftAppId for that claim and will
+                // initialize the dictionaries that contain the cache instances.
                 await CreateConnectorClientAsync(serviceUrl, connectorClaimsIdentity, cancellationToken).ConfigureAwait(false);
             }
 
-            // Add the channel service URL to the trusted services list so we can send messages back
+            // Add the channel service URL to the trusted services list so we can send messages back to the channel.
             AppCredentials.TrustServiceUrl(serviceUrl);
         }
 
