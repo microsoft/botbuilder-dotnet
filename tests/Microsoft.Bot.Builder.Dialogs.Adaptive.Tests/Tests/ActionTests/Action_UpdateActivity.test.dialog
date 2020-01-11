@@ -14,7 +14,7 @@
                     },
                     {
                         "$kind": "Microsoft.UpdateActivity",
-                        "activityId": "turn.lastresult.id",
+                        "activityId": "=turn.lastresult.id",
                         "activity": "text2"
                     },
                     {

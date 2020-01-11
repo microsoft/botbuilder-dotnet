@@ -43,6 +43,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
 
         /// <summary>
+        /// This will return the existing expression or ConstantExpression(Value) if the value is non-complex type.
+        /// </summary>
+        /// <returns>expression.</returns>
+        public Expression ToExpression()
+        {
+            if (this.Expression != null)
+            {
+                return this.Expression;
+            }
+
+            if (this.Value is string || this.Value.IsNumber() || this.Value.IsInteger() || this.Value is bool || this.Value.GetType().IsEnum)
+            {
+                return new ExpressionEngine().Parse(this.Value.ToString());
+            }
+
+            // return expression for json object
+            return new ExpressionEngine().Parse($"json({JsonConvert.SerializeObject(this.Value)})");
+        }
+
+        /// <summary>
         /// Get the value.
         /// </summary>
         /// <param name="data">data to use for expression binding.</param>

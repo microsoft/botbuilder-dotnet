@@ -24,7 +24,7 @@
                         ],
                         "cases": [
                             {
-                                "value": "=susan",
+                                "value": "susan",
                                 "actions": [
                                     {
                                         "$kind": "Microsoft.SendActivity",
@@ -33,7 +33,7 @@
                                 ]
                             },
                             {
-                                "value": "=bob",
+                                "value": "bob",
                                 "actions": [
                                     {
                                         "$kind": "Microsoft.SendActivity",
@@ -42,7 +42,7 @@
                                 ]
                             },
                             {
-                                "value": "=frank",
+                                "value": "frank",
                                 "actions": [
                                     {
                                         "$kind": "Microsoft.SendActivity",

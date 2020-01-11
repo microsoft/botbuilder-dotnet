@@ -14,6 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
     /// </summary>
     /// <typeparam name="T">The property type to construct which is IExpressionProperty.</typeparam>
     public class EnumExpressionConverter<T> : JsonConverter<EnumExpression<T>>
+        where T : struct
     {
         public EnumExpressionConverter()
         {

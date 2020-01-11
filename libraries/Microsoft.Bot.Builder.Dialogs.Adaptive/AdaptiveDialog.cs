@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     {
                         if (trigger.RunOnce)
                         {
-                            var paths = dc.GetState().TrackPaths(parser.Parse(trigger.Condition).References());
+                            var paths = dc.GetState().TrackPaths(trigger.Condition.ToExpression().References());
                             var triggerPath = $"{ConditionTracker}.{trigger.Id}.";
                             dc.GetState().SetValue(triggerPath + "paths", paths);
                             dc.GetState().SetValue(triggerPath + "lastRun", 0u);

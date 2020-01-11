@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The type of change to appy to the active actions.
         /// </value>
         [JsonProperty("changeType")]
-        public ActionChangeType ChangeType { get; set; }
+        public EnumExpression<ActionChangeType> ChangeType { get; set; }
 
         public virtual IEnumerable<Dialog> GetDependencies()
         {
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 var changes = new ActionChangeList()
                 {
-                    ChangeType = ChangeType,
+                    ChangeType = ChangeType.TryGetValue(dc.GetState()).Value,
                     Actions = planActions.ToList()
                 };
 

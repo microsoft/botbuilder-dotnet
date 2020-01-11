@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -31,19 +32,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         // constraints from Rule.AddConstraint()
         private List<Expression> extraConstraints = new List<Expression>();
 
-        private string priorityString = null;
-
         // cached expression representing all constraints (constraint AND extraConstraints AND childrenConstraints)
         private Expression fullConstraint = null;
-
-        // cached expression of parsed priority
-        private Expression priorityExpression = null;
 
         [JsonConstructor]
         public OnCondition(string condition = null, List<Dialog> actions = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
-            this.Condition = condition;
+            if (condition != null)
+            {
+                this.Condition = condition;
+            }
+
             this.Actions = actions;
         }
 
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// The condition which needs to be met for the actions to be executed.
         /// </value>
         [JsonProperty("condition")]
-        public string Condition { get; set; }
+        public BoolExpression Condition { get; set; } = new BoolExpression(true);
 
         /// <summary>
         /// Gets or sets the actions to add to the plan when the rule constraints are met.
@@ -114,17 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 if (this.fullConstraint == null)
                 {
                     var allExpressions = new List<Expression>();
-                    if (!string.IsNullOrWhiteSpace(this.Condition))
-                    {
-                        try
-                        {
-                            allExpressions.Add(parser.Parse(this.Condition));
-                        }
-                        catch (Exception e)
-                        {
-                            throw new Exception($"Invalid constraint expression: {this.Condition}, {e.Message}");
-                        }
-                    }
+                    allExpressions.Add(this.Condition.ToExpression());
 
                     if (this.extraConstraints.Any())
                     {
@@ -161,11 +151,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                                     BuiltInFunctions.ValidateUnary))));
                     }
                 }
-
-                if (priorityExpression == null)
-                {
-                    priorityExpression = parser.Parse(Priority.ToString());
-                }
             }
 
             return this.fullConstraint;
@@ -178,13 +163,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <returns>Computed priority.</returns>
         public int CurrentPriority(SequenceContext context)
         {
-            var (priority, error) = priorityExpression.TryEvaluate(context.GetState());
-            if (error != null || !(priority is int))
+            var (priority, error) = this.Priority.TryGetValue(context.GetState());
+            if (error != null)
             {
                 priority = -1;
             }
 
-            return (int)priority;
+            return priority;
         }
 
         /// <summary>

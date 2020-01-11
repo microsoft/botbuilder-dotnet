@@ -11,7 +11,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "user.isVip",
-                        "value": "=True"
+                        "value": "=true"
                     },
                     {
                         "$kind": "Microsoft.SwitchCondition",
@@ -24,7 +24,7 @@
                         ],
                         "cases": [
                             {
-                                "value": "=True",
+                                "value": "true",
                                 "actions": [
                                     {
                                         "$kind": "Microsoft.SendActivity",
@@ -33,7 +33,7 @@
                                 ]
                             },
                             {
-                                "value": "=False",
+                                "value": "false",
                                 "actions": [
                                     {
                                         "$kind": "Microsoft.SendActivity",

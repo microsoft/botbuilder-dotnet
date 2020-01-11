@@ -12,13 +12,13 @@
                         "$kind": "Microsoft.ChoiceInput",
                         "choices": [
                             {
-                                "value": "=red"
+                                "value": "red"
                             },
                             {
-                                "value": "=green"
+                                "value": "green"
                             },
                             {
-                                "value": "=blue"
+                                "value": "blue"
                             }
                         ],
                         "styles": 2,
@@ -34,13 +34,13 @@
                         "$kind": "Microsoft.ChoiceInput",
                         "choices": [
                             {
-                                "value": "=red"
+                                "value": "red"
                             },
                             {
-                                "value": "=green"
+                                "value": "green"
                             },
                             {
-                                "value": "=blue"
+                                "value": "blue"
                             }
                         ],
                         "styles": 2,
@@ -57,13 +57,13 @@
                         "$kind": "Microsoft.ChoiceInput",
                         "choices": [
                             {
-                                "value": "=red"
+                                "value": "red"
                             },
                             {
-                                "value": "=green"
+                                "value": "green"
                             },
                             {
-                                "value": "=blue"
+                                "value": "blue"
                             }
                         ],
                         "styles": 2,

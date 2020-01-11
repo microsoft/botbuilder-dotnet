@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -8,6 +9,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public class EnumExpression<T> : ExpressionProperty<T>
+        where T : struct
     {
         public EnumExpression()
         {
@@ -34,24 +36,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public static implicit operator EnumExpression<T>(JToken value) => new EnumExpression<T>(value);
 
-        public override (T Value, string Error) TryGetValue(object data)
-        {
-            return base.TryGetValue(data);
-        }
-
         public override void SetValue(object value)
         {
             if (value is string stringOrExpression)
             {
-                try
+                if (Enum.TryParse<T>(stringOrExpression.TrimStart('='), ignoreCase: true, out T val))
                 {
-                    // see if we can parse the value as an enum (we use JsonConvert so that we get camel casing behavior
-                    this.Value = JsonConvert.DeserializeObject<T>($"'{stringOrExpression.TrimStart('=')}'");
+                    this.Value = val;
                     return;
-                }
-                catch
-                {
-                    // it must be an expression, fall through and try that.
                 }
             }
 

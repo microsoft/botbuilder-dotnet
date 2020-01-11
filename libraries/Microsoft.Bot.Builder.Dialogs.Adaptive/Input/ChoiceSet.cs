@@ -50,5 +50,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
             }
         }
+
+        public static implicit operator ChoiceSet(bool value) => new ChoiceSet(value);
+
+        public static implicit operator ChoiceSet(string value) => new ChoiceSet(value);
+
+        public static implicit operator ChoiceSet(JToken value) => new ChoiceSet(value);
     }
 }

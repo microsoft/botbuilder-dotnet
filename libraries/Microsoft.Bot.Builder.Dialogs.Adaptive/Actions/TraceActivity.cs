@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Name of the trace activity.
         /// </value>
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public StringExpression Name { get; set; } = new StringExpression();
 
         /// <summary>
         /// Gets or sets value type of the trace activity.
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Value type of the trace activity.
         /// </value>
         [JsonProperty("valueType")]
-        public string ValueType { get; set; }
+        public StringExpression ValueType { get; set; } = new StringExpression();
 
         /// <summary>
         /// Gets or sets value expression to send as the value. 
@@ -62,14 +62,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Property binding to memory to send as the value. 
         /// </value>
         [JsonProperty("value")]
-        public string Value { get; set; }
+        public ValueExpression Value { get; set; } = new ValueExpression();
 
         /// <summary>
         /// Gets or sets a label to use when describing a trace activity.
         /// </summary>
         /// <value>The label to use. (default will use Name or parent dialog.id).</value>
         [JsonProperty]
-        public string Label { get; set; }
+        public StringExpression Label { get; set; } = new StringExpression();
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -83,17 +83,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            object value = null;
-            if (!string.IsNullOrEmpty(this.Value))
-            {
-                value = dc.GetState().GetValue<object>(this.Value);
-            }
-            else
+            var (value, error) = this.Value.TryGetValue(dc.GetState());
+            if (value == null)
             {
                 value = dc.GetState().GetMemorySnapshot();
             }
 
-            var traceActivity = Activity.CreateTraceActivity(this.Name ?? "Trace", valueType: this.ValueType ?? "State", value: value, label: this.Label ?? this.Name ?? dc.Parent?.ActiveDialog?.Id);
+            var name = this.Name.TryGetValue(dc.GetState()).Value;
+            var valueType = this.ValueType.TryGetValue(dc.GetState()).Value;
+            var label = this.Label.TryGetValue(dc.GetState()).Value;
+
+            var traceActivity = Activity.CreateTraceActivity(name ?? "Trace", valueType: valueType ?? "State", value: value, label: label ?? name ?? dc.Parent?.ActiveDialog?.Id);
             await dc.Context.SendActivityAsync(traceActivity, cancellationToken).ConfigureAwait(false);
             return await dc.EndDialogAsync(traceActivity, cancellationToken: cancellationToken).ConfigureAwait(false);
         }

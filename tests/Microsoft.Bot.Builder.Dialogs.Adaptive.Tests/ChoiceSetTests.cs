@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Converters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
@@ -27,6 +28,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     [TestClass]
     public class ChoiceSetTests
     {
+        private JsonSerializerSettings settings = new JsonSerializerSettings()
+        {
+            Converters = new List<JsonConverter>() { new ChoiceSetConverter(), new ExpressionPropertyConverter<ChoiceSet>() }
+        };
+
         public TestContext TestContext { get; set; }
 
         [TestMethod]
@@ -106,14 +112,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            var json = JsonConvert.SerializeObject(new
+            var sample = new
             {
                 Choices = "test"
-            });
-            var settings = new JsonSerializerSettings()
-            {
-                Converters = new List<JsonConverter>() { new ChoiceSetConverter() }
             };
+            var json = JsonConvert.SerializeObject(sample, settings);
 
             var bar = JsonConvert.DeserializeObject<Bar>(json, settings);
             Assert.AreEqual(typeof(Bar), bar.GetType());
@@ -131,7 +134,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
             };
 
-            var json = JsonConvert.SerializeObject(new
+            var sample = new
             {
                 Choices = new List<Choice>()
                 {
@@ -139,11 +142,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new Choice() { Value = "test2" },
                     new Choice() { Value = "test3" }
                 }
-            });
-            var settings = new JsonSerializerSettings()
-            {
-                Converters = new List<JsonConverter>() { new ChoiceSetConverter() }
             };
+            var json = JsonConvert.SerializeObject(sample, settings);
 
             var bar = JsonConvert.DeserializeObject<Bar>(json, settings);
             Assert.AreEqual(typeof(Bar), bar.GetType());
@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
             };
 
-            var json = JsonConvert.SerializeObject(new
+            var sample = new
             {
                 Choices = new List<string>()
                 {
@@ -169,11 +169,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     "test2",
                     "test3"
                 }
-            });
-            var settings = new JsonSerializerSettings()
-            {
-                Converters = new List<JsonConverter>() { new ChoiceSetConverter() }
             };
+
+            var json = JsonConvert.SerializeObject(sample, settings);
 
             var bar = JsonConvert.DeserializeObject<Bar>(json, settings);
             Assert.AreEqual(typeof(Bar), bar.GetType());
