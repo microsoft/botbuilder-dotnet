@@ -220,7 +220,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
                     return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
                 }
-                else if (this.MaxTurnCount == null || turnCount < this.MaxTurnCount)
+                else if (this.MaxTurnCount == null || turnCount < this.MaxTurnCount.TryGetValue(dc.GetState()).Value)
                 {
                     // increase the turnCount as last step
                     dc.GetState().SetValue(TURN_COUNT_PROPERTY, turnCount + 1);

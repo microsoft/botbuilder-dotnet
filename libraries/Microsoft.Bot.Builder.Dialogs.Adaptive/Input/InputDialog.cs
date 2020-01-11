@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// A value indicating whether the input should always prompt the user regardless of there being a value or not.
         /// </value>
         [JsonProperty("alwaysPrompt")]
-        public BoolExpression AlwaysPrompt { get; set; } = new BoolExpression(false);
+        public BoolExpression AlwaysPrompt { get; set; } 
 
         /// <summary>
         /// Gets or sets intteruption policy. 
@@ -38,10 +38,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// "true".
         /// </example>
         /// <value>
-        /// Intteruption policy. 
+        /// Intteruption policy. Default is True.
         /// </value>
         [JsonProperty("allowInterruptions")]
-        public BoolExpression AllowInterruptions { get; set; } = new BoolExpression(true);
+        public BoolExpression AllowInterruptions { get; set; }
 
         /// <summary>
         /// Gets or sets an optional expression which if is true will disable this action.
@@ -50,10 +50,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// "user.age > 18".
         /// </example>
         /// <value>
-        /// A boolean expression. 
+        /// A boolean expression. Default is false.
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } = new BoolExpression(false);
+        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets the memory property path which the value will be bound to.
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// A value expression which can be used to intialize the input prompt.
         /// </value>
         [JsonProperty("value")]
-        public ValueExpression Value { get; set; } = new ValueExpression();
+        public ValueExpression Value { get; set; }
 
         /// <summary>
         /// Gets or sets the activity to send to the user.
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Maximum number of times to ask the user for this value before the dilog gives up.
         /// </value>
         [JsonProperty("maxTurnCount")]
-        public int? MaxTurnCount { get; set; }
+        public IntExpression MaxTurnCount { get; set; }
 
         /// <summary>
         /// Gets or sets the default value for the input dialog when MaxTurnCount is exceeded.
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// The default value for the input dialog when MaxTurnCount is exceeded.
         /// </value>
         [JsonProperty("defaultValue")]
-        public ValueExpression DefaultValue { get; set; } = new ValueExpression();
+        public ValueExpression DefaultValue { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -160,10 +160,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var op = OnInitializeOptions(dc, options);
             dc.GetState().SetValue(ThisPath.OPTIONS, op);
             dc.GetState().SetValue(TURN_COUNT_PROPERTY, 0);
-            var alwaysPrompt = this.AlwaysPrompt.TryGetValue(dc.GetState()).Value;
+
+            var alwaysPrompt = this.AlwaysPrompt?.TryGetValue(dc.GetState()).Value ?? false;
 
             // If AlwaysPrompt is set to true, then clear Property value for turn 0.
-            if (!string.IsNullOrEmpty(this.Property) && alwaysPrompt)
+            if (this.Property != null && alwaysPrompt)
             {
                 dc.GetState().SetValue(this.Property, null);
             }
@@ -199,7 +200,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             var interrupted = dc.GetState().GetValue<bool>(TurnPath.INTERRUPTED, () => false);
             var turnCount = dc.GetState().GetValue<int>(TURN_COUNT_PROPERTY, () => 0);
-
+            
             // Perform base recognition
             var state = await this.RecognizeInput(dc, interrupted ? 0 : turnCount);
 
@@ -215,7 +216,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
                 return await dc.EndDialogAsync(input).ConfigureAwait(false);
             }
-            else if (this.MaxTurnCount == null || turnCount < this.MaxTurnCount)
+            else if (this.MaxTurnCount == null || turnCount < this.MaxTurnCount.TryGetValue(dc.GetState()).Value)
             {
                 // increase the turnCount as last step
                 dc.GetState().SetValue(TURN_COUNT_PROPERTY, turnCount + 1);
@@ -223,9 +224,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
             else
             {
-                var (defaultValue, error) = this.DefaultValue.TryGetValue(dc.GetState());
-                if (error == null && defaultValue != null)
+                if (this.DefaultValue != null)
                 {
+                    var (value, error) = this.DefaultValue.TryGetValue(dc.GetState());
                     if (this.DefaultValueResponse != null)
                     {
                         var response = await this.DefaultValueResponse.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
@@ -233,9 +234,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     }
 
                     // set output property
-                    dc.GetState().SetValue(this.Property, defaultValue);
+                    dc.GetState().SetValue(this.Property, value);
 
-                    return await dc.EndDialogAsync(defaultValue).ConfigureAwait(false);
+                    return await dc.EndDialogAsync(value).ConfigureAwait(false);
                 }
             }
 
@@ -257,8 +258,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 await dc.Parent.EmitEventAsync(AdaptiveEvents.RecognizeUtterance, value: dc.Context.Activity, bubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 // Should we allow interruptions
-                var (allowInterruptions, error) = this.AllowInterruptions.TryGetValue(dc.GetState());
-                var canInterrupt = (error == null) && allowInterruptions;
+                var canInterrupt = true;
+                if (this.AllowInterruptions != null)
+                {
+                    var (allowInterruptions, error) = this.AllowInterruptions.TryGetValue(dc.GetState());
+                    canInterrupt = error == null && allowInterruptions;
+                }
 
                 // Stop bubbling if interruptions ar NOT allowed
                 return !canInterrupt;
@@ -381,7 +386,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             // Use Value expression for input second
-            if (input == null)
+            if (input == null && this.Value != null)
             {
                 var (value, valueError) = this.Value.TryGetValue(dc.GetState());
                 if (valueError != null)
