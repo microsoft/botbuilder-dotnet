@@ -31,7 +31,7 @@
                     "$kind": "Microsoft.EditArray",
                     "changeType": "push",
                     "itemsProperty": "user.todos",
-                    "value": "dialog.todo"
+                    "value": "=dialog.todo"
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
