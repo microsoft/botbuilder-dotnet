@@ -61,20 +61,18 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
                 config.AddUserSecrets<Startup>();
 
-                // Add luis.settings files to config
+                // Add general and then user specific luis.settings files to config
                 var di = new DirectoryInfo(env.ContentRootPath);
-                var generalPattern = $".{env.EnvironmentName}.{luisAuthoringRegion}.json";
-                var userPattern = $".{Environment.UserName}.{luisAuthoringRegion}.json";
-                foreach (var file in di.GetFiles("luis.settings.*", SearchOption.AllDirectories))
+                var generalPattern = $"{env.EnvironmentName}.{luisAuthoringRegion}.json";
+                foreach (var file in di.GetFiles($"luis.settings.{generalPattern}", SearchOption.AllDirectories))
                 {
-                    if (file.Name.EndsWith(generalPattern))
-                    {
-                        config.AddJsonFile(Path.GetRelativePath(env.ContentRootPath, file.FullName), optional: false, reloadOnChange: true);
-                    }
-                    else if (file.Name.EndsWith(userPattern))
-                    {
-                        config.AddJsonFile(file.FullName, optional: false, reloadOnChange: true);
-                    }
+                    config.AddJsonFile(file.FullName, optional: false, reloadOnChange: true);
+                }
+
+                var userPattern = $"{Environment.UserName}.{luisAuthoringRegion}.json";
+                foreach (var file in di.GetFiles($"luis.settings.{userPattern}", SearchOption.AllDirectories))
+                {
+                    config.AddJsonFile(file.FullName, optional: false, reloadOnChange: true);
                 }
             })
             .UseStartup<Startup>()
