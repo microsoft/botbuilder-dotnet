@@ -15,8 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// Ask for an open-ended response.
     /// </summary>
     /// <remarks>
-    /// This sends an activity and then terminates with <see cref="DialogTurnStatus.CompleteAndWait"/> in order to allow the parent
-    /// adaptive dialog to handle the user utterance.  
+    /// This sends an activity and then terminates the turn with <see cref="DialogTurnStatus.CompleteAndWait"/>.
+    /// The next activity from the user will then be handled by the parent adaptive dialog.
+    /// 
     /// It also builds in a model of the properties that are expected in response through <see cref="DialogPath.ExpectedProperties"/>.
     /// <see cref="DialogPath.Retries"/> is updated as the same question is asked multiple times.
     /// </remarks>

@@ -21,7 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 
         private IReadOnlyList<OnCondition> _conditionals;
         private bool _evaluate;
-        private Expression condition;
 
         /// <summary>
         /// Gets or sets expression that determines which selector to use.
@@ -30,11 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// Expression that determines which selector to use.
         /// </value>
         [JsonProperty("condition")]
-        public string Condition
-        {
-            get => condition?.ToString(); 
-            set => this.condition = (value != null) ? Parser.Parse(value) : null;
-        }
+        public BoolExpression Condition { get; set; } = new BoolExpression();
 
         /// <summary>
         /// Gets or sets selector if <see cref="Condition"/> is true.
@@ -69,8 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 
         public async Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel = default)
         {
-            var (value, error) = condition.TryEvaluate(context.GetState());
-            var eval = error == null && (bool)value;
+            var (eval, _) = Condition.TryGetValue(context.GetState());
             ITriggerSelector selector;
             if (eval)
             {

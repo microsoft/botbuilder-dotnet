@@ -147,7 +147,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
 
             remainingPath = string.Empty;
-            return GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(path));
+            return GetMemoryScope(scope);
         }
 
         /// <summary>
@@ -383,13 +383,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public bool TryGetValue(string key, out object value)
         {
-            value = default;
-            if (this.TryGetValue<object>(key, out var result))
-            {
-                value = result;
-            }
-
-            return true;
+            return this.TryGetValue<object>(key, out value);
         }
 
         public void Add(KeyValuePair<string, object> item)

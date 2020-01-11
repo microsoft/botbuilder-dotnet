@@ -20,9 +20,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.UpdateActivity";
 
-        private Expression activityId;
-        private Expression disabled;
-
         public UpdateActivity(Activity activity, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -46,11 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; } = new BoolExpression(false);
 
         /// <summary>
         /// Gets or sets template for the activity.
@@ -66,11 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </summary>
         /// <value>Expression to activityId.</value>
         [JsonProperty("activityId")]
-        public string ActivityId
-        {
-            get { return activityId.ToString(); }
-            set { activityId = new ExpressionEngine().Parse(value); }
-        }
+        public StringExpression ActivityId { get; set; } = new StringExpression(null);
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -79,13 +68,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            if (this.Disabled.TryGetValue(dc.GetState()).Value == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             var activity = await Activity.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
-            var (result, error) = activityId.TryEvaluate(dc.GetState());
+            var (result, error) = this.ActivityId.TryGetValue(dc.GetState());
             if (error != null)
             {
                 throw new ArgumentException(error);

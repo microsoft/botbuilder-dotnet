@@ -8,7 +8,7 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Length",
-            "value": "@dimension"          
+            "value": "=@dimension"          
         }
     ]               
 }

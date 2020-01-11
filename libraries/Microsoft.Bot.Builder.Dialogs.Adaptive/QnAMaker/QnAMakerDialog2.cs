@@ -14,10 +14,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.QnAMakerDialog";
 
-        private Expression knowledgebaseIdExpression;
-        private Expression endpointkeyExpression;
-        private Expression hostnameExpression;
-
         [JsonConstructor]
         public QnAMakerDialog2([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base(sourceFilePath, sourceLineNumber)
@@ -31,11 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// The knowledgebase Id.
         /// </value>
         [JsonProperty("knowledgeBaseId")]
-        public string KnowledgeBaseId
-        {
-            get { return knowledgebaseIdExpression?.ToString(); }
-            set { knowledgebaseIdExpression = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public StringExpression KnowledgeBaseId { get; set; } = new StringExpression();
 
         /// <summary>
         /// Gets or sets the Hostname for your QnA Maker service.
@@ -44,11 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// The host name of the QnA Maker knowledgebase.
         /// </value>
         [JsonProperty("hostname")]
-        public string HostName
-        {
-            get { return hostnameExpression?.ToString(); }
-            set { hostnameExpression = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public StringExpression HostName { get; set; } = new StringExpression();
 
         /// <summary>
         /// Gets or sets the Endpoint key for the QnA Maker KB.
@@ -57,11 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// The endpoint key for the QnA service.
         /// </value>
         [JsonProperty("endpointKey")]
-        public string EndpointKey
-        {
-            get { return endpointkeyExpression?.ToString(); }
-            set { endpointkeyExpression = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public StringExpression EndpointKey { get; set; } = new StringExpression();
 
         /// <summary>
         /// Gets or sets the Threshold score to filter results.
@@ -70,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// The threshold for the results.
         /// </value>
         [JsonProperty("threshold")]
-        public float Threshold { get; set; } = DefaultThreshold;
+        public FloatExpression Threshold { get; set; } = new FloatExpression(DefaultThreshold);
 
         /// <summary>
         /// Gets or sets the number of results you want.
@@ -79,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// The number of results you want.
         /// </value>
         [JsonProperty("top")]
-        public int Top { get; set; } = DefaultTopN;
+        public IntExpression Top { get; set; } = new IntExpression(DefaultTopN);
 
         /// <summary>
         /// Gets or sets the template for Default answer to return when none found in KB.
@@ -97,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// Title for active learning suggestions card.
         /// </value>
         [JsonProperty("activeLearningCardTitle")]
-        public string ActiveLearningCardTitle { get; set; }
+        public StringExpression ActiveLearningCardTitle { get; set; } = new StringExpression();
 
         /// <summary>
         /// Gets or sets the Text for no match option.
@@ -106,7 +90,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// The Text for no match option.
         /// </value>
         [JsonProperty("cardNoMatchText")]
-        public string CardNoMatchText { get; set; }
+        public StringExpression CardNoMatchText { get; set; } = new StringExpression();
 
         /// <summary>
         /// Gets or sets the template for Custom response when no match option was selected.
@@ -142,7 +126,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// Ranker Types.
         /// </value>
         [JsonProperty("rankerType")]
-        public string RankerType { get; set; } = RankerTypes.DefaultRankerType;
+        public StringExpression RankerType { get; set; } = new StringExpression(RankerTypes.DefaultRankerType);
 
         protected async override Task<IQnAMakerClient> GetQnAMakerClientAsync(DialogContext dc)
         {
@@ -153,9 +137,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
                 return qnaClient;
             }
 
-            var (epKey, error) = this.endpointkeyExpression.TryEvaluate(dc.GetState());
-            var (hn, error2) = this.hostnameExpression.TryEvaluate(dc.GetState());
-            var (kbId, error3) = this.knowledgebaseIdExpression.TryEvaluate(dc.GetState());
+            var (epKey, error) = this.EndpointKey.TryGetValue(dc.GetState());
+            var (hn, error2) = this.HostName.TryGetValue(dc.GetState());
+            var (kbId, error3) = this.KnowledgeBaseId.TryGetValue(dc.GetState());
 
             var endpoint = new QnAMakerEndpoint
             {
@@ -171,11 +155,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         {
             return Task.FromResult(new QnAMakerOptions
             {
-                ScoreThreshold = this.Threshold,
+                ScoreThreshold = this.Threshold.TryGetValue(dc.GetState()).Value,
                 StrictFilters = this.StrictFilters,
-                Top = this.Top,
+                Top = this.Top.TryGetValue(dc.GetState()).Value,
                 QnAId = 0,
-                RankerType = this.RankerType,
+                RankerType = this.RankerType.TryGetValue(dc.GetState()).Value,
                 IsTest = this.IsTest
             });
         }
@@ -187,8 +171,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
 
             var responseOptions = new QnADialogResponseOptions
             {
-                ActiveLearningCardTitle = this.ActiveLearningCardTitle,
-                CardNoMatchText = this.CardNoMatchText,
+                ActiveLearningCardTitle = this.ActiveLearningCardTitle.TryGetValue(dc.GetState()).Value,
+                CardNoMatchText = this.CardNoMatchText.TryGetValue(dc.GetState()).Value,
                 NoAnswer = noAnswer,
                 CardNoMatchResponse = cardNoMatchResponse,
             };

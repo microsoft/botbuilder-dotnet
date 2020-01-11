@@ -8,8 +8,8 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SetProperty",
-                    "value": "@title",
-                    "property": "dialog.todo"
+                    "property": "dialog.todo",
+                    "value": "=@title"
                 },
                 {
                     "$kind": "Microsoft.TextInput",

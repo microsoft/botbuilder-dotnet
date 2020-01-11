@@ -10,7 +10,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "$counter",
-                        "value": "0"
+                        "value": "=0"
                     },
                     {
                         "id": "loopTop",
@@ -24,7 +24,7 @@
                             {
                                 "$kind": "Microsoft.SetProperty",
                                 "property": "$counter",
-                                "value": "$counter + 1"
+                                "value": "==$counter + 1"
                             },
                             {
                                 "$kind": "Microsoft.GotoAction",
@@ -33,7 +33,7 @@
                         ],
                         "cases": [
                             {
-                                "value": "2",
+                                "value": "=2",
                                 "actions": [
                                     {
                                         "$kind": "Microsoft.GotoAction",

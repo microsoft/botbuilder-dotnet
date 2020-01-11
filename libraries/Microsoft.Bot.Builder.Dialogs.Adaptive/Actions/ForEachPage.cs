@@ -25,8 +25,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private const string FOREACHPAGE = "dialog.foreach.page";
         private const string FOREACHPAGEINDEX = "dialog.foreach.pageindex";
         
-        private Expression disabled;
-
         [JsonConstructor]
         public ForeachPage([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
@@ -44,11 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; } = new BoolExpression(false);
 
         // Expression used to compute the list that should be enumerated.
         [JsonProperty("itemsProperty")]
@@ -64,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            if (this.Disabled.TryGetValue(dc.GetState()).Value == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }

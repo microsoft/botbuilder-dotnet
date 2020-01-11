@@ -18,9 +18,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.GetActivityMembers";
 
-        private Expression activityId;
-        private Expression disabled;
-
         [JsonConstructor]
         public GetActivityMembers([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
@@ -38,11 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; } = new BoolExpression(false);
 
         /// <summary>
         /// Gets or sets property path to put the value in.
@@ -60,11 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The expression to get the value to put into property path. If this is missing, then the current turn Activity.id will be used.
         /// </value>
         [JsonProperty("activityId")]
-        public string ActivityId
-        {
-            get { return activityId?.ToString(); }
-            set { this.activityId = (value != null) ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public StringExpression ActivityId { get; set; } = new StringExpression(null);
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -73,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            if (this.Disabled.TryGetValue(dc.GetState()).Value == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -85,9 +74,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             string id = dc.Context.Activity.Id;
-            if (this.activityId != null)
+            if (this.ActivityId != null)
             {
-                var (value, valueError) = this.activityId.TryEvaluate(dc.GetState());
+                var (value, valueError) = this.ActivityId.TryGetValue(dc.GetState());
                 if (valueError != null)
                 {
                     throw new Exception($"Expression evaluation resulted in an error. Expression: {this.ActivityId}. Error: {valueError}");
@@ -105,7 +94,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.ActivityId ?? string.Empty},{this.Property ?? string.Empty}]";
+            return $"{this.GetType().Name}[{this.ActivityId.ToString() ?? string.Empty},{this.Property ?? string.Empty}]";
         }
     }
 }

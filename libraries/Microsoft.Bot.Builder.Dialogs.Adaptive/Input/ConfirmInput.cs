@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.Choice;
@@ -43,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public string DefaultLocale { get; set; } = null;
 
         [JsonProperty("style")]
-        public ListStyle Style { get; set; } = ListStyle.Auto;
+        public EnumExpression<ListStyle> Style { get; set; } = new EnumExpression<ListStyle>(ListStyle.Auto);
 
         [JsonProperty("choiceOptions")]
         public ChoiceFactoryOptions ChoiceOptions { get; set; } = null;
@@ -52,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public List<Choice> ConfirmChoices { get; set; } = null;
 
         [JsonProperty("outputFormat")]
-        public string OutputFormat { get; set; }
+        public StringExpression OutputFormat { get; set; }
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
@@ -68,17 +69,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     if (bool.TryParse(first.Resolution["value"].ToString(), out var value))
                     {
                         dc.GetState().SetValue(VALUE_PROPERTY, value);
-                        if (!string.IsNullOrEmpty(OutputFormat))
+                        if (OutputFormat != null)
                         {
-                            var outputExpression = new ExpressionEngine().Parse(OutputFormat);
-                            var (outputValue, error) = outputExpression.TryEvaluate(dc.GetState());
+                            var (outputValue, error) = OutputFormat.TryGetValue(dc.GetState());
                             if (error == null)
                             {
                                 dc.GetState().SetValue(VALUE_PROPERTY, outputValue);
                             }
                             else
                             {
-                                throw new Exception($"OutputFormat Expression evaluation resulted in an error. Expression: {outputExpression.ToString()}. Error: {error}");
+                                throw new Exception($"OutputFormat Expression evaluation resulted in an error. Expression: {OutputFormat.ToString()}. Error: {error}");
                             }
                         }
 
@@ -127,8 +127,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var confirmChoices = ConfirmChoices ?? new List<Choice>() { defaults.Item1, defaults.Item2 };
 
             var prompt = await base.OnRenderPrompt(dc, state);
-
-            return this.AppendChoices(prompt.AsMessageActivity(), channelId, confirmChoices, this.Style, choiceOptions);
+            var (style, error) = this.Style.TryGetValue(dc.GetState());
+            return this.AppendChoices(prompt.AsMessageActivity(), channelId, confirmChoices, style, choiceOptions);
         }
 
         private string GetCulture(DialogContext dc)

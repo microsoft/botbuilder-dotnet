@@ -22,6 +22,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </summary>
         /// <value>Value expression.</value>
         [JsonProperty("value")]
-        public string Value { get; set; }
+        public ValueExpression Value { get; set; }
     }
 }

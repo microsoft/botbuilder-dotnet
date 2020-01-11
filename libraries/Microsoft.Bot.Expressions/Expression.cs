@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Text;
 using Microsoft.Bot.Expressions.Memory;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Expressions
 {
@@ -262,16 +263,145 @@ namespace Microsoft.Bot.Expressions
         /// <summary>
         /// Evaluate the expression.
         /// </summary>
+        /// <typeparam name="T">type of result of the expression.</typeparam>
         /// <param name="state">
         /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
         /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
         /// </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
         public (object value, string error) TryEvaluate(object state)
-            => Evaluator.TryEvaluate(this, SimpleObjectMemory.Wrap(state));
+            => this.TryEvaluate<object>(state);
 
+        /// <summary>
+        /// Evaluate the expression.
+        /// </summary>
+        /// <typeparam name="T">type of result of the expression.</typeparam>
+        /// <param name="state">
+        /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
+        /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
+        /// </param>
+        /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
         public (object value, string error) TryEvaluate(IMemory state)
-            => Evaluator.TryEvaluate(this, state);
+            => this.TryEvaluate<object>(state);
+
+        /// <summary>
+        /// Evaluate the expression.
+        /// </summary>
+        /// <typeparam name="T">type of result of the expression.</typeparam>
+        /// <param name="state">
+        /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
+        /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
+        /// </param>
+        /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
+        public (T value, string error) TryEvaluate<T>(object state)
+        => this.TryEvaluate<T>(SimpleObjectMemory.Wrap(state));
+
+        /// <summary>
+        /// Evaluate the expression.
+        /// </summary>
+        /// <typeparam name="T">type of result of the expression.</typeparam>
+        /// <param name="state">
+        /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
+        /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
+        /// </param>
+        /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
+        public (T value, string error) TryEvaluate<T>(IMemory state)
+        {
+            var (result, error) = Evaluator.TryEvaluate(this, state);
+            if (error != null)
+            {
+                return (default(T), error);
+            }
+
+            if (result is T)
+            {
+                return ((T)result, error);
+            }
+
+            try
+            {
+                if (typeof(T) == typeof(object))
+                {
+                    if (result == null)
+                    {
+                        return (default(T), error);
+                    }
+
+                    return ((T)result, error);
+                }
+
+                if (typeof(T) == typeof(string))
+                {
+                    if (result == null)
+                    {
+                        return (default(T), null);
+                    }
+
+                    return (default(T), Error<string>(result));
+                }
+                
+                if (typeof(T) == typeof(bool))
+                {
+                    return ((T)(object)Convert.ToBoolean(result), error);
+                }
+                
+                if (typeof(T) == typeof(byte))
+                {
+                    return ((T)(object)Convert.ToByte(result), (Convert.ToByte(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
+                }
+                
+                if (typeof(T) == typeof(short))
+                {
+                    return ((T)(object)Convert.ToInt16(result), (Convert.ToInt16(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
+                }
+                
+                if (typeof(T) == typeof(int))
+                {
+                    return ((T)(object)Convert.ToInt32(result), (Convert.ToInt32(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
+                }
+                
+                if (typeof(T) == typeof(long))
+                {
+                    return ((T)(object)Convert.ToInt64(result), (Convert.ToInt64(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
+                }
+                
+                if (typeof(T) == typeof(ushort))
+                {
+                    return ((T)(object)Convert.ToUInt16(result), (Convert.ToUInt16(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
+                }
+                
+                if (typeof(T) == typeof(uint))
+                {
+                    return ((T)(object)Convert.ToUInt32(result), (Convert.ToUInt32(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
+                }
+                
+                if (typeof(T) == typeof(ulong))
+                {
+                    return ((T)(object)Convert.ToUInt64(result), (Convert.ToUInt64(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
+                }
+                
+                if (typeof(T) == typeof(float))
+                {
+                    return ((T)(object)Convert.ToSingle(Convert.ToDecimal(result)), null);
+                }
+                
+                if (typeof(T) == typeof(double))
+                {
+                    return ((T)(object)Convert.ToDouble(Convert.ToDecimal(result)), null);
+                }
+
+                if (result == null)
+                {
+                    return (default(T), error);
+                }
+
+                return (JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(result)), null);
+            }
+            catch
+            {
+                return (default(T), Error<T>(result));
+            }
+        }
 
         public override string ToString()
         {
@@ -347,6 +477,11 @@ namespace Microsoft.Bot.Expressions
             }
 
             return builder.ToString();
+        }
+
+        private string Error<T>(object result)
+        {
+            return $"'{result}' is not of type {typeof(T).Name}";
         }
     }
 }

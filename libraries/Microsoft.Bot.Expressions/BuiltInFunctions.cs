@@ -1286,33 +1286,29 @@ namespace Microsoft.Bot.Expressions
 
         private static (object value, string error) Substring(Expression expression, IMemory state)
         {
-            object result = null;
+            string result = null;
             string error;
-            dynamic str;
-            (str, error) = expression.Children[0].TryEvaluate(state);
+            string str;
+            (str, error) = expression.Children[0].TryEvaluate<string>(state);
             if (error == null)
             {
                 if (str == null)
                 {
                     result = string.Empty;
                 }
-                else if (str is string)
+                else
                 {
-                    dynamic start;
+                    int start;
                     var startExpr = expression.Children[1];
-                    (start, error) = startExpr.TryEvaluate(state);
-                    if (error == null && !(start is int))
-                    {
-                        error = $"{startExpr} is not an integer.";
-                    }
-                    else if (start < 0 || start >= str.Length)
+                    (start, error) = startExpr.TryEvaluate<int>(state);
+                    if (error == null && (start < 0 || start >= str.Length))
                     {
                         error = $"{startExpr}={start} which is out of range for {str}.";
                     }
 
                     if (error == null)
                     {
-                        dynamic length;
+                        int length;
                         if (expression.Children.Length == 2)
                         {
                             // Without length, compute to end
@@ -1321,12 +1317,8 @@ namespace Microsoft.Bot.Expressions
                         else
                         {
                             var lengthExpr = expression.Children[2];
-                            (length, error) = lengthExpr.TryEvaluate(state);
-                            if (error == null && !(length is int))
-                            {
-                                error = $"{lengthExpr} is not an integer.";
-                            }
-                            else if (length < 0 || start + length > str.Length)
+                            (length, error) = lengthExpr.TryEvaluate<int>(state);
+                            if (error == null && (length < 0 || start + length > str.Length))
                             {
                                 error = $"{lengthExpr}={length} which is out of range for {str}.";
                             }
@@ -1337,10 +1329,6 @@ namespace Microsoft.Bot.Expressions
                             result = str.Substring(start, length);
                         }
                     }
-                }
-                else
-                {
-                    error = $"{expression.Children[0]} is not a string.";
                 }
             }
 
@@ -1447,10 +1435,14 @@ namespace Microsoft.Bot.Expressions
 
                         // the local iterator is pushed as one memory layer in the memory stack
                         stackedMemory.Push(SimpleObjectMemory.Wrap(local));
-                        (var r, _) = expression.Children[2].TryEvaluate(stackedMemory);
+                        var (r, err) = expression.Children[2].TryEvaluate<bool>(stackedMemory);
                         stackedMemory.Pop();
 
-                        if ((bool)r)
+                        if (err != null)
+                        {
+                        }
+
+                        if (r)
                         {
                             // add if only if it evaluates to true
                             ((List<object>)result).Add(local[iteratorName]);
@@ -2152,29 +2144,17 @@ namespace Microsoft.Bot.Expressions
             {
                 if (TryParseList(arr, out var list))
                 {
-                    object start;
-                    var startInt = 0;
+                    int start = 0;
                     var startExpr = expression.Children[1];
-                    (start, error) = startExpr.TryEvaluate(state);
+                    (start, error) = startExpr.TryEvaluate<int>(state);
+                    if (error == null && (start < 0 || start >= list.Count))
+                    {
+                        error = $"{startExpr}={start} which is out of range for {arr}";
+                    }
+
                     if (error == null)
                     {
-                        if (start == null || !start.IsInteger())
-                        {
-                            error = $"{startExpr} is not an integer.";
-                        }
-                        else
-                        {
-                            startInt = (int)start;
-                            if (startInt < 0 || startInt >= list.Count)
-                            {
-                                error = $"{startExpr}={start} which is out of range for {arr}";
-                            }
-                        }
-
-                        if (error == null)
-                        {
-                            result = list.OfType<object>().Skip(startInt).ToList();
-                        }
+                        result = list.OfType<object>().Skip(start).ToList();
                     }
                 }
                 else
@@ -2198,39 +2178,31 @@ namespace Microsoft.Bot.Expressions
                 var arrIsStr = arr.GetType() == typeof(string);
                 if (arrIsList || arrIsStr)
                 {
-                    object countObj;
+                    int count;
                     var countExpr = expression.Children[1];
-                    (countObj, error) = countExpr.TryEvaluate(state);
+                    (count, error) = countExpr.TryEvaluate<int>(state);
                     if (error == null)
                     {
-                        if (countObj == null || !countObj.IsInteger())
+                        if (arrIsList)
                         {
-                            error = $"{countExpr} is not an integer.";
-                        }
-                        else
-                        {
-                            var count = (int)countObj;
-                            if (arrIsList)
+                            if (count < 0 || count >= list.Count)
                             {
-                                if (count < 0 || count >= list.Count)
-                                {
-                                    error = $"{countExpr}={count} which is out of range for {arr}";
-                                }
-                                else
-                                {
-                                    result = list.OfType<object>().Take(count).ToList();
-                                }
+                                error = $"{countExpr}={count} which is out of range for {arr}";
                             }
                             else
                             {
-                                if (count < 0 || count > list.Count)
-                                {
-                                    error = $"{countExpr}={count} which is out of range for {arr}";
-                                }
-                                else
-                                {
-                                    result = arr.ToString().Substring(0, count);
-                                }
+                                result = list.OfType<object>().Take(count).ToList();
+                            }
+                        }
+                        else
+                        {
+                            if (count < 0 || count > list.Count)
+                            {
+                                error = $"{countExpr}={count} which is out of range for {arr}";
+                            }
+                            else
+                            {
+                                result = arr.ToString().Substring(0, count);
                             }
                         }
                     }
@@ -2256,20 +2228,10 @@ namespace Microsoft.Bot.Expressions
                 if (TryParseList(arr, out var list))
                 {
                     var startExpr = expression.Children[1];
-                    object startObj;
-                    (startObj, error) = startExpr.TryEvaluate(state);
-                    var start = 0;
+                    int start;
+                    (start, error) = startExpr.TryEvaluate<int>(state);
                     if (error == null)
                     {
-                        if (startObj == null || !startObj.IsInteger())
-                        {
-                            error = $"{startExpr} is not an integer.";
-                        }
-                        else
-                        {
-                            start = (int)startObj;
-                        }
-
                         if (error == null && (start < 0 || start > list.Count))
                         {
                             error = $"{startExpr}={start} which is out of range for {arr}";
@@ -2277,7 +2239,7 @@ namespace Microsoft.Bot.Expressions
 
                         if (error == null)
                         {
-                            var end = 0;
+                            int end = 0;
                             if (expression.Children.Length == 2)
                             {
                                 end = list.Count;
@@ -2285,23 +2247,10 @@ namespace Microsoft.Bot.Expressions
                             else
                             {
                                 var endExpr = expression.Children[2];
-                                object endObj;
-                                (endObj, error) = endExpr.TryEvaluate(state);
-                                if (error == null)
+                                (end, error) = endExpr.TryEvaluate<int>(state);
+                                if (error == null && (end < 0 || end > list.Count))
                                 {
-                                    if (endObj == null || !endObj.IsInteger())
-                                    {
-                                        error = $"{endExpr} is not an integer.";
-                                    }
-                                    else
-                                    {
-                                        end = (int)endObj;
-                                    }
-
-                                    if (error == null && (end < 0 || end > list.Count))
-                                    {
-                                        error = $"{endExpr}={end} which is out of range for {arr}";
-                                    }
+                                    error = $"{endExpr}={end} which is out of range for {arr}";
                                 }
                             }
 
@@ -2348,19 +2297,18 @@ namespace Microsoft.Bot.Expressions
                        {
                            var jarray = JArray.FromObject(list.OfType<object>().ToList());
                            var propertyNameExpression = expression.Children[1];
-                           object propertyName;
-                           (propertyName, error) = propertyNameExpression.TryEvaluate(state);
-                           var propertyNameString = string.Empty;
+                           string propertyName;
+                           (propertyName, error) = propertyNameExpression.TryEvaluate<string>(state);
                            if (error == null)
                            {
-                               propertyNameString = propertyName == null ? string.Empty : propertyName.ToString();
+                               propertyName = propertyName ?? string.Empty;
                                if (isDescending)
                                {
-                                   result = jarray.OrderByDescending(obj => obj[propertyNameString]).ToList();
+                                   result = jarray.OrderByDescending(obj => obj[propertyName]).ToList();
                                }
                                else
                                {
-                                   result = jarray.OrderBy(obj => obj[propertyNameString]).ToList();
+                                   result = jarray.OrderBy(obj => obj[propertyName]).ToList();
                                }
                            }
                        }

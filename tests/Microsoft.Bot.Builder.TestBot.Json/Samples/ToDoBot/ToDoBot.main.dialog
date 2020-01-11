@@ -7,38 +7,26 @@
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-
-                
                 "intent": "AddIntent",
-                "pattern": "(?i)(?:add|create) .*(?:to-do|todo|task)(?: )?(?:named (?<title>.*))?" 
+                "pattern": "(?i)(?:add|create) .*(?:to-do|todo|task)(?: )?(?:named (?<title>.*))?"
             },
             {
-
-                
                 "intent": "ClearIntent",
-                "pattern": "(?i)(?:delete|remove|clear) (?:all|every) (?:to-dos|todos|tasks)" 
+                "pattern": "(?i)(?:delete|remove|clear) (?:all|every) (?:to-dos|todos|tasks)"
             },
             {
-
-                
                 "intent": "DeleteIntent",
-                "pattern": "(?i)(?:delete|remove|clear) .*(?:to-do|todo|task)(?: )?(?:named (?<title>.*))?" 
+                "pattern": "(?i)(?:delete|remove|clear) .*(?:to-do|todo|task)(?: )?(?:named (?<title>.*))?"
             },
             {
-
-                
                 "intent": "ShowIntent",
-                "pattern": "(?i)(?:show|see|view) .*(?:to-do|todo|task)" 
+                "pattern": "(?i)(?:show|see|view) .*(?:to-do|todo|task)"
             },
             {
-
-                
                 "intent": "HelpIntent",
-                "pattern": "(?i)help" 
+                "pattern": "(?i)help"
             },
             {
-
-                
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel|never mind"
             }

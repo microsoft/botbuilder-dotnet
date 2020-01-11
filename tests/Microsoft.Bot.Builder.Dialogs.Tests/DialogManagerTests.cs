@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+#pragma warning disable SA1402 // File may only contain a single type
 
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -127,6 +130,58 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await TestUtilities.RunTestScript();
         }
 
+        [TestMethod]
+        public async Task DialogManager_DialogSet()
+        {
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+
+            var adapter = new TestAdapter();
+            adapter
+                .UseStorage(storage)
+                .UseState(userState, convoState)
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            var rootDialog = new AdaptiveDialog()
+            {
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SetProperty()
+                            {
+                                Property = "conversation.dialogId",
+                                Value = "test"
+                            },
+                            new BeginDialog()
+                            {
+                                DialogId = "=conversation.dialogId"
+                            },
+                            new BeginDialog()
+                            {
+                                DialogId = "test"
+                            }
+                        }
+                    }
+                }
+            };
+
+            DialogManager dm = new DialogManager(rootDialog);
+            dm.Dialogs.Add(new SimpleDialog() { Id = "test" });
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+                {
+                    await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+                })
+                .SendConversationUpdate()
+                    .AssertReply("simple")
+                    .AssertReply("simple")
+                .StartTestAsync();
+        }
+
         private Dialog CreateTestDialog(string property = "user.name")
         {
             return new AskForNameDialog(property.Replace(".", string.Empty), property);
@@ -190,6 +245,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 outerDc.GetState().SetValue(this.Property, result);
                 await outerDc.Context.SendActivityAsync($"Hello {result.ToString()}, nice to meet you!");
                 return await outerDc.EndDialogAsync(result);
+            }
+        }
+
+        public class SimpleDialog : Dialog
+        {
+            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            {
+                await dc.Context.SendActivityAsync("simple");
+                return await dc.EndDialogAsync();
             }
         }
     }

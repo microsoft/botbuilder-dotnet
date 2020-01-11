@@ -10,7 +10,7 @@
           {
             "$kind": "Microsoft.SetProperty",
             "property": "user.conditionalSelector",
-            "value": "true"
+            "value": "=true"
           }
         ]
       },
@@ -21,7 +21,7 @@
           {
             "$kind": "Microsoft.SetProperty",
             "property": "user.conditionalSelector",
-            "value": "false"
+            "value": "=false"
           }
         ]
       },

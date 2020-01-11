@@ -9,7 +9,7 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SetProperty",
-                    "value": "@title",
+                    "value": "=@title",
                     "property": "dialog.todo"
                 },
                 {

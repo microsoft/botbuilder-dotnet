@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Value Expression or List of choices (string or Choice objects) to present to user.
         /// </value>
         [JsonProperty("choices")]
-        public ChoiceSet Choices { get; set; }
+        public ExpressionProperty<ChoiceSet> Choices { get; set; } 
 
         /// <summary>
         /// Gets or sets listStyle to use to render the choices.
@@ -130,7 +130,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     op = new ChoiceInputOptions();
                 }
 
-                var choices = this.Choices.GetValue(dc.GetState());
+                var (choices, error) = this.Choices.TryGetValue(dc.GetState());
+                if (error != null)
+                {
+                    throw new Exception(error);
+                }
+
                 op.Choices = choices;
             }
 
@@ -179,7 +184,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var choicePrompt = new ChoicePrompt(this.Id);
             var choiceOptions = this.ChoiceOptions ?? ChoiceInput.DefaultChoiceOptions[locale];
 
-            var choices = this.Choices.GetValue(dc.GetState());
+            var (choices, error) = this.Choices.TryGetValue(dc.GetState());
+            if (error != null)
+            {
+                throw new Exception(error);
+            }
 
             return this.AppendChoices(prompt.AsMessageActivity(), channelId, choices, this.Style, choiceOptions);
         }

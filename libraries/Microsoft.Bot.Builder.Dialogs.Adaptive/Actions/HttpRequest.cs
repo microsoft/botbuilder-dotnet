@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
@@ -27,8 +28,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.HttpRequest";
-
-        private Expression disabled;
 
         public HttpRequest(HttpMethod method, string url, string inputProperty, Dictionary<string, string> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
@@ -111,11 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; } = new BoolExpression(false);
 
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("method")]
@@ -154,7 +149,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            if (this.Disabled.TryGetValue(dc.GetState()).Value == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -348,17 +343,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         var text = token.ToString();
 
                         // if it is a "{bindingpath}" then run through expression engine and treat as a value
-                        if (text.StartsWith("{") && text.EndsWith("}"))
+                        var (result, error) = new ValueExpression(text).TryGetValue(dc.GetState());
+                        if (error == null)
                         {
-                            text = text.Trim('{', '}');
-                            var (val, error) = new ExpressionEngine().Parse(text).TryEvaluate(dc.GetState());
-                            token.Replace(new JValue(val));
-                        }
-                        else
-                        {
-                            // use text template binding to bind in place to a string
-                            var temp = await new TextTemplate(text).BindToData(dc.Context, dc.GetState());
-                            token.Replace(new JValue(temp));
+                            token.Replace(new JValue(result));
                         }
                     }
 

@@ -8,12 +8,12 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Age.number",
-            "value": "@age['number']"          
+            "value": "=@age['number']"          
         },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Age.units",
-            "value": "@age['units']"          
+            "value": "=@age['units']"          
         }
     ]               
 }

@@ -730,7 +730,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         if (trigger.Priority == null)
                         {
                             // Constant expression defined from order
-                            trigger.Priority = id.ToString();
+                            trigger.Priority = new IntExpression(id);
                         }
 
                         if (trigger.Id == null)

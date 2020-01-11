@@ -80,7 +80,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && (bool)new ExpressionEngine().Parse(this.Disabled).TryEvaluate(dc.GetState()).value == true)
+            var (disabled, err) = this.Disabled.TryGetValue(dc.GetState());
+            if (disabled)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -109,7 +110,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             dc.GetState().SetValue(TURN_COUNT_PROPERTY, 0);
 
             // If AlwaysPrompt is set to true, then clear Property value for turn 0.
-            if (!string.IsNullOrEmpty(this.Property) && this.AlwaysPrompt)
+            var (alwaysPrompt, _) = this.AlwaysPrompt.TryGetValue(dc.GetState());
+            
+            if (this.Property != null && alwaysPrompt)
             {
                 dc.GetState().SetValue(this.Property, null);
             }
@@ -230,7 +233,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     if (this.DefaultValue != null)
                     {
-                        var (value, error) = new ExpressionEngine().Parse(this.DefaultValue).TryEvaluate(dc.GetState());
+                        var (value, _) = this.DefaultValue.TryGetValue(dc.GetState());
                         if (this.DefaultValueResponse != null)
                         {
                             var response = await this.DefaultValueResponse.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);

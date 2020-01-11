@@ -32,7 +32,7 @@
                                         },
                                         {
                                             "$kind": "Microsoft.EndDialog",
-                                            "value": "$age"
+                                            "value": "=$age"
                                         }
                                     ]
                                 }

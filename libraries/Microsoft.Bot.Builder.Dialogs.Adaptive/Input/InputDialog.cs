@@ -21,9 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         protected const string VALUE_PROPERTY = "this.value";
 #pragma warning restore SA1310 // Field should not contain underscore.
 
-        private Expression allowInterruptions;
-        private Expression disabled;
-
         /// <summary>
         /// Gets or sets a value indicating whether the input should always prompt the user regardless of there being a value or not.
         /// </summary>
@@ -31,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// A value indicating whether the input should always prompt the user regardless of there being a value or not.
         /// </value>
         [JsonProperty("alwaysPrompt")]
-        public bool AlwaysPrompt { get; set; } = false;
+        public BoolExpression AlwaysPrompt { get; set; } = new BoolExpression(false);
 
         /// <summary>
         /// Gets or sets intteruption policy. 
@@ -43,11 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Intteruption policy. 
         /// </value>
         [JsonProperty("allowInterruptions")]
-        public string AllowInterruptions
-        {
-            get { return allowInterruptions?.ToString(); }
-            set { allowInterruptions = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression AllowInterruptions { get; set; } = new BoolExpression(false);
 
         /// <summary>
         /// Gets or sets an optional expression which if is true will disable this action.
@@ -59,17 +52,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; } = new BoolExpression(false);
 
         /// <summary>
-        /// Gets or sets the value expression which the input will be bound to.
+        /// Gets or sets the memory property path which the value will be bound to.
         /// </summary>
         /// <value>
-        /// The value expression which the input will be bound to.
+        /// The property path to the value that the input dialog will be bound to.
         /// </value>
         [JsonProperty("property")]
         public string Property { get; set; }
@@ -85,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// A value expression which can be used to intialize the input prompt.
         /// </value>
         [JsonProperty("value")]
-        public string Value { get; set; }
+        public ValueExpression Value { get; set; }
 
         /// <summary>
         /// Gets or sets the activity to send to the user.
@@ -133,7 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public List<string> Validations { get; set; } = new List<string>();
 
         /// <summary>
-        /// Gets or sets maximum number of times to ask the user for this value before the dilog gives up.
+        /// Gets or sets maximum number of times to ask the user for this value before the dialog gives up.
         /// </summary>
         /// <value>
         /// Maximum number of times to ask the user for this value before the dilog gives up.
@@ -148,7 +137,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// The default value for the input dialog when MaxTurnCount is exceeded.
         /// </value>
         [JsonProperty("defaultValue")]
-        public string DefaultValue { get; set; }
+        public ValueExpression DefaultValue { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -162,7 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -172,12 +161,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             dc.GetState().SetValue(TURN_COUNT_PROPERTY, 0);
 
             // If AlwaysPrompt is set to true, then clear Property value for turn 0.
-            if (!string.IsNullOrEmpty(this.Property) && this.AlwaysPrompt)
+            var alwaysPrompt = this.AlwaysPrompt.TryGetValue(dc.GetState()).Value;
+
+            if (this.Property != null && alwaysPrompt)
             {
                 dc.GetState().SetValue(this.Property, null);
             }
 
-            var state = this.AlwaysPrompt ? InputState.Missing : await this.RecognizeInput(dc, 0);
+            var state = alwaysPrompt ? InputState.Missing : await this.RecognizeInput(dc, 0);
             if (state == InputState.Valid)
             {
                 var input = dc.GetState().GetValue<object>(VALUE_PROPERTY);
@@ -232,19 +223,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
             else
             {
-                if (this.DefaultValue != null)
+                var defaultValue = this.DefaultValue?.TryGetValue(dc.GetState()).Value;
+                if (defaultValue != null)
                 {
-                    var (value, error) = new ExpressionEngine().Parse(this.DefaultValue).TryEvaluate(dc.GetState());
                     if (this.DefaultValueResponse != null)
                     {
-                        var response = await this.DefaultValueResponse.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
+                        var response = (this.DefaultValueResponse != null) ? await this.DefaultValueResponse.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false) : null;
                         await dc.Context.SendActivityAsync(response).ConfigureAwait(false);
                     }
 
                     // set output property
-                    dc.GetState().SetValue(this.Property, value);
+                    dc.GetState().SetValue(this.Property, defaultValue);
 
-                    return await dc.EndDialogAsync(value).ConfigureAwait(false);
+                    return await dc.EndDialogAsync(defaultValue).ConfigureAwait(false);
                 }
             }
 
@@ -267,10 +258,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
                 // Should we allow interruptions
                 var canInterrupt = true;
-                if (allowInterruptions != null)
+                if (AllowInterruptions != null)
                 {
-                    var (value, error) = allowInterruptions.TryEvaluate(dc.GetState());
-                    canInterrupt = error == null && value != null && (bool)value;
+                    canInterrupt = this.AllowInterruptions.TryGetValue(dc.GetState()).Value;
                 }
 
                 // Stop bubbling if interruptions ar NOT allowed
@@ -394,14 +384,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             // Use Value expression for input second
-            if (input == null && !string.IsNullOrEmpty(this.Value))
+            if (input == null && this.Value != null)
             {
-                var (value, valueError) = new ExpressionEngine().Parse(this.Value).TryEvaluate(dc.GetState());
+                var (value, valueError) = this.Value.TryGetValue(dc.GetState());
                 if (valueError != null)
-                { 
+                {
                     throw new Exception($"In InputDialog, this.Value expression evaluation resulted in an error. Expression: {this.Value}. Error: {valueError}");
                 }
-                 
+
                 input = value;
             }
 
@@ -428,14 +418,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     foreach (var validation in this.Validations)
                     {
-                        var exp = new ExpressionEngine().Parse(validation);
-                        var (value, error) = exp.TryEvaluate(dc.GetState());
-                        if (value == null || (value is bool && (bool)value == false))
+                        var (value, error) = new BoolExpression(validation).TryGetValue(dc.GetState());
+                        if (!value)
                         {
                             return InputState.Invalid;
                         }
                     }
-                    
+
                     dc.GetState().SetValue(TurnPath.ACTIVITYPROCESSED, true);
                     return InputState.Valid;
                 }

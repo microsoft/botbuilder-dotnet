@@ -11,7 +11,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "user.age",
-                        "value": "22"
+                        "value": "=22"
                     },
                     {
                         "$kind": "Microsoft.SwitchCondition",
@@ -24,7 +24,7 @@
                         ],
                         "cases": [
                             {
-                                "value": "21",
+                                "value": "=21",
                                 "actions": [
                                     {
                                         "$kind": "Microsoft.SendActivity",
@@ -33,7 +33,7 @@
                                 ]
                             },
                             {
-                                "value": "22",
+                                "value": "=22",
                                 "actions": [
                                     {
                                         "$kind": "Microsoft.SendActivity",
@@ -42,7 +42,7 @@
                                 ]
                             },
                             {
-                                "value": "23",
+                                "value": "=23",
                                 "actions": [
                                     {
                                         "$kind": "Microsoft.SendActivity",

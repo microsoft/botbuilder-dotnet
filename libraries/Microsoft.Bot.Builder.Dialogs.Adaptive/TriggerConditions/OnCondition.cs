@@ -73,15 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// </summary>
         /// <value>Priority of condition expression.</value>
         [JsonProperty("priority")]
-        public string Priority
-        {
-            get => priorityString;
-            set
-            {
-                priorityExpression = null;
-                priorityString = value;
-            }
-        }
+        public IntExpression Priority { get; set; } = new IntExpression();
 
         /// <summary>
         /// Gets or sets a value indicating whether rule should only run once per unique set of memory paths.
@@ -172,7 +164,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
                 if (priorityExpression == null)
                 {
-                    priorityExpression = parser.Parse(Priority);
+                    priorityExpression = parser.Parse(Priority.ToString());
                 }
             }
 
@@ -207,7 +199,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 {
                     lock (this.extraConstraints)
                     {
-                        this.extraConstraints.Add(new ExpressionEngine().Parse(condition));
+                        this.extraConstraints.Add(new ExpressionEngine().Parse(condition.TrimStart('=')));
                         this.fullConstraint = null; // reset to force it to be recalcaulated
                     }
                 }

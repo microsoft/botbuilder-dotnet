@@ -5,6 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 
@@ -17,9 +18,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.SetProperty";
-
-        private Expression value;
-        private Expression disabled;
 
         [JsonConstructor]
         public SetProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -38,11 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; } = new BoolExpression(false);
 
         /// <summary>
         /// Gets or sets property path to put the value in.
@@ -60,11 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The expression to get the value to put into property path.
         /// </value>
         [JsonProperty("value")]
-        public string Value
-        {
-            get { return value?.ToString(); }
-            set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public ValueExpression Value { get; set; } = new ValueExpression(null);
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -73,19 +63,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            var (disabled, _) = this.Disabled.TryGetValue(dc.GetState());
+            if (disabled)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
-            var (value, valueError) = this.value.TryEvaluate(dc.GetState());
+            var (value, valueError) = this.Value.TryGetValue(dc.GetState());
             if (valueError != null)
             {
                 throw new Exception($"Expression evaluation resulted in an error. Expression: {this.Value.ToString()}. Error: {valueError}");
             }
 
-            dc.GetState().SetValue(this.Property, value);
+            dc.GetState().SetValue(this.Property.TrimStart('='), value);
 
             dc.GetState().SetValue(DialogPath.Retries, 0);
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);

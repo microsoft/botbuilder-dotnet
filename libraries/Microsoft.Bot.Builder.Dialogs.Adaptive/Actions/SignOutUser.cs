@@ -20,9 +20,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.SignOutUser";
 
-        private Expression userId;
-        private Expression disabled;
-
         [JsonConstructor]
         public SignOutUser([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
@@ -39,29 +36,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; } = new BoolExpression(false);
 
         /// <summary>
         /// Gets or sets the expression which resolves to the activityId to update.
         /// </summary>
         /// <value>Expression to userId.  If there is no expression, then the current user.id will be used.</value>
         [JsonProperty("userId")]
-        public string UserId
-        {
-            get { return userId?.ToString(); }
-            set { this.userId = (value != null) ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public StringExpression UserId { get; set; } = new StringExpression();
 
         /// <summary>
         /// Gets or sets the name of the OAuth connection.
         /// </summary>
         /// <value>The name of the OAuth connection.</value>
         [JsonProperty("connectionName")]
-        public string ConnectionName { get; set; }
+        public StringExpression ConnectionName { get; set; } = new StringExpression();
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -70,13 +59,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            if (this.Disabled.TryGetValue(dc.GetState()).Value == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             string userId = null;
-            var (result, error) = new ExpressionEngine().Parse(this.UserId).TryEvaluate(dc.GetState());
+            var (result, error) = this.UserId.TryGetValue(dc.GetState());
             if (result != null)
             {
                 userId = result as string;
@@ -87,7 +76,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new InvalidOperationException("SignoutUser(): not supported by the current adapter");
             }
 
-            await adapter.SignOutUserAsync(dc.Context, this.ConnectionName, (string)userId, cancellationToken).ConfigureAwait(false);
+            var (connectionName, _) = this.ConnectionName.TryGetValue(dc.GetState());
+            await adapter.SignOutUserAsync(dc.Context, connectionName, (string)userId, cancellationToken).ConfigureAwait(false);
 
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }

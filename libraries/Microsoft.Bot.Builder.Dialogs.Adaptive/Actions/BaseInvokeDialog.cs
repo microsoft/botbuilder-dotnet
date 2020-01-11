@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -16,12 +17,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public abstract class BaseInvokeDialog : Dialog, IDialogDependencies
     {
         // Expression for dialogId to call (allowing dynamic expression)
-        private string dialogIdToCall;
-
         public BaseInvokeDialog(string dialogIdToCall = null, IDictionary<string, string> bindingOptions = null)
             : base()
         {
-            this.dialogIdToCall = dialogIdToCall;
+            this.DialogId = new StringExpression(dialogIdToCall);
 
             if (bindingOptions != null)
             {
@@ -48,6 +47,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public Dialog Dialog { get; set; }
 
         /// <summary>
+        /// Gets or sets the expression whih resolves to the dialog Id to call.
+        /// </summary>
+        /// <remarks>In the case of calling dialogs which are not declarative you can invoke them by id using dialogId property.  </remarks>
+        /// <value>
+        /// The dialog.id of a dialog which is in a DialogSet in the parent call chain.  If Dialog is defined this property is ignored.
+        /// </value>
+        [JsonProperty("dialogId")]
+        public StringExpression DialogId { get; set; } = new StringExpression();
+
+        /// <summary>
         /// Gets or sets a value indicating whether to have the new dialog should process the activity.
         /// </summary>
         /// <value>The default for this will be true, which means the new dialog should not look the activity.  You can set this to false to dispatch the activity to the new dialog.</value>
@@ -67,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{Dialog?.Id ?? this.dialogIdToCall}]";
+            return $"{this.GetType().Name}[{Dialog?.Id}]";
         }
 
         protected Dialog ResolveDialog(DialogContext dc)
@@ -77,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return this.Dialog;
             }
 
-            var dialogId = this.dialogIdToCall ?? throw new Exception($"{this.GetType().Name} requires a dialog to be called.");
+            var (dialogId, error) = this.DialogId.TryGetValue(dc.GetState());
             return dc.FindDialog(dialogId) ?? throw new Exception($"{dialogId} not found.");
         }
 
@@ -90,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             foreach (var binding in bindingOptions)
             {
                 // evalute the value
-                var (result, error) = new ExpressionEngine().Parse(binding.Value.ToString()).TryEvaluate(dc.GetState());
+                var (result, error) = new ExpressionEngine().Parse(binding.Value.ToString()).TryEvaluate<object>(dc.GetState());
 
                 if (error != null)
                 {

@@ -6,13 +6,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.QnA;
-using Microsoft.Bot.Expressions;
-using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -30,10 +26,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         
         private const string IntentPrefix = "intent=";
 
-        private Expression knowledgebaseIdExpression;
-        private Expression endpointkeyExpression;
-        private Expression hostnameExpression;
-
         public QnAMakerRecognizer()
         {
         }
@@ -45,11 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// The knowledgebase Id.
         /// </value>
         [JsonProperty("knowledgeBaseId")]
-        public string KnowledgeBaseId
-        {
-            get { return knowledgebaseIdExpression?.ToString(); }
-            set { knowledgebaseIdExpression = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public StringExpression KnowledgeBaseId { get; set; } = new StringExpression();
 
         /// <summary>
         /// Gets or sets the Hostname for your QnA Maker service.
@@ -58,11 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// The host name of the QnA Maker knowledgebase.
         /// </value>
         [JsonProperty("hostname")]
-        public string HostName
-        {
-            get { return hostnameExpression?.ToString(); }
-            set { hostnameExpression = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public StringExpression HostName { get; set; } = new StringExpression();
 
         /// <summary>
         /// Gets or sets the Endpoint key for the QnA Maker KB.
@@ -71,11 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// The endpoint key for the QnA service.
         /// </value>
         [JsonProperty("endpointKey")]
-        public string EndpointKey
-        {
-            get { return endpointkeyExpression?.ToString(); }
-            set { endpointkeyExpression = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public StringExpression EndpointKey { get; set; } = new StringExpression();
 
         /// <summary>
         /// Gets or sets the number of results you want.
@@ -85,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// </value>
         [DefaultValue(3)]
         [JsonProperty("top")]
-        public int Top { get; set; } = 3;
+        public IntExpression Top { get; set; } = new IntExpression(3);
 
         /// <summary>
         /// Gets or sets the threshold score to filter results.
@@ -95,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// </value>
         [DefaultValue(0.3F)]
         [JsonProperty("threshold")]
-        public float Threshold { get; set; } = 0.3F;
+        public FloatExpression Threshold { get; set; } = new FloatExpression(0.3F);
 
         /// <summary>
         /// Gets or sets a value indicating whether gets or sets environment of knowledgebase to be called. 
@@ -113,7 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// The desired RankerType.
         /// </value>
         [JsonProperty("rankerType")]
-        public string RankerType { get; set; } = RankerTypes.DefaultRankerType;
+        public StringExpression RankerType { get; set; } = new StringExpression(RankerTypes.DefaultRankerType);
 
         [JsonIgnore]
         public HttpClient HttpClient { get; set; }
@@ -148,11 +128,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                 new QnAMakerOptions
                 {
                     Context = dialogContext.GetState().GetValue<QnARequestContext>("$qna.context"),
-                    ScoreThreshold = this.Threshold,
+                    ScoreThreshold = this.Threshold.TryGetValue(dialogContext.GetState()).Value,
                     StrictFilters = filters.ToArray(),
-                    Top = this.Top,
+                    Top = this.Top.TryGetValue(dialogContext.GetState()).Value,
                     QnAId = 0,
-                    RankerType = this.RankerType,
+                    RankerType = this.RankerType.TryGetValue(dialogContext.GetState()).Value,
                     IsTest = this.IsTest
                 },
                 null).ConfigureAwait(false);
@@ -204,9 +184,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                 return Task.FromResult(qnaClient);
             }
 
-            var (epKey, error) = this.endpointkeyExpression.TryEvaluate(dc.GetState());
-            var (hn, error2) = this.hostnameExpression.TryEvaluate(dc.GetState());
-            var (kbId, error3) = this.knowledgebaseIdExpression.TryEvaluate(dc.GetState());
+            var (epKey, error) = this.EndpointKey.TryGetValue(dc.GetState());
+            var (hn, error2) = this.HostName.TryGetValue(dc.GetState());
+            var (kbId, error3) = this.KnowledgeBaseId.TryGetValue(dc.GetState());
 
             var endpoint = new QnAMakerEndpoint
             {
