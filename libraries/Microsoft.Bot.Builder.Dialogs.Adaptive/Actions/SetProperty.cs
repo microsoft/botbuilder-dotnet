@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } = new BoolExpression(false);
+        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets property path to put the value in.
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The expression to get the value to put into property path.
         /// </value>
         [JsonProperty("value")]
-        public ValueExpression Value { get; set; } = new ValueExpression(null);
+        public ValueExpression Value { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -63,17 +63,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            var (disabled, _) = this.Disabled.TryGetValue(dc.GetState());
-            if (disabled)
+            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
-            var (value, valueError) = this.Value.TryGetValue(dc.GetState());
-            if (valueError != null)
+            object value = null;
+            if (this.Value != null)
             {
-                throw new Exception($"Expression evaluation resulted in an error. Expression: {this.Value.ToString()}. Error: {valueError}");
+                var (val, valueError) = this.Value.TryGetValue(dc.GetState());
+                if (valueError != null)
+                {
+                    throw new Exception($"Expression evaluation resulted in an error. Expression: {this.Value.ToString()}. Error: {valueError}");
+                }
+
+                value = val;
             }
 
             dc.GetState().SetValue(this.Property.TrimStart('='), value);

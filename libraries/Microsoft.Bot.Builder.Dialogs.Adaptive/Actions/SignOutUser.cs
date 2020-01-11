@@ -36,21 +36,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } = new BoolExpression(false);
+        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets the expression which resolves to the activityId to update.
         /// </summary>
         /// <value>Expression to userId.  If there is no expression, then the current user.id will be used.</value>
         [JsonProperty("userId")]
-        public StringExpression UserId { get; set; } = new StringExpression();
+        public StringExpression UserId { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the OAuth connection.
         /// </summary>
         /// <value>The name of the OAuth connection.</value>
         [JsonProperty("connectionName")]
-        public StringExpression ConnectionName { get; set; } = new StringExpression();
+        public StringExpression ConnectionName { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -59,24 +59,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled.TryGetValue(dc.GetState()).Value == true)
+            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            string userId = null;
-            var (result, error) = this.UserId.TryGetValue(dc.GetState());
-            if (result != null)
-            {
-                userId = result as string;
-            }
-
+            string userId = this.UserId?.TryGetValue(dc.GetState()).Value;
+            
             if (!(dc.Context.Adapter is IUserTokenProvider adapter))
             {
                 throw new InvalidOperationException("SignoutUser(): not supported by the current adapter");
             }
 
-            var (connectionName, _) = this.ConnectionName.TryGetValue(dc.GetState());
+            var connectionName = this.ConnectionName?.TryGetValue(dc.GetState()).Value;
             await adapter.SignOutUserAsync(dc.Context, connectionName, (string)userId, cancellationToken).ConfigureAwait(false);
 
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);

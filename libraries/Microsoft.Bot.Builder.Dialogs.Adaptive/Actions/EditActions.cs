@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } = new BoolExpression(false);
+        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets the actions to be applied to the active action.
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The type of change to appy to the active actions.
         /// </value>
         [JsonProperty("changeType")]
-        public EnumExpression<ActionChangeType> ChangeType { get; set; }
+        public EnumExpression<ActionChangeType> ChangeType { get; set; } = new EnumExpression<ActionChangeType>();
 
         public virtual IEnumerable<Dialog> GetDependencies()
         {
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (this.Disabled.TryGetValue(dc.GetState()).Value == true)
+            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }

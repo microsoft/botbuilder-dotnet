@@ -32,13 +32,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets condition expression against memory Example: "user.age > 18".
+        /// Gets or sets value expression against memory Example: "user.age".
         /// </summary>
         /// <value>
-        /// Condition expression against memory Example: "user.age > 18".
+        /// Value Expression against memory. This value expression will be combined with value expression in case statements to make a bool expression.
         /// </value>
         [JsonProperty("condition")]
-        public BoolExpression Condition { get; set; } = new BoolExpression();
+        public ValueExpression Condition { get; set; } 
 
         /// <summary>
         /// Gets or sets an optional expression which if is true will disable this action.
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } = new BoolExpression(false);
+        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets default case.
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled.TryGetValue(dc.GetState()).Value == true)
+            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -117,13 +117,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     {
                         this.caseExpressions = new Dictionary<string, Expression>();
 
-                        foreach (var c in this.Cases)
+                        foreach (var cse in this.Cases)
                         {
                             // Values for cases are always coerced to string
-                            var caseCondition = Expression.EqualsExpression(this.Condition.Expression, c.CreateValueExpression());
+                            var caseCondition = Expression.EqualsExpression(this.Condition.ToExpression(), cse.CreateValueExpression());
 
                             // Map of expression to actions
-                            this.caseExpressions[c.Value] = caseCondition;
+                            this.caseExpressions[cse.Value] = caseCondition;
                         }
                     }
                 }

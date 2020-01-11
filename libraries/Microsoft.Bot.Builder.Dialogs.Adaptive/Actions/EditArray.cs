@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <param name="arrayProperty">array property (optional).</param>
         /// <param name="value">value to insert.</param>
         /// <param name="resultProperty">output property to put Pop/Take into.</param>
-        public EditArray(ArrayChangeType changeType, string arrayProperty = null, string value = null, string resultProperty = null)
+        public EditArray(ArrayChangeType changeType, string arrayProperty = null, object value = null, string resultProperty = null)
             : base()
         {
             this.ChangeType = new EnumExpression<ArrayChangeType>(changeType);
@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } = new BoolExpression(false);
+        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets property path expression to the collection of items.
@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The expression of the value to put onto the array.
         /// </value>
         [JsonProperty("value")]
-        public ValueExpression Value { get; set; } = new ValueExpression(null);
+        public ValueExpression Value { get; set; } = new ValueExpression();
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled.TryGetValue(dc.GetState()).Value)
+            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }

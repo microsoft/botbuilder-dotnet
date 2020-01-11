@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Property Assignment.
+    /// Property Assignment (used in SetProperty and SetProperties actions).
     /// </summary>
     public class PropertyAssignment
     {

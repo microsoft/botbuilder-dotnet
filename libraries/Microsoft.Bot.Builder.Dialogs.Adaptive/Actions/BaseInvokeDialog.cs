@@ -17,10 +17,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public abstract class BaseInvokeDialog : Dialog, IDialogDependencies
     {
         // Expression for dialogId to call (allowing dynamic expression)
-        public BaseInvokeDialog(string dialogIdToCall = null, IDictionary<string, string> bindingOptions = null)
+        public BaseInvokeDialog(string dialogIdToCall = null, object bindingOptions = null)
             : base()
         {
-            this.DialogId = new StringExpression(dialogIdToCall);
+            if (dialogIdToCall != null)
+            {
+                this.DialogId = dialogIdToCall;
+            }
 
             if (bindingOptions != null)
             {
@@ -35,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Configurable options for the dialog. 
         /// </value>
         [JsonProperty("options")]
-        public object Options { get; set; } = new JObject();
+        public object Options { get; set; }
 
         /// <summary>
         /// Gets or sets the dialog to call.
@@ -54,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The dialog.id of a dialog which is in a DialogSet in the parent call chain.  If Dialog is defined this property is ignored.
         /// </value>
         [JsonProperty("dialogId")]
-        public StringExpression DialogId { get; set; } = new StringExpression();
+        public StringExpression DialogId { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to have the new dialog should process the activity.
@@ -76,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{Dialog?.Id}]";
+            return $"{this.GetType().Name}[{Dialog?.Id ?? DialogId?.ToString()}]";
         }
 
         protected Dialog ResolveDialog(DialogContext dc)
@@ -86,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return this.Dialog;
             }
 
-            var (dialogId, error) = this.DialogId.TryGetValue(dc.GetState());
+            var dialogId = this.DialogId?.TryGetValue(dc.GetState()).Value;
             return dc.FindDialog(dialogId) ?? throw new Exception($"{dialogId} not found.");
         }
 
@@ -99,7 +102,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             foreach (var binding in bindingOptions)
             {
                 // evalute the value
-                var (result, error) = new ExpressionEngine().Parse(binding.Value.ToString()).TryEvaluate<object>(dc.GetState());
+                var (value, error) = new ValueExpression(binding.Value).TryGetValue(dc.GetState());
 
                 if (error != null)
                 {
@@ -107,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
 
                 // and store in options as the result
-                boundOptions[binding.Key] = JToken.FromObject(result);
+                ObjectPath.SetPathValue(boundOptions, binding.Key, value);
             }
 
             return boundOptions;

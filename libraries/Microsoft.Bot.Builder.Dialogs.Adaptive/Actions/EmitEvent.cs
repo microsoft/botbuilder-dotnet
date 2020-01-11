@@ -19,12 +19,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public const string DeclarativeType = "Microsoft.EmitEvent";
 
         [JsonConstructor]
-        public EmitEvent(string eventName = null, string eventValue = null, bool bubble = false, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public EmitEvent(string eventName = null, object eventValue = null, bool bubble = false, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
-            this.EventName = new StringExpression(eventName);
-            this.EventValue = new ValueExpression(eventValue);
+            
+            if (eventName != null)
+            {
+                this.EventName = eventName;
+            }
+
+            if (eventValue != null)
+            {
+                this.EventValue = new ValueExpression(eventValue);
+            }
+
             this.BubbleEvent = new BoolExpression(bubble);
         }
 
@@ -38,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } = new BoolExpression(false);
+        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets the name of the event to emit.
@@ -47,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The name of the event to emit.
         /// </value>
         [JsonProperty("eventName")]
-        public StringExpression EventName { get; set; } = new StringExpression();
+        public StringExpression EventName { get; set; } 
 
         /// <summary>
         /// Gets or sets the memory property path to use to get the value to send as part of the event.
@@ -56,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The memory property path to use to get the value to send as part of the event.
         /// </value>
         [JsonProperty("eventValue")]
-        public ValueExpression EventValue { get; set; } = new ValueExpression();
+        public ValueExpression EventValue { get; set; } 
 
         /// <summary>
         /// Gets or sets a value indicating whether the event should bubble to parents or not.
@@ -65,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A value indicating whether gets or sets whether the event should bubble to parents or not.
         /// </value>
         [JsonProperty("bubbleEvent")]
-        public BoolExpression BubbleEvent { get; set; } = new BoolExpression(false);
+        public BoolExpression BubbleEvent { get; set; } 
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -74,13 +83,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled.TryGetValue(dc.GetState()).Value == true)
+            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var handled = false;
-            var eventName = EventName.TryGetValue(dc.GetState()).Value;
+            bool handled;
+            var eventName = EventName?.TryGetValue(dc.GetState()).Value;
             var bubbleEvent = BubbleEvent.TryGetValue(dc.GetState()).Value;
             if (EventValue != null)
             {

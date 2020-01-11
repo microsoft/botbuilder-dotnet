@@ -711,7 +711,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     installedDependencies = true;
 
-                    var id = 0u;
+                    var id = 0;
                     foreach (var trigger in Triggers)
                     {
                         if (trigger is IDialogDependencies depends)
@@ -730,7 +730,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         if (trigger.Priority == null)
                         {
                             // Constant expression defined from order
-                            trigger.Priority = new IntExpression(id);
+                            trigger.Priority = id;
                         }
 
                         if (trigger.Id == null)

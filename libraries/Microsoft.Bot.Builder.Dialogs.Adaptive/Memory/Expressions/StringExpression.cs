@@ -43,7 +43,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public override void SetValue(object value)
         {
-            if (value is string stringOrExpression)
+            var stringOrExpression = (value as string) ?? (value as JValue)?.Value as string;
+
+            if (stringOrExpression != null)
             {
                 // if it starts with = it always is an expression
                 if (stringOrExpression.StartsWith("="))

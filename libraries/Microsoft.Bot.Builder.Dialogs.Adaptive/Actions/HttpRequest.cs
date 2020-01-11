@@ -110,20 +110,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } = new BoolExpression(false);
+        public BoolExpression Disabled { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("method")]
         public HttpMethod Method { get; set; }
 
         [JsonProperty("url")]
-        public string Url { get; set; }
+        public StringExpression Url { get; set; }
 
         [JsonProperty("headers")]
         public Dictionary<string, string> Headers { get; set; }
 
         [JsonProperty("body")]
-        public JToken Body { get; set; }
+        public ValueExpression Body { get; set; }
 
         [JsonProperty("responseType")]
         public ResponseTypes ResponseType { get; set; } = ResponseTypes.Json;
@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled.TryGetValue(dc.GetState()).Value == true)
+            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -162,13 +162,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             JToken instanceBody = null;
             if (this.Body != null)
             {
-                instanceBody = (JToken)this.Body.DeepClone();
+                var (body, err) = this.Body.TryGetValue(dc.GetState());
+                if (err != null)
+                {
+                    throw new ArgumentException(err);
+                }
+
+                instanceBody = (JToken)JToken.FromObject(body);
             }
 
             var instanceHeaders = Headers == null ? null : new Dictionary<string, string>(Headers);
-            var instanceUrl = this.Url;
 
-            instanceUrl = await new TextTemplate(this.Url).BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
+            var (instanceUrl, instanceUrlError) = this.Url.TryGetValue(dc.GetState());
+            if (instanceUrlError != null)
+            {
+                throw new ArgumentException(instanceUrlError);
+            }
 
             // Bind each string token to the data in state
             if (instanceBody != null)
@@ -346,7 +355,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         var (result, error) = new ValueExpression(text).TryGetValue(dc.GetState());
                         if (error == null)
                         {
-                            token.Replace(new JValue(result));
+                            token.Replace(JToken.FromObject(result));
                         }
                     }
 
