@@ -4,7 +4,7 @@
     "$kind": "Microsoft.OnEndOfActions",
     "condition":"!$Length",
     "priority": "indexOf(dialog.requiredProperties, 'Length')",
-    "actions": [        
+    "actions": [
         {
             "$kind": "Microsoft.Ask",
             "activity": "@{AskLength()}",

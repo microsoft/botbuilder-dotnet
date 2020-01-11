@@ -6,6 +6,10 @@
     "entity": "keyPhrase",
     "actions": [
         {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "@{setPropertyMessage('Keyphraseproperty', @keyPhrase)}"
+        }, 
+        {
             "$kind": "Microsoft.SetProperty",
             "property": "$Keyphraseproperty",
             "value": "@keyPhrase"          

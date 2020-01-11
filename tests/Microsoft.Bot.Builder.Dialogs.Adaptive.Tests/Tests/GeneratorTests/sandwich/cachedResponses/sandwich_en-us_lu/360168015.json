@@ -1,1 +1,0 @@
-{"query":"dlkj","prediction":{"topIntent":"sandwich","intents":{"sandwich":{"score":0.882352948}},"entities":{"personName":["dlkj"],"$instance":{"personName":[{"type":"builtin.personName","text":"dlkj","startIndex":0,"length":4,"modelTypeId":2,"modelType":"Prebuilt Entity Extractor","recognitionSources":["model"]}]}}}}

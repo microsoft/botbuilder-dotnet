@@ -10,7 +10,6 @@
 "sandwich-QuantitySetnumber",
 "sandwich-LengthAsk",
 "sandwich-LengthSetdimension",
-"sandwich-LengthSetnumber",
 "sandwich-NameAsk",
 "sandwich-NameSetpersonName",
 "sandwich-NameSetutterance",
@@ -27,14 +26,17 @@
 "sandwich-PriceSetmoney",
 "sandwich-CancelConfirmation",
 "sandwich-CancelConfirmationSet",
+"sandwich-ChangePropertyConfirmationSet",
 "sandwich-CompleteConfirmation",
 "sandwich-CompleteSetConfirmation",
 "sandwich-CompleteSetPropertyname",
 "sandwich-PropertyToChangeSet",
+"sandwich-PropertyToRememberSet",
 "sandwich-BeginDialog",
 "sandwich-ChooseProperty",
 "sandwich-HelpIntent",
 "sandwich-NotUnderstood",
-"sandwich-sandwichIntent" 
+"sandwich-sandwichIntent",
+"sandwich-ReadPropertyIntent" 
         ]
 }
