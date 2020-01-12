@@ -23,23 +23,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         [JsonProperty("outputFormat")]
-        public StringExpression OutputFormat { get; set; } = new StringExpression(null);
+        public StringExpression OutputFormat { get; set; } 
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
             var input = dc.GetState().GetValue<string>(VALUE_PROPERTY);
 
-            var (outputValue, error) = this.OutputFormat.TryGetValue(dc.GetState());
-            if (error == null)
+            if (this.OutputFormat != null)
             {
-                if (outputValue != null)
+                var (outputValue, error) = this.OutputFormat.TryGetValue(dc.GetState());
+                if (error == null)
                 {
                     input = outputValue.ToString();
                 }
-            }
-            else
-            {
-                throw new Exception($"In TextInput, OutputFormat Expression evaluation resulted in an error. Expression: {OutputFormat.ToString()}. Error: {error}");
+                else
+                {
+                    throw new Exception($"In TextInput, OutputFormat Expression evaluation resulted in an error. Expression: {OutputFormat.ToString()}. Error: {error}");
+                }
             }
 
             dc.GetState().SetValue(VALUE_PROPERTY, input);

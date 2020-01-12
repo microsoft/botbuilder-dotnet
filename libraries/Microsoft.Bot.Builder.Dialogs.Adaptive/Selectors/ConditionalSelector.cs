@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// Expression that determines which selector to use.
         /// </value>
         [JsonProperty("condition")]
-        public BoolExpression Condition { get; set; } = new BoolExpression();
+        public BoolExpression Condition { get; set; }
 
         /// <summary>
         /// Gets or sets selector if <see cref="Condition"/> is true.

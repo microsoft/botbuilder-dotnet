@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// The knowledgebase Id.
         /// </value>
         [JsonProperty("knowledgeBaseId")]
-        public StringExpression KnowledgeBaseId { get; set; } = new StringExpression();
+        public StringExpression KnowledgeBaseId { get; set; } 
 
         /// <summary>
         /// Gets or sets the Hostname for your QnA Maker service.
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// The host name of the QnA Maker knowledgebase.
         /// </value>
         [JsonProperty("hostname")]
-        public StringExpression HostName { get; set; } = new StringExpression();
+        public StringExpression HostName { get; set; } 
 
         /// <summary>
         /// Gets or sets the Endpoint key for the QnA Maker KB.
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// The endpoint key for the QnA service.
         /// </value>
         [JsonProperty("endpointKey")]
-        public StringExpression EndpointKey { get; set; } = new StringExpression();
+        public StringExpression EndpointKey { get; set; } 
 
         /// <summary>
         /// Gets or sets the Threshold score to filter results.
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// Title for active learning suggestions card.
         /// </value>
         [JsonProperty("activeLearningCardTitle")]
-        public StringExpression ActiveLearningCardTitle { get; set; } = new StringExpression();
+        public StringExpression ActiveLearningCardTitle { get; set; } 
 
         /// <summary>
         /// Gets or sets the Text for no match option.
@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// The Text for no match option.
         /// </value>
         [JsonProperty("cardNoMatchText")]
-        public StringExpression CardNoMatchText { get; set; } = new StringExpression();
+        public StringExpression CardNoMatchText { get; set; } 
 
         /// <summary>
         /// Gets or sets the template for Custom response when no match option was selected.

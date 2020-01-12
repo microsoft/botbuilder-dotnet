@@ -114,7 +114,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 if (this.fullConstraint == null)
                 {
                     var allExpressions = new List<Expression>();
-                    allExpressions.Add(this.Condition.ToExpression());
+                    
+                    if (this.Condition != null)
+                    {
+                        allExpressions.Add(this.Condition.ToExpression());
+                    }
 
                     if (this.extraConstraints.Any())
                     {

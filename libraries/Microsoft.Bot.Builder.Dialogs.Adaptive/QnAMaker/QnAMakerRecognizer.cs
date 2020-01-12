@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// The knowledgebase Id.
         /// </value>
         [JsonProperty("knowledgeBaseId")]
-        public StringExpression KnowledgeBaseId { get; set; } = new StringExpression();
+        public StringExpression KnowledgeBaseId { get; set; }
 
         /// <summary>
         /// Gets or sets the Hostname for your QnA Maker service.
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// The host name of the QnA Maker knowledgebase.
         /// </value>
         [JsonProperty("hostname")]
-        public StringExpression HostName { get; set; } = new StringExpression();
+        public StringExpression HostName { get; set; } 
 
         /// <summary>
         /// Gets or sets the Endpoint key for the QnA Maker KB.
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// The endpoint key for the QnA service.
         /// </value>
         [JsonProperty("endpointKey")]
-        public StringExpression EndpointKey { get; set; } = new StringExpression();
+        public StringExpression EndpointKey { get; set; } 
 
         /// <summary>
         /// Gets or sets the number of results you want.
