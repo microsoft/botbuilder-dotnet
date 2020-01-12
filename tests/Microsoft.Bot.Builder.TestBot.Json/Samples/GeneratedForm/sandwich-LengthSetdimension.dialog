@@ -6,9 +6,18 @@
     "entity": "dimension",
     "actions": [
         {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "@{setObjectPropertyMessage('Length',concat(string(@dimension.number), ' ', @dimension.units))}"
+        }, 
+        {
             "$kind": "Microsoft.SetProperty",
-            "property": "$Length",
-            "value": "=@dimension"          
+            "property": "$Length.number",
+            "value": "=@dimension.number"          
+        },
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Length.units",
+            "value": "=@dimension.units"          
         }
     ]               
 }
