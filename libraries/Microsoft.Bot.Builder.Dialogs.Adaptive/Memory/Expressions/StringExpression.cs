@@ -12,6 +12,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     [JsonConverter(typeof(StringExpressionConverter))]
     public class StringExpression : ExpressionProperty<string>
     {
+        private LGFile lg = new LGFile();
+
         public StringExpression()
         {
         }
@@ -35,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             if (this.Value != null)
             {
                 // interpolated string
-                return ((string)new TemplateEngine(new ExpressionEngine()).Evaluate(this.Value, data), null);
+                return (lg.Evaluate(this.Value, data).ToString(), null);
             }
 
             return base.TryGetValue(data);

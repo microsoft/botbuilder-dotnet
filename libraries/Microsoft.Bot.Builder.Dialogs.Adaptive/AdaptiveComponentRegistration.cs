@@ -182,6 +182,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new ExpressionPropertyConverter<ulong>();
             yield return new ExpressionPropertyConverter<double>();
             yield return new ExpressionPropertyConverter<ChoiceSet>();
+            yield return new ExpressionPropertyConverter<List<string>>();
             yield return new EnumExpressionConverter<ArrayChangeType>();
             yield return new EnumExpressionConverter<ListStyle>();
             yield return new ChoiceSetConverter();

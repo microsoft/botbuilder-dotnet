@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -26,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         [JsonProperty("$kind")]
         public new const string DeclarativeType = "Microsoft.Ask";
-        
+
         [JsonConstructor]
         public Ask(
             string text = null,
@@ -58,15 +59,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             dc.GetState().TryGetValue(TurnPath.DIALOGEVENT, out DialogEvent trigger);
 
-            var expected = ExpectedProperties?.GetValue(dc.GetState());
+            var expected = this.ExpectedProperties?.TryGetValue(dc.GetState()).Value;
             if (expected != null
-                && dc.GetState().TryGetValue(DialogPath.ExpectedProperties, out List<string> lastExpectedProperties)
-                && !expected.Any(prop => !lastExpectedProperties.Contains(prop))
-                && !lastExpectedProperties.Any(prop => !expected.Contains(prop))
-                && dc.GetState().TryGetValue(DialogPath.LastTriggerEvent, out DialogEvent lastTrigger)
-                && lastTrigger.Name.Equals(trigger.Name))
+                         && dc.GetState().TryGetValue(DialogPath.ExpectedProperties, out List<string> lastExpectedProperties)
+                         && !expected.Any(prop => !lastExpectedProperties.Contains(prop))
+                         && !lastExpectedProperties.Any(prop => !expected.Contains(prop))
+                         && dc.GetState().TryGetValue(DialogPath.LastTriggerEvent, out DialogEvent lastTrigger)
+                         && lastTrigger.Name.Equals(trigger.Name))
             {
-                retries++;                            
+                retries++;
             }
             else
             {
@@ -75,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             dc.GetState().SetValue(DialogPath.Retries, retries);
             dc.GetState().SetValue(DialogPath.LastTriggerEvent, trigger);
-            dc.GetState().SetValue(DialogPath.ExpectedProperties, expected);            
+            dc.GetState().SetValue(DialogPath.ExpectedProperties, expected);
             var result = await base.BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
             result.Status = DialogTurnStatus.CompleteAndWait;
             return result;

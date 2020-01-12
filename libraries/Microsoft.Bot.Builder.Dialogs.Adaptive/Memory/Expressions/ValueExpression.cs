@@ -12,11 +12,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     [JsonConverter(typeof(ValueExpressionConverter))]
     public class ValueExpression : ExpressionProperty<object>
     {
+        private LGFile lg = new LGFile();
+
         public ValueExpression()
         {
         }
 
-        public ValueExpression(object value) 
+        public ValueExpression(object value)
             : base(value)
         {
         }
@@ -27,10 +29,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public override (object Value, string Error) TryGetValue(object data)
         {
-            if (this.Value != null && this.Value is string v)
+            if (this.Value != null && this.Value is string val)
             {
-                // value should be interpreted as string, which means interperlated
-                return ((object)new TemplateEngine(new ExpressionEngine()).Evaluate(v, data), null);
+                // value is a string (not an expression) should be interpreted as string, which means interperlated
+                return (lg.Evaluate(val, data).ToString(), null);
             }
 
             return base.TryGetValue(data);
@@ -39,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public override void SetValue(object value)
         {
             var stringOrExpression = (value as string) ?? (value as JValue)?.Value as string;
-            
+
             if (stringOrExpression != null)
             {
                 // if it starts with = it always is an expression

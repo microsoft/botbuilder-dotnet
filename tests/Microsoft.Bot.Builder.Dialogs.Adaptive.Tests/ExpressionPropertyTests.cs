@@ -7,6 +7,7 @@
 #pragma warning disable SA1201 // Elements should appear in the correct order
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Converters;
@@ -25,6 +26,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     {
         public TestContext TestContext { get; set; }
 
+        private object data = new
+        {
+            test = "hello",
+            T = true,
+            testEnum = TestEnum.Three,
+            F = false,
+            ByteNum = 1,
+            ShortNum = 2,
+            UShortNum = 3,
+            IntNum = 4,
+            UIntNum = 5,
+            LongNum = 6,
+            ULongNum = 7,
+            FloatNum = 3.1F,
+            DoubleNum = 3.1D,
+            StrArr = new List<string>() { "a", "b", "c" },
+            Obj = new { x = "yo", y = 42 }
+        };
+
         [TestMethod]
         public void ExpressionPropertyTests_ValueTests()
         {
@@ -40,53 +60,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public void ExpressionPropertyTests_BindingTests()
         {
-            TestWithData(new
-            {
-                test = "hello",
-                T = true,
-                testEnum = TestEnum.Three,
-                F = false,
-                ByteNum = 1,
-                ShortNum = 2,
-                UShortNum = 3,
-                IntNum = 4,
-                UIntNum = 5,
-                LongNum = 6,
-                ULongNum = 7,
-                FloatNum = 3.1F,
-                DoubleNum = 3.1D,
-                Obj = new
-                {
-                    x = "yo",
-                    y = 42
-                }
-            });
+            TestWithData(data);
         }
 
         [TestMethod]
         public void ExpressionPropertyTests_JObjectBindingTests()
         {
-            TestWithData(JObject.FromObject(new
-            {
-                test = "hello",
-                T = true,
-                testEnum = TestEnum.Three,
-                F = false,
-                ByteNum = 1,
-                ShortNum = 2,
-                UShortNum = 3,
-                IntNum = 4,
-                UIntNum = 5,
-                LongNum = 6,
-                ULongNum = 7,
-                FloatNum = 3.1F,
-                DoubleNum = 3.1D,
-                Obj = new
-                {
-                    x = "yo",
-                    y = 42
-                }
-            }));
+            TestWithData(JObject.FromObject(data));
         }
 
         public void TestWithData(object data)
@@ -108,13 +88,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             TestExpressionPropertyWithValue<double>("DoubleNum", 3.1D, data);
             TestExpressionPropertyWithValue<double>("=DoubleNum", 3.1D, data);
+
+            var list = new List<string>() { "a", "b", "c" };
+            TestExpressionPropertyWithValue<List<string>>("StrArr", list, data);
+            TestExpressionPropertyWithValue<List<string>>("=StrArr", list, data);
         }
 
         public void TestExpressionPropertyWithValue<T>(string value, T expected, object memory = null)
         {
             var ep = new ExpressionProperty<T>(value);
             var (result, error) = ep.TryGetValue(memory ?? new object());
-            Assert.AreEqual(expected, result);
+            if (result is ICollection)
+            {
+                CollectionAssert.AreEqual((ICollection)expected, (ICollection)result);
+            }
+            else
+            {
+                Assert.AreEqual(expected, result);
+            }
+
             Assert.IsNull(error);
         }
 
@@ -280,7 +272,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var data = new
             {
-                test = "hello"
+                test = "joe"
             };
             var str = new StringExpression("test");
             Assert.IsNull(str.Expression);
@@ -295,7 +287,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(str.Value);
             Assert.AreEqual(str.ToString(), JsonConvert.DeserializeObject<StringExpression>(JsonConvert.SerializeObject(str, settings: settings), settings: settings).ToString());
             (result, error) = str.TryGetValue(data);
-            Assert.AreEqual("hello", result);
+            Assert.AreEqual("joe", result);
+            Assert.IsNull(error);
+
+            str = new StringExpression("Hello @{test}");
+            Assert.IsNull(str.Expression);
+            Assert.IsNotNull(str.Value);
+            Assert.AreEqual(str.ToString(), JsonConvert.DeserializeObject<StringExpression>(JsonConvert.SerializeObject(str, settings: settings), settings: settings).ToString());
+            (result, error) = str.TryGetValue(data);
+            Assert.AreEqual("Hello joe", result);
             Assert.IsNull(error);
         }
 
@@ -330,6 +330,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             (result, error) = val.TryGetValue(data);
             Assert.AreEqual(JsonConvert.SerializeObject(data.test), JsonConvert.SerializeObject(result));
             Assert.IsNull(error);
+
+            val = new ValueExpression("Hello @{test.x}");
+            Assert.IsNull(val.Expression);
+            Assert.IsNotNull(val.Value);
+            Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<ValueExpression>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
+            (result, error) = val.TryGetValue(data);
+            Assert.AreEqual("Hello 13", result);
+            Assert.IsNull(error);
         }
 
         [TestMethod]
@@ -355,7 +363,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             (result, error) = val.TryGetValue(data);
             Assert.IsTrue(result);
             Assert.IsNull(error);
-            
+
             val = new BoolExpression(true);
             Assert.IsNull(val.Expression);
             Assert.IsTrue(val.Value);
