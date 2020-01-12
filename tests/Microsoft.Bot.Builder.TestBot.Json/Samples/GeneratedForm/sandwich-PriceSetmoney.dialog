@@ -8,12 +8,12 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Price.number",
-            "value": "@money['number']"          
+            "value": "=@money['number']"          
         },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Price.units",
-            "value": "@money['units']"          
+            "value": "=@money['units']"          
         }
     ]               
 }

@@ -92,6 +92,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var list = new List<string>() { "a", "b", "c" };
             TestExpressionPropertyWithValue<List<string>>("StrArr", list, data);
             TestExpressionPropertyWithValue<List<string>>("=StrArr", list, data);
+
+            TestExpressionPropertyWithValue<List<string>>("createArray('a','b','c')", list, data);
+            TestExpressionPropertyWithValue<List<string>>("=createArray('a','b','c')", list, data);
         }
 
         public void TestExpressionPropertyWithValue<T>(string value, T expected, object memory = null)

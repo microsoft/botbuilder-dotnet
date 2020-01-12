@@ -118,7 +118,7 @@
           {
             "$kind": "Microsoft.SetProperty",
             "property": "user.name",
-            "value": "='Human'"
+            "value": "Human"
           }
         ]
       },

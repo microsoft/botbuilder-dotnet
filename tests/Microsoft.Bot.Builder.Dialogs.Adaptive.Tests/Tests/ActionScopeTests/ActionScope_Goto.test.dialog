@@ -9,7 +9,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SetProperty",
-                        "property": "=$counter",
+                        "property": "$counter",
                         "value": 0
                     },
                     {
