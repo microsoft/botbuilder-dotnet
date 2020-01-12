@@ -1,0 +1,27 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$kind": "Microsoft.OnAssignEntity",
+    "property": "ChangePropertyConfirmation",
+    "entity": "Confirmation",
+    "actions": [
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$ChangePropertyConfirmation",
+            "value": "@Confirmation"
+        },
+        {
+            "$kind": "Microsoft.IfCondition",
+            "condition":"$ChangePropertyConfirmation == 'yes'",
+            "actions": [
+                {
+                    "$kind": "Microsoft.Ask",
+                    "activity": "@{template(concat('Ask',$PropertyToRemember))}",
+                    "expectedProperties": 
+                        "createArray($PropertyToRemember)"
+                    
+                }
+            ]
+        }
+    ]
+}

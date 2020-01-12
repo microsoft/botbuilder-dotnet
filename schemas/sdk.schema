@@ -894,12 +894,21 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "expectedProperties": {
-                    "type": "array",
-                    "title": "Expected Properties",
-                    "description": "Properties expected to be filled by entities from the user",
-                    "items": {
-                        "type": "string"
-                    }
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "title": "string"
+                            },
+                            "title": "array",
+                            "description": "Properties expected to be filled by entities from the user"
+                        },
+                        {
+                            "type": "string",
+                            "title": "string"
+                        }
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -4027,9 +4036,9 @@
                 },
                 "headers": {
                     "type": "object",
-                    "additionalProperties": true,
                     "title": "Headers",
-                    "description": "One or more headers to include in the request (supports data binding)."
+                    "description": "One or more headers to include in the request (supports data binding).",
+                    "additionalProperties": true
                 },
                 "responseType": {
                     "type": "string",

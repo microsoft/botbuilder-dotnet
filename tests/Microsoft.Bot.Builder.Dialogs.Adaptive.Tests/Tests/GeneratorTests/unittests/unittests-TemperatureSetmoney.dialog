@@ -6,14 +6,18 @@
     "entity": "temperature",
     "actions": [
         {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "@{setObjectPropertyMessage('Temperature', concat(string(@temperature.number), ' ', @temperature.units))}"
+        },
+        {
             "$kind": "Microsoft.SetProperty",
             "property": "$Temperature.number",
-            "value": "=@temperature['number']"          
+            "value": "=@temperature.number"          
         },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Temperature.units",
-            "value": "=@temperature['units']"          
+            "value": "=@temperature.units"          
         }
     ]               
 }
