@@ -14,6 +14,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling
 {
+    // This program is necessary because Visual Studio cannot currently profile tests.
+    // With this program you can point to declarative tests and execute them while profiling.
     public class Program
     {
         public static void Help()

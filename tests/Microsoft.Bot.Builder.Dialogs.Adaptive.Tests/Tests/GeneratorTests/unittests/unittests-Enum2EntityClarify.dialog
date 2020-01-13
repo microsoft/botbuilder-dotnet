@@ -2,12 +2,12 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnChooseEntity",
-    "entity": "CheeseEntity",
+    "entity": "Enum2Entity",
     "actions": [
         {
             "$kind": "Microsoft.Ask",
-            "activity": "@{clarifyCheeseEntity()}",
-            "expectedProperties": ["Cheese"]
+            "activity": "@{clarifyEnum2Entity()}",
+            "expectedProperties": ["Enum2"]
         }
     ]
 }
