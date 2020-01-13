@@ -1,0 +1,23 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$kind": "Microsoft.OnAssignEntity",
+    "property": "Temperature",
+    "entity": "temperature",
+    "actions": [
+        {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "@{setObjectPropertyMessage('Temperature', concat(string(@temperature.number), ' ', @temperature.units))}"
+        },
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Temperature.number",
+            "value": "@temperature.number"          
+        },
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Temperature.units",
+            "value": "@temperature.units"          
+        }
+    ]               
+}

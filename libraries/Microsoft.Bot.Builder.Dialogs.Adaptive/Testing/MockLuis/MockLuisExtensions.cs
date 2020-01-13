@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.MockLuis
     public static class MockLuisExtensions
     {
         private static readonly Encoding UTF8 = new UTF8Encoding();
-        
+
         /// <summary>
         /// Replace Microsoft.LUISRecognizer declarative implementation with <see cref="MockLuisRecognizer"/>.
         /// </summary>
@@ -51,15 +51,14 @@ namespace Microsoft.Bot.Builder.MockLuis
             var host = new Uri(endpoint).Host;
             var region = host.Substring(0, host.IndexOf('.'));
 
-            // Find explicit settings file and fallback to any setting file assuming cached results are available
-            var settings = $"luis.settings.{environment}.{region}.json";
-            if (!File.Exists(Path.Combine(directory, settings)))
+            // Add environment luis.settings files to config
+            // Either there should be 1 or assume it is cached and any are fine.
+            string settings = null;
+            var di = new DirectoryInfo(directory);
+            foreach (var file in di.GetFiles($"luis.settings.*", SearchOption.AllDirectories))
             {
-                var settingFiles = Directory.GetFiles(directory, "luis.settings.*.json");
-                if (settingFiles.Any())
-                {
-                    settings = Path.GetFileName(settingFiles[0]);
-                }
+                settings = file.FullName;
+                break;
             }
 
             return builder

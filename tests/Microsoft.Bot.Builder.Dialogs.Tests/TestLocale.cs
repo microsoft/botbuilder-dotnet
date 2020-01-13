@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         public string InlineOrMore => Culture.InlineOrMore;
 
-        private PromptCultureModel Culture { get; }
+        public PromptCultureModel Culture { get; }
 
         private string GetCapEnding(string validLocale)
         {
