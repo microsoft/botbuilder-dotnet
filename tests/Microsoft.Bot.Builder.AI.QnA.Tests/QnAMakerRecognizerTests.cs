@@ -140,9 +140,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
         {
             var client = new HttpClient(mockHttp);
 
-            var host = "'https://dummy-hostname.azurewebsites.net/qnamaker'";
-            var knowlegeBaseId = "'dummy-id'";
-            var endpointKey = "'dummy-key'";
+            var host = "https://dummy-hostname.azurewebsites.net/qnamaker";
+            var knowlegeBaseId = "dummy-id";
+            var endpointKey = "dummy-key";
 
             var rootDialog = new AdaptiveDialog("outer")
             {
