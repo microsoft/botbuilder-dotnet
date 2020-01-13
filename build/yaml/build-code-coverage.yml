@@ -11,6 +11,7 @@ variables:
   BuildPlatform: 'Any CPU'
   BuildConfiguration: 'debug'
   CovereletOutputFile: 'coverletResult.json'
+  OutputFile: 'result.xml'
 
 steps:
 - task: UseDotNet@2
@@ -41,19 +42,4 @@ steps:
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet test'
-  inputs:
-    command: test
-    projects: |
-     **/Adapters/Microsoft.Bot.Builder.Adapters.Webex.Tests/Microsoft.Bot.Builder.Adapters.Webex.Tests.csproj
-
-    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" /p:CollectCoverage=true /p:MergeWith=$(System.DefaultWorkingDirectory)/$(CovereletOutputFile) /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(System.DefaultWorkingDirectory)/final.xml'
-    workingDirectory: tests
-
-- task: PublishCodeCoverageResults@1
-  displayName: 'Publish code coverage '
-  inputs:
-    codeCoverageTool: Cobertura
-    summaryFileLocation: '$(System.DefaultWorkingDirectory)/final.xml'
-    reportDirectory: '$(System.DefaultWorkingDirectory)'
+- template: code-coverage-steps.yml
