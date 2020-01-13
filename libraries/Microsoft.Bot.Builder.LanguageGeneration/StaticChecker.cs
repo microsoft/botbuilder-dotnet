@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             if (lgFile.AllTemplates.Count == 0)
             {
                 result.Add(BuildLGDiagnostic(
-                    "File must have at least one template definition ",
+                    LGErrors.NoTemplate,
                     DiagnosticSeverity.Warning));
 
                 return result;
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var errorTemplateName = templateNameLine.errorTemplateName();
             if (errorTemplateName != null)
             {
-                result.Add(BuildLGDiagnostic($"Not a valid template name line", context: errorTemplateName));
+                result.Add(BuildLGDiagnostic(LGErrors.InvalidTemplateName, context: errorTemplateName));
             }
             else
             {
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 if (visitedTemplateNames.Contains(templateName))
                 {
-                    result.Add(BuildLGDiagnostic($"Duplicated definitions found for template: {templateName}", context: templateNameLine));
+                    result.Add(BuildLGDiagnostic(LGErrors.DuplicatedTemplateInSameTemplate(templateName), context: templateNameLine));
                 }
                 else
                 {
@@ -94,8 +94,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         var sameTemplates = reference.Templates.Where(u => u.Name == templateName);
                         foreach (var sameTemplate in sameTemplates)
                         {
-                            result.Add(BuildLGDiagnostic(
-                            $"Duplicated definitions found for template: {sameTemplate.Name} in {sameTemplate.Source}", context: templateNameLine));
+                            result.Add(BuildLGDiagnostic(LGErrors.DuplicatedTemplateInDiffTemplate(sameTemplate.Name, sameTemplate.Source), context: templateNameLine));
                         }
                     }
 
@@ -107,7 +106,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         if (context.templateBody() == null)
                         {
-                            result.Add(BuildLGDiagnostic($"There is no template body in template {templateName}", DiagnosticSeverity.Warning, context.templateNameLine()));
+                            result.Add(BuildLGDiagnostic(LGErrors.NoTemplateBody(templateName), DiagnosticSeverity.Warning, context.templateNameLine()));
                         }
                         else
                         {
@@ -129,7 +128,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var errorTemplateStr = templateStr.errorTemplateString();
                 if (errorTemplateStr != null)
                 {
-                    result.Add(BuildLGDiagnostic($"Invalid template body line, did you miss '-' at line begin", context: errorTemplateStr));
+                    result.Add(BuildLGDiagnostic(LGErrors.InvalidTemplateBody, context: errorTemplateStr));
                 }
                 else
                 {
@@ -146,19 +145,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (context.structuredBodyNameLine().errorStructuredName() != null)
             {
-                result.Add(BuildLGDiagnostic($"structured name format error.", context: context.structuredBodyNameLine()));
+                result.Add(BuildLGDiagnostic(LGErrors.InvalidStrucName, context: context.structuredBodyNameLine()));
             }
 
             if (context.structuredBodyEndLine() == null)
             {
-                result.Add(BuildLGDiagnostic($"structured LG missing ending ']'", context: context));
+                result.Add(BuildLGDiagnostic(LGErrors.MissingStrucEnd, context: context));
             }
 
             var bodys = context.structuredBodyContentLine();
 
             if (bodys == null || bodys.Length == 0)
             {
-                result.Add(BuildLGDiagnostic($"Structured content is empty", context: context));
+                result.Add(BuildLGDiagnostic(LGErrors.EmptyStrucContent, context: context));
             }
             else
             {
@@ -166,7 +165,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (body.errorStructureLine() != null)
                     {
-                        result.Add(BuildLGDiagnostic($"structured body format error.", context: body.errorStructureLine()));
+                        result.Add(BuildLGDiagnostic(LGErrors.InvalidStrucBody, context: body.errorStructureLine()));
                     }
                     else if (body.objectStructureLine() != null)
                     {
@@ -208,27 +207,27 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 if (node.GetText().Count(u => u == ' ') > 1)
                 {
-                    result.Add(BuildLGDiagnostic($"At most 1 whitespace is allowed between IF/ELSEIF/ELSE and :", context: conditionNode));
+                    result.Add(BuildLGDiagnostic(LGErrors.InvalidWhitespaceInCondition, context: conditionNode));
                 }
 
                 if (idx == 0 && !ifExpr)
                 {
-                    result.Add(BuildLGDiagnostic($"condition is not start with if", DiagnosticSeverity.Warning, conditionNode));
+                    result.Add(BuildLGDiagnostic(LGErrors.NotStartWithIfInCondition, DiagnosticSeverity.Warning, conditionNode));
                 }
 
                 if (idx > 0 && ifExpr)
                 {
-                    result.Add(BuildLGDiagnostic($"condition can't have more than one if", context: conditionNode));
+                    result.Add(BuildLGDiagnostic(LGErrors.MultipleIfInCondition, context: conditionNode));
                 }
 
                 if (idx == ifRules.Length - 1 && !elseExpr)
                 {
-                    result.Add(BuildLGDiagnostic($"condition is not end with else", DiagnosticSeverity.Warning, conditionNode));
+                    result.Add(BuildLGDiagnostic(LGErrors.NotEndWithElseInCondition, DiagnosticSeverity.Warning, conditionNode));
                 }
 
                 if (idx > 0 && idx < ifRules.Length - 1 && !elseIfExpr)
                 {
-                    result.Add(BuildLGDiagnostic($"only elseif is allowed in middle of condition", context: conditionNode));
+                    result.Add(BuildLGDiagnostic(LGErrors.InvalidMiddleInCondition, context: conditionNode));
                 }
 
                 // check rule should should with one and only expression
@@ -236,7 +235,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (ifRules[idx].ifCondition().EXPRESSION().Length != 1)
                     {
-                        result.Add(BuildLGDiagnostic($"if and elseif should followed by one valid expression", context: conditionNode));
+                        result.Add(BuildLGDiagnostic(LGErrors.InvalidExpressionInCondition, context: conditionNode));
                     }
                     else
                     {
@@ -247,7 +246,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (ifRules[idx].ifCondition().EXPRESSION().Length != 0)
                     {
-                        result.Add(BuildLGDiagnostic($"else should not followed by any expression", context: conditionNode));
+                        result.Add(BuildLGDiagnostic(LGErrors.ExtraExpressionInCondition, context: conditionNode));
                     }
                 }
 
@@ -257,7 +256,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
-                    result.Add(BuildLGDiagnostic($"no normal template body in condition block", context: conditionNode));
+                    result.Add(BuildLGDiagnostic(LGErrors.MissingTemplateBodyInCondition, context: conditionNode));
                 }
             }
 
@@ -281,35 +280,35 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 if (node.GetText().Count(u => u == ' ') > 1)
                 {
-                    result.Add(BuildLGDiagnostic($"At most 1 whitespace is allowed between SWITCH/CASE/DEFAULT and :.", context: switchCaseNode));
+                    result.Add(BuildLGDiagnostic(LGErrors.InvalidWhitespaceInSwitchCase, context: switchCaseNode));
                 }
 
                 if (idx == 0 && !switchExpr)
                 {
-                    result.Add(BuildLGDiagnostic($"control flow is not start with switch", context: switchCaseNode));
+                    result.Add(BuildLGDiagnostic(LGErrors.NotStartWithSwitchInSwitchCase, context: switchCaseNode));
                 }
 
                 if (idx > 0 && switchExpr)
                 {
-                    result.Add(BuildLGDiagnostic($"control flow can not have more than one switch statement", context: switchCaseNode));
+                    result.Add(BuildLGDiagnostic(LGErrors.MultipleSwithStatementInSwitchCase, context: switchCaseNode));
                 }
 
                 if (idx > 0 && idx < length - 1 && !caseExpr)
                 {
-                    result.Add(BuildLGDiagnostic($"only case statement is allowed in the middle of control flow", context: switchCaseNode));
+                    result.Add(BuildLGDiagnostic(LGErrors.InvalidStatementInMiddlerOfSwitchCase, context: switchCaseNode));
                 }
 
                 if (idx == length - 1 && (caseExpr || defaultExpr))
                 {
                     if (caseExpr)
                     {
-                        result.Add(BuildLGDiagnostic($"control flow is not ending with default statement", DiagnosticSeverity.Warning, switchCaseNode));
+                        result.Add(BuildLGDiagnostic(LGErrors.NotEndWithDefaultInSwitchCase, DiagnosticSeverity.Warning, switchCaseNode));
                     }
                     else
                     {
                         if (length == 2)
                         {
-                            result.Add(BuildLGDiagnostic($"control flow should have at least one case statement", DiagnosticSeverity.Warning, switchCaseNode));
+                            result.Add(BuildLGDiagnostic(LGErrors.MissingCaseInSwitchCase, DiagnosticSeverity.Warning, switchCaseNode));
                         }
                     }
                 }
@@ -318,7 +317,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (switchCaseNode.EXPRESSION().Length != 1)
                     {
-                        result.Add(BuildLGDiagnostic($"switch and case should followed by one valid expression", context: switchCaseNode));
+                        result.Add(BuildLGDiagnostic(LGErrors.InvalidExpressionInSwiathCase, context: switchCaseNode));
                     }
                     else
                     {
@@ -329,7 +328,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (switchCaseNode.EXPRESSION().Length != 0 || switchCaseNode.TEXT().Length != 0)
                     {
-                        result.Add(BuildLGDiagnostic($"default should not followed by any expression or any text", context: switchCaseNode));
+                        result.Add(BuildLGDiagnostic(LGErrors.ExtraExpressionInSwitchCase, context: switchCaseNode));
                     }
                 }
 
@@ -341,7 +340,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     }
                     else
                     {
-                        result.Add(BuildLGDiagnostic($"no normal template body in case or default block", context: switchCaseNode));
+                        result.Add(BuildLGDiagnostic(LGErrors.MissingTemplateBodyInSwitchCase, context: switchCaseNode));
                     }
                 }
             }
@@ -363,7 +362,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (multiLinePrefix != null && multiLineSuffix == null)
             {
-                result.Add(BuildLGDiagnostic("Close ``` is missing.", context: context));
+                result.Add(BuildLGDiagnostic(LGErrors.NoEndingInMultiline, context: context));
             }
 
             return result;
