@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Authenticator abstraction used to obtain tokens through the Client Credentials OAuth 2.0 flow.
         /// </summary>
-        private readonly Lazy<AdalAuthenticator> authenticator;
+        private readonly Lazy<IAuthenticator> authenticator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AppCredentials"/> class.
@@ -205,10 +205,10 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <summary>
-        /// Builds the lazy <see cref="AdalAuthenticator" /> to be used for token acquisition.
+        /// Builds the lazy <see cref="IAuthenticator" /> to be used for token acquisition.
         /// </summary>
-        /// <returns>A lazy <see cref="AdalAuthenticator"/>.</returns>
-        protected abstract Lazy<AdalAuthenticator> BuildAuthenticator();
+        /// <returns>A lazy <see cref="IAuthenticator"/>.</returns>
+        protected abstract Lazy<IAuthenticator> BuildAuthenticator();
 
         private static bool IsTrustedUrl(Uri uri)
         {

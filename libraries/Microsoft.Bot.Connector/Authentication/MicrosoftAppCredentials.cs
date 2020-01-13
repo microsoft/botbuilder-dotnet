@@ -132,9 +132,9 @@ namespace Microsoft.Bot.Connector.Authentication
         public string MicrosoftAppPassword { get; set; }
 
         /// <inheritdoc/>
-        protected override Lazy<AdalAuthenticator> BuildAuthenticator()
+        protected override Lazy<IAuthenticator> BuildAuthenticator()
         {
-            return new Lazy<AdalAuthenticator>(
+            return new Lazy<IAuthenticator>(
                 () =>
                 new AdalAuthenticator(
                     new ClientCredential(MicrosoftAppId, MicrosoftAppPassword),
