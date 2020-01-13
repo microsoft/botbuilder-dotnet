@@ -35,12 +35,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!templateMap.ContainsKey(templateName))
             {
-                throw new Exception($"[{templateName}] template not found");
+                throw new Exception(LGErrors.TemplateNotExist(templateName));
             }
 
             if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"Loop detected: {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"{LGErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evalution trace
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
 
-            throw new Exception("template name match failed");
+            return new AnalyzerResult();
         }
 
         public override AnalyzerResult VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
