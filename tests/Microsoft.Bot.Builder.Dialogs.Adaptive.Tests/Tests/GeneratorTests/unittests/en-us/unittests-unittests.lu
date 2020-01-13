@@ -1,7 +1,9 @@
 # unittests
+
 - {age}
 - {ordinal}
 - {geographyV2}
+
 - {money}
 - {percentage}
 - {temperature}
@@ -12,5 +14,4 @@
 - {Enum1Entity}
 - {Enum2Entity}
 - {email}
-- {Confirmation}
-- {PROPERTYName}
+

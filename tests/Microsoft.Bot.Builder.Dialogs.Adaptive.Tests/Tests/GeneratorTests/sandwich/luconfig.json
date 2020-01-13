@@ -1,8 +1,0 @@
-
-{
-    "name": "sandwich",
-    "defaultLanguage": "en-us",
-    "models": [
-        "en-us/sandwich.en-us.lu"
-    ]
-}

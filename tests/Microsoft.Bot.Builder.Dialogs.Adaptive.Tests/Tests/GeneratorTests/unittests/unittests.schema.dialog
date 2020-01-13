@@ -190,6 +190,12 @@
                 "Confirmation"
             ]
         },
+        "ChangePropertyConfirmation": {
+            "type": "string",
+            "$entities": [
+                "Confirmation"
+            ]
+        },
         "CompleteConfirmation": {
             "type": "string",
             "$entities": [
@@ -198,6 +204,13 @@
             ]
         },
         "PropertyToChange": {
+            "type": "string",
+            "enum": "properties",
+            "$entities": [
+                "PROPERTYName"
+            ]
+        },
+        "PropertyToRemember": {
             "type": "string",
             "enum": "properties",
             "$entities": [
