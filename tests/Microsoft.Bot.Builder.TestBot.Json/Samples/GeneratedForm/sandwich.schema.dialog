@@ -12,13 +12,23 @@
             ]
         },
         "Length": {
-            "type": "number",
+            "type": "object",
             "$entities": [
-                "dimension",
-                "number"
+                "dimension:Length",
+                "dimension"
             ],
-            "$comment": "This is used by the mapping to convert underlying dimensions to inches.",
-            "$units": "inches"
+            "required": [
+                "number",
+                "units"
+            ],
+            "properties": {
+                "number": {
+                    "type": "number"
+                },
+                "units": {
+                    "type": "string"
+                }
+            }
         },
         "Name": {
             "type": "string",
@@ -96,6 +106,12 @@
                 "Confirmation"
             ]
         },
+        "ChangePropertyConfirmation": {
+            "type": "string",
+            "$entities": [
+                "Confirmation"
+            ]
+        },
         "CompleteConfirmation": {
             "type": "string",
             "$entities": [
@@ -104,6 +120,13 @@
             ]
         },
         "PropertyToChange": {
+            "type": "string",
+            "enum": "properties",
+            "$entities": [
+                "PROPERTYName"
+            ]
+        },
+        "PropertyToRemember": {
             "type": "string",
             "enum": "properties",
             "$entities": [

@@ -6,6 +6,10 @@
     "entity": "personName", 
     "actions": [
         {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "@{setPropertyMessage('Personname', @personName)}"
+        }, 
+        {
             "$kind": "Microsoft.SetProperty",
             "property": "$Personname",
             "value": "@personName"          
