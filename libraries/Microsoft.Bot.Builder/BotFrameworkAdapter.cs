@@ -1219,8 +1219,13 @@ namespace Microsoft.Bot.Builder
                 await CreateConnectorClientAsync(serviceUrl, connectorClaimsIdentity, cancellationToken).ConfigureAwait(false);
             }
 
-            // Add the channel service URL to the trusted services list so we can send messages back to the channel.
-            AppCredentials.TrustServiceUrl(serviceUrl);
+            if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
+            {
+                // Add the channel service URL to the trusted services list so we can send messages back.
+                // the service URL for skills is trusted because it is applied by the SkillHandler based on the original request
+                // received by the root bot
+                AppCredentials.TrustServiceUrl(serviceUrl);
+            }
         }
 
         /// <summary>
