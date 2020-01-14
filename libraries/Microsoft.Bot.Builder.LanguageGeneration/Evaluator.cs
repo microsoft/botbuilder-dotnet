@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         public const string LGType = "lgType";
         public static readonly Regex ExpressionRecognizeRegex = new Regex(@"(?<!\\)@{(((\'([^'\r\n])*?\')|(\""([^""\r\n])*?\""))|[^\r\n{}'""])*?}", RegexOptions.Compiled);
-        private const string ReExexuteSuffix = "!";
+        private const string ReExecuteSuffix = "!";
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
         public Evaluator(List<LGTemplate> templates, ExpressionEngine expressionEngine)
@@ -532,8 +532,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new ArgumentException("template name is null.");
             }
 
-            return templateName.EndsWith(ReExexuteSuffix) ?
-                (true, templateName.Substring(0, templateName.Length - ReExexuteSuffix.Length))
+            return templateName.EndsWith(ReExecuteSuffix) ?
+                (true, templateName.Substring(0, templateName.Length - ReExecuteSuffix.Length))
                 : (false, templateName);
         }
     }
