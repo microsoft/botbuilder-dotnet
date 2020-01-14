@@ -81,4 +81,5 @@ steps:
     azureSubscription: '$(AzureSubscriptionName)'
     scriptLocation: inlineScript
     inlineScript: 'call az group delete -n "$(ResourceGroupName)" --yes'
+  condition: always()
 
