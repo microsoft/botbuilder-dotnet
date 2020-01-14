@@ -59,7 +59,7 @@ Enter a value for @{name(property)}
 
 # requiredProperties
 - IF: @{count(dialogClass.schema.required) > 0}
-- Required properties include: @{join(foreach(where(dialogClass.schema.required, property, !contains(dialogClass.schema.$expectedOnly, property)), property, name(property)), ',')}\n
+- Required properties include: @{join(foreach(dialogClass.schema.required, property, name(property)), ',')}\n
 - ELSE:
 - 
 
@@ -74,7 +74,7 @@ Enter a value for @{name(property)}
 # possibleValues(property)
 - @{foreach(dialogClass.schema.properties[property].enum, enum, value(property, enum))}
 
-# clarifyEnumEntity(property)
+# chooseEnumEntity(property)
 - ```
 @{askHelp()}
 Please choose a value for @{name(property)} from \[@{join(foreach(turn.dialogEvent.value.entity.value, val, enumEntityValue(property, val)), ', ')}\]
@@ -82,6 +82,14 @@ Please choose a value for @{name(property)} from \[@{join(foreach(turn.dialogEve
 
 # cancel
 - Do you want to end the conversation? (yes/no)
+
+# setObjectPropertyMessage(property, val)
+- IF: @{contains($expectedProperties, property)}
+- 
+- ELSEIF: @{dialog[property]} 
+- @{name(property)} is changed from @{join(foreach(dialogClass.schema.properties[property].required, subproperty, subFact(property, subproperty)), ' ')} to @{val}.
+- ELSE: 
+- @{name(property)} is set as @{val}.
 
 # setPropertyMessage(property, val)
 - IF: @{contains($expectedProperties, property)}
@@ -117,7 +125,18 @@ Please choose a value for @{name(property)} from \[@{join(foreach(turn.dialogEve
 - @{join(foreach(dialog.requiredProperties, property, textProperty(property)), ', ')}
 
 # textProperty(property)
-- @{toLower(property)}=@{value(property, dialog[property])}
+- IF: @{dialog[property] == null}
+- The value of @{toLower(property)} is empty.
+- ELSEIF: @{dialogClass.schema.properties[property].required}
+- The value of @{toLower(property)} is @{join(foreach(dialogClass.schema.properties[property].required, subproperty, subFact(property, subproperty)), ' ')}.
+- ELSE:
+- The value of @{toLower(property)} is @{dialog[property]}.
+
+# confirmChangeProperty(property)
+- IF: @{dialog[property]}
+- Do you want to change the value of @{toLower(property)}? (yes or no)
+- ELSE: 
+- Do you want to add a value for @{toLower(property)}? (yes or no)
 
 # formCard
 -```

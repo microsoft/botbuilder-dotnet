@@ -19,7 +19,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.BeginDialog",
-                        "includeActivity": true,
+                        "activityProcessed": false,
                         "options": {},
                         "dialog": {
                             "$kind": "Microsoft.AdaptiveDialog",

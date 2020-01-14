@@ -107,7 +107,7 @@
                 },
                 {
                     "$kind": "Microsoft.EditArray",
-                    "changeType": "Remove",
+                    "changeType": "remove",
                     "itemsProperty": "user.lists[dialog.listName]",
                     "value": "dialog.item"
                 },

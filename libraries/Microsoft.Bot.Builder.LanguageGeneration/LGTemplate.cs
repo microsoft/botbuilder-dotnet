@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="parseTree">The parse tree of this template.</param>
         /// <param name="lgfileContent">lg file content.</param>
         /// <param name="source">Source of this template.</param>
-        public LGTemplate(LGFileParser.TemplateDefinitionContext parseTree, string lgfileContent, string source = "")
+        internal LGTemplate(LGFileParser.TemplateDefinitionContext parseTree, string lgfileContent, string source = "")
         {
             ParseTree = parseTree;
             Source = source;

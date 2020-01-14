@@ -168,6 +168,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new InterfaceConverter<EntityRecognizer>(refResolver, sourceMap, paths);
             yield return new InterfaceConverter<ITriggerSelector>(refResolver, sourceMap, paths);
             yield return new ExpressionPropertyConverter<ChoiceSet>();
+            yield return new ExpressionPropertyConverter<ExpressionProperty<List<string>>>();
             yield return new ActivityTemplateConverter();
             yield return new JObjectConverter(refResolver);
         }

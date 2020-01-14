@@ -17,6 +17,7 @@ namespace Microsoft.Bot.Configuration
     /// </summary>
     /// <remarks>It is typically loaded from a .bot file on disk.
     /// This class implements methods for encrypting and manipulating the in memory representation of the configuration.</remarks>
+    [Obsolete("This class is deprecated.  See https://aka.ms/bot-file-basics for more information.", false)]
     public class BotConfiguration
     {
         private const string SECRETKEY = "secretKey";

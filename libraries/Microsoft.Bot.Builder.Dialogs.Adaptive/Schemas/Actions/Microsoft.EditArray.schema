@@ -19,11 +19,11 @@
             "title": "Type of change",
             "description": "Type of change to the array in memory.",
             "enum": [
-                "Push",
-                "Pop",
-                "Take",
-                "Remove",
-                "Clear"
+                "push",
+                "pop",
+                "take",
+                "remove",
+                "clear"
             ]
         },
         "disabled": {

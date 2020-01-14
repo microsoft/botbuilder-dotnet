@@ -34,37 +34,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 Children = new List<PropertySchema>();
             }
 
-            // TODO: Should we have this logic in here or should the generator always generate $mappings?
             var list = new List<string>();
-            var mappings = schema["$mappings"]?.Value<JArray>();
-            if (mappings == null)
+            var entities = schema["$entities"]?.Value<JArray>();
+            if (entities != null)
             {
-                if (path != string.Empty)
+                foreach (var entity in entities)
                 {
-                    // TODO: Should probably be smarter about this--there may not be an entity.
-                    list.Add(path + "Entity");
-                }
-
-                if (Type == "integer" || Type == "float")
-                {
-                    // We want to pick up generic numbers when expected.
-                    list.Add("number");
-                }
-
-                if (Type == "string" && !IsEnum)
-                {
-                    list.Add("utterance");
-                }
-            }
-            else
-            {
-                foreach (var mapping in mappings)
-                {
-                    list.Add(mapping.Value<string>());
+                    list.Add(entity.Value<string>());
                 }
             }
 
-            Mappings = list;
+            Entities = list;
+
+            list = new List<string>();
+            var expected = schema["$expectedOnly"]?.Value<JArray>();
+            if (expected != null)
+            {
+                foreach (var entity in expected)
+                {
+                    list.Add(entity.Value<string>());
+                }
+
+                ExpectedOnly = list;
+            }
         }
 
         /// <summary>
@@ -91,7 +83,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </value>
         public JObject Schema { get; }
 
-        [Newtonsoft.Json.JsonIgnore]
+        /// <summary>
+        /// Gets parent schema.
+        /// </summary>
+        /// <value>Parent property schema if any.</value>
         public PropertySchema Parent { get; private set; }
 
         /// <summary>
@@ -116,7 +111,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Gets mappings to possible entities for property.
         /// </summary>
         /// <value>List of entity names.</value>
-        public IReadOnlyList<string> Mappings { get; }
+        public IReadOnlyList<string> Entities { get; }
+
+        /// <summary>
+        /// Gets list of entities that are only recognized for this property when expected.
+        /// </summary>
+        /// <value>List of expected only entity names.</value>
+        public IReadOnlyList<string> ExpectedOnly { get; }
 
         /// <summary>
         /// Gets child properties if there are any.

@@ -4,13 +4,13 @@
     "properties": {
         "Personname": {
             "type": "string",
-            "$mappings": [
+            "$entities": [
                 "personName"
             ]
         },
         "Age": {
             "type": "object",
-            "$mappings": [
+            "$entities": [
                 "age:Age",
                 "age"
             ],
@@ -29,13 +29,13 @@
         },
         "Ordinal": {
             "type": "string",
-            "$mappings": [
+            "$entities": [
                 "ordinal"
             ]
         },
         "Geographyv2": {
             "type": "object",
-            "$mappings": [
+            "$entities": [
                 "geographyV2:Geographyv2",
                 "geographyV2"
             ],
@@ -54,13 +54,13 @@
         },
         "Keyphraseproperty": {
             "type": "string",
-            "$mappings": [
+            "$entities": [
                 "keyPhrase"
             ]
         },
         "Money": {
             "type": "object",
-            "$mappings": [
+            "$entities": [
                 "money:Money",
                 "money"
             ],
@@ -79,13 +79,13 @@
         },
         "Percentage": {
             "type": "string",
-            "$mappings": [
+            "$entities": [
                 "percentage"
             ]
         },
         "Temperature": {
             "type": "object",
-            "$mappings": [
+            "$entities": [
                 "temperature:Temperature",
                 "temperature"
             ],
@@ -104,13 +104,13 @@
         },
         "Url": {
             "type": "string",
-            "$mappings": [
+            "$entities": [
                 "url"
             ]
         },
         "Quantity": {
             "type": "number",
-            "$mappings": [
+            "$entities": [
                 "number"
             ],
             "minimum": 1,
@@ -118,14 +118,14 @@
         },
         "Utteranceproperty": {
             "type": "string",
-            "$mappings": [
+            "$entities": [
                 "utterance"
             ],
             "$comment": "This indicates the whole string is what maps to this."
         },
         "Dimension": {
             "type": "object",
-            "$mappings": [
+            "$entities": [
                 "dimension:Dimension",
                 "dimension"
             ],
@@ -149,6 +149,9 @@
                 "rye",
                 "white",
                 "wholeWheat"
+            ],
+            "$entities": [
+                "Enum1Entity"
             ]
         },
         "Enum2": {
@@ -162,31 +165,40 @@
                 "provolone",
                 "swiss",
                 "none"
+            ],
+            "$entities": [
+                "Enum2Entity"
             ]
         },
         "Zipcodepattern": {
             "type": "string",
             "pattern": "^[0-9]{5}(?:-[0-9]{4})?$",
-            "$mappings": [
+            "$entities": [
                 "utterance",
                 "number"
             ]
         },
         "Email": {
             "type": "string",
-            "$mappings": [
+            "$entities": [
                 "email"
             ]
         },
         "CancelConfirmation": {
             "type": "string",
-            "$mappings": [
+            "$entities": [
+                "Confirmation"
+            ]
+        },
+        "ChangePropertyConfirmation": {
+            "type": "string",
+            "$entities": [
                 "Confirmation"
             ]
         },
         "CompleteConfirmation": {
             "type": "string",
-            "$mappings": [
+            "$entities": [
                 "Confirmation",
                 "PROPERTYName"
             ]
@@ -194,7 +206,14 @@
         "PropertyToChange": {
             "type": "string",
             "enum": "properties",
-            "$mappings": [
+            "$entities": [
+                "PROPERTYName"
+            ]
+        },
+        "PropertyToRemember": {
+            "type": "string",
+            "enum": "properties",
+            "$entities": [
                 "PROPERTYName"
             ]
         }
@@ -218,9 +237,11 @@
         "Email"
     ],
     "$expectedOnly": [
-        "CancelConfirmation",
-        "CompleteConfirmation",
-        "PropertyToChange"
+        "Confirmation",
+        "PROPERTYName",
+        "utterance",
+        "keyPhrase",
+        "personName"
     ],
     "$public": [
         "Personname",
@@ -244,7 +265,7 @@
         "PROPERTYName": {
             "type": "string",
             "enum": "properties",
-            "$mappings": [
+            "$entities": [
                 "PROPERTYName"
             ]
         }

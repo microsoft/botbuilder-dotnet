@@ -4,71 +4,72 @@
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
         "id": "root",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "test",
+                    "pattern": "test"
+                }
+            ]
+        },
         "triggers": [
             {
-                "$kind": "Microsoft.OnBeginDialog",
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "outer unknown"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "test",
                 "actions": [
                     {
                         "$kind": "Microsoft.BeginDialog",
-                        "includeActivity": true,
-                        "options": {},
+                        "activityProcessed": false,
                         "dialog": {
                             "$kind": "Microsoft.AdaptiveDialog",
-                            "id": "outer",
+                            "autoEndDialog": false,
                             "recognizer": {
                                 "$kind": "Microsoft.RegexRecognizer",
                                 "intents": [
                                     {
-                                        "intent": "EmitIntent",
-                                        "pattern": "emit"
-                                    },
-                                    {
-                                        "intent": "CowboyIntent",
-                                        "pattern": "moo"
+                                        "intent": "test",
+                                        "pattern": "test"
                                     }
                                 ]
                             },
                             "triggers": [
                                 {
                                     "$kind": "Microsoft.OnIntent",
-                                    "intent": "CowboyIntent",
+                                    "intent": "test",
                                     "actions": [
                                         {
                                             "$kind": "Microsoft.SendActivity",
-                                            "activity": "Yippee ki-yay!"
+                                            "activity": "test intent"
                                         }
                                     ]
                                 },
                                 {
-                                    "$kind": "Microsoft.OnIntent",
-                                    "intent": "EmitIntent",
+                                    "$kind": "Microsoft.OnUnknownIntent",
                                     "actions": [
                                         {
-                                            "$kind": "Microsoft.EmitEvent",
-                                            "eventName": "CustomEvent",
-                                            "bubbleEvent": true
+                                            "$kind": "Microsoft.Test.AssertCondition",
+                                            "condition": "false",
+                                            "description": "Should not fire test intent"
                                         }
                                     ]
                                 }
-                            ],
-                            "defaultResultProperty": "dialog.result"
+                            ]
                         }
-                    }
-                ]
-            },
-            {
-                "$kind": "Microsoft.OnCustomEvent",
-                "event": "CustomEvent",
-                "actions": [
-                    {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": "CustomEventFired"
                     }
                 ]
             }
         ],
-        "autoEndDialog": true,
-        "defaultResultProperty": "dialog.result"
+        "autoEndDialog": false
     },
     "script": [
         {
@@ -77,23 +78,15 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Yippee ki-yay!"
+            "text": "outer unknown"
         },
         {
             "$kind": "Microsoft.Test.UserSays",
-            "text": "emit"
+            "text": "test"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "CustomEventFired"
-        },
-        {
-            "$kind": "Microsoft.Test.UserSays",
-            "text": "moo"
-        },
-        {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "Yippee ki-yay!"
+            "text": "test intent"
         }
     ]
 }

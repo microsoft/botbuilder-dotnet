@@ -3,501 +3,405 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
 using Microsoft.Bot.Expressions;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
-    public class StaticChecker
+    /// <summary>
+    /// LG managed code checker.
+    /// </summary>
+    internal class StaticChecker : LGFileParserBaseVisitor<List<Diagnostic>>
     {
-        private readonly ExpressionEngine expressionEngine;
+        private readonly ExpressionEngine baseExpressionEngine;
+        private readonly LGFile lgFile;
+        private IList<string> visitedTemplateNames;
 
-        public StaticChecker(ExpressionEngine expressionEngine = null)
+        private IExpressionParser _expressionParser;
+
+        public StaticChecker(LGFile lgFile, ExpressionEngine expressionEngine = null)
         {
-            this.expressionEngine = expressionEngine ?? new ExpressionEngine();
+            this.lgFile = lgFile;
+            baseExpressionEngine = expressionEngine ?? new ExpressionEngine();
         }
 
-        public List<Diagnostic> CheckFiles(IEnumerable<string> filePaths, ImportResolverDelegate importResolver = null)
+        // Create a property because we want this to be lazy loaded
+        private IExpressionParser ExpressionParser
         {
-            var result = new List<Diagnostic>();
-            var templates = new List<LGTemplate>();
-            var isParseSuccess = true;
-            try
+            get
             {
-                var totalLGResources = new List<LGResource>();
-                foreach (var filePath in filePaths)
+                if (_expressionParser == null)
                 {
-                    // do not use ??=, it will cause issue in the C# < 8.0
-                    importResolver = importResolver ?? ImportResolver.FileResolver;
-
-                    var fullPath = Path.GetFullPath(ImportResolver.NormalizePath(filePath));
-                    var rootResource = LGParser.Parse(File.ReadAllText(fullPath), fullPath);
-                    var resources = rootResource.DiscoverDependencies(importResolver);
-                    totalLGResources.AddRange(resources);
+                    // create an evaluator to leverage it's customized function look up for checking
+                    var evaluator = new Evaluator(lgFile.AllTemplates.ToList(), baseExpressionEngine);
+                    _expressionParser = evaluator.ExpressionEngine;
                 }
 
-                var deduplicatedLGResources = totalLGResources.GroupBy(x => x.Id).Select(x => x.First()).ToList();
-                templates = deduplicatedLGResources.SelectMany(x => x.Templates).ToList();
+                return _expressionParser;
             }
-            catch (LGException ex)
+        }
+
+        /// <summary>
+        /// Return error messaages list.
+        /// </summary>
+        /// <returns>report result.</returns>
+        public List<Diagnostic> Check()
+        {
+            visitedTemplateNames = new List<string>();
+            var result = new List<Diagnostic>();
+
+            if (lgFile.AllTemplates.Count == 0)
             {
-                result.AddRange(ex.Diagnostics);
-                isParseSuccess = false;
-            }
-            catch (Exception err)
-            {
-                result.Add(new Diagnostic(new Range(new Position(0, 0), new Position(0, 0)), err.Message));
-                isParseSuccess = false;
+                result.Add(BuildLGDiagnostic(
+                    LGErrors.NoTemplate,
+                    DiagnosticSeverity.Warning));
+
+                return result;
             }
 
-            if (isParseSuccess)
+            lgFile.Templates.ToList().ForEach(t =>
             {
-                result.AddRange(CheckTemplates(templates));
+                result.AddRange(Visit(t.ParseTree));
+            });
+
+            return result;
+        }
+
+        public override List<Diagnostic> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
+        {
+            var result = new List<Diagnostic>();
+            var templateNameLine = context.templateNameLine();
+            var errorTemplateName = templateNameLine.errorTemplateName();
+            if (errorTemplateName != null)
+            {
+                result.Add(BuildLGDiagnostic(LGErrors.InvalidTemplateName, context: errorTemplateName));
+            }
+            else
+            {
+                var templateName = context.templateNameLine().templateName().GetText();
+
+                if (visitedTemplateNames.Contains(templateName))
+                {
+                    result.Add(BuildLGDiagnostic(LGErrors.DuplicatedTemplateInSameTemplate(templateName), context: templateNameLine));
+                }
+                else
+                {
+                    visitedTemplateNames.Add(templateName);
+                    foreach (var reference in lgFile.References)
+                    {
+                        var sameTemplates = reference.Templates.Where(u => u.Name == templateName);
+                        foreach (var sameTemplate in sameTemplates)
+                        {
+                            result.Add(BuildLGDiagnostic(LGErrors.DuplicatedTemplateInDiffTemplate(sameTemplate.Name, sameTemplate.Source), context: templateNameLine));
+                        }
+                    }
+
+                    if (result.Count > 0)
+                    {
+                        return result;
+                    }
+                    else
+                    {
+                        if (context.templateBody() == null)
+                        {
+                            result.Add(BuildLGDiagnostic(LGErrors.NoTemplateBody(templateName), DiagnosticSeverity.Warning, context.templateNameLine()));
+                        }
+                        else
+                        {
+                            result.AddRange(Visit(context.templateBody()));
+                        }
+                    }
+                }
             }
 
             return result;
         }
 
-        public List<Diagnostic> CheckFile(string filePath, ImportResolverDelegate importResolver = null) => CheckFiles(new List<string>() { filePath }, importResolver);
-
-        public List<Diagnostic> CheckText(string content, string id = "", ImportResolverDelegate importResolver = null)
+        public override List<Diagnostic> VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
         {
-            if (importResolver == null)
-            {
-                var importPath = ImportResolver.NormalizePath(id);
-                if (!Path.IsPathRooted(importPath))
-                {
-                    throw new Exception("[Error] id must be full path when importResolver is null");
-                }
-            }
-
             var result = new List<Diagnostic>();
-            var templates = new List<LGTemplate>();
-            var isParseSuccess = true;
-            try
-            {
-                var rootResource = LGParser.Parse(content, id);
-                var resources = rootResource.DiscoverDependencies(importResolver);
-                templates = resources.SelectMany(x => x.Templates).ToList();
-            }
-            catch (LGException ex)
-            {
-                result.AddRange(ex.Diagnostics);
-                isParseSuccess = false;
-            }
-            catch (Exception err)
-            {
-                result.Add(new Diagnostic(new Range(new Position(0, 0), new Position(0, 0)), err.Message));
-                isParseSuccess = false;
-            }
 
-            if (isParseSuccess)
+            foreach (var templateStr in context.templateString())
             {
-                result.AddRange(CheckTemplates(templates));
+                var errorTemplateStr = templateStr.errorTemplateString();
+                if (errorTemplateStr != null)
+                {
+                    result.Add(BuildLGDiagnostic(LGErrors.InvalidTemplateBody, context: errorTemplateStr));
+                }
+                else
+                {
+                    result.AddRange(Visit(templateStr.normalTemplateString()));
+                }
             }
 
             return result;
         }
 
-        public List<Diagnostic> CheckTemplates(List<LGTemplate> templates) => new StaticCheckerInner(templates, expressionEngine).Check();
-
-        private class StaticCheckerInner : LGFileParserBaseVisitor<List<Diagnostic>>
+        public override List<Diagnostic> VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
         {
-            private Dictionary<string, LGTemplate> templateMap = new Dictionary<string, LGTemplate>();
+            var result = new List<Diagnostic>();
 
-            private string currentSource = string.Empty;
-            private readonly ExpressionEngine baseExpressionEngine;
-            private readonly Regex structuredNameRegex = new Regex(@"^[a-z0-9_][a-z0-9_\-\.]*$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
-            private IExpressionParser _expressionParser;
-
-            public StaticCheckerInner(List<LGTemplate> templates, ExpressionEngine expressionEngine)
+            if (context.structuredBodyNameLine().errorStructuredName() != null)
             {
-                Templates = templates;
-                baseExpressionEngine = expressionEngine;
+                result.Add(BuildLGDiagnostic(LGErrors.InvalidStrucName, context: context.structuredBodyNameLine()));
             }
 
-            public List<LGTemplate> Templates { get; }
-
-            // Create a property because we want this to be lazy loaded
-            private IExpressionParser ExpressionParser
+            if (context.structuredBodyEndLine() == null)
             {
-                get
+                result.Add(BuildLGDiagnostic(LGErrors.MissingStrucEnd, context: context));
+            }
+
+            var bodys = context.structuredBodyContentLine();
+
+            if (bodys == null || bodys.Length == 0)
+            {
+                result.Add(BuildLGDiagnostic(LGErrors.EmptyStrucContent, context: context));
+            }
+            else
+            {
+                foreach (var body in bodys)
                 {
-                    if (_expressionParser == null)
+                    if (body.errorStructureLine() != null)
                     {
-                        // create an evaluator to leverage it's customized function look up for checking
-                        var evaluator = new Evaluator(Templates, baseExpressionEngine);
-                        _expressionParser = evaluator.ExpressionEngine;
+                        result.Add(BuildLGDiagnostic(LGErrors.InvalidStrucBody, context: body.errorStructureLine()));
                     }
-
-                    return _expressionParser;
-                }
-            }
-
-            /// <summary>
-            /// Return error messaages list.
-            /// </summary>
-            /// <returns>report result.</returns>
-            public List<Diagnostic> Check()
-            {
-                var result = new List<Diagnostic>();
-
-                // check dup first
-                var duplicatedTemplates = Templates
-                                          .GroupBy(t => t.Name)
-                                          .Where(g => g.Count() > 1)
-                                          .ToList();
-
-                if (duplicatedTemplates.Count > 0)
-                {
-                    duplicatedTemplates.ForEach(g =>
+                    else if (body.objectStructureLine() != null)
                     {
-                        var name = g.Key;
-                        var sources = string.Join(":", g.Select(x => x.Source));
-
-                        var msg = $"Duplicated definitions found for template: {name} in {sources}";
-                        result.Add(BuildLGDiagnostic(msg));
-                    });
-
-                    return result;
-                }
-
-                // Covert to dict should be fine after checking dup
-                templateMap = Templates.ToDictionary(t => t.Name);
-
-                if (Templates.Count == 0)
-                {
-                    result.Add(BuildLGDiagnostic(
-                        "File must have at least one template definition ",
-                        DiagnosticSeverity.Warning));
-                }
-
-                Templates.ForEach(t =>
-                {
-                    currentSource = t.Source;
-                    result.AddRange(Visit(t.ParseTree));
-                });
-
-                return result;
-            }
-
-            public override List<Diagnostic> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
-            {
-                var result = new List<Diagnostic>();
-                var templateNameLine = context.templateNameLine();
-                var errorTemplateName = templateNameLine.errorTemplateName();
-                if (errorTemplateName != null)
-                {
-                    result.Add(BuildLGDiagnostic($"Not a valid template name line", context: errorTemplateName));
-                }
-                else
-                {
-                    var templateName = context.templateNameLine().templateName().GetText();
-
-                    if (context.templateBody() == null)
-                    {
-                        result.Add(BuildLGDiagnostic($"There is no template body in template {templateName}", DiagnosticSeverity.Warning, context.templateNameLine()));
+                        result.AddRange(CheckExpression(body.objectStructureLine().GetText(), body.objectStructureLine()));
                     }
                     else
                     {
-                        result.AddRange(Visit(context.templateBody()));
-                    }
-                }
-
-                return result;
-            }
-
-            public override List<Diagnostic> VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
-            {
-                var result = new List<Diagnostic>();
-
-                foreach (var templateStr in context.templateString())
-                {
-                    var errorTemplateStr = templateStr.errorTemplateString();
-                    if (errorTemplateStr != null)
-                    {
-                        result.Add(BuildLGDiagnostic($"Invalid template body line, did you miss '-' at line begin", context: errorTemplateStr));
-                    }
-                    else
-                    {
-                        result.AddRange(Visit(templateStr.normalTemplateString()));
-                    }
-                }
-
-                return result;
-            }
-
-            public override List<Diagnostic> VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
-            {
-                var result = new List<Diagnostic>();
-                
-                if (context.structuredBodyNameLine().errorStructuredName() != null)
-                {
-                    result.Add(BuildLGDiagnostic($"structured name format error.", context: context.structuredBodyNameLine()));
-                }
-
-                if (context.structuredBodyEndLine() == null)
-                {
-                    result.Add(BuildLGDiagnostic($"structured LG missing ending ']'", context: context));
-                }
-
-                var bodys = context.structuredBodyContentLine();
-
-                if (bodys == null || bodys.Length == 0)
-                {
-                    result.Add(BuildLGDiagnostic($"Structured content is empty", context: context));
-                }
-                else
-                {
-                    foreach (var body in bodys)
-                    {
-                        if (body.errorStructureLine() != null)
+                        // KeyValueStructuredLine
+                        var structureValues = body.keyValueStructureLine().keyValueStructureValue();
+                        foreach (var structureValue in structureValues)
                         {
-                            result.Add(BuildLGDiagnostic($"structured body format error.", context: body.errorStructureLine()));
-                        }
-                        else if (body.objectStructureLine() != null)
-                        {
-                            result.AddRange(CheckExpression(body.objectStructureLine().GetText(), body.objectStructureLine()));
-                        }
-                        else
-                        {
-                            // KeyValueStructuredLine
-                            var structureValues = body.keyValueStructureLine().keyValueStructureValue();
-                            foreach (var structureValue in structureValues)
+                            foreach (var expression in structureValue.EXPRESSION_IN_STRUCTURE_BODY())
                             {
-                                foreach (var expression in structureValue.EXPRESSION_IN_STRUCTURE_BODY())
-                                {
-                                    result.AddRange(CheckExpression(expression.GetText(), context));
-                                }
+                                result.AddRange(CheckExpression(expression.GetText(), context));
                             }
                         }
                     }
                 }
-
-                return result;
             }
 
-            public override List<Diagnostic> VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
+            return result;
+        }
+
+        public override List<Diagnostic> VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
+        {
+            var result = new List<Diagnostic>();
+
+            var ifRules = context.ifElseTemplateBody().ifConditionRule();
+            for (var idx = 0; idx < ifRules.Length; idx++)
             {
-                var result = new List<Diagnostic>();
+                var conditionNode = ifRules[idx].ifCondition();
+                var ifExpr = conditionNode.IF() != null;
+                var elseIfExpr = conditionNode.ELSEIF() != null;
+                var elseExpr = conditionNode.ELSE() != null;
 
-                var ifRules = context.ifElseTemplateBody().ifConditionRule();
-                for (var idx = 0; idx < ifRules.Length; idx++)
+                var node = ifExpr ? conditionNode.IF() :
+                           elseIfExpr ? conditionNode.ELSEIF() :
+                           conditionNode.ELSE();
+
+                if (node.GetText().Count(u => u == ' ') > 1)
                 {
-                    var conditionNode = ifRules[idx].ifCondition();
-                    var ifExpr = conditionNode.IF() != null;
-                    var elseIfExpr = conditionNode.ELSEIF() != null;
-                    var elseExpr = conditionNode.ELSE() != null;
+                    result.Add(BuildLGDiagnostic(LGErrors.InvalidWhitespaceInCondition, context: conditionNode));
+                }
 
-                    var node = ifExpr ? conditionNode.IF() :
-                               elseIfExpr ? conditionNode.ELSEIF() :
-                               conditionNode.ELSE();
+                if (idx == 0 && !ifExpr)
+                {
+                    result.Add(BuildLGDiagnostic(LGErrors.NotStartWithIfInCondition, DiagnosticSeverity.Warning, conditionNode));
+                }
 
-                    if (node.GetText().Count(u => u == ' ') > 1)
+                if (idx > 0 && ifExpr)
+                {
+                    result.Add(BuildLGDiagnostic(LGErrors.MultipleIfInCondition, context: conditionNode));
+                }
+
+                if (idx == ifRules.Length - 1 && !elseExpr)
+                {
+                    result.Add(BuildLGDiagnostic(LGErrors.NotEndWithElseInCondition, DiagnosticSeverity.Warning, conditionNode));
+                }
+
+                if (idx > 0 && idx < ifRules.Length - 1 && !elseIfExpr)
+                {
+                    result.Add(BuildLGDiagnostic(LGErrors.InvalidMiddleInCondition, context: conditionNode));
+                }
+
+                // check rule should should with one and only expression
+                if (!elseExpr)
+                {
+                    if (ifRules[idx].ifCondition().EXPRESSION().Length != 1)
                     {
-                        result.Add(BuildLGDiagnostic($"At most 1 whitespace is allowed between IF/ELSEIF/ELSE and :", context: conditionNode));
-                    }
-
-                    if (idx == 0 && !ifExpr)
-                    {
-                        result.Add(BuildLGDiagnostic($"condition is not start with if", DiagnosticSeverity.Warning, conditionNode));
-                    }
-
-                    if (idx > 0 && ifExpr)
-                    {
-                        result.Add(BuildLGDiagnostic($"condition can't have more than one if", context: conditionNode));
-                    }
-
-                    if (idx == ifRules.Length - 1 && !elseExpr)
-                    {
-                        result.Add(BuildLGDiagnostic($"condition is not end with else", DiagnosticSeverity.Warning, conditionNode));
-                    }
-
-                    if (idx > 0 && idx < ifRules.Length - 1 && !elseIfExpr)
-                    {
-                        result.Add(BuildLGDiagnostic($"only elseif is allowed in middle of condition", context: conditionNode));
-                    }
-
-                    // check rule should should with one and only expression
-                    if (!elseExpr)
-                    {
-                        if (ifRules[idx].ifCondition().EXPRESSION().Length != 1)
-                        {
-                            result.Add(BuildLGDiagnostic($"if and elseif should followed by one valid expression", context: conditionNode));
-                        }
-                        else
-                        {
-                            result.AddRange(CheckExpression(ifRules[idx].ifCondition().EXPRESSION(0).GetText(), conditionNode));
-                        }
+                        result.Add(BuildLGDiagnostic(LGErrors.InvalidExpressionInCondition, context: conditionNode));
                     }
                     else
                     {
-                        if (ifRules[idx].ifCondition().EXPRESSION().Length != 0)
-                        {
-                            result.Add(BuildLGDiagnostic($"else should not followed by any expression", context: conditionNode));
-                        }
+                        result.AddRange(CheckExpression(ifRules[idx].ifCondition().EXPRESSION(0).GetText(), conditionNode));
                     }
-
-                    if (ifRules[idx].normalTemplateBody() != null)
+                }
+                else
+                {
+                    if (ifRules[idx].ifCondition().EXPRESSION().Length != 0)
                     {
-                        result.AddRange(Visit(ifRules[idx].normalTemplateBody()));
+                        result.Add(BuildLGDiagnostic(LGErrors.ExtraExpressionInCondition, context: conditionNode));
+                    }
+                }
+
+                if (ifRules[idx].normalTemplateBody() != null)
+                {
+                    result.AddRange(Visit(ifRules[idx].normalTemplateBody()));
+                }
+                else
+                {
+                    result.Add(BuildLGDiagnostic(LGErrors.MissingTemplateBodyInCondition, context: conditionNode));
+                }
+            }
+
+            return result;
+        }
+
+        public override List<Diagnostic> VisitSwitchCaseBody([NotNull] LGFileParser.SwitchCaseBodyContext context)
+        {
+            var result = new List<Diagnostic>();
+            var switchCaseRules = context.switchCaseTemplateBody().switchCaseRule();
+            var length = switchCaseRules.Length;
+            for (var idx = 0; idx < length; idx++)
+            {
+                var switchCaseNode = switchCaseRules[idx].switchCaseStat();
+                var switchExpr = switchCaseNode.SWITCH() != null;
+                var caseExpr = switchCaseNode.CASE() != null;
+                var defaultExpr = switchCaseNode.DEFAULT() != null;
+                var node = switchExpr ? switchCaseNode.SWITCH() :
+                           caseExpr ? switchCaseNode.CASE() :
+                           switchCaseNode.DEFAULT();
+
+                if (node.GetText().Count(u => u == ' ') > 1)
+                {
+                    result.Add(BuildLGDiagnostic(LGErrors.InvalidWhitespaceInSwitchCase, context: switchCaseNode));
+                }
+
+                if (idx == 0 && !switchExpr)
+                {
+                    result.Add(BuildLGDiagnostic(LGErrors.NotStartWithSwitchInSwitchCase, context: switchCaseNode));
+                }
+
+                if (idx > 0 && switchExpr)
+                {
+                    result.Add(BuildLGDiagnostic(LGErrors.MultipleSwithStatementInSwitchCase, context: switchCaseNode));
+                }
+
+                if (idx > 0 && idx < length - 1 && !caseExpr)
+                {
+                    result.Add(BuildLGDiagnostic(LGErrors.InvalidStatementInMiddlerOfSwitchCase, context: switchCaseNode));
+                }
+
+                if (idx == length - 1 && (caseExpr || defaultExpr))
+                {
+                    if (caseExpr)
+                    {
+                        result.Add(BuildLGDiagnostic(LGErrors.NotEndWithDefaultInSwitchCase, DiagnosticSeverity.Warning, switchCaseNode));
                     }
                     else
                     {
-                        result.Add(BuildLGDiagnostic($"no normal template body in condition block", context: conditionNode));
+                        if (length == 2)
+                        {
+                            result.Add(BuildLGDiagnostic(LGErrors.MissingCaseInSwitchCase, DiagnosticSeverity.Warning, switchCaseNode));
+                        }
                     }
                 }
 
-                return result;
-            }
-
-            public override List<Diagnostic> VisitSwitchCaseBody([NotNull] LGFileParser.SwitchCaseBodyContext context)
-            {
-                var result = new List<Diagnostic>();
-                var switchCaseRules = context.switchCaseTemplateBody().switchCaseRule();
-                var length = switchCaseRules.Length;
-                for (var idx = 0; idx < length; idx++)
+                if (switchExpr || caseExpr)
                 {
-                    var switchCaseNode = switchCaseRules[idx].switchCaseStat();
-                    var switchExpr = switchCaseNode.SWITCH() != null;
-                    var caseExpr = switchCaseNode.CASE() != null;
-                    var defaultExpr = switchCaseNode.DEFAULT() != null;
-                    var node = switchExpr ? switchCaseNode.SWITCH() :
-                               caseExpr ? switchCaseNode.CASE() :
-                               switchCaseNode.DEFAULT();
-
-                    if (node.GetText().Count(u => u == ' ') > 1)
+                    if (switchCaseNode.EXPRESSION().Length != 1)
                     {
-                        result.Add(BuildLGDiagnostic($"At most 1 whitespace is allowed between SWITCH/CASE/DEFAULT and :.", context: switchCaseNode));
-                    }
-
-                    if (idx == 0 && !switchExpr)
-                    {
-                        result.Add(BuildLGDiagnostic($"control flow is not start with switch", context: switchCaseNode));
-                    }
-
-                    if (idx > 0 && switchExpr)
-                    {
-                        result.Add(BuildLGDiagnostic($"control flow can not have more than one switch statement", context: switchCaseNode));
-                    }
-
-                    if (idx > 0 && idx < length - 1 && !caseExpr)
-                    {
-                        result.Add(BuildLGDiagnostic($"only case statement is allowed in the middle of control flow", context: switchCaseNode));
-                    }
-
-                    if (idx == length - 1 && (caseExpr || defaultExpr))
-                    {
-                        if (caseExpr)
-                        {
-                            result.Add(BuildLGDiagnostic($"control flow is not ending with default statement", DiagnosticSeverity.Warning, switchCaseNode));
-                        }
-                        else
-                        {
-                            if (length == 2)
-                            {
-                                result.Add(BuildLGDiagnostic($"control flow should have at least one case statement", DiagnosticSeverity.Warning, switchCaseNode));
-                            }
-                        }
-                    }
-
-                    if (switchExpr || caseExpr)
-                    {
-                        if (switchCaseNode.EXPRESSION().Length != 1)
-                        {
-                            result.Add(BuildLGDiagnostic($"switch and case should followed by one valid expression", context: switchCaseNode));
-                        }
-                        else
-                        {
-                            result.AddRange(CheckExpression(switchCaseNode.EXPRESSION(0).GetText(), switchCaseNode));
-                        }
+                        result.Add(BuildLGDiagnostic(LGErrors.InvalidExpressionInSwiathCase, context: switchCaseNode));
                     }
                     else
                     {
-                        if (switchCaseNode.EXPRESSION().Length != 0 || switchCaseNode.TEXT().Length != 0)
-                        {
-                            result.Add(BuildLGDiagnostic($"default should not followed by any expression or any text", context: switchCaseNode));
-                        }
+                        result.AddRange(CheckExpression(switchCaseNode.EXPRESSION(0).GetText(), switchCaseNode));
                     }
-
-                    if (caseExpr || defaultExpr)
+                }
+                else
+                {
+                    if (switchCaseNode.EXPRESSION().Length != 0 || switchCaseNode.TEXT().Length != 0)
                     {
-                        if (switchCaseRules[idx].normalTemplateBody() != null)
-                        {
-                            result.AddRange(Visit(switchCaseRules[idx].normalTemplateBody()));
-                        }
-                        else
-                        {
-                            result.Add(BuildLGDiagnostic($"no normal template body in case or default block", context: switchCaseNode));
-                        }
+                        result.Add(BuildLGDiagnostic(LGErrors.ExtraExpressionInSwitchCase, context: switchCaseNode));
                     }
                 }
 
+                if (caseExpr || defaultExpr)
+                {
+                    if (switchCaseRules[idx].normalTemplateBody() != null)
+                    {
+                        result.AddRange(Visit(switchCaseRules[idx].normalTemplateBody()));
+                    }
+                    else
+                    {
+                        result.Add(BuildLGDiagnostic(LGErrors.MissingTemplateBodyInSwitchCase, context: switchCaseNode));
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public override List<Diagnostic> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
+        {
+            var result = new List<Diagnostic>();
+
+            foreach (var expression in context.EXPRESSION())
+            {
+                result.AddRange(CheckExpression(expression.GetText(), context));
+            }
+
+            var multiLinePrefix = context.MULTILINE_PREFIX();
+            var multiLineSuffix = context.MULTILINE_SUFFIX();
+
+            if (multiLinePrefix != null && multiLineSuffix == null)
+            {
+                result.Add(BuildLGDiagnostic(LGErrors.NoEndingInMultiline, context: context));
+            }
+
+            return result;
+        }
+
+        private List<Diagnostic> CheckExpression(string exp, ParserRuleContext context)
+        {
+            var result = new List<Diagnostic>();
+            exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
+
+            try
+            {
+                ExpressionParser.Parse(exp);
+            }
+            catch (Exception e)
+            {
+                result.Add(BuildLGDiagnostic(e.Message + $" in expression `{exp}`", context: context));
                 return result;
             }
 
-            public override List<Diagnostic> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
-            {
-                var result = new List<Diagnostic>();
+            return result;
+        }
 
-                foreach (var expression in context.EXPRESSION())
-                {
-                    result.AddRange(CheckExpression(expression.GetText(), context));
-                }
-
-                var multiLinePrefix = context.MULTILINE_PREFIX();
-                var multiLineSuffix = context.MULTILINE_SUFFIX();
-
-                if (multiLinePrefix != null && multiLineSuffix == null)
-                {
-                    result.Add(BuildLGDiagnostic("Close ``` is missing.", context: context));
-                }
-
-                return result;
-            }
-
-            private List<Diagnostic> CheckExpression(string exp, ParserRuleContext context)
-            {
-                var result = new List<Diagnostic>();
-                exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
-
-                try
-                {
-                    ExpressionParser.Parse(exp);
-                }
-                catch (Exception e)
-                {
-                    result.Add(BuildLGDiagnostic(e.Message + $" in expression `{exp}`", context: context));
-                    return result;
-                }
-
-                return result;
-            }
-
-            /// <summary>
-            /// Build LG diagnostic with antlr tree node context.
-            /// </summary>
-            /// <param name="message">error/warning message. <see cref="Diagnostic.Message"/>.</param>
-            /// <param name="severity">diagnostic Severity <see cref="DiagnosticSeverity"/> to get more info.</param>
-            /// <param name="context">the parsed tree node context of the diagnostic.</param>
-            /// <returns>new Diagnostic object.</returns>
-            private Diagnostic BuildLGDiagnostic(
-                string message,
-                DiagnosticSeverity severity = DiagnosticSeverity.Error,
-                ParserRuleContext context = null)
-            {
-                var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line, context.Start.Column);
-                var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
-                var range = new Range(startPosition, stopPosition);
-                message = $"source: {currentSource}. error message: {message}";
-                return new Diagnostic(range, message, severity);
-            }
+        /// <summary>
+        /// Build LG diagnostic with antlr tree node context.
+        /// </summary>
+        /// <param name="message">error/warning message. <see cref="Diagnostic.Message"/>.</param>
+        /// <param name="severity">diagnostic Severity <see cref="DiagnosticSeverity"/> to get more info.</param>
+        /// <param name="context">the parsed tree node context of the diagnostic.</param>
+        /// <returns>new Diagnostic object.</returns>
+        private Diagnostic BuildLGDiagnostic(
+            string message,
+            DiagnosticSeverity severity = DiagnosticSeverity.Error,
+            ParserRuleContext context = null)
+        {
+            var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line, context.Start.Column);
+            var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
+            var range = new Range(startPosition, stopPosition);
+            return new Diagnostic(range, message, severity, lgFile.Id);
         }
     }
 }

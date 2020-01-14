@@ -60,7 +60,7 @@
                 ]
             }
         ],
-        "autoEndDialog": true,
+        "autoEndDialog": false,
         "defaultResultProperty": "dialog.result"
     },
     "script": [

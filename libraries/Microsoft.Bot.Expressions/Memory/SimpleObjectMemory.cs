@@ -36,9 +36,9 @@ namespace Microsoft.Bot.Expressions.Memory
         public bool TryGetValue(string path, out object value)
         {
             value = null;
-            if (memory == null)
+            if (memory == null || path.Length == 0 || (path[0] != '[' && !char.IsLetter(path[0])))
             {
-                return true;
+                return false;
             }
 
             var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
@@ -47,21 +47,23 @@ namespace Microsoft.Bot.Expressions.Memory
 
             var curScope = memory;
 
-            foreach (string part in parts)
+            foreach (var part in parts)
             {
                 string error = null;
                 if (int.TryParse(part, out var idx) && BuiltInFunctions.TryParseList(curScope, out var li))
                 {
                     (value, error) = BuiltInFunctions.AccessIndex(li, idx);
+                    if (error != null)
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
-                    (value, error) = BuiltInFunctions.AccessProperty(curScope, part);
-                }
-
-                if (error != null)
-                {
-                    return true;
+                    if (!BuiltInFunctions.TryAccessProperty(curScope, part, out value))
+                    {
+                        return false;
+                    }
                 }
 
                 curScope = value;
@@ -101,17 +103,18 @@ namespace Microsoft.Bot.Expressions.Memory
                 else
                 {
                     curPath += $".{parts[i]}";
-                    (curScope, error) = BuiltInFunctions.AccessProperty(curScope, parts[i]);
+                    if (BuiltInFunctions.TryAccessProperty(curScope, parts[i], out var newScope))
+                    {
+                        curScope = newScope;
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
 
-                if (error != null)
+                if (error != null || curScope == null)
                 {
-                    return;
-                }
-
-                if (curScope == null)
-                {
-                    curPath = curPath.TrimStart('.');
                     return;
                 }
             }

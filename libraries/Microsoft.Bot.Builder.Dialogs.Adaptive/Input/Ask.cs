@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -28,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonConstructor]
         public Ask(
             string text = null,
-            List<string> expectedProperties = null,
+            ExpressionProperty<List<string>> expectedProperties = null,
             [CallerFilePath] string callerPath = "",
             [CallerLineNumber] int callerLine = 0)
         : base(text, callerPath, callerLine)
@@ -44,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Properties expected to be filled by response.
         /// </value>
         [JsonProperty("expectedProperties")]
-        public List<string> ExpectedProperties { get; set; } = new List<string>();
+        public ExpressionProperty<List<string>> ExpectedProperties { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
@@ -56,10 +57,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             dc.GetState().TryGetValue(TurnPath.DIALOGEVENT, out DialogEvent trigger);
 
-            if (ExpectedProperties != null
+            var expected = ExpectedProperties?.GetValue(dc.GetState());
+            if (expected != null
                 && dc.GetState().TryGetValue(DialogPath.ExpectedProperties, out List<string> lastExpectedProperties)
-                && !ExpectedProperties.Any(prop => !lastExpectedProperties.Contains(prop))
-                && !lastExpectedProperties.Any(prop => !ExpectedProperties.Contains(prop))
+                && !expected.Any(prop => !lastExpectedProperties.Contains(prop))
+                && !lastExpectedProperties.Any(prop => !expected.Contains(prop))
                 && dc.GetState().TryGetValue(DialogPath.LastTriggerEvent, out DialogEvent lastTrigger)
                 && lastTrigger.Name.Equals(trigger.Name))
             {
@@ -72,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             dc.GetState().SetValue(DialogPath.Retries, retries);
             dc.GetState().SetValue(DialogPath.LastTriggerEvent, trigger);
-            dc.GetState().SetValue(DialogPath.ExpectedProperties, ExpectedProperties);            
+            dc.GetState().SetValue(DialogPath.ExpectedProperties, expected);            
             var result = await base.BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
             result.Status = DialogTurnStatus.CompleteAndWait;
             return result;

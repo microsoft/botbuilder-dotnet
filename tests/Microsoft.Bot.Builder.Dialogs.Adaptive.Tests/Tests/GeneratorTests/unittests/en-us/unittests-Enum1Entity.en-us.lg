@@ -11,7 +11,7 @@
 - DEFAULT: 
  - I don't understand @{value}
 
-# clarifyEnum1Entity
-- @{clarifyEnumEntity('Enum1')}
+# chooseEnum1Entity
+- @{chooseEnumEntity('Enum1')}
 
 [unittests-common.lg](unittests-common.lg)

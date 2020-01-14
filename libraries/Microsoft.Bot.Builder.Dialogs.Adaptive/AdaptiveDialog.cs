@@ -400,11 +400,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         }
 
                         break;
-
-                    case AdaptiveEvents.EndOfActions:
-                        // Completed actions so continue processing entity queues
-                        handled = await ProcessQueuesAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
-                        break;
                 }
             }
             else
@@ -560,13 +555,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Is the current dialog still on the stack?
             if (sequenceContext.ActiveDialog != null)
             {
-                // Raise EndOfActions event
-                var endOfActionsEvent = new DialogEvent() { Name = AdaptiveEvents.EndOfActions, Bubble = false };
-                var handled = await OnDialogEventAsync(sequenceContext, endOfActionsEvent, cancellationToken).ConfigureAwait(false);
+                // Completed actions so continue processing entity queues
+                var handled = await ProcessQueuesAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
 
                 if (handled)
                 {
-                    // EndOfActions event was handled
+                    // Still processing queues
                     return await ContinueActionsAsync(sequenceContext, null, cancellationToken).ConfigureAwait(false);
                 }
                 else if (ShouldEnd(sequenceContext))
@@ -623,21 +617,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
 
         // This function goes through the ambiguity queues and emits events if present.
-        // In order ClearProperties, AssignEntity, ChooseProperties, ChooseEntity, Ask.
+        // In order ClearProperties, AssignEntity, ChooseProperties, ChooseEntity, EndOfActions.
         private async Task<bool> ProcessQueuesAsync(SequenceContext sequenceContext, CancellationToken cancellationToken)
         {
             DialogEvent evt;
             var queues = EntityEvents.Read(sequenceContext);
-
-            // Remove the last emitted queue event if any
-            var changed = queues.DequeueEvent(sequenceContext.GetState().GetValue<string>(DialogPath.LastEvent));
+            var changed = false;
             if (queues.ClearProperties.Any())
             {
-                evt = new DialogEvent() { Name = AdaptiveEvents.ClearProperty, Value = queues.ClearProperties[0], Bubble = false };
+                evt = new DialogEvent() { Name = AdaptiveEvents.ClearProperty, Value = queues.ClearProperties.Dequeue(), Bubble = false };
+                changed = true;
             }
             else if (queues.AssignEntities.Any())
             {
-                var val = queues.AssignEntities[0];
+                var val = queues.AssignEntities.Dequeue();
                 evt = new DialogEvent() { Name = AdaptiveEvents.AssignEntity, Value = val, Bubble = false };
 
                 // TODO: For now, I'm going to dereference to a one-level array value.  There is a bug in the current code in the distinction between
@@ -650,6 +643,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
 
                 sequenceContext.GetState().SetValue($"{TurnPath.RECOGNIZED}.entities.{val.Entity.Name}", entity);
+                changed = true;
             }
             else if (queues.ChooseProperties.Any())
             {
@@ -661,7 +655,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
             else
             {
-                evt = new DialogEvent() { Name = AdaptiveEvents.Ask, Bubble = false };
+                evt = new DialogEvent() { Name = AdaptiveEvents.EndOfActions, Bubble = false };
             }
 
             if (changed)
@@ -820,6 +814,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             if (dialogSchema != null)
             {
+                if (context.GetState().TryGetValue<string>(DialogPath.LastEvent, out var lastEvent))
+                {
+                    context.GetState().RemoveValue(DialogPath.LastEvent);
+                }
+
                 var queues = EntityEvents.Read(context);
                 var entities = NormalizeEntities(context);
                 var utterance = context.Context.Activity?.AsMessageActivity()?.Text;
@@ -830,18 +829,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                 // Utterance is a special entity that corresponds to the full utterance
                 entities["utterance"] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = "utterance", Score = 0.0, Type = "string", Value = utterance, Text = utterance } };
-                var updated = UpdateLastEvent(context, queues, entities, expected);
-                var newQueues = new EntityEvents();
-                var recognized = AssignEntities(entities, expected, newQueues);
+                var recognized = AssignEntities(context, entities, expected, queues, lastEvent);
                 var unrecognized = SplitUtterance(utterance, recognized);
-                recognized.AddRange(updated);
 
                 // TODO: Is this actually useful information?
                 context.GetState().SetValue(TurnPath.UNRECOGNIZEDTEXT, unrecognized);
                 context.GetState().SetValue(TurnPath.RECOGNIZEDENTITIES, recognized);
-                queues.Merge(newQueues);
                 var turn = context.GetState().GetValue<uint>(DialogPath.EventCounter);
-                CombineOldEntityToPropertys(queues, turn);
+                CombineOldEntityToProperties(queues, turn);
                 queues.Write(context);
             }
         }
@@ -869,64 +864,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return unrecognized;
         }
 
-        // See if entities seem to be in response to previous ambiguity event in order to update queues
-        private List<EntityInfo> UpdateLastEvent(SequenceContext context, EntityEvents queues, Dictionary<string, List<EntityInfo>> entities, string[] expected)
-        {
-            var recognized = new List<EntityInfo>();
-            if (context.GetState().TryGetValue<string>(DialogPath.LastEvent, out var evt))
-            {
-                switch (evt)
-                {
-                    case AdaptiveEvents.ChooseEntity:
-                        {
-                            context.GetState().RemoveValue(DialogPath.LastEvent);
-                            var entityToProperty = queues.ChooseEntities[0];
-                            var ambiguousEntity = entityToProperty.Entity;
-
-                            // TODO: There could be no way to resolve the ambiguity, i.e. wheat has synonym wheat and
-                            // honeywheat has synonym wheat.  For now rely on the model to not have that issue.
-                            if (entities.TryGetValue(ambiguousEntity.Name, out var infos) && infos.Count() == 1)
-                            {
-                                queues.ChooseEntities.Dequeue();
-                            }
-
-                            break;
-                        }
-
-                    case AdaptiveEvents.ChooseProperty:
-                        {
-                            context.GetState().RemoveValue(DialogPath.LastEvent);
-
-                            // NOTE: This assumes the existance of a property entity which contains the normalized
-                            // names of the properties.
-                            if (entities.TryGetValue("PROPERTYName", out var infos) && infos.Count() == 1)
-                            {
-                                var info = infos[0];
-                                var choices = queues.ChooseProperties[0];
-                                var choice = choices.Find(p => p.Property == (info.Value as JArray)[0].ToObject<string>());
-                                if (choice != null)
-                                {
-                                    // Resolve and move to SetProperty
-                                    recognized.Add(info);
-                                    infos.Clear();
-                                    queues.ChooseProperties.Dequeue();
-                                    choice.IsExpected = true;
-                                    queues.AssignEntities.Add(choice);
-                                    context.GetState().SetValue(DialogPath.ExpectedProperties, expected.Concat(new string[] { choice.Property }).ToArray());
-                                }
-                            }
-
-                            break;
-                        }
-                }
-            }
-
-            return recognized;
-        }
-
         // We have four kinds of ambiguity to deal with:
         // * Entity: Ambiguous interpretation of entity value: (peppers -> [green peppers, red peppers]  Tell this by entity value is array.  Doesn't matter if property singleton or not. Ask.
-        // * Text: Ambiguous interpretion of text: (3 -> age or number) Identify by overlapping entities. Resolve by greater coverage, expected entity, ask.
+        // * Text: Ambiguous interpretation of text: (3 -> age or number) Identify by overlapping entities. Resolve by greater coverage, expected entity, ask.
         // * Singleton: two different entities which could fill property singleton.  Could be same type or different types.  Resolve by rule priority.
         // * Property: Which property should an entity go to?  Resolve by expected, then ask.
 
@@ -1034,29 +974,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         // Generate possible entity to property mappings
         private IEnumerable<EntityAssignment> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected)
         {
-            var expectedOnly = dialogSchema.Schema["$expectedOnly"]?.ToObject<List<string>>() ?? new List<string>();
+            var globalExpectedOnly = dialogSchema.Schema["$expectedOnly"]?.ToObject<List<string>>() ?? new List<string>();
             foreach (var propSchema in dialogSchema.Property.Children)
             {
                 var isExpected = expected.Contains(propSchema.Path);
-                if (isExpected || !expectedOnly.Contains(propSchema.Path))
+                var expectedOnly = propSchema.ExpectedOnly;
+                foreach (var entityName in propSchema.Entities)
                 {
-                    foreach (var entityName in propSchema.Mappings)
+                    if (entities.TryGetValue(entityName, out var matches) && (isExpected || !(expectedOnly != null ? expectedOnly : globalExpectedOnly).Contains(entityName)))
                     {
-                        // Utterance is only allowed if expected
-                        if (entities.TryGetValue(entityName, out var matches) && (entityName != "utterance" || isExpected))
+                        foreach (var entity in matches)
                         {
-                            foreach (var entity in matches)
+                            yield return new EntityAssignment
                             {
-                                yield return new EntityAssignment
-                                {
-                                    Entity = entity,
-                                    Property = propSchema.Path,
+                                Entity = entity,
+                                Property = propSchema.Path,
 
-                                    // TODO: Eventually we should be able to pick up an add/remove composite here as an alternative
-                                    Operation = AssignEntityOperations.Add,
-                                    IsExpected = isExpected
-                                };
-                            }
+                                // TODO: Eventually we should be able to pick up an add/remove composite here as an alternative
+                                Operation = AssignEntityOperations.Add,
+                                IsExpected = isExpected
+                            };
                         }
                     }
                 }
@@ -1104,7 +1041,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                 // Assume preference by order listed in mappings
                 // Alternatives would be to look at coverage or other metrices
-                foreach (var entity in schema.Mappings)
+                foreach (var entity in schema.Entities)
                 {
                     EntityAssignment candidate;
                     do
@@ -1131,7 +1068,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        private List<EntityInfo> AddToQueues(Dictionary<string, List<EntityInfo>> entities, string[] expected, EntityEvents queues)
+        private List<EntityInfo> AddToQueues(SequenceContext context, Dictionary<string, List<EntityInfo>> entities, string[] expected, EntityEvents queues, string lastEvent)
         {
             var candidates = (from candidate in RemoveOverlappingPerProperty(Candidates(entities, expected))
                               orderby candidate.IsExpected descending
@@ -1148,18 +1085,47 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     alternatives.RemoveAll(a => !a.IsExpected);
                 }
 
+                var mapped = false;
+                if (lastEvent == AdaptiveEvents.ChooseEntity && candidate.Property == queues.ChooseEntities[0].Property)
+                {
+                    // Property has resolution so remove entity ambiguity
+                    queues.ChooseEntities.Dequeue();
+                    lastEvent = null;
+                }
+                else if (lastEvent == AdaptiveEvents.ChooseProperty && candidate.Entity.Name == "PROPERTYName")
+                {
+                    // NOTE: This assumes the existence of an entity named PROPERTYName for resolving this ambiguity
+                    // See if one of the choices corresponds to an alternative
+                    var choices = queues.ChooseProperties[0];
+                    var entity = (candidate.Entity.Value as JArray)?[0]?.ToObject<string>();
+                    var choice = choices.Find(p => p.Property == entity);
+                    if (choice != null)
+                    {
+                        // Resolve choice and add to queues
+                        queues.ChooseProperties.Dequeue();
+                        context.GetState().SetValue(DialogPath.ExpectedProperties, new List<string> { choice.Property });
+                        choice.IsExpected = true;
+                        AddMappingToQueue(choice, queues);
+                        mapped = true;
+                    }
+                }
+
+                usedEntities.Add(candidate.Entity);
                 foreach (var alternative in alternatives)
                 {
                     usedEntities.Add(alternative.Entity);
                 }
 
-                if (alternatives.Count() == 1)
+                if (!mapped)
                 {
-                    AddMappingToQueue(candidate, queues);
-                }
-                else
-                {
-                    queues.ChooseProperties.Add(alternatives);
+                    if (alternatives.Count() == 1)
+                    {
+                        AddMappingToQueue(candidate, queues);
+                    }
+                    else
+                    {
+                        queues.ChooseProperties.Add(alternatives);
+                    }
                 }
             }
 
@@ -1208,7 +1174,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return propertyToQueues;
         }
 
-        private void CombineNewEntityToPropertys(EntityEvents queues)
+        private void CombineNewEntityProperties(EntityEvents queues)
         {
             var propertyToQueues = PerPropertyQueues(queues);
             foreach (var entry in propertyToQueues)
@@ -1242,7 +1208,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // TODO: There is a lot more we can do here
         }
 
-        private void CombineOldEntityToPropertys(EntityEvents queues, uint turn)
+        private void CombineOldEntityToProperties(EntityEvents queues, uint turn)
         {
             var propertyToQueues = PerPropertyQueues(queues);
             foreach (var entry in propertyToQueues)
@@ -1283,10 +1249,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
 
         // Assign entities to queues
-        private List<EntityInfo> AssignEntities(Dictionary<string, List<EntityInfo>> entities, string[] expected, EntityEvents queues)
+        private List<EntityInfo> AssignEntities(SequenceContext context, Dictionary<string, List<EntityInfo>> entities, string[] expected, EntityEvents queues, string lastEvent)
         {
-            var recognized = AddToQueues(entities, expected, queues);
-            CombineNewEntityToPropertys(queues);
+            var recognized = AddToQueues(context, entities, expected, queues, lastEvent);
+            CombineNewEntityProperties(queues);
             return recognized;
         }
     }
