@@ -78,7 +78,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -86,7 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             object value = null;
             if (this.Value != null)
             {
-                var (val, valError) = this.Value.TryGetValue(dc.GetState());
+                var (val, valError) = this.Value.TryGetValue(dcState);
                 if (valError != null)
                 {
                     throw new Exception(valError);
@@ -96,12 +98,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
             else
             {
-                value = dc.GetState().GetMemorySnapshot();
+                value = dcState.GetMemorySnapshot();
             }
 
-            var name = this.Name?.TryGetValue(dc.GetState()).Value;
-            var valueType = this.ValueType?.TryGetValue(dc.GetState()).Value;
-            var label = this.Label?.TryGetValue(dc.GetState()).Value;
+            var name = this.Name?.GetValue(dcState);
+            var valueType = this.ValueType?.GetValue(dcState);
+            var label = this.Label?.GetValue(dcState);
 
             var traceActivity = Activity.CreateTraceActivity(name ?? "Trace", valueType: valueType ?? "State", value: value, label: label ?? name ?? dc.Parent?.ActiveDialog?.Id);
             await dc.Context.SendActivityAsync(traceActivity, cancellationToken).ConfigureAwait(false);

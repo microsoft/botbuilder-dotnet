@@ -66,6 +66,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Get the value.
         /// </summary>
         /// <param name="data">data to use for expression binding.</param>
+        /// <returns>value or default(T) if not found.</returns>
+        public virtual T GetValue(object data)
+        {
+            return this.TryGetValue(data).Value;
+        }
+
+        /// <summary>
+        /// try to Get the value.
+        /// </summary>
+        /// <param name="data">data to use for expression binding.</param>
         /// <returns>value.</returns>
         public virtual (T Value, string Error) TryGetValue(object data)
         {

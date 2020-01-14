@@ -62,12 +62,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var activity = await Activity.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
+            var activity = await Activity.BindToData(dc.Context, dcState).ConfigureAwait(false);
             ResourceResponse response = null;
             if (activity.Type != "message" 
                 || !string.IsNullOrEmpty(activity.Text)

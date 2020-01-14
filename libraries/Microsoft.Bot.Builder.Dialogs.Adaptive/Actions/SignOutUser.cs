@@ -59,19 +59,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            string userId = this.UserId?.TryGetValue(dc.GetState()).Value;
+            string userId = this.UserId?.GetValue(dcState);
             
             if (!(dc.Context.Adapter is IUserTokenProvider adapter))
             {
                 throw new InvalidOperationException("SignoutUser(): not supported by the current adapter");
             }
 
-            var connectionName = this.ConnectionName?.TryGetValue(dc.GetState()).Value;
+            var connectionName = this.ConnectionName?.GetValue(dcState);
             await adapter.SignOutUserAsync(dc.Context, connectionName, (string)userId, cancellationToken).ConfigureAwait(false);
 
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);

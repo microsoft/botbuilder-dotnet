@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// The condition which needs to be met for the actions to be executed.
         /// </value>
         [JsonProperty("condition")]
-        public BoolExpression Condition { get; set; } = new BoolExpression(true);
+        public BoolExpression Condition { get; set; }
 
         /// <summary>
         /// Gets or sets the actions to add to the plan when the rule constraints are met.
@@ -208,8 +208,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         {
             if (RunOnce)
             {
-                var count = planningContext.GetState().GetValue<uint>(DialogPath.EventCounter);
-                planningContext.GetState().SetValue($"{AdaptiveDialog.ConditionTracker}.{Id}.lastRun", count);
+                var dcState = planningContext.GetState();
+                var count = dcState.GetValue<uint>(DialogPath.EventCounter);
+                dcState.SetValue($"{AdaptiveDialog.ConditionTracker}.{Id}.lastRun", count);
             }
 
             return await Task.FromResult(new List<ActionChangeList>()

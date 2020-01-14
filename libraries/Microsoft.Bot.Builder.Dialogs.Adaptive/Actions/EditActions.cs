@@ -69,7 +69,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -85,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 var changes = new ActionChangeList()
                 {
-                    ChangeType = ChangeType.TryGetValue(dc.GetState()).Value,
+                    ChangeType = ChangeType.GetValue(dcState),
                     Actions = planActions.ToList()
                 };
 

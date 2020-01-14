@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } 
+        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets property path expression to the collection of items.
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Property path expression to the collection of items.
         /// </value>
         [JsonProperty("itemsProperty")]
-        public string ItemsProperty { get; set; }
+        public StringExpression ItemsProperty { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -58,12 +58,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            dc.GetState().SetValue(INDEX, -1);
+            dcState.SetValue(INDEX, -1);
             return await this.NextItemAsync(dc, cancellationToken).ConfigureAwait(false);
         }
 
@@ -85,17 +87,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected virtual async Task<DialogTurnResult> NextItemAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             // Get list information
-            var itemsProperty = new ExpressionEngine().Parse(this.ItemsProperty);
-            var (itemList, error) = itemsProperty.TryEvaluate(dc.GetState());
-            var list = JArray.FromObject(itemList);
-            var index = dc.GetState().GetIntValue(INDEX);
+            var dcState = dc.GetState();
+            var list = dcState.GetValue<JArray>(this.ItemsProperty.GetValue(dcState));
+            var index = dcState.GetIntValue(INDEX);
 
             // Next item
             if (++index < list.Count)
             {
                 // Persist index and value
-                dc.GetState().SetValue(VALUE, list[index]);
-                dc.GetState().SetValue(INDEX, index);
+                dcState.SetValue(VALUE, list[index]);
+                dcState.SetValue(INDEX, index);
 
                 // Start loop
                 return await this.BeginActionAsync(dc, 0, cancellationToken).ConfigureAwait(false);

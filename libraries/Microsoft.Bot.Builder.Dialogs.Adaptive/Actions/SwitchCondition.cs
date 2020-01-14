@@ -103,7 +103,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -132,7 +134,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 foreach (var caseScope in this.Cases)
                 {
-                    var (value, error) = this.caseExpressions[caseScope.Value].TryEvaluate(dc.GetState());
+                    var (value, error) = this.caseExpressions[caseScope.Value].TryEvaluate(dcState);
 
                     if (error != null)
                     {

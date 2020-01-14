@@ -337,7 +337,7 @@ namespace Microsoft.Bot.Expressions
                         return (default(T), null);
                     }
 
-                    return (default(T), Error<string>(result));
+                    return ((T)(object)result.ToString(), error);
                 }
                 
                 if (typeof(T) == typeof(bool))

@@ -13,27 +13,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
     /// Converter which allows json to be expression to object or static object.
     /// </summary>
     /// <typeparam name="T">The property type to construct which is IExpressionProperty.</typeparam>
-    public class FloatExpressionConverter : JsonConverter<FloatExpression>
+    public class NumberExpressionConverter : JsonConverter<NumberExpression>
     {
-        public FloatExpressionConverter()
+        public NumberExpressionConverter()
         {
         }
 
         public override bool CanRead => true;
 
-        public override FloatExpression ReadJson(JsonReader reader, Type objectType, FloatExpression existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override NumberExpression ReadJson(JsonReader reader, Type objectType, NumberExpression existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.ValueType == typeof(string))
             {
-                return new FloatExpression((string)reader.Value);
+                return new NumberExpression((string)reader.Value);
             }
             else
             {
-                return new FloatExpression(JToken.Load(reader));
+                return new NumberExpression(JToken.Load(reader));
             }
         }
 
-        public override void WriteJson(JsonWriter writer, FloatExpression value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, NumberExpression value, JsonSerializer serializer)
         {
             if (value.Expression != null)
             {

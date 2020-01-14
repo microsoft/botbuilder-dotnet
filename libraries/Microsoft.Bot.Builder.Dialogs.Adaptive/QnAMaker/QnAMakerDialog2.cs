@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// The knowledgebase Id.
         /// </value>
         [JsonProperty("knowledgeBaseId")]
-        public StringExpression KnowledgeBaseId { get; set; } 
+        public StringExpression KnowledgeBaseId { get; set; }
 
         /// <summary>
         /// Gets or sets the Hostname for your QnA Maker service.
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// The host name of the QnA Maker knowledgebase.
         /// </value>
         [JsonProperty("hostname")]
-        public StringExpression HostName { get; set; } 
+        public StringExpression HostName { get; set; }
 
         /// <summary>
         /// Gets or sets the Endpoint key for the QnA Maker KB.
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// The endpoint key for the QnA service.
         /// </value>
         [JsonProperty("endpointKey")]
-        public StringExpression EndpointKey { get; set; } 
+        public StringExpression EndpointKey { get; set; }
 
         /// <summary>
         /// Gets or sets the Threshold score to filter results.
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// The threshold for the results.
         /// </value>
         [JsonProperty("threshold")]
-        public FloatExpression Threshold { get; set; } = new FloatExpression(DefaultThreshold);
+        public NumberExpression Threshold { get; set; } = DefaultThreshold;
 
         /// <summary>
         /// Gets or sets the number of results you want.
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// The number of results you want.
         /// </value>
         [JsonProperty("top")]
-        public IntExpression Top { get; set; } = new IntExpression(DefaultTopN);
+        public IntExpression Top { get; set; } = DefaultTopN;
 
         /// <summary>
         /// Gets or sets the template for Default answer to return when none found in KB.
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// Title for active learning suggestions card.
         /// </value>
         [JsonProperty("activeLearningCardTitle")]
-        public StringExpression ActiveLearningCardTitle { get; set; } 
+        public StringExpression ActiveLearningCardTitle { get; set; }
 
         /// <summary>
         /// Gets or sets the Text for no match option.
@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// The Text for no match option.
         /// </value>
         [JsonProperty("cardNoMatchText")]
-        public StringExpression CardNoMatchText { get; set; } 
+        public StringExpression CardNoMatchText { get; set; }
 
         /// <summary>
         /// Gets or sets the template for Custom response when no match option was selected.
@@ -130,6 +130,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
 
         protected async override Task<IQnAMakerClient> GetQnAMakerClientAsync(DialogContext dc)
         {
+            var dcState = dc.GetState();
+
             var qnaClient = dc.Context.TurnState.Get<IQnAMakerClient>();
             if (qnaClient != null)
             {
@@ -137,9 +139,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
                 return qnaClient;
             }
 
-            var (epKey, error) = this.EndpointKey.TryGetValue(dc.GetState());
-            var (hn, error2) = this.HostName.TryGetValue(dc.GetState());
-            var (kbId, error3) = this.KnowledgeBaseId.TryGetValue(dc.GetState());
+            var (epKey, error) = this.EndpointKey.TryGetValue(dcState);
+            var (hn, error2) = this.HostName.TryGetValue(dcState);
+            var (kbId, error3) = this.KnowledgeBaseId.TryGetValue(dcState);
 
             var endpoint = new QnAMakerEndpoint
             {
@@ -153,26 +155,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
 
         protected override Task<QnAMakerOptions> GetQnAMakerOptionsAsync(DialogContext dc)
         {
+            var dcState = dc.GetState();
+
             return Task.FromResult(new QnAMakerOptions
             {
-                ScoreThreshold = this.Threshold.TryGetValue(dc.GetState()).Value,
+                ScoreThreshold = this.Threshold.GetValue(dcState),
                 StrictFilters = this.StrictFilters,
-                Top = this.Top.TryGetValue(dc.GetState()).Value,
+                Top = this.Top.GetValue(dcState),
                 QnAId = 0,
-                RankerType = this.RankerType.TryGetValue(dc.GetState()).Value,
+                RankerType = this.RankerType.GetValue(dcState),
                 IsTest = this.IsTest
             });
         }
 
         protected async override Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
         {
-            var noAnswer = (this.NoAnswer != null) ? await this.NoAnswer.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false) : null;
-            var cardNoMatchResponse = (this.CardNoMatchResponse != null) ? await this.CardNoMatchResponse.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false) : null;
+            var dcState = dc.GetState();
+            var noAnswer = (this.NoAnswer != null) ? await this.NoAnswer.BindToData(dc.Context, dcState).ConfigureAwait(false) : null;
+            var cardNoMatchResponse = (this.CardNoMatchResponse != null) ? await this.CardNoMatchResponse.BindToData(dc.Context, dcState).ConfigureAwait(false) : null;
 
             var responseOptions = new QnADialogResponseOptions
             {
-                ActiveLearningCardTitle = this.ActiveLearningCardTitle.TryGetValue(dc.GetState()).Value,
-                CardNoMatchText = this.CardNoMatchText.TryGetValue(dc.GetState()).Value,
+                ActiveLearningCardTitle = this.ActiveLearningCardTitle.GetValue(dcState),
+                CardNoMatchText = this.CardNoMatchText.GetValue(dcState),
                 NoAnswer = noAnswer,
                 CardNoMatchResponse = cardNoMatchResponse,
             };

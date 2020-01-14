@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } 
+        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets template for the activity.
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </summary>
         /// <value>Expression to activityId.</value>
         [JsonProperty("activityId")]
-        public StringExpression ActivityId { get; set; } = new StringExpression(null);
+        public StringExpression ActivityId { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -68,13 +68,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var activity = await Activity.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
-            var (result, error) = this.ActivityId.TryGetValue(dc.GetState());
+            var activity = await Activity.BindToData(dc.Context, dcState).ConfigureAwait(false);
+            var (result, error) = this.ActivityId.TryGetValue(dcState);
             if (error != null)
             {
                 throw new ArgumentException(error);

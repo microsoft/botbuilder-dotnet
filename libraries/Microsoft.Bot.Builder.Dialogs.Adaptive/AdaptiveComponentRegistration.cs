@@ -174,8 +174,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new ValueExpressionConverter();
             yield return new BoolExpressionConverter();
             yield return new IntExpressionConverter();
-            yield return new LongExpressionConverter();
-            yield return new FloatExpressionConverter();
+            yield return new NumberExpressionConverter();
             yield return new ExpressionPropertyConverter<short>();
             yield return new ExpressionPropertyConverter<ushort>();
             yield return new ExpressionPropertyConverter<uint>();
@@ -185,6 +184,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new ExpressionPropertyConverter<List<string>>();
             yield return new EnumExpressionConverter<ArrayChangeType>();
             yield return new EnumExpressionConverter<ListStyle>();
+            yield return new EnumExpressionConverter<AttachmentOutputFormat>();
+            
             yield return new ChoiceSetConverter();
             yield return new ActivityTemplateConverter();
             yield return new JObjectConverter(refResolver);

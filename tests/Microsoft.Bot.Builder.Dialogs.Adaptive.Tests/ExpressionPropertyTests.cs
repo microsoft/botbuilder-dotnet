@@ -233,30 +233,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 Str = "test",
                 Int = "13",
-                Long = "45",
-                Float = "3.14",
+                Number = "3.14",
                 Enm = "two",
                 Bool = "true"
             };
 
             Assert.AreEqual("test", test.Str.TryGetValue(data).Value);
             Assert.AreEqual(13, test.Int.TryGetValue(data).Value);
-            Assert.AreEqual(45, test.Long.TryGetValue(data).Value);
-            Assert.AreEqual(3.14F, test.Float.TryGetValue(data).Value);
+            Assert.AreEqual(3.14F, test.Number.TryGetValue(data).Value);
             Assert.AreEqual(TestEnum.Two, test.Enm.TryGetValue(data).Value);
             Assert.AreEqual(true, test.Bool.TryGetValue(data).Value);
 
             test.Str = "='test2'";
             test.Int = "=113";
-            test.Long = "=145";
-            test.Float = "=13.14";
+            test.Number = "=13.14";
             test.Enm = "=three";
             test.Bool = "=true";
 
             Assert.AreEqual("test2", test.Str.TryGetValue(data).Value);
             Assert.AreEqual(113, test.Int.TryGetValue(data).Value);
-            Assert.AreEqual(145, test.Long.TryGetValue(data).Value);
-            Assert.AreEqual(13.14F, test.Float.TryGetValue(data).Value);
+            Assert.AreEqual(13.14F, test.Number.TryGetValue(data).Value);
             Assert.AreEqual(TestEnum.Three, test.Enm.TryGetValue(data).Value);
             Assert.AreEqual(true, test.Bool.TryGetValue(data).Value);
 
@@ -264,8 +260,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var test2 = JsonConvert.DeserializeObject<ImplicitCastTest>(json, settings: settings);
             Assert.AreEqual("test2", test2.Str.TryGetValue(data).Value);
             Assert.AreEqual(113, test2.Int.TryGetValue(data).Value);
-            Assert.AreEqual(145, test2.Long.TryGetValue(data).Value);
-            Assert.AreEqual(13.14F, test2.Float.TryGetValue(data).Value);
+            Assert.AreEqual(13.14F, test2.Number.TryGetValue(data).Value);
             Assert.AreEqual(TestEnum.Three, test2.Enm.TryGetValue(data).Value);
             Assert.AreEqual(true, test2.Bool.TryGetValue(data).Value);
         }
@@ -448,15 +443,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public void ExpressionPropertyTests_LongExpression()
-        {
-            TestNumberExpression<LongExpression, long>(new LongExpression(), 12345);
-        }
-
-        [TestMethod]
         public void ExpressionPropertyTests_FloatExpression()
         {
-            TestNumberExpression<FloatExpression, float>(new FloatExpression(), 3.14F);
+            TestNumberExpression<NumberExpression, float>(new NumberExpression(), 3.14F);
         }
 
         private void TestNumberExpression<TExpression, TValue>(TExpression val, TValue expected)
@@ -517,12 +506,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                      new ValueExpressionConverter(),
                      new BoolExpressionConverter(),
                      new IntExpressionConverter(),
-                     new LongExpressionConverter(),
-                     new FloatExpressionConverter(),
+                     new NumberExpressionConverter(),
                      new ExpressionPropertyConverter<short>(),
                      new ExpressionPropertyConverter<ushort>(),
                      new ExpressionPropertyConverter<uint>(),
                      new ExpressionPropertyConverter<ulong>(),
+                     new ExpressionPropertyConverter<long>(),
                      new ExpressionPropertyConverter<double>(),
                      new ExpressionPropertyConverter<ChoiceSet>(),
                      new EnumExpressionConverter<TestEnum>(),
@@ -556,9 +545,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             public EnumExpression<TestEnum> Enm { get; set; } = new EnumExpression<TestEnum>();
 
-            public LongExpression Long { get; set; } = new LongExpression();
-
-            public FloatExpression Float { get; set; } = new FloatExpression();
+            public NumberExpression Number { get; set; } = new NumberExpression();
 
             public ValueExpression Value { get; set; } = new ValueExpression();
 

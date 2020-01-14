@@ -64,7 +64,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 
         public async Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel = default)
         {
-            var (eval, _) = Condition.TryGetValue(context.GetState());
+            var dcState = context.GetState();
+            var (eval, _) = Condition.TryGetValue(dcState);
             ITriggerSelector selector;
             if (eval)
             {

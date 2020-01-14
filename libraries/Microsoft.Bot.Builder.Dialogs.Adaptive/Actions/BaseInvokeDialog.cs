@@ -89,12 +89,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return this.Dialog;
             }
 
-            var dialogId = this.DialogId?.TryGetValue(dc.GetState()).Value;
+            var dcState = dc.GetState();
+            var dialogId = this.DialogId?.GetValue(dcState);
             return dc.FindDialog(dialogId) ?? throw new Exception($"{dialogId} not found.");
         }
 
         protected object BindOptions(DialogContext dc, object options)
         {
+            var dcState = dc.GetState();
+
             // binding options are static definition of options with overlay of passed in options);
             var bindingOptions = (JObject)ObjectPath.Merge(Options, options ?? new JObject());
             var boundOptions = new JObject();
@@ -102,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             foreach (var binding in bindingOptions)
             {
                 // evalute the value
-                var (value, error) = new ValueExpression(binding.Value).TryGetValue(dc.GetState());
+                var (value, error) = new ValueExpression(binding.Value).TryGetValue(dcState);
 
                 if (error != null)
                 {

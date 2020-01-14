@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The memory expression. 
         /// </value>
         [JsonProperty("condition")]
-        public BoolExpression Condition { get; set; } = new BoolExpression(false);
+        public BoolExpression Condition { get; set; } = false;
 
         /// <summary>
         /// Gets or sets an optional expression which if is true will disable this action.
@@ -98,8 +98,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
+            
+            var dcState = dc.GetState();
 
-            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value == true)
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -107,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Ensure planning context
             if (dc is SequenceContext planning)
             {
-                var (conditionResult, error) = this.Condition.TryGetValue(dc.GetState());
+                var (conditionResult, error) = this.Condition.TryGetValue(dcState);
                 if (error == null && conditionResult == true && TrueScope.Actions.Any())
                 {
                     // replace dialog with If True Action Scope

@@ -23,15 +23,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         [JsonProperty("defaultLocale")]
-        public string DefaultLocale { get; set; } = null;
+        public StringExpression DefaultLocale { get; set; } = null;
 
         [JsonProperty("outputFormat")]
-        public string OutputFormat { get; set; }
+        public StringExpression OutputFormat { get; set; }
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.GetState().GetValue<object>(VALUE_PROPERTY);
-
+            var dcState = dc.GetState();
+            var input = dcState.GetValue<object>(VALUE_PROPERTY);
             var culture = GetCulture(dc);
             var results = DateTimeRecognizer.RecognizeDateTime(input.ToString(), culture);
             if (results.Count > 0)
@@ -44,18 +44,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     result.Add(ReadResolution(value));
                 }
 
-                dc.GetState().SetValue(VALUE_PROPERTY, result);
-                if (!string.IsNullOrEmpty(OutputFormat))
+                dcState.SetValue(VALUE_PROPERTY, result);
+                
+                if (OutputFormat != null)
                 {
-                    var outputExpression = new ExpressionEngine().Parse(OutputFormat);
-                    var (outputValue, error) = outputExpression.TryEvaluate(dc.GetState());
+                    var (outputValue, error) = this.OutputFormat.TryGetValue(dcState);
                     if (error == null)
                     {
-                        dc.GetState().SetValue(VALUE_PROPERTY, outputValue);
+                        dcState.SetValue(VALUE_PROPERTY, outputValue);
                     }
                     else
                     {
-                        throw new Exception($"OutputFormat Expression evaluation resulted in an error. Expression: {outputExpression.ToString()}. Error: {error}");
+                        throw new Exception($"OutputFormat Expression evaluation resulted in an error. Expression: {this.OutputFormat}. Error: {error}");
                     }
                 }
             }
@@ -101,9 +101,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return dc.Context.Activity.Locale;
             }
 
-            if (!string.IsNullOrEmpty(this.DefaultLocale))
+            if (this.DefaultLocale != null)
             {
-                return this.DefaultLocale;
+                var dcState = dc.GetState();
+                return this.DefaultLocale.GetValue(dcState);
             }
 
             return English;

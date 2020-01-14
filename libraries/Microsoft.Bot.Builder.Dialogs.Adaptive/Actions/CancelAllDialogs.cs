@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Event name. 
         /// </value>
         [JsonProperty("eventName")]
-        public string EventName { get; set; }
+        public StringExpression EventName { get; set; }
 
         /// <summary>
         /// Gets or sets value expression for EventValue.
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Value expression for EventValue.
         /// </value>
         [JsonProperty("eventValue")]
-        public string EventValue { get; set; }
+        public StringExpression EventValue { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -62,24 +62,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            object eventValue = null;
-            if (this.EventValue != null)
-            {
-                eventValue = new ExpressionEngine().Parse(this.EventValue).TryEvaluate(dc.GetState());
-            }
-
             if (dc.Parent == null)
             {
-                return await dc.CancelAllDialogsAsync(true, EventName, eventValue, cancellationToken).ConfigureAwait(false);
+                return await dc.CancelAllDialogsAsync(true, EventName.GetValue(dcState), this.EventValue.GetValue(dcState), cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                var turnResult = await dc.Parent.CancelAllDialogsAsync(true, EventName, eventValue, cancellationToken).ConfigureAwait(false);
+                var turnResult = await dc.Parent.CancelAllDialogsAsync(true, EventName.GetValue(dcState), this.EventValue.GetValue(dcState), cancellationToken).ConfigureAwait(false);
                 turnResult.ParentEnded = true;
                 return turnResult;
             }

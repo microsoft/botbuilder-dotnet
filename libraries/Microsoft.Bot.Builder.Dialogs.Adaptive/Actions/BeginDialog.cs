@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The property path to store the dialog result in.
         /// </value>
         [JsonProperty("resultProperty")]
-        public string ResultProperty { get; set; }
+        public StringExpression ResultProperty { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -53,8 +53,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
+            
+            var dcState = dc.GetState();
 
-            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value == true)
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -65,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var boundOptions = BindOptions(dc, options);
 
             // set the activity processed state (default is true)
-            dc.GetState().SetValue(TurnPath.ACTIVITYPROCESSED, this.ActivityProcessed);
+            dcState.SetValue(TurnPath.ACTIVITYPROCESSED, this.ActivityProcessed);
 
             // start dialog with bound options passed in as the options
             return await dc.BeginDialogAsync(dialog.Id, options: boundOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -73,9 +75,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            var dcState = dc.GetState();
+
             if (this.ResultProperty != null)
             {
-                dc.GetState().SetValue(this.ResultProperty, result);
+                dcState.SetValue(this.ResultProperty.GetValue(dcState), result);
             }
 
             // By default just end the current dialog and return result to parent.

@@ -41,23 +41,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         [JsonProperty("defaultLocale")]
-        public string DefaultLocale { get; set; } = null;
+        public StringExpression DefaultLocale { get; set; }
 
         [JsonProperty("style")]
-        public EnumExpression<ListStyle> Style { get; set; } = new EnumExpression<ListStyle>(ListStyle.Auto);
+        public EnumExpression<ListStyle> Style { get; set; } = ListStyle.Auto;
 
         [JsonProperty("choiceOptions")]
-        public ChoiceFactoryOptions ChoiceOptions { get; set; } = null;
+        public ExpressionProperty<ChoiceFactoryOptions> ChoiceOptions { get; set; }
 
         [JsonProperty("confirmChoices")]
-        public List<Choice> ConfirmChoices { get; set; } = null;
+        public ExpressionProperty<List<Choice>> ConfirmChoices { get; set; }
 
         [JsonProperty("outputFormat")]
         public StringExpression OutputFormat { get; set; }
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.GetState().GetValue<object>(VALUE_PROPERTY);
+            var dcState = dc.GetState();
+            var input = dcState.GetValue<object>(VALUE_PROPERTY);
             if (dc.Context.Activity.Type == ActivityTypes.Message)
             {
                 // Recognize utterance
@@ -68,13 +69,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     var first = results[0];
                     if (bool.TryParse(first.Resolution["value"].ToString(), out var value))
                     {
-                        dc.GetState().SetValue(VALUE_PROPERTY, value);
+                        dcState.SetValue(VALUE_PROPERTY, value);
                         if (OutputFormat != null)
                         {
-                            var (outputValue, error) = OutputFormat.TryGetValue(dc.GetState());
+                            var (outputValue, error) = OutputFormat.TryGetValue(dcState);
                             if (error == null)
                             {
-                                dc.GetState().SetValue(VALUE_PROPERTY, outputValue);
+                                dcState.SetValue(VALUE_PROPERTY, outputValue);
                             }
                             else
                             {
@@ -93,18 +94,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     // First check whether the prompt was sent to the user with numbers - if it was we should recognize numbers
                     var defaults = ChoiceDefaults[culture];
-                    var choiceOptions = ChoiceOptions ?? defaults.Item3;
+                    var choiceOptions = ChoiceOptions?.GetValue(dcState) ?? defaults.Item3;
 
                     // This logic reflects the fact that IncludeNumbers is nullable and True is the default set in Inline style
                     if (!choiceOptions.IncludeNumbers.HasValue || choiceOptions.IncludeNumbers.Value)
                     {
                         // The text may be a number in which case we will interpret that as a choice.
-                        var confirmChoices = ConfirmChoices ?? new List<Choice>() { defaults.Item1, defaults.Item2 };
+                        var confirmChoices = ConfirmChoices?.GetValue(dcState) ?? new List<Choice>() { defaults.Item1, defaults.Item2 };
                         var secondAttemptResults = ChoiceRecognizers.RecognizeChoices(input.ToString(), confirmChoices);
                         if (secondAttemptResults.Count > 0)
                         {
                             input = secondAttemptResults[0].Resolution.Index == 0;
-                            dc.GetState().SetValue(VALUE_PROPERTY, input);
+                            dcState.SetValue(VALUE_PROPERTY, input);
                         }
                         else
                         {
@@ -120,14 +121,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         protected override async Task<IActivity> OnRenderPrompt(DialogContext dc, InputState state)
         {
             // Format prompt to send
+            var dcState = dc.GetState();
             var channelId = dc.Context.Activity.ChannelId;
             var culture = GetCulture(dc);
             var defaults = ChoiceDefaults[culture];
-            var choiceOptions = ChoiceOptions ?? defaults.Item3;
-            var confirmChoices = ConfirmChoices ?? new List<Choice>() { defaults.Item1, defaults.Item2 };
+            var choiceOptions = ChoiceOptions?.GetValue(dcState) ?? defaults.Item3;
+            var confirmChoices = ConfirmChoices?.GetValue(dcState) ?? new List<Choice>() { defaults.Item1, defaults.Item2 };
 
             var prompt = await base.OnRenderPrompt(dc, state);
-            var (style, error) = this.Style.TryGetValue(dc.GetState());
+            var (style, error) = this.Style.TryGetValue(dcState);
             return this.AppendChoices(prompt.AsMessageActivity(), channelId, confirmChoices, style, choiceOptions);
         }
 
@@ -138,9 +140,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return dc.Context.Activity.Locale;
             }
 
-            if (!string.IsNullOrEmpty(this.DefaultLocale))
+            if (this.DefaultLocale != null)
             {
-                return this.DefaultLocale;
+                var dcState = dc.GetState();
+                return this.DefaultLocale.GetValue(dcState);
             }
 
             return English;

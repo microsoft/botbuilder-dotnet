@@ -22,9 +22,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.EditArray";
 
-        private Expression itemsProperty;
-        private Expression resultProperty;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="EditArray"/> class.
         /// </summary>
@@ -47,11 +44,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 case ArrayChangeType.Clear:
                 case ArrayChangeType.Pop:
                 case ArrayChangeType.Take:
-                    this.ResultProperty = resultProperty;
+                    if (ResultProperty != null)
+                    {
+                        this.ResultProperty = resultProperty;
+                    }
+
                     break;
                 case ArrayChangeType.Push:
                 case ArrayChangeType.Remove:
-                    this.Value = new ValueExpression(value);
+                    if (value != null)
+                    {
+                        this.Value = new ValueExpression(value);
+                    }
+
                     break;
             }
         }
@@ -111,7 +116,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } 
+        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets property path expression to the collection of items.
@@ -120,11 +125,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Property path expression to the collection of items.
         /// </value>
         [JsonProperty("itemsProperty")]
-        public string ItemsProperty
-        {
-            get { return itemsProperty?.ToString(); }
-            set { this.itemsProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public StringExpression ItemsProperty { get; set; }
 
         /// <summary>
         /// Gets or sets the path expression to store the result of the action.
@@ -133,11 +134,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The path expression to store the result of the action.
         /// </value>
         [JsonProperty("resultProperty")]
-        public string ResultProperty
-        {
-            get { return resultProperty?.ToString(); }
-            set { this.resultProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public StringExpression ResultProperty { get; set; }
 
         /// <summary>
         /// Gets or sets the expression of the value to put onto the array.
@@ -155,22 +152,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState))
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            if (string.IsNullOrEmpty(ItemsProperty))
+            if (ItemsProperty == null)
             {
                 throw new Exception($"EditArray: \"{ChangeType}\" operation couldn't be performed because the arrayProperty wasn't specified.");
             }
 
-            var array = dc.GetState().GetValue<JArray>(this.ItemsProperty, () => new JArray());
+            var array = dcState.GetValue<JArray>(this.ItemsProperty.GetValue(dcState), () => new JArray());
 
             object item = null;
             object result = null;
 
-            switch (ChangeType.TryGetValue(dc.GetState()).Value)
+            switch (ChangeType.GetValue(dcState))
             {
                 case ArrayChangeType.Pop:
                     item = array[array.Count - 1];
@@ -179,7 +178,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
                 case ArrayChangeType.Push:
                     EnsureValue();
-                    var (itemResult, error) = this.Value.TryGetValue(dc.GetState());
+                    var (itemResult, error) = this.Value.TryGetValue(dcState);
                     if (error == null && itemResult != null)
                     {
                         array.Add(itemResult);
@@ -198,7 +197,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
                 case ArrayChangeType.Remove:
                     EnsureValue();
-                    (itemResult, error) = this.Value.TryGetValue(dc.GetState());
+                    (itemResult, error) = this.Value.TryGetValue(dcState);
                     if (error == null && itemResult != null)
                     {
                         result = false;
@@ -220,11 +219,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
             }
 
-            dc.GetState().SetValue(this.ItemsProperty, array);
+            dcState.SetValue(this.ItemsProperty.GetValue(dcState), array);
 
             if (ResultProperty != null)
             {
-                dc.GetState().SetValue(this.ResultProperty, result);
+                dcState.SetValue(this.ResultProperty.GetValue(dcState), result);
             }
 
             return await dc.EndDialogAsync(result);

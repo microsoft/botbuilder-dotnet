@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Gets or sets the action Id to goto.
         /// </summary>
         /// <value>The action Id.</value>
-        public string ActionId { get; set; }
+        public StringExpression ActionId { get; set; }
 
         /// <summary>
         /// Gets or sets an optional expression which if is true will disable this action.
@@ -49,7 +49,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.TryGetValue(dc.GetState()).Value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -58,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var actionScopeResult = new ActionScopeResult()
             {
                 ActionScopeCommand = ActionScopeCommands.GotoAction,
-                ActionId = this.ActionId ?? throw new ArgumentNullException(nameof(ActionId))
+                ActionId = this.ActionId?.GetValue(dcState) ?? throw new ArgumentNullException(nameof(ActionId))
             };
 
             return await dc.EndDialogAsync(result: actionScopeResult, cancellationToken: cancellationToken).ConfigureAwait(false);
