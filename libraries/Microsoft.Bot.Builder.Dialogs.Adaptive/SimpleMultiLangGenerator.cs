@@ -3,11 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.LanguageGeneration;
-using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
@@ -19,29 +16,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         private readonly LanguagePolicy languageFallbackPolicy;
 
-        private readonly string localeDefault;
-
         private readonly Dictionary<string, LGFile> lgFilesPerLocale;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleMultiLangGenerator"/> class.
         /// </summary>
-        /// <param name="localeLGFiles">A dictionary of locale and LG file(s).</param>
-        /// <param name="fallbackLocale">The default fallback locale to use.</param>
-        public SimpleMultiLangGenerator(Dictionary<string, string> localeLGFiles, string fallbackLocale)
+        /// <param name="localeLGFiles">A dictionary of locale and LG file.</param>
+        public SimpleMultiLangGenerator(Dictionary<string, string> localeLGFiles)
         {
             lgFilesPerLocale = new Dictionary<string, LGFile>(StringComparer.OrdinalIgnoreCase);
             languageFallbackPolicy = new LanguagePolicy();
-            localeDefault = fallbackLocale;
 
             if (localeLGFiles == null)
             {
                 throw new ArgumentNullException(nameof(localeLGFiles));
-            }
-
-            if (string.IsNullOrEmpty(fallbackLocale))
-            {
-                throw new ArgumentNullException(nameof(fallbackLocale));
             }
 
             foreach (var filesPerLocale in localeLGFiles)
@@ -50,44 +38,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        public async Task<Activity> Generate(ITurnContext turnContext, string template, object data)
+        public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
-            if (templateName == null)
+            if (template == null)
             {
-                throw new ArgumentNullException(nameof(templateName));
+                throw new ArgumentNullException(nameof(template));
             }
 
-            // By default we use the locale for the current culture, if a locale is provided then we ignore this.
-            var locale = localeOverride ?? CultureInfo.CurrentUICulture.Name;
+            var locale = turnContext.Activity.Locale ?? string.Empty;
 
-            // Do we have a template engine for this locale?
             if (lgFilesPerLocale.ContainsKey(locale))
             {
-                return ActivityFactory.CreateActivity(lgFilesPerLocale[locale].EvaluateTemplate(templateName, data).ToString());
+                return lgFilesPerLocale[locale].Evaluate(template, data).ToString();
             }
             else
             {
-                // We don't have a set of matching responses for this locale so we apply fallback policy to find options.
-                languageFallbackPolicy.TryGetValue(locale, out string[] locales);
+                var locales = new string[] { string.Empty };
+                if (!languageFallbackPolicy.TryGetValue(locale, out locales))
                 {
-                    // If no fallback options were found then we fallback to the default and log.
-                    if (!languageFallbackPolicy.TryGetValue(localeDefault, out locales))
+                    if (!languageFallbackPolicy.TryGetValue(string.Empty, out locales))
                     {
-                        throw new Exception($"No LG responses found for {locale} or when attempting to fallback to '{localeDefault}'");
+                        throw new Exception($"No supported language found for {locale}");
                     }
                 }
 
-                // Work through the fallback hierarchy to find a response
                 foreach (var fallBackLocale in locales)
                 {
                     if (lgFilesPerLocale.ContainsKey(fallBackLocale))
                     {
-                        return ActivityFactory.CreateActivity(lgFilesPerLocale[fallBackLocale].EvaluateTemplate(templateName, data).ToString());
+                        return lgFilesPerLocale[fallBackLocale].Evaluate(template, data).ToString();
                     }
                 }
             }
 
-            throw new Exception($"No LG responses found for {locale} or when attempting to fallback to '{localeDefault}'");
+            throw new Exception($"No LG responses found for locale: {locale}");
         }
     }
 }
