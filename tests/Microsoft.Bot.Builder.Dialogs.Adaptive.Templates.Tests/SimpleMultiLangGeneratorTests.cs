@@ -22,14 +22,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests
             };
 
             var generator = new SimpleMultiLangGenerator(localPerFile);
-            // fallback to "en"
+
+            // fallback to "c.en.lg"
             var result = await generator.Generate(GetTurnContext("en-us"), "@{templatec()}", null);
             Assert.AreEqual("from c.en.lg", result);
 
+            // "c.en.lg" is used
             result = await generator.Generate(GetTurnContext("en"), "@{templatec()}", null);
             Assert.AreEqual("from c.en.lg", result);
 
+            // locale "fr" has no entry file, default file "c.lg" is used
             result = await generator.Generate(GetTurnContext("fr"), "@{templatec()}", null);
+            Assert.AreEqual("from c.lg", result);
+
+            // "c.lg" is used
+            result = await generator.Generate(GetTurnContext(null), "@{templatec()}", null);
             Assert.AreEqual("from c.lg", result);
         }
 
