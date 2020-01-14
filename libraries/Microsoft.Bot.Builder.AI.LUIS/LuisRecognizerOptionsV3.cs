@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -35,6 +36,13 @@ namespace Microsoft.Bot.Builder.AI.Luis
         : base(application)
         {
         }
+
+        /// <summary>
+        /// Gets or sets entity recognizer to recognize external entities to pass to LUIS.
+        /// </summary>
+        /// <value>External entity recognizer.</value>
+        [JsonProperty("externalEntityRecognizer")]
+        public Recognizer ExternalEntityRecognizer { get; set; }
 
         /// <summary>
         /// Gets or sets the Luis Prediction Options for the V3 endpoint.

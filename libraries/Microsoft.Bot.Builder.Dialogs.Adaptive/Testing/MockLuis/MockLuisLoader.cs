@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Runtime.Serialization;
-using Microsoft.Bot.Builder.AI.Luis;
+using System.IO;
+using Microsoft.Bot.Builder.AI.LuisV3;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Extensions.Configuration;
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.MockLuis
             // simpler json format
             if (obj["applicationId"]?.Type == JTokenType.String)
             {
-                var luisApplication = obj.ToObject<LuisApplication>();
+                var luisApplication = obj.ToObject<AI.Luis.LuisApplication>();
                 var name = luisApplication.ApplicationId;
                 if (name.StartsWith("{") && name.EndsWith("}"))
                 {
@@ -40,10 +40,11 @@ namespace Microsoft.Bot.Builder.MockLuis
                 luisApplication.Endpoint = configuration.LoadSetting(luisApplication.Endpoint);
                 luisApplication.EndpointKey = configuration.LoadSetting(luisApplication.EndpointKey);                
 
-                var options = new LuisRecognizerOptionsV3(luisApplication);
+                var options = new AI.Luis.LuisRecognizerOptionsV3(luisApplication);
                 if (obj["predictionOptions"] != null)
                 {
-                    options.PredictionOptions = obj["predictionOptions"].ToObject<AI.LuisV3.LuisPredictionOptions>();
+                    var json = JsonConvert.SerializeObject(obj["predictionOptions"]);
+                    options.PredictionOptions = serializer.Deserialize<AI.LuisV3.LuisPredictionOptions>(new JsonTextReader(new StringReader(json)));
                 }
 
                 return new MockLuisRecognizer(options, configuration.GetValue<string>("luis:resources"), name);

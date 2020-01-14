@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.IO;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -32,7 +33,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Loaders
                 var options = new LuisRecognizerOptionsV3(luisApplication);
                 if (obj["predictionOptions"] != null)
                 {
-                    options.PredictionOptions = obj["predictionOptions"].ToObject<AI.LuisV3.LuisPredictionOptions>();
+                    var json = JsonConvert.SerializeObject(obj["predictionOptions"]);
+                    options.PredictionOptions = serializer.Deserialize<AI.LuisV3.LuisPredictionOptions>(new JsonTextReader(new StringReader(json)));
                 }
 
                 return new LuisRecognizer(options);

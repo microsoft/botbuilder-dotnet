@@ -16,6 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
             yield return new InterfaceConverter<Recognizer>(refResolver, sourceMap, paths);
             yield return new ExpressionConverter();
             yield return new ActivityConverter();
+            yield return new DynamicListConverter();
         }
     }
 }

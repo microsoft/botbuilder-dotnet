@@ -158,4 +158,9 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Tests\GeneratorTests\sandwich\cachedResponses\sandwich_en-us_lu\" />
+    <Folder Include="Tests\LuisRecognizerTests\cachedResponses\DynamicLists_test_en-us_lu\" />
+  </ItemGroup>
+
 </Project>

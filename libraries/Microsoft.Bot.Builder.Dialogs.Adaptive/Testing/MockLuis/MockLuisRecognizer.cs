@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Dynamic;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -21,7 +22,6 @@ namespace Microsoft.Bot.Builder.MockLuis
     public class MockLuisRecognizer : Recognizer
     {
         private string _responseDir;
-        private LuisRecognizerOptionsV3 _options;
         private string _name;
 
         /// <summary>
@@ -38,43 +38,123 @@ namespace Microsoft.Bot.Builder.MockLuis
         {
             _responseDir = Path.Combine(resourceDir, "cachedResponses", name);
             _name = name;
-            _options = options;
-            _options.IncludeAPIResults = true;
+            PredictionOptions = options;
+            PredictionOptions.IncludeAPIResults = true;
             if (!Directory.Exists(_responseDir))
             {
                 Directory.CreateDirectory(_responseDir);
             }
         }
 
+        /// <summary>
+        /// Gets or sets prediction options.
+        /// </summary>
+        /// <value>Prediction options.</value>
+        [JsonProperty("predictionOptions")]
+        public LuisRecognizerOptionsV3 PredictionOptions { get; set; }
+
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken = default)
-        { 
-            var client = GetMockedClient(text);
-            var recognizer = new LuisRecognizer(_options, client);
+        {
+            var client = GetMockedClient(text, PredictionOptions);
+            var recognizer = new LuisRecognizer(PredictionOptions, client);
             var result = await recognizer.RecognizeAsync(dialogContext, text, locale, cancellationToken);
             if (client == null)
             {
                 // Save response
-                var outPath = ResponsePath(text);
+                var outPath = ResponsePath(text, PredictionOptions);
                 File.WriteAllText(outPath, JsonConvert.SerializeObject(result.Properties["luisResult"]));
             }
 
             return result;
         }
 
-        private string ResponsePath(string utterance)
-            => Path.Combine(_responseDir, $"{utterance.StableHash()}.json");
+        private string ResponsePath(string utterance, LuisRecognizerOptionsV3 options)
+        {
+            var hash = utterance.StableHash();
+            if (options.ExternalEntityRecognizer != null)
+            {
+                hash ^= "external".StableHash();
+            }
 
-        private HttpClientHandler GetMockedClient(string utterance)
+            if (options.IncludeAPIResults)
+            {
+                hash ^= "api".StableHash();
+            }
+
+            if (options.LogPersonalInformation)
+            {
+                hash ^= "personal".StableHash();
+            }
+
+            var poptions = options.PredictionOptions;
+            if (poptions.DynamicLists != null)
+            {
+                foreach (var dynamicList in poptions.DynamicLists)
+                {
+                    hash ^= dynamicList.Entity.StableHash();
+                    foreach (var choices in dynamicList.List)
+                    {
+                        hash ^= choices.CanonicalForm.StableHash();
+                        foreach (var synonym in choices.Synonyms)
+                        {
+                            hash ^= synonym.StableHash();
+                        }
+                    }
+                }
+            }
+
+            if (poptions.ExternalEntities != null)
+            {
+                foreach (var external in poptions.ExternalEntities)
+                {
+                    hash ^= external.Entity.StableHash();
+                }
+            }
+
+            if (poptions.IncludeAllIntents)
+            {
+                hash ^= "all".StableHash();
+            }
+
+            if (poptions.IncludeInstanceData)
+            {
+                hash ^= "instance".StableHash();
+            }
+
+            if (poptions.Log ?? false)
+            {
+                hash ^= "log".StableHash();
+            }
+
+            if (poptions.PreferExternalEntities)
+            {
+                hash ^= "prefer".StableHash();
+            }
+
+            if (poptions.Slot != null)
+            {
+                hash ^= poptions.Slot.StableHash();
+            }
+
+            if (poptions.Version != null)
+            {
+                hash ^= poptions.Version.StableHash();
+            }
+
+            return Path.Combine(_responseDir, $"{hash}.json");
+        }
+
+        private HttpClientHandler GetMockedClient(string utterance, LuisRecognizerOptionsV3 options)
         {
             HttpClientHandler client = null;
             if (utterance != null)
             {
-                var response = ResponsePath(utterance);
+                var response = ResponsePath(utterance, options);
                 if (File.Exists(response))
                 {
                     var handler = new MockHttpMessageHandler();
                     handler
-                        .When(_options.Application.Endpoint + "*")
+                        .When(PredictionOptions.Application.Endpoint + "*")
                         .WithPartialContent(utterance)
                         .Respond("application/json", File.OpenRead(response));
                     client = new MockedHttpClientHandler(handler.ToHttpClient());
