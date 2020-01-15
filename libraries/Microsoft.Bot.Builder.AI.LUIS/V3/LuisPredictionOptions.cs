@@ -12,6 +12,31 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
     public class LuisPredictionOptions
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="LuisPredictionOptions"/> class.
+        /// </summary>
+        public LuisPredictionOptions()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LuisPredictionOptions"/> class from an existing instance.
+        /// </summary>
+        /// <param name="other">Source of values.</param>
+        public LuisPredictionOptions(LuisPredictionOptions other)
+        {
+            IncludeAllIntents = other.IncludeAllIntents;
+            IncludeAPIResults = other.IncludeAPIResults;
+            IncludeInstanceData = other.IncludeInstanceData;
+            Log = other.Log;
+            DynamicLists = other.DynamicLists;
+            DynamicListsExpression = other.DynamicListsExpression;
+            ExternalEntities = other.ExternalEntities;
+            PreferExternalEntities = other.PreferExternalEntities;
+            Slot = other.Slot;
+            Version = other.Version;
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating whether all intents come back or only the top one.
         /// </summary>
         /// <value>
@@ -51,6 +76,12 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
         /// Dynamic lists of things like contact names to recognize at query time.
         /// </value>
         public IList<DynamicList> DynamicLists { get; set; }
+
+        /// <summary>
+        /// Gets or sets expression for computing dynamic lists.
+        /// </summary>
+        /// <value>Expression.</value>
+        public string DynamicListsExpression { get; set; }
 
         /// <summary>
         /// Gets or sets external entities recognized in the query.

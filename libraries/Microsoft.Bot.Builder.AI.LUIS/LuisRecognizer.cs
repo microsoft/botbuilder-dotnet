@@ -199,6 +199,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return result;
         }
 
+        /// <inheritdoc />
         public override Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
         {
             return this.RecognizeAsync(dialogContext.Context, cancellationToken);
@@ -362,7 +363,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 throw new ArgumentException("TurnContext is different than text");
             }
 
-            return await RecognizeAsync(dialogContext.Context, cancellationToken).ConfigureAwait(false);
+            return await RecognizeAsync(dialogContext, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
