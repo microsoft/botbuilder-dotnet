@@ -170,12 +170,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new InterfaceConverter<TestAction>(refResolver, sourceMap, paths);
             yield return new InterfaceConverter<EntityRecognizer>(refResolver, sourceMap, paths);
             yield return new InterfaceConverter<ITriggerSelector>(refResolver, sourceMap, paths);
+
+            yield return new IntExpressionConverter();
+            yield return new NumberExpressionConverter();
             yield return new StringExpressionConverter();
             yield return new ValueExpressionConverter();
             yield return new BoolExpressionConverter();
-            yield return new IntExpressionConverter();
-            yield return new NumberExpressionConverter();
-            
             yield return new DialogExpressionConverter(refResolver, sourceMap, paths);
 
             yield return new ObjectExpressionConverter<ChoiceSet>();
@@ -190,8 +190,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new EnumExpressionConverter<AttachmentOutputFormat>();
             yield return new EnumExpressionConverter<ListStyle>();
             yield return new EnumExpressionConverter<ChoiceOutputFormat>();
-
-//            yield return new ObjectExpressionConverter<Dialog>();
 
             yield return new ChoiceSetConverter();
             yield return new ActivityTemplateConverter();
