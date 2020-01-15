@@ -33,7 +33,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var dcState = dc.GetState();
             var input = dcState.GetValue<object>(VALUE_PROPERTY);
             var culture = GetCulture(dc);
-            var results = DateTimeRecognizer.RecognizeDateTime(input.ToString(), culture);
+            var refTime = dc.Context.Activity.LocalTimestamp?.LocalDateTime;
+            var results = DateTimeRecognizer.RecognizeDateTime(input.ToString(), culture, refTime: refTime);
             if (results.Count > 0)
             {
                 // Return list of resolutions from first match
@@ -45,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
 
                 dcState.SetValue(VALUE_PROPERTY, result);
-                
+
                 if (OutputFormat != null)
                 {
                     var (outputValue, error) = this.OutputFormat.TryGetValue(dcState);
