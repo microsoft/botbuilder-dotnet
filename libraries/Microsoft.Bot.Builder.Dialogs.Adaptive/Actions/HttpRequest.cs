@@ -15,6 +15,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.Streaming.Payloads;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -29,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.HttpRequest";
 
-        public HttpRequest(HttpMethod method, string url, string inputProperty, Dictionary<string, string> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public HttpRequest(HttpMethod method, string url, string inputProperty, Dictionary<string, StringExpression> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
             this.Method = method;
@@ -120,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public StringExpression Url { get; set; }
 
         [JsonProperty("headers")]
-        public Dictionary<string, string> Headers { get; set; }
+        public Dictionary<string, StringExpression> Headers { get; set; }
 
         [JsonProperty("body")]
         public ValueExpression Body { get; set; }
@@ -173,7 +174,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 instanceBody = (JToken)JToken.FromObject(body);
             }
 
-            var instanceHeaders = Headers == null ? null : new Dictionary<string, string>(Headers);
+            var instanceHeaders = Headers == null ? null : Headers.ToDictionary(kv => kv.Key, kv => kv.Value.GetValue(dcState));
 
             var (instanceUrl, instanceUrlError) = this.Url.TryGetValue(dcState);
             if (instanceUrlError != null)

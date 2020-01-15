@@ -175,17 +175,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new BoolExpressionConverter();
             yield return new IntExpressionConverter();
             yield return new NumberExpressionConverter();
-            yield return new ExpressionPropertyConverter<short>();
-            yield return new ExpressionPropertyConverter<ushort>();
-            yield return new ExpressionPropertyConverter<uint>();
-            yield return new ExpressionPropertyConverter<ulong>();
-            yield return new ExpressionPropertyConverter<double>();
-            yield return new ExpressionPropertyConverter<ChoiceSet>();
-            yield return new ExpressionPropertyConverter<List<string>>();
-            yield return new EnumExpressionConverter<ArrayChangeType>();
-            yield return new EnumExpressionConverter<ListStyle>();
-            yield return new EnumExpressionConverter<AttachmentOutputFormat>();
             
+            yield return new DialogExpressionConverter(refResolver, sourceMap, paths);
+
+            yield return new ObjectExpressionConverter<ChoiceSet>();
+            yield return new ObjectExpressionConverter<ChoiceFactoryOptions>();
+            yield return new ObjectExpressionConverter<FindChoicesOptions>();
+
+            yield return new ArrayExpressionConverter<string>();
+            yield return new ArrayExpressionConverter<Choice>();
+
+            yield return new EnumExpressionConverter<ActionChangeType>();
+            yield return new EnumExpressionConverter<ArrayChangeType>();
+            yield return new EnumExpressionConverter<AttachmentOutputFormat>();
+            yield return new EnumExpressionConverter<ListStyle>();
+            yield return new EnumExpressionConverter<ChoiceOutputFormat>();
+
+//            yield return new ObjectExpressionConverter<Dialog>();
+
             yield return new ChoiceSetConverter();
             yield return new ActivityTemplateConverter();
             yield return new JObjectConverter(refResolver);

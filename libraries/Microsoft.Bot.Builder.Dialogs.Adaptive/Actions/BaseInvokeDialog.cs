@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             if (dialogIdToCall != null)
             {
-                this.DialogId = dialogIdToCall;
+                this.Dialog = dialogIdToCall;
             }
 
             if (bindingOptions != null)
@@ -47,17 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The dialog to call.
         /// </value>
         [JsonProperty("dialog")]
-        public Dialog Dialog { get; set; }
-
-        /// <summary>
-        /// Gets or sets the expression whih resolves to the dialog Id to call.
-        /// </summary>
-        /// <remarks>In the case of calling dialogs which are not declarative you can invoke them by id using dialogId property.  </remarks>
-        /// <value>
-        /// The dialog.id of a dialog which is in a DialogSet in the parent call chain.  If Dialog is defined this property is ignored.
-        /// </value>
-        [JsonProperty("dialogId")]
-        public StringExpression DialogId { get; set; }
+        public DialogExpression Dialog { get; set; } 
 
         /// <summary>
         /// Gets or sets a value indicating whether to have the new dialog should process the activity.
@@ -65,13 +55,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>The default for this will be true, which means the new dialog should not look the activity.  You can set this to false to dispatch the activity to the new dialog.</value>
         [DefaultValue(true)]
         [JsonProperty("activityProcessed")]
-        public bool ActivityProcessed { get; set; } = true;
+        public BoolExpression ActivityProcessed { get; set; } = true;
 
         public virtual IEnumerable<Dialog> GetDependencies()
         {
-            if (Dialog != null)
+            if (Dialog?.Value != null)
             {
-                yield return Dialog;
+                yield return Dialog.Value;
             }
 
             yield break;
@@ -79,19 +69,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{Dialog?.Id ?? DialogId?.ToString()}]";
+            return $"{this.GetType().Name}[{Dialog?.ToString()}]";
         }
 
         protected Dialog ResolveDialog(DialogContext dc)
         {
-            if (this.Dialog != null)
+            if (this.Dialog?.Value != null)
             {
-                return this.Dialog;
+                return this.Dialog.Value;
             }
 
             var dcState = dc.GetState();
-            var dialogId = this.DialogId?.GetValue(dcState);
-            return dc.FindDialog(dialogId) ?? throw new Exception($"{dialogId} not found.");
+            
+            // NOTE: we call TryEvaluate instead of TryGetValue because we want the result of the expression as a string so we can
+            // look up the string using external FindDialog().
+            var (dialogId, _) = this.Dialog.Expression.TryEvaluate<string>(dcState);
+            return dc.FindDialog(dialogId ?? throw new Exception($"{this.Dialog.ToString()} not found."));
         }
 
         protected object BindOptions(DialogContext dc, object options)

@@ -12,6 +12,7 @@
             "properties": {
                 "outputFormat": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Output format",
                     "description": "Expression to format the confirm output.",
                     "examples": [
@@ -19,12 +20,14 @@
                     ]
                 },
                 "defaultLocale": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Default locale",
                     "description": "Default locale.",
                     "default": "en-us"
                 },
                 "style": {
+                    "$role": "expression",
                     "type": "string",
                     "enum": [
                         "None",
@@ -39,6 +42,7 @@
                     "default": "Auto"
                 },
                 "choiceOptions": {
+                    "$role": "expression",
                     "type": "object",
                     "properties": {
                         "inlineSeparator": {
@@ -68,6 +72,7 @@
                     }
                 },
                 "confirmChoices": {
+                    "$role": "expression",
                     "type": "array",
                     "items": [
                         {

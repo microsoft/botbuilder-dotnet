@@ -9,6 +9,22 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
+    /// <summary>
+    /// ValueExpression - represents a property which is an object of any kind or a string expression.
+    /// </summary>
+    /// <remarks>
+    /// If the value is 
+    /// * a string with '=' prefix then the string is treated as an expression to resolve to a string. 
+    /// * a string without '=' then value is treated as string with string interpolation.
+    /// * any other type, then it is of that type (int, bool, object, etc.)
+    /// You can escape the '=' prefix by putting a backslash.  
+    /// Examples: 
+    ///     prop = true ==> true
+    ///     prop = "Hello @{user.name}" => "Hello Joe"
+    ///     prop = "=length(user.name)" => 3
+    ///     prop = "=user.age" => 45.
+    ///     prop = "\=user.age" => "=user.age".
+    /// </remarks>
     [JsonConverter(typeof(ValueExpressionConverter))]
     public class ValueExpression : ExpressionProperty<object>
     {

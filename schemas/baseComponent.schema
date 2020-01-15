@@ -34,8 +34,6 @@
             "description": "Extra information for the Bot Framework Designer."
         },
         "expression": {
-            "type": "string",
-            "description": "String must contain an expression."
         },
         "lg": {
             "type": "string",
@@ -45,6 +43,18 @@
             "type": "string",
             "description": "String must contain a memory path.",
             "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+        },
+        "boolExpression": {
+            "type": [ "boolean", "string"]
+        },
+        "integerExpression": {
+            "type": [ "integer", "string" ]
+        },
+        "numberExpression": {
+            "type": [ "number", "string" ]
+        },
+        "valueExpression": {
+            "type": [ "object", "array", "number", "integer", "boolean", "string"]
         }
     },
     "properties": {

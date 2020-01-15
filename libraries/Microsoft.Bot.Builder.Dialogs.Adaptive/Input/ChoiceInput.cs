@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Value Expression or List of choices (string or Choice objects) to present to user.
         /// </value>
         [JsonProperty("choices")]
-        public ExpressionProperty<ChoiceSet> Choices { get; set; }
+        public ObjectExpression<ChoiceSet> Choices { get; set; }
 
         /// <summary>
         /// Gets or sets listStyle to use to render the choices.
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// ChoiceOptions controls display options for customizing language.
         /// </value>
         [JsonProperty("choiceOptions")]
-        public ExpressionProperty<ChoiceFactoryOptions> ChoiceOptions { get; set; }
+        public ObjectExpression<ChoiceFactoryOptions> ChoiceOptions { get; set; }
 
         /// <summary>
         /// Gets or sets customize how to use the choices to recognize the response from the user.
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Customize how to use the choices to recognize the response from the user.
         /// </value>
         [JsonProperty("recognizerOptions")]
-        public ExpressionProperty<FindChoicesOptions> RecognizerOptions { get; set; } = null;
+        public ObjectExpression<FindChoicesOptions> RecognizerOptions { get; set; } = null;
 
         public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {

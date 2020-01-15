@@ -12,6 +12,7 @@
         },
         "disabled": {
             "$role": "expression",
+            "type": [ "boolean", "string"],
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -36,13 +37,15 @@
             }
         },
         "activityProcessed": {
-            "type": "boolean",
+            "$role": "expression",
+            "type": [ "boolean", "string" ],
             "title": "Activity Processed",
             "description": "When set to false, the dialog that is called can process the current activity.",
             "default": true
         },
         "resultProperty": {
             "$role": "expression",
+            "type": "string",
             "title": "Property",
             "description": "Property to store any value returned by the dialog that is called.",
             "examples": [

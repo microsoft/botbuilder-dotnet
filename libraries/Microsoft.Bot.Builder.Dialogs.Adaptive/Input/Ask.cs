@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonConstructor]
         public Ask(
             string text = null,
-            ExpressionProperty<List<string>> expectedProperties = null,
+            ArrayExpression<string> expectedProperties = null,
             [CallerFilePath] string callerPath = "",
             [CallerLineNumber] int callerLine = 0)
         : base(text, callerPath, callerLine)
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Properties expected to be filled by response.
         /// </value>
         [JsonProperty("expectedProperties")]
-        public ExpressionProperty<List<string>> ExpectedProperties { get; set; }
+        public ArrayExpression<string> ExpectedProperties { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {

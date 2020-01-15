@@ -47,10 +47,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public EnumExpression<ListStyle> Style { get; set; } = ListStyle.Auto;
 
         [JsonProperty("choiceOptions")]
-        public ExpressionProperty<ChoiceFactoryOptions> ChoiceOptions { get; set; }
+        public ObjectExpression<ChoiceFactoryOptions> ChoiceOptions { get; set; }
 
         [JsonProperty("confirmChoices")]
-        public ExpressionProperty<List<Choice>> ConfirmChoices { get; set; }
+        public ArrayExpression<Choice> ConfirmChoices { get; set; }
 
         [JsonProperty("outputFormat")]
         public StringExpression OutputFormat { get; set; }

@@ -64,7 +64,6 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("split(one, 'l')"), // split only accept string parameter
             Test("split(hello, 1)"), // split only accept string parameter
             Test("substring(hello, 0.5)"), // the second parameter of substring must be integer
-            Test("substring(one, 0)"), // the first parameter of substring must be string
             Test("substring(hello, 10)"), // the start index is out of the range of the string length
             Test("substring(hello, 0, hello)"), // length is not integer
             Test("substring(hello, 0, 10)"), // the length of substring is out of the range of the original string

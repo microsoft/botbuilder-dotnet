@@ -9,6 +9,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Converters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
@@ -497,6 +498,137 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
         }
 
+        [TestMethod]
+        public void ExpressionPropertyTests_ObjectExpression()
+        {
+            var data = new
+            {
+                test = new Foo()
+                {
+                    Age = 13,
+                    Name = "joe"
+                }
+            };
+
+            var val = new ObjectExpression<Foo>("test");
+            Assert.IsNotNull(val.Expression);
+            Assert.IsNull(val.Value);
+            var (result, error) = val.TryGetValue(data);
+            Assert.AreEqual(13, result.Age);
+            Assert.AreEqual("joe", result.Name);
+            Assert.IsNull(error);
+
+            val = new ObjectExpression<Foo>("=test");
+            Assert.IsNotNull(val.Expression);
+            Assert.IsNull(val.Value);
+            (result, error) = val.TryGetValue(data);
+            Assert.AreEqual(13, result.Age);
+            Assert.AreEqual("joe", result.Name);
+            Assert.IsNull(error);
+
+            val = new ObjectExpression<Foo>(data.test);
+            Assert.IsNull(val.Expression);
+            Assert.IsNotNull(val.Value);
+            (result, error) = val.TryGetValue(data);
+            Assert.AreEqual(13, result.Age);
+            Assert.AreEqual("joe", result.Name);
+            Assert.IsNull(error);
+
+            val = new ObjectExpression<Foo>(JObject.FromObject(data.test));
+            Assert.IsNull(val.Expression);
+            Assert.IsNotNull(val.Value);
+            (result, error) = val.TryGetValue(data);
+            Assert.AreEqual(13, result.Age);
+            Assert.AreEqual("joe", result.Name);
+            Assert.IsNull(error);
+        }
+
+        [TestMethod]
+        public void ExpressionPropertyTests_ArrayExpressionString()
+        {
+            var data = new
+            {
+                test = new ArrFoo()
+                {
+                    Strings = new List<string>()
+                    {
+                        "a", "b", "c"
+                    }
+                }
+            };
+
+            var val = new ArrayExpression<string>("test.Strings");
+            Assert.IsNotNull(val.Expression);
+            Assert.IsNull(val.Value);
+            var (result, error) = val.TryGetValue(data);
+            Assert.AreEqual(JsonConvert.SerializeObject(data.test.Strings, settings), JsonConvert.SerializeObject(result, settings: settings));
+            CollectionAssert.AreEqual(data.test.Strings, result);
+
+            val = new ArrayExpression<string>("=test.Strings");
+            Assert.IsNotNull(val.Expression);
+            Assert.IsNull(val.Value);
+            (result, error) = val.TryGetValue(data);
+            Assert.AreEqual(JsonConvert.SerializeObject(data.test.Strings, settings), JsonConvert.SerializeObject(result, settings: settings));
+            CollectionAssert.AreEqual(data.test.Strings, result);
+
+            val = new ArrayExpression<string>(data.test.Strings);
+            Assert.IsNull(val.Expression);
+            Assert.IsNotNull(val.Value);
+            (result, error) = val.TryGetValue(data);
+            Assert.AreEqual(JsonConvert.SerializeObject(data.test.Strings, settings), JsonConvert.SerializeObject(result, settings: settings));
+            CollectionAssert.AreEqual(data.test.Strings, result);
+
+            val = new ArrayExpression<string>(data.test.Strings);
+            Assert.IsNull(val.Expression);
+            Assert.IsNotNull(val.Value);
+            (result, error) = val.TryGetValue(data);
+            Assert.AreEqual(JsonConvert.SerializeObject(data.test.Strings, settings), JsonConvert.SerializeObject(result, settings: settings));
+            CollectionAssert.AreEqual(data.test.Strings, result);
+        }
+
+        [TestMethod]
+        public void ExpressionPropertyTests_ArrayExpressionObject()
+        {
+            var data = new
+            {
+                test = new ArrFoo()
+                {
+                    Objects = new List<Foo>()
+                    {
+                        new Foo()
+                        {
+                            Age = 13,
+                            Name = "joe"
+                        }
+                    }
+                }
+            };
+
+            var val = new ArrayExpression<Foo>("test.Objects");
+            Assert.IsNotNull(val.Expression);
+            Assert.IsNull(val.Value);
+            var (result, error) = val.TryGetValue(data);
+            CollectionAssert.AreEqual(data.test.Objects, result);
+
+            val = new ArrayExpression<Foo>("=test.Objects");
+            Assert.IsNotNull(val.Expression);
+            Assert.IsNull(val.Value);
+            (result, error) = val.TryGetValue(data);
+            CollectionAssert.AreEqual(data.test.Objects, result);
+
+            val = new ArrayExpression<Foo>(data.test.Objects);
+            Assert.IsNull(val.Expression);
+            Assert.IsNotNull(val.Value);
+            (result, error) = val.TryGetValue(data);
+            Assert.AreEqual(JsonConvert.SerializeObject(data.test.Objects, settings), JsonConvert.SerializeObject(result, settings));
+
+            val = new ArrayExpression<Foo>(JArray.FromObject(data.test.Objects));
+            Assert.IsNull(val.Expression);
+            Assert.IsNotNull(val.Value);
+            (result, error) = val.TryGetValue(data);
+            Assert.AreEqual(JsonConvert.SerializeObject(data.test.Objects, settings), JsonConvert.SerializeObject(result, settings));
+        }
+
         private JsonSerializerSettings settings = new JsonSerializerSettings()
         {
             Formatting = Formatting.Indented,
@@ -535,6 +667,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             public string Name { get; set; }
 
             public int Age { get; set; }
+        }
+
+        private class ArrFoo
+        {
+            public List<Foo> Objects { get; set; }
+
+            public List<string> Strings { get; set; }
         }
 
         public class ImplicitCastTest

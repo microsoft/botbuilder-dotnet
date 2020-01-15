@@ -12,7 +12,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     /// <summary>
-    /// Defines a Expression or value for a property.
+    /// Base class which defines a Expression or value for a property.
     /// </summary>
     /// <typeparam name="T">type of object the expression should evaluate to.</typeparam>
     public class ExpressionProperty<T>
@@ -26,10 +26,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             SetValue(value);
         }
 
-        [JsonIgnore]
         public T Value { get; set; } = default(T);
 
-        [JsonIgnore]
         public Expression Expression { get; set; }
 
         public new string ToString()

@@ -7,6 +7,10 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
+    /// <summary>
+    /// IntExpression - represents a property which is either an Integer or a string expression which resolves to a Integer.
+    /// </summary>
+    /// <remarks>String values are always be interpreted as an expression, whether it has '=' prefix or not.</remarks>
     [JsonConverter(typeof(IntExpressionConverter))]
     public class IntExpression : ExpressionProperty<int>
     {

@@ -158,11 +158,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             },
                             new BeginDialog()
                             {
-                                DialogId = "=conversation.dialogId"
+                                Dialog = "=conversation.dialogId"
                             },
                             new BeginDialog()
                             {
-                                DialogId = "test"
+                                Dialog = "test"
                             }
                         }
                     }

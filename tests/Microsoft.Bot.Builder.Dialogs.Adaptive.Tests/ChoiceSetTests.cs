@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
         }
 
-        public ExpressionProperty<ChoiceSet> Choices { get; set; }
+        public ObjectExpression<ChoiceSet> Choices { get; set; }
     }
 
     [TestClass]
@@ -30,7 +30,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     {
         private JsonSerializerSettings settings = new JsonSerializerSettings()
         {
-            Converters = new List<JsonConverter>() { new ChoiceSetConverter(), new ExpressionPropertyConverter<ChoiceSet>() }
+            Converters = new List<JsonConverter>() 
+            { 
+                new ChoiceSetConverter(),
+                new ObjectExpressionConverter<ChoiceSet>()
+            }
         };
 
         public TestContext TestContext { get; set; }
@@ -48,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            var ep = new ExpressionProperty<ChoiceSet>("choices");
+            var ep = new ObjectExpression<ChoiceSet>("choices");
             var (result, error) = ep.TryGetValue(state);
             Assert.AreEqual("test1", result[0].Value);
             Assert.AreEqual("test2", result[1].Value);
@@ -59,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public void TestValueAccess()
         {
             var state = new object();
-            var ep = new ExpressionProperty<ChoiceSet>(new ChoiceSet()
+            var ep = new ObjectExpression<ChoiceSet>(new ChoiceSet()
                 {
                     new Choice() { Value = "test1" },
                     new Choice() { Value = "test2" },
@@ -81,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new Choice() { Value = "test3" }
                 };
 
-            var ep = new ExpressionProperty<ChoiceSet>(new ChoiceSet(JArray.FromObject(foo)));
+            var ep = new ObjectExpression<ChoiceSet>(new ChoiceSet(JArray.FromObject(foo)));
             var (result, error) = ep.TryGetValue(new object());
             Assert.AreEqual("test1", result[0].Value);
             Assert.AreEqual("test2", result[1].Value);
@@ -92,7 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public void TestStringArrayAccess()
         {
             var foo = new List<string>() { "test1", "test2", "test3" };
-            var ep = new ExpressionProperty<ChoiceSet>(new ChoiceSet(JArray.FromObject(foo)));
+            var ep = new ObjectExpression<ChoiceSet>(new ChoiceSet(JArray.FromObject(foo)));
             var (result, error) = ep.TryGetValue(new object());
             Assert.AreEqual("test1", result[0].Value);
             Assert.AreEqual("test2", result[1].Value);
@@ -120,7 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var bar = JsonConvert.DeserializeObject<Bar>(json, settings);
             Assert.AreEqual(typeof(Bar), bar.GetType());
-            Assert.AreEqual(typeof(ExpressionProperty<ChoiceSet>), bar.Choices.GetType());
+            Assert.AreEqual(typeof(ObjectExpression<ChoiceSet>), bar.Choices.GetType());
             var (result, error) = bar.Choices.TryGetValue(state);
             Assert.AreEqual("test1", result[0].Value);
             Assert.AreEqual("test2", result[1].Value);
@@ -147,7 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var bar = JsonConvert.DeserializeObject<Bar>(json, settings);
             Assert.AreEqual(typeof(Bar), bar.GetType());
-            Assert.AreEqual(typeof(ExpressionProperty<ChoiceSet>), bar.Choices.GetType());
+            Assert.AreEqual(typeof(ObjectExpression<ChoiceSet>), bar.Choices.GetType());
             var (result, error) = bar.Choices.TryGetValue(state);
             Assert.AreEqual("test1", result[0].Value);
             Assert.AreEqual("test2", result[1].Value);
@@ -175,7 +179,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var bar = JsonConvert.DeserializeObject<Bar>(json, settings);
             Assert.AreEqual(typeof(Bar), bar.GetType());
-            Assert.AreEqual(typeof(ExpressionProperty<ChoiceSet>), bar.Choices.GetType());
+            Assert.AreEqual(typeof(ObjectExpression<ChoiceSet>), bar.Choices.GetType());
             var (result, error) = bar.Choices.TryGetValue(state);
             Assert.AreEqual("test1", result[0].Value);
             Assert.AreEqual("test2", result[1].Value);

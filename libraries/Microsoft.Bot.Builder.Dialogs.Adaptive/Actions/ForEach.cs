@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; }
+        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets property path expression to the collection of items.

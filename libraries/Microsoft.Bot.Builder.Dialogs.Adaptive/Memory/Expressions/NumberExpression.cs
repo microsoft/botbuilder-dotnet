@@ -7,6 +7,10 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
+    /// <summary>
+    /// NumberExpression - represents a property which is either a float or a string expression which resolves to a float.
+    /// </summary>
+    /// <remarks>String values are always be interpreted as an expression, whether it has '=' prefix or not.</remarks>
     [JsonConverter(typeof(NumberExpressionConverter))]
     public class NumberExpression : ExpressionProperty<float>
     {

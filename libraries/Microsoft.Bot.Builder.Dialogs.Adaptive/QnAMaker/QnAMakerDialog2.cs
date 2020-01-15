@@ -108,7 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// The metadata strict filters.
         /// </value>
         [JsonProperty("strictFilters")]
-        public Metadata[] StrictFilters { get; set; }
+        public ArrayExpression<Metadata> StrictFilters { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether gets or sets environment of knowledgebase to be called. 
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
             return Task.FromResult(new QnAMakerOptions
             {
                 ScoreThreshold = this.Threshold.GetValue(dcState),
-                StrictFilters = this.StrictFilters,
+                StrictFilters = this.StrictFilters?.GetValue(dcState)?.ToArray(),
                 Top = this.Top.GetValue(dcState),
                 QnAId = 0,
                 RankerType = this.RankerType.GetValue(dcState),
