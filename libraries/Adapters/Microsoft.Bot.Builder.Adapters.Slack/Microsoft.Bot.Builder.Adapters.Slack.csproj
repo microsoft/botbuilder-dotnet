@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Microsoft.Bot.Builder.Adapters.Slack</PackageId>
     <Description>Library for connecting bots with Slack.</Description>
     <Summary>This library implements C# classes for the Slack adapter.</Summary>
