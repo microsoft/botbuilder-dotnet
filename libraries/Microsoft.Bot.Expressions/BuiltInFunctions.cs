@@ -1435,12 +1435,8 @@ namespace Microsoft.Bot.Expressions
 
                         // the local iterator is pushed as one memory layer in the memory stack
                         stackedMemory.Push(SimpleObjectMemory.Wrap(local));
-                        var (r, err) = expression.Children[2].TryEvaluate<bool>(stackedMemory);
+                        var (r, _) = expression.Children[2].TryEvaluate<bool>(stackedMemory);
                         stackedMemory.Pop();
-
-                        if (err != null)
-                        {
-                        }
 
                         if (r)
                         {
