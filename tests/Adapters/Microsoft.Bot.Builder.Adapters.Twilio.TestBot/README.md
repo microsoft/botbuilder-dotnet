@@ -18,10 +18,10 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 - Clone the repository
 
     ```bash
-    git clone https://github.com/Microsoft/BotBuilder-Samples.git
+    git clone https://github.com/Microsoft/botbuilder-dotnet.git
     ```
 
-- In a terminal, navigate to `BotBuilder-Samples/samples/csharp_dotnetcore/52. twilio-adapter`
+- In a terminal, navigate to `test/Adapters/Microsoft.Bot.Builder.Adapters.Twilio.TestBot`
 
 - Connect the bot with Twilio by following the instructions below.
 
@@ -38,8 +38,8 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 
   - Launch Visual Studio
   - File -> Open -> Project/Solution
-  - Navigate to `BotBuilder-Samples/samples/csharp_dotnetcore/52. twilio-adapter` folder
-  - Select `TwilioAdapterBot.csproj` file
+  - Navigate to `test/Adapters/Microsoft.Bot.Builder.Adapters.Twilio.TestBot` folder
+  - Select `Microsoft.Bot.Builder.Adapters.Twilio.TestBot.csproj` file
   - Press <kbd>F5</kbd> to run the project
 
 - Test the bot sending a SMS message to the Twilio Number.
