@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <PackageId>Microsoft.Bot.Builder.Adapters.Twilio</PackageId>
     <Description>Library for connecting bots with Twilio SMS API.</Description>
     <Summary>This library implements C# classes for Twilio adapter.</Summary>
@@ -31,10 +31,6 @@
     <DebugType>Full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Twilio" Version="5.33.1" />
