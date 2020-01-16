@@ -10,24 +10,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// BoolExpression - represents a property which is either a boolean or a string expression which resolves to a boolean.
     /// </summary>
-    /// <remarks>String values are always be interpreted as an expression, whether it has '=' prefix or not.</remarks>
+    /// <remarks>String values are always interpreted as an expression, whether it has '=' prefix or not.</remarks>
     [JsonConverter(typeof(BoolExpressionConverter))]
     public class BoolExpression : ExpressionProperty<bool>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BoolExpression"/> class.
+        /// </summary>
         public BoolExpression()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BoolExpression"/> class.
+        /// </summary>
+        /// <param name="value">bool value.</param>
         public BoolExpression(bool value) 
             : base(value)
         {
         }
 
-        public BoolExpression(string value)
-            : base(value)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BoolExpression"/> class.
+        /// </summary>
+        /// <param name="expression">expression to resolve to bool.</param>
+        public BoolExpression(string expression)
+            : base(expression)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BoolExpression"/> class.
+        /// </summary>
+        /// <param name="value">expression or value to resolve to bool.</param>
         public BoolExpression(JToken value)
             : base(value)
         {

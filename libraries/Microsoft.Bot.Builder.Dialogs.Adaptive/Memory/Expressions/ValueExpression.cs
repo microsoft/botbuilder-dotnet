@@ -30,16 +30,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         private LGFile lg = new LGFile();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ValueExpression"/> class.
+        /// </summary>
         public ValueExpression()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ValueExpression"/> class.
+        /// </summary>
+        /// <param name="value">value to interpret as object or string expression.</param>
         public ValueExpression(object value)
             : base(value)
         {
         }
 
-        public static implicit operator ValueExpression(string value) => new ValueExpression(value);
+        public static implicit operator ValueExpression(string valueOrExpression) => new ValueExpression(valueOrExpression);
 
         public static implicit operator ValueExpression(JToken value) => new ValueExpression(value);
 

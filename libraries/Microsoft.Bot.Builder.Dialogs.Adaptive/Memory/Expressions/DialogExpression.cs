@@ -10,23 +10,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// DialogExpression - represents a property which is either a Dialog or a string expression for a dialogId.
     /// </summary>
-    /// <remarks>String values are always be interpreted as an expression, whether it has '=' prefix or not.</remarks>
+    /// <remarks>String values are always interpreted as a string with interpolation, unless it has '=' prefix or not. The result is interpreted as a resource Id or dialogId.</remarks>
     public class DialogExpression : ObjectExpression<Dialog>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogExpression"/> class.
+        /// </summary>
         public DialogExpression()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogExpression"/> class.
+        /// </summary>
+        /// <param name="value">dialog value.</param>
         public DialogExpression(Dialog value)
             : base(value)
         {
         }
 
-        public DialogExpression(string value)
-            : base(value)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogExpression"/> class.
+        /// </summary>
+        /// <param name="dialogIdOrExpression">dialogId or expression to dialogId.</param>
+        public DialogExpression(string dialogIdOrExpression)
+            : base(dialogIdOrExpression)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogExpression"/> class.
+        /// </summary>
+        /// <param name="value">JToken which is either dialog or dialogId.</param>
         public DialogExpression(JToken value)
             : base(value)
         {
@@ -34,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public static implicit operator DialogExpression(Dialog value) => new DialogExpression(value);
 
-        public static implicit operator DialogExpression(string value) => new DialogExpression(value);
+        public static implicit operator DialogExpression(string dialogIdOrExpression) => new DialogExpression(dialogIdOrExpression);
 
         public static implicit operator DialogExpression(JToken value) => new DialogExpression(value);
 

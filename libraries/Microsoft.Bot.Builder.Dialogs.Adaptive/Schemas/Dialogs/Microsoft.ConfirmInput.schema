@@ -16,7 +16,7 @@
                     "title": "Output format",
                     "description": "Expression to format the confirm output.",
                     "examples": [
-                        "concat('confirmation:', this.value)"
+                        "=concat('confirmation:', this.value)"
                     ]
                 },
                 "defaultLocale": {

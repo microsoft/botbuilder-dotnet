@@ -10,24 +10,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// NumberExpression - represents a property which is either a float or a string expression which resolves to a float.
     /// </summary>
-    /// <remarks>String values are always be interpreted as an expression, whether it has '=' prefix or not.</remarks>
+    /// <remarks>String values are always interpreted as an expression, whether it has '=' prefix or not.</remarks>
     [JsonConverter(typeof(NumberExpressionConverter))]
     public class NumberExpression : ExpressionProperty<float>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NumberExpression"/> class.
+        /// </summary>
         public NumberExpression()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NumberExpression"/> class.
+        /// </summary>
+        /// <param name="value">value to use.</param>
         public NumberExpression(float value) 
             : base(value)
         {
         }
 
-        public NumberExpression(string value)
-            : base(value)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NumberExpression"/> class.
+        /// </summary>
+        /// <param name="expression">string to interpret as expression or number.</param>
+        public NumberExpression(string expression)
+            : base(expression)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NumberExpression"/> class.
+        /// </summary>
+        /// <param name="value">jtoken to interpret as expression or number.</param>
         public NumberExpression(JToken value)
             : base(value)
         {

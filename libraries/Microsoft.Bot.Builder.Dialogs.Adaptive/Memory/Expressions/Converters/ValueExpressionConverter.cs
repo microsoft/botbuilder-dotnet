@@ -10,7 +10,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
     /// <summary>
     /// Converter which allows json to be expression to object or static object.
     /// </summary>
-    /// <typeparam name="T">The property type to construct which is IExpressionProperty.</typeparam>
     public class ValueExpressionConverter : JsonConverter<ValueExpression>
     {
         public ValueExpressionConverter()

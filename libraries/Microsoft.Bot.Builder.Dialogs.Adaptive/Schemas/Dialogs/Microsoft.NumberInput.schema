@@ -16,7 +16,8 @@
                     "title": "Output format",
                     "description": "Expression to format the number output.",
                     "examples": [
-                        "@{int(this.value)}"
+                        "=this.value",
+                        "=int(this.text)"
                     ]
                 },
                 "defaultLocale": {

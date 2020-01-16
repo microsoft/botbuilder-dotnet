@@ -17,7 +17,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
     /// <summary>
     /// Converter which allows json to be expression to object or static object.
     /// </summary>
-    /// <typeparam name="T">The property type to construct which is IExpressionProperty.</typeparam>
     public class DialogExpressionConverter : JsonConverter<DialogExpression>
     {
         private readonly InterfaceConverter<Dialog> converter;
@@ -43,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
                 {
                     return new DialogExpression((Dialog)this.converter.ReadJson(new JsonTextReader(new StringReader($"\"{id}\"")), objectType, existingValue, serializer));
                 }
-                catch (Exception err)
+                catch (Exception)
                 {
                     return new DialogExpression($"='{id}'");
                 }

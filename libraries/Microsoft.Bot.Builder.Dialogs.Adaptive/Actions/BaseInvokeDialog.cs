@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Configurable options for the dialog. 
         /// </value>
         [JsonProperty("options")]
-        public object Options { get; set; }
+        public ObjectExpression<object> Options { get; set; } = new ObjectExpression<object>();
 
         /// <summary>
         /// Gets or sets the dialog to call.
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var dcState = dc.GetState();
 
             // binding options are static definition of options with overlay of passed in options);
-            var bindingOptions = (JObject)ObjectPath.Merge(Options, options ?? new JObject());
+            var bindingOptions = (JObject)ObjectPath.Merge(this.Options.GetValue(dcState), options ?? new JObject());
             var boundOptions = new JObject();
 
             foreach (var binding in bindingOptions)

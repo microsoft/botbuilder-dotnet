@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
     /// <summary>
     /// Converter which allows json to be expression to object or static object.
     /// </summary>
-    /// <typeparam name="T">The property type to construct which is IExpressionProperty.</typeparam>
+    /// <typeparam name="T">The enum type to construct.</typeparam>
     public class EnumExpressionConverter<T> : JsonConverter<EnumExpression<T>>
         where T : struct
     {

@@ -10,12 +10,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.TraceExtensions;
-using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.Streaming.Payloads;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -30,13 +26,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.HttpRequest";
 
-        public HttpRequest(HttpMethod method, string url, string inputProperty, Dictionary<string, StringExpression> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public HttpRequest(HttpMethod method, string url, Dictionary<string, StringExpression> headers = null, object body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
             this.Method = method;
             this.Url = url ?? throw new ArgumentNullException(nameof(url));
             this.Headers = headers;
-            this.Body = body;
+            this.Body = JToken.FromObject(body);
         }
 
         [JsonConstructor]
@@ -113,19 +109,47 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("disabled")]
         public BoolExpression Disabled { get; set; }
 
+        /// <summary>
+        /// Gets or sets the HttpMethod to use.
+        /// </summary>
+        /// <value>
+        /// HttpMethod.
+        /// </value>
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("method")]
         public HttpMethod Method { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Url.
+        /// </summary>
+        /// <value>url.</value>
         [JsonProperty("url")]
         public StringExpression Url { get; set; }
 
+        /// <summary>
+        /// Gets or sets headers.
+        /// </summary>
+        /// <value>
+        /// Headers.
+        /// </value>
         [JsonProperty("headers")]
         public Dictionary<string, StringExpression> Headers { get; set; }
 
+        /// <summary>
+        /// Gets or sets body payload.
+        /// </summary>
+        /// <value>
+        /// Body payload.
+        /// </value>
         [JsonProperty("body")]
         public ValueExpression Body { get; set; }
 
+        /// <summary>
+        /// Gets or sets the ResponseType.
+        /// </summary>
+        /// <value>
+        /// The ResponseType.
+        /// </value>
         [JsonProperty("responseType")]
         public EnumExpression<ResponseTypes> ResponseType { get; set; } = ResponseTypes.Json;
 
@@ -171,7 +195,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     throw new ArgumentException(err);
                 }
 
-                instanceBody = (JToken)JToken.FromObject(body);
+                instanceBody = (JToken)JToken.FromObject(body).DeepClone();
             }
 
             var instanceHeaders = Headers == null ? null : Headers.ToDictionary(kv => kv.Key, kv => kv.Value.GetValue(dcState));
@@ -193,9 +217,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 foreach (var unit in instanceHeaders)
                 {
-                    client.DefaultRequestHeaders.Add(
-                        await new TextTemplate(unit.Key).BindToData(dc.Context, dcState),
-                        await new TextTemplate(unit.Value).BindToData(dc.Context, dcState));
+                    client.DefaultRequestHeaders.TryAddWithoutValidation(unit.Key, unit.Value);
                 }
             }
 
@@ -340,7 +362,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
 
                 case JTokenType.Array:
-                    foreach (var child in token.Children())
+                    // NOTE: ToList() is required because JToken.Replace will break the enumeration.
+                    foreach (var child in token.Children().ToList())
                     {
                         await ReplaceJTokenRecursively(dc, child);
                     }

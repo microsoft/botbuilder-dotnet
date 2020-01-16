@@ -20,7 +20,8 @@
             ]
         },
         "options": {
-            "type": "object",
+            "$role": "expression",
+            "type": [ "string", "object" ],
             "title": "Options",
             "description": "One or more options that are passed to the dialog that is called.",
             "additionalProperties": {

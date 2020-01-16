@@ -33,8 +33,6 @@
             "type": "object",
             "description": "Extra information for the Bot Framework Designer."
         },
-        "expression": {
-        },
         "lg": {
             "type": "string",
             "description": "String is used for language generation."

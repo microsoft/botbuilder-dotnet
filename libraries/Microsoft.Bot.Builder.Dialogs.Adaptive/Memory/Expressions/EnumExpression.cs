@@ -12,24 +12,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// EnumExpression - represents a property which is either a enum(T) or a string expression which resolves to a enum(T).
     /// </summary>
     /// <typeparam name="T">type of enum.</typeparam>
-    /// <remarks>String values are always be interpreted as an expression, whether it has '=' prefix or not.</remarks>
+    /// <remarks>String values are always interpreted as an enum, unless it has '=' prefix in which case it is evaluated as a expression.</remarks>
     public class EnumExpression<T> : ExpressionProperty<T>
         where T : struct
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EnumExpression{T}"/> class.
+        /// </summary>
         public EnumExpression()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EnumExpression{T}"/> class.
+        /// </summary>
+        /// <param name="value">value of T.</param>
         public EnumExpression(T value)
             : base(value)
         {
         }
 
-        public EnumExpression(string value)
-            : base(value)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EnumExpression{T}"/> class.
+        /// </summary>
+        /// <param name="expression">expression to resolve to an enum.</param>
+        public EnumExpression(string expression)
+            : base(expression)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EnumExpression{T}"/> class.
+        /// </summary>
+        /// <param name="value">jtoken value to resolve to an enum.</param>
         public EnumExpression(JToken value)
             : base(value)
         {
@@ -37,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public static implicit operator EnumExpression<T>(T value) => new EnumExpression<T>(value);
 
-        public static implicit operator EnumExpression<T>(string value) => new EnumExpression<T>(value);
+        public static implicit operator EnumExpression<T>(string enumOrExpression) => new EnumExpression<T>(enumOrExpression);
 
         public static implicit operator EnumExpression<T>(JToken value) => new EnumExpression<T>(value);
 

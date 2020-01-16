@@ -106,7 +106,7 @@
       "$role": "expression",
       "type": [ "boolean", "string" ],
       "title": "Always prompt",
-      "description": "Collect information even if the specified  'property' is not empty.",
+      "description": "Collect information even if the specified 'property' is not empty.",
       "default": false,
       "examples": [
         false

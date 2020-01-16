@@ -1211,6 +1211,8 @@
                 },
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
+                    "$role": "expression",
+                    "type": "string",
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
@@ -1219,7 +1221,11 @@
                     "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "options": {
-                    "type": "object",
+                    "$role": "expression",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
                     "title": "Options",
                     "description": "One or more options that are passed to the dialog that is called.",
                     "additionalProperties": {
@@ -9051,7 +9057,11 @@
                     ]
                 },
                 "options": {
-                    "type": "object",
+                    "$role": "expression",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
                     "title": "Options",
                     "description": "One or more options that are passed to the dialog that is called.",
                     "additionalProperties": {
@@ -9140,6 +9150,8 @@
                 },
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
+                    "$role": "expression",
+                    "type": "string",
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
@@ -9148,7 +9160,11 @@
                     "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "options": {
-                    "type": "object",
+                    "$role": "expression",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
                     "title": "Options",
                     "description": "One or more options that are passed to the dialog that is called.",
                     "additionalProperties": {

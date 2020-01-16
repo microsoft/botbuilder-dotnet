@@ -147,7 +147,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
 
             remainingPath = string.Empty;
-            return GetMemoryScope(scope);
+            return GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(path));
         }
 
         /// <summary>

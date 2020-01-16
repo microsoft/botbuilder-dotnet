@@ -10,24 +10,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// IntExpression - represents a property which is either an Integer or a string expression which resolves to a Integer.
     /// </summary>
-    /// <remarks>String values are always be interpreted as an expression, whether it has '=' prefix or not.</remarks>
+    /// <remarks>String values are always interpreted as an expression, whether it has '=' prefix or not.</remarks>
     [JsonConverter(typeof(IntExpressionConverter))]
     public class IntExpression : ExpressionProperty<int>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntExpression"/> class.
+        /// </summary>
         public IntExpression()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntExpression"/> class.
+        /// </summary>
+        /// <param name="value">value to return.</param>
         public IntExpression(int value)
             : base(value)
         {
         }
 
-        public IntExpression(string value)
-            : base(value)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntExpression"/> class.
+        /// </summary>
+        /// <param name="expression">string expression to resolve to an int.</param>
+        public IntExpression(string expression)
+            : base(expression)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntExpression"/> class.
+        /// </summary>
+        /// <param name="value">JToken to resolve to an int.</param>
         public IntExpression(JToken value)
             : base(value)
         {

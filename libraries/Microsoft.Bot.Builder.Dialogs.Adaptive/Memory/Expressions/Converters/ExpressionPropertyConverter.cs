@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
     /// <summary>
     /// Converter which allows json to be expression to object or static object.
     /// </summary>
-    /// <typeparam name="T">The property type to construct which is IExpressionProperty.</typeparam>
+    /// <typeparam name="T">The property type to construct.</typeparam>
     public class ExpressionPropertyConverter<T> : JsonConverter<ExpressionProperty<T>>
     {
         public override bool CanRead => true;

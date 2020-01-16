@@ -28,21 +28,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         private LGFile lg = new LGFile();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringExpression"/> class.
+        /// </summary>
         public StringExpression()
         {
         }
 
-        public StringExpression(string value)
-            : base(value)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringExpression"/> class.
+        /// </summary>
+        /// <param name="valueOrExpression">string to interpret as string or expression to a string.</param>
+        public StringExpression(string valueOrExpression)
+            : base(valueOrExpression)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringExpression"/> class.
+        /// </summary>
+        /// <param name="value">value to interpret as a string or expression to a string.</param>
         public StringExpression(JToken value)
             : base(value)
         {
         }
 
-        public static implicit operator StringExpression(string value) => new StringExpression(value);
+        public static implicit operator StringExpression(string valueOrExpression) => new StringExpression(valueOrExpression);
 
         public static implicit operator StringExpression(JToken value) => new StringExpression(value);
 
