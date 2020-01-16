@@ -140,4 +140,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Tests\LuisRecognizerTests\cachedResponses\ExternalEntities_test_en-us_lu\" />
+  </ItemGroup>
+
 </Project>

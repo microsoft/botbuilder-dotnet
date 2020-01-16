@@ -102,6 +102,12 @@ namespace Microsoft.Bot.Builder.MockLuis
                     }
                 }
             }
+            
+            // TODO: This needs to be changed when propertyexpression comes in
+            if (poptions.DynamicListsExpression != null)
+            {
+                hash ^= "dynamic".StableHash();
+            }
 
             if (poptions.ExternalEntities != null)
             {

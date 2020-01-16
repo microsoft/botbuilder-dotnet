@@ -22,5 +22,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .Build();
             await TestUtils.RunTestScript(configuration: config);
         }
+
+        [TestMethod]
+        public async Task ExternalEntities()
+        {
+            var config = new ConfigurationBuilder()
+                .AddInMemoryCollection()
+                .UseLuisSettings(dynamicListsDirectory, "TestBot")
+                .Build();
+            await TestUtils.RunTestScript(configuration: config);
+        }
     }
 }

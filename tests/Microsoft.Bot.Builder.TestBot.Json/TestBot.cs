@@ -72,6 +72,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 Cases = new List<Case>()
             };
 
+            Dialog lastDialog = null;
             foreach (var resource in this.resourceExplorer.GetResources(".dialog").Where(r => r.Id.EndsWith(".main.dialog")))
             {
                 try
@@ -79,6 +80,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
                     choiceInput.Choices.Value.Add(new Choice(name));
                     var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, this.resourceExplorer, DebugSupport.SourceMap);
+                    lastDialog = dialog;
                     handleChoice.Cases.Add(new Case($"{name}", new List<Dialog>() { dialog }));
                 }
                 catch (SyntaxErrorException err)
@@ -96,7 +98,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             {
                 Actions = new List<Dialog>()
                 {
-                    choiceInput,
+                    choiceInput.Choices.Value.Count() == 1 ? lastDialog : choiceInput,
                     new SendActivity("# Running @{conversation.dialogChoice}.main.dialog"),
                     handleChoice,
                     new RepeatDialog()

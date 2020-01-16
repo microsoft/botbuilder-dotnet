@@ -66,17 +66,39 @@ namespace Microsoft.Bot.Builder.AI.Luis
             if (ExternalEntityRecognizer != null)
             {
                 var matches = await ExternalEntityRecognizer.RecognizeAsync(context, cancellationToken).ConfigureAwait(false);
-                if (matches.Entities != null && matches.Entities.Count > 0)
+                if (matches.Entities != null && matches.Entities.Count > 2)
                 {
                     options = new LuisV3.LuisPredictionOptions(options);
                     options.ExternalEntities = new List<LuisV3.ExternalEntity>();
-                    dynamic entities = matches.Entities;
-                    dynamic instance = entities["$instance"];
-                    foreach (var child in entities)
+                    var entities = matches.Entities;
+                    var instance = entities["$instance"].ToObject<JObject>();
+                    if (instance != null)
                     {
-                        var start = instance?.startIndex ?? 0;
-                        var end = instance?.endIndex ?? utterance.Length;
-                        options.ExternalEntities.Add(new LuisV3.ExternalEntity(child.Key, start, end - start, child.Value));
+                        foreach (var child in entities)
+                        {
+                            // TODO: Checking for "text" because we get an extra non-real entity from the text recognizers
+                            if (child.Key != "text" && child.Key != "$instance")
+                            {
+                                var instances = instance[child.Key]?.ToObject<JArray>();
+                                var values = child.Value.ToObject<JArray>();
+                                if (instances != null && values != null
+                                    && instances.Count == values.Count)
+                                {
+                                    for (var i = 0; i < values.Count; ++i)
+                                    {
+                                        var childInstance = instances[i].ToObject<JObject>();
+                                        if (childInstance != null
+                                            && childInstance.ContainsKey("startIndex")
+                                            && childInstance.ContainsKey("endIndex"))
+                                        {
+                                            var start = childInstance["startIndex"].Value<int>();
+                                            var end = childInstance["endIndex"].Value<int>();
+                                            options.ExternalEntities.Add(new LuisV3.ExternalEntity(child.Key, start, end - start, child.Value));
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

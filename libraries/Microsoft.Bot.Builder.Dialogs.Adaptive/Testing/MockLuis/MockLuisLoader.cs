@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using Microsoft.Bot.Builder.AI.LuisV3;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Extensions.Configuration;
@@ -43,8 +44,12 @@ namespace Microsoft.Bot.Builder.MockLuis
                 var options = new AI.Luis.LuisRecognizerOptionsV3(luisApplication);
                 if (obj["predictionOptions"] != null)
                 {
-                    var json = JsonConvert.SerializeObject(obj["predictionOptions"]);
-                    options.PredictionOptions = serializer.Deserialize<AI.LuisV3.LuisPredictionOptions>(new JsonTextReader(new StringReader(json)));
+                    options.PredictionOptions = serializer.Deserialize<AI.LuisV3.LuisPredictionOptions>(obj["predictionOptions"].CreateReader());
+                }
+
+                if (obj["externalEntityRecognizer"] != null)
+                {
+                    options.ExternalEntityRecognizer = serializer.Deserialize<Recognizer>(obj["externalEntityRecognizer"].CreateReader());
                 }
 
                 return new MockLuisRecognizer(options, configuration.GetValue<string>("luis:resources"), name);

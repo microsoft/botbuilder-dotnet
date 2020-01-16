@@ -33,8 +33,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Loaders
                 var options = new LuisRecognizerOptionsV3(luisApplication);
                 if (obj["predictionOptions"] != null)
                 {
-                    var json = JsonConvert.SerializeObject(obj["predictionOptions"]);
-                    options.PredictionOptions = serializer.Deserialize<AI.LuisV3.LuisPredictionOptions>(new JsonTextReader(new StringReader(json)));
+                    options.PredictionOptions = serializer.Deserialize<AI.LuisV3.LuisPredictionOptions>(obj["predictionOptions"].CreateReader());
+                }
+
+                if (obj["externalEntityRecognizer"] != null)
+                {
+                    options.ExternalEntityRecognizer = serializer.Deserialize<Recognizer>(obj["externalEntityRecognizer"].CreateReader());
                 }
 
                 return new LuisRecognizer(options);

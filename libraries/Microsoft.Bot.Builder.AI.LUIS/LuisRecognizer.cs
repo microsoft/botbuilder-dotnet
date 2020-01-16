@@ -200,9 +200,13 @@ namespace Microsoft.Bot.Builder.AI.Luis
         }
 
         /// <inheritdoc />
-        public override Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
+        public async override Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
         {
-            return this.RecognizeAsync(dialogContext.Context, cancellationToken);
+            var result = await _luisRecognizerOptions.RecognizeInternalAsync(dialogContext, DefaultHttpClient, cancellationToken).ConfigureAwait(false);
+
+            // TODO: Should telemetry be null?
+            await OnRecognizerResultAsync(result, dialogContext.Context, null, null, cancellationToken).ConfigureAwait(false);
+            return result;
         }
 
         /// <summary>
