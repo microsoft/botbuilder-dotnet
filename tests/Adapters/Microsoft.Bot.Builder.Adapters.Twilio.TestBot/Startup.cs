@@ -6,13 +6,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Adapters.Twilio;
+using Microsoft.Bot.Builder.Adapters.Twilio.TestBot.Bots;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.DependencyInjection;
-using TwilioAdapterBot.Bots;
 
-namespace TwilioAdapterBot
+namespace Microsoft.Bot.Builder.Adapters.Twilio.TestBot
 {
     public class Startup
     {

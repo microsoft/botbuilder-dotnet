@@ -3,10 +3,9 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
-namespace TwilioAdapterBot.Bots
+namespace Microsoft.Bot.Builder.Adapters.Twilio.TestBot.Bots
 {
     public class EchoBot : ActivityHandler
     {

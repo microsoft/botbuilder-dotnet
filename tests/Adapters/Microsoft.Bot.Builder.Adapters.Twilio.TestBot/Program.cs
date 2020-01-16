@@ -6,7 +6,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace TwilioAdapterBot
+namespace Microsoft.Bot.Builder.Adapters.Twilio.TestBot
 {
     public class Program
     {
