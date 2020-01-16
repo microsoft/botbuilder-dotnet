@@ -166,7 +166,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestProtocol", "tests\Microsoft.Bot.Builder.TestProtocol\Microsoft.Bot.Builder.TestProtocol.csproj", "{24CCB459-B4F6-484F-8BA4-946A4AB816FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling", "tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling\Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling.csproj", "{D9242899-AB3F-46BB-BAB4-386CB8EC535C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling", "tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling\Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling.csproj", "{D9242899-AB3F-46BB-BAB4-386CB8EC535C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Twilio.TestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Twilio.TestBot\Microsoft.Bot.Builder.Adapters.Twilio.TestBot.csproj", "{F98A9787-B175-450F-99FC-EC241EB9D581}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -680,6 +682,14 @@ Global
 		{D9242899-AB3F-46BB-BAB4-386CB8EC535C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D9242899-AB3F-46BB-BAB4-386CB8EC535C}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{D9242899-AB3F-46BB-BAB4-386CB8EC535C}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{F98A9787-B175-450F-99FC-EC241EB9D581}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F98A9787-B175-450F-99FC-EC241EB9D581}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F98A9787-B175-450F-99FC-EC241EB9D581}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{F98A9787-B175-450F-99FC-EC241EB9D581}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{F98A9787-B175-450F-99FC-EC241EB9D581}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F98A9787-B175-450F-99FC-EC241EB9D581}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F98A9787-B175-450F-99FC-EC241EB9D581}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{F98A9787-B175-450F-99FC-EC241EB9D581}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -754,6 +764,7 @@ Global
 		{1D05EFE4-7F25-4D5A-BCEE-1109B9EF25A8} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
 		{24CCB459-B4F6-484F-8BA4-946A4AB816FA} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{D9242899-AB3F-46BB-BAB4-386CB8EC535C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{F98A9787-B175-450F-99FC-EC241EB9D581} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
