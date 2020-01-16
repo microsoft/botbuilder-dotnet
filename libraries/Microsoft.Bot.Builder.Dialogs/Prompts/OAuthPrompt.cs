@@ -272,7 +272,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         private static bool IsTeamsVerificationInvoke(ITurnContext turnContext)
         {
             var activity = turnContext.Activity;
-            return activity.Type == ActivityTypes.Invoke && activity.Name == "signin/verifyState";
+            return activity.Type == ActivityTypes.Invoke && activity.Name == SignInOperations.VerifyStateOperationName;
+        }
+
+        private static bool IsTokenExchangeRequestInvoke(ITurnContext turnContext)
+        {
+            var activity = turnContext.Activity;
+            return activity.Type == ActivityTypes.Invoke && activity.Name == SignInOperations.TokenExchangeOperationName;
         }
 
         private static bool ChannelSupportsOAuthCard(string channelId)
@@ -293,7 +299,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             BotAssert.ContextNotNull(turnContext);
 
-            if (!(turnContext.Adapter is IUserTokenProvider adapter))
+            if (!(turnContext.Adapter is ITokenExchangeProvider adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.Prompt(): not supported by the current adapter");
             }
@@ -314,7 +320,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (!prompt.Attachments.Any(a => a.Content is SigninCard))
                 {
-                    var link = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
+                    var signInResource = await adapter.GetSignInResourceAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
                     prompt.Attachments.Add(new Attachment
                     {
                         ContentType = SigninCard.ContentType,
@@ -326,7 +332,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                                 new CardAction
                                 {
                                     Title = _settings.Title,
-                                    Value = link,
+                                    Value = signInResource.SignInUrl,
                                     Type = ActionTypes.Signin,
                                 },
                             },
@@ -337,16 +343,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             else if (!prompt.Attachments.Any(a => a.Content is OAuthCard))
             {
                 var cardActionType = ActionTypes.Signin;
-                string signInLink = null;
+                var signInResource = await adapter.GetSignInResourceAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
 
-                if (turnContext.Activity.IsFromStreamingConnection())
-                {
-                    signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
-                }
-                else if (turnContext.TurnState.Get<ClaimsIdentity>("BotIdentity") is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
+                if (turnContext.TurnState.Get<ClaimsIdentity>("BotIdentity") is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
                 {
                     // Force magic code for Skills (to be addressed in R8)
-                    signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
                     cardActionType = ActionTypes.OpenUrl;
                 }
 
@@ -364,9 +365,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                                 Title = _settings.Title,
                                 Text = _settings.Text,
                                 Type = cardActionType,
-                                Value = signInLink
+                                //Value = signInResource.SignInUrl
                             }
-                        }
+                        },
+                        TokenExchangeResource = signInResource.TokenExchangeResource
                     }
                 });
             }
@@ -426,12 +428,97 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                     else
                     {
-                        await turnContext.SendActivityAsync(new Activity { Type = ActivityTypesEx.InvokeResponse, Value = new InvokeResponse { Status = 404 } }, cancellationToken).ConfigureAwait(false);
+                        await this.SendInvokeResponseAsync(turnContext, cancellationToken, 404).ConfigureAwait(false);
                     }
                 }
                 catch
                 {
-                    await turnContext.SendActivityAsync(new Activity { Type = ActivityTypesEx.InvokeResponse, Value = new InvokeResponse { Status = 500 } }, cancellationToken).ConfigureAwait(false);
+                    await this.SendInvokeResponseAsync(turnContext, cancellationToken, 500).ConfigureAwait(false);
+                }
+            }
+            else if (IsTokenExchangeRequestInvoke(turnContext))
+            {
+                var tokenExchangeRequest = ((JObject)turnContext.Activity.Value).ToObject<TokenExchangeInvokeRequest>();
+
+                if (tokenExchangeRequest == null)
+                {
+                    await this.SendInvokeResponseAsync(
+                        turnContext,
+                        cancellationToken,
+                        400,
+                        new TokenExchangeInvokeResponse()
+                        {
+                            ConnectionName = _settings.ConnectionName,
+                            FailureDetail = "Missing TokenExchangeInvokeRequest",
+                        }).ConfigureAwait(false);
+                }
+                else if (tokenExchangeRequest.ConnectionName != _settings.ConnectionName)
+                {
+                    await this.SendInvokeResponseAsync(
+                        turnContext,
+                        cancellationToken,
+                        400,
+                        new TokenExchangeInvokeResponse()
+                        {
+                            ConnectionName = _settings.ConnectionName,
+                            FailureDetail = "Invalid ConnectionName in the TokenExchangeInvokeRequest",
+                        }).ConfigureAwait(false);
+                }
+                else if (!(turnContext.Adapter is ITokenExchangeProvider adapter))
+                {
+                    await this.SendInvokeResponseAsync(
+                           turnContext,
+                           cancellationToken,
+                           502,
+                           new TokenExchangeInvokeResponse()
+                           {
+                               ConnectionName = _settings.ConnectionName,
+                               FailureDetail = "Bot Adapter does not support token exchange.",
+                           }).ConfigureAwait(false);
+                    throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
+                }
+                else
+                {
+                    var tokenExchangeResponse = await adapter.ExchangeTokenAsync(
+                        turnContext,
+                        _settings.ConnectionName,
+                        new TokenExchangeRequest()
+                        {
+                            Token = tokenExchangeRequest.Token,
+                        },
+                        cancellationToken).ConfigureAwait(false);
+
+                    if (tokenExchangeResponse == null || string.IsNullOrEmpty(tokenExchangeResponse.Token))
+                    {
+                        await this.SendInvokeResponseAsync(
+                           turnContext,
+                           cancellationToken,
+                           409,
+                           new TokenExchangeInvokeResponse()
+                           {
+                               ConnectionName = _settings.ConnectionName,
+                               FailureDetail = "Unable to exchange token.",
+                           }).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await this.SendInvokeResponseAsync(
+                           turnContext,
+                           cancellationToken,
+                           200,
+                           new TokenExchangeInvokeResponse()
+                           {
+                               ConnectionName = _settings.ConnectionName,
+                           }).ConfigureAwait(false);
+
+                        result.Succeeded = true;
+                        result.Value = new TokenResponse()
+                        {
+                            ChannelId = tokenExchangeResponse.ChannelId,
+                            ConnectionName = tokenExchangeResponse.ConnectionName,
+                            Token = tokenExchangeResponse.Token,
+                        };
+                    }
                 }
             }
             else if (turnContext.Activity.Type == ActivityTypes.Message)
@@ -454,6 +541,20 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return result;
+        }
+
+        private async Task SendInvokeResponseAsync(ITurnContext turnContext, CancellationToken cancellationToken, int statusCode, object body = null)
+        {
+            await turnContext.SendActivityAsync(
+                new Activity
+                {
+                    Type = ActivityTypesEx.InvokeResponse,
+                    Value = new InvokeResponse
+                    {
+                        Status = statusCode,
+                        Body = body,
+                    },
+                }, cancellationToken).ConfigureAwait(false);
         }
     }
 }
