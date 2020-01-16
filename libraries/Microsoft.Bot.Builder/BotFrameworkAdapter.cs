@@ -309,6 +309,7 @@ namespace Microsoft.Bot.Builder
             {
                 context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 context.TurnState.Add<BotCallbackHandler>(callback);
+                await EnsureChannelConnectorClientIsCreatedAsync(reference.ServiceUrl, claimsIdentity, cancellationToken).ConfigureAwait(false);
                 var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
 
@@ -1192,6 +1193,39 @@ namespace Microsoft.Bot.Builder
             }
 
             return appId;
+        }
+
+        /// <summary>
+        /// This method creates a default ConnectorClient for the bot AppId and also registers the service URL as a trusted URL.
+        /// </summary>
+        /// <remarks>
+        /// When a parent bot is deployed to multiple instances the cache AppIds, ConnectClients and Trusted URL are not initialized
+        /// if the server instance hasn't been hit by a request from the channel.
+        /// This code ensures that the required objects are created.
+        /// </remarks>
+        private async Task EnsureChannelConnectorClientIsCreatedAsync(string serviceUrl, ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
+        {
+            // Ensure we have a default ConnectorClient and MSAppCredentials instance for the audience.
+            var audience = claimsIdentity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
+            if (string.IsNullOrWhiteSpace(audience) || !AuthenticationConstants.ToBotFromChannelTokenIssuer.Equals(audience, StringComparison.InvariantCultureIgnoreCase))
+            {
+                // We create a default connector for audiences that are not coming from the default https://api.botframework.com audience.
+                // We create a default claim that contains only the desired audience.
+                var defaultConnectorClaims = new List<Claim> { new Claim(AuthenticationConstants.AudienceClaim, audience) };
+                var connectorClaimsIdentity = new ClaimsIdentity(defaultConnectorClaims);
+                
+                // The CreateConnectorClientAsync will create a ConnectorClient with an associated MicrosoftAppId for that claim and will
+                // initialize the dictionaries that contain the cache instances.
+                await CreateConnectorClientAsync(serviceUrl, connectorClaimsIdentity, cancellationToken).ConfigureAwait(false);
+            }
+
+            if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
+            {
+                // Add the channel service URL to the trusted services list so we can send messages back.
+                // the service URL for skills is trusted because it is applied by the SkillHandler based on the original request
+                // received by the root bot
+                AppCredentials.TrustServiceUrl(serviceUrl);
+            }
         }
 
         /// <summary>
