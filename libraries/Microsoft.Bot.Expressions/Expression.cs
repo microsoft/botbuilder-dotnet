@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Expressions
 {
     /// <summary>
-    /// Type expected from evalating an expression.
+    /// Type expected from evaluating an expression.
     /// </summary>
     public enum ReturnType
     {
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Expressions
             => new Expression(new ExpressionEvaluator(ExpressionType.Lambda, function));
 
         /// <summary>
-        /// Construct an expression from a lamba expression over the state.
+        /// Construct an expression from a lambda expression over the state.
         /// </summary>
         /// <remarks>Exceptions will be caught and surfaced as an error string.</remarks>
         /// <param name="function">Lambda expression to evaluate.</param>
