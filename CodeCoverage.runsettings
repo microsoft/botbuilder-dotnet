@@ -79,6 +79,6 @@
     </DataCollectors>
   </DataCollectionRunSettings>
   <RunConfiguration>
-    <MaxCpuCount>0</MaxCpuCount>
+    <MaxCpuCount>10</MaxCpuCount>
   </RunConfiguration>
 </RunSettings>
