@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         /// Convert raw object to desired value type.
         /// </summary>
         /// <remarks>
-        /// This method is called whenever an object is fected via expression or is deserialized from raw text.
+        /// This method is called whenever an object is fetched via expression or is deserialized from raw text.
         /// </remarks>
         /// <param name="result">result to convert to object of type T.</param>
         /// <returns>object of type T.</returns>

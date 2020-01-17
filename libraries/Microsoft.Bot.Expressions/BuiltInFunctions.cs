@@ -669,7 +669,7 @@ namespace Microsoft.Bot.Expressions
             => new ExpressionEvaluator(type, Apply(function, VerifyStringOrNull), ReturnType.String, ValidateUnaryString);
 
         /// <summary>
-        /// Transform a datetime to another datetime.
+        /// Transform a date-time to another date-time.
         /// </summary>
         /// <param name="type">Expression type.</param>
         /// <param name="function">Transformer.</param>
@@ -1662,7 +1662,7 @@ namespace Microsoft.Bot.Expressions
             }
             catch
             {
-                error = $"illegal timestamp representation {sourceTimestamp}";
+                error = $"illegal time-stamp representation {sourceTimestamp}";
             }
 
             if (error == null)
