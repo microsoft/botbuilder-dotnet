@@ -6,14 +6,18 @@
     "entity": "money",
     "actions": [
         {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "@{setObjectPropertyMessage('Money', concat(string(@money.number), ' ', @money.units))}"
+        }, 
+        {
             "$kind": "Microsoft.SetProperty",
             "property": "$Money.number",
-            "value": "@money['number']"          
+            "value": "@money.number"          
         },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Money.units",
-            "value": "@money['units']"          
+            "value": "@money.units"          
         }
     ]               
 }

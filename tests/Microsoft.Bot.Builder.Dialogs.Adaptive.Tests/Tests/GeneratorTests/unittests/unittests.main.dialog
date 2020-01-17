@@ -21,7 +21,7 @@
 "unittests-PercentageAsk",
 "unittests-PercentageSetpercentage",
 "unittests-TemperatureAsk",
-"unittests-TemperatureSetmoney",
+"unittests-TemperatureSettemperature",
 "unittests-UrlAsk",
 "unittests-UrlSeturl",
 "unittests-QuantityAsk",
@@ -43,14 +43,17 @@
 "unittests-EmailSetemail",
 "unittests-CancelConfirmation",
 "unittests-CancelConfirmationSet",
+"unittests-ChangePropertyConfirmationSet",
 "unittests-CompleteConfirmation",
 "unittests-CompleteSetConfirmation",
 "unittests-CompleteSetPropertyname",
 "unittests-PropertyToChangeSet",
+"unittests-PropertyToRememberSet",
 "unittests-BeginDialog",
 "unittests-ChooseProperty",
 "unittests-HelpIntent",
 "unittests-NotUnderstood",
-"unittests-unittestsIntent" 
+"unittests-unittestsIntent",
+"unittests-ReadPropertyIntent" 
         ]
 }

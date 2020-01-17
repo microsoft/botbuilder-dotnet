@@ -51,7 +51,9 @@
     <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.1.2" />
     <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="9.4.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" >
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.1" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />

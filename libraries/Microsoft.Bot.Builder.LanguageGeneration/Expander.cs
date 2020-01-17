@@ -38,12 +38,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception($"[{templateName}] not found");
+                throw new Exception(LGErrors.TemplateNotExist(templateName));
             }
 
             if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"Loop detected: {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"{LGErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evaluation trace
@@ -344,12 +344,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
             if (error != null)
             {
-                throw new Exception($"Error occurs when evaluating expression ${exp}: {error}");
+                throw new Exception(LGErrors.ErrorExpression(exp, error));
             }
 
             if (result == null)
             {
-                throw new Exception($"Error occurs when evaluating expression '{exp}': {exp} is evaluated to null");
+                throw new Exception(LGErrors.NullExpression(exp));
             }
 
             if (result is IList &&
@@ -440,7 +440,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (!this.TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception($"no such template '{templateName}' to call in {expression}");
+                throw new Exception(LGErrors.TemplateNotExist(templateName));
             }
 
             var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
@@ -448,7 +448,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (expectedArgsCount != actualArgsCount)
             {
-                throw new Exception($"arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
+                throw new Exception(LGErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
             }
         }
 

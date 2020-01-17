@@ -22,9 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private const string DEFAULTLABEL = "Unknown";
 
-        private readonly Dictionary<string, LGFile> multiLanglgFiles = new Dictionary<string, LGFile>();
-
-        private LGFile lgFile;
+        private readonly LGFile lgFile;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
@@ -37,26 +35,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
+        /// <param name="engine">template engine.</param>
+        public TemplateEngineLanguageGenerator(LGFile engine = null)
+        {
+            this.lgFile = engine ?? new LGFile();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
+        /// </summary>
         /// <param name="lgText">lg template text.</param>
         /// <param name="id">optional label for the source of the templates (used for labeling source of template errors).</param>
         /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
         public TemplateEngineLanguageGenerator(string lgText, string id, Dictionary<string, IList<IResource>> resourceMapping)
         {
             this.Id = id ?? DEFAULTLABEL;
-            var (_, locale) = MultiLanguageResourceLoader.ParseLGFileName(id);
-            var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, resourceMapping.Keys.ToList());
-
-            foreach (var mapping in resourceMapping)    
-            {
-                // if no locale present in id, enumarate every locale found
-                // if locale is present, use that one
-                if (string.Equals(fallbackLocale, string.Empty) || string.Equals(fallbackLocale, mapping.Key))
-                {
-                    var engine = LGParser.ParseText(lgText ?? string.Empty, Id, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
-                    multiLanglgFiles.Add(mapping.Key, engine);
-                }
-            }
-        }   
+            var (_, locale) = LGResourceLoader.ParseLGFileName(id);
+            var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
+            this.lgFile = LGParser.ParseText(lgText ?? string.Empty, Id, importResolver);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
@@ -68,28 +65,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             filePath = PathUtils.NormalizePath(filePath);
             this.Id = Path.GetFileName(filePath);
 
-            var (_, locale) = MultiLanguageResourceLoader.ParseLGFileName(Id);
-            var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, resourceMapping.Keys.ToList());
-
-            foreach (var mapping in resourceMapping)
-            {
-                // if no locale present in id, enumarate every locale found
-                // if locale is present, use that one
-                if (string.Equals(fallbackLocale, string.Empty) || string.Equals(fallbackLocale, mapping.Key))
-                {
-                    var lgFile = LGParser.ParseFile(filePath, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
-                    multiLanglgFiles.Add(mapping.Key, lgFile);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
-        /// </summary>
-        /// <param name="lgFile">template engine.</param>
-        public TemplateEngineLanguageGenerator(LGFile lgFile)
-        {
-            this.lgFile = lgFile;
+            var (_, locale) = LGResourceLoader.ParseLGFileName(Id);
+            var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
+            this.lgFile = LGParser.ParseFile(filePath, importResolver);
         }
 
         /// <summary>
@@ -110,8 +88,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>generated text.</returns>
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
-            lgFile = InitLGFile(turnContext);
-
             try
             {
                 return await Task.FromResult(lgFile.Evaluate(template, data).ToString());
@@ -125,23 +101,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                 throw;
             }
-        }
-
-        private LGFile InitLGFile(ITurnContext turnContext)
-        {
-            var locale = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
-            if (multiLanglgFiles.Count > 0)
-            {
-                var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, multiLanglgFiles.Keys.ToList());
-                lgFile = multiLanglgFiles[fallbackLocale];
-            }
-            else
-            {
-                // Do not rewrite to ??= (C# 8.0 new feature). It will break in linux/mac
-                lgFile = lgFile ?? new LGFile();
-            }
-
-            return lgFile;
         }
     }
 }
