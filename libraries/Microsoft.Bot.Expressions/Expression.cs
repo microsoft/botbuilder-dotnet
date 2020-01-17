@@ -263,7 +263,6 @@ namespace Microsoft.Bot.Expressions
         /// <summary>
         /// Evaluate the expression.
         /// </summary>
-        /// <typeparam name="T">type of result of the expression.</typeparam>
         /// <param name="state">
         /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
         /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
@@ -275,7 +274,6 @@ namespace Microsoft.Bot.Expressions
         /// <summary>
         /// Evaluate the expression.
         /// </summary>
-        /// <typeparam name="T">type of result of the expression.</typeparam>
         /// <param name="state">
         /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
         /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.

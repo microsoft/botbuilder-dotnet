@@ -610,7 +610,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .UseStorage(storage)
                 .UseState(userState, conversationState)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             adapter.OnTurnError = async (context, exception) =>
             {
@@ -709,7 +709,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
                 .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
                 .UseState(new UserState(new MemoryStorage()), convoState ?? new ConversationState(new MemoryStorage()))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var dm = new DialogManager(dialog);
 

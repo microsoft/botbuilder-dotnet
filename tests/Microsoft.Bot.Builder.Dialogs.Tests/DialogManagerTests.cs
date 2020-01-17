@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, convoState)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var rootDialog = new AdaptiveDialog()
             {
@@ -196,7 +196,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, convoState)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             DialogManager dm = new DialogManager(dialog);
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>

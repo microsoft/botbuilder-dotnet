@@ -13,6 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
     /// <summary>
     /// Converter which allows json to be expression to object or static object.
     /// </summary>
+    /// <typeparam name="T">The type of the items of the array.</typeparam>
     public class ArrayExpressionConverter<T> : JsonConverter<ArrayExpression<T>>
     {
         public override bool CanRead => true;

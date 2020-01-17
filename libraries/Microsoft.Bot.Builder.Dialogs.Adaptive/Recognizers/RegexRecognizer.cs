@@ -77,7 +77,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     var intentKey = intentPattern.Intent.Replace(" ", "_");
                     if (!recognizerResult.Intents.ContainsKey(intentKey))
                     {
-                        recognizerResult.Intents.Add(intentKey, new IntentScore() { Score = 1.0 });
+                        recognizerResult.Intents.Add(intentKey, new IntentScore()
+                        {
+                            Score = 1.0,
+                            Properties = new Dictionary<string, object>() { { "pattern", intentPattern.Pattern } }
+                        });
                     }
 
                     // Check for named capture groups
@@ -117,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             // map entityPool of Entity objects => RecognizerResult entity format
             recognizerResult.Entities = new JObject();
-            
+
             foreach (var entityResult in entityPool)
             {
                 // add value

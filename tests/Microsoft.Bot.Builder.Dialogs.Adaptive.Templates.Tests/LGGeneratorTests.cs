@@ -353,7 +353,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 .UseResourceExplorer(resourceExplorer)
                 .UseAdaptiveDialogs()
                 .UseLanguageGeneration(resourceExplorer, "test.lg")
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             return new TestFlow(adapter, handler);
         }
@@ -372,7 +372,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 .UseResourceExplorer(resourceExplorer)
                 .UseAdaptiveDialogs()
                 .UseLanguageGeneration(resourceExplorer, "a.lg")
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             return new TestFlow(adapter, handler);
         }
@@ -390,7 +390,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 .UseState(userState, convoState)
                 .UseAdaptiveDialogs()
                 .UseLanguageGeneration()
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             return new TestFlow(adapter, handler);
         }

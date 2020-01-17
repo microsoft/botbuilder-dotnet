@@ -1586,7 +1586,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, conversationState)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             DialogManager dm = new DialogManager(rootDialog);
 
