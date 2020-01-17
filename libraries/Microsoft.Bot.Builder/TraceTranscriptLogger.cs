@@ -17,7 +17,12 @@ namespace Microsoft.Bot.Builder
 
         private bool traceActivity;
 
-        public TraceTranscriptLogger(bool traceActivity = true)
+        public TraceTranscriptLogger()
+            : this(true)
+        {
+        }
+
+        public TraceTranscriptLogger(bool traceActivity)
         {
             this.traceActivity = traceActivity;
         }
