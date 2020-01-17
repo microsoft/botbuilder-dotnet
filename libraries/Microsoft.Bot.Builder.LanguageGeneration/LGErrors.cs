@@ -55,6 +55,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public const string NoEndingInMultiline = "Close ``` is missing";
 
+        public const string NoCloseBracket = "Close } is missing in Expression";
+
         public const string LoopDetected = "Loop detected:";
 
         public static string DuplicatedTemplateInSameTemplate(string templateName) => $"Duplicated definitions found for template: {templateName}";

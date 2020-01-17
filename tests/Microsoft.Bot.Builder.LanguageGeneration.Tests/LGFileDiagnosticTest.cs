@@ -250,6 +250,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestExpressionFormatError()
+        {
+            var diagnostics = GetDiagnostics("ExpressionFormatError.lg");
+            Assert.AreEqual(1, diagnostics.Count);
+            Assert.IsTrue(diagnostics[0].Message.Contains("Close } is missing in Expression"));
+        }
+
+        [TestMethod]
         public void TestNoVariableMatch()
         {
             var lgFile = GetLGFile("NoVariableMatch.lg");
