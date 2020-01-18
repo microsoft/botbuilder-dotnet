@@ -11,7 +11,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "user.name",
-                        "value": "'frank'"
+                        "value": "='frank'"
                     },
                     {
                         "$kind": "Microsoft.SwitchCondition",

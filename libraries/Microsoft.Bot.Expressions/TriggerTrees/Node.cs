@@ -599,8 +599,8 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
                 // No child matched so we might
                 if (!found)
                 {
-                    var (value, error) = Clause.TryEvaluate(state);
-                    if (error == null && value is bool match && match)
+                    var (match, error) = Clause.TryEvaluate<bool>(state);
+                    if (error == null && match)
                     {
                         foreach (var trigger in Triggers)
                         {

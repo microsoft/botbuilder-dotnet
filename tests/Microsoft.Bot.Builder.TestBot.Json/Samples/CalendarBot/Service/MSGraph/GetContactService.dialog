@@ -33,7 +33,7 @@
                 },
                 {
                     "$kind": "Microsoft.SetProperty",
-                    "value": "dialog.getResponse.content.value[0].emailAddresses[0].address",
+                    "value": "=dialog.getResponse.content.value[0].emailAddresses[0].address",
                     "property": "user.email"
                 }
             ]

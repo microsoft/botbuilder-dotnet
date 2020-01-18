@@ -63,8 +63,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
                 var engine = new ExpressionEngine();
                 foreach (var assertion in this.Assertions)
                 {
-                    var (result, error) = engine.Parse(assertion).TryEvaluate(activity);
-                    if ((bool)result != true)
+                    var (result, error) = engine.Parse(assertion).TryEvaluate<bool>(activity);
+                    if (result != true)
                     {
                         throw new Exception($"{this.Description} {assertion} {activity}");
                     }

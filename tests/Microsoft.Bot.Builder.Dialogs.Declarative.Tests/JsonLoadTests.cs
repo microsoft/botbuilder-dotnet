@@ -438,7 +438,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .UseResourceExplorer(resourceExplorer)
                 .UseAdaptiveDialogs()
                 .UseLanguageGeneration(resourceExplorer)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             return adapter;
         }

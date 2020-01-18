@@ -192,13 +192,14 @@ namespace Microsoft.Bot.Expressions.TriggerTrees.Tests
                         var found = false;
                         foreach (var firstClause in first.Clauses)
                         {
-                            var (value, error) = firstClause.TryEvaluate(memory);
-                            if (error == null && (value is bool match && match))
+                            var (match, error) = firstClause.TryEvaluate<bool>(memory);
+                            if (error == null && match)
                             {
                                 foreach (var secondClause in second.Clauses)
                                 {
-                                    (value, error) = firstClause.TryEvaluate(memory);
-                                    if (error == null && (value is bool match2 && match2))
+                                    bool match2;
+                                    (match2, error) = firstClause.TryEvaluate<bool>(memory);
+                                    if (error == null && match2)
                                     {
                                         var reln = firstClause.Relationship(secondClause, tree.Comparers);
                                         if (reln == RelationshipType.Equal || reln == RelationshipType.Incomparable)
