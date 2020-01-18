@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+using Thrzn41.WebexTeams.Version1;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot.Bots
 {
@@ -42,7 +43,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot.Bots
 
         protected override async Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
         {
-            Activity activity = null;
+            Activity activity;
+
             if (turnContext.Activity.Value != null)
             {
                 var inputs = (Dictionary<string, string>)turnContext.Activity.Value;
@@ -50,6 +52,17 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot.Bots
 
                 activity = MessageFactory.Text($"How are you doing {name}?");
                 await turnContext.SendActivityAsync(activity, cancellationToken);
+            }
+
+            if (turnContext.Activity.TryGetChannelData(out WebhookEventData eventData))
+            {
+                if (eventData.ResourceName == "memberships" && eventData.EventTypeName == "created")
+                {
+                    activity = MessageFactory.Text("Hello! I'm the WebexTestBot, nice to meet you");
+                    activity.Conversation = new ConversationAccount { Id = eventData.SpaceData.Id };
+
+                    await turnContext.SendActivityAsync(activity, cancellationToken);
+                }
             }
         }
 

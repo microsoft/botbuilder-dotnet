@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Expressions.Memory
         // for example
         // if you set dialog.a.b = x, but dialog.a don't exist, this will result in an error
         // because we can't and shouldn't smart create structure in the middle
-        // you can implement a customzied Scope that support such behavior
+        // you can implement a customized Scope that support such behavior
         public void SetValue(string path, object value)
         {
             if (memory == null)
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Expressions.Memory
             var curPath = string.Empty; // valid path so far
             string error = null;
 
-            // find the 2nd last value, ie, the container
+            // find the 2nd last value, the container
             for (var i = 0; i < parts.Length - 1; i++)
             {
                 if (int.TryParse(parts[i], out var index) && BuiltInFunctions.TryParseList(curScope, out var li))

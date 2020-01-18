@@ -20,6 +20,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -73,12 +74,14 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             };
 
             Dialog lastDialog = null;
+            var choices = new ChoiceSet();
+
             foreach (var resource in this.resourceExplorer.GetResources(".dialog").Where(r => r.Id.EndsWith(".main.dialog")))
             {
                 try
                 {
                     var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
-                    choiceInput.Choices.Value.Add(new Choice(name));
+                    choices.Add(new Choice(name));
                     var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, this.resourceExplorer, DebugSupport.SourceMap);
                     lastDialog = dialog;
                     handleChoice.Cases.Add(new Case($"{name}", new List<Dialog>() { dialog }));
@@ -93,6 +96,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 }
             }
 
+            choiceInput.Choices = new ChoiceSet();
             choiceInput.Style = ListStyle.Auto;
             rootDialog.Triggers.Add(new OnBeginDialog()
             {

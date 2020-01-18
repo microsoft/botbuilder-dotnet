@@ -64,7 +64,6 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("split(one, 'l')"), // split only accept string parameter
             Test("split(hello, 1)"), // split only accept string parameter
             Test("substring(hello, 0.5)"), // the second parameter of substring must be integer
-            Test("substring(one, 0)"), // the first parameter of substring must be string
             Test("substring(hello, 10)"), // the start index is out of the range of the string length
             Test("substring(hello, 0, hello)"), // length is not integer
             Test("substring(hello, 0, 10)"), // the length of substring is out of the range of the original string
@@ -304,7 +303,6 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("where(items, item, item2, item3)"), // should have three parameters
             Test("where(items, add(1), item)"), // Second paramter of where is not an identifier
             Test("where(items, 1, item)"), // Second paramter error
-            Test("where(items, x, sum(x))"), // third paramter error
             Test("indicesAndValues(items, 1)"), // only one param
             Test("indicesAndValues(1)"), // shoud have array param
             Test("union(one, two)"), // should have collection param
@@ -324,9 +322,9 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("sortBy(hello, 'x')"), // first param should be list
             Test("sortBy(createArray('H','e','l','l','o'), 1)"), // second param should be string
             Test("sortBy(createArray('H','e','l','l','o'), 'x', hi)"), // second param should be string
-            #endregion
+#endregion
 
-            #region Object manipulation and construction functions test
+#region Object manipulation and construction functions test
             Test("json(1,2)"), // should have 1 parameter
             Test("json(1)"), // should be string parameter
             Test("json('{\"key1\":value1\"}')"), // invalid json format string 
@@ -344,28 +342,28 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("jPath(hello,'Manufacturers[0].Products[0].Price')"), // not a valid json
             Test("jPath(hello,'Manufacturers[0]/Products[0]/Price')"), // not a valid path
             Test("jPath(jsonStr,'$..Products[?(@.Price >= 100)].Name')"), // no matched node
-           #endregion
+#endregion
 
-            #region Memory access test
+#region Memory access test
             Test("getProperty(bag, 1)"), // second param should be string
             Test("Accessor(1)"), // first param should be string
             Test("Accessor(bag, 1)"), // second should be object
             Test("one[0]"),  // one is not list
             Test("items[3]"), // index out of range
             Test("items[one+0.5]"), // index is not integer
-            #endregion
+#endregion
             
-            #region Regex
+#region Regex
             Test("isMatch('^[a-z]+$')"), // should have 2 parameter
             Test("isMatch('abC', one)"), // second param should be string
             Test("isMatch(1, '^[a-z]+$')"), // first param should be string
             Test("isMatch('abC', '^[a-z+$')"), // bad regular expression
-            #endregion
+#endregion
 
-            #region SetPathToValue tests
+#region SetPathToValue tests
             Test("setPathToValue(2+3, 4)"), // Not a real path
             Test("setPathToValue(a)") // Missing value
-            #endregion
+#endregion
         };
 
         /// <summary>
@@ -465,7 +463,7 @@ namespace Microsoft.Bot.Expressions.Tests
             try
             {
                 var (value, error) = new ExpressionEngine().Parse(exp).TryEvaluate(scope);
-                if (error == null)
+                if (error != null)
                 {
                     isFail = true;
                 }
@@ -476,10 +474,11 @@ namespace Microsoft.Bot.Expressions.Tests
             }
             catch (Exception e)
             {
+                isFail = true;
                 TestContext.WriteLine(e.Message);
             }
 
-            if (isFail)
+            if (isFail == false)
             {
                 Assert.Fail("Test method did not throw expected exception");
             }

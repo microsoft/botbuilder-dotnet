@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         public async Task TemplateManager_defaultlookup()
         {
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         public async Task TemplateManager_DataDefined()
         {
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var templateManager = new TemplateManager()
             {
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         public async Task TemplateManager_enLookup()
         {
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
@@ -176,7 +176,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         public async Task TemplateManager_frLookup()
         {
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
@@ -197,7 +197,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         public async Task TemplateManager_override()
         {
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
@@ -218,7 +218,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         public async Task TemplateManager_useTemplateEngine()
         {
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))

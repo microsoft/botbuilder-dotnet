@@ -40,7 +40,7 @@
                                 "actions": [
                                     {
                                         "$kind": "Microsoft.SetProperty",
-                                        "property": "user.foo",
+                                        "property": "foo",
                                         "value": "xxx"
                                     }
                                 ]

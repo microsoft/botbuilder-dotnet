@@ -12,7 +12,7 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Ordinal",
-            "value": "@ordinal"          
+            "value": "=@ordinal"          
         }
     ]               
 }

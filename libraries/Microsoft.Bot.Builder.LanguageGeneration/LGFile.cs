@@ -85,8 +85,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         /// <summary>
         /// Gets or sets all references that this LG file has from <see cref="Imports"/>.
-        /// Notice: reference includs all child imports from the lg file,
-        /// not only the children belong to this lgfile directly.
+        /// Notice: reference includes all child imports from the LG file,
+        /// not only the children belong to this LG file directly.
         /// so, reference count may >= imports count. 
         /// </summary>
         /// <value>
@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="newTemplateName">new template Name.</param>
         /// <param name="parameters">new params.</param>
         /// <param name="templateBody">new template body.</param>
-        /// <returns>updated lgfile.</returns>
+        /// <returns>updated LG file.</returns>
         public LGFile UpdateTemplate(string templateName, string newTemplateName, List<string> parameters, string templateBody)
         {
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
@@ -192,7 +192,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="templateName">new template name.</param>
         /// <param name="parameters">new params.</param>
         /// <param name="templateBody">new  template body.</param>
-        /// <returns>updated lgfile.</returns>
+        /// <returns>updated LG file.</returns>
         public LGFile AddTemplate(string templateName, List<string> parameters, string templateBody)
         {
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Delete an exist template.
         /// </summary>
         /// <param name="templateName">which template should delete.</param>
-        /// <returns>updated lgfile.</returns>
+        /// <returns>updated LG file.</returns>
         public LGFile DeleteTemplate(string templateName)
         {
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
@@ -361,9 +361,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// use an existing LGFile to override current object.
+        /// use an existing LG file to override current object.
         /// </summary>
-        /// <param name="lgFile">Existing LGFile.</param>
+        /// <param name="lgFile">Existing LG file.</param>
         private void Initialize(LGFile lgFile)
         {
             Templates = lgFile.Templates;

@@ -21,8 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.LogAction";
 
-        private Expression disabled;
-
         [JsonConstructor]
         public LogAction(string text = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
@@ -43,11 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets lG expression to log.
@@ -65,14 +59,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Whether a TraceActivity will be sent in addition to console log.
         /// </value>
         [JsonProperty("traceActivity")]
-        public bool TraceActivity { get; set; } = false;
+        public BoolExpression TraceActivity { get; set; } = false;
 
         /// <summary>
         /// Gets or sets a label to use when describing a trace activity.
         /// </summary>
         /// <value>The label to use. (default is the id of the action).</value>
         [JsonProperty]
-        public string Label { get; set; }
+        public StringExpression Label { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -81,18 +75,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var text = await Text.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
+            var text = await Text.BindToData(dc.Context, dcState).ConfigureAwait(false);
 
             System.Diagnostics.Trace.TraceInformation(text);
 
-            if (this.TraceActivity)
+            if (this.TraceActivity.GetValue(dcState))
             {
-                var traceActivity = Activity.CreateTraceActivity(name: "Log", valueType: "Text", value: text, label: this.Label ?? dc.Parent?.ActiveDialog?.Id);
+                var traceActivity = Activity.CreateTraceActivity(name: "Log", valueType: "Text", value: text, label: this.Label?.GetValue(dcState) ?? dc.Parent?.ActiveDialog?.Id);
                 await dc.Context.SendActivityAsync(traceActivity, cancellationToken).ConfigureAwait(false);
             }
 

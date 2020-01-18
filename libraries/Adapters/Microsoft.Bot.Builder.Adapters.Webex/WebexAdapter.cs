@@ -72,22 +72,25 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 else
                 {
                     // transform activity into the webex message format
-                    string personIdOrEmail;
+                    string recipientId;
+                    var target = MessageTarget.PersonId;
 
-                    if (activity.GetChannelData<WebhookEventData>()?.MessageData.PersonEmail != null)
+                    if (activity.Conversation?.Id != null)
                     {
-                        personIdOrEmail = activity.GetChannelData<WebhookEventData>()?.MessageData.PersonEmail;
+                        recipientId = activity.Conversation.Id;
+                        target = MessageTarget.SpaceId;
+                    }
+                    else if (activity.Conversation == null && activity.Recipient?.Id != null)
+                    {
+                        recipientId = activity.Recipient.Id;
+                    }
+                    else if (activity.GetChannelData<WebhookEventData>()?.MessageData.PersonEmail != null)
+                    {
+                        recipientId = activity.GetChannelData<WebhookEventData>()?.MessageData.PersonEmail;
                     }
                     else
                     {
-                        if (activity.Recipient?.Id != null)
-                        {
-                            personIdOrEmail = activity.Recipient.Id;
-                        }
-                        else
-                        {
-                            throw new Exception("No Person or Email to send the message");
-                        }
+                        throw new Exception("No Person, Email or Room to send the message");
                     }
 
                     string responseId;
@@ -96,7 +99,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     {
                         if (activity.Attachments[0].ContentType == "application/vnd.microsoft.card.adaptive")
                         {
-                            responseId = await _webexClient.CreateMessageWithAttachmentsAsync(personIdOrEmail, activity.Text, activity.Attachments, cancellationToken).ConfigureAwait(false);
+                            responseId = await _webexClient.CreateMessageWithAttachmentsAsync(recipientId, activity.Text, activity.Attachments, MessageTextType.Text, target, cancellationToken).ConfigureAwait(false);
                         }
                         else
                         {
@@ -108,13 +111,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                                 files.Add(file);
                             }
 
-                            responseId = await _webexClient.CreateMessageAsync(personIdOrEmail, activity.Text, files.Count > 0 ? files : null, cancellationToken).ConfigureAwait(false);
+                            responseId = await _webexClient.CreateMessageAsync(recipientId, activity.Text, files.Count > 0 ? files : null, MessageTextType.Text, target, cancellationToken).ConfigureAwait(false);
                         }
                     }
                     else
                     {
                         responseId = await _webexClient
-                            .CreateMessageAsync(personIdOrEmail, activity.Text, cancellationToken: cancellationToken)
+                            .CreateMessageAsync(recipientId, activity.Text, target: target, cancellationToken: cancellationToken)
                             .ConfigureAwait(false);
                     }
 
