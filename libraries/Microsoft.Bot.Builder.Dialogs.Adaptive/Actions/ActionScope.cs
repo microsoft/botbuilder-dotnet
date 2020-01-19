@@ -49,8 +49,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await OnActionScopeResultAsync(dc, actionScopeResult, cancellationToken).ConfigureAwait(false);
             }
 
+            var dcState = dc.GetState();
+
             // When we are resumed, we increment our offset into the actions and being the next action
-            var nextOffset = dc.GetState().GetIntValue(OFFSETKEY, 0) + 1;
+            var nextOffset = dcState.GetIntValue(OFFSETKEY, 0) + 1;
             if (nextOffset < this.Actions.Count)
             {
                 return await this.BeginActionAsync(dc, nextOffset, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -135,7 +137,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected virtual async Task<DialogTurnResult> BeginActionAsync(DialogContext dc, int offset, CancellationToken cancellationToken = default)
         {
             // get the action for the offset
-            dc.GetState().SetValue(OFFSETKEY, offset);
+            var dcState = dc.GetState();
+            
+            dcState.SetValue(OFFSETKEY, offset);
             var actionId = this.Actions[offset].Id;
 
             // begin Action dialog

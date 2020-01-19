@@ -12,7 +12,7 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Url",
-            "value": "@url"          
+            "value": "=@url"          
         }
     ]               
 }
