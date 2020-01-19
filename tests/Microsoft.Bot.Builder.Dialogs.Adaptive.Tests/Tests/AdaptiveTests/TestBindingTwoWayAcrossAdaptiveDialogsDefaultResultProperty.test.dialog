@@ -17,7 +17,7 @@
                         "$kind": "Microsoft.BeginDialog",
                         "resultProperty": "$userAge",
                         "options": {
-                            "userName2": "$userName"
+                            "userName2": "=$userName"
                         },
                         "dialog": {
                             "$kind": "Microsoft.AdaptiveDialog",

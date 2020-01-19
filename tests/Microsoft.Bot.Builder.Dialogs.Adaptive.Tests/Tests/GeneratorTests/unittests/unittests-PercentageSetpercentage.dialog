@@ -12,7 +12,7 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Percentage",
-            "value": "@percentage"          
+            "value": "=@percentage"          
         }
     ]               
 }

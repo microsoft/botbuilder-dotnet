@@ -11,7 +11,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "$p1",
-                        "value": "'val1'"
+                        "value": "='val1'"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",

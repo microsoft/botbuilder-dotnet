@@ -31,7 +31,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "user.a",
-                        "value": "1"
+                        "value": "=1"
                     }
                 ]
             },
@@ -42,7 +42,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "user.b",
-                        "value": "1"
+                        "value": "=1"
                     }
                 ]
             },

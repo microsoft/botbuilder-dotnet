@@ -23,27 +23,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         [JsonProperty("outputFormat")]
-        public string OutputFormat { get; set; }
+        public StringExpression OutputFormat { get; set; } 
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.GetState().GetValue<string>(VALUE_PROPERTY);
+            var dcState = dc.GetState();
 
-            if (!string.IsNullOrEmpty(OutputFormat))
+            var input = dcState.GetValue<string>(VALUE_PROPERTY);
+
+            if (this.OutputFormat != null)
             {
-                var outputExpression = new ExpressionEngine().Parse(OutputFormat);
-                var (outputValue, error) = outputExpression.TryEvaluate(dc.GetState());
+                var (outputValue, error) = this.OutputFormat.TryGetValue(dcState);
                 if (error == null)
                 {
                     input = outputValue.ToString();
                 }
                 else
                 {
-                    throw new Exception($"In TextInput, OutputFormat Expression evaluation resulted in an error. Expression: {outputExpression.ToString()}. Error: {error}");
+                    throw new Exception($"In TextInput, OutputFormat Expression evaluation resulted in an error. Expression: {OutputFormat.ToString()}. Error: {error}");
                 }
             }
 
-            dc.GetState().SetValue(VALUE_PROPERTY, input);
+            dcState.SetValue(VALUE_PROPERTY, input);
             return input.Length > 0 ? Task.FromResult(InputState.Valid) : Task.FromResult(InputState.Unrecognized);
         }
     }

@@ -5,7 +5,6 @@
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-                
                 "intent": "Cancel",
                 "pattern": "(?i)cancel"
             }
@@ -23,7 +22,7 @@
                             "$kind": "Microsoft.TextInput",
                             "property": "user.name",
                             "prompt": "Hello, I'm Zoidberg. What is your name?",
-                            "outputFormat": "trim(this.value)",
+                            "outputFormat": "=trim(this.value)",
                             "allowInterruptions": "true"
                         }
                     ]
@@ -40,7 +39,7 @@
                             "$kind": "Microsoft.TextInput",
                             "property": "user.name2",
                             "prompt": "Hello, I'm Zoidberg. What is your name?",
-                            "outputFormat": "trim(this.value)",
+                            "outputFormat": "=trim(this.value)",
                             "allowInterruptions": "!#Cancel"
                         }
                     ]

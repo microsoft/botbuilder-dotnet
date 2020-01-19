@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                     .UseAdaptiveDialogs()
                     .UseLanguageGeneration(resourceExplorer)
                     .UseMockLuis()
-                    .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                    .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
                 adapter.OnTurnError += (context, err) => context.SendActivityAsync(err.Message);
             }
