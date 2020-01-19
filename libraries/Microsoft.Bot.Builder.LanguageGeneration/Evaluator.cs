@@ -227,7 +227,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception(LGErrors.TemplateNotExist(templateName));
+                ThrowEvaluateException(LGErrors.TemplateNotExist(templateName));
             }
 
             var parameters = TemplateMap[templateName].Parameters;
@@ -242,15 +242,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var newScope = parameters.Zip(args, (k, v) => new { k, v })
                                     .ToDictionary(x => x.k, x => x.v);
 
-            if (currentScope is CustomizedMemory memory)
+            var memory = currentScope as CustomizedMemory;
+            if (memory == null)
             {
-                // inherit current memory's global scope
-                return new CustomizedMemory(memory.GlobalMemory, new SimpleObjectMemory(newScope));
+                ThrowEvaluateException(LGErrors.InvalidMemory);
             }
-            else
-            {
-                throw new Exception("Scope is not a LG customized memory");
-            }
+
+            // inherit current memory's global scope
+            return new CustomizedMemory(memory.GlobalMemory, new SimpleObjectMemory(newScope));
         }
         
         private object VisitStructureValue(LGFileParser.KeyValueStructureLineContext context)
@@ -331,27 +330,25 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
             var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
-            if (error != null)
+
+            if (error != null || result == null)
             {
-                var errorMsg = $"[{CurrentTarget().TemplateName}]";
+                var errorMsg = string.Empty;
                 if (context != null)
                 {
-                    errorMsg += $"Error occured when evaluating '{context.GetText()}'";
+                    errorMsg += LGErrors.ErrorExpression(context.GetText());
                 }
 
-                throw new Exception(errorMsg);
-            }
-
-            if (result == null)
-            {
-                var errorMsg = $"'{exp}' evaluated to null. ";
-                errorMsg += $"[{CurrentTarget().TemplateName}]";
-                if (context != null)
+                if (error != null)
                 {
-                    errorMsg += $"Error occured when evaluating '{context.GetText()}'";
+                    errorMsg += error;
+                }
+                else if (result == null)
+                {
+                    errorMsg += LGErrors.NullExpression(exp);
                 }
 
-                throw new Exception(errorMsg);
+                ThrowEvaluateException(errorMsg);
             }
 
             return result;
@@ -508,14 +505,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         => (IReadOnlyList<object> args) =>
         {
             var newScope = this.ConstructScope(templateName, args.ToList());
-            try
-            {
-                return this.EvaluateTemplate(templateName, newScope);
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"[{templateName}] {e.Message}. ");
-            }
+            return this.EvaluateTemplate(templateName, newScope);
         };
 
         private void ValidTemplateReference(Expression expression)
@@ -537,6 +527,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 throw new Exception(LGErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
             }
+        }
+
+        private void ThrowEvaluateException(string errorMessage)
+        {
+            var currentTemplateName = CurrentTarget().TemplateName;
+
+            errorMessage = $"[{currentTemplateName}]" + errorMessage;
+
+            if (evaluationTargetStack.Count > 0)
+            {
+                evaluationTargetStack.Pop();
+            }
+            
+            throw new Exception(errorMessage);
         }
     }
 }

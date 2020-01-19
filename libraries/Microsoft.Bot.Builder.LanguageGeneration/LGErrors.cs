@@ -58,6 +58,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public const string LoopDetected = "Loop detected:";
 
         public const string SyntaxError = "Unexpected content. Expecting either a comment or a template definition or an import statement.";
+        public const string InvalidMemory = "Scope is not a LG customized memory";
 
         public static string DuplicatedTemplateInSameTemplate(string templateName) => $"Duplicated definitions found for template: {templateName}";
 
@@ -67,14 +68,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public static string TemplateNotExist(string templateName) => $"No such template {templateName}";
 
-        public static string ErrorExpression(string expression, string error) => $"Error occurs when evaluating expression {expression}: {error}";
+        public static string ErrorExpression(string expression) => $"Error occured when evaluating '{expression}'.\r\n";
 
-        public static string NullExpression(string expression) => $"Error occurs when evaluating expression '{expression}': {expression} is evaluated to null";
+        public static string NullExpression(string expression) => $"'{expression}' evaluated to null.";
 
         public static string ArgumentMismatch(string templateName, int expectedCount, int actualCount) => $"arguments mismatch for template {templateName}, expect {expectedCount} actual {actualCount}";
 
         public static string ErrorTemplateNameformat(string templateName) => $"{templateName} can't be used as a template name, must be a string value";
 
         public static string TemplateExist(string templateName) => $"template {templateName} already exists.";
+
+        public static string ExpressionParseError(string exp) => $"Error occurs when parsing expression '{exp}'.";
     }
 }

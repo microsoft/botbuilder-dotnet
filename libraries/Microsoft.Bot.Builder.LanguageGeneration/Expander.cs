@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Microsoft.Bot.Expressions;
@@ -99,7 +100,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var switchCaseNodes = context.switchCaseTemplateBody().switchCaseRule();
             var length = switchCaseNodes.Length;
             var switchExprs = switchCaseNodes[0].switchCaseStat().EXPRESSION();
-            var switchExprResult = EvalExpression(switchExprs[0].GetText());
+            var switchExprResult = EvalExpression(switchExprs[0].GetText(), switchCaseNodes[0].switchCaseStat());
             var idx = 0;
             foreach (var switchCaseNode in switchCaseNodes)
             {
@@ -123,7 +124,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
 
                 var caseExprs = switchCaseNode.switchCaseStat().EXPRESSION();
-                var caseExprResult = EvalExpression(caseExprs[0].GetText());
+                var caseExprResult = EvalExpression(caseExprs[0].GetText(), switchCaseNode.switchCaseStat());
                 if (switchExprResult[0] == caseExprResult[0])
                 {
                     return Visit(switchCaseNode.normalTemplateBody());
@@ -175,7 +176,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
-                    var propertyObjects = EvalExpression(body.objectStructureLine().GetText()).Select(x => JObject.Parse(x)).ToList();
+                    var propertyObjects = EvalExpression(body.objectStructureLine().GetText(), body.objectStructureLine()).Select(x => JObject.Parse(x)).ToList();
                     var tempResult = new List<JObject>();
                     foreach (var res in expandedResult)
                     {
@@ -238,7 +239,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         result = StringListConcat(result, new List<string>() { node.GetText().Escape() });
                         break;
                     case LGFileParser.EXPRESSION:
-                        result = StringListConcat(result, EvalExpression(node.GetText()));
+                        result = StringListConcat(result, EvalExpression(node.GetText(), context));
                         break;
                     default:
                         result = StringListConcat(result, new List<string>() { node.GetText() });
@@ -285,7 +286,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (item.IsPureExpression(out var text))
                 {
-                    result.Add(EvalExpression(text));
+                    result.Add(EvalExpression(text, item));
                 }
                 else
                 {
@@ -298,7 +299,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                                 itemStringResult = StringListConcat(itemStringResult, new List<string>() { node.GetText().Escape() });
                                 break;
                             case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
-                                itemStringResult = StringListConcat(itemStringResult, EvalExpression(node.GetText()));
+                                itemStringResult = StringListConcat(itemStringResult, EvalExpression(node.GetText(), item));
                                 break;
                             default:
                                 itemStringResult = StringListConcat(itemStringResult, new List<string>() { node.GetText() });
@@ -338,18 +339,29 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private List<string> EvalExpression(string exp)
+        private List<string> EvalExpression(string exp, ParserRuleContext context)
         {
             exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
             var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
-            if (error != null)
-            {
-                throw new Exception(LGErrors.ErrorExpression(exp, error));
-            }
 
-            if (result == null)
+            if (error != null || result == null)
             {
-                throw new Exception(LGErrors.NullExpression(exp));
+                var errorMsg = string.Empty;
+                if (context != null)
+                {
+                    errorMsg += LGErrors.ErrorExpression(context.GetText());
+                }
+
+                if (error != null)
+                {
+                    errorMsg += error;
+                }
+                else if (result == null)
+                {
+                    errorMsg += LGErrors.NullExpression(exp);
+                }
+
+                ThrowEvaluateException(errorMsg);
             }
 
             if (result is IList &&
@@ -440,7 +452,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (!this.TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception(LGErrors.TemplateNotExist(templateName));
+                ThrowEvaluateException(LGErrors.TemplateNotExist(templateName));
             }
 
             var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
@@ -448,7 +460,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (expectedArgsCount != actualArgsCount)
             {
-                throw new Exception(LGErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
+                ThrowEvaluateException(LGErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
             }
         }
 
@@ -472,6 +484,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return expanderExpression;
+        }
+
+        private void ThrowEvaluateException(string errorMessage)
+        {
+            var currentTemplateName = CurrentTarget().TemplateName;
+
+            errorMessage = $"[{currentTemplateName}]" + errorMessage;
+
+            if (evaluationTargetStack.Count > 0)
+            {
+                evaluationTargetStack.Pop();
+            }
+
+            throw new Exception(errorMessage);
         }
     }
 }

@@ -379,8 +379,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             catch (Exception e)
             {
-                var errorMsg = $"Error occurs when parsing expression '{exp}'. ";
-                errorMsg += e.Message;
+                var errorMsg = LGErrors.ExpressionParseError(exp) + e.Message;
 
                 result.Add(BuildLGDiagnostic(errorMsg, context: context));
                 return result;
