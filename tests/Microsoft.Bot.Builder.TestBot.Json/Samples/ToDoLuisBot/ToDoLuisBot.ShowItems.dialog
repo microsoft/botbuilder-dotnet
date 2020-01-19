@@ -8,7 +8,7 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SetProperty",
-                    "value": "@ListType",
+                    "value": "=@ListType",
                     "property": "dialog.listName"
                 },
                 {

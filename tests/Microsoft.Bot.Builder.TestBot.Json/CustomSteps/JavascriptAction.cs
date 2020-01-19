@@ -50,9 +50,11 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            var dcState = dc.GetState();
+
             // map state into json
             dynamic payload = new JObject();
-            payload.state = dc.GetState().GetMemorySnapshot();
+            payload.state = dcState.GetMemorySnapshot();
 
             // payload.property = (this.Property != null) ? dc.GetValue<object>(this.Property) : null;
             string payloadJson = JsonConvert.SerializeObject(payload);
@@ -61,10 +63,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             if (!string.IsNullOrEmpty(responseJson))
             {
                 dynamic response = JsonConvert.DeserializeObject(responseJson);
-                dc.GetState().SetValue(ScopePath.USER, response.state.user);
-                dc.GetState().SetValue(ScopePath.CONVERSATION, response.state.conversation);
-                dc.GetState().SetValue(ScopePath.DIALOG, response.state.dialog);
-                dc.GetState().SetValue(ScopePath.TURN, response.state.turn);
+                dcState.SetValue(ScopePath.USER, response.state.user);
+                dcState.SetValue(ScopePath.CONVERSATION, response.state.conversation);
+                dcState.SetValue(ScopePath.DIALOG, response.state.dialog);
+                dcState.SetValue(ScopePath.TURN, response.state.turn);
                 return dc.EndDialogAsync((object)response.result, cancellationToken: cancellationToken);
             }
 

@@ -12,7 +12,7 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Keyphraseproperty",
-            "value": "@keyPhrase"          
+            "value": "=@keyPhrase"          
         }
     ]               
 }

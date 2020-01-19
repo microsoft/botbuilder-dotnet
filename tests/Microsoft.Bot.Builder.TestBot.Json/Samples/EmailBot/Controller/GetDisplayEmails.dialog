@@ -11,7 +11,7 @@
     {
       "$kind": "Microsoft.SetProperty",
       "property": "user.emailCount",
-      "value": "count(user.getGraphEmails.value)"
+      "value": "=count(user.getGraphEmails.value)"
     },
     // *** Translate from graph model to view model. Map the same entity from graph/google to the same attribute. ***
     {

@@ -17,31 +17,31 @@
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
             "changeType": "push",
-            "value": "1"
+            "value": "=1"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
             "changeType": "push",
-            "value": "2"
+            "value": "=2"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
             "changeType": "push",
-            "value": "3"
+            "value": "=3"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
             "changeType": "push",
-            "value": "4"
+            "value": "=4"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
             "changeType": "push",
-            "value": "5"
+            "value": "=5"
           },
           {
             "$kind": "Microsoft.ForeachPage",

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -50,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             // Identify matched intents
             text = text ?? string.Empty;
 
-            var result = new RecognizerResult()
+            var recognizerResult = new RecognizerResult()
             {
                 Text = text,
                 Intents = new Dictionary<string, IntentScore>(),
@@ -74,9 +75,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 {
                     // TODO length weighted match and multiple intents
                     var intentKey = intentPattern.Intent.Replace(" ", "_");
-                    if (!result.Intents.ContainsKey(intentKey))
+                    if (!recognizerResult.Intents.ContainsKey(intentKey))
                     {
-                        result.Intents.Add(intentKey, new IntentScore() { Score = 1.0 });
+                        recognizerResult.Intents.Add(intentKey, new IntentScore()
+                        {
+                            Score = 1.0,
+                            Properties = new Dictionary<string, object>() { { "pattern", intentPattern.Pattern } }
+                        });
                     }
 
                     // Check for named capture groups
@@ -115,16 +120,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             }
 
             // map entityPool of Entity objects => RecognizerResult entity format
-            result.Entities = new JObject();
-            
+            recognizerResult.Entities = new JObject();
+
             foreach (var entityResult in entityPool)
             {
                 // add value
                 JToken values;
-                if (!result.Entities.TryGetValue(entityResult.Type, StringComparison.OrdinalIgnoreCase, out values))
+                if (!recognizerResult.Entities.TryGetValue(entityResult.Type, StringComparison.OrdinalIgnoreCase, out values))
                 {
                     values = new JArray();
-                    result.Entities[entityResult.Type] = values;
+                    recognizerResult.Entities[entityResult.Type] = values;
                 }
 
                 // The Entity type names are not consistent, map everything to camelcase so we can process them cleaner.
@@ -133,10 +138,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
                 // get/create $instance
                 JToken instanceRoot;
-                if (!result.Entities.TryGetValue("$instance", StringComparison.OrdinalIgnoreCase, out instanceRoot))
+                if (!recognizerResult.Entities.TryGetValue("$instance", StringComparison.OrdinalIgnoreCase, out instanceRoot))
                 {
                     instanceRoot = new JObject();
-                    result.Entities["$instance"] = instanceRoot;
+                    recognizerResult.Entities["$instance"] = instanceRoot;
                 }
 
                 // add instanceData
@@ -158,12 +163,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             }
 
             // if no match return None intent
-            if (!result.Intents.Keys.Any())
+            if (!recognizerResult.Intents.Keys.Any())
             {
-                result.Intents.Add("None", new IntentScore() { Score = 1.0 });
+                recognizerResult.Intents.Add("None", new IntentScore() { Score = 1.0 });
             }
 
-            return result;
+            await dialogContext.Context.TraceActivityAsync(nameof(RegexRecognizer), JObject.FromObject(recognizerResult), "RecognizerResult", "Regex RecognizerResult", cancellationToken).ConfigureAwait(false);
+
+            return recognizerResult;
         }
     }
 }

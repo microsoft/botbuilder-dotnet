@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// If a value is pure Expression.
         /// </summary>
         /// <param name="context">Key value structure value context.</param>
-        /// <param name="expression">string expressin.</param>
+        /// <param name="expression">string expression.</param>
         /// <returns>is pure expression or not.</returns>
         public static bool IsPureExpression(this LGFileParser.KeyValueStructureValueContext context, out string expression)
         {
@@ -97,12 +97,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Normalize authored path to os path.
+        /// Normalize authored path to OS path.
         /// </summary>
         /// <remarks>
         /// path is from authored content which doesn't know what OS it is running on.
-        /// This method treats / and \ both as seperators regardless of OS, for windows that means / -> \ and for linux/mac \ -> /.
-        /// This allows author to use ../foo.lg or ..\foo.lg as equivelents for importing.
+        /// This method treats / and \ both as separators regardless of OS, for Windows that means / -> \ and for Linux/Mac \ -> /.
+        /// This allows author to use ../foo.lg or ..\foo.lg as equivalents for importing.
         /// </remarks>
         /// <param name="ambigiousPath">authoredPath.</param>
         /// <returns>path expressed as OS path.</returns>
@@ -110,12 +110,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                // map linux/mac sep -> windows
+                // Map Linux/Mac separator -> Windows
                 return ambigiousPath.Replace("/", "\\");
             }
             else
             {
-                // map windows sep -> linux/mac
+                // Map Windows separator -> Linux/Mac
                 return ambigiousPath.Replace("\\", "/");
             }
         }

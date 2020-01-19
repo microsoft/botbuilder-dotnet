@@ -11,9 +11,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// <summary>
     /// load all lg resource and split them into different language group.
     /// </summary>
-    public class MultiLanguageResourceLoader
+    public class LGResourceLoader
     {
-        public static Dictionary<string, IList<IResource>> Load(ResourceExplorer resourceExplorer)
+        public static Dictionary<string, IList<IResource>> GroupByLocale(ResourceExplorer resourceExplorer)
         {
             var resourceMapping = new Dictionary<string, IList<IResource>>();
             var allResources = resourceExplorer.GetResources("lg");

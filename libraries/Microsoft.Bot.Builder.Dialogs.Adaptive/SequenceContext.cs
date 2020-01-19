@@ -73,6 +73,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <returns>True if there were any changes to apply. </returns>
         public async Task<bool> ApplyChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
+            var dcState = this.GetState();
+
             // Retrieve queued changes from turn context
             var changes = this.Changes ?? new List<ActionChangeList>();
 
@@ -89,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     {
                         foreach (var keyValue in change.Turn)
                         {
-                            this.GetState().SetValue($"turn.{keyValue.Key}", keyValue.Value);
+                            dcState.SetValue($"turn.{keyValue.Key}", keyValue.Value);
                         }
                     }
 
