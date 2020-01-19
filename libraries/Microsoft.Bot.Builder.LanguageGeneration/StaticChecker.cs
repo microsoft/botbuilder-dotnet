@@ -179,7 +179,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         {
                             foreach (var expression in structureValue.EXPRESSION_IN_STRUCTURE_BODY())
                             {
-                                result.AddRange(CheckExpression(expression.GetText(), context));
+                                result.AddRange(CheckExpression(expression.GetText(), structureValue));
                             }
                         }
                     }
@@ -379,7 +379,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             catch (Exception e)
             {
-                result.Add(BuildLGDiagnostic(e.Message + $" in expression `{exp}`", context: context));
+                var errorMsg = $"Error occurs when parsing expression '{exp}'. ";
+                errorMsg += e.Message;
+
+                result.Add(BuildLGDiagnostic(errorMsg, context: context));
                 return result;
             }
 
@@ -398,6 +401,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             DiagnosticSeverity severity = DiagnosticSeverity.Error,
             ParserRuleContext context = null)
         {
+            message = $"[{visitedTemplateNames.LastOrDefault()}]" + message;
             var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line, context.Start.Column);
             var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
             var range = new Range(startPosition, stopPosition);

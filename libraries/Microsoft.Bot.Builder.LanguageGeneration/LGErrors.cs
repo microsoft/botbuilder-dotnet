@@ -57,6 +57,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public const string LoopDetected = "Loop detected:";
 
+        public const string SyntaxError = "Unexpected content. Expecting either a comment or a template definition or an import statement.";
+
         public static string DuplicatedTemplateInSameTemplate(string templateName) => $"Duplicated definitions found for template: {templateName}";
 
         public static string DuplicatedTemplateInDiffTemplate(string templateName, string source) => $"Duplicated definitions found for template: {templateName} in {source}";
