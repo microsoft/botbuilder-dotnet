@@ -12,7 +12,7 @@
                         "$kind": "Microsoft.DateTimeInput",
                         "property": "user.date",
                         "prompt": "Please enter a date.",
-                        "outputFormat": "this.value[0].Value"
+                        "outputFormat": "=this.value[0].Value"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",

@@ -22,7 +22,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "dialog.name",
-                        "value": "'foo'"
+                        "value": "='foo'"
                     },
                     {
                         "$kind": "Microsoft.TextInput",

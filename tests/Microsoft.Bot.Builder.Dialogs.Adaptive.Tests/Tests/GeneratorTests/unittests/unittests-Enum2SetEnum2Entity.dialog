@@ -12,7 +12,7 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Enum2",
-            "value": "@Enum2Entity"
+            "value": "=@Enum2Entity"
         }
     ]
 }

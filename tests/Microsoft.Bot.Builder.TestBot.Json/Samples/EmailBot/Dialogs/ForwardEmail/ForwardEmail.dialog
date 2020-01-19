@@ -12,7 +12,7 @@
     },
     {
       "$kind": "Microsoft.SetProperty",
-      "value": "concat('Fw:',user.focusedEmail.subject)",
+      "value": "=concat('Fw:',user.focusedEmail.subject)",
       "property": "user.fwSubject"
     },
     {

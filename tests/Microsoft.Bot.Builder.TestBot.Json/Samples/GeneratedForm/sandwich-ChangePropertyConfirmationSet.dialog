@@ -8,7 +8,7 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$ChangePropertyConfirmation",
-            "value": "@Confirmation"
+            "value": "=@Confirmation"
         },
         {
             "$kind": "Microsoft.IfCondition",

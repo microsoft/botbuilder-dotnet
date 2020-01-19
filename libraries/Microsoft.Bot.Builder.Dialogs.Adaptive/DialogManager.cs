@@ -22,13 +22,10 @@ namespace Microsoft.Bot.Builder.Dialogs
     {
         private const string DIALOGS = "_dialogs";
         private const string LASTACCESS = "_lastAccess";
-        private DialogSet dialogSet;
         private string rootDialogId;
 
         public DialogManager(Dialog rootDialog = null)
         {
-            this.dialogSet = new DialogSet();
-
             if (rootDialog != null)
             {
                 this.RootDialog = rootDialog;
@@ -63,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (this.rootDialogId != null)
                 {
-                    return this.dialogSet.Find(this.rootDialogId);
+                    return this.Dialogs.Find(this.rootDialogId);
                 }
 
                 return null;
@@ -71,11 +68,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             set
             {
-                this.dialogSet = new DialogSet();
+                this.Dialogs = new DialogSet();
                 if (value != null)
                 {
                     this.rootDialogId = value.Id;
-                    this.dialogSet.Add(value);
+                    this.Dialogs.Add(value);
                 }
                 else
                 {
@@ -83,6 +80,13 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets global dialogs that you want to have be callable.
+        /// </summary>
+        /// <value>Dialogs set.</value>
+        [JsonIgnore]
+        public DialogSet Dialogs { get; set; } = new DialogSet();
 
         /// <summary>
         /// Gets or sets the DialogStateManagerConfiguration.
@@ -141,7 +145,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             DialogState dialogState = await dialogsProperty.GetAsync(context, () => new DialogState(), cancellationToken: cancellationToken).ConfigureAwait(false);
 
             // Create DialogContext
-            var dc = new DialogContext(this.dialogSet, context, dialogState);
+            var dc = new DialogContext(this.Dialogs, context, dialogState);
 
             // set DSM configuration
             dc.SetStateConfiguration(this.StateConfiguration ?? DialogStateManager.CreateStandardConfiguration(conversationState, userState));

@@ -193,8 +193,8 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
                 matched = true;
                 if (ignored != null)
                 {
-                    var (value, err) = ignored.TryEvaluate(memory);
-                    matched = err == null && value is bool match && match;
+                    var (match, err) = ignored.TryEvaluate<bool>(memory);
+                    matched = err == null && match;
                 }
             }
 

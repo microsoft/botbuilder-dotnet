@@ -15,12 +15,12 @@ namespace Microsoft.Bot.Expressions.Memory
         void SetValue(string path, object value);
 
         /// <summary>
-        /// Try get value from a given path, it can be a simple indenfiter like "a", or
-        /// a combined path like "a.b", "a.b[2]", "a.b[2].c", inside [] is guranteed to be a int number or a string.
+        /// Try get value from a given path, it can be a simple identifier like "a", or
+        /// a combined path like "a.b", "a.b[2]", "a.b[2].c", inside [] is guaranteed to be a int number or a string.
         /// </summary>
         /// <param name="path">memory path.</param>
-        /// <param name="value">resovled value.</param>
-        /// <returns> true if thememory contains an element with the specified key; otherwise, false.  </returns>
+        /// <param name="value">resolved value.</param>
+        /// <returns> true if the memory contains an element with the specified key; otherwise, false.</returns>
         bool TryGetValue(string path, out object value);
 
         /// <summary>
