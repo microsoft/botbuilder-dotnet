@@ -13,19 +13,19 @@
                         "assignments": [
                             {
                                 "property": "$p1",
-                                "value": "'val1'"
+                                "value": "='val1'"
                             },
                             {
                                 "property": "$p2",
-                                "value": "$p1"
+                                "value": "=$p1"
                             },
                             {
                                 "property": "$p3",
-                                "value": "13"
+                                "value": "=13"
                             },
                             {
                                 "property": "$p4",
-                                "value": "'billybob'"
+                                "value": "='billybob'"
                             }
                         ]
                     },

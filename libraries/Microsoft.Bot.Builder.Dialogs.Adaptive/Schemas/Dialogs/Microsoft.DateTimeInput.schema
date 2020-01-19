@@ -12,6 +12,7 @@
             "properties": {
                 "outputFormat": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Output format",
                     "description": "Expression to format the datetime output.",
                     "examples": [
@@ -19,6 +20,7 @@
                     ]
                 },
                 "defaultLocale": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Default locale",
                     "description": "Default locale.",

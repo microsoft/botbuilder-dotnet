@@ -383,13 +383,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public bool TryGetValue(string key, out object value)
         {
-            value = default;
-            if (this.TryGetValue<object>(key, out var result))
-            {
-                value = result;
-            }
-
-            return true;
+            return this.TryGetValue<object>(key, out value);
         }
 
         public void Add(KeyValuePair<string, object> item)
@@ -461,12 +455,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public bool AnyPathChanged(uint counter, IEnumerable<string> paths)
         {
             var found = false;
-            foreach (var path in paths)
+            if (paths != null)
             {
-                if (GetValue<uint>(PathTracker + "." + path) > counter)
+                foreach (var path in paths)
                 {
-                    found = true;
-                    break;
+                    if (GetValue<uint>(PathTracker + "." + path) > counter)
+                    {
+                        found = true;
+                        break;
+                    }
                 }
             }
 

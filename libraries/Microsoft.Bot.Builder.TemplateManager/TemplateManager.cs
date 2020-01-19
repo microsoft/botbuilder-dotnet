@@ -20,18 +20,18 @@ namespace Microsoft.Bot.Builder.TemplateManager
         }
 
         /// <summary>
-        /// Gets or sets template Renderers.
+        /// Gets or sets template renderers.
         /// </summary>
         /// <value>
-        /// Template Renderers.
+        /// Template renderers.
         /// </value>
         public List<ITemplateRenderer> Renderers { get; set; } = new List<ITemplateRenderer>();
 
         /// <summary>
-        /// Gets or sets language fallback policy.
+        /// Gets or sets language fall-back policy.
         /// </summary>
         /// <value>
-        /// Language fallback policy.
+        /// Language fall-back policy.
         /// </value>
         public List<string> LanguageFallback { get; set; } = new List<string>();
 
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// Add a template engine for binding templates.
         /// </summary>
         /// <param name="renderer">Data for binding templates.</param>
-        /// <returns>Reurns a template manager.</returns>
+        /// <returns>Returns a template manager.</returns>
         public TemplateManager Register(ITemplateRenderer renderer)
         {
             if (!this.Renderers.Contains(renderer))
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="language">Template language.</param>
         /// <param name="templateId">The id of the template.</param>
-        /// <param name="data">Data to render the tempplate with.</param>
+        /// <param name="data">Data to render the template with.</param>
         /// <returns>Task.</returns>
         public async Task<Activity> RenderTemplate(ITurnContext turnContext, string language, string templateId, object data = null)
         {

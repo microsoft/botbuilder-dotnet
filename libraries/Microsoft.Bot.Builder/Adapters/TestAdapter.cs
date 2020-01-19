@@ -172,7 +172,12 @@ namespace Microsoft.Bot.Builder.Adapters
 
             if (activity.Timestamp == null || activity.Timestamp == default(DateTimeOffset))
             {
-                activity.Timestamp = DateTime.UtcNow;
+                activity.Timestamp = DateTimeOffset.UtcNow;
+            }
+
+            if (activity.LocalTimestamp == null || activity.LocalTimestamp == default(DateTimeOffset))
+            {
+                activity.LocalTimestamp = DateTimeOffset.Now;
             }
 
             using (var context = new TurnContext(this, activity))

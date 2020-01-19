@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Expressions
         /// </summary>
         /// <param name="expression">Expression to analyze.</param>
         /// <param name="extension">If present, called to override lookup for things like template expansion.</param>
-        /// <returns>Accessor path of expression which is a potential partial path and the fullpath found so far.</returns>
+        /// <returns>Accessor path of expression which is a potential partial path and the full path found so far.</returns>
         public static (string path, HashSet<string> references) ReferenceWalk(Expression expression, Func<Expression, bool> extension = null)
         {
             string path = null;
