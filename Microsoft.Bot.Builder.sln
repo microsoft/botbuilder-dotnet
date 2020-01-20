@@ -8,8 +8,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AD743B78
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj", "{3CF175CF-1AF4-4109-96CB-221684DCED7D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.csproj", "{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Azure.Tests", "tests\Microsoft.Bot.Builder.Azure.Tests\Microsoft.Bot.Builder.Azure.Tests.csproj", "{E325A0E2-716A-49E0-9767-5087CF05727C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Azure", "libraries\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj", "{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}"
@@ -93,6 +91,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Debugging.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Debugging.Tests\Microsoft.Bot.Builder.Dialogs.Debugging.Tests.csproj", "{F59673EA-2D0D-441A-BB85-CD343DE6BE45}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LanguageGeneration.Tests", "tests\Microsoft.Bot.Builder.LanguageGeneration.Tests\Microsoft.Bot.Builder.LanguageGeneration.Tests.csproj", "{72EE26E2-E8BE-4169-82AD-93E021539C34}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.csproj", "{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6B6AFE9D-6FA5-4699-B0EB-62335FD431C8}"
 	ProjectSection(SolutionItems) = preProject
@@ -184,14 +184,6 @@ Global
 		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 		{E325A0E2-716A-49E0-9767-5087CF05727C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E325A0E2-716A-49E0-9767-5087CF05727C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E325A0E2-716A-49E0-9767-5087CF05727C}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -200,6 +192,13 @@ Global
 		{E325A0E2-716A-49E0-9767-5087CF05727C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E325A0E2-716A-49E0-9767-5087CF05727C}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{E325A0E2-716A-49E0-9767-5087CF05727C}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
