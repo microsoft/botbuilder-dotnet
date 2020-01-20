@@ -117,6 +117,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private static Diagnostic BuildDiagnostic(string errorMessage, ParserRuleContext context = null, string source = null)
         {
+            errorMessage = LGErrors.StaticFailure + "- " + errorMessage;
             var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line, context.Start.Column);
             var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
             return new Diagnostic(new Range(startPosition, stopPosition), errorMessage, source: source);

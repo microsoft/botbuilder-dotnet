@@ -17,25 +17,25 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(10, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains("condition is not end with else"));
+            Assert.IsTrue(diagnostics[0].Message.Contains(LGErrors.NotEndWithElseInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
-            Assert.IsTrue(diagnostics[1].Message.Contains("if and elseif should followed by one valid expression"));
+            Assert.IsTrue(diagnostics[1].Message.Contains(LGErrors.InvalidExpressionInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[2].Severity);
-            Assert.IsTrue(diagnostics[2].Message.Contains("condition can't have more than one if"));
+            Assert.IsTrue(diagnostics[2].Message.Contains(LGErrors.MultipleIfInCondition));
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[3].Severity);
-            Assert.IsTrue(diagnostics[3].Message.Contains("condition is not end with else"));
+            Assert.IsTrue(diagnostics[3].Message.Contains(LGErrors.NotEndWithElseInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[4].Severity);
-            Assert.IsTrue(diagnostics[4].Message.Contains("else should not followed by any expression"));
+            Assert.IsTrue(diagnostics[4].Message.Contains(LGErrors.ExtraExpressionInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[5].Severity);
-            Assert.IsTrue(diagnostics[5].Message.Contains("condition can't have more than one if"));
+            Assert.IsTrue(diagnostics[5].Message.Contains(LGErrors.MultipleIfInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[6].Severity);
-            Assert.IsTrue(diagnostics[6].Message.Contains("only elseif is allowed in middle of condition"));
+            Assert.IsTrue(diagnostics[6].Message.Contains(LGErrors.InvalidMiddleInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[7].Severity);
-            Assert.IsTrue(diagnostics[7].Message.Contains("At most 1 whitespace is allowed between IF/ELSEIF/ELSE and :"));
+            Assert.IsTrue(diagnostics[7].Message.Contains(LGErrors.InvalidWhitespaceInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[8].Severity);
-            Assert.IsTrue(diagnostics[8].Message.Contains("At most 1 whitespace is allowed between IF/ELSEIF/ELSE and :"));
+            Assert.IsTrue(diagnostics[8].Message.Contains(LGErrors.InvalidWhitespaceInCondition));
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[9].Severity);
-            Assert.IsTrue(diagnostics[9].Message.Contains("condition is not start with i"));
+            Assert.IsTrue(diagnostics[9].Message.Contains(LGErrors.NotStartWithIfInCondition));
         }
 
         [TestMethod]
@@ -45,22 +45,22 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(2, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains("Duplicated definitions found for template: template1"));
+            Assert.IsTrue(diagnostics[0].Message.Contains(LGErrors.DuplicatedTemplateInSameTemplate("template1")));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
-            Assert.IsTrue(diagnostics[1].Message.Contains("Duplicated definitions found for template: template1"));
+            Assert.IsTrue(diagnostics[1].Message.Contains(LGErrors.DuplicatedTemplateInSameTemplate("template1")));
 
             var lgFile = GetLGFile("DuplicatedTemplates.lg");
             var allDiagnostics = lgFile.AllDiagnostics;
 
             Assert.AreEqual(4, allDiagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Error, allDiagnostics[0].Severity);
-            Assert.IsTrue(allDiagnostics[0].Message.Contains("Duplicated definitions found for template: template1"));
+            Assert.IsTrue(allDiagnostics[0].Message.Contains(LGErrors.DuplicatedTemplateInSameTemplate("template1")));
             Assert.AreEqual(DiagnosticSeverity.Error, allDiagnostics[1].Severity);
-            Assert.IsTrue(allDiagnostics[1].Message.Contains("Duplicated definitions found for template: template1"));
+            Assert.IsTrue(allDiagnostics[1].Message.Contains(LGErrors.DuplicatedTemplateInSameTemplate("template1")));
             Assert.AreEqual(DiagnosticSeverity.Error, allDiagnostics[2].Severity);
-            Assert.IsTrue(allDiagnostics[2].Message.Contains("Duplicated definitions found for template: basicTemplate"));
+            Assert.IsTrue(allDiagnostics[2].Message.Contains("Duplicated definitions found for template: 'basicTemplate'"));
             Assert.AreEqual(DiagnosticSeverity.Error, allDiagnostics[3].Severity);
-            Assert.IsTrue(allDiagnostics[3].Message.Contains("Duplicated definitions found for template: basicTemplate2"));
+            Assert.IsTrue(allDiagnostics[3].Message.Contains("Duplicated definitions found for template: 'basicTemplate2'"));
         }
 
         [TestMethod]
@@ -70,9 +70,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(2, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains("Duplicated definitions found for template: basicTemplate"));
+            Assert.IsTrue(diagnostics[0].Message.Contains("Duplicated definitions found for template: 'basicTemplate'"));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
-            Assert.IsTrue(diagnostics[1].Message.Contains("Duplicated definitions found for template: basicTemplate2"));
+            Assert.IsTrue(diagnostics[1].Message.Contains("Duplicated definitions found for template: 'basicTemplate2'"));
         }
 
         [TestMethod]
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(1, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains("File must have at least one template definition"));
+            Assert.IsTrue(diagnostics[0].Message.Contains(LGErrors.NoTemplate));
         }
 
         [TestMethod]
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(1, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains("There is no template body in template template"));
+            Assert.IsTrue(diagnostics[0].Message.Contains(LGErrors.NoTemplateBody("template")));
         }
 
         [TestMethod]
@@ -102,15 +102,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(5, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains("structured body format error"));
+            Assert.IsTrue(diagnostics[0].Message.Contains(LGErrors.InvalidStrucBody));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
-            Assert.IsTrue(diagnostics[1].Message.Contains("Structured content is empty"));
+            Assert.IsTrue(diagnostics[1].Message.Contains(LGErrors.EmptyStrucContent));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[2].Severity);
-            Assert.IsTrue(diagnostics[2].Message.Contains("does not have an evaluator"));
+            Assert.IsTrue(diagnostics[2].Message.Contains("Error occurs when parsing expression 'NOTemplate()'. NOTemplate does not have an evaluator"));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[3].Severity);
-            Assert.IsTrue(diagnostics[3].Message.Contains("does not have an evaluator"));
+            Assert.IsTrue(diagnostics[3].Message.Contains("Error occurs when parsing expression 'NOTemplate()'. NOTemplate does not have an evaluator"));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[4].Severity);
-            Assert.IsTrue(diagnostics[4].Message.Contains("structured name format error"));
+            Assert.IsTrue(diagnostics[4].Message.Contains(LGErrors.InvalidStrucName));
         }
 
         [TestMethod]
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             foreach (var diagnostic in diagnostics)
             {
                 Assert.AreEqual(DiagnosticSeverity.Error, diagnostic.Severity);
-                Assert.IsTrue(diagnostic.Message.Contains("Not a valid template name line"));
+                Assert.IsTrue(diagnostic.Message.Contains(LGErrors.InvalidTemplateName));
             }
         }
 
@@ -143,9 +143,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(2, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains("does not have an evaluator"));
+            Assert.IsTrue(diagnostics[0].Message.Contains("Error occurs when parsing expression 'NotExistTemplate()'. NotExistTemplate does not have an evaluator"));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
-            Assert.IsTrue(diagnostics[1].Message.Contains("arguments mismatch for template"));
+            Assert.IsTrue(diagnostics[1].Message.Contains("Error occurs when parsing expression 'template5('hello', 'world')'. arguments mismatch for template 'template5'. Expecting '1' arguments, actual '2'."));
         }
 
         [TestMethod]
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(1, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains("Close ``` is missing"));
+            Assert.IsTrue(diagnostics[0].Message.Contains(LGErrors.NoEndingInMultiline));
         }
 
         [TestMethod]
@@ -165,11 +165,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(3, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains("condition is not end with else"));
+            Assert.IsTrue(diagnostics[0].Message.Contains(LGErrors.NotEndWithElseInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
-            Assert.IsTrue(diagnostics[1].Message.Contains("no normal template body in condition block"));
+            Assert.IsTrue(diagnostics[1].Message.Contains(LGErrors.MissingTemplateBodyInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[2].Severity);
-            Assert.IsTrue(diagnostics[2].Message.Contains("no normal template body in condition block"));
+            Assert.IsTrue(diagnostics[2].Message.Contains(LGErrors.MissingTemplateBodyInCondition));
         }
 
         [TestMethod]
@@ -179,11 +179,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(3, diagnostics.Count);
 
-            foreach (var diagnostic in diagnostics)
-            {
-                Assert.AreEqual(DiagnosticSeverity.Error, diagnostic.Severity);
-                Assert.IsTrue(diagnostic.Message.Contains("does not have an evaluator"));
-            }
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
+            Assert.IsTrue(diagnostics[0].Message.Contains("Error occurs when parsing expression 'templateRef()'. templateRef does not have an evaluator"));
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
+            Assert.IsTrue(diagnostics[1].Message.Contains("Error occurs when parsing expression 'templateRef(a)'. templateRef does not have an evaluator"));
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[2].Severity);
+            Assert.IsTrue(diagnostics[2].Message.Contains("Error occurs when parsing expression 'templateRefInMultiLine()'. templateRefInMultiLine does not have an evaluator"));
         }
 
         [TestMethod]
@@ -193,33 +194,33 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(14, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains("At most 1 whitespace is allowed between SWITCH/CASE/DEFAULT and :."));
+            Assert.IsTrue(diagnostics[0].Message.Contains(LGErrors.InvalidWhitespaceInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
-            Assert.IsTrue(diagnostics[1].Message.Contains("control flow can not have more than one switch statement"));
+            Assert.IsTrue(diagnostics[1].Message.Contains(LGErrors.MultipleSwithStatementInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[2].Severity);
-            Assert.IsTrue(diagnostics[2].Message.Contains("control flow is not start with switch"));
+            Assert.IsTrue(diagnostics[2].Message.Contains(LGErrors.NotStartWithSwitchInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[3].Severity);
-            Assert.IsTrue(diagnostics[3].Message.Contains("control flow should have at least one case statement"));
+            Assert.IsTrue(diagnostics[3].Message.Contains(LGErrors.MissingCaseInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[4].Severity);
-            Assert.IsTrue(diagnostics[4].Message.Contains("only case statement is allowed in the middle of control flow"));
+            Assert.IsTrue(diagnostics[4].Message.Contains(LGErrors.InvalidStatementInMiddlerOfSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[5].Severity);
-            Assert.IsTrue(diagnostics[5].Message.Contains("control flow is not ending with default statement"));
+            Assert.IsTrue(diagnostics[5].Message.Contains(LGErrors.NotEndWithDefaultInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[6].Severity);
-            Assert.IsTrue(diagnostics[6].Message.Contains("default should not followed by any expression or any text"));
+            Assert.IsTrue(diagnostics[6].Message.Contains(LGErrors.ExtraExpressionInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[7].Severity);
-            Assert.IsTrue(diagnostics[7].Message.Contains("no normal template body in case or default block"));
+            Assert.IsTrue(diagnostics[7].Message.Contains(LGErrors.MissingTemplateBodyInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[8].Severity);
-            Assert.IsTrue(diagnostics[8].Message.Contains("default should not followed by any expression or any text"));
+            Assert.IsTrue(diagnostics[8].Message.Contains(LGErrors.ExtraExpressionInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[9].Severity);
-            Assert.IsTrue(diagnostics[9].Message.Contains("no normal template body in case or default block"));
+            Assert.IsTrue(diagnostics[9].Message.Contains(LGErrors.MissingTemplateBodyInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[10].Severity);
-            Assert.IsTrue(diagnostics[10].Message.Contains("switch and case should followed by one valid expression"));
+            Assert.IsTrue(diagnostics[10].Message.Contains(LGErrors.InvalidExpressionInSwiathCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[11].Severity);
-            Assert.IsTrue(diagnostics[11].Message.Contains("default should not followed by any expression or any text"));
+            Assert.IsTrue(diagnostics[11].Message.Contains(LGErrors.ExtraExpressionInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[12].Severity);
-            Assert.IsTrue(diagnostics[12].Message.Contains("control flow should have at least one case statement"));
+            Assert.IsTrue(diagnostics[12].Message.Contains(LGErrors.MissingCaseInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[13].Severity);
-            Assert.IsTrue(diagnostics[13].Message.Contains("control flow is not ending with default statement"));
+            Assert.IsTrue(diagnostics[13].Message.Contains(LGErrors.NotEndWithDefaultInSwitchCase));
         }
 
         [TestMethod]
@@ -227,10 +228,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var lgFile = GetLGFile("LoopDetected.lg");
             var exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("wPhrase"));
-            Assert.IsTrue(exception.Message.Contains("Loop detected"));
+            Assert.IsTrue(exception.Message.Contains(LGErrors.LoopDetected));
 
             exception = Assert.ThrowsException<Exception>(() => lgFile.AnalyzeTemplate("wPhrase"));
-            Assert.IsTrue(exception.Message.Contains("Loop detected"));
+            Assert.IsTrue(exception.Message.Contains(LGErrors.LoopDetected));
         }
 
         [TestMethod]

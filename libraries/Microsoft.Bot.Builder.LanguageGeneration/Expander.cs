@@ -100,7 +100,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var switchCaseNodes = context.switchCaseTemplateBody().switchCaseRule();
             var length = switchCaseNodes.Length;
             var switchExprs = switchCaseNodes[0].switchCaseStat().EXPRESSION();
-            var switchExprResult = EvalExpression(switchExprs[0].GetText(), switchCaseNodes[0].switchCaseStat());
+            var switchErrorPrefix = "Switch '" + switchExprs[0].GetText() + "': ";
+            var switchExprResult = EvalExpression(switchExprs[0].GetText(), switchCaseNodes[0].switchCaseStat(), switchErrorPrefix);
             var idx = 0;
             foreach (var switchCaseNode in switchCaseNodes)
             {
@@ -124,7 +125,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
 
                 var caseExprs = switchCaseNode.switchCaseStat().EXPRESSION();
-                var caseExprResult = EvalExpression(caseExprs[0].GetText(), switchCaseNode.switchCaseStat());
+                var caseErrorPrefix = "Case '" + caseExprs[0].GetText() + "': ";
+                var caseExprResult = EvalExpression(caseExprs[0].GetText(), switchCaseNode.switchCaseStat(), caseErrorPrefix);
                 if (switchExprResult[0] == caseExprResult[0])
                 {
                     return Visit(switchCaseNode.normalTemplateBody());
@@ -299,7 +301,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                                 itemStringResult = StringListConcat(itemStringResult, new List<string>() { node.GetText().Escape() });
                                 break;
                             case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
-                                itemStringResult = StringListConcat(itemStringResult, EvalExpression(node.GetText(), item));
+                                var errorPrefix = "Property '" + context.STRUCTURE_IDENTIFIER().GetText() + "':";
+                                itemStringResult = StringListConcat(itemStringResult, EvalExpression(node.GetText(), item, errorPrefix));
                                 break;
                             default:
                                 itemStringResult = StringListConcat(itemStringResult, new List<string>() { node.GetText() });
@@ -339,7 +342,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private List<string> EvalExpression(string exp, ParserRuleContext context)
+        private List<string> EvalExpression(string exp, ParserRuleContext context, string errorPrefix = "")
         {
             exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
             var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
@@ -347,21 +350,28 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             if (error != null || result == null)
             {
                 var errorMsg = string.Empty;
-                if (context != null)
-                {
-                    errorMsg += LGErrors.ErrorExpression(context.GetText());
-                }
 
+                var childErrorMsg = string.Empty;
                 if (error != null)
                 {
-                    errorMsg += error;
+                    childErrorMsg += error;
                 }
                 else if (result == null)
                 {
-                    errorMsg += LGErrors.NullExpression(exp);
+                    childErrorMsg += LGErrors.NullExpression(exp);
                 }
 
-                ThrowEvaluateException(errorMsg);
+                if (context != null)
+                {
+                    errorMsg += LGErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
+                }
+
+                if (evaluationTargetStack.Count > 0)
+                {
+                    evaluationTargetStack.Pop();
+                }
+
+                throw new Exception(childErrorMsg + errorMsg);
             }
 
             if (result is IList &&
@@ -452,7 +462,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (!this.TemplateMap.ContainsKey(templateName))
             {
-                ThrowEvaluateException(LGErrors.TemplateNotExist(templateName));
+                throw new Exception(LGErrors.TemplateNotExist(templateName));
             }
 
             var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
@@ -460,7 +470,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (expectedArgsCount != actualArgsCount)
             {
-                ThrowEvaluateException(LGErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
+                throw new Exception(LGErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
             }
         }
 
@@ -484,20 +494,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return expanderExpression;
-        }
-
-        private void ThrowEvaluateException(string errorMessage)
-        {
-            var currentTemplateName = CurrentTarget().TemplateName;
-
-            errorMessage = $"[{currentTemplateName}]" + errorMessage;
-
-            if (evaluationTargetStack.Count > 0)
-            {
-                evaluationTargetStack.Pop();
-            }
-
-            throw new Exception(errorMessage);
         }
     }
 }

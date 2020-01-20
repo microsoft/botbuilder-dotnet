@@ -56,7 +56,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 result.Add(BuildLGDiagnostic(
                     LGErrors.NoTemplate,
-                    DiagnosticSeverity.Warning));
+                    DiagnosticSeverity.Warning,
+                    includeTemplateNameInfo: false));
 
                 return result;
             }
@@ -76,7 +77,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var errorTemplateName = templateNameLine.errorTemplateName();
             if (errorTemplateName != null)
             {
-                result.Add(BuildLGDiagnostic(LGErrors.InvalidTemplateName, context: errorTemplateName));
+                result.Add(BuildLGDiagnostic(LGErrors.InvalidTemplateName, context: errorTemplateName, includeTemplateNameInfo: false));
             }
             else
             {
@@ -175,11 +176,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         // KeyValueStructuredLine
                         var structureValues = body.keyValueStructureLine().keyValueStructureValue();
+                        var errorPrefix = "Property '" + body.keyValueStructureLine().STRUCTURE_IDENTIFIER().GetText() + "':";
                         foreach (var structureValue in structureValues)
                         {
                             foreach (var expression in structureValue.EXPRESSION_IN_STRUCTURE_BODY())
                             {
-                                result.AddRange(CheckExpression(expression.GetText(), structureValue));
+                                result.AddRange(CheckExpression(expression.GetText(), structureValue, errorPrefix));
                             }
                         }
                     }
@@ -239,7 +241,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     }
                     else
                     {
-                        result.AddRange(CheckExpression(ifRules[idx].ifCondition().EXPRESSION(0).GetText(), conditionNode));
+                        var errorPrefix = "Condition '" + conditionNode.EXPRESSION(0).GetText() + "': ";
+                        result.AddRange(CheckExpression(conditionNode.EXPRESSION(0).GetText(), conditionNode, errorPrefix));
                     }
                 }
                 else
@@ -321,7 +324,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     }
                     else
                     {
-                        result.AddRange(CheckExpression(switchCaseNode.EXPRESSION(0).GetText(), switchCaseNode));
+                        var errorPrefix = switchExpr ? "Switch" : "Case";
+                        errorPrefix += " '" + switchCaseNode.EXPRESSION(0).GetText() + "': ";
+                        result.AddRange(CheckExpression(switchCaseNode.EXPRESSION(0).GetText(), switchCaseNode, errorPrefix));
                     }
                 }
                 else
@@ -368,7 +373,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        private List<Diagnostic> CheckExpression(string exp, ParserRuleContext context)
+        private List<Diagnostic> CheckExpression(string exp, ParserRuleContext context, string prefix = "")
         {
             var result = new List<Diagnostic>();
             exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
@@ -379,7 +384,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             catch (Exception e)
             {
-                var errorMsg = LGErrors.ExpressionParseError(exp) + e.Message;
+                var errorMsg = prefix + LGErrors.ExpressionParseError(exp) + e.Message;
 
                 result.Add(BuildLGDiagnostic(errorMsg, context: context));
                 return result;
@@ -398,9 +403,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private Diagnostic BuildLGDiagnostic(
             string message,
             DiagnosticSeverity severity = DiagnosticSeverity.Error,
-            ParserRuleContext context = null)
+            ParserRuleContext context = null,
+            bool includeTemplateNameInfo = true)
         {
-            message = $"[{visitedTemplateNames.LastOrDefault()}]" + message;
+            message = visitedTemplateNames.Count > 0 && includeTemplateNameInfo ? $"[{visitedTemplateNames.LastOrDefault()}]" + message : message;
             var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line, context.Start.Column);
             var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
             var range = new Range(startPosition, stopPosition);
