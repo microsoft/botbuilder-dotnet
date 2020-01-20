@@ -1,3 +1,5 @@
+# ![Bot Framework for dotnet](./doc/media/BotFrameworkDotnet_header.png)
+
 ### [Click here to find out what's new with Bot Framework](https://docs.microsoft.com/en-us/azure/bot-service/what-is-new?view=azure-bot-service-4.0)
 
 # Bot Framework SDK v4 for .NET
