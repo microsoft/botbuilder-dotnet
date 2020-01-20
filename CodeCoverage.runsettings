@@ -2,7 +2,7 @@
 <!-- File name extension must be .runsettings -->
 <RunSettings>
   <RunConfiguration>
-    <MaxCpuCount>4</MaxCpuCount>
+    <MaxCpuCount>10</MaxCpuCount>
   </RunConfiguration>
   <DataCollectionRunSettings>
     <DataCollectors>
