@@ -106,9 +106,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
             Assert.IsTrue(diagnostics[1].Message.Contains(LGErrors.EmptyStrucContent));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[2].Severity);
-            Assert.IsTrue(diagnostics[2].Message.Contains("Error occurs when parsing expression 'NOTemplate()'. NOTemplate does not have an evaluator"));
+            Assert.IsTrue(diagnostics[2].Message.Contains("Error occurred when parsing expression 'NOTemplate()'. NOTemplate does not have an evaluator"));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[3].Severity);
-            Assert.IsTrue(diagnostics[3].Message.Contains("Error occurs when parsing expression 'NOTemplate()'. NOTemplate does not have an evaluator"));
+            Assert.IsTrue(diagnostics[3].Message.Contains("Error occurred when parsing expression 'NOTemplate()'. NOTemplate does not have an evaluator"));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[4].Severity);
             Assert.IsTrue(diagnostics[4].Message.Contains(LGErrors.InvalidStrucName));
         }
@@ -143,9 +143,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(2, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains("Error occurs when parsing expression 'NotExistTemplate()'. NotExistTemplate does not have an evaluator"));
+            Assert.IsTrue(diagnostics[0].Message.Contains("Error occurred when parsing expression 'NotExistTemplate()'. NotExistTemplate does not have an evaluator"));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
-            Assert.IsTrue(diagnostics[1].Message.Contains("Error occurs when parsing expression 'template5('hello', 'world')'. arguments mismatch for template 'template5'. Expecting '1' arguments, actual '2'."));
+            Assert.IsTrue(diagnostics[1].Message.Contains("Error occurred when parsing expression 'template5('hello', 'world')'. arguments mismatch for template 'template5'. Expecting '1' arguments, actual '2'."));
         }
 
         [TestMethod]
@@ -180,11 +180,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(3, diagnostics.Count);
 
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains("Error occurs when parsing expression 'templateRef()'. templateRef does not have an evaluator"));
+            Assert.IsTrue(diagnostics[0].Message.Contains("Error occurred when parsing expression 'templateRef()'. templateRef does not have an evaluator"));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
-            Assert.IsTrue(diagnostics[1].Message.Contains("Error occurs when parsing expression 'templateRef(a)'. templateRef does not have an evaluator"));
+            Assert.IsTrue(diagnostics[1].Message.Contains("Error occurred when parsing expression 'templateRef(a)'. templateRef does not have an evaluator"));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[2].Severity);
-            Assert.IsTrue(diagnostics[2].Message.Contains("Error occurs when parsing expression 'templateRefInMultiLine()'. templateRefInMultiLine does not have an evaluator"));
+            Assert.IsTrue(diagnostics[2].Message.Contains("Error occurred when parsing expression 'templateRefInMultiLine()'. templateRefInMultiLine does not have an evaluator"));
         }
 
         [TestMethod]
@@ -247,7 +247,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var lgFile = GetLGFile("ErrorExpression.lg");
             var exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("template1"));
-            Assert.IsTrue(exception.Message.Contains("Error occured when evaluating"));
+            Assert.IsTrue(exception.Message.Contains("Error occurred when evaluating"));
         }
 
         [TestMethod]
@@ -255,7 +255,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var lgFile = GetLGFile("NoVariableMatch.lg");
             var exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("NoVariableMatch"));
-            Assert.IsTrue(exception.Message.Contains("Error occured when evaluating"));
+            Assert.IsTrue(exception.Message.Contains("Error occurred when evaluating"));
         }
 
         private string GetExceptionExampleFilePath(string fileName)

@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public static string TemplateNotExist(string templateName) => $"No such template '{templateName}'. ";
 
-        public static string ErrorExpression(string refFullText, string templateName, string prefixText) => $"[{templateName}] {prefixText} Error occured when evaluating '{refFullText}'. ";
+        public static string ErrorExpression(string refFullText, string templateName, string prefixText) => $"[{templateName}] {prefixText} Error occurred when evaluating '{refFullText}'. ";
 
         public static string NullExpression(string expression) => $"'{expression}' evaluated to null. ";
 
@@ -81,6 +81,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public static string TemplateExist(string templateName) => $"template '{templateName}' already exists. ";
 
-        public static string ExpressionParseError(string exp) => $"Error occurs when parsing expression '{exp}'. ";
+        public static string ExpressionParseError(string exp) => $"Error occurred when parsing expression '{exp}'. ";
     }
 }
