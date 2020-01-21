@@ -228,6 +228,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override List<string> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
         {
+            var prefixErrorMsg = context.GetPrefixErrorMessage();
             var result = new List<string>() { string.Empty };
             foreach (ITerminalNode node in context.children)
             {
@@ -241,7 +242,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         result = StringListConcat(result, new List<string>() { node.GetText().Escape() });
                         break;
                     case LGFileParser.EXPRESSION:
-                        result = StringListConcat(result, EvalExpression(node.GetText(), context));
+                        result = StringListConcat(result, EvalExpression(node.GetText(), context, prefixErrorMsg));
                         break;
                     default:
                         result = StringListConcat(result, new List<string>() { node.GetText() });

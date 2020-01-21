@@ -355,11 +355,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override List<Diagnostic> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
         {
+            var prefixErrorMsg = context.GetPrefixErrorMessage();
             var result = new List<Diagnostic>();
 
             foreach (var expression in context.EXPRESSION())
             {
-                result.AddRange(CheckExpression(expression.GetText(), context));
+                result.AddRange(CheckExpression(expression.GetText(), context, prefixErrorMsg));
             }
 
             var multiLinePrefix = context.MULTILINE_PREFIX();

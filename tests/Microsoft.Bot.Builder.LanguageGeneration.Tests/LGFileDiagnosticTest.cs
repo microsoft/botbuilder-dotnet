@@ -273,7 +273,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual("'dialog.abc' evaluated to null. [template1]  Error occurred when evaluating '-I want @{dialog.abc}'. [template2]  Error occurred when evaluating '-With composition @{template1()}'. ", exception.Message);
 
             exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("conditionalTemplate1", new { dialog = true }));
-            Assert.AreEqual("'dialog.abc' evaluated to null. [template1]  Error occurred when evaluating '-I want @{dialog.abc}'. [conditionalTemplate1]  Error occurred when evaluating '-I want @{template1()}'. ", exception.Message);
+            Assert.AreEqual("'dialog.abc' evaluated to null. [template1]  Error occurred when evaluating '-I want @{dialog.abc}'. [conditionalTemplate1] Condition '@{dialog}':  Error occurred when evaluating '-I want @{template1()}'. ", exception.Message);
 
             // do not throw exception when something is wrong with condition
             lgFile.EvaluateTemplate("conditionalTemplate2");
@@ -288,10 +288,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual("'dialog.abc' evaluated to null. [template1]  Error occurred when evaluating '-I want @{dialog.abc}'. [structured2] Property 'Text': Error occurred when evaluating 'Text=I want @{template1()}'. [structured3]  Error occurred when evaluating '@{structured2()}'. ", exception.Message);
 
             exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("switchcase1", new { turn = new { testValue = 1 } }));
-            Assert.AreEqual("'dialog.abc' evaluated to null. [switchcase1]  Error occurred when evaluating '-I want @{dialog.abc}'. ", exception.Message);
+            Assert.AreEqual("'dialog.abc' evaluated to null. [switchcase1] Case '@{1}': Error occurred when evaluating '-I want @{dialog.abc}'. ", exception.Message);
 
             exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("switchcase2", new { turn = new { testValue = 0 } }));
-            Assert.AreEqual("'dialog.abc' evaluated to null. [switchcase2]  Error occurred when evaluating '-I want @{dialog.abc}'. ", exception.Message);
+            Assert.AreEqual("'dialog.abc' evaluated to null. [switchcase2] Case 'Default': Error occurred when evaluating '-I want @{dialog.abc}'. ", exception.Message);
         }
 
         private string GetExceptionExampleFilePath(string fileName)

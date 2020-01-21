@@ -102,5 +102,40 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return ambigiousPath.Replace("\\", "/");
             }
         }
+
+        /// <summary>
+        /// Get prefix error message from normal template sting context.
+        /// </summary>
+        /// <param name="context">normal template sting context.</param>
+        /// <returns>prefix error message.</returns>
+        public static string GetPrefixErrorMessage(this LGFileParser.NormalTemplateStringContext context)
+        {
+            var errorPrefix = string.Empty;
+            if (context.Parent?.Parent?.Parent is LGFileParser.IfConditionRuleContext conditionContext)
+            {
+                errorPrefix = "Condition '" + conditionContext.ifCondition()?.EXPRESSION(0)?.GetText() + "': ";
+            }
+            else
+            {
+                if (context.Parent?.Parent?.Parent is LGFileParser.SwitchCaseRuleContext switchCaseContext)
+                {
+                    var state = switchCaseContext.switchCaseStat();
+                    if (state?.DEFAULT() != null)
+                    {
+                        errorPrefix = "Case 'Default':";
+                    }
+                    else if (state?.SWITCH() != null)
+                    {
+                        errorPrefix = $"Switch '{state.EXPRESSION(0)?.GetText()}':";
+                    }
+                    else if (state?.CASE() != null)
+                    {
+                        errorPrefix = $"Case '{state.EXPRESSION(0)?.GetText()}':";
+                    }
+                }
+            }
+
+            return errorPrefix;
+        }
     }
 }

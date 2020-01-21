@@ -197,6 +197,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override object VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
         {
+            var prefixErrorMsg = context.GetPrefixErrorMessage();
+
             var result = new List<object>();
             foreach (ITerminalNode node in context.children)
             {
@@ -210,7 +212,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         result.Add(node.GetText().Escape());
                         break;
                     case LGFileParser.EXPRESSION:
-                        result.Add(EvalExpression(node.GetText(), context));
+                        result.Add(EvalExpression(node.GetText(), context, prefixErrorMsg));
                         break;
                     default:
                         result.Add(node.GetText());
@@ -254,7 +256,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // inherit current memory's global scope
             return new CustomizedMemory(memory.GlobalMemory, new SimpleObjectMemory(newScope));
         }
-        
+
         private object VisitStructureValue(LGFileParser.KeyValueStructureLineContext context)
         {
             var values = context.keyValueStructureValue();
