@@ -65,13 +65,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Add a .csproj as resource (adding the project, referenced projects and referenced packages).
         /// </summary>
+        /// <param name="resourceExplorer">resource explorer.</param>
         /// <param name="projectFile">Project file.</param>
         /// <param name="ignoreFolders">Folders to ignore.</param>
         /// <param name="monitorChanges">Whether to track changes.</param>
         /// <returns>A new <see cref="ResourceExplorer"/>.</returns>
-        public static ResourceExplorer LoadProject(string projectFile, string[] ignoreFolders = null, bool monitorChanges = true)
+        public static ResourceExplorer LoadProject(this ResourceExplorer resourceExplorer, string projectFile, string[] ignoreFolders = null, bool monitorChanges = true)
         {
-            var explorer = new ResourceExplorer();
             projectFile = PathUtils.NormalizePath(projectFile);
             ignoreFolders = ignoreFolders?.Select(f => PathUtils.NormalizePath(f)).ToArray();
 
@@ -80,8 +80,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 var foundProject = Directory.EnumerateFiles(projectFile, "*.*proj").FirstOrDefault();
                 if (foundProject == null)
                 {
-                    explorer.AddFolder(Path.GetDirectoryName(projectFile));
-                    return explorer;
+                    resourceExplorer.AddFolder(Path.GetDirectoryName(projectFile));
+                    return resourceExplorer;
                 }
                 else
                 {
@@ -97,11 +97,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             // add folder for the project
             if (ignoreFolders != null)
             {
-                explorer.AddFolders(projectFolder, ignoreFolders, monitorChanges: monitorChanges);
+                resourceExplorer.AddFolders(projectFolder, ignoreFolders, monitorChanges: monitorChanges);
             }
             else
             {
-                explorer.AddResourceProvider(new FolderResourceProvider(projectFolder, includeSubFolders: true, monitorChanges: monitorChanges));
+                resourceExplorer.AddResourceProvider(new FolderResourceProvider(projectFolder, includeSubFolders: true, monitorChanges: monitorChanges));
             }
 
             // add project references
@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 path = Path.GetDirectoryName(path);
                 if (Directory.Exists(path))
                 {
-                    explorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: monitorChanges));
+                    resourceExplorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: monitorChanges));
                 }
             }
 
@@ -141,11 +141,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     var folder = Path.Combine(packages, PathUtils.NormalizePath(pathResolver.GetPackageDirectoryName(package)));
                     if (Directory.Exists(folder))
                     {
-                        explorer.AddResourceProvider(new FolderResourceProvider(folder, includeSubFolders: true, monitorChanges: monitorChanges));
+                        resourceExplorer.AddResourceProvider(new FolderResourceProvider(folder, includeSubFolders: true, monitorChanges: monitorChanges));
                     }
                 }
             }
 
-            return explorer;
+            return resourceExplorer;
         }
     }
+}
