@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.MockLuis
             string resourceDir,
             string name)
         {
-            _responseDir = Path.Combine(resourceDir, "cachedResponses", name);
+            _responseDir = Path.Combine(Path.GetDirectoryName(resourceDir), "cachedResponses", name);
             _name = name;
             _options = options;
             _options.IncludeAPIResults = true;
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.MockLuis
         }
 
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken = default)
-        { 
+        {
             var client = GetMockedClient(text);
             var recognizer = new LuisRecognizer(_options, client);
             var result = await recognizer.RecognizeAsync(dialogContext, text, locale, cancellationToken);

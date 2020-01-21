@@ -21,8 +21,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling
         public static void Help()
         {
             Console.Error.WriteLine("[-secret <id=profile>] [-luis <luisDir>] testscripts...");
-            Console.Error.WriteLine("-secret This is your secret id for luis keys.");
-            Console.Error.WriteLine("-luis This is the directory where luis settings arg.");
+            Console.Error.WriteLine("-secret This is your dotnet secret id for luis keys. [default = 'profile']");
+            Console.Error.WriteLine("-luis This is the directory where luis settings are.");
+            Console.Error.WriteLine("The -secret and -luis are before the testscripts so you can customize per testscript.");
+            Console.Error.WriteLine("Example: -secret GeneratorId -luis sandwich/luis generator_sandwich.test.dialog");
             System.Environment.Exit(-1);
         }
 
