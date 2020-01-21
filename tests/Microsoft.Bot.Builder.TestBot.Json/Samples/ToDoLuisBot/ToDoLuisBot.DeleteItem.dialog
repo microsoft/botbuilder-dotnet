@@ -79,7 +79,7 @@
                         {
                             "$kind": "Microsoft.SetProperty",
                             "property": "user.lists",
-                            "value": "{}"
+                            "value": "={}"
                         }
                     ]
                 },
@@ -101,7 +101,7 @@
                         {
                             "$kind": "Microsoft.SetProperty",
                             "property": "user.lists[dialog.listName]",
-                            "value": "[]"
+                            "value": "=[]"
                         }
                     ]
                 },

@@ -17,7 +17,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "user.todos",
-                        "value": "[]"
+                        "value": "=[]"
                     },
                     {
                         "$kind": "Microsoft.EditArray",

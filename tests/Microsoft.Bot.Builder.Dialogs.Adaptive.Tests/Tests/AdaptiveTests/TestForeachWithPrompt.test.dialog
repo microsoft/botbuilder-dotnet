@@ -22,7 +22,7 @@
           {
             "$kind": "Microsoft.SetProperty",
             "property": "$userAnswers",
-            "value": "[]"
+            "value": "=[]"
           },
           {
             "$kind": "Microsoft.Foreach",

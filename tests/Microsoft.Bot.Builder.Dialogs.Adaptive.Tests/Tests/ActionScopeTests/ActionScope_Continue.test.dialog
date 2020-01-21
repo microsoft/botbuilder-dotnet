@@ -11,7 +11,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "dialog.todo",
-                        "value": "[]"
+                        "value": "=[]"
                     },
                     {
                         "$kind": "Microsoft.EditArray",
