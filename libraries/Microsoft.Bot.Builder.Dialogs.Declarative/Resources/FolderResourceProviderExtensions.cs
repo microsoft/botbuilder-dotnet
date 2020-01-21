@@ -65,23 +65,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Add a .csproj as resource (adding the project, referenced projects and referenced packages).
         /// </summary>
-        /// <param name="resourceExplorer">resourceExporer to add project to.</param>
         /// <param name="projectFile">Project file.</param>
         /// <param name="ignoreFolders">Folders to ignore.</param>
         /// <param name="monitorChanges">Whether to track changes.</param>
         /// <returns>A new <see cref="ResourceExplorer"/>.</returns>
-        public static ResourceExplorer LoadProject(this ResourceExplorer resourceExplorer, string projectFile, string[] ignoreFolders = null, bool monitorChanges = true)
+        public static ResourceExplorer LoadProject(string projectFile, string[] ignoreFolders = null, bool monitorChanges = true)
         {
+            var explorer = new ResourceExplorer();
             projectFile = PathUtils.NormalizePath(projectFile);
             ignoreFolders = ignoreFolders?.Select(f => PathUtils.NormalizePath(f)).ToArray();
 
             if (!File.Exists(projectFile))
             {
-                var foundProject = System.IO.Directory.EnumerateFiles(projectFile, "*.*proj").FirstOrDefault();
+                var foundProject = Directory.EnumerateFiles(projectFile, "*.*proj").FirstOrDefault();
                 if (foundProject == null)
                 {
-                    resourceExplorer.AddFolder(Path.GetDirectoryName(projectFile));
-                    return resourceExplorer;
+                    explorer.AddFolder(Path.GetDirectoryName(projectFile));
+                    return explorer;
                 }
                 else
                 {
@@ -97,11 +97,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             // add folder for the project
             if (ignoreFolders != null)
             {
-                resourceExplorer.AddFolders(projectFolder, ignoreFolders, monitorChanges: monitorChanges);
+                explorer.AddFolders(projectFolder, ignoreFolders, monitorChanges: monitorChanges);
             }
             else
             {
-                resourceExplorer.AddResourceProvider(new FolderResourceProvider(projectFolder, includeSubFolders: true, monitorChanges: monitorChanges));
+                explorer.AddResourceProvider(new FolderResourceProvider(projectFolder, includeSubFolders: true, monitorChanges: monitorChanges));
             }
 
             // add project references
@@ -110,15 +110,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 var path = Path.Combine(projectFolder, PathUtils.NormalizePath(node.Attributes["Include"].Value));
                 path = Path.GetFullPath(path);
                 path = Path.GetDirectoryName(path);
-                if (System.IO.Directory.Exists(path))
+                if (Directory.Exists(path))
                 {
-                    resourceExplorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: monitorChanges));
+                    explorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: monitorChanges));
                 }
             }
 
             var packages = Path.GetFullPath("packages");
             var relativePackagePath = Path.Combine(@"..", "packages");
-            while (!System.IO.Directory.Exists(packages) && Path.GetDirectoryName(packages) != Path.GetPathRoot(packages))
+            while (!Directory.Exists(packages) && Path.GetDirectoryName(packages) != Path.GetPathRoot(packages))
             {
                 packages = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(packages), PathUtils.NormalizePath(relativePackagePath)));
                 if (packages == null)
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
             var pathResolver = new PackagePathResolver(packages);
 
-            // add nuget package references
+            // add NuGet package references
             foreach (XmlNode node in xmlDoc.SelectNodes("//PackageReference"))
             {
                 string packageName = node.Attributes["Include"]?.Value;
@@ -139,14 +139,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 {
                     var package = new PackageIdentity(packageName, nugetVersion);
                     var folder = Path.Combine(packages, PathUtils.NormalizePath(pathResolver.GetPackageDirectoryName(package)));
-                    if (System.IO.Directory.Exists(folder))
+                    if (Directory.Exists(folder))
                     {
-                        resourceExplorer.AddResourceProvider(new FolderResourceProvider(folder, includeSubFolders: true, monitorChanges: monitorChanges));
+                        explorer.AddResourceProvider(new FolderResourceProvider(folder, includeSubFolders: true, monitorChanges: monitorChanges));
                     }
                 }
             }
 
-            return resourceExplorer;
+            return explorer;
         }
     }
-}
