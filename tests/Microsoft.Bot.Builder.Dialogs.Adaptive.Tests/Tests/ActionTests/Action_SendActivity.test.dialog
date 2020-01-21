@@ -16,7 +16,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "$disabled",
-                        "value": "true"
+                        "value": "=true"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",

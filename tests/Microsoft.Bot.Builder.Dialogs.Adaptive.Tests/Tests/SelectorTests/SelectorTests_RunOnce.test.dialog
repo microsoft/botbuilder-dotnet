@@ -6,22 +6,18 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    "$kind": "Microsoft.IntentPattern",
                     "intent": "a",
                     "pattern": "a"
                 },
                 {
-                    "$kind": "Microsoft.IntentPattern",
                     "intent": "b",
                     "pattern": "b"
                 },
                 {
-                    "$kind": "Microsoft.IntentPattern",
                     "intent": "c",
                     "pattern": "c"
                 },
                 {
-                    "$kind": "Microsoft.IntentPattern",
                     "intent": "trigger",
                     "pattern": "trigger"
                 }
@@ -31,36 +27,33 @@
             {
                 "$kind": "Microsoft.OnIntent",
                 "intent": "a",
-
                 "actions": [
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "user.a",
-                        "value": "1"
+                        "value": "=1"
                     }
                 ]
             },
             {
                 "$kind": "Microsoft.OnIntent",
                 "intent": "b",
-
                 "actions": [
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "user.b",
-                        "value": "1"
+                        "value": "=1"
                     }
                 ]
             },
             {
                 "$kind": "Microsoft.OnIntent",
                 "intent": "c",
-
                 "actions": [
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "user.c",
-                        "value": "1"
+                        "value": "=1"
                     }
                 ]
             },
@@ -68,7 +61,6 @@
                 "$comment": "This will never fire since there are no memory references.",
                 "$kind": "Microsoft.OnIntent",
                 "intent": "trigger",
-
                 "runOnce": true,
                 "actions": [
                     {
@@ -80,8 +72,6 @@
             {
                 "$kind": "Microsoft.OnIntent",
                 "intent": "trigger",
-
-                "condition": "",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -92,7 +82,6 @@
             {
                 "$kind": "Microsoft.OnIntent",
                 "intent": "trigger",
-
                 "runOnce": true,
                 "condition": "user.a == 1",
                 "actions": [
@@ -105,7 +94,6 @@
             {
                 "$kind": "Microsoft.OnIntent",
                 "intent": "trigger",
-
                 "runOnce": true,
                 "condition": "user.a == 1 && user.b == 1",
                 "actions": [
@@ -118,7 +106,6 @@
             {
                 "$kind": "Microsoft.OnIntent",
                 "intent": "trigger",
-
                 "runOnce": true,
                 "condition": "user.a == 1 || user.c == 1",
                 "actions": [

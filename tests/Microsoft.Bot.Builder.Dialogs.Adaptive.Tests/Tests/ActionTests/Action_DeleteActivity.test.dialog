@@ -14,7 +14,7 @@
                     },
                     {
                         "$kind": "Microsoft.DeleteActivity",
-                        "activityId": "turn.lastresult.id"
+                        "activityId": "=turn.lastresult.id"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",

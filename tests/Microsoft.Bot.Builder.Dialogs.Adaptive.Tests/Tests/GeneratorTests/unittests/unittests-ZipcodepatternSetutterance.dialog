@@ -6,9 +6,13 @@
     "entity": "utterance",
     "actions": [
         {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "@{setPropertyMessage('Zipcodepattern', @utterance)}"
+        },
+        {
             "$kind": "Microsoft.SetProperty",
             "property": "$Zipcodepattern",
-            "value": "@utterance"          
+            "value": "=@utterance"          
         }
     ]               
 }

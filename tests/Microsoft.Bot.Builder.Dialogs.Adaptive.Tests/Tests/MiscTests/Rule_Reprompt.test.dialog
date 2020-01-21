@@ -53,7 +53,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "user.name",
-                        "value": "@name"
+                        "value": "=@name"
                     }
                 ]
             }

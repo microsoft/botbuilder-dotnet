@@ -20,8 +20,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.EditActions";
 
-        private Expression disabled;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="EditActions"/> class.
         /// </summary>
@@ -44,11 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets the actions to be applied to the active action.
@@ -66,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The type of change to appy to the active actions.
         /// </value>
         [JsonProperty("changeType")]
-        public ActionChangeType ChangeType { get; set; }
+        public EnumExpression<ActionChangeType> ChangeType { get; set; } = new EnumExpression<ActionChangeType>();
 
         public virtual IEnumerable<Dialog> GetDependencies()
         {
@@ -75,7 +69,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -91,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 var changes = new ActionChangeList()
                 {
-                    ChangeType = ChangeType,
+                    ChangeType = ChangeType.GetValue(dcState),
                     Actions = planActions.ToList()
                 };
 

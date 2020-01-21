@@ -22,8 +22,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var startPosition = new Position(line, charPositionInLine);
             var stopPosition = new Position(line, charPositionInLine + offendingSymbol.StopIndex - offendingSymbol.StartIndex + 1);
             var range = new Range(startPosition, stopPosition);
-            msg = $"source: {source}. syntax error message: {msg}";
-            var diagnostic = new Diagnostic(range, msg, DiagnosticSeverity.Error);
+            var diagnostic = new Diagnostic(range, msg, DiagnosticSeverity.Error, source);
             throw new LGException(diagnostic.ToString(), new List<Diagnostic>() { diagnostic });
         }
     }

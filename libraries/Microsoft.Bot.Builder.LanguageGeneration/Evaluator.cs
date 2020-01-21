@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
@@ -21,6 +20,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         public const string LGType = "lgType";
         public static readonly Regex ExpressionRecognizeRegex = new Regex(@"(?<!\\)@{(((\'([^'\r\n])*?\')|(\""([^""\r\n])*?\""))|[^\r\n{}'""])*?}", RegexOptions.Compiled);
+        private const string ReExecuteSuffix = "!";
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
         public Evaluator(List<LGTemplate> templates, ExpressionEngine expressionEngine)
@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
 
-            // generate a new customzied expression engine by injecting the template as functions
+            // generate a new customized expression engine by injecting the template as functions
             ExpressionEngine = new ExpressionEngine(CustomizedEvaluatorLookup(expressionEngine.EvaluatorLookup));
         }
 
@@ -38,16 +38,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public Dictionary<string, LGTemplate> TemplateMap { get; }
 
-        public object EvaluateTemplate(string templateName, object scope)
+        public object EvaluateTemplate(string inputTemplateName, object scope)
         {
+            (var reExecute, var templateName) = ParseTemplateName(inputTemplateName);
+
             if (!TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception($"[{templateName}] not found");
+                throw new Exception(LGErrors.TemplateNotExist(templateName));
             }
 
             if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"Loop detected: {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"{LGErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             var templateTarget = new EvaluationTarget(templateName, scope);
@@ -59,18 +61,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 previousEvaluateTarget = evaluationTargetStack.Peek();
 
-                if (previousEvaluateTarget.EvaluatedChildren.ContainsKey(currentEvaluateId))
+                if (!reExecute && previousEvaluateTarget.EvaluatedChildren.ContainsKey(currentEvaluateId))
                 {
                     return previousEvaluateTarget.EvaluatedChildren[currentEvaluateId];
                 }
             }
 
-            // Using a stack to track the evalution trace
+            // Using a stack to track the evaluation trace
             evaluationTargetStack.Push(templateTarget);
             var result = Visit(TemplateMap[templateName].ParseTree);
             if (previousEvaluateTarget != null)
             {
-                previousEvaluateTarget.EvaluatedChildren.Add(currentEvaluateId, result);
+                previousEvaluateTarget.EvaluatedChildren[currentEvaluateId] = result;
             }
 
             evaluationTargetStack.Pop();
@@ -223,11 +225,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return string.Join(string.Empty, result);
         }
 
-        public object ConstructScope(string templateName, List<object> args)
+        public object ConstructScope(string inputTemplateName, List<object> args)
         {
+            var templateName = ParseTemplateName(inputTemplateName).pureTemplateName;
+
             if (!TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception($"No such template {templateName}");
+                throw new Exception(LGErrors.TemplateNotExist(templateName));
             }
 
             var parameters = TemplateMap[templateName].Parameters;
@@ -249,7 +253,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             else
             {
-                throw new Exception("Scope is a LG customized memory");
+                throw new Exception("Scope is not a LG customized memory");
             }
         }
         
@@ -333,12 +337,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
             if (error != null)
             {
-                throw new Exception($"Error occurs when evaluating expression {exp}: {error}");
+                throw new Exception(LGErrors.ErrorExpression(exp, error));
             }
 
             if (result == null)
             {
-                throw new Exception($"Error occurs when evaluating expression '{exp}': {exp} is evaluated to null");
+                throw new Exception(LGErrors.NullExpression(exp));
             }
 
             return result;
@@ -355,7 +359,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return parse.TryEvaluate(scope);
         }
 
-        // Genearte a new lookup function based on one lookup function
+        // Generate a new lookup function based on one lookup function
         private EvaluatorLookup CustomizedEvaluatorLookup(EvaluatorLookup baseLookup)
         => (string name) =>
         {
@@ -366,9 +370,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return baseLookup(name.Substring(prebuiltPrefix.Length));
             }
 
-            if (this.TemplateMap.ContainsKey(name))
+            var templateName = ParseTemplateName(name).pureTemplateName;
+
+            if (this.TemplateMap.ContainsKey(templateName))
             {
-                return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
+                return new ExpressionEvaluator(templateName, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
             }
 
             const string template = "template";
@@ -382,21 +388,25 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (name.Equals(fromFile))
             {
-                return new ExpressionEvaluator(fromFile, BuiltInFunctions.Apply(this.FromFile()), ReturnType.String, this.ValidateFromFile);
+                return new ExpressionEvaluator(fromFile, BuiltInFunctions.Apply(this.FromFile()), ReturnType.String, BuiltInFunctions.ValidateUnaryString);
             }
 
             const string activityAttachment = "ActivityAttachment";
 
             if (name.Equals(activityAttachment))
             {
-                return new ExpressionEvaluator(activityAttachment, BuiltInFunctions.Apply(this.ActivityAttachment()), ReturnType.Object, this.ValidateActivityAttachment);
+                return new ExpressionEvaluator(
+                    activityAttachment,
+                    BuiltInFunctions.Apply(this.ActivityAttachment()),
+                    ReturnType.Object,
+                    (expr) => BuiltInFunctions.ValidateOrder(expr, null, ReturnType.Object, ReturnType.String));
             }
 
             const string isTemplate = "isTemplate";
 
             if (name.Equals(isTemplate))
             {
-                return new ExpressionEvaluator(isTemplate, BuiltInFunctions.Apply(this.IsTemplate()), ReturnType.Boolean, this.ValidateIsTemplate);
+                return new ExpressionEvaluator(isTemplate, BuiltInFunctions.Apply(this.IsTemplate()), ReturnType.Boolean, BuiltInFunctions.ValidateUnaryString);
             }
 
             return baseLookup(name);
@@ -409,20 +419,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
            return TemplateMap.ContainsKey(templateName);
        };
 
-        private void ValidateIsTemplate(Expression expression)
-        {
-            if (expression.Children.Length != 1)
-            {
-                throw new Exception("isTemplate should have one parameter");
-            }
-
-            var children0 = expression.Children[0];
-            if (children0.ReturnType != ReturnType.Object && children0.ReturnType != ReturnType.String)
-            {
-                throw new Exception($"{children0} can't be used as a template name, must be a string value");
-            }
-        }
-
         private Func<IReadOnlyList<object>, object> ActivityAttachment()
         => (IReadOnlyList<object> args) =>
         {
@@ -434,30 +430,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             };
         };
 
-        private void ValidateActivityAttachment(Expression expression)
-        {
-            if (expression.Children.Length != 2)
-            {
-                throw new Exception("ActivityAttachment should have two parameters");
-            }
-
-            var children0 = expression.Children[0];
-            if (children0.ReturnType != ReturnType.Object)
-            {
-                throw new Exception($"{children0} can't be used as a json file");
-            }
-
-            var children1 = expression.Children[1];
-            if (children1.ReturnType != ReturnType.Object && children1.ReturnType != ReturnType.String)
-            {
-                throw new Exception($"{children0} can't be used as an attachment format, must be a string value");
-            }
-        }
-
         private Func<IReadOnlyList<object>, object> FromFile()
        => (IReadOnlyList<object> args) =>
        {
-           var filePath = ImportResolver.NormalizePath(args[0].ToString());
+           var filePath = args[0].ToString().NormalizePath();
 
            var resourcePath = GetResourcePath(filePath);
            var stringContent = File.ReadAllText(resourcePath);
@@ -466,20 +442,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
            var result = ExpressionRecognizeRegex.Replace(stringContent, evalutor);
            return result.Escape();
        };
-
-        private void ValidateFromFile(Expression expression)
-        {
-            if (expression.Children.Length != 1)
-            {
-                throw new Exception("fromFile should have one parameter");
-            }
-
-            var children0 = expression.Children[0];
-            if (children0.ReturnType != ReturnType.Object && children0.ReturnType != ReturnType.String)
-            {
-                throw new Exception($"{children0} can't be used as a file path, must be a string value");
-            }
-        }
 
         private string GetResourcePath(string filePath)
         {
@@ -492,7 +454,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             else
             {
                 var template = TemplateMap[CurrentTarget().TemplateName];
-                var sourcePath = ImportResolver.NormalizePath(template.Source);
+                var sourcePath = template.Source.NormalizePath();
                 var baseFolder = Environment.CurrentDirectory;
                 if (Path.IsPathRooted(sourcePath))
                 {
@@ -518,35 +480,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         // Validator for template(...)
         private void ValidateTemplateFunction(Expression expression)
         {
-            if (expression.Children.Length == 0)
-            {
-                throw new Exception("No template name is provided when calling template, expected: template(templateName, ...args) ");
-            }
+            BuiltInFunctions.ValidateAtLeastOne(expression);
 
             var children0 = expression.Children[0];
 
-            // Validate return type
             if (children0.ReturnType != ReturnType.Object && children0.ReturnType != ReturnType.String)
             {
-                throw new Exception($"{children0} can't be used as a template name, must be a string value");
+                throw new Exception(LGErrors.ErrorTemplateNameformat(children0.ToString()));
             }
 
             // Validate more if the name is string constant
             if (children0.Type == ExpressionType.Constant)
             {
                 var templateName = (children0 as Constant).Value.ToString();
-                if (!this.TemplateMap.ContainsKey(templateName))
-                {
-                    throw new Exception($"No such template '{templateName}' to call in {expression}");
-                }
-
-                var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
-                var actualArgsCount = expression.Children.Length - 1;
-
-                if (actualArgsCount != 0 && expectedArgsCount != actualArgsCount)
-                {
-                    throw new Exception($"Arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
-                }
+                CheckTemplateReference(templateName, expression.Children.Skip(1));
             }
         }
 
@@ -559,20 +506,35 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private void ValidTemplateReference(Expression expression)
         {
-            var templateName = expression.Type;
+            CheckTemplateReference(expression.Type, expression.Children);
+        }
 
+        private void CheckTemplateReference(string templateName, IEnumerable<Expression> children)
+        {
             if (!this.TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception($"no such template '{templateName}' to call in {expression}");
+                throw new Exception(LGErrors.TemplateNotExist(templateName));
             }
 
             var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
-            var actualArgsCount = expression.Children.Length;
+            var actualArgsCount = children.Count();
 
             if (actualArgsCount != 0 && expectedArgsCount != actualArgsCount)
             {
-                throw new Exception($"arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
+                throw new Exception(LGErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
             }
+        }
+
+        private (bool reExecute, string pureTemplateName) ParseTemplateName(string templateName)
+        {
+            if (templateName == null)
+            {
+                throw new ArgumentException("template name is null.");
+            }
+
+            return templateName.EndsWith(ReExecuteSuffix) ?
+                (true, templateName.Substring(0, templateName.Length - ReExecuteSuffix.Length))
+                : (false, templateName);
         }
     }
 }

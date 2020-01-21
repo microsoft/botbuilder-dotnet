@@ -29,5 +29,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// </value>
         [JsonProperty("noAction")]
         public bool NoAction { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the recognizer should check for Numbers using the NumberRecognizer's
+        /// NumberModel.
+        /// </summary>
+        /// <value>
+        /// Default is <c>true</c>.  If <c>false</c>, the Number Model will not be used to check the utterance for numbers.
+        /// </value>
+        [JsonProperty("recognizeNumbers")]
+        public bool RecognizeNumbers { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the recognizer should check for Ordinal Numbers using the NumberRecognizer's
+        /// OrdinalModel.
+        /// </summary>
+        /// <value>
+        /// Default is <c>true</c>.  If <c>false</c>, the Ordinal Model will not be used to check the utterance for ordinal numbers.
+        /// </value>
+        [JsonProperty("recognizeOrdinals")]
+        public bool RecognizeOrdinals { get; set; } = true;
     }
 }

@@ -18,8 +18,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.DeleteProperty";
         
-        private Expression disabled;
-
         [JsonConstructor]
         public DeleteProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
@@ -47,11 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets property path to remove.
@@ -63,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Property path to remove.
         /// </value>
         [JsonProperty("property")]
-        public string Property { get; set; }
+        public StringExpression Property { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -71,8 +65,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
+            
+            var dcState = dc.GetState();
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -80,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Ensure planning context
             if (dc is SequenceContext planning)
             {
-                dc.GetState().RemoveValue(Property);
+                dcState.RemoveValue(Property.GetValue(dcState));
                 return await dc.EndDialogAsync();
             }
             else

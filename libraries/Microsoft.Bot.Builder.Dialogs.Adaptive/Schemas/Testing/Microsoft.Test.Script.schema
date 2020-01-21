@@ -21,6 +21,12 @@
                 "$kind": "Microsoft.Test.ITestAction"
             }
         },
+        "locale": {
+            "type": "string",
+            "title": "Locale",
+            "description": "Set the locale for the user utterances in the script.",
+            "default": "en-us"
+        },
         "enableTrace": {
             "type": "boolean",
             "title": "Enable Trace Activity",

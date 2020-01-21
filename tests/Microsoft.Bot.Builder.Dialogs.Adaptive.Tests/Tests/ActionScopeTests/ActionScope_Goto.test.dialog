@@ -29,7 +29,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "$counter",
-                        "value": "$counter + 1"
+                        "value": "=$counter + 1"
                     },
                     {
                         "$kind": "Microsoft.GotoAction",

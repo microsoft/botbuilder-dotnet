@@ -1,9 +1,0 @@
-
-{
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
-    "$kind": "Microsoft.MultiLanguageRecognizer",
-    "recognizers": {
-        "en-us": "unittests.en-us.lu",
-        "": "unittests.en-us.lu"
-    }
-}

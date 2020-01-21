@@ -35,21 +35,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!templateMap.ContainsKey(templateName))
             {
-                throw new Exception($"[{templateName}] template not found");
+                throw new Exception(LGErrors.TemplateNotExist(templateName));
             }
 
             if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"Loop detected: {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"{LGErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
-            // Using a stack to track the evalution trace
+            // Using a stack to track the evaluation trace
             evaluationTargetStack.Push(new EvaluationTarget(templateName, null));
 
-            // we don't exclude paratemters any more
+            // we don't exclude parameters any more
             // because given we don't track down for templates have parameters
             // the only scenario that we are still analyzing an parameterized template is
-            // this template is root template to anaylze, in this we also don't have exclude parameters
+            // this template is root template to analyze, in this we also don't have exclude parameters
             var dependencies = Visit(templateMap[templateName].ParseTree);
             evaluationTargetStack.Pop();
 
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
 
-            throw new Exception("template name match failed");
+            return new AnalyzerResult();
         }
 
         public override AnalyzerResult VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
@@ -191,7 +191,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         /// <summary>
         /// Extract the templates ref out from an expression
-        /// return only those without paramaters.
+        /// return only those without parameters.
         /// </summary>
         /// <param name="exp">Expression.</param>
         /// <returns>template refs.</returns>
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
-                    // if template has params, just get the templateref without variables.
+                    // if template has parameters, just get the template ref without variables.
                     result.Union(new AnalyzerResult(templateReferences: this.AnalyzeTemplate(templateName).TemplateReferences));
                 }
             }
