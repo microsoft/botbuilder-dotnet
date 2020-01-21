@@ -11,12 +11,20 @@
         {
             "properties": {
                 "expectedProperties": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
+                    "$role": "expression",
                     "title": "Expected Properties",
-                    "description": "Properties expected to be filled by entities from the user"
+                    "description": "Properties expected to be filled by entities from the user",
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
                 }
             }
         }

@@ -6,9 +6,13 @@
     "entity": "utterance",
     "actions": [
         {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "@{setPropertyMessage('Utteranceproperty', @utterance)}"
+        },
+        {
             "$kind": "Microsoft.SetProperty",
             "property": "$Utteranceproperty",
-            "value": "@utterance"          
+            "value": "=@utterance"          
         }
     ]               
 }

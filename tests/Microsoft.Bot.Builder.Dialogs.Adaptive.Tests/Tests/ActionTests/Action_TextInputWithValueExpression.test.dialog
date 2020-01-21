@@ -11,12 +11,12 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "dialog.firstName",
-                        "value": "'lu'"
+                        "value": "lu"
                     },
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "dialog.lastName",
-                        "value": "'han'"
+                        "value": "han"
                     },
                     {
                         "$kind": "Microsoft.IfCondition",
@@ -31,7 +31,7 @@
                                 "validations": [
                                     "this.value.Length > 3"
                                 ],
-                                "value": "concat(toUpper($firstName),toUpper($lastName))"
+                                "value": "=concat(toUpper($firstName),toUpper($lastName))"
                             }
                         ]
                     },

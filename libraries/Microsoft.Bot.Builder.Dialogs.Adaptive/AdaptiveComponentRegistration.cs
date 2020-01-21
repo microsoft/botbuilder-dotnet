@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Converters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
@@ -14,6 +15,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
@@ -21,6 +23,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Newtonsoft.Json;
+using static Microsoft.Bot.Builder.Dialogs.Adaptive.Actions.EditArray;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
@@ -167,7 +170,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new InterfaceConverter<TestAction>(refResolver, sourceMap, paths);
             yield return new InterfaceConverter<EntityRecognizer>(refResolver, sourceMap, paths);
             yield return new InterfaceConverter<ITriggerSelector>(refResolver, sourceMap, paths);
-            yield return new ExpressionPropertyConverter<ChoiceSet>();
+
+            yield return new IntExpressionConverter();
+            yield return new NumberExpressionConverter();
+            yield return new StringExpressionConverter();
+            yield return new ValueExpressionConverter();
+            yield return new BoolExpressionConverter();
+            yield return new DialogExpressionConverter(refResolver, sourceMap, paths);
+
+            yield return new ObjectExpressionConverter<ChoiceSet>();
+            yield return new ObjectExpressionConverter<ChoiceFactoryOptions>();
+            yield return new ObjectExpressionConverter<FindChoicesOptions>();
+
+            yield return new ArrayExpressionConverter<string>();
+            yield return new ArrayExpressionConverter<Choice>();
+
+            yield return new EnumExpressionConverter<ActionChangeType>();
+            yield return new EnumExpressionConverter<ArrayChangeType>();
+            yield return new EnumExpressionConverter<AttachmentOutputFormat>();
+            yield return new EnumExpressionConverter<ListStyle>();
+            yield return new EnumExpressionConverter<ChoiceOutputFormat>();
+
+            yield return new ChoiceSetConverter();
             yield return new ActivityTemplateConverter();
             yield return new JObjectConverter(refResolver);
         }

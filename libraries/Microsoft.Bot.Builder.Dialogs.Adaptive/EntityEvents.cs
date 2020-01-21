@@ -46,7 +46,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <returns>Event queues.</returns>
         public static EntityEvents Read(SequenceContext context)
         {
-            if (!context.GetState().TryGetValue<EntityEvents>(Events, out var queues))
+            var dcState = context.GetState();
+
+            if (!dcState.TryGetValue<EntityEvents>(Events, out var queues))
             {
                 queues = new EntityEvents();
             }

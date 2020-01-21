@@ -29,6 +29,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public IMemory LocalMemory { get; set; }
 
+        public void SetValue(string path, object value)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool TryGetValue(string path, out object value)
         {
             value = null;
@@ -48,11 +53,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return true;
-        }
-
-        public void SetValue(string path, object value)
-        {
-            throw new Exception("LG memory are readonly");
         }
 
         public string Version()
