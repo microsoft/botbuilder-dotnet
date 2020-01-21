@@ -91,9 +91,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling
                     var timer = new System.Diagnostics.Stopwatch();
                     Console.Write($"Executing {arg}");
                     timer.Start();
-                    script.ExecuteAsync(testName: name, configuration: config, resourceExplorer: explorer).Wait();
+                    var adapter = script.DefaultTestAdapter(testName: name, resourceExplorer: explorer, configuration: config);
                     timer.Stop();
-                    Console.WriteLine($" took {timer.ElapsedMilliseconds} ms");
+                    var loading = timer.ElapsedMilliseconds;
+                    Console.Write($" (loading {loading} ms)");
+                    timer.Start();
+                    script.ExecuteAsync(adapter: adapter).Wait();
+                    timer.Stop();
+                    Console.WriteLine($" (executing {timer.ElapsedMilliseconds} ms) took {loading + timer.ElapsedMilliseconds} ms");
                 }
             }
         }
