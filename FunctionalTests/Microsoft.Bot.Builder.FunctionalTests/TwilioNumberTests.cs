@@ -30,25 +30,25 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             GetEnvironmentVars();
             TwilioClient.Init(_twilioAccountSid, _twilioAuthToken);
             var echoGuid = Guid.NewGuid().ToString();
-            await SendMessage(echoGuid);
+            await SendMessageAsync(echoGuid);
             var response = RetrieveMessage();
 
             Assert.IsTrue(response.Contains($"Echo: {echoGuid}"));
         }
 
-        private async Task SendMessage(string message)
+        private async Task SendMessageAsync(string message)
         {
             var parameters = GetParameters(message);
-            var signature = ComputeSignature(_botEndpoint, parameters);
+            var signature = ComputeSignature(parameters);
             using var client = new HttpClient();
             client.DefaultRequestHeaders.Add("X-Twilio-Signature", signature);
 
             await client.PostAsync(_botEndpoint, new FormUrlEncodedContent(parameters));
         }
 
-        private string ComputeSignature(string url, IDictionary<string, string> parameters)
+        private string ComputeSignature(IDictionary<string, string> parameters)
         {
-            var toEncode = new StringBuilder(url);
+            var toEncode = new StringBuilder(_botEndpoint);
             
             if (parameters != null)
             {
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             var parameters = new Dictionary<string, string>
             {
                 { "Body", message },
-                { "From", this._senderNumber }
+                { "From", _senderNumber }
             };
 
             return parameters;
