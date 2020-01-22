@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             }
             else
             {
-                choiceInput.Choices = new ChoiceSet();
+                choiceInput.Choices = choices;
                 choiceInput.Style = ListStyle.Auto;
                 rootDialog.Triggers.Add(new OnBeginDialog()
                 {
