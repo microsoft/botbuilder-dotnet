@@ -808,6 +808,31 @@ namespace Microsoft.Bot.Expressions.Tests
             Assert.AreEqual(path, "b");
         }
 
+        [TestMethod]
+        public void TestTryEvaluateOfT()
+        {
+            AssertResult<bool>("true", true);
+            AssertResult<bool>("false", false);
+            AssertResult<string>("'this is a test'", "this is a test");
+            AssertResult<byte>(byte.MaxValue.ToString(), byte.MaxValue);
+            AssertResult<short>(short.MaxValue.ToString(), short.MaxValue);
+            AssertResult<int>(int.MaxValue.ToString(), int.MaxValue);
+            AssertResult<long>(int.MaxValue.ToString(), int.MaxValue);
+            AssertResult<ushort>(ushort.MaxValue.ToString(), ushort.MaxValue);
+            AssertResult<uint>(uint.MaxValue.ToString(), uint.MaxValue);
+            AssertResult<ulong>(uint.MaxValue.ToString(), uint.MaxValue);
+            AssertResult<float>(15.32322F.ToString(), 15.32322F);
+            AssertResult<double>(15.32322.ToString(), 15.32322);
+        }
+
+        private void AssertResult<T>(string text, T expected)
+        {
+            var memory = new object();
+            var (result, error) = new ExpressionEngine().Parse(text).TryEvaluate<T>(memory);
+            Assert.AreEqual(expected, result);
+            Assert.IsNull(error);
+        }
+
         private void AssertObjectEquals(object expected, object actual)
         {
             if (IsNumber(actual) && IsNumber(expected))

@@ -12,7 +12,7 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Zipcodepattern",
-            "value": "@number"          
+            "value": "=@number"          
         }
     ]               
 }

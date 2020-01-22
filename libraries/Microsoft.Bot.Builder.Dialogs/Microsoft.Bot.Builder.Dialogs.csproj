@@ -51,7 +51,9 @@
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.2.9" />
     <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.2.9" />
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" >
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

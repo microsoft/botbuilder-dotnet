@@ -12,7 +12,7 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Name",
-            "value": "@utterance"          
+            "value": "=@utterance"          
         }
     ]               
 }

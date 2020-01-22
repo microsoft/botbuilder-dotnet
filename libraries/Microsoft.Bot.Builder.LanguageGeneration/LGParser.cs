@@ -150,10 +150,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Extract LG templates from a file parse tree.
         /// </summary>
-        /// <param name="file">LGFile context from antlr parser.</param>
-        /// <param name="lgfileContent">LGFile content.</param>
+        /// <param name="file">LG file context from ANTLR parser.</param>
+        /// <param name="lgfileContent">LG file content.</param>
         /// <param name="source">text source.</param>
-        /// <returns>lg template list.</returns>
+        /// <returns>LG template list.</returns>
         private static IList<LGTemplate> ExtractLGTemplates(LGFileParser.FileContext file, string lgfileContent, string source = "")
         {
             return file == null ? new List<LGTemplate>() :
@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Extract LG imports from a file parse tree.
         /// </summary>
-        /// <param name="file">LGFile context from antlr parser.</param>
+        /// <param name="file">LG file context from ANTLR parser.</param>
         /// <param name="source">text source.</param>
         /// <returns>lg template list.</returns>
         private static IList<LGImport> ExtractLGImports(LGFileParser.FileContext file, string source = "")

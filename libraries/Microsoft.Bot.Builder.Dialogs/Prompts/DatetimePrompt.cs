@@ -100,7 +100,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 var message = turnContext.Activity.AsMessageActivity();
                 var culture = turnContext.Activity.Locale ?? DefaultLocale ?? English;
-                var results = DateTimeRecognizer.RecognizeDateTime(message.Text, culture);
+                var refTime = turnContext.Activity.LocalTimestamp?.LocalDateTime;
+                var results = DateTimeRecognizer.RecognizeDateTime(message.Text, culture, refTime: refTime);
                 if (results.Count > 0)
                 {
                     // Return list of resolutions from first match

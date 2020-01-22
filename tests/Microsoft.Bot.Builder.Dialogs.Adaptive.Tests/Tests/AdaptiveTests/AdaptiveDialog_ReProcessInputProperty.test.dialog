@@ -52,7 +52,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "turn.interrupted",
-                        "value": "False"
+                        "value": "=False"
                     }
                 ]
             }

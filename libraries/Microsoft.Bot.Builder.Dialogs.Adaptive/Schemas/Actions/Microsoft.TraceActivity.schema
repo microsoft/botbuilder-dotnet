@@ -12,6 +12,7 @@
         },
         "disabled": {
             "$role": "expression",
+            "type": [ "boolean", "string" ],
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -19,22 +20,26 @@
             ]
         },
         "name": {
+            "$role": "expression",
             "type": "string",
             "title": "Name",
             "description": "Name of the trace activity"
         },
         "label": {
+            "$role": "expression",
             "type": "string",
             "title": "Label",
             "description": "Label for the trace activity (used to identify it in a list of trace activities.)"
         },
         "valueType": {
+            "$role": "expression",
             "type": "string",
             "title": "Value type",
             "description": "Type of value"
         },
         "value": {
             "$role": "expression",
+            "type": [ "object", "array", "number", "integer", "boolean", "string" ],
             "title": "Value",
             "description": "Property that holds the value to send as trace activity."
         }

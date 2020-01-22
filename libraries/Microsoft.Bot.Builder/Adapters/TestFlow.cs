@@ -327,26 +327,11 @@ namespace Microsoft.Bot.Builder.Adapters
                         timeout = uint.MaxValue;
                     }
 
-                    var start = DateTime.UtcNow;
-                    while (true)
-                    {
-                        var current = DateTime.UtcNow;
-
-                        if ((current - start).TotalMilliseconds > timeout)
-                        {
-                            throw new TimeoutException($"{timeout}ms Timed out waiting for:'{description}'");
-                        }
-
-                        IActivity replyActivity = _adapter.GetNextReply();
-                        if (replyActivity != null)
-                        {
-                            // if we have a reply
-                            validateActivity(replyActivity);
-                            return;
-                        }
-
-                        await Task.Delay(100).ConfigureAwait(false);
-                    }
+                    CancellationTokenSource cts = new CancellationTokenSource();
+                    cts.CancelAfter((int)timeout);
+                    IActivity replyActivity = await _adapter.GetNextReplyAsync(cts.Token).ConfigureAwait(false);
+                    validateActivity(replyActivity);
+                    return;
                 },
                 this);
         }
@@ -366,24 +351,19 @@ namespace Microsoft.Bot.Builder.Adapters
                     // NOTE: See details code in above method.
                     await this._testTask.ConfigureAwait(false);
 
-                    var start = DateTime.UtcNow;
-                    while (true)
+                    try
                     {
-                        var current = DateTime.UtcNow;
-
-                        if ((current - start).TotalMilliseconds > timeout)
-                        {
-                            return;
-                        }
-
-                        IActivity replyActivity = _adapter.GetNextReply();
+                        CancellationTokenSource cts = new CancellationTokenSource();
+                        cts.CancelAfter((int)timeout);
+                        IActivity replyActivity = await _adapter.GetNextReplyAsync(cts.Token).ConfigureAwait(false);
                         if (replyActivity != null)
                         {
                             // if we have a reply
                             throw new Exception($"{replyActivity.ToString()} is repsonded when waiting for no reply:'{description}'");
                         }
-
-                        await Task.Delay(100).ConfigureAwait(false);
+                    }
+                    catch (TaskCanceledException)
+                    {
                     }
                 },
                 this);
