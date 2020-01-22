@@ -48,7 +48,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
         /// </summary>
-        /// <param name="application">The LUIS application to use to recognize text.</param>
         /// <param name="recognizerOptions"> The LUIS recognizer version options.</param>
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
         public LuisRecognizer(LuisRecognizerOptions recognizerOptions, HttpClientHandler clientHandler = null)

@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -251,7 +250,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             // Setup mocked Webex API client
             const string expectedResponseId = "Mocked Response Id";
             var webexApi = new Mock<WebexClientWrapper>(_testOptions);
-            webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Uri>>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
+            webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Uri>>(), It.IsAny<MessageTextType>(), It.IsAny<MessageTarget>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
 
             // Create a new Webex Adapter with the mocked classes and get the responses
             var webexAdapter = new WebexAdapter(webexApi.Object);
@@ -275,7 +274,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             // Setup mocked Webex API client
             const string expectedResponseId = "Mocked Response Id";
             var webexApi = new Mock<WebexClientWrapper>(_testOptions);
-            webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Uri>>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
+            webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Uri>>(), It.IsAny<MessageTextType>(), It.IsAny<MessageTarget>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
 
             // Create a new Webex Adapter with the mocked classes and get the responses
             var webexAdapter = new WebexAdapter(webexApi.Object);
@@ -302,7 +301,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         {
             const string expectedResponseId = "Mocked Response Id";
             var webexApi = new Mock<WebexClientWrapper>(_testOptions);
-            webexApi.Setup(x => x.CreateMessageWithAttachmentsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Attachment>>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
+            webexApi.Setup(x => x.CreateMessageWithAttachmentsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Attachment>>(), It.IsAny<MessageTextType>(), It.IsAny<MessageTarget>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
 
             var webexAdapter = new WebexAdapter(webexApi.Object);
 
@@ -327,7 +326,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         {
             const string expectedResponseId = "Mocked Response Id";
             var webexApi = new Mock<WebexClientWrapper>(_testOptions);
-            webexApi.Setup(x => x.CreateMessageWithAttachmentsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Attachment>>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
+            webexApi.Setup(x => x.CreateMessageWithAttachmentsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Attachment>>(), It.IsAny<MessageTextType>(), It.IsAny<MessageTarget>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
 
             var webexAdapter = new WebexAdapter(webexApi.Object);
 
@@ -349,7 +348,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             // Setup mocked Webex API client
             const string expectedResponseId = "Mocked Response Id";
             var webexApi = new Mock<WebexClientWrapper>(_testOptions);
-            webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Uri>>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
+            webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Uri>>(), It.IsAny<MessageTextType>(), It.IsAny<MessageTarget>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
 
             // Create a new Webex Adapter with the mocked classes and get the responses
             var webexAdapter = new WebexAdapter(webexApi.Object);

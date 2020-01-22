@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -16,12 +17,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public abstract class BaseInvokeDialog : Dialog, IDialogDependencies
     {
         // Expression for dialogId to call (allowing dynamic expression)
-        private string dialogIdToCall;
-
-        public BaseInvokeDialog(string dialogIdToCall = null, IDictionary<string, string> bindingOptions = null)
+        public BaseInvokeDialog(string dialogIdToCall = null, object bindingOptions = null)
             : base()
         {
-            this.dialogIdToCall = dialogIdToCall;
+            if (dialogIdToCall != null)
+            {
+                this.Dialog = dialogIdToCall;
+            }
 
             if (bindingOptions != null)
             {
@@ -36,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Configurable options for the dialog. 
         /// </value>
         [JsonProperty("options")]
-        public object Options { get; set; } = new JObject();
+        public ObjectExpression<object> Options { get; set; } = new ObjectExpression<object>();
 
         /// <summary>
         /// Gets or sets the dialog to call.
@@ -45,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The dialog to call.
         /// </value>
         [JsonProperty("dialog")]
-        public Dialog Dialog { get; set; }
+        public DialogExpression Dialog { get; set; } 
 
         /// <summary>
         /// Gets or sets a value indicating whether to have the new dialog should process the activity.
@@ -53,13 +55,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>The default for this will be true, which means the new dialog should not look the activity.  You can set this to false to dispatch the activity to the new dialog.</value>
         [DefaultValue(true)]
         [JsonProperty("activityProcessed")]
-        public bool ActivityProcessed { get; set; } = true;
+        public BoolExpression ActivityProcessed { get; set; } = true;
 
         public virtual IEnumerable<Dialog> GetDependencies()
         {
-            if (Dialog != null)
+            if (Dialog?.Value != null)
             {
-                yield return Dialog;
+                yield return Dialog.Value;
             }
 
             yield break;
@@ -67,30 +69,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{Dialog?.Id ?? this.dialogIdToCall}]";
+            return $"{this.GetType().Name}[{Dialog?.ToString()}]";
         }
 
         protected Dialog ResolveDialog(DialogContext dc)
         {
-            if (this.Dialog != null)
+            if (this.Dialog?.Value != null)
             {
-                return this.Dialog;
+                return this.Dialog.Value;
             }
 
-            var dialogId = this.dialogIdToCall ?? throw new Exception($"{this.GetType().Name} requires a dialog to be called.");
-            return dc.FindDialog(dialogId) ?? throw new Exception($"{dialogId} not found.");
+            var dcState = dc.GetState();
+            
+            // NOTE: we call TryEvaluate instead of TryGetValue because we want the result of the expression as a string so we can
+            // look up the string using external FindDialog().
+            var (dialogId, _) = this.Dialog.Expression.TryEvaluate<string>(dcState);
+            return dc.FindDialog(dialogId ?? throw new Exception($"{this.Dialog.ToString()} not found."));
         }
 
         protected object BindOptions(DialogContext dc, object options)
         {
+            var dcState = dc.GetState();
+
             // binding options are static definition of options with overlay of passed in options);
-            var bindingOptions = (JObject)ObjectPath.Merge(Options, options ?? new JObject());
+            var bindingOptions = (JObject)ObjectPath.Merge(this.Options.GetValue(dcState), options ?? new JObject());
             var boundOptions = new JObject();
 
             foreach (var binding in bindingOptions)
             {
                 // evalute the value
-                var (result, error) = new ExpressionEngine().Parse(binding.Value.ToString()).TryEvaluate(dc.GetState());
+                var (value, error) = new ValueExpression(binding.Value).TryGetValue(dcState);
 
                 if (error != null)
                 {
@@ -98,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
 
                 // and store in options as the result
-                boundOptions[binding.Key] = JToken.FromObject(result);
+                ObjectPath.SetPathValue(boundOptions, binding.Key, value);
             }
 
             return boundOptions;

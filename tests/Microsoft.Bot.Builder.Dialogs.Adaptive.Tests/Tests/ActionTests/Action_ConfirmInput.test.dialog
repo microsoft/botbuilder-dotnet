@@ -10,7 +10,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.ConfirmInput",
-                        "style": 1,
+                        "style": "auto",
                         "property": "user.confirmed",
                         "prompt": "yes or no",
                         "unrecognizedPrompt": "I need a yes or no."
@@ -21,7 +21,7 @@
                     },
                     {
                         "$kind": "Microsoft.ConfirmInput",
-                        "style": 1,
+                        "style": "auto",
                         "alwaysPrompt": true,
                         "property": "user.confirmed",
                         "prompt": "yes or no",
@@ -33,7 +33,7 @@
                     },
                     {
                         "$kind": "Microsoft.ConfirmInput",
-                        "style": 1,
+                        "style": "auto",
                         "alwaysPrompt": true,
                         "property": "user.confirmed",
                         "prompt": "yes or no",
@@ -45,12 +45,12 @@
                     },
                     {
                         "$kind": "Microsoft.ConfirmInput",
-                        "style": 1,
+                        "style": "auto",
                         "alwaysPrompt": true,
                         "property": "user.confirmed",
                         "prompt": "yes or no",
                         "unrecognizedPrompt": "I need a yes or no.",
-                        "outputFormat": "concat('confirmation: ', this.value)"
+                        "outputFormat": "=concat('confirmation: ', this.value)"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",

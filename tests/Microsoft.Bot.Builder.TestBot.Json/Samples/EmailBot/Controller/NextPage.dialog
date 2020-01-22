@@ -5,7 +5,7 @@
     // Todo: check page boundary.
     {
       "$kind": "Microsoft.SetProperty",
-      "value": "user.showIndex+1",
+      "value": "=user.showIndex+1",
       "property": "user.showIndex"
     }
   ]

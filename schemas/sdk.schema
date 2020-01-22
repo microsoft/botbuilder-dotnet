@@ -880,12 +880,15 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "activity": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -894,6 +897,9 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "expectedProperties": {
+                    "$role": "expression",
+                    "title": "Expected Properties",
+                    "description": "Properties expected to be filled by entities from the user",
                     "oneOf": [
                         {
                             "type": "array",
@@ -901,14 +907,14 @@
                                 "type": "string",
                                 "title": "string"
                             },
-                            "title": "array",
-                            "description": "Properties expected to be filled by entities from the user"
+                            "title": "array"
                         },
                         {
                             "type": "string",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -969,12 +975,15 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -1013,7 +1022,11 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
                     "default": 3,
@@ -1037,6 +1050,7 @@
                 },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
                     "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
                     "examples": [
@@ -1044,30 +1058,47 @@
                         "user.name",
                         "conversation.issueTitle",
                         "dialog.favColor"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "defaultValue": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Default value",
                     "description": "Expression to examine on each turn of the conversation as possible value to the property.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
                     "examples": [
                         "@userName"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "alwaysPrompt": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified  'property' is not empty.",
                     "default": false,
@@ -1077,15 +1108,19 @@
                 },
                 "allowInterruptions": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
                     "examples": [
                         "true"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "outputFormat": {
+                    "$role": "expression",
                     "type": "string",
                     "enum": [
                         "all",
@@ -1154,15 +1189,23 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
+                    "$role": "expression",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
@@ -1171,7 +1214,11 @@
                     "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "options": {
-                    "type": "object",
+                    "$role": "expression",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
                     "title": "Options",
                     "description": "One or more options that are passed to the dialog that is called.",
                     "additionalProperties": {
@@ -1180,19 +1227,23 @@
                     }
                 },
                 "activityProcessed": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Activity Processed",
                     "description": "When set to false, the dialog that is called can process the current activity.",
                     "default": true
                 },
                 "resultProperty": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
                     "description": "Property to store any value returned by the dialog that is called.",
                     "examples": [
                         "dialog.userName"
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -1253,12 +1304,15 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -1319,20 +1373,32 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "eventName": {
+                    "$role": "expression",
+                    "type": "string",
                     "title": "Event name",
-                    "description": "Name of the event to emit.",
-                    "type": "string"
+                    "description": "Name of the event to emit."
                 },
                 "eventValue": {
-                    "type": "object",
+                    "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Event value",
                     "description": "Value to emit with the event (optional).",
                     "additionalProperties": true
@@ -1396,12 +1462,15 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -1440,7 +1509,11 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
                     "default": 3,
@@ -1464,6 +1537,7 @@
                 },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
                     "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
                     "examples": [
@@ -1471,30 +1545,47 @@
                         "user.name",
                         "conversation.issueTitle",
                         "dialog.favColor"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "defaultValue": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Default value",
                     "description": "Expression to examine on each turn of the conversation as possible value to the property.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
                     "examples": [
                         "@userName"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "alwaysPrompt": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified  'property' is not empty.",
                     "default": false,
@@ -1504,15 +1595,19 @@
                 },
                 "allowInterruptions": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
                     "examples": [
                         "true"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "outputFormat": {
+                    "$role": "expression",
                     "type": "string",
                     "enum": [
                         "value",
@@ -1767,12 +1862,15 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -1811,7 +1909,11 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
                     "default": 3,
@@ -1835,6 +1937,7 @@
                 },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
                     "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
                     "examples": [
@@ -1842,30 +1945,47 @@
                         "user.name",
                         "conversation.issueTitle",
                         "dialog.favColor"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "defaultValue": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Default value",
                     "description": "Expression to examine on each turn of the conversation as possible value to the property.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
                     "examples": [
                         "@userName"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "alwaysPrompt": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified  'property' is not empty.",
                     "default": false,
@@ -1875,30 +1995,35 @@
                 },
                 "allowInterruptions": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
                     "examples": [
                         "true"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "outputFormat": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Output format",
                     "description": "Expression to format the confirm output.",
                     "examples": [
                         "concat('confirmation:', this.value)"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "defaultLocale": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Default locale",
                     "description": "Default locale.",
                     "default": "en-us"
                 },
                 "style": {
+                    "$role": "expression",
                     "type": "string",
                     "enum": [
                         "None",
@@ -1913,6 +2038,7 @@
                     "default": "Auto"
                 },
                 "choiceOptions": {
+                    "$role": "expression",
                     "type": "object",
                     "properties": {
                         "inlineSeparator": {
@@ -1939,9 +2065,11 @@
                             "description": "If true, inline and list style choices will be prefixed with the index of the choice.",
                             "default": true
                         }
-                    }
+                    },
+                    "description": "String must contain an expression."
                 },
                 "confirmChoices": {
+                    "$role": "expression",
                     "type": "array",
                     "items": [
                         {
@@ -1967,7 +2095,8 @@
                                 }
                             }
                         }
-                    ]
+                    ],
+                    "description": "String must contain an expression."
                 }
             },
             "additionalProperties": false,
@@ -2080,12 +2209,15 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -2317,12 +2449,15 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -2361,7 +2496,11 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
                     "default": 3,
@@ -2385,6 +2524,7 @@
                 },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
                     "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
                     "examples": [
@@ -2392,30 +2532,47 @@
                         "user.name",
                         "conversation.issueTitle",
                         "dialog.favColor"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "defaultValue": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Default value",
                     "description": "Expression to examine on each turn of the conversation as possible value to the property.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
                     "examples": [
                         "@userName"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "alwaysPrompt": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified  'property' is not empty.",
                     "default": false,
@@ -2425,24 +2582,28 @@
                 },
                 "allowInterruptions": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
                     "examples": [
                         "true"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "outputFormat": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Output format",
                     "description": "Expression to format the datetime output.",
                     "examples": [
                         "this.value[0].Value"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "defaultLocale": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Default locale",
                     "description": "Default locale.",
@@ -2507,12 +2668,15 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -2573,21 +2737,24 @@
                 },
                 "activityId": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "ActivityId",
                     "description": "expression to an activityId to delete",
                     "examples": [
-                        "$lastActivity"
-                    ],
-                    "type": "string"
+                        "=$lastActivity"
+                    ]
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -2650,12 +2817,15 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "properties": {
                     "type": "array",
@@ -2663,9 +2833,9 @@
                     "description": "Properties to delete.",
                     "items": {
                         "$role": "expression",
+                        "type": "string",
                         "title": "Property",
-                        "description": "Property to delete.",
-                        "type": "string"
+                        "description": "Property to delete."
                     }
                 }
             },
@@ -2728,18 +2898,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
-                    "description": "Property to delete.",
-                    "type": "string"
+                    "description": "Property to delete."
                 }
             },
             "additionalProperties": false,
@@ -2853,14 +3026,18 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "changeType": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Type of change",
                     "description": "Type of change to apply to the current actions.",
@@ -2941,6 +3118,7 @@
                     "description": "Optional id for the dialog"
                 },
                 "changeType": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Type of change",
                     "description": "Type of change to the array in memory.",
@@ -2954,35 +3132,45 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "itemsProperty": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Items property",
-                    "description": "Property that holds the array to update.",
-                    "type": "string"
+                    "description": "Property that holds the array to update."
                 },
                 "resultProperty": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Result Property",
-                    "description": "Property to store the result of this action.",
-                    "type": "string"
+                    "description": "Property to store the result of this action."
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "New value or expression.",
                     "examples": [
                         "'milk'",
                         "dialog.favColor",
                         "dialog.favColor == 'red'"
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -3097,46 +3285,55 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "eventName": {
+                    "$role": "expression",
+                    "type": "string",
                     "title": "Event name",
                     "description": "Name of the event to emit.",
-                    "anyOf": [
-                        {
-                            "enum": [
-                                "beginDialog",
-                                "resumeDialog",
-                                "repromptDialog",
-                                "cancelDialog",
-                                "endDialog",
-                                "activityReceived",
-                                "recognizedIntent",
-                                "unknownIntent",
-                                "actionsStarted",
-                                "actionsSaved",
-                                "actionsEnded",
-                                "actionsResumed"
-                            ]
-                        },
-                        {
-                            "type": "string"
-                        }
+                    "enum": [
+                        "beginDialog",
+                        "resumeDialog",
+                        "repromptDialog",
+                        "cancelDialog",
+                        "endDialog",
+                        "activityReceived",
+                        "recognizedIntent",
+                        "unknownIntent",
+                        "actionsStarted",
+                        "actionsSaved",
+                        "actionsEnded",
+                        "actionsResumed"
                     ]
                 },
                 "eventValue": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Event value",
-                    "description": "Value to emit with the event (optional).",
-                    "type": "string"
+                    "description": "Value to emit with the event (optional)."
                 },
                 "bubbleEvent": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Bubble event",
                     "description": "If true this event is passed on to parent dialogs.",
                     "default": false
@@ -3201,22 +3398,32 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "Result value returned to the parent dialog.",
                     "examples": [
-                        "dialog.userName",
-                        "'tomato'"
-                    ],
-                    "type": "string"
+                        "=dialog.userName",
+                        "='tomato'"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -3277,12 +3484,15 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -3493,21 +3703,26 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "itemsProperty": {
                     "$role": "expression",
+                    "type": [
+                        "string"
+                    ],
                     "title": "Items property",
                     "description": "Property that holds the array.",
                     "examples": [
                         "user.todoList"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -3579,21 +3794,24 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "itemsProperty": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Items property",
                     "description": "Property that holds the array.",
                     "examples": [
                         "user.todoList"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -3605,7 +3823,11 @@
                     }
                 },
                 "pageSize": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Page size",
                     "description": "Number of items in each page.",
                     "default": 10
@@ -3671,21 +3893,24 @@
                 },
                 "activityId": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "ActivityId",
                     "description": "expression to an activityId to get the members. If none is defined then the current activity id will be used.",
                     "examples": [
                         "$lastActivity"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -3746,12 +3971,15 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -3812,14 +4040,18 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "actionId": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Action Id",
                     "description": "Action Id to execute next"
@@ -3988,12 +4220,15 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "method": {
                     "type": "string",
@@ -4012,6 +4247,7 @@
                     ]
                 },
                 "url": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Url",
                     "description": "URL to call (supports data binding).",
@@ -4020,27 +4256,40 @@
                     ]
                 },
                 "body": {
-                    "type": "object",
+                    "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Body",
                     "description": "Body to include in the HTTP call (supports data binding).",
                     "additionalProperties": true
                 },
                 "resultProperty": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Result property",
                     "description": "Property to store the result of this action. The result includes 4 properties from the http response: statusCode, reasonPhrase, content and headers. If the content is json it will be a deserialized object.",
                     "examples": [
                         "dialog.contosodata"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "headers": {
                     "type": "object",
                     "title": "Headers",
                     "description": "One or more headers to include in the request (supports data binding).",
-                    "additionalProperties": true
+                    "additionalProperties": {
+                        "$role": "expression",
+                        "type": "string",
+                        "description": "String must contain an expression."
+                    }
                 },
                 "responseType": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Response type",
                     "description": "Defines the type of HTTP response. Automatically calls the 'Send a response' action if set to 'Activity' or 'Activities'.",
@@ -4556,21 +4805,27 @@
                 },
                 "condition": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Condition",
                     "description": "Expression to evaluate.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -4651,23 +4906,27 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
                     "description": "Property (named location to store information).",
                     "examples": [
                         "user.age"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "type": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Type",
                     "description": "Type of value.",
@@ -4840,25 +5099,34 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "text": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Text",
                     "description": "Information to log."
                 },
                 "label": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Label",
                     "description": "Label for the trace activity (used to identify it in a list of trace activities.)"
                 },
                 "traceActivity": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Send Trace Activity",
                     "description": "If true, automatically sends a TraceActivity (view in Bot Framework Emulator).",
                     "default": false
@@ -5314,12 +5582,15 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -5358,7 +5629,11 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
                     "default": 3,
@@ -5382,6 +5657,7 @@
                 },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
                     "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
                     "examples": [
@@ -5389,30 +5665,47 @@
                         "user.name",
                         "conversation.issueTitle",
                         "dialog.favColor"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "defaultValue": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Default value",
                     "description": "Expression to examine on each turn of the conversation as possible value to the property.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
                     "examples": [
                         "@userName"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "alwaysPrompt": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified  'property' is not empty.",
                     "default": false,
@@ -5422,24 +5715,28 @@
                 },
                 "allowInterruptions": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
                     "examples": [
                         "true"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "outputFormat": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Output format",
                     "description": "Expression to format the number output.",
                     "examples": [
-                        "int(this.value)"
-                    ],
-                    "type": "string"
+                        "@{int(this.value)}"
+                    ]
                 },
                 "defaultLocale": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Default locale",
                     "description": "Default locale.",
@@ -5550,6 +5847,7 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "connectionName": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Connection name",
                     "description": "The connection name configured in Azure Web App Bot OAuth settings.",
@@ -5559,14 +5857,18 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "text": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Text",
                     "description": "Text shown in the OAuth signin card.",
@@ -5575,6 +5877,7 @@
                     ]
                 },
                 "title": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Title",
                     "description": "Title shown in the OAuth signin card.",
@@ -5583,19 +5886,23 @@
                     ]
                 },
                 "timeout": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Timeout",
                     "description": "Time out setting for the OAuth signin card.",
                     "default": "900000"
                 },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Token property",
                     "description": "Property to store the OAuth token result.",
                     "examples": [
                         "dialog.token"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "invalidPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -5616,7 +5923,11 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
                     "default": 3,
@@ -5626,22 +5937,32 @@
                 },
                 "defaultValue": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Default value",
                     "description": "Expression to examine on each turn of the conversation as possible value to the property.",
                     "examples": [
                         "@token"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "allowInterruptions": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
                     "examples": [
                         "true"
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -8133,27 +8454,27 @@
                 },
                 "knowledgeBaseId": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "KnowledgeBase Id",
                     "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
-                    "default": "settings.qna.knowledgebaseid",
-                    "type": "string"
+                    "default": "=settings.qna.knowledgebaseid"
                 },
                 "endpointKey": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Endpoint Key",
                     "description": "Endpoint key for the QnA Maker KB.",
-                    "default": "settings.qna.endpointkey",
-                    "type": "string"
+                    "default": "=settings.qna.endpointkey"
                 },
                 "hostname": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Hostname",
                     "description": "Hostname for your QnA Maker service.",
-                    "default": "settings.qna.hostname",
+                    "default": "=settings.qna.hostname",
                     "examples": [
                         "https://yourserver.azurewebsites.net/qnamaker"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "noAnswer": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -8163,18 +8484,24 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "threshold": {
-                    "type": "number",
+                    "$role": "expression",
+                    "type": [
+                        "number",
+                        "string"
+                    ],
                     "title": "Threshold",
                     "description": "Threshold score to filter results.",
                     "default": 0.3
                 },
                 "activeLearningCardTitle": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Active learning card title",
                     "description": "Title for active learning suggestions card.",
                     "default": "Did you mean:"
                 },
                 "cardNoMatchText": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Card no match text",
                     "description": "Text for no match option.",
@@ -8188,7 +8515,11 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "strictFilters": {
-                    "type": "array",
+                    "$role": "expression",
+                    "type": [
+                        "array",
+                        "string"
+                    ],
                     "title": "Strict Filters",
                     "description": "Metadata filters to use when calling the QnA Maker KB.",
                     "items": {
@@ -8208,7 +8539,11 @@
                     }
                 },
                 "top": {
-                    "type": "number",
+                    "$role": "expression",
+                    "type": [
+                        "number",
+                        "string"
+                    ],
                     "title": "Top",
                     "description": "The number of answers you want to retrieve.",
                     "default": 3
@@ -8223,6 +8558,11 @@
                     "type": "string",
                     "title": "RankerType",
                     "description": "Type of Ranker.",
+                    "enum": [
+                        "Default",
+                        "QuestionOnly",
+                        "AutoSuggestQuestion"
+                    ],
                     "default": "Default"
                 }
             },
@@ -8733,15 +9073,22 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "options": {
-                    "type": "object",
+                    "$role": "expression",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
                     "title": "Options",
                     "description": "One or more options that are passed to the dialog that is called.",
                     "additionalProperties": {
@@ -8750,7 +9097,11 @@
                     }
                 },
                 "activityProcessed": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Activity Processed",
                     "description": "When set to false, the dialog that is called can process the current activity.",
                     "default": true
@@ -8814,15 +9165,23 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
+                    "$role": "expression",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
@@ -8831,7 +9190,11 @@
                     "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "options": {
-                    "type": "object",
+                    "$role": "expression",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
                     "title": "Options",
                     "description": "One or more options that are passed to the dialog that is called.",
                     "additionalProperties": {
@@ -8840,7 +9203,11 @@
                     }
                 },
                 "activityProcessed": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Activity Processed",
                     "description": "When set to false, the dialog that is called can process the current activity.",
                     "default": true
@@ -8904,12 +9271,15 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "activity": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -8976,12 +9346,15 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "assignments": {
                     "type": "array",
@@ -8992,23 +9365,30 @@
                         "properties": {
                             "property": {
                                 "$role": "expression",
+                                "type": "string",
                                 "title": "Property",
                                 "description": "Property (named location to store information).",
                                 "examples": [
                                     "user.age"
-                                ],
-                                "type": "string"
+                                ]
                             },
                             "value": {
                                 "$role": "expression",
+                                "type": [
+                                    "object",
+                                    "array",
+                                    "number",
+                                    "integer",
+                                    "boolean",
+                                    "string"
+                                ],
                                 "title": "Value",
                                 "description": "New value or expression.",
                                 "examples": [
-                                    "'milk'",
-                                    "dialog.favColor",
-                                    "dialog.favColor == 'red'"
-                                ],
-                                "type": "string"
+                                    "='milk'",
+                                    "=dialog.favColor",
+                                    "=dialog.favColor == 'red'"
+                                ]
                             }
                         }
                     }
@@ -9073,32 +9453,42 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
                     "description": "Property (named location to store information).",
                     "examples": [
                         "user.age"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "New value or expression.",
                     "examples": [
-                        "'milk'",
-                        "dialog.favColor",
-                        "dialog.favColor == 'red'"
-                    ],
-                    "type": "string"
+                        "='milk'",
+                        "=dialog.favColor",
+                        "=dialog.favColor == 'red'"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -9161,26 +9551,30 @@
                 },
                 "userId": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "ActivityId",
                     "description": "expression to an activityId to get the members. If none is defined then the current activity id will be used.",
                     "examples": [
-                        "$lastActivity"
-                    ],
-                    "type": "string"
+                        "=$lastActivity"
+                    ]
                 },
                 "connectionName": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Connection Name",
                     "description": "Connection name that was used with OAuthInput to log a user in."
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -9299,21 +9693,24 @@
                 },
                 "condition": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Condition",
                     "description": "Property to evaluate.",
                     "examples": [
                         "user.favColor"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "cases": {
                     "type": "array",
@@ -9328,13 +9725,18 @@
                         "properties": {
                             "value": {
                                 "$role": "expression",
+                                "type": [
+                                    "number",
+                                    "integer",
+                                    "boolean",
+                                    "string"
+                                ],
                                 "title": "Value",
                                 "description": "Value.",
                                 "examples": [
                                     "'red'",
                                     "dialog.colors.red"
-                                ],
-                                "type": "string"
+                                ]
                             },
                             "actions": {
                                 "type": "array",
@@ -9847,6 +10249,12 @@
                         "$ref": "#/definitions/Microsoft.Test.ITestAction"
                     }
                 },
+                "locale": {
+                    "type": "string",
+                    "title": "Locale",
+                    "description": "Set the locale for the user utterances in the script.",
+                    "default": "en-us"
+                },
                 "enableTrace": {
                     "type": "boolean",
                     "title": "Enable Trace Activity",
@@ -10222,12 +10630,15 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -10266,7 +10677,11 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
                     "default": 3,
@@ -10290,6 +10705,7 @@
                 },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
                     "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
                     "examples": [
@@ -10297,30 +10713,47 @@
                         "user.name",
                         "conversation.issueTitle",
                         "dialog.favColor"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "defaultValue": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Default value",
                     "description": "Expression to examine on each turn of the conversation as possible value to the property.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
                     "examples": [
                         "@userName"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "alwaysPrompt": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified  'property' is not empty.",
                     "default": false,
@@ -10330,22 +10763,25 @@
                 },
                 "allowInterruptions": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
                     "examples": [
                         "true"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "outputFormat": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Output format",
                     "description": "Expression to format the output.",
                     "examples": [
-                        "toUpper(this.value)"
-                    ],
-                    "type": "string"
+                        "@{toUpper(this.value)}"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -10464,33 +10900,46 @@
                 },
                 "disabled": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "name": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Name",
                     "description": "Name of the trace activity"
                 },
                 "label": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Label",
                     "description": "Label for the trace activity (used to identify it in a list of trace activities.)"
                 },
                 "valueType": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Value type",
                     "description": "Type of value"
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
-                    "description": "Property that holds the value to send as trace activity.",
-                    "type": "string"
+                    "description": "Property that holds the value to send as trace activity."
                 }
             },
             "additionalProperties": false,
@@ -10600,6 +11049,28 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
+                "activityId": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Activity Id",
+                    "dDescription": "An string expression with the activity id to update.",
+                    "examples": [
+                        "=dialog.lastActivityId"
+                    ],
+                    "description": "String must contain an expression."
                 },
                 "activity": {
                     "$kind": "Microsoft.IActivityTemplate",

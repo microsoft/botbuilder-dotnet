@@ -12,7 +12,7 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Email",
-            "value": "@email"          
+            "value": "=@email"          
         }
     ]               
 }
