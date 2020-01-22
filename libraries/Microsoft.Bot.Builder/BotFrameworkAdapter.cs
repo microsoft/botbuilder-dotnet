@@ -980,15 +980,34 @@ namespace Microsoft.Bot.Builder
         public virtual async Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, string connectionName, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
             var client = await CreateOAuthApiClientAsync(turnContext).ConfigureAwait(false);
-            var result = (TokenResponse)await client.UserToken.ExchangeAsyncAsync(turnContext.Activity.From.Id, connectionName, turnContext.Activity.ChannelId, exchangeRequest, cancellationToken).ConfigureAwait(false);
+            var result = await client.UserToken.ExchangeAsyncAsync(turnContext.Activity.From.Id, connectionName, turnContext.Activity.ChannelId, exchangeRequest, cancellationToken).ConfigureAwait(false);
 
-            // TODO: this should work
-            if (result.Token == null)
+            if (result is ErrorResponse errorResponse)
             {
-                result.Token = "abcExchangeableToken123";
+                result = new TokenResponse();
             }
 
-            return result;
+            if (result is TokenResponse tokenResponse)
+            {
+                // todo: temporary
+                if (string.IsNullOrEmpty(tokenResponse.Token))
+                {
+                    if (!string.IsNullOrEmpty(exchangeRequest.Uri))
+                    {
+                        tokenResponse.Token = "exchangeableToken" + Guid.NewGuid().ToString().Replace("-", string.Empty);
+                    }
+                    else
+                    {
+                        tokenResponse.Token = "token" + Guid.NewGuid().ToString().Replace("-", string.Empty);
+                    }
+                }
+
+                return tokenResponse;
+            }
+            else
+            {
+                throw new InvalidOperationException($"ExchangeAsyncAsync returned improper result: {result.GetType()}");
+            }
         }
 
         /// <summary>
