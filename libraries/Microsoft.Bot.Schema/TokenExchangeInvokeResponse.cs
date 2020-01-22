@@ -19,6 +19,12 @@ namespace Microsoft.Bot.Schema
     public class TokenExchangeInvokeResponse
     {
         /// <summary>
+        /// The id from the TokenExchangeInvokeRequest
+        /// </summary>
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        /// <summary>
         /// The connection name
         /// </summary>
         [JsonProperty("connectionName")]

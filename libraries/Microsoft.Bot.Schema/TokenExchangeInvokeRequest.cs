@@ -19,6 +19,12 @@ namespace Microsoft.Bot.Schema
     public class TokenExchangeInvokeRequest
     {
         /// <summary>
+        /// The id from the OAuthCard
+        /// </summary>
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        /// <summary>
         /// The connection name
         /// </summary>
         [JsonProperty("connectionName")]

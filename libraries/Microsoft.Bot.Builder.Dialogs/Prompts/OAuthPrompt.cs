@@ -365,11 +365,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                                 Title = _settings.Title,
                                 Text = _settings.Text,
                                 Type = cardActionType,
-                                //Value = signInResource.SignInUrl
-                            }
+                            },
                         },
-                        TokenExchangeResource = signInResource.TokenExchangeResource
-                    }
+                        TokenExchangeResource = signInResource.TokenExchangeResource,
+                    },
                 });
             }
 
@@ -448,6 +447,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         400,
                         new TokenExchangeInvokeResponse()
                         {
+                            Id = tokenExchangeRequest.Id,
                             ConnectionName = _settings.ConnectionName,
                             FailureDetail = "Missing TokenExchangeInvokeRequest",
                         }).ConfigureAwait(false);
@@ -460,6 +460,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         400,
                         new TokenExchangeInvokeResponse()
                         {
+                            Id = tokenExchangeRequest.Id,
                             ConnectionName = _settings.ConnectionName,
                             FailureDetail = "Invalid ConnectionName in the TokenExchangeInvokeRequest",
                         }).ConfigureAwait(false);
@@ -472,6 +473,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                            502,
                            new TokenExchangeInvokeResponse()
                            {
+                               Id = tokenExchangeRequest.Id,
                                ConnectionName = _settings.ConnectionName,
                                FailureDetail = "Bot Adapter does not support token exchange.",
                            }).ConfigureAwait(false);
@@ -496,6 +498,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                            409,
                            new TokenExchangeInvokeResponse()
                            {
+                               Id = tokenExchangeRequest.Id,
                                ConnectionName = _settings.ConnectionName,
                                FailureDetail = "Unable to exchange token.",
                            }).ConfigureAwait(false);
@@ -508,6 +511,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                            200,
                            new TokenExchangeInvokeResponse()
                            {
+                               Id = tokenExchangeRequest.Id,
                                ConnectionName = _settings.ConnectionName,
                            }).ConfigureAwait(false);
 
