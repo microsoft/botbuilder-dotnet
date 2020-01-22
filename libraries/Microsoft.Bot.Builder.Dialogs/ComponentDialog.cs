@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <value>The <see cref="IBotTelemetryClient"/> to use when logging.</value>
         /// <seealso cref="DialogSet.TelemetryClient"/>
-        public new IBotTelemetryClient TelemetryClient
+        public override IBotTelemetryClient TelemetryClient
         {
             get
             {
