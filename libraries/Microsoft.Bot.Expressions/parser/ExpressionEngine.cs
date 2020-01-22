@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Expressions
         /// Parse the input into an expression.
         /// </summary>
         /// <param name="expression">Expression to parse.</param>
-        /// <returns>Expresion tree.</returns>
+        /// <returns>Expression tree.</returns>
         public Expression Parse(string expression)
         {
             if (string.IsNullOrEmpty(expression))

@@ -16,6 +16,7 @@
         },
         "disabled": {
             "$role": "expression",
+            "type": [ "boolean", "string" ],
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -24,6 +25,7 @@
         },
         "property": {
             "$role": "expression",
+            "type": "string",
             "title": "Property",
             "description": "Property (named location to store information).",
             "examples": [
@@ -31,6 +33,7 @@
             ]
         },
         "type": {
+            "$role": "expression",
             "type": "string",
             "title": "Type",
             "description": "Type of value.",

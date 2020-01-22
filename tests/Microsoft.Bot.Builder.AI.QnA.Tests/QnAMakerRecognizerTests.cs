@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 .UseState(userState, conversationState)
                 .UseLanguageGeneration()
                 .UseAdaptiveDialogs()
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             DialogManager dm = new DialogManager(rootDialog);
 
@@ -140,9 +140,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
         {
             var client = new HttpClient(mockHttp);
 
-            var host = "'https://dummy-hostname.azurewebsites.net/qnamaker'";
-            var knowlegeBaseId = "'dummy-id'";
-            var endpointKey = "'dummy-key'";
+            var host = "https://dummy-hostname.azurewebsites.net/qnamaker";
+            var knowlegeBaseId = "dummy-id";
+            var endpointKey = "dummy-key";
 
             var rootDialog = new AdaptiveDialog("outer")
             {

@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
             // 2) Run your scenario
             // 3) You will most likely get a break on the error.
             // 4) Enable TraceTree and set it here to get the trace before count
-            // Node._count has the global count for breakpointd
+            // Node._count has the global count for breakpoint
             // ShowTrace = _count > 280000;
 
             Clause = new Clause(clause);  // Drop ignored from node clause
@@ -599,8 +599,8 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
                 // No child matched so we might
                 if (!found)
                 {
-                    var (value, error) = Clause.TryEvaluate(state);
-                    if (error == null && value is bool match && match)
+                    var (match, error) = Clause.TryEvaluate<bool>(state);
+                    if (error == null && match)
                     {
                         foreach (var trigger in Triggers)
                         {

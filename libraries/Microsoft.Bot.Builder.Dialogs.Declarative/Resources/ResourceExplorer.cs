@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
             var pathResolver = new PackagePathResolver(packages);
 
-            // add nuget package references
+            // add NuGet package references
             foreach (XmlNode node in xmlDoc.SelectNodes("//PackageReference"))
             {
                 string packageName = node.Attributes["Include"]?.Value;

@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Value Expression or List of choices (string or Choice objects) to present to user.
         /// </value>
         [JsonProperty("choices")]
-        public ChoiceSet Choices { get; set; }
+        public ObjectExpression<ChoiceSet> Choices { get; set; }
 
         /// <summary>
         /// Gets or sets listStyle to use to render the choices.
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// ListStyle to use to render the choices.
         /// </value>
         [JsonProperty("style")]
-        public ListStyle Style { get; set; } = ListStyle.Auto;
+        public EnumExpression<ListStyle> Style { get; set; } = ListStyle.Auto;
 
         /// <summary>
         /// Gets or sets defaultLocale.
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// DefaultLocale.
         /// </value>
         [JsonProperty("defaultLocale")]
-        public string DefaultLocale { get; set; } = null;
+        public StringExpression DefaultLocale { get; set; }
 
         /// <summary>
         /// Gets or sets control the format of the response (value or the index of the choice).
@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Control the format of the response (value or the index of the choice).
         /// </value>
         [JsonProperty("outputFormat")]
-        public ChoiceOutputFormat OutputFormat { get; set; } = ChoiceOutputFormat.Value;
+        public EnumExpression<ChoiceOutputFormat> OutputFormat { get; set; } = ChoiceOutputFormat.Value;
 
         /// <summary>
         /// Gets or sets choiceOptions controls display options for customizing language.
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// ChoiceOptions controls display options for customizing language.
         /// </value>
         [JsonProperty("choiceOptions")]
-        public ChoiceFactoryOptions ChoiceOptions { get; set; } = null;
+        public ObjectExpression<ChoiceFactoryOptions> ChoiceOptions { get; set; }
 
         /// <summary>
         /// Gets or sets customize how to use the choices to recognize the response from the user.
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Customize how to use the choices to recognize the response from the user.
         /// </value>
         [JsonProperty("recognizerOptions")]
-        public FindChoicesOptions RecognizerOptions { get; set; } = null;
+        public ObjectExpression<FindChoicesOptions> RecognizerOptions { get; set; } = null;
 
         public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -125,12 +125,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var op = options as ChoiceInputOptions;
             if (op == null || op.Choices == null || op.Choices.Count == 0)
             {
+                var dcState = dc.GetState();
                 if (op == null)
                 {
                     op = new ChoiceInputOptions();
                 }
 
-                var choices = this.Choices.GetValue(dc.GetState());
+                var (choices, error) = this.Choices.TryGetValue(dcState);
+                if (error != null)
+                {
+                    throw new Exception(error);
+                }
+
                 op.Choices = choices;
             }
 
@@ -139,15 +145,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.GetState().GetValue<object>(VALUE_PROPERTY);
-            var options = dc.GetState().GetValue<ChoiceInputOptions>(ThisPath.OPTIONS);
+            var dcState = dc.GetState();
+
+            var input = dcState.GetValue<object>(VALUE_PROPERTY);
+            var options = dcState.GetValue<ChoiceInputOptions>(ThisPath.OPTIONS);
 
             var choices = options.Choices;
 
             var result = new PromptRecognizerResult<FoundChoice>();
             if (dc.Context.Activity.Type == ActivityTypes.Message)
             {
-                var opt = this.RecognizerOptions ?? new FindChoicesOptions();
+                var opt = this.RecognizerOptions?.GetValue(dcState) ?? new FindChoicesOptions();
                 opt.Locale = GetCulture(dc);
                 var results = ChoiceRecognizers.RecognizeChoices(input.ToString(), choices, opt);
                 if (results == null || results.Count == 0)
@@ -156,14 +164,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
 
                 var foundChoice = results[0].Resolution;
-                switch (this.OutputFormat)
+                switch (this.OutputFormat.GetValue(dcState))
                 {
                     case ChoiceOutputFormat.Value:
                     default:
-                        dc.GetState().SetValue(VALUE_PROPERTY, foundChoice.Value);
+                        dcState.SetValue(VALUE_PROPERTY, foundChoice.Value);
                         break;
                     case ChoiceOutputFormat.Index:
-                        dc.GetState().SetValue(VALUE_PROPERTY, foundChoice.Index);
+                        dcState.SetValue(VALUE_PROPERTY, foundChoice.Index);
                         break;
                 }
             }
@@ -173,27 +181,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override async Task<IActivity> OnRenderPrompt(DialogContext dc, InputState state)
         {
+            var dcState = dc.GetState();
             var locale = GetCulture(dc);
             var prompt = await base.OnRenderPrompt(dc, state);
             var channelId = dc.Context.Activity.ChannelId;
             var choicePrompt = new ChoicePrompt(this.Id);
-            var choiceOptions = this.ChoiceOptions ?? ChoiceInput.DefaultChoiceOptions[locale];
+            var choiceOptions = this.ChoiceOptions?.GetValue(dcState) ?? ChoiceInput.DefaultChoiceOptions[locale];
 
-            var choices = this.Choices.GetValue(dc.GetState());
+            var (choices, error) = this.Choices.TryGetValue(dcState);
+            if (error != null)
+            {
+                throw new Exception(error);
+            }
 
-            return this.AppendChoices(prompt.AsMessageActivity(), channelId, choices, this.Style, choiceOptions);
+            return this.AppendChoices(prompt.AsMessageActivity(), channelId, choices, this.Style.GetValue(dcState), choiceOptions);
         }
 
         private string GetCulture(DialogContext dc)
         {
+            var dcState = dc.GetState();
+
             if (!string.IsNullOrWhiteSpace(dc.Context.Activity.Locale))
             {
                 return dc.Context.Activity.Locale;
             }
 
-            if (!string.IsNullOrWhiteSpace(this.DefaultLocale))
+            if (this.DefaultLocale != null)
             {
-                return this.DefaultLocale;
+                return this.DefaultLocale.GetValue(dcState);
             }
 
             return English;

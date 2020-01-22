@@ -34,7 +34,7 @@
                             "id": 0,
                             "name": "string"
                         },
-                        "name": "@{dialog.petname}",
+                        "name": "=dialog.petname",
                         "photoUrls": [
                             "string"
                         ],

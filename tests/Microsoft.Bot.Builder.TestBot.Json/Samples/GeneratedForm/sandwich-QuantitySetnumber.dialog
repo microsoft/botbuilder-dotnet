@@ -12,7 +12,7 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Quantity",
-            "value": "@number"          
+            "value": "=@number"          
         }
     ]               
 }

@@ -10,9 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.TraceExtensions;
-using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -28,15 +26,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.HttpRequest";
 
-        private Expression disabled;
-
-        public HttpRequest(HttpMethod method, string url, string inputProperty, Dictionary<string, string> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public HttpRequest(HttpMethod method, string url, Dictionary<string, StringExpression> headers = null, object body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
             this.Method = method;
             this.Url = url ?? throw new ArgumentNullException(nameof(url));
             this.Headers = headers;
-            this.Body = body;
+            this.Body = JToken.FromObject(body);
         }
 
         [JsonConstructor]
@@ -111,27 +107,51 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; }
 
+        /// <summary>
+        /// Gets or sets the HttpMethod to use.
+        /// </summary>
+        /// <value>
+        /// HttpMethod.
+        /// </value>
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("method")]
         public HttpMethod Method { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Url.
+        /// </summary>
+        /// <value>url.</value>
         [JsonProperty("url")]
-        public string Url { get; set; }
+        public StringExpression Url { get; set; }
 
+        /// <summary>
+        /// Gets or sets headers.
+        /// </summary>
+        /// <value>
+        /// Headers.
+        /// </value>
         [JsonProperty("headers")]
-        public Dictionary<string, string> Headers { get; set; }
+        public Dictionary<string, StringExpression> Headers { get; set; }
 
+        /// <summary>
+        /// Gets or sets body payload.
+        /// </summary>
+        /// <value>
+        /// Body payload.
+        /// </value>
         [JsonProperty("body")]
-        public JToken Body { get; set; }
+        public ValueExpression Body { get; set; }
 
+        /// <summary>
+        /// Gets or sets the ResponseType.
+        /// </summary>
+        /// <value>
+        /// The ResponseType.
+        /// </value>
         [JsonProperty("responseType")]
-        public ResponseTypes ResponseType { get; set; } = ResponseTypes.Json;
+        public EnumExpression<ResponseTypes> ResponseType { get; set; } = ResponseTypes.Json;
 
         /// <summary>
         /// Gets or sets the property expression to store the HTTP response in. 
@@ -145,7 +165,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The property expression to store the HTTP response in. 
         /// </value>
         [JsonProperty("resultProperty")]
-        public string ResultProperty { get; set; }
+        public StringExpression ResultProperty { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -154,7 +174,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -167,13 +189,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             JToken instanceBody = null;
             if (this.Body != null)
             {
-                instanceBody = (JToken)this.Body.DeepClone();
+                var (body, err) = this.Body.TryGetValue(dcState);
+                if (err != null)
+                {
+                    throw new ArgumentException(err);
+                }
+
+                instanceBody = (JToken)JToken.FromObject(body).DeepClone();
             }
 
-            var instanceHeaders = Headers == null ? null : new Dictionary<string, string>(Headers);
-            var instanceUrl = this.Url;
+            var instanceHeaders = Headers == null ? null : Headers.ToDictionary(kv => kv.Key, kv => kv.Value.GetValue(dcState));
 
-            instanceUrl = await new TextTemplate(this.Url).BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
+            var (instanceUrl, instanceUrlError) = this.Url.TryGetValue(dcState);
+            if (instanceUrlError != null)
+            {
+                throw new ArgumentException(instanceUrlError);
+            }
 
             // Bind each string token to the data in state
             if (instanceBody != null)
@@ -186,9 +217,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 foreach (var unit in instanceHeaders)
                 {
-                    client.DefaultRequestHeaders.Add(
-                        await new TextTemplate(unit.Key).BindToData(dc.Context, dc.GetState()),
-                        await new TextTemplate(unit.Value).BindToData(dc.Context, dc.GetState()));
+                    client.DefaultRequestHeaders.TryAddWithoutValidation(unit.Key, unit.Value);
                 }
             }
 
@@ -266,7 +295,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             object content = (object)await response.Content.ReadAsStringAsync();
 
-            switch (this.ResponseType)
+            switch (this.ResponseType.GetValue(dcState))
             {
                 case ResponseTypes.Activity:
                     var activity = JsonConvert.DeserializeObject<Activity>((string)content);
@@ -306,7 +335,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (this.ResultProperty != null)
             {
-                dc.GetState().SetValue(this.ResultProperty, requestResult);
+                dcState.SetValue(this.ResultProperty.GetValue(dcState), requestResult);
             }
 
             // return the actionResult as the result of this operation
@@ -320,6 +349,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         private async Task ReplaceJTokenRecursively(DialogContext dc, JToken token)
         {
+            var dcState = dc.GetState();
+
             switch (token.Type)
             {
                 case JTokenType.Object:
@@ -331,7 +362,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
 
                 case JTokenType.Array:
-                    foreach (var child in token.Children())
+                    // NOTE: ToList() is required because JToken.Replace will break the enumeration.
+                    foreach (var child in token.Children().ToList())
                     {
                         await ReplaceJTokenRecursively(dc, child);
                     }
@@ -348,17 +380,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         var text = token.ToString();
 
                         // if it is a "{bindingpath}" then run through expression engine and treat as a value
-                        if (text.StartsWith("{") && text.EndsWith("}"))
+                        var (result, error) = new ValueExpression(text).TryGetValue(dcState);
+                        if (error == null)
                         {
-                            text = text.Trim('{', '}');
-                            var (val, error) = new ExpressionEngine().Parse(text).TryEvaluate(dc.GetState());
-                            token.Replace(new JValue(val));
-                        }
-                        else
-                        {
-                            // use text template binding to bind in place to a string
-                            var temp = await new TextTemplate(text).BindToData(dc.Context, dc.GetState());
-                            token.Replace(new JValue(temp));
+                            token.Replace(JToken.FromObject(result));
                         }
                     }
 

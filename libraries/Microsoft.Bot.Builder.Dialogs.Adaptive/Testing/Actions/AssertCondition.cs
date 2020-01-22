@@ -41,11 +41,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
 
         public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-            var (result, error) = new ExpressionEngine().Parse(Condition).TryEvaluate(dc.GetState());
+            var dcState = dc.GetState();
+
+            var (result, error) = new ExpressionEngine().Parse(Condition).TryEvaluate(dcState);
             if ((bool)result == false)
             {
                 var desc = await new TemplateEngineLanguageGenerator()
-                    .Generate(dc.Context, this.Description, dc.GetState())
+                    .Generate(dc.Context, this.Description, dcState)
                     .ConfigureAwait(false);
                 throw new Exception(desc);
             }

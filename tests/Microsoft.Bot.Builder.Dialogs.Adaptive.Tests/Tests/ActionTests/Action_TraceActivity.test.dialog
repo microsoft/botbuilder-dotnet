@@ -12,13 +12,13 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "user.name",
-                        "value": "'frank'"
+                        "value": "='frank'"
                     },
                     {
                         "$kind": "Microsoft.TraceActivity",
                         "name": "test",
                         "valueType": "user",
-                        "value": "user"
+                        "value": "=user"
                     },
                     {
                         "$kind": "Microsoft.TraceActivity",

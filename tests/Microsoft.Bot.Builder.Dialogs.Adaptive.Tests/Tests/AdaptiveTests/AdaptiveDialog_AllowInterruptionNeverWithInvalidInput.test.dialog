@@ -51,7 +51,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "turn.processInput",
-                        "value": "True"
+                        "value": "=True"
                     }
                 ]
             }

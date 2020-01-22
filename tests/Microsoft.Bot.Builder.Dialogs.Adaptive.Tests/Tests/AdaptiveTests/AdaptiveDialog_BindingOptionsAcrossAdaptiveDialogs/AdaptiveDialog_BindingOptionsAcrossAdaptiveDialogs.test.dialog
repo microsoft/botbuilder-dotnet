@@ -16,7 +16,7 @@
                     {
                         "$kind": "Microsoft.BeginDialog",
                         "options": {
-                            "userAge": "$age"
+                            "userAge": "=$age"
                         },
                         "dialog": "AdaptiveDialog_BindingOptionsAcrossAdaptiveDialogs.AgeDialog"
                     }

@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         // Endpoint and Authkey for the CosmosDB Emulator running locally
         private const string CosmosServiceEndpoint = "https://localhost:8081";
         private const string CosmosAuthKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
-        private const string CosmosDatabaseName = "test-db";
+        private const string CosmosDatabaseName = "test-CosmosDbPartitionStorageTests";
         private const string CosmosCollectionName = "bot-storage";
 
         private const string _noEmulatorMessage = "This test requires CosmosDB Emulator! go to https://aka.ms/documentdb-emulator-docs to download and install.";

@@ -12,12 +12,12 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Length.number",
-            "value": "@dimension.number"          
+            "value": "=@dimension.number"          
         },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Length.units",
-            "value": "@dimension.units"          
+            "value": "=@dimension.units"          
         }
     ]               
 }

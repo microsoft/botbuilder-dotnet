@@ -22,7 +22,7 @@
                     {
                         "$kind": "Microsoft.EditArray",
                         "itemsProperty": "user.todos",
-                        "value": "dialog.todo"
+                        "value": "=dialog.todo"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -37,7 +37,7 @@
                     {
                         "$kind": "Microsoft.EditArray",
                         "itemsProperty": "user.todos",
-                        "value": "dialog.todo"
+                        "value": "=dialog.todo"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -53,7 +53,7 @@
                         "$kind": "Microsoft.EditArray",
                         "changeType": "Remove",
                         "itemsProperty": "user.todos",
-                        "value": "dialog.todo"
+                        "value": "=dialog.todo"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -68,7 +68,7 @@
                     {
                         "$kind": "Microsoft.EditArray",
                         "itemsProperty": "user.todos",
-                        "value": "dialog.todo"
+                        "value": "=dialog.todo"
                     },
                     {
                         "$kind": "Microsoft.TextInput",
@@ -79,7 +79,7 @@
                     {
                         "$kind": "Microsoft.EditArray",
                         "itemsProperty": "user.todos",
-                        "value": "dialog.todo"
+                        "value": "=dialog.todo"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",

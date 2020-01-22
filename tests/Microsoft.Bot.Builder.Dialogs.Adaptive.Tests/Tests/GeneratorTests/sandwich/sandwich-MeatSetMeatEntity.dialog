@@ -12,7 +12,7 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Meat",
-            "value": "@MeatEntity"
+            "value": "=@MeatEntity"
         }
     ]
 }
