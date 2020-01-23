@@ -26,8 +26,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             else if (obj is JObject asJobject)
             {
                 // If types are not used by storage serialization, and Newtonsoft is the serializer
-                // the item found will be a JObject.
+                // the item found can be a JObject.
                 return asJobject.ToObject<T>();
+            }
+            else if (obj is JArray asJarray)
+            {
+                // If types are not used by storage serialization, and Newtonsoft is the serializer
+                // the item found can be a JArray.
+                return asJarray.ToObject<T>();
             }
             else if (obj == null)
             {
