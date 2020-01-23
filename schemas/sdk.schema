@@ -1100,7 +1100,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -1587,7 +1587,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -1987,7 +1987,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -2012,7 +2012,7 @@
                     "title": "Output format",
                     "description": "Expression to format the confirm output.",
                     "examples": [
-                        "concat('confirmation:', this.value)"
+                        "=concat('confirmation:', this.value)"
                     ]
                 },
                 "defaultLocale": {
@@ -2574,7 +2574,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -5663,7 +5663,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -5688,7 +5688,8 @@
                     "title": "Output format",
                     "description": "Expression to format the number output.",
                     "examples": [
-                        "@{int(this.value)}"
+                        "=this.value",
+                        "=int(this.text)"
                     ]
                 },
                 "defaultLocale": {
@@ -10711,7 +10712,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -10736,6 +10737,7 @@
                     "title": "Output format",
                     "description": "Expression to format the output.",
                     "examples": [
+                        "=toUpper(this.value)",
                         "@{toUpper(this.value)}"
                     ]
                 }

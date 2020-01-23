@@ -1110,7 +1110,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -1212,7 +1212,10 @@
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
                     "$role": "expression",
-                    "type": "string",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
@@ -1594,7 +1597,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -1994,7 +1997,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -2019,7 +2022,7 @@
                     "title": "Output format",
                     "description": "Expression to format the confirm output.",
                     "examples": [
-                        "concat('confirmation:', this.value)"
+                        "=concat('confirmation:', this.value)"
                     ]
                 },
                 "defaultLocale": {
@@ -2581,7 +2584,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -5680,7 +5683,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -5705,7 +5708,8 @@
                     "title": "Output format",
                     "description": "Expression to format the number output.",
                     "examples": [
-                        "@{int(this.value)}"
+                        "=this.value",
+                        "=int(this.text)"
                     ]
                 },
                 "defaultLocale": {
@@ -9151,7 +9155,10 @@
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
                     "$role": "expression",
-                    "type": "string",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
@@ -10725,7 +10732,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -10750,6 +10757,7 @@
                     "title": "Output format",
                     "description": "Expression to format the output.",
                     "examples": [
+                        "=toUpper(this.value)",
                         "@{toUpper(this.value)}"
                     ]
                 }
@@ -11153,32 +11161,49 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "inputBindings": {
-                    "type": "object",
-                    "title": "Input Bindings",
-                    "description": "map of named arguments and the property path to bind to them",
-                    "examples": [
-                        {
-                            "name": "user.name",
-                            "problemId": "conversation.problem.id"
-                        }
-                    ],
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "outputBinding": {
+                "id": {
                     "type": "string",
-                    "title": "Output Binding",
-                    "description": "This will be the property which the result will be put into",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
                     "examples": [
-                        "conversation.resolution"
+                        "user.age > 3"
                     ]
                 },
                 "script": {
                     "type": "string",
                     "title": "Script",
-                    "description": "name of the script file"
+                    "description": "name of the script file, or javascript function with function: doAction(memory, args) => result"
+                },
+                "options": {
+                    "$role": "expression",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
+                    "title": "Options",
+                    "description": "One or more options that are passed to the function as args.",
+                    "additionalProperties": {
+                        "type": "string",
+                        "title": "Options"
+                    }
+                },
+                "resultProperty": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Property",
+                    "description": "Property to store any value returned by the javascript function.",
+                    "examples": [
+                        "dialog.userName"
+                    ]
                 }
             },
             "patternProperties": {
