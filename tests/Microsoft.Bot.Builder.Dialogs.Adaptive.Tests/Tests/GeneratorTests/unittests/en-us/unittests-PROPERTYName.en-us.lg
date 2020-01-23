@@ -4,8 +4,8 @@
  - personname
 - CASE: @{'Age'} 
  - age
-- CASE: @{'Ordinal'} 
- - ordinal
+- CASE: @{'Ordinalv2'} 
+ - ordinalv2
 - CASE: @{'Geographyv2'} 
  - geographyv2
 - CASE: @{'Keyphraseproperty'} 
@@ -34,5 +34,7 @@
  - email
 - CASE: @{'Phonenumber'} 
  - phonenumber
+- CASE: @{'Datetimev2'} 
+ - datetimev2
 - DEFAULT: 
  - I don't understand @{value}
