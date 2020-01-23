@@ -11,7 +11,7 @@ using System.Threading;
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
     /// <summary>
-    /// Class which gives ResourceExplorer to resources which are stored in file system.
+    /// Class which gives ResourceExplorer access to resources which are stored in file system.
     /// </summary>
     public class FolderResourceProvider : IResourceProvider, IDisposable
     {
@@ -23,9 +23,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Initializes a new instance of the <see cref="FolderResourceProvider"/> class.
         /// </summary>
-        /// <param name="folder">folder.</param>
-        /// <param name="includeSubFolders">should include sub folders.</param>
-        /// <param name="monitorChanges">should monitor changes.</param>
+        /// <param name="folder">Folder.</param>
+        /// <param name="includeSubFolders">Should include sub folders.</param>
+        /// <param name="monitorChanges">Should monitor changes.</param>
         public FolderResourceProvider(string folder, bool includeSubFolders = true, bool monitorChanges = true)
         {
             this.IncludeSubFolders = includeSubFolders;

@@ -3,7 +3,7 @@
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
     /// <summary>
-    /// Interface for lookingup a resource by id.
+    /// Interface for looking up a resource by id.
     /// </summary>
     public interface IResourceProvider
     {
