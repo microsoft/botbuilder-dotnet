@@ -7,7 +7,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Connector.Teams;
+using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json.Linq;
 
@@ -47,6 +49,54 @@ namespace Microsoft.Bot.Builder.Teams
                 var conversationId = turnContext.Activity?.Conversation?.Id;
                 return GetMembersAsync(GetConnectorClient(turnContext), conversationId, cancellationToken);
             }
+        }
+
+        public static async Task<Tuple<ConversationReference, string>> SendMessageToTeamsChannelAsync(ITurnContext turnContext, IActivity activity, string teamsChannelId, MicrosoftAppCredentials credentials, CancellationToken cancellationToken = default)
+        {
+            if (turnContext == null)
+            {
+                throw new ArgumentException("The turnContext cannot be null");
+            }
+
+            if (turnContext.Activity == null)
+            {
+                throw new ArgumentException("The turnContext.Activity cannot be null");
+            }
+
+            if (string.IsNullOrEmpty(teamsChannelId))
+            {
+                throw new ArgumentException("teamsChannelId cannot be null or empty");
+            }
+
+            if (credentials == null)
+            {
+                throw new ArgumentException("MicrosoftAppCredentails cannot be null");
+            }
+
+            ConversationReference conversationReference = null;
+            var newActivityId = string.Empty;
+            var serviceUrl = turnContext.Activity.ServiceUrl;
+            var conversationParameters = new ConversationParameters
+            {
+                IsGroup = true,
+                ChannelData = new { channel = new { id = teamsChannelId } },
+                Activity = (Activity)activity,
+            };
+
+            await ((BotFrameworkAdapter)turnContext.Adapter).CreateConversationAsync(
+                teamsChannelId,
+                serviceUrl,
+                credentials,
+                conversationParameters,
+                (t, ct) =>
+                {
+                    conversationReference = t.Activity.GetConversationReference();
+                    newActivityId = t.Activity.Id;
+                    return Task.CompletedTask;
+                },
+                cancellationToken).ConfigureAwait(false);
+
+            return new Tuple<ConversationReference, string>(conversationReference, newActivityId);
         }
 
         private static async Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(IConnectorClient connectorClient, string conversationId, CancellationToken cancellationToken)

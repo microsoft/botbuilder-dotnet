@@ -21,6 +21,37 @@ namespace Microsoft.Bot.Builder.Teams.Tests
     public class TeamsInfoTests
     {
         [TestMethod]
+        public async Task TestSendMessageToTeamsChannelAsync()
+        {
+            var baseUri = new Uri("https://test.coffee");
+            var customHttpClient = new HttpClient(new RosterHttpMessageHandler(), false);
+
+            // Set a special base address so then we can make sure the connector client is honoring this http client
+            customHttpClient.BaseAddress = baseUri;
+            var connectorClient = new ConnectorClient(new Uri("https://test.coffee"), new MicrosoftAppCredentials("big-guid-here", "appPasswordHere"), customHttpClient);
+            
+            var activity = new Activity
+            {
+                Type = "message",
+                Text = "Test-SendMessageToTeamsChannelAsync",
+                ChannelId = Channels.Msteams,
+                ChannelData = new TeamsChannelData
+                {
+                    Team = new TeamInfo
+                    {
+                        Id = "team-id",
+                    },
+                },
+            };
+            
+            var turnContext = new TurnContext(new BotFrameworkAdapter(new SimpleCredentialProvider("big-guid-here", "appPasswordHere"), customHttpClient: customHttpClient), activity);
+            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+            turnContext.Activity.ServiceUrl = "https://test.coffee";
+            var handler = new TestTeamsActivityHandler();
+            await handler.OnTurnAsync(turnContext);
+        }
+
+        [TestMethod]
         public async Task TestGetTeamDetailsAsync()
         {
             var baseUri = new Uri("https://test.coffee");
@@ -129,11 +160,11 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                         Id = "team-id",
                     },
                 },
+                ServiceUrl = "https://test.coffee",
             };
 
             var turnContext = new TurnContext(new SimpleAdapter(), activity);
             turnContext.TurnState.Add<IConnectorClient>(connectorClient);
-
             var handler = new TestTeamsActivityHandler();
             await handler.OnTurnAsync(turnContext);
         }
@@ -158,10 +189,27 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     case "Test-GetChannelsAsync":
                         await CallGetChannelsAsync(turnContext);
                         break;
+                    case "Test-SendMessageToTeamsChannelAsync":
+                        await CallSendMessageToTeamsChannelAsync(turnContext);
+                        break;
                     default:
                         Assert.IsTrue(false);
                         break;
                 }
+            }
+
+            private async Task CallSendMessageToTeamsChannelAsync(ITurnContext turnContext)
+            {
+                var message = MessageFactory.Text("hi");
+                var channelId = "channelId123";
+                var creds = new MicrosoftAppCredentials("big-guid-here", "appPasswordHere");
+                var cancelToken = new CancellationToken();
+                var reference = await TeamsInfo.SendMessageToTeamsChannelAsync(turnContext, message, channelId, creds, cancelToken);
+
+                Assert.AreEqual(reference.Item1.ActivityId, "activityId123");
+                Assert.AreEqual(reference.Item1.ChannelId, "channelId123");
+                Assert.AreEqual(reference.Item1.ServiceUrl, "https://test.coffee");
+                Assert.AreEqual(reference.Item2, "activityId123");
             }
 
             private async Task CallGetTeamDetailsAsync(ITurnContext turnContext)
@@ -235,6 +283,18 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                         new JProperty("id", "team-id"),
                         new JProperty("name", "team-name"),
                         new JProperty("aadGroupId", "team-aadgroupid"),
+                    };
+                    response.Content = new StringContent(content.ToString());
+                }
+
+                // SendMessageToThreadInTeams
+                else if (request.RequestUri.PathAndQuery.EndsWith("v3/conversations"))
+                {
+                    var content = new JObject 
+                    { 
+                        new JProperty("id", "id123"),
+                        new JProperty("serviceUrl", "https://serviceUrl/"),
+                        new JProperty("activityId", "activityId123")
                     };
                     response.Content = new StringContent(content.ToString());
                 }
