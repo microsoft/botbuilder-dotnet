@@ -4,15 +4,10 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using NuGet.Packaging;
-using NuGet.Packaging.Core;
-using NuGet.Versioning;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
@@ -46,93 +41,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         public IEnumerable<IResourceProvider> ResourceProviders
         {
             get { return this.resourceProviders; }
-        }
-
-        /// <summary>
-        /// Add a .csproj as resource (adding the project, referenced projects and referenced packages).
-        /// </summary>
-        /// <param name="projectFile">Project file.</param>
-        /// <param name="ignoreFolders">Folders to ignore.</param>
-        /// <param name="monitorChanges">Whether to track changes.</param>
-        /// <returns>A new <see cref="ResourceExplorer"/>.</returns>
-        public static ResourceExplorer LoadProject(string projectFile, string[] ignoreFolders = null, bool monitorChanges = true)
-        {
-            var explorer = new ResourceExplorer();
-            projectFile = PathUtils.NormalizePath(projectFile);
-            ignoreFolders = ignoreFolders?.Select(f => PathUtils.NormalizePath(f)).ToArray();
-
-            if (!File.Exists(projectFile))
-            {
-                var foundProject = Directory.EnumerateFiles(projectFile, "*.*proj").FirstOrDefault();
-                if (foundProject == null)
-                {
-                    explorer.AddFolder(Path.GetDirectoryName(projectFile));
-                    return explorer;
-                }
-                else
-                {
-                    projectFile = foundProject;
-                }
-            }
-
-            string projectFolder = Path.GetDirectoryName(projectFile);
-
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(projectFile);
-
-            // add folder for the project
-            if (ignoreFolders != null)
-            {
-                explorer.AddFolders(projectFolder, ignoreFolders, monitorChanges: monitorChanges);
-            }
-            else
-            {
-                explorer.AddResourceProvider(new FolderResourceProvider(projectFolder, includeSubFolders: true, monitorChanges: monitorChanges));
-            }
-
-            // add project references
-            foreach (XmlNode node in xmlDoc.SelectNodes("//ProjectReference"))
-            {
-                var path = Path.Combine(projectFolder, PathUtils.NormalizePath(node.Attributes["Include"].Value));
-                path = Path.GetFullPath(path);
-                path = Path.GetDirectoryName(path);
-                if (Directory.Exists(path))
-                {
-                    explorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: monitorChanges));
-                }
-            }
-
-            var packages = Path.GetFullPath("packages");
-            var relativePackagePath = Path.Combine(@"..", "packages");
-            while (!Directory.Exists(packages) && Path.GetDirectoryName(packages) != Path.GetPathRoot(packages))
-            {
-                packages = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(packages), PathUtils.NormalizePath(relativePackagePath)));
-                if (packages == null)
-                {
-                    throw new ArgumentNullException("Can't find packages folder");
-                }
-            }
-
-            var pathResolver = new PackagePathResolver(packages);
-
-            // add NuGet package references
-            foreach (XmlNode node in xmlDoc.SelectNodes("//PackageReference"))
-            {
-                string packageName = node.Attributes["Include"]?.Value;
-                string version = node.Attributes["Version"]?.Value;
-                NuGetVersion nugetVersion;
-                if (!string.IsNullOrEmpty(packageName) && !string.IsNullOrEmpty(version) && NuGetVersion.TryParse(version, out nugetVersion))
-                {
-                    var package = new PackageIdentity(packageName, nugetVersion);
-                    var folder = Path.Combine(packages, PathUtils.NormalizePath(pathResolver.GetPackageDirectoryName(package)));
-                    if (Directory.Exists(folder))
-                    {
-                        explorer.AddResourceProvider(new FolderResourceProvider(folder, includeSubFolders: true, monitorChanges: monitorChanges));
-                    }
-                }
-            }
-
-            return explorer;
         }
 
         public ResourceExplorer AddResourceProvider(IResourceProvider resourceProvider)
