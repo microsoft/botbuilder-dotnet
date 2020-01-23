@@ -30,3 +30,5 @@ $PROPERTYName:Zipcodepattern=
 - zipcodepattern
 $PROPERTYName:Email=
 - email
+$PROPERTYName:Phonenumber=
+- phonenumber
