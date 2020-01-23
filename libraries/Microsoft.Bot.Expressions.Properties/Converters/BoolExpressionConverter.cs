@@ -2,12 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Data.SqlTypes;
-using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
+namespace Microsoft.Bot.Expressions.Properties.Converters
 {
     /// <summary>
     /// Converter which allows json to be expression to object or static object.

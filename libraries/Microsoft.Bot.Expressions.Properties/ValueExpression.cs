@@ -1,13 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Converters;
 using Microsoft.Bot.Builder.LanguageGeneration;
-using Microsoft.Bot.Expressions;
+using Microsoft.Bot.Expressions.Properties.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive
+namespace Microsoft.Bot.Expressions.Properties
 {
     /// <summary>
     /// ValueExpression - represents a property which is an object of any kind or a string expression.

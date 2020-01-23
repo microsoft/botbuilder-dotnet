@@ -22,6 +22,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Expressions.Properties.Converters;
 using Newtonsoft.Json;
 using static Microsoft.Bot.Builder.Dialogs.Adaptive.Actions.EditArray;
 

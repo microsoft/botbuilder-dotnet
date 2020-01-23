@@ -1,10 +1,11 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.Bot.Builder.LanguageGeneration;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive
+namespace Microsoft.Bot.Expressions.Properties
 {
     /// <summary>
     /// Extension methods for AdaptiveDialog.

@@ -1,11 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Converters;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive
+namespace Microsoft.Bot.Expressions.Properties
 {
     /// <summary>
     /// ObjectExpression(T) - represents a property which is either an object of type T or a string expression which resolves to a object of type T.

@@ -5,32 +5,29 @@ using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
+namespace Microsoft.Bot.Expressions.Properties.Converters
 {
     /// <summary>
     /// Converter which allows json to be expression to object or static object.
     /// </summary>
-    public class ValueExpressionConverter : JsonConverter<ValueExpression>
+    /// <typeparam name="T">The type of the items of the array.</typeparam>
+    public class ArrayExpressionConverter<T> : JsonConverter<ArrayExpression<T>>
     {
-        public ValueExpressionConverter()
-        {
-        }
-
         public override bool CanRead => true;
 
-        public override ValueExpression ReadJson(JsonReader reader, Type objectType, ValueExpression existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override ArrayExpression<T> ReadJson(JsonReader reader, Type objectType, ArrayExpression<T> existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.ValueType == typeof(string))
             {
-                return new ValueExpression((string)reader.Value);
+                return new ArrayExpression<T>((string)reader.Value);
             }
             else
             {
-                return new ValueExpression(JToken.Load(reader));
+                return new ArrayExpression<T>(JToken.Load(reader));
             }
         }
 
-        public override void WriteJson(JsonWriter writer, ValueExpression value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, ArrayExpression<T> value, JsonSerializer serializer)
         {
             if (value.Expression != null)
             {

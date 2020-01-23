@@ -1,13 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Converters;
 using Microsoft.Bot.Builder.LanguageGeneration;
-using Microsoft.Bot.Expressions;
+using Microsoft.Bot.Expressions.Properties.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive
+namespace Microsoft.Bot.Expressions.Properties
 {
     /// <summary>
     /// StringExpression - represents a property which is either a string value or a string expression.

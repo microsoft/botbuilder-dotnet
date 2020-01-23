@@ -2,35 +2,35 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Data.SqlTypes;
-using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
+namespace Microsoft.Bot.Expressions.Properties.Converters
 {
     /// <summary>
     /// Converter which allows json to be expression to object or static object.
     /// </summary>
-    public class StringExpressionConverter : JsonConverter<StringExpression>
+    public class IntExpressionConverter : JsonConverter<IntExpression>
     {
-        public StringExpressionConverter()
+        public IntExpressionConverter()
         {
         }
 
-        public override StringExpression ReadJson(JsonReader reader, Type objectType, StringExpression existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override bool CanRead => true;
+
+        public override IntExpression ReadJson(JsonReader reader, Type objectType, IntExpression existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.ValueType == typeof(string))
             {
-                return new StringExpression((string)reader.Value);
+                return new IntExpression((string)reader.Value);
             }
             else
             {
-                return new StringExpression(JToken.Load(reader));
+                return new IntExpression(JToken.Load(reader));
             }
         }
 
-        public override void WriteJson(JsonWriter writer, StringExpression value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, IntExpression value, JsonSerializer serializer)
         {
             if (value.Expression != null)
             {
