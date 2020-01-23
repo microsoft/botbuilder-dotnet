@@ -29,6 +29,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // the item found will be a JObject.
                 return asJobject.ToObject<T>();
             }
+            else if (obj == null)
+            {
+                return default(T);
+            }
             else
             {
                 throw new InvalidOperationException("Data is not in the correct format for casting.");
