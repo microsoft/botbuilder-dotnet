@@ -2,14 +2,14 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition":"!$Ordinal",
-    "priority": "indexOf(dialog.requiredProperties, 'Ordinal')",
+    "condition":"!$Datetimev2",
+    "priority": "indexOf(dialog.requiredProperties, 'Datetimev2')",
     "actions": [
         {
             "$kind": "Microsoft.Ask",
-            "activity": "@{AskOrdinal()}",
+            "activity": "@{AskDatetimev2()}",
             "expectedProperties": [
-                "Ordinal"
+                "Datetimev2"
             ]
         }
     ]
