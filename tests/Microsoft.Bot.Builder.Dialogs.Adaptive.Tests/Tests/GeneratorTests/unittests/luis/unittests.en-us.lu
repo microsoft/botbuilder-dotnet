@@ -1,7 +1,6 @@
 >>> Library
 [unittests-personName.en-us.lu](../en-us/unittests-personName.en-us.lu)
 [unittests-age.en-us.lu](../en-us/unittests-age.en-us.lu)
-[unittests-Ordinalv2.en-us.lu](../en-us/unittests-Ordinalv2.en-us.lu)
 [unittests-ordinalV2.en-us.lu](../en-us/unittests-ordinalV2.en-us.lu)
 [unittests-geographyV2.en-us.lu](../en-us/unittests-geographyV2.en-us.lu)
 [unittests-keyPhrase.en-us.lu](../en-us/unittests-keyPhrase.en-us.lu)
@@ -13,7 +12,6 @@
 [unittests-dimension.en-us.lu](../en-us/unittests-dimension.en-us.lu)
 [unittests-email.en-us.lu](../en-us/unittests-email.en-us.lu)
 [unittests-phonenumber.en-us.lu](../en-us/unittests-phonenumber.en-us.lu)
-[unittests-Datetimev2.en-us.lu](../en-us/unittests-Datetimev2.en-us.lu)
 [unittests-datetime.en-us.lu](../en-us/unittests-datetime.en-us.lu)
 [unittests-Confirmation.en-us.lu](../en-us/unittests-Confirmation.en-us.lu)
 [unittests-PROPERTYName.en-us.lu](../en-us/unittests-PROPERTYName.en-us.lu)
