@@ -23,6 +23,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private CancellationTokenSource cancelReloadToken = new CancellationTokenSource();
         private ConcurrentBag<IResource> changedResources = new ConcurrentBag<IResource>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
+        /// </summary>
         public ResourceExplorer()
         {
         }
@@ -43,6 +46,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             get { return this.resourceProviders; }
         }
 
+        /// <summary>
+        /// Add a resource provider to the resources managed by the resource explorer.
+        /// </summary>
+        /// <param name="resourceProvider">resource provider.</param>
+        /// <returns>resource explorer so that you can fluently call multiple methods on the resource explorer.</returns>
         public ResourceExplorer AddResourceProvider(IResourceProvider resourceProvider)
         {
             resourceProvider.Changed += ResourceProvider_Changed;
