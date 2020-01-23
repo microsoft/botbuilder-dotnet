@@ -41,6 +41,8 @@
 "unittests-ZipcodepatternSetnumber",
 "unittests-EmailAsk",
 "unittests-EmailSetemail",
+"unittests-PhonenumberAsk",
+"unittests-PhonenumberSetphonenumber",
 "unittests-CancelConfirmation",
 "unittests-CancelConfirmationSet",
 "unittests-ChangePropertyConfirmationSet",

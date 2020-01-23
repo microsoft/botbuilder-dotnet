@@ -184,6 +184,12 @@
                 "email"
             ]
         },
+        "Phonenumber": {
+            "type": "string",
+            "$entities": [
+                "phonenumber"
+            ]
+        },
         "CancelConfirmation": {
             "type": "string",
             "$entities": [
@@ -234,7 +240,8 @@
         "Enum1",
         "Enum2",
         "Zipcodepattern",
-        "Email"
+        "Email",
+        "Phonenumber"
     ],
     "$expectedOnly": [
         "Confirmation",
@@ -259,7 +266,8 @@
         "Enum1",
         "Enum2",
         "Zipcodepattern",
-        "Email"
+        "Email",
+        "Phonenumber"
     ],
     "definitions": {
         "PROPERTYName": {

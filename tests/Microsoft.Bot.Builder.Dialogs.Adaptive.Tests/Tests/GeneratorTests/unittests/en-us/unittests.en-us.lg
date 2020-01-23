@@ -29,3 +29,5 @@
 [unittests-Zipcodepattern.lg](unittests-Zipcodepattern.lg)
 [unittests-EmailEntity.lg](unittests-EmailEntity.lg)
 [unittests-Email.lg](unittests-Email.lg)
+[unittests-PhonenumberEntity.lg](unittests-PhonenumberEntity.lg)
+[unittests-Phonenumber.lg](unittests-Phonenumber.lg)
