@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,13 +54,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
             var utterance = Utterance(context.Context);
             var options = PredictionOptions;
-            /* TODO: When expression stuff is there use it.
             if (options.DynamicListsExpression != null)
             {
                 options = new LuisV3.LuisPredictionOptions(options);
-                options.DynamicLists = new Expression
+                options.DynamicLists = options.DynamicListsExpression.GetValue(context.GetState());
             }
-            */
 
             if (ExternalEntityRecognizer != null)
             {

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Bot.Expressions.Properties;
 
 namespace Microsoft.Bot.Builder.AI.LuisV3
 {
@@ -81,7 +82,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
         /// Gets or sets expression for computing dynamic lists.
         /// </summary>
         /// <value>Expression.</value>
-        public string DynamicListsExpression { get; set; }
+        public ObjectExpression<DynamicList> DynamicListsExpression { get; set; }
 
         /// <summary>
         /// Gets or sets external entities recognized in the query.
