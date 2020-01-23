@@ -2,21 +2,19 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.MockLuis
+namespace Microsoft.Bot.Builder.AI.Luis
 {
-    public class MockLuisComponentRegistration : ComponentRegistration
+    public class LuisComponentRegistration : ComponentRegistration
     {
         public override IEnumerable<TypeRegistration> GetTypes()
         {
-            // Recognizers
-            yield return new TypeRegistration<MockLuisRecognizer>("Microsoft.LuisRecognizer") { CustomDeserializer = new MockLuisLoader(TypeFactory.Configuration) };
+            yield return new TypeRegistration<LuisRecognizer>(LuisRecognizer.DeclarativeType) { CustomDeserializer = new LuisRecognizerLoader(TypeFactory.Configuration) };
         }
 
         public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)

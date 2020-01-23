@@ -5,11 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Bot.Builder.AI.LuisV3;
-using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
+namespace Microsoft.Bot.Builder.AI.Luis
 {
     public class DynamicListConverter : JsonConverter
     {
