@@ -1,10 +1,13 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Jurassic;
+using Jint;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -12,99 +15,146 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 {
     public class JavascriptAction : Dialog
     {
-        private ScriptEngine scriptEngine;
-        private string script;
+        private string script = null;
 
         [JsonConstructor]
         public JavascriptAction([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
-            this.scriptEngine = new ScriptEngine();
-
             // enable instances of this command as debug break point
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
         }
 
         /// <summary>
-        /// Gets or sets javascript bound to memory run function(user, conversation, dialog, turn).
+        /// Gets or sets javascript bound to memory run function.
         /// </summary>
         /// <example>
-        /// example inline script:
-        ///        if (user.age > 18)
-        ///              return dialog.lastResult;
-        ///          return null;
-        /// Example file script.js:
-        /// function doAction(user, conversation, dialog, turn) {
-        ///    if (user.age)
-        ///        return user.age* 7;
+        /// example script:
+        /// function doAction(options) {
+        ///    if (options.age > 7 && _user.IsVip)
+        ///        return memory.user.age* 7;
         ///    return 0;
         /// }.
         /// </example>
         /// <value>
-        /// Javascript bound to memory run function(user, conversation, dialog, turn).
+        /// Javascript doAction(options) function.
         /// </value>
-        public string Script
+        [JsonProperty("script")]
+        public string Script { get; set; }
+
+        /// <summary>
+        /// Gets or sets configurable options for the dialog. 
+        /// </summary>
+        /// <value>
+        /// Configurable options for the dialog. 
+        /// </value>
+        [JsonProperty("options")]
+        public ObjectExpression<object> Options { get; set; } = new ObjectExpression<object>();
+
+        /// <summary>
+        /// Gets or sets an optional expression which if is true will disable this action.
+        /// </summary>
+        /// <example>
+        /// "user.age > 18".
+        /// </example>
+        /// <value>
+        /// A boolean expression. 
+        /// </value>
+        [JsonProperty("disabled")]
+        public BoolExpression Disabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property path to store the dialog result in.
+        /// </summary>
+        /// <value>
+        /// The property path to store the dialog result in.
+        /// </value>
+        [JsonProperty("resultProperty")]
+        public StringExpression ResultProperty { get; set; }
+
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            get { return script; } set { LoadScript(value); }
-        }
-
-        public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var dcState = dc.GetState();
-
-            // map state into json
-            dynamic payload = new JObject();
-            payload.state = dcState.GetMemorySnapshot();
-
-            // payload.property = (this.Property != null) ? dc.GetValue<object>(this.Property) : null;
-            string payloadJson = JsonConvert.SerializeObject(payload);
-            var responseJson = scriptEngine.CallGlobalFunction<string>("callAction", payloadJson);
-
-            if (!string.IsNullOrEmpty(responseJson))
+            if (options is CancellationToken)
             {
-                dynamic response = JsonConvert.DeserializeObject(responseJson);
-                dcState.SetValue(ScopePath.USER, response.state.user);
-                dcState.SetValue(ScopePath.CONVERSATION, response.state.conversation);
-                dcState.SetValue(ScopePath.DIALOG, response.state.dialog);
-                dcState.SetValue(ScopePath.TURN, response.state.turn);
-                return dc.EndDialogAsync((object)response.result, cancellationToken: cancellationToken);
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            return dc.EndDialogAsync(cancellationToken: cancellationToken);
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
+            {
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
+            LoadScript();
+
+            // use bindingOptions to bind to the bound options
+            var boundOptions = BindOptions(dc, options);
+            dcState.SetValue(ThisPath.OPTIONS, boundOptions);
+
+            var engine = new Engine();
+            foreach (var scope in dcState.Where(ms => ms.Key != "this"))
+            {
+                engine.SetValue(scope.Key, scope.Value);
+            }
+
+            var result = engine.Execute(this.script)
+                .GetValue("doAction")
+                .Invoke(Jint.Native.JsValue.FromObject(engine, boundOptions ?? new object()))
+                .ToObject();
+
+            if (this.ResultProperty != null)
+            {
+                dcState.SetValue(this.ResultProperty.GetValue(dcState), result);
+            }
+
+            return await dc.EndDialogAsync(result, cancellationToken: cancellationToken);
         }
 
         protected override string OnComputeId()
         {
+            LoadScript();
             return $"{this.GetType().Name}({this.script.GetHashCode()})";
         }
 
-        private void LoadScript(string value)
+        protected object BindOptions(DialogContext dc, object options)
         {
-            if (File.Exists(value))
+            var dcState = dc.GetState();
+
+            // binding options are static definition of options with overlay of passed in options);
+            var bindingOptions = (JObject)ObjectPath.Merge(this.Options.GetValue(dcState), options ?? new JObject());
+            var boundOptions = new JObject();
+
+            foreach (var binding in bindingOptions)
             {
-                this.script = File.ReadAllText(value);
+                // evalute the value
+                var (value, error) = new ValueExpression(binding.Value).TryGetValue(dcState);
+
+                if (error != null)
+                {
+                    throw new Exception(error);
+                }
+
+                // and store in options as the result
+                ObjectPath.SetPathValue(boundOptions, binding.Key, value);
             }
-            else
+
+            return boundOptions;
+        }
+
+        private void LoadScript()
+        {
+            if (this.script == null)
             {
-                this.script = value;
+                if (File.Exists(this.Script))
+                {
+                    this.script = File.ReadAllText(this.Script);
+                }
+                else
+                {
+                    this.script = this.Script;
+                }
             }
-
-            // define the function
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine(script);
-            sb.AppendLine(@"function callAction(payloadJson) { 
-	                var payload = JSON.parse(payloadJson);
-
-                    // run script
-	                payload.result = doAction(payload.state.user, 
-                        payload.state.conversation, 
-                        payload.state.dialog, 
-                        payload.state.turn);
-
-                    return JSON.stringify(payload, null, 4);
-                }");
-
-            scriptEngine.Evaluate(sb.ToString());
         }
     }
 }
