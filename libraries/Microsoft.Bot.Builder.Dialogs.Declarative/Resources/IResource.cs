@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
+    /// <summary>
+    /// Interface for access the content of a resource.
+    /// </summary>
     public interface IResource
     {
         /// <summary>

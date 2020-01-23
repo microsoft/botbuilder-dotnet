@@ -85,13 +85,13 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 _slackChannel = Environment.GetEnvironmentVariable("SLACK_CHANNEL");
                 if (string.IsNullOrWhiteSpace(_slackChannel))
                 {
-                    throw new Exception("Environment variable 'SLACK_CHANNEL' not found.");
+                    Assert.Inconclusive("Environment variable 'SLACK_CHANNEL' not found.");
                 }
 
                 _slackBotToken = Environment.GetEnvironmentVariable("SLACK_BOT_TOKEN");
                 if (string.IsNullOrWhiteSpace(_slackBotToken))
                 {
-                    throw new Exception("Environment variable 'SLACK_BOT_TOKEN' not found.");
+                    Assert.Inconclusive("Environment variable 'SLACK_BOT_TOKEN' not found.");
                 }
             }
         }
