@@ -484,6 +484,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     var tokenExchangeResponse = await adapter.ExchangeTokenAsync(
                         turnContext,
                         _settings.ConnectionName,
+                        turnContext.Activity.From.Id,
                         new TokenExchangeRequest()
                         {
                             Token = tokenExchangeRequest.Token,

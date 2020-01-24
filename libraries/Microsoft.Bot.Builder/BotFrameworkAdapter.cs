@@ -383,7 +383,7 @@ namespace Microsoft.Bot.Builder
             {
                 context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 context.TurnState.Add<BotCallbackHandler>(callback);
-                
+
                 var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
 
@@ -489,7 +489,7 @@ namespace Microsoft.Bot.Builder
                         {
                             Logger.LogError("Failed to fetch token before processing outgoing activity. " + ex.Message);
                         }
-                        
+
                         response = await ProcessOutgoingActivityAsync(turnContext, activity, cancellationToken).ConfigureAwait(false);
                     }
                     else
@@ -963,7 +963,8 @@ namespace Microsoft.Bot.Builder
                 {
                     Id = Guid.NewGuid().ToString(),
                     ProviderId = null,
-                    Uri = "api://123-abc/.default",
+                    Uri = "api://96f8ab55-1fe6-47f7-adea-747c5ae290b0/.default"
+                    //Uri = "api://123-abc/.default",
                 },
             };
         }
@@ -973,14 +974,15 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <param name="userId">The user id associated with the token..</param>
         /// <param name="exchangeRequest">The exchange request details, either a token to exchange or a uri to exchange.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>If the task completes, the exchanged token is returned.</returns>
-        public virtual async Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, string connectionName, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, string connectionName, string userId, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
             var client = await CreateOAuthApiClientAsync(turnContext).ConfigureAwait(false);
-            var result = await client.UserToken.ExchangeAsyncAsync(turnContext.Activity.From.Id, connectionName, turnContext.Activity.ChannelId, exchangeRequest, cancellationToken).ConfigureAwait(false);
+            var result = await client.UserToken.ExchangeAsyncAsync(userId, connectionName, turnContext.Activity.ChannelId, exchangeRequest, cancellationToken).ConfigureAwait(false);
 
             if (result is ErrorResponse errorResponse)
             {
@@ -1328,7 +1330,7 @@ namespace Microsoft.Bot.Builder
                 // We create a default claim that contains only the desired audience.
                 var defaultConnectorClaims = new List<Claim> { new Claim(AuthenticationConstants.AudienceClaim, audience) };
                 var connectorClaimsIdentity = new ClaimsIdentity(defaultConnectorClaims);
-                
+
                 // The CreateConnectorClientAsync will create a ConnectorClient with an associated MicrosoftAppId for that claim and will
                 // initialize the dictionaries that contain the cache instances.
                 await CreateConnectorClientAsync(serviceUrl, connectorClaimsIdentity, cancellationToken).ConfigureAwait(false);

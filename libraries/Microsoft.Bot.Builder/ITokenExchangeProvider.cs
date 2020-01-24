@@ -39,10 +39,11 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <param name="userId">The user id associated with the token..</param>
         /// <param name="exchangeRequest">The exchange request details, either a token to exchange or a uri to exchange.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>If the task completes, the exchanged token is returned.</returns>
-        Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, string connectionName, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken = default(CancellationToken));
+        Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, string connectionName, string userId, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
