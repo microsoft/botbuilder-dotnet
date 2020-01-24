@@ -112,7 +112,7 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "ordinal is set as 3."
+      "text": "ordinalv2 is set as 3 start."
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
@@ -235,16 +235,32 @@
       "text": "abc@def.com"
     },
     {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Enter a value for phonenumber"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "123-456-7890"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Enter a value for datetimev2"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "Jan 22nd, 2020"
+    },
+    {
       "$kind": "Microsoft.Test.AssertReplyActivity",
       "assertions": [
         "type == 'message'",
         "count(attachments) == 1",
         "attachments[0].content.type == 'AdaptiveCard'",
         "count(attachments[0].content.body) == 2",
-        "count(attachments[0].content.body[1].facts) == 16",
+        "count(attachments[0].content.body[1].facts) == 18",
         "attachments[0].content.body[1].facts[0].value == 'John Smith'",
         "attachments[0].content.body[1].facts[1].value == '21 Year'",
-        "attachments[0].content.body[1].facts[2].value == '3'",
+        "attachments[0].content.body[1].facts[2].value == '3 start'",
         "attachments[0].content.body[1].facts[3].value == 'city Bellevue'",
         "attachments[0].content.body[1].facts[4].value == 'Bot Framework'",
         "attachments[0].content.body[1].facts[5].value == '4 Dollar'",
@@ -257,7 +273,9 @@
         "attachments[0].content.body[1].facts[12].value == 'whole wheat'",
         "attachments[0].content.body[1].facts[13].value == 'swiss'",
         "attachments[0].content.body[1].facts[14].value == '98004'",
-        "attachments[0].content.body[1].facts[15].value == 'abc@def.com'"
+        "attachments[0].content.body[1].facts[15].value == 'abc@def.com'",
+        "attachments[0].content.body[1].facts[16].value == '123-456-7890'",
+        "attachments[0].content.body[1].facts[17].value == 'date 2020-01-22'"
       ]
     },
     {
@@ -283,10 +301,10 @@
         "count(attachments) == 1",
         "attachments[0].content.type == 'AdaptiveCard'",
         "count(attachments[0].content.body) == 2",
-        "count(attachments[0].content.body[1].facts) == 16",
+        "count(attachments[0].content.body[1].facts) == 18",
         "attachments[0].content.body[1].facts[0].value == 'Johnannes Smith'",
         "attachments[0].content.body[1].facts[1].value == '21 Year'",
-        "attachments[0].content.body[1].facts[2].value == '3'",
+        "attachments[0].content.body[1].facts[2].value == '3 start'",
         "attachments[0].content.body[1].facts[3].value == 'city Bellevue'",
         "attachments[0].content.body[1].facts[4].value == 'Bot Framework'",
         "attachments[0].content.body[1].facts[5].value == '4 Dollar'",
@@ -299,7 +317,9 @@
         "attachments[0].content.body[1].facts[12].value == 'whole wheat'",
         "attachments[0].content.body[1].facts[13].value == 'swiss'",
         "attachments[0].content.body[1].facts[14].value == '98004'",
-        "attachments[0].content.body[1].facts[15].value == 'abc@def.com'"
+        "attachments[0].content.body[1].facts[15].value == 'abc@def.com'",
+        "attachments[0].content.body[1].facts[16].value == '123-456-7890'",
+        "attachments[0].content.body[1].facts[17].value == 'date 2020-01-22'"
       ]
     },
     {

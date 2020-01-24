@@ -34,7 +34,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.Bots
                         content: attachment.Content);
 
                     activity.Attachments.Add(image);
-                    await turnContext.SendActivityAsync(activity, cancellationToken);
+
+                    // Generate an activity with typing indicator, then send it along the other to display the indicator
+                    // while the attachment is retrieved
+                    var typingActivity = FacebookHelper.GenerateTypingActivity(turnContext.Activity.Conversation.Id);
+                    await turnContext.SendActivitiesAsync(new[] { typingActivity, activity }, cancellationToken).ConfigureAwait(false);
                 }
             }
             else if (turnContext.Activity.GetChannelData<FacebookMessage>().IsStandby)
@@ -53,7 +57,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.Bots
             {
                 IActivity activity;
 
-                switch (turnContext.Activity.Text)
+                var messageText = turnContext.Activity.Text.ToLowerInvariant();
+
+                switch (messageText)
                 {
                     case "button template":
                         activity = MessageFactory.Attachment(CreateTemplateAttachment(Directory.GetCurrentDirectory() + @"/Resources/ButtonTemplatePayload.json"));
@@ -64,19 +70,19 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.Bots
                     case "generic template":
                         activity = MessageFactory.Attachment(CreateTemplateAttachment(Directory.GetCurrentDirectory() + @"/Resources/GenericTemplatePayload.json"));
                         break;
-                    case "Hello button":
+                    case "hello button":
                         activity = MessageFactory.Text("Hello Human!");
                         break;
-                    case "Goodbye button":
+                    case "goodbye button":
                         activity = MessageFactory.Text("Goodbye Human!");
                         break;
-                    case "Chatting":
+                    case "chatting":
                         activity = MessageFactory.Text("Hello! How can I help you?");
                         break;
                     case "handover template":
                         activity = MessageFactory.Attachment(CreateTemplateAttachment(Directory.GetCurrentDirectory() + @"/Resources/HandoverTemplatePayload.json"));
                         break;
-                    case "Handover":
+                    case "handover":
                         activity = MessageFactory.Text("Redirecting...");
                         activity.Type = ActivityTypes.Event;
                         ((IEventActivity)activity).Name = HandoverConstants.PassThreadControl;
@@ -85,7 +91,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.Bots
                     case "bot template":
                         activity = MessageFactory.Attachment(CreateTemplateAttachment(Directory.GetCurrentDirectory() + @"/Resources/HandoverBotsTemplatePayload.json"));
                         break;
-                    case "SecondaryBot":
+                    case "secondaryBot":
                         activity = MessageFactory.Text("Redirecting to the secondary bot...");
                         activity.Type = ActivityTypes.Event;
 
@@ -95,15 +101,18 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.Bots
                         //AppId
                         ((IEventActivity)activity).Value = SecondaryReceiverAppId;
                         break;
-                    case "Other Bot":
+                    case "other Bot":
                         activity = MessageFactory.Text($"Secondary bot is requesting me the thread control. Passing thread control!");
+                        break;
+                    case "display typing indicator":
+                        activity = FacebookHelper.GenerateTypingActivity(turnContext.Activity.Conversation.Id);
                         break;
                     default:
                         activity = MessageFactory.Text($"Echo: {turnContext.Activity.Text}");
                         break;
                 }
 
-                await turnContext.SendActivityAsync(activity, cancellationToken);
+                await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
             }
         }
 

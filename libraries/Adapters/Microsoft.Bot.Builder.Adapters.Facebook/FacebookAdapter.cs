@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 {
                     var message = FacebookHelper.ActivityToFacebook(activity);
 
-                    if (message.Message.Attachment != null)
+                    if (message.Message?.Attachment != null)
                     {
                         message.Message.Text = null;
                     }

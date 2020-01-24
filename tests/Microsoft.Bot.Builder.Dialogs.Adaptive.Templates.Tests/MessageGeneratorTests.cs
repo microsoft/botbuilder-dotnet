@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
             DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
 
-            resourceExplorer = ResourceExplorer.LoadProject(GetProjectFolder());
+            resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder());
         }
 
         [TestMethod]

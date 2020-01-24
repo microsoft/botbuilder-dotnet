@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <summary>
         /// Gets or sets the sender action.
         /// </summary>
-        /// <value>The sender action.</value>
+        /// <value>The sender action (typing_on, typing_off, mark_seen).</value>
         [JsonProperty(PropertyName = "sender_action")]
         public string SenderAction { get; set; }
 
@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// Gets or sets a value indicating whether the message was received while in Standby mode.
         /// </summary>
         /// <value>Value indicating whether the message was received while in Standby mode.</value>
-        [JsonProperty(PropertyName = "standby")]
+        [JsonIgnore]
         public bool IsStandby { get; set; }
 
         /// <summary>
