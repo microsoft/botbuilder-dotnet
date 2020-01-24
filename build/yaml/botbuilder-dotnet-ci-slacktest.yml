@@ -8,8 +8,6 @@ pool:
   vmImage: 'windows-2019'
 
 variables:
-  BotGroup: 'TestSlackBot-Group-CI-Build'
-  BotName: 'TestSlackBot-Echo-CI-Build'
   BuildConfiguration: 'debug'
   BuildPlatform: 'any cpu'
 
