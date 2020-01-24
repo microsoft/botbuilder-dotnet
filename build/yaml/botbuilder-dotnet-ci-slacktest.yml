@@ -1,9 +1,9 @@
-trigger:
-  - master
+#
+# This YAML build definition replaces the classic BotBuilder-DotNet-master-CI-PR
+#
 
-pr:
-  - master
-
+# "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
+name: $(Build.BuildId)
 pool:
   vmImage: 'windows-2019'
 
