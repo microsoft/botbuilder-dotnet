@@ -24,8 +24,9 @@ namespace Microsoft.Bot.Expressions.Properties.Converters
             }
             else
             {
-                var obj = JToken.Load(reader);
-                return new ArrayExpression<T>(obj.ToObject<List<T>>(serializer));
+                // NOTE: This does not use the serializer because even we could deserialize here
+                // expression evaluation has no idea about converters.
+                return new ArrayExpression<T>(JToken.Load(reader));
             }
         }
 

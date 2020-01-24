@@ -1,11 +1,9 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.AI.Luis;
-using Microsoft.Bot.Builder.AI.LuisV3;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Luis;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.MockLuis;
 using Microsoft.Bot.Expressions.Properties;
@@ -79,6 +77,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task DynamicListsExpression()
+        {
+            var config = new ConfigurationBuilder()
+                .AddInMemoryCollection()
+                .UseLuisSettings(dynamicListsDirectory, "TestBot")
+                .Build();
+            await TestUtils.RunTestScript(configuration: config);
+        }
+
+        [TestMethod]
         public async Task ExternalEntities()
         {
             var config = new ConfigurationBuilder()
@@ -91,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public void DeserializeDynamicList()
         {
-            var dl = JsonConvert.DeserializeObject<List<DynamicList>>(DynamicListJSon, new DynamicListConverter());
+            var dl = JsonConvert.DeserializeObject<List<DynamicList>>(DynamicListJSon);
             Assert.AreEqual(2, dl.Count);
             Assert.AreEqual("alphaEntity", dl[0].Entity);
             Assert.AreEqual(2, dl[0].List.Count);
@@ -100,9 +108,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public void DeserializeSerializedDynamicList()
         {
-            var ol = JsonConvert.DeserializeObject<List<DynamicList>>(DynamicListJSon, new DynamicListConverter());
-            var json = JsonConvert.SerializeObject(ol, new DynamicListConverter());
-            var dl = JsonConvert.DeserializeObject<List<DynamicList>>(json, new DynamicListConverter());
+            var ol = JsonConvert.DeserializeObject<List<DynamicList>>(DynamicListJSon);
+            var json = JsonConvert.SerializeObject(ol);
+            var dl = JsonConvert.DeserializeObject<List<DynamicList>>(json);
             Assert.AreEqual(2, dl.Count);
             Assert.AreEqual("alphaEntity", dl[0].Entity);
             Assert.AreEqual(2, dl[0].List.Count);
@@ -111,7 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public void DeserializeArrayExpression()
         {
-            var ae = JsonConvert.DeserializeObject<ArrayExpression<DynamicList>>(DynamicListJSon, new DynamicListConverter(), new ArrayExpressionConverter<DynamicList>());
+            var ae = JsonConvert.DeserializeObject<ArrayExpression<DynamicList>>(DynamicListJSon, new ArrayExpressionConverter<DynamicList>());
             var dl = ae.GetValue(null);
             Assert.AreEqual(2, dl.Count);
             Assert.AreEqual("alphaEntity", dl[0].Entity);
@@ -121,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public void DeserializeLuisAdaptiveRecognizer()
         {
-            var recognizer = JsonConvert.DeserializeObject<LuisAdaptiveRecognizer>(RecognizerJson, new DynamicListConverter(), new ArrayExpressionConverter<DynamicList>());
+            var recognizer = JsonConvert.DeserializeObject<LuisAdaptiveRecognizer>(RecognizerJson, new ArrayExpressionConverter<DynamicList>());
             var dl = recognizer.DynamicLists.GetValue(null);
             Assert.AreEqual(2, dl.Count);
             Assert.AreEqual("alphaEntity", dl[0].Entity);

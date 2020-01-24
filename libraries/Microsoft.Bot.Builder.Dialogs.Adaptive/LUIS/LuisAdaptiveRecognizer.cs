@@ -1,12 +1,10 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
 
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.AI;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Expressions.Properties;
 using Newtonsoft.Json;
@@ -62,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// </summary>
         /// <value>Dynamic lists.</value>
         [JsonProperty("dynamicLists")]
-        public ArrayExpression<AI.LuisV3.DynamicList> DynamicLists { get; set; }
+        public ArrayExpression<Luis.DynamicList> DynamicLists { get; set; }
 
         /// <summary>
         /// Gets or sets LUIS prediction options.
@@ -98,7 +96,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             if (DynamicLists != null)
             {
                 options = new AI.LuisV3.LuisPredictionOptions(options);
-                options.DynamicLists = DynamicLists.GetValue(dialogContext.GetState());
+                var list = new List<AI.LuisV3.DynamicList>();
+                foreach (var listEntity in DynamicLists.GetValue(dialogContext.GetState()))
+                {
+                    list.Add(new AI.LuisV3.DynamicList(listEntity.Entity, listEntity.List));
+                }
+
+                options.DynamicLists = list;
             }
 
             var state = dialogContext.GetState();

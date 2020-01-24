@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.AI.LuisV3;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Luis;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
@@ -21,7 +21,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
         public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)
         {
-            yield return new DynamicListConverter();
             yield return new ArrayExpressionConverter<DynamicList>();
         }
     }
