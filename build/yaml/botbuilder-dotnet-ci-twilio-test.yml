@@ -11,8 +11,6 @@ pool:
   - visualstudio
 
 variables:
-  ResourceGroup: 'Twilio-FuncTest-CI'
-  BotName: 'testbot-twilio-ci'
   ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
   BuildPlatform: 'any cpu'
