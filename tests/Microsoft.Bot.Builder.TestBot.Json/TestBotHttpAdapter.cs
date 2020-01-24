@@ -37,6 +37,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             this.UseAdaptiveDialogs();
             this.UseQnAMaker();
             this.UseLanguageGeneration(resourceExplorer);
+            this.Use(new RegisterClassMiddleware<IConfiguration>(configuration));
             this.UseDebugger(configuration.GetValue<int>("debugport", 4712), events: new Events<AdaptiveEvents>());
 
             this.OnTurnError = async (turnContext, exception) =>

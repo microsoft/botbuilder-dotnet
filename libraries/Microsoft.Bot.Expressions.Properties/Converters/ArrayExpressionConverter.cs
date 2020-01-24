@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -23,7 +24,8 @@ namespace Microsoft.Bot.Expressions.Properties.Converters
             }
             else
             {
-                return new ArrayExpression<T>(JToken.Load(reader));
+                var obj = JToken.Load(reader);
+                return new ArrayExpression<T>(obj.ToObject<List<T>>(serializer));
             }
         }
 

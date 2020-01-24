@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Antlr4.Runtime;
 using Microsoft.Bot.Builder.AI.LuisV3;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -22,19 +23,22 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             dynamic obj = JToken.Load(reader);
-            var json = JsonConvert.SerializeObject(obj.list);
             return new DynamicList()
             {
                 Entity = obj.entity,
-                List = serializer.Deserialize<List<ListElement>>(new JsonTextReader(new StringReader(json)))
+                List = obj.list.ToObject<List<ListElement>>()
             };
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var list = (DynamicList)value;
-            var obj = new JObject(new JProperty("entity", list.Entity));
-            serializer.Serialize(writer, obj);
+            writer.WriteStartObject();
+            writer.WritePropertyName("entity");
+            writer.WriteValue(list.Entity);
+            writer.WritePropertyName("list");
+            serializer.Serialize(writer, list.List);
+            writer.WriteEndObject();
         }
     }
 }

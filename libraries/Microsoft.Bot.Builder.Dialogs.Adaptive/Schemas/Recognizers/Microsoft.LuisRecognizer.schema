@@ -34,14 +34,21 @@
             "description": "Entities recognized by this recognizer will be passed to LUIS as external entities.",
             "$kind": "Microsoft.Recognizer"
         },
-        "predictionOptions": {
-            "type": "object",
-            "properties": {
-                "dynamicLists": {
+        "dynamicLists": {
+            "$role": "expression",
+            "oneOf": [
+                {
+                    "type": "string",
+                    "title": "Expression",
+                    "description": "Expression for computing dynamic list."
+                },
+                {
                     "title": "Dynamic lists",
                     "description": "Runtime defined entity lists.",
                     "type": "array",
                     "items": {
+                        "title": "Entity list",
+                        "description": "Lists of canonical values and synonyms for an entity.",
                         "type": "object",
                         "properties": {
                             "entity": {
@@ -74,7 +81,12 @@
                             }
                         }
                     }
-                },
+                }
+            ]
+        },
+        "predictionOptions": {
+            "type": "object",
+            "properties": {
                 "includeAllIntents": {
                     "type": "boolean",
                     "title": "Include all intents",

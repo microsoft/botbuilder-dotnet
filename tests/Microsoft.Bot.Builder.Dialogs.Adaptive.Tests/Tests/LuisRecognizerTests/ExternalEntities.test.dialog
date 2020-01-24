@@ -5,9 +5,9 @@
         "$kind": "Microsoft.AdaptiveDialog",
         "recognizer": {
             "$kind": "Microsoft.LuisRecognizer",
-            "applicationId": "{settings.luis.ExternalEntities_test_en-us_lu}",
-            "endpoint": "{settings.luis.endpoint}",
-            "endpointKey": "{settings.luis.endpointKey}",
+            "applicationId": "=settings.luis.ExternalEntities_test_en-us_lu",
+            "endpoint": "=settings.luis.endpoint",
+            "endpointKey": "=settings.luis.endpointKey",
             "externalEntityRecognizer": "ExternalEntities.Recognizer",
             "predictionOptions": {
                 "preferExternalEntities": true

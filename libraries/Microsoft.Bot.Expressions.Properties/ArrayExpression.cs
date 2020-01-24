@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Expressions.Properties
         /// <summary>
         /// Initializes a new instance of the <see cref="ArrayExpression{T}"/> class.
         /// </summary>
-        /// <param name="value">JToken which is either a collection of (T) or expression which evalutes to array.</param>
+        /// <param name="value">JToken which is either a collection of (T) or expression which evaluates to array.</param>
         public ArrayExpression(JToken value)
             : base(value)
         {

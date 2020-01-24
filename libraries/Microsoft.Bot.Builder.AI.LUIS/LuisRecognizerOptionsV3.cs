@@ -54,12 +54,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
             var utterance = Utterance(context.Context);
             var options = PredictionOptions;
-            if (options.DynamicListsExpression != null)
-            {
-                options = new LuisV3.LuisPredictionOptions(options);
-                options.DynamicLists = options.DynamicListsExpression.GetValue(context.GetState());
-            }
-
             if (ExternalEntityRecognizer != null)
             {
                 var matches = await ExternalEntityRecognizer.RecognizeAsync(context, cancellationToken).ConfigureAwait(false);

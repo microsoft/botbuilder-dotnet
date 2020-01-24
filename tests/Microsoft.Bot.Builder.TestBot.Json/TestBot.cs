@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             this.dialogManager = new DialogManager(rootDialog);
 
-            System.Diagnostics.Trace.TraceInformation("Done loading resources.");
+            Trace.TraceInformation("Done loading resources.");
         }
     }
 }

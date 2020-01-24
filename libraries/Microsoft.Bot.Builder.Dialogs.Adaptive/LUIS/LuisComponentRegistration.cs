@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.AI.LuisV3;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Expressions.Properties.Converters;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.Luis
@@ -14,12 +16,13 @@ namespace Microsoft.Bot.Builder.AI.Luis
     {
         public override IEnumerable<TypeRegistration> GetTypes()
         {
-            yield return new TypeRegistration<LuisRecognizer>(LuisRecognizer.DeclarativeType) { CustomDeserializer = new LuisRecognizerLoader(TypeFactory.Configuration) };
+            yield return new TypeRegistration<LuisAdaptiveRecognizer>(LuisAdaptiveRecognizer.DeclarativeType);
         }
 
         public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)
         {
             yield return new DynamicListConverter();
+            yield return new ArrayExpressionConverter<DynamicList>();
         }
     }
 }

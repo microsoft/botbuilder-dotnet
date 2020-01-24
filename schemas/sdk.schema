@@ -1100,7 +1100,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -1587,7 +1587,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -1987,7 +1987,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -2012,7 +2012,7 @@
                     "title": "Output format",
                     "description": "Expression to format the confirm output.",
                     "examples": [
-                        "concat('confirmation:', this.value)"
+                        "=concat('confirmation:', this.value)"
                     ]
                 },
                 "defaultLocale": {
@@ -2574,7 +2574,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -5214,47 +5214,59 @@
                     "$kind": "Microsoft.Recognizer",
                     "$ref": "#/definitions/Microsoft.Recognizer"
                 },
-                "predictionOptions": {
-                    "type": "object",
-                    "properties": {
-                        "dynamicLists": {
-                            "title": "Dynamic lists",
+                "dynamicLists": {
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "title": "array",
                             "description": "Runtime defined entity lists.",
                             "type": "array",
                             "items": {
                                 "type": "object",
                                 "properties": {
                                     "entity": {
-                                        "title": "Entity",
+                                        "title": "string",
                                         "description": "Entity to extend with a dynamic list.",
                                         "type": "string"
                                     },
                                     "list": {
-                                        "title": "Dynamic list",
+                                        "title": "array",
                                         "description": "List of canonical forms and synonyms.",
                                         "type": "array",
                                         "items": {
                                             "type": "object",
                                             "properties": {
                                                 "canonicalForm": {
-                                                    "title": "Canonical form",
+                                                    "title": "string",
                                                     "description": "Resolution if any synonym matches.",
                                                     "type": "string"
                                                 },
                                                 "synonyms": {
-                                                    "title": "Synonyms",
+                                                    "title": "array",
                                                     "description": "List of synonyms for a canonical form.",
                                                     "type": "array",
                                                     "items": {
-                                                        "type": "string"
+                                                        "type": "string",
+                                                        "title": "string"
                                                     }
                                                 }
-                                            }
+                                            },
+                                            "title": "object"
                                         }
                                     }
-                                }
+                                },
+                                "title": "object"
                             }
                         },
+                        {
+                            "type": "string",
+                            "title": "string"
+                        }
+                    ]
+                },
+                "predictionOptions": {
+                    "type": "object",
+                    "properties": {
                         "includeAllIntents": {
                             "type": "boolean",
                             "title": "Include all intents",
@@ -5707,7 +5719,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -5732,7 +5744,8 @@
                     "title": "Output format",
                     "description": "Expression to format the number output.",
                     "examples": [
-                        "@{int(this.value)}"
+                        "=this.value",
+                        "=int(this.text)"
                     ]
                 },
                 "defaultLocale": {
@@ -10755,7 +10768,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -10780,6 +10793,7 @@
                     "title": "Output format",
                     "description": "Expression to format the output.",
                     "examples": [
+                        "=toUpper(this.value)",
                         "@{toUpper(this.value)}"
                     ]
                 }

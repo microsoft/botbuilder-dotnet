@@ -21,7 +21,10 @@ namespace Microsoft.Bot.Builder.MockLuis
 
         public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)
         {
-            yield return new DynamicListConverter();
+            foreach (var converter in new LuisComponentRegistration().GetConverters(sourceMap, refResolver, paths))
+            {
+                yield return converter;
+            }
         }
     }
 }

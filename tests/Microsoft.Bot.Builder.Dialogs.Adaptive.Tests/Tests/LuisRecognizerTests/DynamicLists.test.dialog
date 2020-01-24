@@ -5,51 +5,49 @@
         "$kind": "Microsoft.AdaptiveDialog",
         "recognizer": {
             "$kind": "Microsoft.LuisRecognizer",
-            "applicationId": "{settings.luis.DynamicLists_test_en-us_lu}",
-            "endpoint": "{settings.luis.endpoint}",
-            "endpointKey": "{settings.luis.endpointKey}",
-            "predictionOptions": {
-                "dynamicLists": [
-                    {
-                        "entity": "alphaEntity",
-                        "list": [
-                            {
-                                "canonicalForm": "a",
-                                "synonyms": [
-                                    "a",
-                                    "aa"
-                                ]
-                            },
-                            {
-                                "canonicalForm": "b",
-                                "synonyms": [
-                                    "b",
-                                    "bb"
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "entity": "numberEntity",
-                        "list": [
-                            {
-                                "canonicalForm": "1",
-                                "synonyms": [
-                                    "1",
-                                    "one"
-                                ]
-                            },
-                            {
-                                "canonicalForm": "2",
-                                "synonyms": [
-                                    "2",
-                                    "two"
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }
+            "applicationId": "=settings.luis.DynamicLists_test_en-us_lu",
+            "endpoint": "=settings.luis.endpoint",
+            "endpointKey": "=settings.luis.endpointKey",
+            "dynamicLists": [
+                {
+                    "entity": "alphaEntity",
+                    "list": [
+                        {
+                            "canonicalForm": "a",
+                            "synonyms": [
+                                "a",
+                                "aa"
+                            ]
+                        },
+                        {
+                            "canonicalForm": "b",
+                            "synonyms": [
+                                "b",
+                                "bb"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "entity": "numberEntity",
+                    "list": [
+                        {
+                            "canonicalForm": "1",
+                            "synonyms": [
+                                "1",
+                                "one"
+                            ]
+                        },
+                        {
+                            "canonicalForm": "2",
+                            "synonyms": [
+                                "2",
+                                "two"
+                            ]
+                        }
+                    ]
+                }
+            ]
         },
         "triggers": [
             {
