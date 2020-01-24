@@ -11,8 +11,6 @@ pool:
   - visualstudio
 
 variables:
-  ResourceGroup: 'FB-FuncTest-CI'
-  BotName: 'testbot-fb-ci'
   ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
   BuildPlatform: 'any cpu'
@@ -44,7 +42,7 @@ steps:
    echo '##vso[task.setvariable variable=FacebookAccessToken]$(FacebookAccessToken)'
    echo '##vso[task.setvariable variable=FacebookAppSecret]$(FacebookAppSecret)'
    echo '##vso[task.setvariable variable=BotEndpoint]https://$(BotName).azurewebsites.net/api/messages'
-   echo '##vso[task.setvariable variable=UserId]$(UserId)'
+   echo '##vso[task.setvariable variable=SenderId]$(SenderId)'
   displayName: 'Set environment variables'
 
 - task: DotNetCoreCLI@2
