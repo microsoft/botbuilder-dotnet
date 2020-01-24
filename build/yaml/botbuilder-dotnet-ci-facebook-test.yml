@@ -35,8 +35,8 @@ steps:
     azureSubscription: '$(AzureSubscription)'
     scriptLocation: inlineScript
     inlineScript: |
-     call az deployment create --name "$(ResourceGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId="$(AppId)" appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" groupName="$(ResourceGroup)" groupLocation="westus" newAppServicePlanLocation="westus" facebookVerifyToken="verifyToken" facebookAppSecret="$(FacebookAppSecret)"  facebookAccessToken="$(FacebookAccessToken)"
-     call az webapp deployment source config-zip --resource-group "$(ResourceGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot\PublishedBot.zip"
+     call az deployment create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId="$(AppId)" appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" facebookVerifyToken="verifyToken" facebookAppSecret="$(FacebookAppSecret)"  facebookAccessToken="$(FacebookAccessToken)"
+     call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot\PublishedBot.zip"
 
 - powershell: |
    echo '##vso[task.setvariable variable=FacebookAccessToken]$(FacebookAccessToken)'
@@ -57,5 +57,5 @@ steps:
   inputs:
     azureSubscription: '$(AzureSubscription)'
     scriptLocation: inlineScript
-    inlineScript: 'call az group delete -n "$(ResourceGroup)" --yes'
+    inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
   condition: always()
