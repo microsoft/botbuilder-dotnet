@@ -5,7 +5,7 @@
     "description": "Actions to be performed when an entity value needs to be resolved.",
     "allOf": [
         {
-            "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/TriggerConditions/Microsoft.OnCondition.schema#"
+            "$ref": "./Microsoft.OnCondition.schema#"
         },
         {
             "type": "object",
