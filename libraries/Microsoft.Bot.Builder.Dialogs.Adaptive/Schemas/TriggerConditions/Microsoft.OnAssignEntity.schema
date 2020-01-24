@@ -5,7 +5,7 @@
     "description": "Actions to take when an entity should be assigned to a property.",
     "allOf": [
         {
-            "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/TriggerConditions/Microsoft.OnCondition.schema#"
+            "$ref": "./Microsoft.OnCondition.schema#"
         },
         {
             "type": "object",
