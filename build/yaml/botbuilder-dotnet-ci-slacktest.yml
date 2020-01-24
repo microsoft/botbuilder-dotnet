@@ -1,15 +1,13 @@
-trigger:
-  - master
+#
+# Runs functional tests against the Slack channel.
+#
 
-pr:
-  - master
-
+# "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
+name: $(Build.BuildId)
 pool:
   vmImage: 'windows-2019'
 
 variables:
-  BotGroup: 'TestSlackBot-Group-CI-Build'
-  BotName: 'TestSlackBot-Echo-CI-Build'
   BuildConfiguration: 'debug'
   BuildPlatform: 'any cpu'
 
@@ -54,7 +52,7 @@ steps:
 - task: AzureCLI@1
   displayName: 'Create Resources'
   inputs:
-    azureSubscription: '$(AzureSubscription)'
+    azureSubscription: 'FUSE Temporary (174c5021-8109-4087-a3e2-a1de20420569)'
     scriptLocation: inlineScript
     inlineScript: |
      call az deployment create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" slackVerificationToken="$(SlackVerificationToken)" slackBotToken="$(SlackBotToken)"  slackClientSigningSecret="$(SlackClientSigningSecret)"
@@ -79,7 +77,7 @@ steps:
 - task: AzureCLI@1
   displayName: 'Delete Resources'
   inputs:
-    azureSubscription: '$(AzureSubscription)'
+    azureSubscription: 'FUSE Temporary (174c5021-8109-4087-a3e2-a1de20420569)'
     scriptLocation: inlineScript
     inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
   condition: always()
