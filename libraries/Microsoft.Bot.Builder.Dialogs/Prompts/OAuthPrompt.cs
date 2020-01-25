@@ -193,8 +193,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var promptState = (IDictionary<string, object>)state[PersistedState];
-            var promptOptions = (PromptOptions)state[PersistedOptions];
+            var promptState = state[PersistedState].CastTo<IDictionary<string, object>>();
+            var promptOptions = state[PersistedOptions].CastTo<PromptOptions>();
 
             // Increment attempt count
             // Convert.ToInt32 For issue https://github.com/Microsoft/botbuilder-dotnet/issues/1859
