@@ -36,53 +36,44 @@
         },
         "dynamicLists": {
             "$role": "expression",
-            "oneOf": [
-                {
-                    "type": "string",
-                    "title": "Expression",
-                    "description": "Expression for computing dynamic list."
-                },
-                {
-                    "title": "Dynamic lists",
-                    "description": "Runtime defined entity lists.",
-                    "type": "array",
-                    "items": {
-                        "title": "Entity list",
-                        "description": "Lists of canonical values and synonyms for an entity.",
-                        "type": "object",
-                        "properties": {
-                            "entity": {
-                                "title": "Entity",
-                                "description": "Entity to extend with a dynamic list.",
-                                "type": "string"
-                            },
-                            "list": {
-                                "title": "Dynamic list",
-                                "description": "List of canonical forms and synonyms.",
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "canonicalForm": {
-                                            "title": "Canonical form",
-                                            "description": "Resolution if any synonym matches.",
-                                            "type": "string"
-                                        },
-                                        "synonyms": {
-                                            "title": "Synonyms",
-                                            "description": "List of synonyms for a canonical form.",
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
+            "title": "Dynamic lists",
+            "description": "Runtime defined entity lists.",
+            "type": "array",
+            "items": {
+                "title": "Entity list",
+                "description": "Lists of canonical values and synonyms for an entity.",
+                "type": "object",
+                "properties": {
+                    "entity": {
+                        "title": "Entity",
+                        "description": "Entity to extend with a dynamic list.",
+                        "type": "string"
+                    },
+                    "list": {
+                        "title": "Dynamic list",
+                        "description": "List of canonical forms and synonyms.",
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "canonicalForm": {
+                                    "title": "Canonical form",
+                                    "description": "Resolution if any synonym matches.",
+                                    "type": "string"
+                                },
+                                "synonyms": {
+                                    "title": "Synonyms",
+                                    "description": "List of synonyms for a canonical form.",
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
                                     }
                                 }
                             }
                         }
                     }
                 }
-            ]
+            }
         },
         "predictionOptions": {
             "type": "object",

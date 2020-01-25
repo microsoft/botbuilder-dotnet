@@ -106,7 +106,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Schemas", "Schemas", "{EE56F2B6-4995-4E8F-ACFF-310AF0A4DA0F}"
 	ProjectSection(SolutionItems) = preProject
 		schemas\baseComponent.schema = schemas\baseComponent.schema
-		schemas\component.schema = schemas\component.schema
 		schemas\readme.md = schemas\readme.md
 		schemas\sdk.schema = schemas\sdk.schema
 		schemas\update.cmd = schemas\update.cmd
@@ -168,7 +167,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling", "tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling\Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling.csproj", "{D9242899-AB3F-46BB-BAB4-386CB8EC535C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Expressions.Properties", "libraries\Microsoft.Bot.Expressions.Properties\Microsoft.Bot.Expressions.Properties.csproj", "{4943C197-0742-480E-B1D3-6738D41582A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Expressions.Properties", "libraries\Microsoft.Bot.Expressions.Properties\Microsoft.Bot.Expressions.Properties.csproj", "{4943C197-0742-480E-B1D3-6738D41582A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

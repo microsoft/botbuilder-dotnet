@@ -16,10 +16,7 @@
         },
         "disabled": {
             "$role": "expression",
-            "type": [
-                "boolean",
-                "string"
-            ],
+            "type": "boolean",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -46,10 +43,7 @@
         },
         "timeout": {
             "$role": "expression",
-            "type": [
-                "integer",
-                "string"
-            ],
+            "type": "integer",
             "title": "Timeout",
             "description": "Time out setting for the OAuth signin card.",
             "default": "900000"
@@ -81,10 +75,7 @@
         },
         "maxTurnCount": {
             "$role": "expression",
-            "type": [
-                "integer",
-                "string"
-            ],
+            "type": "integer",
             "title": "Max turn count",
             "description": "Maximum number of re-prompt attempts to collect information.",
             "default": 3,
@@ -110,10 +101,7 @@
         },
         "allowInterruptions": {
             "$role": "expression",
-            "type": [
-                "boolean",
-                "string"
-            ],
+            "type": "boolean",
             "title": "Allow Interruptions",
             "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
             "default": "true",
