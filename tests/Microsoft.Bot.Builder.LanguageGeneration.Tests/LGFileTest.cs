@@ -732,6 +732,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestReExecute()
+        {
+            var lgFile = LGParser.ParseFile(GetExampleFilePath("ReExecute.lg"));
+
+            // may be has different values
+            var evaled = lgFile.EvaluateTemplate("templateWithSameParams", new { param1 = "ms", param2 = "newms" });
+        }
+
+        [TestMethod]
         public void TestConditionExpression()
         {
             var lgFile = LGParser.ParseFile(GetExampleFilePath("ConditionExpression.lg"));

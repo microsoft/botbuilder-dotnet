@@ -2,8 +2,8 @@ $PROPERTYName:Personname=
 - personname
 $PROPERTYName:Age=
 - age
-$PROPERTYName:Ordinal=
-- ordinal
+$PROPERTYName:Ordinalv2=
+- ordinalv2
 $PROPERTYName:Geographyv2=
 - geographyv2
 $PROPERTYName:Keyphraseproperty=
@@ -30,3 +30,7 @@ $PROPERTYName:Zipcodepattern=
 - zipcodepattern
 $PROPERTYName:Email=
 - email
+$PROPERTYName:Phonenumber=
+- phonenumber
+$PROPERTYName:Datetimev2=
+- datetimev2

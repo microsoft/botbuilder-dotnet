@@ -44,7 +44,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 typing.From.Name = this.User;
             }
 
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             await adapter.ProcessActivityAsync((Activity)typing, callback, default(CancellationToken)).ConfigureAwait(false);
+
+            sw.Stop();
+
+            Trace.TraceInformation($"[Turn Ended => {sw.ElapsedMilliseconds} ms processing UserConversationUpdate[]");
         }
     }
 }

@@ -18,6 +18,7 @@ steps:
   displayName: 'Tag Build with PackageVersion'
   inputs:
     tags: 'Version=$(ReleasePackageVersion)'
+  continueOnError: true
 
 - task: NuGetToolInstaller@0
   displayName: 'Use NuGet 4.9.1'

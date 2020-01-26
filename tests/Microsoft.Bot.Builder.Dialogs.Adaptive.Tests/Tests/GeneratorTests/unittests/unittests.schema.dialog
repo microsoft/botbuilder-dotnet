@@ -27,11 +27,24 @@
                 }
             }
         },
-        "Ordinal": {
-            "type": "string",
+        "Ordinalv2": {
+            "type": "object",
             "$entities": [
-                "ordinal"
-            ]
+                "ordinalV2:Ordinalv2",
+                "ordinalV2"
+            ],
+            "required": [
+                "offset",
+                "relativeTo"
+            ],
+            "properties": {
+                "offset": {
+                    "type": "number"
+                },
+                "relativeTo": {
+                    "type": "string"
+                }
+            }
         },
         "Geographyv2": {
             "type": "object",
@@ -184,6 +197,31 @@
                 "email"
             ]
         },
+        "Phonenumber": {
+            "type": "string",
+            "$entities": [
+                "phonenumber"
+            ]
+        },
+        "Datetimev2": {
+            "type": "object",
+            "$entities": [
+                "datetime:Datetimev2",
+                "datetime"
+            ],
+            "required": [
+                "type",
+                "timex"
+            ],
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "timex": {
+                    "type": "string"
+                }
+            }
+        },
         "CancelConfirmation": {
             "type": "string",
             "$entities": [
@@ -221,7 +259,7 @@
     "required": [
         "Personname",
         "Age",
-        "Ordinal",
+        "Ordinalv2",
         "Geographyv2",
         "Keyphraseproperty",
         "Money",
@@ -234,7 +272,9 @@
         "Enum1",
         "Enum2",
         "Zipcodepattern",
-        "Email"
+        "Email",
+        "Phonenumber",
+        "Datetimev2"
     ],
     "$expectedOnly": [
         "Confirmation",
@@ -246,7 +286,7 @@
     "$public": [
         "Personname",
         "Age",
-        "Ordinal",
+        "Ordinalv2",
         "Geographyv2",
         "Keyphraseproperty",
         "Money",
@@ -259,7 +299,9 @@
         "Enum1",
         "Enum2",
         "Zipcodepattern",
-        "Email"
+        "Email",
+        "Phonenumber",
+        "Datetimev2"
     ],
     "definitions": {
         "PROPERTYName": {
