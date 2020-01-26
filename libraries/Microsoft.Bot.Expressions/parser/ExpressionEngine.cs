@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Expressions
                     return Expression.ConstantExpression(new JObject());
                 }
 
-                throw new Exception($"Unregonized constant: {text}");
+                throw new Exception($"Unrecognized constant: {text}");
             }
 
             private Expression MakeExpression(string type, params Expression[] children)
