@@ -6,6 +6,7 @@ using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Loaders
 {
@@ -24,12 +25,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Loaders
             // simpler json format
             if (obj["applicationId"]?.Type == JTokenType.String)
             {
-                var luisService = obj.ToObject<LuisApplication>();
-                luisService.ApplicationId = configuration.LoadSetting(luisService.ApplicationId);
-                luisService.Endpoint = configuration.LoadSetting(luisService.Endpoint);
-                luisService.EndpointKey = configuration.LoadSetting(luisService.EndpointKey);
+                var luisApplication = obj.ToObject<LuisApplication>();
+                luisApplication.ApplicationId = configuration.LoadSetting(luisApplication.ApplicationId);
+                luisApplication.Endpoint = configuration.LoadSetting(luisApplication.Endpoint);
+                luisApplication.EndpointKey = configuration.LoadSetting(luisApplication.EndpointKey);
+                var options = new LuisRecognizerOptionsV3(luisApplication);
+                if (obj["predictionOptions"] != null)
+                {
+                    options.PredictionOptions = obj["predictionOptions"].ToObject<AI.LuisV3.LuisPredictionOptions>();
+                }
 
-                return new LuisRecognizer(luisService);
+                return new LuisRecognizer(options);
             }
 
             // Else, just assume it is the verbose structure with LuisService as inner object

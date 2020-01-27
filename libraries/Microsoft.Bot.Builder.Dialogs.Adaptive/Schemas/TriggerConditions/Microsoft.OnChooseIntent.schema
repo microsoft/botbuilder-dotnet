@@ -1,0 +1,27 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.ITriggerCondition)",
+    "title": "On ambigious intent",
+    "description": "Actions to perform on when an intent is ambigious.",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./Microsoft.OnCondition.schema#"
+        },
+        {
+            "properties": {
+                "intents": {
+                    "type": "array",
+                    "title": "Intents",
+                    "description": "Intents that must be in the ChooseIntent result for this condition to trigger.",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    ],
+    "required": [
+        "actions"
+    ]
+}

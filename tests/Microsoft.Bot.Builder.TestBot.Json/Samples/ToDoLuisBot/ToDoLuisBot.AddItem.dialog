@@ -8,12 +8,12 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SetProperty",
-                    "value": "@promptContentML",
+                    "value": "=@promptContentML",
                     "property": "dialog.item"
                 },
                 {
                     "$kind": "Microsoft.SetProperty",
-                    "value": "@ListType",
+                    "value": "=@ListType",
                     "property": "dialog.listName"
                 },
                 {
@@ -107,7 +107,7 @@
                 },
                 {
                     "$kind": "Microsoft.EditArray",
-                    "changeType": "Push",
+                    "changeType": "push",
                     "itemsProperty": "user.lists[dialog.listName]",
                     "value": "dialog.item"
                 },

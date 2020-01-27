@@ -5,14 +5,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Expressions.Memory;
 using Newtonsoft.Json.Linq;
-using NuGet.Common;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory
 {
@@ -23,6 +21,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
     /// </summary>
     public class DialogStateManager : IDictionary<string, object>, IMemory
     {
+        /// <summary>
+        /// Information for tracking when path was last modified.
+        /// </summary>
+        private const string PathTracker = "dialog._tracker.paths";
+
+        private static readonly char[] Separators = { ',', '[' };
+
         private readonly DialogContext dialogContext;
         private int version = 0;
 
@@ -42,7 +47,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public bool IsReadOnly => true;
 
-        public object this[string key] { get => GetValue<object>(key, () => null); set => SetValue(key, value); }
+        public object this[string key]
+        {
+            get => GetValue<object>(key, () => null);
+            set
+            {
+                if (key.IndexOfAny(Separators) == -1)
+                {
+                    // Root is handled by SetMemory rather than SetValue
+                    var scope = GetMemoryScope(key) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(key));
+                    scope.SetMemory(this.dialogContext, value);
+                }
+                else
+                {
+                    SetValue(key, value);
+                }
+            }
+        }
 
         public static DialogStateManagerConfiguration CreateStandardConfiguration(ConversationState conversationState = null, UserState userState = null)
         {
@@ -61,6 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                     new TurnMemoryScope(),
                     new SettingsMemoryScope(),
                     new DialogMemoryScope(),
+                    new DialogClassMemoryScope(),
                     new ClassMemoryScope(),
                     new ThisMemoryScope()
                 }
@@ -95,47 +117,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         }
 
         /// <summary>
-        /// IMemory.GetValue is simple wrapper on 'TryGetValue' now, and swallow error silently.
-        /// </summary>
-        /// <param name="path">The path to get value for.</param>
-        /// <returns>The value get.</returns>
-        (object value, string error) IMemory.GetValue(string path)
-        {
-            if (this.TryGetValue<object>(path, out var result))
-            {
-                return (result, null);
-            }
-            else
-            {
-                // We choose to swallow error here to let an invalid path evaluate to null
-                // Maybe we can log a warnning message like
-                // $"Get value for path: '{path}' failed".
-                return (null, null);
-            }
-        }
-
-        /// <summary>
-        /// IMemory.SetValue is a simpler wrapper on top of 'SetValue', which is been widely used across
-        /// AdaptiveDialog. We may consider let other part of AdaptiveDialog use IMemory interface instead of
-        /// call `SetValue` directly.
-        /// </summary>
-        /// <param name="path">Path to set value.</param>
-        /// <param name="value">Value to set.</param>
-        /// <returns>Value set.</returns>
-        (object value, string error) IMemory.SetValue(string path, object value)
-        {
-            try
-            {
-                this.SetValue(path, value);
-                return (value, null);
-            }
-            catch (Exception e)
-            {
-                return (value, $"Set value to path: '{path}' failed, Reason: {e.Message}");
-            }
-        }
-
-        /// <summary>
         /// Version help caller to identify the updates and decide cache or not.
         /// </summary>
         /// <returns>Current version.</returns>
@@ -152,14 +133,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>The memory scope.</returns>
         public virtual MemoryScope ResolveMemoryScope(string path, out string remainingPath)
         {
-            path = path.Trim();
-            if (path.StartsWith("{") && path.EndsWith("}"))
-            {
-                // TODO: Eventually this should use the expression machinery
-                // This allows doing something like {$foo} where dialog.foo contains $blah to compute a path.
-                path = GetValue<string>(path.Substring(1, path.Length - 2));
-            }
-
             var scope = path;
             var dot = path.IndexOf(".");
             if (dot > 0)
@@ -206,21 +179,41 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
 
             var memoryScope = ResolveMemoryScope(path, out var remainingPath);
-            if (memoryScope != null && string.IsNullOrEmpty(remainingPath))
+            if (memoryScope == null)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(remainingPath))
             {
                 var memory = memoryScope.GetMemory(this.dialogContext);
+                if (memory == null)
+                {
+                    return false;
+                }
+
                 value = ObjectPath.MapValueTo<T>(memory);
                 return true;
             }
 
-            // HACK to support .First() retrieval on turn.recognized.entities.foo, replace with Expressions once expression ship
-            var iFirst = path.ToLower().LastIndexOf(".first()");
+            // TODO: HACK to support .First() retrieval on turn.recognized.entities.foo, replace with Expressions once expression ship
+            const string first = ".first()";
+            var iFirst = path.ToLower().LastIndexOf(first);
             if (iFirst >= 0)
             {
+                remainingPath = path.Substring(iFirst + first.Length);
                 path = path.Substring(0, iFirst);
-                memoryScope = ResolveMemoryScope(path, out remainingPath);
-                var memory = memoryScope.GetMemory(dialogContext);
-                return TryGetFirstNestedValue(ref value, ref remainingPath, memory);
+                if (TryGetFirstNestedValue(ref value, ref path, this))
+                {
+                    if (string.IsNullOrEmpty(remainingPath))
+                    {
+                        return true;
+                    }
+
+                    return ObjectPath.TryGetPathValue(value, remainingPath, out value);
+                }
+
+                return false;
             }
 
             return ObjectPath.TryGetPathValue(this, path, out value);
@@ -288,18 +281,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 throw new Exception($"{path} = You can't pass an unresolved Task to SetValue");
             }
 
-            path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            var memoryScope = ResolveMemoryScope(path, out var remainingPath);
-            if (memoryScope == null)
-            {
-                throw new ArgumentException($"{path} does not resolve to a memory scope: {string.Join(",", this.Configuration.MemoryScopes.Select(ms => ms.Name))}");
-            }
-
-            if (string.IsNullOrEmpty(remainingPath))
-            {
-                memoryScope.SetMemory(this.dialogContext, value);
-            }
-            else
+            path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
+            if (TrackChange(path, value))
             {
                 ObjectPath.SetPathValue(this, path, value);
             }
@@ -314,19 +297,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <param name="path">Path to remove the leaf property.</param>
         public void RemoveValue(string path)
         {
-            path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-
-            //var memoryScope = ResolveMemoryScope(path, out var remainingPath);
-            //if (memoryScope == null)
-            //{
-            //    throw new ArgumentException($"{path} does not resolve to a memory scope: {string.Join(",", this.Configuration.MemoryScopes.Select(ms => ms.Name))}");
-            //}
-
-            //if (string.IsNullOrEmpty(remainingPath))
-            //{
-            //    throw new ArgumentException("You cannot remove a root memory scope.");
-            //}
-            //else
+            path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
+            if (TrackChange(path, null))
             {
                 ObjectPath.RemovePathValue(this, path);
             }
@@ -411,8 +383,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public bool TryGetValue(string key, out object value)
         {
-            value = default;
-            return TryGetValue<object>(key, out value);
+            return this.TryGetValue<object>(key, out value);
         }
 
         public void Add(KeyValuePair<string, object> item)
@@ -451,6 +422,54 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
         }
 
+        /// <summary>
+        /// Track when specific paths are changed.
+        /// </summary>
+        /// <param name="paths">Paths to track.</param>
+        /// <returns>Normalized paths to pass to <see cref="AnyPathChanged"/>.</returns>
+        public List<string> TrackPaths(IEnumerable<string> paths)
+        {
+            var allPaths = new List<string>();
+            foreach (var path in paths)
+            {
+                var tpath = TransformPath(path);
+
+                // Track any path that resolves to a constant path
+                if (ObjectPath.TryResolvePath(this, tpath, out var segments))
+                {
+                    var npath = string.Join("_", segments);
+                    SetValue(PathTracker + "." + npath, 0);
+                    allPaths.Add(npath);
+                }
+            }
+
+            return allPaths;
+        }
+
+        /// <summary>
+        /// Check to see if any path has changed since watermark.
+        /// </summary>
+        /// <param name="counter">Time counter to compare to.</param>
+        /// <param name="paths">Paths from <see cref="TrackPaths"/> to check.</param>
+        /// <returns>True if any path has changed since counter.</returns>
+        public bool AnyPathChanged(uint counter, IEnumerable<string> paths)
+        {
+            var found = false;
+            if (paths != null)
+            {
+                foreach (var path in paths)
+                {
+                    if (GetValue<uint>(PathTracker + "." + path) > counter)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+
+            return found;
+        }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             foreach (var ms in Configuration.MemoryScopes)
@@ -464,9 +483,64 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             return $"'{path}' does not match memory scopes:{string.Join(",", Configuration.MemoryScopes.Select(ms => ms.Name))}";
         }
 
+        private bool TrackChange(string path, object value)
+        {
+            var hasPath = false;
+            if (ObjectPath.TryResolvePath(this, path, out var segments))
+            {
+                var root = segments.Count() > 1 ? segments[1] as string : string.Empty;
+
+                // Skip _* as first scope, i.e. _adaptive, _tracker, ...
+                if (!root.StartsWith("_"))
+                {
+                    // Convert to a simple path with _ between segments
+                    var pathName = string.Join("_", segments);
+                    var trackedPath = $"{PathTracker}.{pathName}";
+                    uint? counter = null;
+                    void Update()
+                    {
+                        if (TryGetValue<uint>(trackedPath, out var lastChanged))
+                        {
+                            if (!counter.HasValue)
+                            {
+                                counter = GetValue<uint>(DialogPath.EventCounter);
+                            }
+
+                            SetValue(trackedPath, counter.Value);
+                        }
+                    }
+
+                    Update();
+                    if (value is object obj)
+                    {
+                        // For an object we need to see if any children path are being tracked
+                        void CheckChildren(string property, object value)
+                        {
+                            // Add new child segment
+                            trackedPath += "_" + property.ToLower();
+                            Update();
+                            if (value is object child)
+                            {
+                                ObjectPath.ForEachProperty(child, CheckChildren);
+                            }
+
+                            // Remove added child segment
+                            trackedPath = trackedPath.Substring(0, trackedPath.LastIndexOf('_'));
+                        }
+
+                        ObjectPath.ForEachProperty(obj, CheckChildren);
+                    }
+                }
+
+                hasPath = true;
+            }
+
+            return hasPath;
+        }
+
         private bool TryGetFirstNestedValue<T>(ref T value, ref string remainingPath, object memory)
         {
-            if (ObjectPath.TryGetPathValue<JArray>(memory, $"{remainingPath}", out var array))
+            if (ObjectPath.TryGetPathValue<JArray>(memory, remainingPath, out var array))
             {
                 if (array != null && array.Count > 0)
                 {

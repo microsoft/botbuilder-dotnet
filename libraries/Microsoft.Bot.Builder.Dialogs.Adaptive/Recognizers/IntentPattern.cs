@@ -11,9 +11,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </summary>
     public class IntentPattern
     {
-        [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.IntentPattern";
-
         private Regex regex;
         private string pattern;
 
@@ -53,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             set
             {
                 this.pattern = value;
-                this.regex = new Regex(pattern, RegexOptions.Compiled);
+                this.regex = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
             }
         }
 

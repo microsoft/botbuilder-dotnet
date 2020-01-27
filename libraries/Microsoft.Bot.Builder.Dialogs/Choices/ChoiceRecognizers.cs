@@ -45,24 +45,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             // - We only want to use a single strategy for returning results to avoid issues where utterances
             //   like the "the third one" or "the red one" or "the first division book" would miss-recognize as
             //   a numerical index or ordinal as well.
-            var locale = options?.Locale ?? Recognizers.Text.Culture.English;
+            var locale = options?.Locale ?? Culture.English;
             var matched = Find.FindChoices(utterance, list, options);
             if (matched.Count == 0)
             {
-                // Next try finding by ordinal
-                var matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale, NumberOptions.SuppressExtendedTypes).GetOrdinalModel(locale));
-                if (matches.Any())
+                var matches = new List<ModelResult<FoundChoice>>();
+                if (options == null || options.RecognizeOrdinals)
                 {
+                    // Next try finding by ordinal
+                    matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale, NumberOptions.SuppressExtendedTypes).GetOrdinalModel(locale));
                     foreach (var match in matches)
                     {
                         MatchChoiceByIndex(list, matched, match);
                     }
                 }
-                else
+
+                if (matches.Count == 0 && (options == null || options.RecognizeNumbers))
                 {
                     // Then try by numerical index
                     matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale, NumberOptions.SuppressExtendedTypes).GetNumberModel(locale));
-
                     foreach (var match in matches)
                     {
                         MatchChoiceByIndex(list, matched, match);

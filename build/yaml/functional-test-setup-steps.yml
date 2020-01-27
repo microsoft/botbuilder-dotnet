@@ -1,56 +1,49 @@
+#
+# These functional test setup steps are called by botbuilder-dotnet-sign.yml and botbuilder-dotnet-functional-tests-setup.yml
+#
 steps:
 - task: DotNetCoreCLI@2
-  displayName: 'Create PublishedBot.zip for deploy to Azure'
+  displayName: 'Create Microsoft.Bot.Builder.TestBot.zip for deploy to Azure'
   inputs:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj'
-    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\PublishedBot'
-    modifyOutputPath: false
+    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\PublishedBot --configuration $(TestConfiguration) --framework netcoreapp2.1'
 
 - task: CopyFiles@2
   displayName: 'Copy root Directory.Build.props to staging'
   inputs:
     SourceFolder: '$(System.DefaultWorkingDirectory)'
     Contents: Directory.Build.props
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Test'
 
 - task: CopyFiles@2
   displayName: 'Copy FunctionalTests to staging'
   inputs:
     SourceFolder: '$(System.DefaultWorkingDirectory)\FunctionalTests'
     Contents: '**\*'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\FunctionalTests'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Test\FunctionalTests'
 
 - task: CopyFiles@2
   displayName: 'Copy libraries to staging'
   inputs:
     SourceFolder: '$(System.DefaultWorkingDirectory)\libraries'
     Contents: '**\*'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\libraries'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Test\libraries'
 
 - task: CopyFiles@2
   displayName: 'Copy tests\integration to staging'
   inputs:
     SourceFolder: '$(System.DefaultWorkingDirectory)\tests\integration'
     Contents: '**\*'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\tests\integration'
-
-- task: CopyFiles@2
-  displayName: 'Copy PublishedBot.zip to staging'
-  inputs:
-    SourceFolder: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\PublishedBot'
-    Contents: '*.zip'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    flattenFolders: true
-  enabled: false
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Test\tests\integration'
 
 - task: CopyFiles@2
   displayName: 'Copy test bot to staging'
   inputs:
     SourceFolder: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot'
     Contents: '**\*'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\tests\Microsoft.Bot.Builder.TestBot'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Test\tests\Microsoft.Bot.Builder.TestBot'
 
 - task: CopyFiles@2
   displayName: 'Copy CodeCoverage.runsettings and PublishToCoveralls.ps1 to staging'
@@ -59,14 +52,19 @@ steps:
     Contents: |
      CodeCoverage.runsettings
      build\PublishToCoveralls.ps1
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Test'
     flattenFolders: true
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Push staging to Artifacts drop'
+  displayName: 'Push functional test items to Artifacts Test'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\Test'
+    ArtifactName: Test
 
 - script: |
    cd ..
    dir *.* /s
   displayName: 'Dir workspace'
+  continueOnError: true
+  condition: succeededOrFailed()
   enabled: true

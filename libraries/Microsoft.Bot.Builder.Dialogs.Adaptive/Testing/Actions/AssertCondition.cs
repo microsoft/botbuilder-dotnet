@@ -27,6 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
         /// <value>
         /// Condition which must be true.
         /// </value>
+        [JsonProperty("condition")]
         public string Condition { get; set; }
 
         /// <summary>
@@ -35,15 +36,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
         /// <value>
         /// Description of assertion.
         /// </value>
+        [JsonProperty("description")]
         public string Description { get; set; }
 
         public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-            var (result, error) = new ExpressionEngine().Parse(Condition).TryEvaluate(dc.GetState());
+            var dcState = dc.GetState();
+
+            var (result, error) = new ExpressionEngine().Parse(Condition).TryEvaluate(dcState);
             if ((bool)result == false)
             {
                 var desc = await new TemplateEngineLanguageGenerator()
-                    .Generate(dc.Context, this.Description, dc.GetState())
+                    .Generate(dc.Context, this.Description, dcState)
                     .ConfigureAwait(false);
                 throw new Exception(desc);
             }

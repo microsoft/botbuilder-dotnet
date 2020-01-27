@@ -1,4 +1,5 @@
 {
+    "$schema": "../../../../schemas/sdk.schema",
     "$kind": "Microsoft.Test.Script",
     "enableTrace": true,
     "dialog": {
@@ -7,18 +8,17 @@
         "triggers": [
             {
                 "$kind": "Microsoft.OnUnknownIntent",
-                
                 "actions": [
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "user.name",
-                        "value": "'frank'"
+                        "value": "='frank'"
                     },
                     {
                         "$kind": "Microsoft.TraceActivity",
                         "name": "test",
                         "valueType": "user",
-                        "value": "user"
+                        "value": "=user"
                     },
                     {
                         "$kind": "Microsoft.TraceActivity",
@@ -28,9 +28,8 @@
                 ]
             }
         ],
-        "AutoEndDialog": true,
-        "defaultResultProperty": "dialog.result",
-        "dialogs": {}
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
     },
     "script": [
         {

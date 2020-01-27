@@ -20,8 +20,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public new const string DeclarativeType = "Microsoft.OnIntent";
 
         [JsonConstructor]
-        public OnIntent(string intent = null, List<string> entities = null, List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(@event: AdaptiveEvents.RecognizedIntent, actions: actions, condition: constraint, callerPath: callerPath, callerLine: callerLine)
+        public OnIntent(string intent = null, List<string> entities = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(
+                @event: AdaptiveEvents.RecognizedIntent,
+                actions: actions,
+                condition: condition,
+                callerPath: callerPath,
+                callerLine: callerLine)
         {
             Intent = intent ?? null;
             Entities = entities ?? new List<string>();
@@ -81,7 +86,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
         protected override ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
         {
-            var recognizerResult = planning.GetState().GetValue<RecognizerResult>($"{TurnPath.DIALOGEVENT}.value");
+            var dcState = planning.GetState();
+            var recognizerResult = dcState.GetValue<RecognizerResult>($"{TurnPath.DIALOGEVENT}.value");
             if (recognizerResult != null)
             {
                 var (name, score) = recognizerResult.GetTopScoringIntent();
@@ -92,36 +98,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                     // proposed turn state changes
                     Turn = new Dictionary<string, object>()
                     {
-                        {
-                            "recognized", JObject.FromObject(new
-                            {
-                                text = recognizerResult.Text,
-                                alteredText = recognizerResult.AlteredText,
-                                intent = name,
-                                score,
-                                intents = recognizerResult.Intents,
-                                entities = recognizerResult.Entities,
-                            })
-                        }
                     },
-                    Actions = Actions.Select(s => new ActionState()
+                    Actions = new List<ActionState>()
                     {
-                        DialogStack = new List<DialogInstance>(),
-                        DialogId = s.Id,
-                        Options = dialogOptions
-                    }).ToList()
+                        new ActionState()
+                        {
+                            DialogId = this.ActionScope.Id,
+                            Options = dialogOptions
+                        }
+                    }
                 };
             }
 
-            return new ActionChangeList()
-            {
-                Actions = Actions.Select(s => new ActionState()
-                {
-                    DialogStack = new List<DialogInstance>(),
-                    DialogId = s.Id,
-                    Options = dialogOptions
-                }).ToList()
-            };
+            return base.OnCreateChangeList(planning, dialogOptions);
         }
     }
 }

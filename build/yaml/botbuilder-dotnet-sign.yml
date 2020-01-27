@@ -3,9 +3,10 @@
 #
 
 # "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
-name: $(Build.BuildId)
+name: $(Date:yyMMdd)-$(Build.BuildId)
 variables:
   BuildConfiguration: Release-Windows
+  TestConfiguration: Release
   BuildPlatform: any cpu
   IsBuildServer: true # Consumed by projects in Microsoft.Bot.Builder.sln.
   MSBuildArguments: -p:IncludeSymbols=true -p:SourceLinkCreate=true -p:SymbolPackageFormat=snupkg
@@ -23,3 +24,4 @@ jobs:
   steps:
   - template: ci-build-steps.yml
   - template: sign-steps.yml
+  - template: functional-test-setup-steps.yml

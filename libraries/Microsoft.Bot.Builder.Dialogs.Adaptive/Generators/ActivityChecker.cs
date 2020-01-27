@@ -19,33 +19,50 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         private static readonly IList<string> CardActionProperties = GetAllProperties(typeof(CardAction));
 
         /// <summary>
-        /// check the LG string result before generate an Activity.
+        /// check the LG result before generate an Activity.
         /// </summary>
-        /// <param name="lgStringResult">string result from languageGenerator.</param>
+        /// <param name="lgResult">lg output.</param>
         /// <returns>Diagnostic list.</returns>
-        public static IList<Diagnostic> Check(string lgStringResult)
+        public static IList<Diagnostic> Check(object lgResult)
         {
-            if (string.IsNullOrWhiteSpace(lgStringResult))
+            if (lgResult is string lgStringResult)
             {
-                return new List<Diagnostic> { BuildDiagnostic("LG output is empty", false) };
-            }
+                if (string.IsNullOrWhiteSpace(lgStringResult))
+                {
+                    return new List<Diagnostic> { BuildDiagnostic("LG output is empty", false) };
+                }
 
-            if (!lgStringResult.StartsWith("{") || !lgStringResult.EndsWith("}"))
-            {
-                return new List<Diagnostic> { BuildDiagnostic("LG output is not a json object, and will fallback to string format.", false) };
-            }
+                if (!lgStringResult.StartsWith("{") || !lgStringResult.EndsWith("}"))
+                {
+                    return new List<Diagnostic> { BuildDiagnostic("LG output is not a json object, and will fallback to string format.", false) };
+                }
 
-            JObject lgStructuredResult;
-            try
-            {
-                lgStructuredResult = JObject.Parse(lgStringResult);
-            }
-            catch
-            {
-                return new List<Diagnostic> { BuildDiagnostic("LG output is not a json object, and will fallback to string format.", false) };
-            }
+                JObject lgStructuredResult;
+                try
+                {
+                    lgStructuredResult = JObject.Parse(lgStringResult);
+                }
+                catch
+                {
+                    return new List<Diagnostic> { BuildDiagnostic("LG output is not a json object, and will fallback to string format.", false) };
+                }
 
-            return CheckStructuredResult(lgStructuredResult);
+                return CheckStructuredResult(lgStructuredResult);
+            }
+            else
+            {
+                JObject lgStructuredResult;
+                try
+                {
+                    lgStructuredResult = JObject.FromObject(lgResult);
+                }
+                catch
+                {
+                    return new List<Diagnostic> { BuildDiagnostic("LG output is not a json object, and will fallback to string format.", false) };
+                }
+
+                return CheckStructuredResult(lgStructuredResult);
+            }
         }
 
         private static IList<Diagnostic> CheckStructuredResult(JObject lgJObj)

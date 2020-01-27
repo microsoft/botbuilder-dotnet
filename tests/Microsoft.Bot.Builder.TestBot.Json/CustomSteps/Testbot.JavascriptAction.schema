@@ -6,32 +6,43 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-        "inputBindings": {
-            "type": "object",
-            "title": "Input Bindings",
-            "description": "map of named arguments and the property path to bind to them",
-            "additionalProperties": {
-                "type": "string"
-            },
-            "examples": [
-                {
-                    "name": "user.name",
-                    "problemId": "conversation.problem.id"
-                }
-            ]
-        },
-        "outputBinding": {
+        "id": {
             "type": "string",
-            "title": "Output Binding",
-            "description": "This will be the property which the result will be put into",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$role": "expression",
+            "type": [ "boolean", "string" ],
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
             "examples": [
-                "conversation.resolution"
+                "user.age > 3"
             ]
         },
         "script": {
             "type": "string",
             "title": "Script",
-            "description": "name of the script file"
+            "description": "name of the script file, or javascript function with function: doAction(memory, args) => result"
+        },
+        "options": {
+            "$role": "expression",
+            "type": [ "string", "object" ],
+            "title": "Options",
+            "description": "One or more options that are passed to the function as args.",
+            "additionalProperties": {
+                "type": "string",
+                "title": "Options"
+            }
+        },
+        "resultProperty": {
+            "$role": "expression",
+            "type": "string",
+            "title": "Property",
+            "description": "Property to store any value returned by the javascript function.",
+            "examples": [
+                "dialog.userName"
+            ]
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Microsoft.Bot.Expressions.TriggerTrees
@@ -13,7 +14,7 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
     // Each of those clauses is then put into a DAG where the most restrictive clauses are at the bottom.
     // When matching the most specific clauses block out any more general clauses.
     // 
-    // Disjunctions and quantification do not change the tree construction, but they are used in determing
+    // Disjunctions and quantification do not change the tree construction, but they are used in determining
     // what triggers are returned.  For example, from a strictly logical sense A&B v C&D is more general then A&B or C.  If we had these rules:
     // R1(A)
     // R2(A&B)
@@ -29,7 +30,7 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
     // In the tree above if you had C&D you would get both R3 and R4—which does not seem like what you really want.
     // Even though R3 is a disjunction, C&D is more specific than just C.
     // The fix is build the tree just based on the conjunctions and then filter triggers on a specific clause so that more specific triggers remove more general ones, i.e. disjunctions.  
-    // This is what the correspoinding tree looks like:
+    // This is what the corresponding tree looks like:
     // Root
     //    |                                                   |
     // A: R1(A)                                           C: R4(C)
@@ -47,7 +48,7 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
     /// A trigger expression generates true if the expression evaluated on a frame is true.
     /// The expression itself consists of arbitrary boolean functions ("predicates") combined with &amp;&amp; || !.
     /// Most predicates are expressed over the frame passed in, but they can be anything--there are even ways of optimizing or comparing them.
-    /// By organizing evaluators into a tree (techinically a DAG) it becomes easier to use rules by reducing the coupling between rules.
+    /// By organizing evaluators into a tree (technically a DAG) it becomes easier to use rules by reducing the coupling between rules.
     /// For example if a rule applies if some predicate A is true, then another rule that applies if A &amp;&amp; B are true is
     /// more specialized.  If the second expression is true, then because we know of the relationship we can ignore the first
     /// rule--even though its expression is true.  Without this kind of capability in order to add the second rule, you would
@@ -200,10 +201,10 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
         /// </summary>
         /// <param name="state">State to evaluate against.</param>
         /// <returns>Enumeration of possible matches.</returns>
-        public IEnumerable<Node> Matches(object state) => Root.Matches(state);
+        public IEnumerable<Trigger> Matches(object state) => Root.Matches(state);
 
         /// <summary>
-        /// Verify the tree meets speicalization/generalization invariants. 
+        /// Verify the tree meets specialization/generalization invariants. 
         /// </summary>
         /// <returns>Bad node if found.</returns>
         public Node VerifyTree() => VerifyTree(Root, new HashSet<Node>());

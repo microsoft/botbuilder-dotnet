@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// How to modify an action sequence.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
+    [JsonConverter(typeof(StringEnumConverter), /*camelCase*/ true)]
     public enum ActionChangeType
     {
         /// <summary>

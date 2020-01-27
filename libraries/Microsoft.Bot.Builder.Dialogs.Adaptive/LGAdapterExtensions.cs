@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -10,6 +11,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public static class LGAdapterExtensions
     {
+        private static Dictionary<ResourceExplorer, LanguageGeneratorManager> languageGeneratorManagers = new Dictionary<ResourceExplorer, LanguageGeneratorManager>();
+
         /// <summary>
         /// Register default LG file as language generation.
         /// </summary>
@@ -54,9 +57,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public static BotAdapter UseLanguageGeneration(this BotAdapter botAdapter, ResourceExplorer resourceExplorer, ILanguageGenerator languageGenerator)
         {
             DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
-            botAdapter.Use(new RegisterClassMiddleware<LanguageGeneratorManager>(new LanguageGeneratorManager(resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer)))));
-            botAdapter.Use(new RegisterClassMiddleware<ILanguageGenerator>(languageGenerator ?? throw new ArgumentNullException(nameof(languageGenerator))));
-            return botAdapter;
+
+            lock (languageGeneratorManagers)
+            {
+                if (!languageGeneratorManagers.TryGetValue(resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer)), out var lgm))
+                {
+                    lgm = new LanguageGeneratorManager(resourceExplorer);
+                    languageGeneratorManagers[resourceExplorer] = lgm;
+                }
+
+                botAdapter.Use(new RegisterClassMiddleware<LanguageGeneratorManager>(lgm));
+                botAdapter.Use(new RegisterClassMiddleware<ILanguageGenerator>(languageGenerator ?? throw new ArgumentNullException(nameof(languageGenerator))));
+                return botAdapter;
+            }
         }
     }
 }

@@ -342,7 +342,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             public new MockLogger Logger { get; private set; }
 
-            public override Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, string connectionName, string magicCode, CancellationToken cancellationToken)
+            public override Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, AppCredentials appCredentials, string connectionName, string magicCode, CancellationToken cancellationToken)
             {
                 return Task.FromResult(_getUserTokenAction());
             }

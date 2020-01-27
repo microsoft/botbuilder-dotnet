@@ -4,11 +4,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
@@ -16,6 +16,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.MockLuis;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -40,6 +41,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             NullValueHandling = NullValueHandling.Ignore,
             DefaultValueHandling = DefaultValueHandling.Ignore
         };
+
+        private static IConfiguration defaultConfiguration = new ConfigurationBuilder().Build();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestScript"/> class.
@@ -111,7 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 
             if (adapter == null)
             {
-                TypeFactory.Configuration = configuration ?? new ConfigurationBuilder().Build();
+                TypeFactory.Configuration = configuration ?? defaultConfiguration;
                 var storage = new MemoryStorage();
                 var convoState = new ConversationState(storage);
                 var userState = new UserState(storage);
@@ -122,7 +125,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                     .UseResourceExplorer(resourceExplorer)
                     .UseAdaptiveDialogs()
                     .UseLanguageGeneration(resourceExplorer)
-                    .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                    .UseMockLuis()
+                    .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
+                adapter.OnTurnError += (context, err) => context.SendActivityAsync(err.Message);
             }
 
             adapter.EnableTrace = this.EnableTrace;
@@ -137,7 +143,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             }
             else
             {
-                DialogManager dm = new DialogManager(this.Dialog);
+                var dm = new DialogManager(this.Dialog);
                 foreach (var testAction in this.Script)
                 {
                     await testAction.ExecuteAsync(adapter, dm.OnTurnAsync).ConfigureAwait(false);
@@ -367,7 +373,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         {
             protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
             {
-                JsonProperty property = base.CreateProperty(member, memberSerialization);
+                var property = base.CreateProperty(member, memberSerialization);
 
                 if (typeof(IEnumerable).IsAssignableFrom(property.PropertyType) && property.PropertyType != typeof(string))
                 {

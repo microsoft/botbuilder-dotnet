@@ -5,6 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -26,13 +27,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
+        /// Gets or sets an optional expression which if is true will disable this action.
+        /// </summary>
+        /// <example>
+        /// "user.age > 18".
+        /// </example>
+        /// <value>
+        /// A boolean expression. 
+        /// </value>
+        [JsonProperty("disabled")]
+        public BoolExpression Disabled { get; set; } 
+
+        /// <summary>
         /// Gets or sets property path to initialize.
         /// </summary>
         /// <value>
         /// Property path to initialize.
         /// </value>
         [JsonProperty("property")]
-        public string Property { get; set; }
+        public StringExpression Property { get; set; }
 
         /// <summary>
         ///  Gets or sets type, either Array or Object.
@@ -50,16 +63,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
+            {
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
             // Ensure planning context
             if (dc is SequenceContext planning)
             {
+                var state = dcState;
+
                 switch (Type.ToLower())
                 {
                     case "array":
-                        dc.GetState().SetValue(this.Property, new JArray());
+                        state.SetValue(this.Property.GetValue(state), new JArray());
                         break;
                     case "object":
-                        dc.GetState().SetValue(this.Property, new JObject());
+                        state.SetValue(this.Property.GetValue(state), new JObject());
                         break;
                 }
 

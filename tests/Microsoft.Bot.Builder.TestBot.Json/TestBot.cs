@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
@@ -19,6 +20,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -36,7 +38,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             // auto reload dialogs when file changes
             this.resourceExplorer.Changed += (resources) =>
             {
-                if (resources.Any(resource => resource.Id.EndsWith(".dialog")))
+                if (resources.Any(resource => resource.Id.EndsWith(".dialog") || resource.Id.EndsWith(".lg")))
                 {
                     Task.Run(() => this.LoadDialogs());
                 }
@@ -62,7 +64,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 Prompt = new ActivityTemplate("What declarative sample do you want to run?"),
                 Property = "conversation.dialogChoice",
                 AlwaysPrompt = true,
-                Choices = new ChoiceSet(new List<Choice>())
             };
 
             var handleChoice = new SwitchCondition()
@@ -71,12 +72,14 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 Cases = new List<Case>()
             };
 
+            var choices = new ChoiceSet();
+
             foreach (var resource in this.resourceExplorer.GetResources(".dialog").Where(r => r.Id.EndsWith(".main.dialog")))
             {
                 try
                 {
                     var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
-                    choiceInput.Choices.Value.Add(new Choice(name));
+                    choices.Add(new Choice(name));
                     var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, this.resourceExplorer, DebugSupport.SourceMap);
                     handleChoice.Cases.Add(new Case($"{name}", new List<Dialog>() { dialog }));
                 }
@@ -90,6 +93,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 }
             }
 
+            choiceInput.Choices = choices;
             choiceInput.Style = ListStyle.Auto;
             rootDialog.Triggers.Add(new OnBeginDialog()
             {

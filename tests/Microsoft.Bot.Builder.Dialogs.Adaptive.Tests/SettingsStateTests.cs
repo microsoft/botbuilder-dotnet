@@ -25,13 +25,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task SettingsStateTests_SettingsTest()
         {
-            await TestUtils.RunTestScript("SettingsStateTests_SettingsTest.test.dialog", configuration: Configuration);
+            await TestUtils.RunTestScript(configuration: Configuration);
         }
 
         [TestMethod]
         public async Task SettingsStateTests_TestTurnStateAcrossBoundaries()
         {
-            await TestUtils.RunTestScript("SettingsStateTests_TestTurnStateAcrossBoundaries.test.dialog", configuration: Configuration);
+            await TestUtils.RunTestScript(configuration: Configuration);
         }
     }
 }

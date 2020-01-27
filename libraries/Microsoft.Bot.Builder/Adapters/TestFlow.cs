@@ -327,25 +327,43 @@ namespace Microsoft.Bot.Builder.Adapters
                         timeout = uint.MaxValue;
                     }
 
-                    var start = DateTime.UtcNow;
-                    while (true)
+                    CancellationTokenSource cts = new CancellationTokenSource();
+                    cts.CancelAfter((int)timeout);
+                    IActivity replyActivity = await _adapter.GetNextReplyAsync(cts.Token).ConfigureAwait(false);
+                    validateActivity(replyActivity);
+                    return;
+                },
+                this);
+        }
+
+        /// <summary>
+        /// Adds an assertion that the turn processing logic finishes responding as expected.
+        /// </summary>
+        /// <param name="description">A message to send if the turn still responds.</param>
+        /// <param name="timeout">The amount of time in milliseconds within which no response is expected.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
+        public TestFlow AssertNoReply([CallerMemberName] string description = null, uint timeout = 3000)
+        {
+            return new TestFlow(
+                async () =>
+                {
+                    // NOTE: See details code in above method.
+                    await this._testTask.ConfigureAwait(false);
+
+                    try
                     {
-                        var current = DateTime.UtcNow;
-
-                        if ((current - start).TotalMilliseconds > timeout)
-                        {
-                            throw new TimeoutException($"{timeout}ms Timed out waiting for:'{description}'");
-                        }
-
-                        IActivity replyActivity = _adapter.GetNextReply();
+                        CancellationTokenSource cts = new CancellationTokenSource();
+                        cts.CancelAfter((int)timeout);
+                        IActivity replyActivity = await _adapter.GetNextReplyAsync(cts.Token).ConfigureAwait(false);
                         if (replyActivity != null)
                         {
                             // if we have a reply
-                            validateActivity(replyActivity);
-                            return;
+                            throw new Exception($"{replyActivity.ToString()} is repsonded when waiting for no reply:'{description}'");
                         }
-
-                        await Task.Delay(100).ConfigureAwait(false);
+                    }
+                    catch (TaskCanceledException)
+                    {
                     }
                 },
                 this);

@@ -4,7 +4,7 @@
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
-    /// Here is a data model that can easily understanded and used as the LG import definition in lg files.
+    /// Here is a data model that can easily understand and use the LG import definition in LG files.
     /// </summary>
     public class LGImport
     {
@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="parseTree">The parse tree of this template.</param>
         /// <param name="source">Source of this import.</param>
-        public LGImport(LGFileParser.ImportDefinitionContext parseTree, string source = "")
+        internal LGImport(LGFileParser.ImportDefinitionContext parseTree, string source = "")
         {
             ParseTree = parseTree;
             Source = source;

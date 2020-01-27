@@ -1,0 +1,12 @@
+# AskQuantity
+- @{askNumber('Quantity')}
+
+# QuantityName
+- quantity
+
+# Quantity(val)
+- @{QuantityEntity(val)}
+
+[unittests-QuantityEntity.lg](unittests-QuantityEntity.lg)
+
+[unittests-common.lg](unittests-common.lg)

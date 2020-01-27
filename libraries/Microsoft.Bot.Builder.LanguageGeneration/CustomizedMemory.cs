@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.Bot.Expressions.Memory;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -28,36 +29,34 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public IMemory LocalMemory { get; set; }
 
-        public (object value, string error) GetValue(string path)
+        public void SetValue(string path, object value)
         {
-            object value = null;
-            var error = string.Empty;
+            throw new NotImplementedException();
+        }
 
+        public bool TryGetValue(string path, out object value)
+        {
+            value = null;
             if (this.LocalMemory != null)
             {
-                (value, error) = this.LocalMemory.GetValue(path);
-                if (error == null && value != null)
+                if (this.LocalMemory.TryGetValue(path, out var result))
                 {
-                    return (value, error);
+                    value = result;
+                    return true;
                 }
             }
 
             if (this.GlobalMemory != null)
             {
-                return this.GlobalMemory.GetValue(path);
+                this.GlobalMemory.TryGetValue(path, out var result);
+                value = result;
             }
 
-            return (value, error);
-        }
-
-        public (object value, string error) SetValue(string path, object value)
-        {
-            return (null, "LG memory are readonly");
+            return true;
         }
 
         public string Version()
         {
-            // Read-only
             return "0";
         }
     }

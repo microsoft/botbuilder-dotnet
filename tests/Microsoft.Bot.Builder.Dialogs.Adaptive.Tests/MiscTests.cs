@@ -26,13 +26,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task IfCondition_EndDialog()
         {
-            await TestUtils.RunTestScript("IfCondition_EndDialog.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
         public async Task Rule_Reprompt()
         {
-            await TestUtils.RunTestScript("Rule_Reprompt.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
@@ -84,8 +84,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
     }
 
-    public class CustomRecognizer : IRecognizer
+    public class CustomRecognizer : Recognizer, IRecognizer
     {
+        public override Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
+        {
+            return this.RecognizeAsync(dialogContext.Context, cancellationToken);
+        }
+
         public Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             return Task.FromResult(new RecognizerResult());

@@ -10,12 +10,11 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 {
     public class TestBotLG : IBot
     {
-        private readonly TemplateEngine engine;
+        private readonly LGFile lgFile;
 
         public TestBotLG(TestBotAccessors accessors)
         {
-            // load LG file into engine
-            engine = new TemplateEngine().AddFile(GetLGResourceFile("8.LG"));
+            lgFile = LGParser.ParseFile(GetLGResourceFile("8.LG"));
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
@@ -24,23 +23,23 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             {
                 if (turnContext.Activity.Text.ToLower() == "hi")
                 {
-                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("GreetingTemplate", null).ToString());
+                    await turnContext.SendActivityAsync(lgFile.EvaluateTemplate("GreetingTemplate", null).ToString());
                 }
                 else if (turnContext.Activity.Text.ToLower().Contains("marco"))
                 {
-                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("WordGameReply", new { GameName = "MarcoPolo" }).ToString());
+                    await turnContext.SendActivityAsync(lgFile.EvaluateTemplate("WordGameReply", new { GameName = "MarcoPolo" }).ToString());
                 }
                 else if (turnContext.Activity.Text.ToLower().Contains("what time is it"))
                 {
-                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("TimeOfDayExmple", new { timeOfDay = "morning" }).ToString());
+                    await turnContext.SendActivityAsync(lgFile.EvaluateTemplate("TimeOfDayExmple", new { timeOfDay = "morning" }).ToString());
                 }
                 else if (turnContext.Activity.Text.ToLower().Contains("multi"))
                 {
-                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("MultiLineExample", null).ToString());
+                    await turnContext.SendActivityAsync(lgFile.EvaluateTemplate("MultiLineExample", null).ToString());
                 }
                 else if (turnContext.Activity.Text.ToLower().Contains("card"))
                 {
-                    HeroCard card = JsonConvert.DeserializeObject<HeroCard>(engine.EvaluateTemplate("CardExample", null).ToString());
+                    HeroCard card = JsonConvert.DeserializeObject<HeroCard>(lgFile.EvaluateTemplate("CardExample", null).ToString());
                     var reply = turnContext.Activity.CreateReply();
                     reply.Attachments = new List<Attachment>();
                     reply.Attachments.Add(card.ToAttachment());
@@ -56,11 +55,11 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                         low = "33"
                     };
 
-                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("WeatherForecast", temp).ToString());
+                    await turnContext.SendActivityAsync(lgFile.EvaluateTemplate("WeatherForecast", temp).ToString());
                 }
                 else
                 {
-                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("EchoTemplate", turnContext).ToString());
+                    await turnContext.SendActivityAsync(lgFile.EvaluateTemplate("EchoTemplate", turnContext).ToString());
                 }
             }
             else if (turnContext.Activity.Type == ActivityTypes.ConversationUpdate)
@@ -71,7 +70,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     {
                         if (member.Id != turnContext.Activity.Recipient.Id)
                         {
-                            await turnContext.SendActivityAsync(engine.EvaluateTemplate("WelcomeTemplate", null).ToString());
+                            await turnContext.SendActivityAsync(lgFile.EvaluateTemplate("WelcomeTemplate", null).ToString());
                         }
                     }
                 }

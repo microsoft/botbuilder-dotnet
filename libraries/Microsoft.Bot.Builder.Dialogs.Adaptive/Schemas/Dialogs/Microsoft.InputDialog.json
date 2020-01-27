@@ -7,6 +7,15 @@
       "title": "Id",
       "description": "Optional id for the dialog"
     },
+    "disabled": {
+      "$role": "expression",
+      "type": [ "boolean", "string" ],
+      "title": "Disabled",
+      "description": "Optional condition which if true will disable this action.",
+      "examples": [
+        "user.age > 3"
+      ]
+    },
     "prompt": {
       "$kind": "Microsoft.IActivityTemplate",
       "title": "Initial prompt",
@@ -40,7 +49,8 @@
       ]
     },
     "maxTurnCount": {
-      "type": "integer",
+      "$role": "expression",
+      "type": [ "integer", "string" ],
       "title": "Max turn count",
       "description": "Maximum number of re-prompt attempts to collect information.",
       "default": 3,
@@ -51,7 +61,8 @@
     "validations": {
       "type": "array",
       "items": {
-        "$role": "expression"
+        "$role": "expression",
+        "type": "string"
       },
       "title": "Validation expressions",
       "description": "Expression to validate user input.",
@@ -62,6 +73,7 @@
     },
     "property": {
       "$role": "expression",
+      "type": "string",
       "title": "Property",
       "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
       "examples": [
@@ -73,6 +85,7 @@
     },
     "defaultValue": {
       "$role": "expression",
+      "type": [ "object", "array", "number", "integer", "boolean", "string" ],
       "title": "Default value",
       "description": "Expression to examine on each turn of the conversation as possible value to the property.",
       "examples": [
@@ -82,6 +95,7 @@
     },
     "value": {
       "$role": "expression",
+      "type": [ "object", "array", "number", "integer", "boolean", "string" ],
       "title": "Value",
       "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
       "examples": [
@@ -89,9 +103,10 @@
       ]
     },
     "alwaysPrompt": {
-      "type": "boolean",
+      "$role": "expression",
+      "type": [ "boolean", "string" ],
       "title": "Always prompt",
-      "description": "Collect information even if the specified  'property' is not empty.",
+      "description": "Collect information even if the specified 'property' is not empty.",
       "default": false,
       "examples": [
         false
@@ -99,6 +114,7 @@
     },
     "allowInterruptions": {
       "$role": "expression",
+      "type": [ "boolean", "string" ],
       "title": "Allow Interruptions",
       "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
       "default": "true",

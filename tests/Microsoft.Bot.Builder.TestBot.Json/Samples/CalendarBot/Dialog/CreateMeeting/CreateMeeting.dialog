@@ -42,7 +42,7 @@
         {
           "$kind": "Microsoft.SetProperty",
           "property": "user.startDate",
-          "value": "formatDateTime(user.startDate[0].Value, 'yyyy-MM-dd')"
+          "value": "=formatDateTime(user.startDate[0].Value, 'yyyy-MM-dd')"
         },
         {
           "$kind": "Microsoft.IfCondition",
@@ -58,12 +58,12 @@
         {
           "$kind": "Microsoft.SetProperty",
           "property": "user.startTime",
-          "value": "formatDateTime(user.startTime[0].Value, 'THH:mm:ssZ')"
+          "value": "=formatDateTime(user.startTime[0].Value, 'THH:mm:ssZ')"
         },
         {
           "$kind": "Microsoft.SetProperty",
           "property": "user.startDateTime",
-          "value": "formatDateTime(concat(user.startDate, user.startTime))"
+          "value": "=formatDateTime(concat(user.startDate, user.startTime))"
         },
         {
           "$kind": "Microsoft.IfCondition",
@@ -79,7 +79,7 @@
         {
           "$kind": "Microsoft.SetProperty",
           "property": "user.endDateTime",
-          "value": "addSeconds(user.startDateTime, int(user.duration[0].Value))"
+          "value": "=addSeconds(user.startDateTime, int(user.duration[0].Value))"
         },
         {
           "$kind": "Microsoft.IfCondition",

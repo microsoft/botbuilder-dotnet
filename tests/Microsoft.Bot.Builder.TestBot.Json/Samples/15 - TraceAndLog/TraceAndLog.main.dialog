@@ -1,7 +1,6 @@
 {
     "$schema": "../../app.schema",
     "$kind": "Microsoft.AdaptiveDialog",
-    "$id": "root",
     "triggers": [
         {
             "$kind": "Microsoft.OnBeginDialog",
@@ -14,7 +13,7 @@
                 {
                     "$kind": "Microsoft.TraceActivity",
                     "valueType": "memory",
-                    "value": "user"
+                    "value": "=user"
                 },
                 {
                     "$kind": "Microsoft.LogAction",

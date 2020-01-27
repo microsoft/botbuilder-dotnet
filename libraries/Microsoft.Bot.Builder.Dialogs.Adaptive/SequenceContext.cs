@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public class SequenceContext : DialogContext
     {
+        private const string WaitForInput = "turn.waitForInput";
+
         private readonly string changeKey;
 
         private DialogSet actionDialogs;
@@ -72,6 +73,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <returns>True if there were any changes to apply. </returns>
         public async Task<bool> ApplyChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
+            var dcState = this.GetState();
+
             // Retrieve queued changes from turn context
             var changes = this.Changes ?? new List<ActionChangeList>();
 
@@ -88,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     {
                         foreach (var keyValue in change.Turn)
                         {
-                            this.GetState().SetValue($"turn.{keyValue.Key}", keyValue.Value);
+                            dcState.SetValue($"turn.{keyValue.Key}", keyValue.Value);
                         }
                     }
 

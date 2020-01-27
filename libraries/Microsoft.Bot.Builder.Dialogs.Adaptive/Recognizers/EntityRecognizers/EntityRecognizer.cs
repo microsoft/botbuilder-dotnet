@@ -1,42 +1,39 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.Recognizers.Text;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
-    public abstract class EntityRecognizer
+    public class EntityRecognizer
     {
         public EntityRecognizer()
         {
         }
 
-        public Task<IList<Entity>> RecognizeEntities(ITurnContext turnContext, IEnumerable<Entity> entities)
+        public virtual Task<IEnumerable<Entity>> RecognizeEntities(DialogContext dialogContext, IEnumerable<Entity> entities, CancellationToken cancellationToken = default)
         {
-            List<Entity> newEntities = new List<Entity>();
-            if (turnContext.Activity.Type == ActivityTypes.Message)
-            {
-                var culture = Culture.MapToNearestLanguage(turnContext.Activity.Locale ?? string.Empty);
-
-                // look for text entities to recognize 
-                foreach (var entity in entities.Where(e => e.Type == TextEntity.TypeName).Select(e => e as TextEntity ?? e.GetAs<TextEntity>()))
-                {
-                    var results = Recognize(entity.Text, culture);
-                    foreach (var result in results)
-                    {
-                        var newEntity = new Entity();
-                        newEntity.SetAs(result);
-                        newEntity.Type = result.TypeName;
-                        newEntities.Add(newEntity);
-                    }
-                }
-            }
-
-            return Task.FromResult((IList<Entity>)newEntities);
+            return this.RecognizeEntities(dialogContext, dialogContext.Context.Activity, entities, cancellationToken);
         }
 
-        protected abstract List<ModelResult> Recognize(string text, string culture);
+        public virtual async Task<IEnumerable<Entity>> RecognizeEntities(DialogContext dialogContext, Activity activity, IEnumerable<Entity> entities, CancellationToken cancellationToken = default)
+        {
+            if (activity.Type == ActivityTypes.Message)
+            {
+                return await this.RecognizeEntities(dialogContext, activity.Text, activity.Locale, entities, cancellationToken).ConfigureAwait(false);
+            }
+
+            return new List<Entity>();
+        }
+
+        public virtual Task<IEnumerable<Entity>> RecognizeEntities(DialogContext dialogContext, string text, string locale, IEnumerable<Entity> entities, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult<IEnumerable<Entity>>(Array.Empty<Entity>());
+        }
     }
 }
