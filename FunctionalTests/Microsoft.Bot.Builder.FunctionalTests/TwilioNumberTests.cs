@@ -16,6 +16,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 {
     [TestClass]
     [TestCategory("FunctionalTests")]
+    [TestCategory("Adapters")]
     public class TwilioNumberTests
     {
         private string _botEndpoint;
