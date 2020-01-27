@@ -15,8 +15,6 @@ pool:
 variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'Release'
-  BotGroup: 'nightly-test-group'
-  BotName: 'nightly-test-bot'
 
 steps:
 - task: UseDotNet@2

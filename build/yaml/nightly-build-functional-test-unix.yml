@@ -15,8 +15,6 @@ pool:
 variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'Release'
-  BotName: 'testLinuxGitBot'
-  BotGroup: 'testLinuxGit'
 
 steps:
 - task: UseDotNet@2
