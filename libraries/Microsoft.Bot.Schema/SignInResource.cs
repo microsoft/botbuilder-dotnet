@@ -11,29 +11,44 @@
 namespace Microsoft.Bot.Schema
 {
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
+    using System.Linq;
 
-    /// <summary>
-    /// Record for a token exchange request that is sent as part of an OAuthCard
-    /// </summary>
-    public class SignInResource
+    public partial class SignInResource
     {
         /// <summary>
-        /// A url to use as the sign-in url
+        /// Initializes a new instance of the SignInUrlResponse class.
         /// </summary>
-        [JsonProperty("signInUrl")]
-        public string SignInUrl { get; set; }
+        public SignInResource()
+        {
+            CustomInit();
+        }
 
         /// <summary>
-        /// The token exchange resource that can be used for token exchange operations
+        /// Initializes a new instance of the SignInUrlResponse class.
         /// </summary>
-        [JsonProperty("tokenExchangeResource")]
+        public SignInResource(string signInLink = default(string), TokenExchangeResource tokenExchangeResource = default(TokenExchangeResource))
+        {
+            SignInLink = signInLink;
+            TokenExchangeResource = tokenExchangeResource;
+            CustomInit();
+        }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults
+        /// </summary>
+        partial void CustomInit();
+
+        /// <summary>
+        /// The sign-in link
+        /// </summary>
+        [JsonProperty(PropertyName = "signInLink")]
+        public string SignInLink { get; set; }
+
+        /// <summary>
+        /// Additional properties that cna be used for token exchange operations
+        /// </summary>
+        [JsonProperty(PropertyName = "tokenExchangeResource")]
         public TokenExchangeResource TokenExchangeResource { get; set; }
 
-        /// <summary>
-        /// Extension data for overflow of properties
-        /// </summary>
-        [JsonExtensionData(ReadData = true, WriteData = true)]
-        public JObject Properties { get; set; } = new JObject();
     }
 }

@@ -332,7 +332,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                                 new CardAction
                                 {
                                     Title = _settings.Title,
-                                    Value = signInResource.SignInUrl,
+                                    Value = signInResource.SignInLink,
                                     Type = ActionTypes.Signin,
                                 },
                             },

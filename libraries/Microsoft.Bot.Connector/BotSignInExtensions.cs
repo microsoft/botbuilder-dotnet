@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Connector
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<SignInUrlResponse> GetSignInResourceAsync(this IBotSignIn operations, string state, string codeChallenge = default(string), string emulatorUrl = default(string), string finalRedirect = default(string), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<SignInResource> GetSignInResourceAsync(this IBotSignIn operations, string state, string codeChallenge = default(string), string emulatorUrl = default(string), string finalRedirect = default(string), CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.GetSignInResourceWithHttpMessagesAsync(state, codeChallenge, emulatorUrl, finalRedirect, null, cancellationToken).ConfigureAwait(false))
                 {

@@ -246,7 +246,7 @@ namespace Microsoft.Bot.Connector
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<SignInUrlResponse>> GetSignInResourceWithHttpMessagesAsync(string state, string codeChallenge = default(string), string emulatorUrl = default(string), string finalRedirect = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<SignInResource>> GetSignInResourceWithHttpMessagesAsync(string state, string codeChallenge = default(string), string emulatorUrl = default(string), string finalRedirect = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (state == null)
             {
@@ -355,7 +355,7 @@ namespace Microsoft.Bot.Connector
                 throw ex;
             }
             // Create Result
-            var _result = new HttpOperationResponse<SignInUrlResponse>();
+            var _result = new HttpOperationResponse<SignInResource>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
             // Deserialize Response
@@ -364,7 +364,7 @@ namespace Microsoft.Bot.Connector
                 _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<SignInUrlResponse>(_responseContent, Client.DeserializationSettings);
+                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<SignInResource>(_responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {

@@ -956,17 +956,8 @@ namespace Microsoft.Bot.Builder
             var state = Convert.ToBase64String(encodedState);
 
             var client = await CreateOAuthApiClientAsync(turnContext).ConfigureAwait(false);
-            return new SignInResource()
-            {
-                SignInUrl = await client.BotSignIn.GetSignInUrlAsync(state, null, null, finalRedirect, cancellationToken).ConfigureAwait(false),
-                TokenExchangeResource = new TokenExchangeResource()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    ProviderId = null,
-                    Uri = "api://96f8ab55-1fe6-47f7-adea-747c5ae290b0/.default"
-                    //Uri = "api://123-abc/.default",
-                },
-            };
+
+            return await client.BotSignIn.GetSignInResourceAsync(state, null, null, finalRedirect, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
