@@ -68,6 +68,55 @@
         }
       }
     },
+    "/api/botsignin/GetSignInResource": {
+      "get": {
+        "tags": [
+          "BotSignIn"
+        ],
+        "operationId": "BotSignIn_GetSignInResource",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "code_challenge",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "emulatorUrl",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "finalRedirect",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/SignInUrlResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/usertoken/GetToken": {
       "get": {
         "tags": [
@@ -371,6 +420,31 @@
     }
   },
   "definitions": {
+    "SignInUrlResponse": {
+      "type": "object",
+      "properties": {
+        "signInLink": {
+          "type": "string"
+        },
+        "tokenExchangeResource": {
+          "$ref": "#/definitions/TokenExchangeResource"
+        }
+      }
+    },
+    "TokenExchangeResource": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "uri": {
+          "type": "string"
+        },
+        "providerId": {
+          "type": "string"
+        }
+      }
+    },
     "TokenResponse": {
       "type": "object",
       "properties": {
