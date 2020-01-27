@@ -90,7 +90,7 @@ steps:
      !**/Microsoft.Bot.Builder.Classic.Tests.csproj
      !**/Microsoft.Bot.ApplicationInsights.WebApi.Tests.csproj
      !**/Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests.csproj
-    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests"'
+    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=Adapters"'
     workingDirectory: tests
 
 - task: AzureCLI@1
