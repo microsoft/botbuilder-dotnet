@@ -20,6 +20,18 @@ namespace Microsoft.Bot.Expressions.Tests
         private readonly object scope = new Dictionary<string, object>
         {
             {
+                "emptyList", new List<object>()
+            },
+            {
+                "emptyObject", new Dictionary<string, object>()
+            },
+            {
+                "emptyJObject", new JObject()
+            },
+            {
+                "emptyAnonymousObject", new { }
+            },
+            {
                 "path", new Dictionary<string, object>()
                 {
                     {
@@ -246,6 +258,7 @@ namespace Microsoft.Bot.Expressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
+            Test("hello == 'hello'", true),
             #region SetPathToProperty test
             Test("setPathToValue(path.simple, 3) + path.simple", 6),
             Test("setPathToValue(path.simple, 5) + path.simple", 10),
@@ -465,6 +478,22 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("if(null, 'r1', 'r2')", "r2"),
             Test("if(hello * 5, 'r1', 'r2')", "r2"),
             Test("if(10, 'r1', 'r2')", "r1"),
+            Test("emptyList == []", true),
+            Test("emptyList != []", false),
+            Test("emptyList == {}", false),
+            Test("emptyObject == {}", true),
+            Test("emptyObject != {}", false),
+            Test("emptyObject == []", false),
+            Test("emptyJObject == {}", true),
+            Test("emptyJObject != {}", false),
+            Test("emptyJObject == []", false),
+            Test("emptyAnonymousObject == {}", true),
+            Test("emptyAnonymousObject != {}", false),
+            Test("emptyAnonymousObject == []", false),
+            Test("emptyList == [ ]", true),
+            Test("emptyList == {  }", false),
+            Test("emptyObject == {  }", true),
+            Test("emptyObject == [  ]", false),
             #endregion
 
             #region  Conversion functions test

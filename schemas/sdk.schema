@@ -201,11 +201,6 @@
             "$ref": "#/definitions/Microsoft.IfCondition"
         },
         {
-            "title": "Microsoft.InitProperty",
-            "description": "Define and initialize a property to be an array or object.",
-            "$ref": "#/definitions/Microsoft.InitProperty"
-        },
-        {
             "title": "Microsoft.IpEntityRecognizer",
             "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
             "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
@@ -431,9 +426,9 @@
             "$ref": "#/definitions/Microsoft.RecognizerSet"
         },
         {
-            "title": "Microsoft.RegexEntityRecognizer",
+            "title": "Microsoft.RegExEntityRecognizer",
             "description": "Recognizer which recognizes patterns of input based on regex.",
-            "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
+            "$ref": "#/definitions/Microsoft.RegExEntityRecognizer"
         },
         {
             "title": "Microsoft.RegexRecognizer",
@@ -3753,9 +3748,9 @@
                     "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
                 },
                 {
-                    "title": "Microsoft.RegexEntityRecognizer",
+                    "title": "Microsoft.RegExEntityRecognizer",
                     "description": "Recognizer which recognizes patterns of input based on regex.",
-                    "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
+                    "$ref": "#/definitions/Microsoft.RegExEntityRecognizer"
                 },
                 {
                     "title": "Microsoft.TemperatureEntityRecognizer",
@@ -4683,11 +4678,6 @@
                     "$ref": "#/definitions/Microsoft.IfCondition"
                 },
                 {
-                    "title": "Microsoft.InitProperty",
-                    "description": "Define and initialize a property to be an array or object.",
-                    "$ref": "#/definitions/Microsoft.InitProperty"
-                },
-                {
                     "title": "Microsoft.LogAction",
                     "description": "Log a message to the host application. Send a TraceActivity to Bot Framework Emulator (optional).",
                     "$ref": "#/definitions/Microsoft.LogAction"
@@ -5079,103 +5069,6 @@
                     "required": [
                         "condition",
                         "actions",
-                        "$kind"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.InitProperty": {
-            "$role": "union(Microsoft.IDialog)",
-            "title": "Initialize property",
-            "description": "Define and initialize a property to be an array or object.",
-            "type": "object",
-            "properties": {
-                "$kind": {
-                    "title": "$kind",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.InitProperty"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "Optional id for the dialog"
-                },
-                "disabled": {
-                    "$role": "expression",
-                    "title": "Disabled",
-                    "description": "Optional condition which if true will disable this action.",
-                    "examples": [
-                        "user.age > 3"
-                    ],
-                    "oneOf": [
-                        {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
-                            "type": "string",
-                            "title": "string",
-                            "description": "Expression evaluating to undefined."
-                        }
-                    ]
-                },
-                "property": {
-                    "$role": "expression",
-                    "type": "string",
-                    "title": "Property",
-                    "description": "Property (named location to store information).",
-                    "examples": [
-                        "user.age"
-                    ]
-                },
-                "type": {
-                    "$role": "expression",
-                    "type": "string",
-                    "title": "Type",
-                    "description": "Type of value.",
-                    "enum": [
-                        "object",
-                        "array"
-                    ]
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "property",
-                        "type",
                         "$kind"
                     ]
                 }
@@ -9726,7 +9619,7 @@
                 }
             ]
         },
-        "Microsoft.RegexEntityRecognizer": {
+        "Microsoft.RegExEntityRecognizer": {
             "$role": "union(Microsoft.EntityRecognizers)",
             "title": "Regex Entity Recognizer",
             "description": "Recognizer which recognizes patterns of input based on regex.",
@@ -9737,7 +9630,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexEntityRecognizer"
+                    "const": "Microsoft.RegExEntityRecognizer"
                 },
                 "$copy": {
                     "title": "$copy",
