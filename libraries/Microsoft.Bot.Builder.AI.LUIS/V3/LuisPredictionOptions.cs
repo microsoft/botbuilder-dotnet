@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Bot.Expressions.Properties;
 
 namespace Microsoft.Bot.Builder.AI.LuisV3
 {
