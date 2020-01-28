@@ -90,9 +90,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         private string CreateHubSignature(string message, string timestamp)
         {
             var hashResult = string.Empty;
-
             object[] signature = { "v0", timestamp, message };
-
             var baseString = string.Join(":", signature);
 
             using (var hmac = new System.Security.Cryptography.HMACSHA256(Encoding.UTF8.GetBytes(_slackClientSigningSecret)))
@@ -133,7 +131,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
         private void GetEnvironmentVars()
         {
-            if (string.IsNullOrWhiteSpace(_slackChannel) || string.IsNullOrWhiteSpace(_slackBotToken) || string.IsNullOrWhiteSpace(_slackClientSigningSecret) || string.IsNullOrWhiteSpace(_slackVerificationToken))
+            if (string.IsNullOrWhiteSpace(_slackChannel) || string.IsNullOrWhiteSpace(_slackBotToken) || string.IsNullOrWhiteSpace(_slackClientSigningSecret) || string.IsNullOrWhiteSpace(_slackVerificationToken) || string.IsNullOrWhiteSpace(_botName))
             {
                 _slackChannel = Environment.GetEnvironmentVariable("SLACK_CHANNEL");
                 if (string.IsNullOrWhiteSpace(_slackChannel))
