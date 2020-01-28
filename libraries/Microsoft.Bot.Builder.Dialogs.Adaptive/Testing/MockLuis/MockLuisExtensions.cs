@@ -64,11 +64,14 @@ namespace Microsoft.Bot.Builder.MockLuis
             return builder
                 .SetBasePath(Path.GetFullPath(directory))
                 .AddJsonFile(settings, optional: false)
-                .AddInMemoryCollection(new KeyValuePair<string, string>[]
-                {
-                    new KeyValuePair<string, string>("luis:endpoint", endpoint),
-                    new KeyValuePair<string, string>("luis:resources", directory)
-                })
+                .AddInMemoryCollection(new Dictionary<string, string>
+                    {
+                        { "luis:endpoint", endpoint },
+                        { "luis:resources", directory },
+
+                        // Ensure there is a key even if there is no secret
+                        { "luis:endpointKey", "00000000-0000-0000-0000-000000000000" }
+                    })
                 .AddUserSecrets(userSecretId);
         }
 

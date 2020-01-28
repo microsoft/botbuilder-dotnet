@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
             if (!Guid.TryParse(endpointKey, out var subscriptionGuid))
             {
-                throw new ArgumentException($"\"{subscriptionGuid}\" is not a valid LUIS subscription key.");
+                throw new ArgumentException($"\"{endpointKey}\" is not a valid LUIS subscription key.");
             }
 
             if (string.IsNullOrWhiteSpace(endpoint))

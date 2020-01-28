@@ -18,7 +18,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task Generator_sandwich()
         {
             var config = new ConfigurationBuilder()
-                .AddInMemoryCollection()
                 .UseLuisSettings(sandwichDirectory, "TestBot")
                 .Build();
             await TestUtils.RunTestScript(configuration: config);
@@ -28,7 +27,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task Generator_unittests()
         {
             var config = new ConfigurationBuilder()
-                .AddInMemoryCollection()
                 .UseLuisSettings(unitTestsDirectory, "TestBot")
                 .Build();
             await TestUtils.RunTestScript(configuration: config);

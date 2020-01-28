@@ -70,7 +70,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task DynamicLists()
         {
             var config = new ConfigurationBuilder()
-                .AddInMemoryCollection()
                 .UseLuisSettings(dynamicListsDirectory, "TestBot")
                 .Build();
             await TestUtils.RunTestScript(configuration: config);
@@ -80,7 +79,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task DynamicListsExpression()
         {
             var config = new ConfigurationBuilder()
-                .AddInMemoryCollection()
                 .UseLuisSettings(dynamicListsDirectory, "TestBot")
                 .Build();
             await TestUtils.RunTestScript(configuration: config);
@@ -90,7 +88,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task ExternalEntities()
         {
             var config = new ConfigurationBuilder()
-                .AddInMemoryCollection()
                 .UseLuisSettings(dynamicListsDirectory, "TestBot")
                 .Build();
             await TestUtils.RunTestScript(configuration: config);
