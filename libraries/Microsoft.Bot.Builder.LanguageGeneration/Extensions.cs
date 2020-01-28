@@ -80,6 +80,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
+        /// trim expression. @{abc} => abc,  @{a == {}} => a == {}.
+        /// </summary>
+        /// <param name="expression">input expression string.</param>
+        /// <returns>pure expression string.</returns>
+        public static string TrimExpression(this string expression)
+        {
+            var result = expression.Trim().TrimStart('@').Trim();
+
+            if (result.StartsWith("{") && result.EndsWith("}"))
+            {
+                result = result.Substring(1, result.Length - 2);
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Normalize authored path to OS path.
         /// </summary>
         /// <remarks>
