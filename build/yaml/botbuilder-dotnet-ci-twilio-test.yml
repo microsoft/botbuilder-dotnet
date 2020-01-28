@@ -56,7 +56,7 @@ steps:
 - task: AzureCLI@1
   displayName: 'Delete resources'
   inputs:
-    azureSubscription: devtest
+    azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
     inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
   condition: always()
