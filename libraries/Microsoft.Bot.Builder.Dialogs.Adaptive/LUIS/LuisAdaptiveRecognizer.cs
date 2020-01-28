@@ -1,12 +1,14 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
 
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Expressions.Properties;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
@@ -87,9 +89,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken = default)
         {
             var wrapper = new LuisRecognizer(RecognizerOptions(dialogContext), HttpClient);
-            return await wrapper.RecognizeAsync(dialogContext, text, locale, cancellationToken).ConfigureAwait(false);
+            var context = dialogContext.Context;
+            if (context.Activity == null || context.Activity.Type != ActivityTypes.Message || context.Activity.Text != text || context.Activity.Locale != locale)
+            {
+                throw new ArgumentException("TurnContext is different than text");
+            }
+
+            return await RecognizeAsync(dialogContext, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Construct V3 recognizer options from the current dialog context.
+        /// </summary>
+        /// <param name="dialogContext">Context.</param>
+        /// <returns>LUIS Recognizer options.</returns>
         public LuisRecognizerOptionsV3 RecognizerOptions(DialogContext dialogContext)
         {
             var options = PredictionOptions;

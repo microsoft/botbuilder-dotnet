@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.MockLuis
             recognizer.IncludeAPIResults = true;
             var client = GetMockedClient(text, recognizer);
             var wrapper = new LuisRecognizer(recognizer, client);
-            var result = await wrapper.RecognizeAsync(dialogContext, text, locale, cancellationToken).ConfigureAwait(false);
+            var result = await wrapper.RecognizeAsync(dialogContext.Context, cancellationToken).ConfigureAwait(false);
             if (client == null)
             {
                 // Save response
