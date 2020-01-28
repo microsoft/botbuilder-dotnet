@@ -237,7 +237,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             activity.Recipient.Id = await client.GetBotUserByTeamAsync(activity, cancellationToken).ConfigureAwait(false);
 
             // If this is conclusively a message originating from a user, we'll mark it as such
-            if (slackEvent.Type == "message" && slackEvent.BotId == null)
+            if (slackEvent.Type == "message" && slackEvent.ClientMsgId != null)
             {
                 if (slackEvent.SubType == null)
                 {
@@ -352,6 +352,15 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                     Payload = payload,
                     Token = payload.Token,
                 };
+            }
+
+            try
+            {
+                var json = JsonConvert.DeserializeObject<SlackRequestBody>(requestBody, new UnixDateTimeConverter());
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
 
             return JsonConvert.DeserializeObject<SlackRequestBody>(requestBody, new UnixDateTimeConverter());
