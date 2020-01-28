@@ -2,24 +2,28 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Specialized;
-using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.FunctionalTests.Payloads;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.FunctionalTests
 {
     [TestClass]
     [TestCategory("FunctionalTests")]
+    [TestCategory("Adapters")]
     public class SlackClientTest
     {
         private const string SlackUrlBase = "https://slack.com/api";
         private HttpClient _client;
         private string _slackChannel;
         private string _slackBotToken;
+        private string _slackClientSigningSecret;
+        private string _slackVerificationToken;
+        private string _botName;
 
         [TestMethod]
         public async Task SendAndReceiveSlackMessageShouldSucceed()
@@ -64,23 +68,70 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
         private async Task SendMessageAsync(string echoGuid)
         {
-            var data = new NameValueCollection
+            var timestamp = DateTime.Now.ToString();
+
+            using (var client = new HttpClient())
+            using (var request = new HttpRequestMessage())
             {
-                ["token"] = _slackBotToken,
-                ["channel"] = _slackChannel,
-                ["text"] = echoGuid,
-                ["as_user"] = "true",
+                var message = CreateMessage(echoGuid);
+                var hubSignature = CreateHubSignature(message, timestamp);
+
+                request.Headers.Add("X-Slack-Request-Timestamp", timestamp);
+                request.Headers.Add("X-Slack-Signature", hubSignature);
+                request.Content = new StringContent(message, Encoding.UTF8, "application/json");
+                request.Method = HttpMethod.Post;
+
+                request.RequestUri = new Uri($"https://{_botName}.azurewebsites.net/api/messages");
+
+                var response = await client.SendAsync(request);
+            }
+        }
+
+        private string CreateHubSignature(string message, string timestamp)
+        {
+            var hashResult = string.Empty;
+            object[] signature = { "v0", timestamp, message };
+            var baseString = string.Join(":", signature);
+
+            using (var hmac = new System.Security.Cryptography.HMACSHA256(Encoding.UTF8.GetBytes(_slackClientSigningSecret)))
+            {
+                var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(baseString));
+                var hash = string.Concat("v0=", BitConverter.ToString(hashArray).Replace("-", string.Empty)).ToUpperInvariant();
+
+                hashResult = hash;
+            }
+
+            return hashResult;
+        }
+
+        private string CreateMessage(string echoGuid)
+        {
+            var message = new JObject
+            {
+                ["token"] = _slackVerificationToken,
+                ["team_id"] = "teamId",
+                ["api_app_id"] = "apiAppId"
             };
 
-            using (var client = new WebClient())
+            var slackEvent = new JObject
             {
-                await client.UploadValuesTaskAsync($"{SlackUrlBase}/chat.postMessage", "POST", data);
-            }
+                ["client_msg_id"] = "client_msg_id",
+                ["type"] = "message",
+                ["text"] = echoGuid,
+                ["user"] = "userId",
+                ["channel"] = _slackChannel,
+                ["channel_type"] = "im"
+            };
+
+            message["event"] = slackEvent;
+            message["type"] = "event_callback";
+
+            return message.ToString();
         }
 
         private void GetEnvironmentVars()
         {
-            if (string.IsNullOrWhiteSpace(_slackChannel) || string.IsNullOrWhiteSpace(_slackBotToken))
+            if (string.IsNullOrWhiteSpace(_slackChannel) || string.IsNullOrWhiteSpace(_slackBotToken) || string.IsNullOrWhiteSpace(_slackClientSigningSecret) || string.IsNullOrWhiteSpace(_slackVerificationToken) || string.IsNullOrWhiteSpace(_botName))
             {
                 _slackChannel = Environment.GetEnvironmentVariable("SLACK_CHANNEL");
                 if (string.IsNullOrWhiteSpace(_slackChannel))
@@ -92,6 +143,24 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 if (string.IsNullOrWhiteSpace(_slackBotToken))
                 {
                     Assert.Inconclusive("Environment variable 'SLACK_BOT_TOKEN' not found.");
+                }
+
+                _slackClientSigningSecret = Environment.GetEnvironmentVariable("SLACK_CLIENT_SIGNING_SECRET");
+                if (string.IsNullOrWhiteSpace(_slackClientSigningSecret))
+                {
+                    Assert.Inconclusive("Environment variable 'SLACK_CLIENT_SIGNING_SECRET' not found.");
+                }
+
+                _slackVerificationToken = Environment.GetEnvironmentVariable("SLACK_VERIFICATION_TOKEN");
+                if (string.IsNullOrWhiteSpace(_slackVerificationToken))
+                {
+                    Assert.Inconclusive("Environment variable 'SLACK_VERIFICATION_TOKEN' not found.");
+                }
+
+                _botName = Environment.GetEnvironmentVariable("BOT_NAME");
+                if (string.IsNullOrWhiteSpace(_botName))
+                {
+                    Assert.Inconclusive("Environment variable 'BOT_NAME' not found.");
                 }
             }
         }
