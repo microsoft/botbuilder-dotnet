@@ -22,6 +22,8 @@
     <None Remove="lg\NormalStructuredLG.lg" />
     <None Remove="adaptiveCard.json" />
     <None Remove="lg\herocard.json" />
+    <None Remove="lg\c.en.lg" />
+    <None Remove="lg\c.lg" />
   </ItemGroup>
     
   <ItemGroup>
@@ -32,6 +34,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="lg\herocard.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lg\c.en.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lg\c.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
