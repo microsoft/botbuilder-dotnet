@@ -8,7 +8,7 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SetProperty",
-                    "value": "@ListType",
+                    "value": "=@ListType",
                     "property": "dialog.listName"
                 },
                 {
@@ -16,9 +16,9 @@
                     "condition": "user.lists == null",
                     "actions": [
                         {
-                            "$kind": "Microsoft.InitProperty",
-                            "property": "user.lists",
-                            "type": "object"
+                          "$kind": "Microsoft.SetProperty",
+                          "property": "user.lists",
+                          "value": "={}"
                         }
                     ]
                 },

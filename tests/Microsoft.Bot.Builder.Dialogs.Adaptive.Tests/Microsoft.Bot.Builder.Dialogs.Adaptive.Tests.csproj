@@ -100,40 +100,22 @@
     <Content Include="Tests\GeneratorTests\sandwich\en-us\sandwich.en-us.lg" />
     <Content Include="Tests\GeneratorTests\sandwich\en-us\sandwich.en-us.lu" />
     <Content Include="Tests\GeneratorTests\sandwich\en-us\sandwich.en-us.lu.dialog" />
-    <Content Include="Tests\GeneratorTests\sandwich\luconfig.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Tests\GeneratorTests\sandwich\luis.settings.chrimc.westus.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-BeginDialog.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-BreadAsk.dialog" />
-    <Content Include="Tests\GeneratorTests\sandwich\sandwich-BreadEntityClarify.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-BreadSetBreadEntity.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-CancelConfirmation.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-CancelConfirmationSet.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-CheeseAsk.dialog" />
-    <Content Include="Tests\GeneratorTests\sandwich\sandwich-CheeseEntityClarify.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-CheeseSetCheeseEntity.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-ChooseProperty.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-CompleteConfirmation.dialog" />
-    <Content Include="Tests\GeneratorTests\sandwich\sandwich-CompleteConfirmationSet.dialog" />
-    <Content Include="Tests\GeneratorTests\sandwich\sandwich-DirectionsAsk.dialog" />
-    <Content Include="Tests\GeneratorTests\sandwich\sandwich-DirectionsSetDirectionsEntity.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-HelpIntent.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-MeatAsk.dialog" />
-    <Content Include="Tests\GeneratorTests\sandwich\sandwich-MeatEntityClarify.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-MeatSetMeatEntity.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-NameAsk.dialog" />
-    <Content Include="Tests\GeneratorTests\sandwich\sandwich-NameSetNameEntity.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-NotUnderstood.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-PropertyToChangeSet.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-sandwichIntent.dialog" />
-    <Content Include="Tests\GeneratorTests\sandwich\sandwich.lu.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich.main.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich.schema.dialog" />
   </ItemGroup>

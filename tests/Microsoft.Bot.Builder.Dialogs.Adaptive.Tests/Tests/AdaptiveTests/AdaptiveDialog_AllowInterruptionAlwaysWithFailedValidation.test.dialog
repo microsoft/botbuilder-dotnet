@@ -55,12 +55,12 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "turn.interrupted",
-                        "value": "False"
+                        "value": "=False"
                     }
                 ]
             }
         ],
-        "autoEndDialog": true,
+        "autoEndDialog": false,
         "defaultResultProperty": "dialog.result"
     },
     "script": [

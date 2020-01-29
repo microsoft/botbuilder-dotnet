@@ -669,7 +669,7 @@ namespace Microsoft.Bot.Expressions
             => new ExpressionEvaluator(type, Apply(function, VerifyStringOrNull), ReturnType.String, ValidateUnaryString);
 
         /// <summary>
-        /// Transform a datetime to another datetime.
+        /// Transform a date-time to another date-time.
         /// </summary>
         /// <param name="type">Expression type.</param>
         /// <param name="function">Transformer.</param>
@@ -768,57 +768,57 @@ namespace Microsoft.Bot.Expressions
         /// </summary>
         /// <param name="instance">Instance with property.</param>
         /// <param name="property">Property to lookup.</param>
-        /// <returns>Value and error information if any.</returns>
-        public static (object value, string error) AccessProperty(object instance, string property)
+        /// <param name="value">Value of property.</param>
+        /// <returns>True if property is present and binds value.</returns>
+        public static bool TryAccessProperty(object instance, string property, out object value)
         {
-            // NOTE: This returns null rather than an error if property is not present
-            if (instance == null)
+            var isPresent = false;
+            value = null;
+            if (instance != null)
             {
-                return (null, null);
-            }
+                property = property.ToLower();
 
-            object value = null;
-            string error = null;
-            property = property.ToLower();
-
-            // NOTE: what about other type of TKey, TValue?
-            if (instance is IDictionary<string, object> idict)
-            {
-                if (!idict.TryGetValue(property, out value))
+                // NOTE: what about other type of TKey, TValue?
+                if (instance is IDictionary<string, object> idict)
                 {
-                    // fall back to case insensitive
-                    var prop = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();
-                    if (prop != null)
+                    if (!idict.TryGetValue(property, out value))
                     {
-                        idict.TryGetValue(prop, out value);
+                        // fall back to case insensitive
+                        var prop = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();
+                        if (prop != null)
+                        {
+                            isPresent = idict.TryGetValue(prop, out value);
+                        }
+                    }
+                    else
+                    {
+                        isPresent = true;
                     }
                 }
-            }
-            else if (instance is IDictionary dict)
-            {
-                foreach (var p in dict.Keys)
+                else if (instance is JObject jobj)
                 {
-                    value = dict[property];
+                    value = jobj.GetValue(property, StringComparison.CurrentCultureIgnoreCase);
+                    isPresent = value != null;
                 }
-            }
-            else if (instance is JObject jobj)
-            {
-                value = jobj.GetValue(property, StringComparison.CurrentCultureIgnoreCase);
-            }
-            else
-            {
-                // Use reflection
-                var type = instance.GetType();
-                var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
-                if (prop != null)
+                else
                 {
-                    value = prop.GetValue(instance);
+                    // Use reflection
+                    var type = instance.GetType();
+                    var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
+                    if (prop != null)
+                    {
+                        value = prop.GetValue(instance);
+                        isPresent = true;
+                    }
+                }
+
+                if (isPresent)
+                {
+                    value = ResolveValue(value);
                 }
             }
 
-            value = ResolveValue(value);
-
-            return (value, error);
+            return isPresent;
         }
 
         public static (object result, string error) SetProperty(object instance, string property, object value)
@@ -1029,7 +1029,7 @@ namespace Microsoft.Bot.Expressions
                 return (result, null);
             }
 
-            return (null, $"Can not access {property}");
+            return (null, null);
         }
 
         private static (object value, string error) ExtractElement(Expression expression, IMemory state)
@@ -1052,7 +1052,7 @@ namespace Microsoft.Bot.Expressions
                     }
                     else if (idxValue is string idxStr)
                     {
-                        (value, error) = AccessProperty(inst, idxStr);
+                        TryAccessProperty(inst, idxStr, out value);
                     }
                     else
                     {
@@ -1286,33 +1286,29 @@ namespace Microsoft.Bot.Expressions
 
         private static (object value, string error) Substring(Expression expression, IMemory state)
         {
-            object result = null;
+            string result = null;
             string error;
-            dynamic str;
-            (str, error) = expression.Children[0].TryEvaluate(state);
+            string str;
+            (str, error) = expression.Children[0].TryEvaluate<string>(state);
             if (error == null)
             {
                 if (str == null)
                 {
                     result = string.Empty;
                 }
-                else if (str is string)
+                else
                 {
-                    dynamic start;
+                    int start;
                     var startExpr = expression.Children[1];
-                    (start, error) = startExpr.TryEvaluate(state);
-                    if (error == null && !(start is int))
-                    {
-                        error = $"{startExpr} is not an integer.";
-                    }
-                    else if (start < 0 || start >= str.Length)
+                    (start, error) = startExpr.TryEvaluate<int>(state);
+                    if (error == null && (start < 0 || start >= str.Length))
                     {
                         error = $"{startExpr}={start} which is out of range for {str}.";
                     }
 
                     if (error == null)
                     {
-                        dynamic length;
+                        int length;
                         if (expression.Children.Length == 2)
                         {
                             // Without length, compute to end
@@ -1321,12 +1317,8 @@ namespace Microsoft.Bot.Expressions
                         else
                         {
                             var lengthExpr = expression.Children[2];
-                            (length, error) = lengthExpr.TryEvaluate(state);
-                            if (error == null && !(length is int))
-                            {
-                                error = $"{lengthExpr} is not an integer.";
-                            }
-                            else if (length < 0 || start + length > str.Length)
+                            (length, error) = lengthExpr.TryEvaluate<int>(state);
+                            if (error == null && (length < 0 || start + length > str.Length))
                             {
                                 error = $"{lengthExpr}={length} which is out of range for {str}.";
                             }
@@ -1337,10 +1329,6 @@ namespace Microsoft.Bot.Expressions
                             result = str.Substring(start, length);
                         }
                     }
-                }
-                else
-                {
-                    error = $"{expression.Children[0]} is not a string.";
                 }
             }
 
@@ -1390,7 +1378,7 @@ namespace Microsoft.Bot.Expressions
                         stackedMemory.Push(SimpleObjectMemory.Wrap(local));
                         (var r, var e) = expression.Children[2].TryEvaluate(stackedMemory);
                         stackedMemory.Pop();
-                        
+
                         if (e != null)
                         {
                             return (null, e);
@@ -1447,10 +1435,10 @@ namespace Microsoft.Bot.Expressions
 
                         // the local iterator is pushed as one memory layer in the memory stack
                         stackedMemory.Push(SimpleObjectMemory.Wrap(local));
-                        (var r, _) = expression.Children[2].TryEvaluate(stackedMemory);
+                        var (r, _) = expression.Children[2].TryEvaluate<bool>(stackedMemory);
                         stackedMemory.Pop();
 
-                        if ((bool)r)
+                        if (r)
                         {
                             // add if only if it evaluates to true
                             ((List<object>)result).Add(local[iteratorName]);
@@ -1463,7 +1451,9 @@ namespace Microsoft.Bot.Expressions
                         var jobjResult = new JObject();
                         foreach (var item in (List<object>)result)
                         {
-                            jobjResult.Add(AccessProperty(item, "key").value.ToString(), JToken.FromObject(AccessProperty(item, "value").value));
+                            TryAccessProperty(item, "key", out var keyVal);
+                            TryAccessProperty(item, "value", out var val);
+                            jobjResult.Add(keyVal as string, JToken.FromObject(val));
                         }
 
                         result = jobjResult;
@@ -1660,7 +1650,7 @@ namespace Microsoft.Bot.Expressions
             }
             catch
             {
-                error = $"illegal timestamp representation {sourceTimestamp}";
+                error = $"illegal time-stamp representation {sourceTimestamp}";
             }
 
             if (error == null)
@@ -2150,29 +2140,17 @@ namespace Microsoft.Bot.Expressions
             {
                 if (TryParseList(arr, out var list))
                 {
-                    object start;
-                    var startInt = 0;
+                    int start = 0;
                     var startExpr = expression.Children[1];
-                    (start, error) = startExpr.TryEvaluate(state);
+                    (start, error) = startExpr.TryEvaluate<int>(state);
+                    if (error == null && (start < 0 || start >= list.Count))
+                    {
+                        error = $"{startExpr}={start} which is out of range for {arr}";
+                    }
+
                     if (error == null)
                     {
-                        if (start == null || !start.IsInteger())
-                        {
-                            error = $"{startExpr} is not an integer.";
-                        }
-                        else
-                        {
-                            startInt = (int)start;
-                            if (startInt < 0 || startInt >= list.Count)
-                            {
-                                error = $"{startExpr}={start} which is out of range for {arr}";
-                            }
-                        }
-
-                        if (error == null)
-                        {
-                            result = list.OfType<object>().Skip(startInt).ToList();
-                        }
+                        result = list.OfType<object>().Skip(start).ToList();
                     }
                 }
                 else
@@ -2196,39 +2174,31 @@ namespace Microsoft.Bot.Expressions
                 var arrIsStr = arr.GetType() == typeof(string);
                 if (arrIsList || arrIsStr)
                 {
-                    object countObj;
+                    int count;
                     var countExpr = expression.Children[1];
-                    (countObj, error) = countExpr.TryEvaluate(state);
+                    (count, error) = countExpr.TryEvaluate<int>(state);
                     if (error == null)
                     {
-                        if (countObj == null || !countObj.IsInteger())
+                        if (arrIsList)
                         {
-                            error = $"{countExpr} is not an integer.";
-                        }
-                        else
-                        {
-                            var count = (int)countObj;
-                            if (arrIsList)
+                            if (count < 0 || count >= list.Count)
                             {
-                                if (count < 0 || count >= list.Count)
-                                {
-                                    error = $"{countExpr}={count} which is out of range for {arr}";
-                                }
-                                else
-                                {
-                                    result = list.OfType<object>().Take(count).ToList();
-                                }
+                                error = $"{countExpr}={count} which is out of range for {arr}";
                             }
                             else
                             {
-                                if (count < 0 || count > list.Count)
-                                {
-                                    error = $"{countExpr}={count} which is out of range for {arr}";
-                                }
-                                else
-                                {
-                                    result = arr.ToString().Substring(0, count);
-                                }
+                                result = list.OfType<object>().Take(count).ToList();
+                            }
+                        }
+                        else
+                        {
+                            if (count < 0 || count > list.Count)
+                            {
+                                error = $"{countExpr}={count} which is out of range for {arr}";
+                            }
+                            else
+                            {
+                                result = arr.ToString().Substring(0, count);
                             }
                         }
                     }
@@ -2254,20 +2224,10 @@ namespace Microsoft.Bot.Expressions
                 if (TryParseList(arr, out var list))
                 {
                     var startExpr = expression.Children[1];
-                    object startObj;
-                    (startObj, error) = startExpr.TryEvaluate(state);
-                    var start = 0;
+                    int start;
+                    (start, error) = startExpr.TryEvaluate<int>(state);
                     if (error == null)
                     {
-                        if (startObj == null || !startObj.IsInteger())
-                        {
-                            error = $"{startExpr} is not an integer.";
-                        }
-                        else
-                        {
-                            start = (int)startObj;
-                        }
-
                         if (error == null && (start < 0 || start > list.Count))
                         {
                             error = $"{startExpr}={start} which is out of range for {arr}";
@@ -2275,7 +2235,7 @@ namespace Microsoft.Bot.Expressions
 
                         if (error == null)
                         {
-                            var end = 0;
+                            int end = 0;
                             if (expression.Children.Length == 2)
                             {
                                 end = list.Count;
@@ -2283,23 +2243,10 @@ namespace Microsoft.Bot.Expressions
                             else
                             {
                                 var endExpr = expression.Children[2];
-                                object endObj;
-                                (endObj, error) = endExpr.TryEvaluate(state);
-                                if (error == null)
+                                (end, error) = endExpr.TryEvaluate<int>(state);
+                                if (error == null && (end < 0 || end > list.Count))
                                 {
-                                    if (endObj == null || !endObj.IsInteger())
-                                    {
-                                        error = $"{endExpr} is not an integer.";
-                                    }
-                                    else
-                                    {
-                                        end = (int)endObj;
-                                    }
-
-                                    if (error == null && (end < 0 || end > list.Count))
-                                    {
-                                        error = $"{endExpr}={end} which is out of range for {arr}";
-                                    }
+                                    error = $"{endExpr}={end} which is out of range for {arr}";
                                 }
                             }
 
@@ -2346,19 +2293,18 @@ namespace Microsoft.Bot.Expressions
                        {
                            var jarray = JArray.FromObject(list.OfType<object>().ToList());
                            var propertyNameExpression = expression.Children[1];
-                           object propertyName;
-                           (propertyName, error) = propertyNameExpression.TryEvaluate(state);
-                           var propertyNameString = string.Empty;
+                           string propertyName;
+                           (propertyName, error) = propertyNameExpression.TryEvaluate<string>(state);
                            if (error == null)
                            {
-                               propertyNameString = propertyName == null ? string.Empty : propertyName.ToString();
+                               propertyName = propertyName ?? string.Empty;
                                if (isDescending)
                                {
-                                   result = jarray.OrderByDescending(obj => obj[propertyNameString]).ToList();
+                                   result = jarray.OrderByDescending(obj => obj[propertyName]).ToList();
                                }
                                else
                                {
-                                   result = jarray.OrderBy(obj => obj[propertyNameString]).ToList();
+                                   result = jarray.OrderBy(obj => obj[propertyName]).ToList();
                                }
                            }
                        }
@@ -2400,6 +2346,57 @@ namespace Microsoft.Bot.Expressions
         }
 
         private static bool IsSameDay(DateTime date1, DateTime date2) => date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day;
+
+        private static bool IsEqual(IReadOnlyList<dynamic> args)
+        {
+            if (args[0] == null)
+            {
+                return args[1] == null;
+            }
+
+            if (TryParseList(args[0], out IList l0) && l0.Count == 0 && (TryParseList(args[1], out IList l1) && l1.Count == 0))
+            {
+                return true;
+            }
+
+            if (GetPropertyCount(args[0]) == 0 && GetPropertyCount(args[1]) == 0)
+            {
+                return true;
+            }
+
+            try
+            {
+                return args[0] == args[1];
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Get the property count of an object.
+        /// </summary>
+        /// <param name="obj">input object.</param>
+        /// <returns>property count.</returns>
+        private static int GetPropertyCount(dynamic obj)
+        {
+            if (obj is IDictionary dictionary)
+            {
+                return dictionary.Count;
+            }
+            else if (obj is JObject jobj)
+            {
+                return jobj.Properties().Count();
+            }
+            else if (!(obj is JValue) && obj.GetType().IsValueType == false && obj.GetType().FullName != "System.String")
+            {
+                // exclude constant type.
+                return obj.GetType().GetProperties().Length;
+            }
+
+            return -1;
+        }
 
         private static Dictionary<string, ExpressionEvaluator> BuildFunctionLookup()
         {
@@ -2575,8 +2572,9 @@ namespace Microsoft.Bot.Expressions
                 // Booleans
                 Comparison(ExpressionType.LessThan, args => args[0] < args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
                 Comparison(ExpressionType.LessThanOrEqual, args => args[0] <= args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
-                Comparison(ExpressionType.Equal, args => args[0] == args[1], ValidateBinary),
-                Comparison(ExpressionType.NotEqual, args => args[0] != args[1], ValidateBinary),
+
+                Comparison(ExpressionType.Equal, IsEqual, ValidateBinary),
+                Comparison(ExpressionType.NotEqual, args => !IsEqual(args), ValidateBinary),
                 Comparison(ExpressionType.GreaterThan, args => args[0] > args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
                 Comparison(ExpressionType.GreaterThanOrEqual, args => args[0] >= args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
                 Comparison(ExpressionType.Exists, args => args[0] != null, ValidateUnary, VerifyNotNull),
@@ -2600,9 +2598,7 @@ namespace Microsoft.Bot.Expressions
                             }
                             else if (args[1] is string string2)
                             {
-                                object value;
-                                (value, error) = AccessProperty((object)args[0], string2);
-                                found = error == null && value != null;
+                                found = TryAccessProperty((object)args[0], string2, out var _);
                             }
                         }
 

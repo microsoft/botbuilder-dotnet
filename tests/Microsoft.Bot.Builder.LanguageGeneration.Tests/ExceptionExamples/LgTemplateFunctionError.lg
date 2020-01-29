@@ -4,7 +4,7 @@
 
 > arguments mismatch
 # template4
-- @{template5()}
+- @{template5('hello', 'world')}
 
 # template5(param1)
  - hi

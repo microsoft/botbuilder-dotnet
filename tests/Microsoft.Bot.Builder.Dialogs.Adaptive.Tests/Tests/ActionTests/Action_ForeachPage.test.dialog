@@ -9,45 +9,45 @@
         "$kind": "Microsoft.OnBeginDialog",
         "actions": [
           {
-            "$kind": "Microsoft.InitProperty",
+            "$kind": "Microsoft.SetProperty",
             "property": "dialog.todo",
-            "type": "array"
+            "value": "=[]"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "changeType": "Push",
-            "value": "1"
+            "changeType": "push",
+            "value": "=1"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "changeType": "Push",
-            "value": "2"
+            "changeType": "push",
+            "value": "=2"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "changeType": "Push",
-            "value": "3"
+            "changeType": "push",
+            "value": "=3"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "changeType": "Push",
-            "value": "4"
+            "changeType": "push",
+            "value": "=4"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "changeType": "Push",
-            "value": "5"
+            "changeType": "push",
+            "value": "=5"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "changeType": "Push",
-            "value": "6"
+            "changeType": "push",
+            "value": "=6"
           },
           {
             "$kind": "Microsoft.ForeachPage",

@@ -10,8 +10,18 @@
             "title": "Id",
             "description": "Optional id for the dialog"
         },
+        "disabled": {
+            "$role": "expression",
+            "type": [ "boolean", "string" ],
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
         "itemsProperty": {
             "$role": "expression",
+            "type": "string",
             "title": "Items property",
             "description": "Property that holds the array.",
             "examples": [
@@ -27,7 +37,8 @@
             "description": "Actions to execute for each page. Use '$foreach.page' to access each page."
         },
         "pageSize": {
-            "type": "integer",
+            "$role": "expression",
+            "type": [ "integer", "string" ],
             "title": "Page size",
             "description": "Number of items in each page.",
             "default": 10

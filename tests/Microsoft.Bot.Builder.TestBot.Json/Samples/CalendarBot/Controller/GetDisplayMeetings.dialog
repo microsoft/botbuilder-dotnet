@@ -8,7 +8,7 @@
         "GetMeetingsService",
         {
           "$kind": "Microsoft.EditArray",
-          "changeType": "Clear",
+          "changeType": "clear",
           "itemsProperty": "user.meetings"
         },
         // *** Translate from graph model to view model. Map the same entity from graph/google to the same attribute. ***
@@ -19,37 +19,37 @@
             // Need subarray. Hack for now.
             //{
             //  "$kind": "Microsoft.EditArray",
-            //  "changeType": "Push",
+            //  "changeType": "push",
             //  "itemsProperty": "user.meetings",
             //  "itemProperty": "user.getGraphMeetings.value[user.showIndex * user.pageSize + 0]"
             //},
             //{
             //  "$kind": "Microsoft.EditArray",
-            //  "changeType": "Push",
+            //  "changeType": "push",
             //  "itemsProperty": "user.meetings",
             //  "itemProperty": "user.getGraphMeetings.value[user.showIndex * user.pageSize + 1]"
             //},
             //{
             //  "$kind": "Microsoft.EditArray",
-            //  "changeType": "Push",
+            //  "changeType": "push",
             //  "itemsProperty": "user.meetings",
             //  "itemProperty": "user.getGraphMeetings.value[user.showIndex * user.pageSize + 2]"
             //},
             {
               "$kind": "Microsoft.EditArray",
-              "changeType": "Push",
+              "changeType": "push",
               "itemsProperty": "user.meetings",
               "itemProperty": "user.getGraphMeetings.value[0]"
             },
             {
               "$kind": "Microsoft.EditArray",
-              "changeType": "Push",
+              "changeType": "push",
               "itemsProperty": "user.meetings",
               "itemProperty": "user.getGraphMeetings.value[1]"
             },
             {
               "$kind": "Microsoft.EditArray",
-              "changeType": "Push",
+              "changeType": "push",
               "itemsProperty": "user.meetings",
               "itemProperty": "user.getGraphMeetings.value[2]"
             }

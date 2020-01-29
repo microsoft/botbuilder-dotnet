@@ -46,7 +46,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <returns>Event queues.</returns>
         public static EntityEvents Read(SequenceContext context)
         {
-            if (!context.GetState().TryGetValue<EntityEvents>(Events, out var queues))
+            var dcState = context.GetState();
+
+            if (!dcState.TryGetValue<EntityEvents>(Events, out var queues))
             {
                 queues = new EntityEvents();
             }
@@ -62,18 +64,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             => context.GetState().SetValue(Events, this);
 
         /// <summary>
-        /// Merge another event queue.
-        /// </summary>
-        /// <param name="queues">Queues to merge.</param>
-        public void Merge(EntityEvents queues)
-        {
-            AssignEntities.AddRange(queues.AssignEntities);
-            ChooseEntities.AddRange(queues.ChooseEntities);
-            ChooseProperties.AddRange(queues.ChooseProperties);
-            ClearProperties.AddRange(queues.ClearProperties);
-        }
-
-        /// <summary>
         /// Remove an event result from queues.
         /// </summary>
         /// <param name="eventName">Event to remove.</param>
@@ -87,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 case AdaptiveEvents.ChooseEntity: ChooseEntities.Dequeue(); break;
                 case AdaptiveEvents.ClearProperty: ClearProperties.Dequeue(); break;
                 case AdaptiveEvents.AssignEntity: AssignEntities.Dequeue(); break;
-                case AdaptiveEvents.Ask:
+                case AdaptiveEvents.EndOfActions: changed = false; break;
                 default:
                     changed = false;
                     break;

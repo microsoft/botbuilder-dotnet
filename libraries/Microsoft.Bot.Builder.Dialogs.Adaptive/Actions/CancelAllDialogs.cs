@@ -26,13 +26,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
+        /// Gets or sets an optional expression which if is true will disable this action.
+        /// </summary>
+        /// <example>
+        /// "user.age > 18".
+        /// </example>
+        /// <value>
+        /// A boolean expression. 
+        /// </value>
+        [JsonProperty("disabled")]
+        public BoolExpression Disabled { get; set; } 
+
+        /// <summary>
         /// Gets or sets event name. 
         /// </summary>
         /// <value>
         /// Event name. 
         /// </value>
         [JsonProperty("eventName")]
-        public string EventName { get; set; }
+        public StringExpression EventName { get; set; }
 
         /// <summary>
         /// Gets or sets value expression for EventValue.
@@ -41,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Value expression for EventValue.
         /// </value>
         [JsonProperty("eventValue")]
-        public string EventValue { get; set; }
+        public StringExpression EventValue { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -50,19 +62,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            object eventValue = null;
-            if (this.EventValue != null)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
-                eventValue = new ExpressionEngine().Parse(this.EventValue).TryEvaluate(dc.GetState());
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             if (dc.Parent == null)
             {
-                return await dc.CancelAllDialogsAsync(true, EventName, eventValue, cancellationToken).ConfigureAwait(false);
+                return await dc.CancelAllDialogsAsync(true, EventName.GetValue(dcState), this.EventValue.GetValue(dcState), cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                var turnResult = await dc.Parent.CancelAllDialogsAsync(true, EventName, eventValue, cancellationToken).ConfigureAwait(false);
+                var turnResult = await dc.Parent.CancelAllDialogsAsync(true, EventName.GetValue(dcState), this.EventValue.GetValue(dcState), cancellationToken).ConfigureAwait(false);
                 turnResult.ParentEnded = true;
                 return turnResult;
             }

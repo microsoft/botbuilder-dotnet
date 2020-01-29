@@ -20,6 +20,18 @@ namespace Microsoft.Bot.Expressions.Tests
         private readonly object scope = new Dictionary<string, object>
         {
             {
+                "emptyList", new List<object>()
+            },
+            {
+                "emptyObject", new Dictionary<string, object>()
+            },
+            {
+                "emptyJObject", new JObject()
+            },
+            {
+                "emptyAnonymousObject", new { }
+            },
+            {
                 "path", new Dictionary<string, object>()
                 {
                     {
@@ -246,6 +258,7 @@ namespace Microsoft.Bot.Expressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
+            Test("hello == 'hello'", true),
             #region SetPathToProperty test
             Test("setPathToValue(path.simple, 3) + path.simple", 6),
             Test("setPathToValue(path.simple, 5) + path.simple", 10),
@@ -465,6 +478,22 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("if(null, 'r1', 'r2')", "r2"),
             Test("if(hello * 5, 'r1', 'r2')", "r2"),
             Test("if(10, 'r1', 'r2')", "r1"),
+            Test("emptyList == []", true),
+            Test("emptyList != []", false),
+            Test("emptyList == {}", false),
+            Test("emptyObject == {}", true),
+            Test("emptyObject != {}", false),
+            Test("emptyObject == []", false),
+            Test("emptyJObject == {}", true),
+            Test("emptyJObject != {}", false),
+            Test("emptyJObject == []", false),
+            Test("emptyAnonymousObject == {}", true),
+            Test("emptyAnonymousObject != {}", false),
+            Test("emptyAnonymousObject == []", false),
+            Test("emptyList == [ ]", true),
+            Test("emptyList == {  }", false),
+            Test("emptyObject == {  }", true),
+            Test("emptyObject == [  ]", false),
             #endregion
 
             #region  Conversion functions test
@@ -806,6 +835,31 @@ namespace Microsoft.Bot.Expressions.Tests
             exp = parser.Parse("json(x).b");
             (path, left, err) = BuiltInFunctions.TryAccumulatePath(exp, memory);
             Assert.AreEqual(path, "b");
+        }
+
+        [TestMethod]
+        public void TestTryEvaluateOfT()
+        {
+            AssertResult<bool>("true", true);
+            AssertResult<bool>("false", false);
+            AssertResult<string>("'this is a test'", "this is a test");
+            AssertResult<byte>(byte.MaxValue.ToString(), byte.MaxValue);
+            AssertResult<short>(short.MaxValue.ToString(), short.MaxValue);
+            AssertResult<int>(int.MaxValue.ToString(), int.MaxValue);
+            AssertResult<long>(int.MaxValue.ToString(), int.MaxValue);
+            AssertResult<ushort>(ushort.MaxValue.ToString(), ushort.MaxValue);
+            AssertResult<uint>(uint.MaxValue.ToString(), uint.MaxValue);
+            AssertResult<ulong>(uint.MaxValue.ToString(), uint.MaxValue);
+            AssertResult<float>(15.32322F.ToString(), 15.32322F);
+            AssertResult<double>(15.32322.ToString(), 15.32322);
+        }
+
+        private void AssertResult<T>(string text, T expected)
+        {
+            var memory = new object();
+            var (result, error) = new ExpressionEngine().Parse(text).TryEvaluate<T>(memory);
+            Assert.AreEqual(expected, result);
+            Assert.IsNull(error);
         }
 
         private void AssertObjectEquals(object expected, object actual)

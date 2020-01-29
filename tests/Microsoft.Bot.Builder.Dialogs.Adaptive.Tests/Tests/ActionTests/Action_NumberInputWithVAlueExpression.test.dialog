@@ -25,7 +25,7 @@
                     {
                         "$kind": "Microsoft.NumberInput",
                         "property": "turn.age",
-                        "value": "@number",
+                        "value": "=@number",
                         "prompt": "What is your age?",
                         "maxTurnCount": 1
                     },

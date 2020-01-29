@@ -5,20 +5,37 @@
         "Quantity": {
             "type": "number",
             "minimum": 1,
-            "maximum": 10
-        },
-        "Directions": {
-            "type": "string",
-            "$comment": "This indicates the whole string is what maps to this."
+            "maximum": 10,
+            "$entities": [
+                "number:Quantity",
+                "number"
+            ]
         },
         "Length": {
-            "type": "number",
-            "$mappings": [
-                "dimension",
-                "number"
+            "type": "object",
+            "$entities": [
+                "dimension:Length",
+                "dimension"
             ],
-            "$comment": "This is used by the mapping to convert underlying dimensions to inches.",
-            "$units": "inches"
+            "required": [
+                "number",
+                "units"
+            ],
+            "properties": {
+                "number": {
+                    "type": "number"
+                },
+                "units": {
+                    "type": "string"
+                }
+            }
+        },
+        "Name": {
+            "type": "string",
+            "$entities": [
+                "personName",
+                "utterance"
+            ]
         },
         "Bread": {
             "type": "string",
@@ -27,19 +44,9 @@
                 "rye",
                 "white",
                 "wholeWheat"
-            ]
-        },
-        "Cheese": {
-            "type": "string",
-            "enum": [
-                "american",
-                "cheddar",
-                "feta",
-                "gouda",
-                "pepper jack",
-                "provolone",
-                "swiss",
-                "none"
+            ],
+            "$entities": [
+                "BreadEntity"
             ]
         },
         "Meat": {
@@ -53,71 +60,108 @@
                 "salami",
                 "turkey",
                 "none"
+            ],
+            "$entities": [
+                "MeatEntity"
             ]
         },
-        "Name": {
-            "type": "string"
+        "Cheese": {
+            "type": "string",
+            "enum": [
+                "american",
+                "cheddar",
+                "feta",
+                "gouda",
+                "pepper jack",
+                "provolone",
+                "swiss",
+                "none"
+            ],
+            "$entities": [
+                "CheeseEntity"
+            ]
+        },
+        "Price": {
+            "type": "object",
+            "$entities": [
+                "money:Price",
+                "money"
+            ],
+            "required": [
+                "number",
+                "units"
+            ],
+            "properties": {
+                "number": {
+                    "type": "number"
+                },
+                "units": {
+                    "type": "string"
+                }
+            }
         },
         "CancelConfirmation": {
             "type": "string",
-            "$mappings": [
+            "$entities": [
+                "Confirmation"
+            ]
+        },
+        "ChangePropertyConfirmation": {
+            "type": "string",
+            "$entities": [
                 "Confirmation"
             ]
         },
         "CompleteConfirmation": {
             "type": "string",
-            "$mappings": [
-                "Confirmation"
+            "$entities": [
+                "Confirmation",
+                "PROPERTYName"
             ]
         },
         "PropertyToChange": {
             "type": "string",
-            "enum": [
-                "Quantity",
-                "Directions",
-                "Length",
-                "Bread",
-                "Cheese",
-                "Meat",
-                "Name"
-            ],
-            "$mappings": [
+            "enum": "properties",
+            "$entities": [
+                "PROPERTYName"
+            ]
+        },
+        "PropertyToRemember": {
+            "type": "string",
+            "enum": "properties",
+            "$entities": [
                 "PROPERTYName"
             ]
         }
     },
     "required": [
-        "Meat",
-        "Bread",
-        "Cheese"
-    ],
-    "$expectedOnly": [
-        "CancelConfirmation",
-        "CompleteConfirmation",
-        "PropertyToChange"
-    ],
-    "$public": [
-        "Quantity",
-        "Directions",
-        "Length",
+        "Name",
         "Bread",
         "Cheese",
         "Meat",
-        "Name"
+        "Price"
+    ],
+    "$expectedOnly": [
+        "Confirmation",
+        "PROPERTYName",
+        "utterance",
+        "keyPhrase",
+        "personName"
+    ],
+    "$public": [
+        "Quantity",
+        "Length",
+        "Name",
+        "Bread",
+        "Meat",
+        "Cheese",
+        "Price"
     ],
     "definitions": {
         "PROPERTYName": {
             "type": "string",
-            "enum": [
-                "Quantity",
-                "Directions",
-                "Length",
-                "Bread",
-                "Cheese",
-                "Meat",
-                "Name"
-            ],
-            "$mappings": [
+            "enum": "properties",
+            "$entities": [
                 "PROPERTYName"
             ]
         }

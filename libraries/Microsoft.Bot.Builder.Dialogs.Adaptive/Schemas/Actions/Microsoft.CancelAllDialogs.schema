@@ -10,13 +10,24 @@
             "title": "Id",
             "description": "Optional id for the dialog"
         },
+        "disabled": {
+            "$role": "expression",
+            "type": [ "boolean", "string" ],
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
         "eventName": {
+            "$role": "expression",
+            "type": "string",
             "title": "Event name",
-            "description": "Name of the event to emit.",
-            "type": "string"
+            "description": "Name of the event to emit."
         },
         "eventValue": {
-            "type": "object",
+            "$role": "expression",
+            "type": [ "object", "array", "number", "integer", "boolean", "string" ],
             "title": "Event value",
             "description": "Value to emit with the event (optional).",
             "additionalProperties": true

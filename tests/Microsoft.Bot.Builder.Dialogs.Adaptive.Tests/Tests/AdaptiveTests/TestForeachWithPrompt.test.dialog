@@ -17,12 +17,12 @@
           {
             "$kind": "Microsoft.SetProperty",
             "property": "$colorChoices",
-            "value": "createArray('red', 'blue', 'green')"
+            "value": "=createArray('red', 'blue', 'green')"
           },
           {
-            "$kind": "Microsoft.InitProperty",
+            "$kind": "Microsoft.SetProperty",
             "property": "$userAnswers",
-            "type": "array"
+            "value": "=[]"
           },
           {
             "$kind": "Microsoft.Foreach",
@@ -37,7 +37,7 @@
               {
                 "$kind": "Microsoft.EditArray",
                 "itemsProperty": "$userAnswers",
-                "value": "$answer"
+                "value": "=$answer"
               },
               {
                 "$kind": "Microsoft.SendActivity",

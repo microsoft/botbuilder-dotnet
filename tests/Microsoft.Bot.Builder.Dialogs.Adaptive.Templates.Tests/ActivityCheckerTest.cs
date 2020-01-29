@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests
             DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
             DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
 
-            resourceExplorer = ResourceExplorer.LoadProject(GetProjectFolder());
+            resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder());
         }
 
         [TestMethod]
@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests
         {
             var context = new TurnContext(new TestAdapter(), new Activity());
             var lgText = await resourceExplorer.GetResource(lgFile).ReadTextAsync();
-            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgText, "test", MultiLanguageResourceLoader.Load(resourceExplorer)));
+            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgText, "test", LGResourceLoader.GroupByLocale(resourceExplorer)));
             return context;
         }
     }

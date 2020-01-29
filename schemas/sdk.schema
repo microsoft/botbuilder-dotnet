@@ -101,6 +101,11 @@
             "$ref": "#/definitions/Microsoft.DebugBreak"
         },
         {
+            "title": "Microsoft.DeleteActivity",
+            "description": "Delete an activity that was previously sent.",
+            "$ref": "#/definitions/Microsoft.DeleteActivity"
+        },
+        {
             "title": "Microsoft.DeleteProperties",
             "description": "Delete multiple properties and any value it holds.",
             "$ref": "#/definitions/Microsoft.DeleteProperties"
@@ -161,6 +166,16 @@
             "$ref": "#/definitions/Microsoft.ForeachPage"
         },
         {
+            "title": "Microsoft.GetActivityMembers",
+            "description": "Get the members who are participating in an activity. (BotFrameworkAdapter only)",
+            "$ref": "#/definitions/Microsoft.GetActivityMembers"
+        },
+        {
+            "title": "Microsoft.GetConversationMembers",
+            "description": "Get the members who are participating in an conversation. (BotFrameworkAdapter only)",
+            "$ref": "#/definitions/Microsoft.GetConversationMembers"
+        },
+        {
             "title": "Microsoft.GotoAction",
             "description": "Go to an an action by id.",
             "$ref": "#/definitions/Microsoft.GotoAction"
@@ -184,11 +199,6 @@
             "title": "Microsoft.IfCondition",
             "description": "Two-way branch the conversation flow based on a condition.",
             "$ref": "#/definitions/Microsoft.IfCondition"
-        },
-        {
-            "title": "Microsoft.InitProperty",
-            "description": "Define and initialize a property to be an array or object.",
-            "$ref": "#/definitions/Microsoft.InitProperty"
         },
         {
             "title": "Microsoft.IpEntityRecognizer",
@@ -451,6 +461,11 @@
             "$ref": "#/definitions/Microsoft.SetProperty"
         },
         {
+            "title": "Microsoft.SignOutUser",
+            "description": "Sign a user out that was logged in previously using OAuthInput.",
+            "$ref": "#/definitions/Microsoft.SignOutUser"
+        },
+        {
             "title": "Microsoft.StaticActivityTemplate",
             "description": "This allows you to define a static Activity object",
             "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
@@ -534,6 +549,11 @@
             "title": "Microsoft.TrueSelector",
             "description": "Selector for all true events",
             "$ref": "#/definitions/Microsoft.TrueSelector"
+        },
+        {
+            "title": "Microsoft.UpdateActivity",
+            "description": "Respond with an activity.",
+            "$ref": "#/definitions/Microsoft.UpdateActivity"
         },
         {
             "title": "Microsoft.UrlEntityRecognizer",
@@ -853,6 +873,18 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "activity": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Activity",
@@ -860,12 +892,24 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "expectedProperties": {
-                    "type": "array",
+                    "$role": "expression",
                     "title": "Expected Properties",
                     "description": "Properties expected to be filled by entities from the user",
-                    "items": {
-                        "type": "string"
-                    }
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "title": "string"
+                            },
+                            "title": "array"
+                        },
+                        {
+                            "type": "string",
+                            "title": "string"
+                        }
+                    ],
+                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -924,6 +968,18 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Initial prompt",
@@ -961,7 +1017,11 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
                     "default": 3,
@@ -985,6 +1045,7 @@
                 },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
                     "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
                     "examples": [
@@ -992,32 +1053,49 @@
                         "user.name",
                         "conversation.issueTitle",
                         "dialog.favColor"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "defaultValue": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Default value",
                     "description": "Expression to examine on each turn of the conversation as possible value to the property.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
                     "examples": [
                         "@userName"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "alwaysPrompt": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -1025,15 +1103,19 @@
                 },
                 "allowInterruptions": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
                     "examples": [
                         "true"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "outputFormat": {
+                    "$role": "expression",
                     "type": "string",
                     "enum": [
                         "all",
@@ -1100,8 +1182,25 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
+                    "$role": "expression",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
@@ -1110,7 +1209,11 @@
                     "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "options": {
-                    "type": "object",
+                    "$role": "expression",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
                     "title": "Options",
                     "description": "One or more options that are passed to the dialog that is called.",
                     "additionalProperties": {
@@ -1118,20 +1221,24 @@
                         "title": "Options"
                     }
                 },
-                "includeActivity": {
-                    "type": "boolean",
-                    "title": "Include Activity",
-                    "description": "When set to true, dialog that is called can process the current activity.",
-                    "default": false
+                "activityProcessed": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Activity Processed",
+                    "description": "When set to false, the dialog that is called can process the current activity.",
+                    "default": true
                 },
                 "resultProperty": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
                     "description": "Property to store any value returned by the dialog that is called.",
                     "examples": [
                         "dialog.userName"
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -1189,6 +1296,18 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -1247,13 +1366,34 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "eventName": {
+                    "$role": "expression",
+                    "type": "string",
                     "title": "Event name",
-                    "description": "Name of the event to emit.",
-                    "type": "string"
+                    "description": "Name of the event to emit."
                 },
                 "eventValue": {
-                    "type": "object",
+                    "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Event value",
                     "description": "Value to emit with the event (optional).",
                     "additionalProperties": true
@@ -1315,6 +1455,18 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Initial prompt",
@@ -1352,7 +1504,11 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
                     "default": 3,
@@ -1376,6 +1532,7 @@
                 },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
                     "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
                     "examples": [
@@ -1383,32 +1540,49 @@
                         "user.name",
                         "conversation.issueTitle",
                         "dialog.favColor"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "defaultValue": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Default value",
                     "description": "Expression to examine on each turn of the conversation as possible value to the property.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
                     "examples": [
                         "@userName"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "alwaysPrompt": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -1416,15 +1590,19 @@
                 },
                 "allowInterruptions": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
                     "examples": [
                         "true"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "outputFormat": {
+                    "$role": "expression",
                     "type": "string",
                     "enum": [
                         "value",
@@ -1677,6 +1855,18 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Initial prompt",
@@ -1714,7 +1904,11 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
                     "default": 3,
@@ -1738,6 +1932,7 @@
                 },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
                     "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
                     "examples": [
@@ -1745,32 +1940,49 @@
                         "user.name",
                         "conversation.issueTitle",
                         "dialog.favColor"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "defaultValue": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Default value",
                     "description": "Expression to examine on each turn of the conversation as possible value to the property.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
                     "examples": [
                         "@userName"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "alwaysPrompt": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -1778,30 +1990,35 @@
                 },
                 "allowInterruptions": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
                     "examples": [
                         "true"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "outputFormat": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Output format",
                     "description": "Expression to format the confirm output.",
                     "examples": [
-                        "concat('confirmation:', this.value)"
-                    ],
-                    "type": "string"
+                        "=concat('confirmation:', this.value)"
+                    ]
                 },
                 "defaultLocale": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Default locale",
                     "description": "Default locale.",
                     "default": "en-us"
                 },
                 "style": {
+                    "$role": "expression",
                     "type": "string",
                     "enum": [
                         "None",
@@ -1816,6 +2033,7 @@
                     "default": "Auto"
                 },
                 "choiceOptions": {
+                    "$role": "expression",
                     "type": "object",
                     "properties": {
                         "inlineSeparator": {
@@ -1842,9 +2060,11 @@
                             "description": "If true, inline and list style choices will be prefixed with the index of the choice.",
                             "default": true
                         }
-                    }
+                    },
+                    "description": "String must contain an expression."
                 },
                 "confirmChoices": {
+                    "$role": "expression",
                     "type": "array",
                     "items": [
                         {
@@ -1870,7 +2090,8 @@
                                 }
                             }
                         }
-                    ]
+                    ],
+                    "description": "String must contain an expression."
                 }
             },
             "additionalProperties": false,
@@ -1980,6 +2201,18 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -2209,6 +2442,18 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Initial prompt",
@@ -2246,7 +2491,11 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
                     "default": 3,
@@ -2270,6 +2519,7 @@
                 },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
                     "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
                     "examples": [
@@ -2277,32 +2527,49 @@
                         "user.name",
                         "conversation.issueTitle",
                         "dialog.favColor"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "defaultValue": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Default value",
                     "description": "Expression to examine on each turn of the conversation as possible value to the property.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
                     "examples": [
                         "@userName"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "alwaysPrompt": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -2310,24 +2577,28 @@
                 },
                 "allowInterruptions": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
                     "examples": [
                         "true"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "outputFormat": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Output format",
                     "description": "Expression to format the datetime output.",
                     "examples": [
                         "this.value[0].Value"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "defaultLocale": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Default locale",
                     "description": "Default locale.",
@@ -2389,6 +2660,18 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -2407,6 +2690,86 @@
                 {
                     "title": "Type",
                     "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.DeleteActivity": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Delete Activity",
+            "description": "Delete an activity that was previously sent.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.DeleteActivity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "activityId": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "ActivityId",
+                    "description": "expression to an activityId to delete",
+                    "examples": [
+                        "=$lastActivity"
+                    ]
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "property",
+                        "value",
                         "$kind"
                     ]
                 }
@@ -2447,15 +2810,27 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "properties": {
                     "type": "array",
                     "title": "Properties",
                     "description": "Properties to delete.",
                     "items": {
                         "$role": "expression",
+                        "type": "string",
                         "title": "Property",
-                        "description": "Property to delete.",
-                        "type": "string"
+                        "description": "Property to delete."
                     }
                 }
             },
@@ -2516,11 +2891,23 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
-                    "description": "Property to delete.",
-                    "type": "string"
+                    "description": "Property to delete."
                 }
             },
             "additionalProperties": false,
@@ -2632,16 +3019,29 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "changeType": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Type of change",
                     "description": "Type of change to apply to the current actions.",
                     "enum": [
-                        "InsertActions",
-                        "InsertActionsBeforeTags",
-                        "AppendActions",
-                        "EndSequence",
-                        "ReplaceSequence"
+                        "insertActions",
+                        "insertActionsBeforeTags",
+                        "appendActions",
+                        "endSequence",
+                        "replaceSequence"
                     ]
                 },
                 "actions": {
@@ -2713,39 +3113,59 @@
                     "description": "Optional id for the dialog"
                 },
                 "changeType": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Type of change",
                     "description": "Type of change to the array in memory.",
                     "enum": [
-                        "Push",
-                        "Pop",
-                        "Take",
-                        "Remove",
-                        "Clear"
+                        "push",
+                        "pop",
+                        "take",
+                        "remove",
+                        "clear"
+                    ]
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
                     ]
                 },
                 "itemsProperty": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Items property",
-                    "description": "Property that holds the array to update.",
-                    "type": "string"
+                    "description": "Property that holds the array to update."
                 },
                 "resultProperty": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Result Property",
-                    "description": "Property to store the result of this action.",
-                    "type": "string"
+                    "description": "Property to store the result of this action."
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "New value or expression.",
                     "examples": [
                         "'milk'",
                         "dialog.favColor",
                         "dialog.favColor == 'red'"
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -2858,41 +3278,60 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "eventName": {
+                    "$role": "expression",
+                    "type": "string",
                     "title": "Event name",
                     "description": "Name of the event to emit.",
-                    "anyOf": [
-                        {
-                            "enum": [
-                                "beginDialog",
-                                "resumeDialog",
-                                "repromptDialog",
-                                "cancelDialog",
-                                "endDialog",
-                                "activityReceived",
-                                "recognizedIntent",
-                                "unknownIntent",
-                                "actionsStarted",
-                                "actionsSaved",
-                                "actionsEnded",
-                                "actionsResumed"
-                            ]
-                        },
-                        {
-                            "type": "string"
-                        }
+                    "enum": [
+                        "beginDialog",
+                        "resumeDialog",
+                        "repromptDialog",
+                        "cancelDialog",
+                        "endDialog",
+                        "activityReceived",
+                        "recognizedIntent",
+                        "unknownIntent",
+                        "actionsStarted",
+                        "actionsSaved",
+                        "actionsEnded",
+                        "actionsResumed"
                     ]
                 },
                 "eventValue": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Event value",
-                    "description": "Value to emit with the event (optional).",
-                    "type": "string"
+                    "description": "Value to emit with the event (optional)."
                 },
                 "bubbleEvent": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Bubble event",
-                    "description": "If true this event is passed on to parent dialogs."
+                    "description": "If true this event is passed on to parent dialogs.",
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -2952,15 +3391,34 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "Result value returned to the parent dialog.",
                     "examples": [
-                        "dialog.userName",
-                        "'tomato'"
-                    ],
-                    "type": "string"
+                        "=dialog.userName",
+                        "='tomato'"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -3018,6 +3476,18 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -3226,14 +3696,28 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "itemsProperty": {
                     "$role": "expression",
+                    "type": [
+                        "string"
+                    ],
                     "title": "Items property",
                     "description": "Property that holds the array.",
                     "examples": [
                         "user.todoList"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -3303,14 +3787,26 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "itemsProperty": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Items property",
                     "description": "Property that holds the array.",
                     "examples": [
                         "user.todoList"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -3322,7 +3818,11 @@
                     }
                 },
                 "pageSize": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Page size",
                     "description": "Number of items in each page.",
                     "default": 10
@@ -3346,6 +3846,153 @@
                     "required": [
                         "itemsProperty",
                         "actions",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.GetActivityMembers": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Get Activity Members",
+            "description": "Get the members who are participating in an activity. (BotFrameworkAdapter only)",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.GetActivityMembers"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "activityId": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "ActivityId",
+                    "description": "expression to an activityId to get the members. If none is defined then the current activity id will be used.",
+                    "examples": [
+                        "$lastActivity"
+                    ]
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.GetConversationMembers": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Get Converation Members",
+            "description": "Get the members who are participating in an conversation. (BotFrameworkAdapter only)",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.GetConversationMembers"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
                         "$kind"
                     ]
                 }
@@ -3386,7 +4033,20 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "actionId": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Action Id",
                     "description": "Action Id to execute next"
@@ -3553,6 +4213,18 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "method": {
                     "type": "string",
                     "title": "HTTP method",
@@ -3570,6 +4242,7 @@
                     ]
                 },
                 "url": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Url",
                     "description": "URL to call (supports data binding).",
@@ -3578,27 +4251,40 @@
                     ]
                 },
                 "body": {
-                    "type": "object",
+                    "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Body",
                     "description": "Body to include in the HTTP call (supports data binding).",
                     "additionalProperties": true
                 },
                 "resultProperty": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Result property",
                     "description": "Property to store the result of this action. The result includes 4 properties from the http response: statusCode, reasonPhrase, content and headers. If the content is json it will be a deserialized object.",
                     "examples": [
                         "dialog.contosodata"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "headers": {
                     "type": "object",
-                    "additionProperties": true,
                     "title": "Headers",
-                    "description": "One or more headers to include in the request (supports data binding)."
+                    "description": "One or more headers to include in the request (supports data binding).",
+                    "additionalProperties": {
+                        "$role": "expression",
+                        "type": "string",
+                        "description": "String must contain an expression."
+                    }
                 },
                 "responseType": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Response type",
                     "description": "Defines the type of HTTP response. Automatically calls the 'Send a response' action if set to 'Activity' or 'Activities'.",
@@ -3716,6 +4402,11 @@
                     "$ref": "#/definitions/Microsoft.DebugBreak"
                 },
                 {
+                    "title": "Microsoft.DeleteActivity",
+                    "description": "Delete an activity that was previously sent.",
+                    "$ref": "#/definitions/Microsoft.DeleteActivity"
+                },
+                {
                     "title": "Microsoft.DeleteProperties",
                     "description": "Delete multiple properties and any value it holds.",
                     "$ref": "#/definitions/Microsoft.DeleteProperties"
@@ -3761,6 +4452,16 @@
                     "$ref": "#/definitions/Microsoft.ForeachPage"
                 },
                 {
+                    "title": "Microsoft.GetActivityMembers",
+                    "description": "Get the members who are participating in an activity. (BotFrameworkAdapter only)",
+                    "$ref": "#/definitions/Microsoft.GetActivityMembers"
+                },
+                {
+                    "title": "Microsoft.GetConversationMembers",
+                    "description": "Get the members who are participating in an conversation. (BotFrameworkAdapter only)",
+                    "$ref": "#/definitions/Microsoft.GetConversationMembers"
+                },
+                {
                     "title": "Microsoft.GotoAction",
                     "description": "Go to an an action by id.",
                     "$ref": "#/definitions/Microsoft.GotoAction"
@@ -3774,11 +4475,6 @@
                     "title": "Microsoft.IfCondition",
                     "description": "Two-way branch the conversation flow based on a condition.",
                     "$ref": "#/definitions/Microsoft.IfCondition"
-                },
-                {
-                    "title": "Microsoft.InitProperty",
-                    "description": "Define and initialize a property to be an array or object.",
-                    "$ref": "#/definitions/Microsoft.InitProperty"
                 },
                 {
                     "title": "Microsoft.LogAction",
@@ -3826,6 +4522,11 @@
                     "$ref": "#/definitions/Microsoft.SetProperty"
                 },
                 {
+                    "title": "Microsoft.SignOutUser",
+                    "description": "Sign a user out that was logged in previously using OAuthInput.",
+                    "$ref": "#/definitions/Microsoft.SignOutUser"
+                },
+                {
                     "title": "Microsoft.SwitchCondition",
                     "description": "Execute different actions based on the value of a property.",
                     "$ref": "#/definitions/Microsoft.SwitchCondition"
@@ -3844,6 +4545,11 @@
                     "title": "Microsoft.TraceActivity",
                     "description": "Send a trace activity to the transcript logger and/ or Bot Framework Emulator.",
                     "$ref": "#/definitions/Microsoft.TraceActivity"
+                },
+                {
+                    "title": "Microsoft.UpdateActivity",
+                    "description": "Respond with an activity.",
+                    "$ref": "#/definitions/Microsoft.UpdateActivity"
                 },
                 {
                     "type": "string",
@@ -4089,12 +4795,27 @@
                 },
                 "condition": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Condition",
                     "description": "Expression to evaluate.",
                     "examples": [
                         "user.age > 3"
+                    ]
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
                     ],
-                    "type": "string"
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -4133,83 +4854,6 @@
                     "required": [
                         "condition",
                         "actions",
-                        "$kind"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.InitProperty": {
-            "$role": "union(Microsoft.IDialog)",
-            "title": "Initialize property",
-            "description": "Define and initialize a property to be an array or object.",
-            "type": "object",
-            "properties": {
-                "$kind": {
-                    "title": "$kind",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.InitProperty"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "Optional id for the dialog"
-                },
-                "property": {
-                    "$role": "expression",
-                    "title": "Property",
-                    "description": "Property (named location to store information).",
-                    "examples": [
-                        "user.age"
-                    ],
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string",
-                    "title": "Type",
-                    "description": "Type of value.",
-                    "enum": [
-                        "object",
-                        "array"
-                    ]
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "property",
-                        "type",
                         "$kind"
                     ]
                 }
@@ -4353,13 +4997,36 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "text": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Text",
                     "description": "Information to log."
                 },
+                "label": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Label",
+                    "description": "Label for the trace activity (used to identify it in a list of trace activities.)"
+                },
                 "traceActivity": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Send Trace Activity",
                     "description": "If true, automatically sends a TraceActivity (view in Bot Framework Emulator).",
                     "default": false
@@ -4769,6 +5436,18 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Initial prompt",
@@ -4806,7 +5485,11 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
                     "default": 3,
@@ -4830,6 +5513,7 @@
                 },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
                     "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
                     "examples": [
@@ -4837,32 +5521,49 @@
                         "user.name",
                         "conversation.issueTitle",
                         "dialog.favColor"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "defaultValue": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Default value",
                     "description": "Expression to examine on each turn of the conversation as possible value to the property.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
                     "examples": [
                         "@userName"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "alwaysPrompt": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -4870,24 +5571,29 @@
                 },
                 "allowInterruptions": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
                     "examples": [
                         "true"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "outputFormat": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Output format",
                     "description": "Expression to format the number output.",
                     "examples": [
-                        "int(this.value)"
-                    ],
-                    "type": "string"
+                        "=this.value",
+                        "=int(this.text)"
+                    ]
                 },
                 "defaultLocale": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Default locale",
                     "description": "Default locale.",
@@ -4998,6 +5704,7 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "connectionName": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Connection name",
                     "description": "The connection name configured in Azure Web App Bot OAuth settings.",
@@ -5005,7 +5712,20 @@
                         "msgraphOAuthConnection"
                     ]
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "text": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Text",
                     "description": "Text shown in the OAuth signin card.",
@@ -5014,6 +5734,7 @@
                     ]
                 },
                 "title": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Title",
                     "description": "Title shown in the OAuth signin card.",
@@ -5022,19 +5743,23 @@
                     ]
                 },
                 "timeout": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Timeout",
                     "description": "Time out setting for the OAuth signin card.",
                     "default": "900000"
                 },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Token property",
                     "description": "Property to store the OAuth token result.",
                     "examples": [
                         "dialog.token"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "invalidPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -5055,7 +5780,11 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
                     "default": 3,
@@ -5065,22 +5794,32 @@
                 },
                 "defaultValue": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Default value",
                     "description": "Expression to examine on each turn of the conversation as possible value to the property.",
                     "examples": [
                         "@token"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "allowInterruptions": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
                     "examples": [
                         "true"
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -7572,27 +8311,27 @@
                 },
                 "knowledgeBaseId": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "KnowledgeBase Id",
                     "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
-                    "default": "settings.qna.knowledgebaseid",
-                    "type": "string"
+                    "default": "=settings.qna.knowledgebaseid"
                 },
                 "endpointKey": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Endpoint Key",
                     "description": "Endpoint key for the QnA Maker KB.",
-                    "default": "settings.qna.endpointkey",
-                    "type": "string"
+                    "default": "=settings.qna.endpointkey"
                 },
                 "hostname": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Hostname",
                     "description": "Hostname for your QnA Maker service.",
-                    "default": "settings.qna.hostname",
+                    "default": "=settings.qna.hostname",
                     "examples": [
                         "https://yourserver.azurewebsites.net/qnamaker"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "noAnswer": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -7602,18 +8341,24 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "threshold": {
-                    "type": "number",
+                    "$role": "expression",
+                    "type": [
+                        "number",
+                        "string"
+                    ],
                     "title": "Threshold",
                     "description": "Threshold score to filter results.",
                     "default": 0.3
                 },
                 "activeLearningCardTitle": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Active learning card title",
                     "description": "Title for active learning suggestions card.",
                     "default": "Did you mean:"
                 },
                 "cardNoMatchText": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Card no match text",
                     "description": "Text for no match option.",
@@ -7627,7 +8372,11 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "strictFilters": {
-                    "type": "array",
+                    "$role": "expression",
+                    "type": [
+                        "array",
+                        "string"
+                    ],
                     "title": "Strict Filters",
                     "description": "Metadata filters to use when calling the QnA Maker KB.",
                     "items": {
@@ -7647,7 +8396,11 @@
                     }
                 },
                 "top": {
-                    "type": "number",
+                    "$role": "expression",
+                    "type": [
+                        "number",
+                        "string"
+                    ],
                     "title": "Top",
                     "description": "The number of answers you want to retrieve.",
                     "default": 3
@@ -7662,6 +8415,11 @@
                     "type": "string",
                     "title": "RankerType",
                     "description": "Type of Ranker.",
+                    "enum": [
+                        "Default",
+                        "QuestionOnly",
+                        "AutoSuggestQuestion"
+                    ],
                     "default": "Default"
                 }
             },
@@ -8170,8 +8928,24 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "options": {
-                    "type": "object",
+                    "$role": "expression",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
                     "title": "Options",
                     "description": "One or more options that are passed to the dialog that is called.",
                     "additionalProperties": {
@@ -8179,11 +8953,15 @@
                         "title": "Options"
                     }
                 },
-                "includeActivity": {
-                    "type": "boolean",
-                    "title": "Include Activity",
-                    "description": "When set to true, dialog that is called can process the current activity.",
-                    "default": false
+                "activityProcessed": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Activity Processed",
+                    "description": "When set to false, the dialog that is called can process the current activity.",
+                    "default": true
                 }
             },
             "additionalProperties": false,
@@ -8242,8 +9020,25 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
+                    "$role": "expression",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
@@ -8252,7 +9047,11 @@
                     "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "options": {
-                    "type": "object",
+                    "$role": "expression",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
                     "title": "Options",
                     "description": "One or more options that are passed to the dialog that is called.",
                     "additionalProperties": {
@@ -8260,11 +9059,15 @@
                         "title": "Options"
                     }
                 },
-                "includeActivity": {
-                    "type": "boolean",
-                    "title": "Include Activity",
-                    "description": "When set to true, dialog that is called can process the current activity.",
-                    "default": false
+                "activityProcessed": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Activity Processed",
+                    "description": "When set to false, the dialog that is called can process the current activity.",
+                    "default": true
                 }
             },
             "additionalProperties": false,
@@ -8322,6 +9125,18 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
                 },
                 "activity": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -8386,6 +9201,18 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "assignments": {
                     "type": "array",
                     "title": "Assignments",
@@ -8395,23 +9222,30 @@
                         "properties": {
                             "property": {
                                 "$role": "expression",
+                                "type": "string",
                                 "title": "Property",
                                 "description": "Property (named location to store information).",
                                 "examples": [
                                     "user.age"
-                                ],
-                                "type": "string"
+                                ]
                             },
                             "value": {
                                 "$role": "expression",
+                                "type": [
+                                    "object",
+                                    "array",
+                                    "number",
+                                    "integer",
+                                    "boolean",
+                                    "string"
+                                ],
                                 "title": "Value",
                                 "description": "New value or expression.",
                                 "examples": [
-                                    "'milk'",
-                                    "dialog.favColor",
-                                    "dialog.favColor == 'red'"
-                                ],
-                                "type": "string"
+                                    "='milk'",
+                                    "=dialog.favColor",
+                                    "=dialog.favColor == 'red'"
+                                ]
                             }
                         }
                     }
@@ -8474,25 +9308,44 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
                     "description": "Property (named location to store information).",
                     "examples": [
                         "user.age"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "New value or expression.",
                     "examples": [
-                        "'milk'",
-                        "dialog.favColor",
-                        "dialog.favColor == 'red'"
-                    ],
-                    "type": "string"
+                        "='milk'",
+                        "=dialog.favColor",
+                        "=dialog.favColor == 'red'"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -8513,6 +9366,90 @@
                     "required": [
                         "property",
                         "value",
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.SignOutUser": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Sign Out User",
+            "description": "Sign a user out that was logged in previously using OAuthInput.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.SignOutUser"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "userId": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "ActivityId",
+                    "description": "expression to an activityId to get the members. If none is defined then the current activity id will be used.",
+                    "examples": [
+                        "=$lastActivity"
+                    ]
+                },
+                "connectionName": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Connection Name",
+                    "description": "Connection name that was used with OAuthInput to log a user in."
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
                         "$kind"
                     ]
                 }
@@ -8613,12 +9550,24 @@
                 },
                 "condition": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Condition",
                     "description": "Property to evaluate.",
                     "examples": [
                         "user.favColor"
+                    ]
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
                     ],
-                    "type": "string"
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
                 },
                 "cases": {
                     "type": "array",
@@ -8633,13 +9582,18 @@
                         "properties": {
                             "value": {
                                 "$role": "expression",
+                                "type": [
+                                    "number",
+                                    "integer",
+                                    "boolean",
+                                    "string"
+                                ],
                                 "title": "Value",
                                 "description": "Value.",
                                 "examples": [
                                     "'red'",
                                     "dialog.colors.red"
-                                ],
-                                "type": "string"
+                                ]
                             },
                             "actions": {
                                 "type": "array",
@@ -9152,6 +10106,12 @@
                         "$ref": "#/definitions/Microsoft.Test.ITestAction"
                     }
                 },
+                "locale": {
+                    "type": "string",
+                    "title": "Locale",
+                    "description": "Set the locale for the user utterances in the script.",
+                    "default": "en-us"
+                },
                 "enableTrace": {
                     "type": "boolean",
                     "title": "Enable Trace Activity",
@@ -9525,6 +10485,18 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "prompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Initial prompt",
@@ -9562,7 +10534,11 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
-                    "type": "integer",
+                    "$role": "expression",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
                     "default": 3,
@@ -9586,6 +10562,7 @@
                 },
                 "property": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Property",
                     "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
                     "examples": [
@@ -9593,32 +10570,49 @@
                         "user.name",
                         "conversation.issueTitle",
                         "dialog.favColor"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "defaultValue": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Default value",
                     "description": "Expression to examine on each turn of the conversation as possible value to the property.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
                     "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
                     "examples": [
                         "@userName"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "alwaysPrompt": {
-                    "type": "boolean",
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -9626,22 +10620,26 @@
                 },
                 "allowInterruptions": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
                     "default": "true",
                     "examples": [
                         "true"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "outputFormat": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Output format",
                     "description": "Expression to format the output.",
                     "examples": [
-                        "toUpper(this.value)"
-                    ],
-                    "type": "string"
+                        "=toUpper(this.value)",
+                        "@{toUpper(this.value)}"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -9758,21 +10756,48 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
                 "name": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Name",
                     "description": "Name of the trace activity"
                 },
+                "label": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Label",
+                    "description": "Label for the trace activity (used to identify it in a list of trace activities.)"
+                },
                 "valueType": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Value type",
                     "description": "Type of value"
                 },
                 "value": {
                     "$role": "expression",
+                    "type": [
+                        "object",
+                        "array",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Value",
-                    "description": "Property that holds the value to send as trace activity.",
-                    "type": "string"
+                    "description": "Property that holds the value to send as trace activity."
                 }
             },
             "additionalProperties": false,
@@ -9825,6 +10850,91 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.UpdateActivity": {
+            "$role": "union(Microsoft.IDialog)",
+            "title": "Send an activity",
+            "description": "Respond with an activity.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.UpdateActivity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
+                "activityId": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Activity Id",
+                    "dDescription": "An string expression with the activity id to update.",
+                    "examples": [
+                        "=dialog.lastActivityId"
+                    ],
+                    "description": "String must contain an expression."
+                },
+                "activity": {
+                    "$kind": "Microsoft.IActivityTemplate",
+                    "title": "Activity",
+                    "description": "Activity to send.",
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 }
             },
             "additionalProperties": false,

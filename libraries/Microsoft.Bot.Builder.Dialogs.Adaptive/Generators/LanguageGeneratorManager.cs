@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         public LanguageGeneratorManager(ResourceExplorer resourceExplorer)
         {
             this.resourceExplorer = resourceExplorer;
-            multilanguageResources = MultiLanguageResourceLoader.Load(resourceExplorer);
+            multilanguageResources = LGResourceLoader.GroupByLocale(resourceExplorer);
 
             // load all LG resources
             foreach (var resource in this.resourceExplorer.GetResources("lg"))
@@ -55,12 +55,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             return (string source, string id) =>
             {
-                var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, resourceMapping.Keys.ToList());
+                var fallbackLocale = LGResourceLoader.FallbackLocale(locale, resourceMapping.Keys.ToList());
                 var resources = resourceMapping[fallbackLocale];
 
                 var resourceName = Path.GetFileName(PathUtils.NormalizePath(id));
 
-                var resource = resources.FirstOrDefault(u => MultiLanguageResourceLoader.ParseLGFileName(u.Id).prefix.ToLower() == MultiLanguageResourceLoader.ParseLGFileName(resourceName).prefix.ToLower());
+                var resource = resources.FirstOrDefault(u => LGResourceLoader.ParseLGFileName(u.Id).prefix.ToLower() == LGResourceLoader.ParseLGFileName(resourceName).prefix.ToLower());
                 if (resource == null)
                 {
                     throw new Exception($"There is no matching LG resource for {resourceName}");

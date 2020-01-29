@@ -196,14 +196,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 return true;
             }
 
-            // HACK to support .First() retrieval on turn.recognized.entities.foo, replace with Expressions once expression ship
-            var iFirst = path.ToLower().LastIndexOf(".first()");
+            // TODO: HACK to support .First() retrieval on turn.recognized.entities.foo, replace with Expressions once expression ship
+            const string first = ".first()";
+            var iFirst = path.ToLower().LastIndexOf(first);
             if (iFirst >= 0)
             {
+                remainingPath = path.Substring(iFirst + first.Length);
                 path = path.Substring(0, iFirst);
-                memoryScope = ResolveMemoryScope(path, out remainingPath);
-                var memory = memoryScope.GetMemory(dialogContext);
-                return TryGetFirstNestedValue(ref value, ref remainingPath, memory);
+                if (TryGetFirstNestedValue(ref value, ref path, this))
+                {
+                    if (string.IsNullOrEmpty(remainingPath))
+                    {
+                        return true;
+                    }
+
+                    return ObjectPath.TryGetPathValue(value, remainingPath, out value);
+                }
+
+                return false;
             }
 
             return ObjectPath.TryGetPathValue(this, path, out value);
@@ -373,13 +383,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public bool TryGetValue(string key, out object value)
         {
-            value = default;
-            if (this.TryGetValue<object>(key, out var result))
-            {
-                value = result;
-            }
-
-            return true;
+            return this.TryGetValue<object>(key, out value);
         }
 
         public void Add(KeyValuePair<string, object> item)
@@ -451,12 +455,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public bool AnyPathChanged(uint counter, IEnumerable<string> paths)
         {
             var found = false;
-            foreach (var path in paths)
+            if (paths != null)
             {
-                if (GetValue<uint>(PathTracker + "." + path) > counter)
+                foreach (var path in paths)
                 {
-                    found = true;
-                    break;
+                    if (GetValue<uint>(PathTracker + "." + path) > counter)
+                    {
+                        found = true;
+                        break;
+                    }
                 }
             }
 
@@ -533,7 +540,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         private bool TryGetFirstNestedValue<T>(ref T value, ref string remainingPath, object memory)
         {
-            if (ObjectPath.TryGetPathValue<JArray>(memory, $"{remainingPath}", out var array))
+            if (ObjectPath.TryGetPathValue<JArray>(memory, remainingPath, out var array))
             {
                 if (array != null && array.Count > 0)
                 {

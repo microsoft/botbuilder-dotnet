@@ -221,8 +221,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 
             Assert.AreEqual(3, results.Count, "Should be 2 entities found");
             Assert.AreEqual(2, results.Where(entity => entity.Type == "color").Count(), "Should have 2 color results");
-            Assert.AreEqual(results[1].Properties["Text"], "red", "should be red");
-            Assert.AreEqual(results[2].Properties["Text"], "Blue", "should be Blue");
+            Assert.AreEqual(results[1].Properties["text"], "red", "should be red");
+            Assert.AreEqual(results[2].Properties["text"], "Blue", "should be Blue");
         }
 
         private DialogContext GetTurnContext(string text, string locale = "en-us")

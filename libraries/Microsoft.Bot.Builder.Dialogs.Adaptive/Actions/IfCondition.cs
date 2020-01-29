@@ -20,8 +20,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.IfCondition";
 
-        private Expression condition;
-
         private ActionScope trueScope;
         private ActionScope falseScope;
 
@@ -42,11 +40,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The memory expression. 
         /// </value>
         [JsonProperty("condition")]
-        public string Condition
-        {
-            get { return condition?.ToString(); }
-            set { condition = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Condition { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets an optional expression which if is true will disable this action.
+        /// </summary>
+        /// <example>
+        /// "user.age > 18".
+        /// </example>
+        /// <value>
+        /// A boolean expression. 
+        /// </value>
+        [JsonProperty("disabled")]
+        public BoolExpression Disabled { get; set; } 
 
         [JsonProperty("actions")]
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
@@ -92,13 +98,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
+            
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
+            {
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
 
             // Ensure planning context
             if (dc is SequenceContext planning)
             {
-                var (value, error) = condition.TryEvaluate(dc.GetState());
-                var conditionResult = error == null && value != null && (bool)value;
-                if (conditionResult == true && TrueScope.Actions.Any())
+                var (conditionResult, error) = this.Condition.TryGetValue(dcState);
+                if (error == null && conditionResult == true && TrueScope.Actions.Any())
                 {
                     // replace dialog with If True Action Scope
                     return await dc.ReplaceDialogAsync(this.TrueScope.Id, cancellationToken: cancellationToken).ConfigureAwait(false);

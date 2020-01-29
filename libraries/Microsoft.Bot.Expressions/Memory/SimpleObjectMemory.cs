@@ -36,9 +36,9 @@ namespace Microsoft.Bot.Expressions.Memory
         public bool TryGetValue(string path, out object value)
         {
             value = null;
-            if (memory == null)
+            if (memory == null || path.Length == 0 || (path[0] != '[' && !char.IsLetter(path[0])))
             {
-                return true;
+                return false;
             }
 
             var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
@@ -47,21 +47,23 @@ namespace Microsoft.Bot.Expressions.Memory
 
             var curScope = memory;
 
-            foreach (string part in parts)
+            foreach (var part in parts)
             {
                 string error = null;
                 if (int.TryParse(part, out var idx) && BuiltInFunctions.TryParseList(curScope, out var li))
                 {
                     (value, error) = BuiltInFunctions.AccessIndex(li, idx);
+                    if (error != null)
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
-                    (value, error) = BuiltInFunctions.AccessProperty(curScope, part);
-                }
-
-                if (error != null)
-                {
-                    return true;
+                    if (!BuiltInFunctions.TryAccessProperty(curScope, part, out value))
+                    {
+                        return false;
+                    }
                 }
 
                 curScope = value;
@@ -74,7 +76,7 @@ namespace Microsoft.Bot.Expressions.Memory
         // for example
         // if you set dialog.a.b = x, but dialog.a don't exist, this will result in an error
         // because we can't and shouldn't smart create structure in the middle
-        // you can implement a customzied Scope that support such behavior
+        // you can implement a customized Scope that support such behavior
         public void SetValue(string path, object value)
         {
             if (memory == null)
@@ -90,7 +92,7 @@ namespace Microsoft.Bot.Expressions.Memory
             var curPath = string.Empty; // valid path so far
             string error = null;
 
-            // find the 2nd last value, ie, the container
+            // find the 2nd last value, the container
             for (var i = 0; i < parts.Length - 1; i++)
             {
                 if (int.TryParse(parts[i], out var index) && BuiltInFunctions.TryParseList(curScope, out var li))
@@ -101,17 +103,18 @@ namespace Microsoft.Bot.Expressions.Memory
                 else
                 {
                     curPath += $".{parts[i]}";
-                    (curScope, error) = BuiltInFunctions.AccessProperty(curScope, parts[i]);
+                    if (BuiltInFunctions.TryAccessProperty(curScope, parts[i], out var newScope))
+                    {
+                        curScope = newScope;
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
 
-                if (error != null)
+                if (error != null || curScope == null)
                 {
-                    return;
-                }
-
-                if (curScope == null)
-                {
-                    curPath = curPath.TrimStart('.');
                     return;
                 }
             }

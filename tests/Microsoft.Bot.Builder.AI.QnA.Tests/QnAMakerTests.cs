@@ -1586,7 +1586,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, conversationState)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             DialogManager dm = new DialogManager(rootDialog);
 
@@ -1643,9 +1643,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var client = new HttpClient(mockHttp);
 
             var noAnswerActivity = new ActivityTemplate("No match found, please as another question.");
-            var host = "'https://dummy-hostname.azurewebsites.net/qnamaker'";
-            var knowlegeBaseId = "'dummy-id'";
-            var endpointKey = "'dummy-key'";
+            var host = "https://dummy-hostname.azurewebsites.net/qnamaker";
+            var knowlegeBaseId = "dummy-id";
+            var endpointKey = "dummy-key";
             var activeLearningCardTitle = "QnAMaker Active Learning";
 
             var outerDialog = new AdaptiveDialog("outer")

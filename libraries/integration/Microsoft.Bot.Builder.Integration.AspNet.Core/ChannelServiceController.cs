@@ -10,8 +10,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// <summary>
     /// A base class for a skill controller.
     /// </summary>
+    // Note: this class is marked as abstract to prevent the ASP runtime from registering it as a controller.
     [ChannelServiceExceptionFilter]
-    public class ChannelServiceController : ControllerBase
+    public abstract class ChannelServiceController : ControllerBase
     {
         private readonly ChannelServiceHandler _handler;
 
@@ -19,7 +20,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// Initializes a new instance of the <see cref="ChannelServiceController"/> class.
         /// </summary>
         /// <param name="handler">A <see cref="ChannelServiceHandler"/> that will handle the incoming request.</param>
-        public ChannelServiceController(ChannelServiceHandler handler)
+        protected ChannelServiceController(ChannelServiceHandler handler)
         {
             _handler = handler;
         }

@@ -1,9 +1,9 @@
 # unittests
-- {personName}
+
 - {age}
-- {ordinal}
+- {ordinalV2}
 - {geographyV2}
-- {keyPhrase}
+
 - {money}
 - {percentage}
 - {temperature}
@@ -14,5 +14,6 @@
 - {Enum1Entity}
 - {Enum2Entity}
 - {email}
-- {Confirmation}
-- {PROPERTYName}
+- {phonenumber}
+- {datetimeV2}
+

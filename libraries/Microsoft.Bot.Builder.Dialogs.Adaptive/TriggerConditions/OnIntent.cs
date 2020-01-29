@@ -86,7 +86,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
         protected override ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
         {
-            var recognizerResult = planning.GetState().GetValue<RecognizerResult>($"{TurnPath.DIALOGEVENT}.value");
+            var dcState = planning.GetState();
+            var recognizerResult = dcState.GetValue<RecognizerResult>($"{TurnPath.DIALOGEVENT}.value");
             if (recognizerResult != null)
             {
                 var (name, score) = recognizerResult.GetTopScoringIntent();
@@ -97,7 +98,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                     // proposed turn state changes
                     Turn = new Dictionary<string, object>()
                     {
-                        { "recognized", recognizerResult }
                     },
                     Actions = new List<ActionState>()
                     {
