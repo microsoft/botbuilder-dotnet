@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 throw new ArgumentException("TurnContext is different than text");
             }
 
-            return await RecognizeAsync(dialogContext, cancellationToken).ConfigureAwait(false);
+            return await wrapper.RecognizeAsync(dialogContext.Context, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

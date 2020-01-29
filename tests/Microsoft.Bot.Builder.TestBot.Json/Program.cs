@@ -8,8 +8,8 @@ using System.IO;
 using System.Reflection.Emit;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -17,20 +17,20 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
         public static void Help()
         {
             Trace.TraceInformation("--root <PATH>: Absolute path to the root directory for declarative resources all *.main.dialog be options.  Default current directory");
             Trace.TraceInformation("--region <REGION>: LUIS endpoint region.  Default westus");
-            Trace.TraceInformation("--environment <ENVIRONMENT>: LUIS environment settins to use.  Default 'devlopment' or user alias.");
+            Trace.TraceInformation("--environment <ENVIRONMENT>: LUIS environment settings to use.  Default 'devlopment' or user alias.");
             Trace.TraceInformation("--help: This help.");
             System.Environment.Exit(-1);
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration((hostingContext, config) =>
             {
                 var luisRegion = Environment.GetEnvironmentVariable("LUIS_AUTHORING_REGION") ?? "westus";
@@ -39,37 +39,42 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 for (var i = 0; i < args.Length; ++i)
                 {
                     var arg = args[i];
-                    switch (arg)
+
+                    // No args has %LAUNCHER_ARGS% as the single argument so ignore it
+                    if (!arg.StartsWith("%"))
                     {
-                        case "--region":
-                            {
-                                if (++i < args.Length)
+                        switch (arg)
+                        {
+                            case "--region":
                                 {
-                                    luisRegion = args[i];
+                                    if (++i < args.Length)
+                                    {
+                                        luisRegion = args[i];
+                                    }
                                 }
-                            }
 
-                            break;
-                        case "--root":
-                            {
-                                if (++i < args.Length)
+                                break;
+                            case "--root":
                                 {
-                                    botRoot = args[i];
+                                    if (++i < args.Length)
+                                    {
+                                        botRoot = args[i];
+                                    }
                                 }
-                            }
 
-                            break;
-                        case "--environment":
-                            {
-                                if (++i < args.Length)
+                                break;
+                            case "--environment":
                                 {
-                                    environment = args[i];
+                                    if (++i < args.Length)
+                                    {
+                                        environment = args[i];
+                                    }
                                 }
-                            }
 
-                            break;
+                                break;
 
-                        default: Help(); break;
+                            default: Help(); break;
+                        }
                     }
                 }
 
@@ -94,7 +99,9 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     config.AddJsonFile(file.FullName, optional: false, reloadOnChange: true);
                 }
             })
-            .UseStartup<Startup>()
-            .Build();
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
     }
 }
