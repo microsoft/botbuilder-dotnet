@@ -1,0 +1,61 @@
+trigger:
+  - master
+
+pr:
+  - master
+
+pool:
+  name: Hosted Windows 2019 with VS2019
+  demands:
+  - msbuild
+  - visualstudio
+
+variables:
+  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
+  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
+  BuildPlatform: 'any cpu'
+  BuildConfiguration: 'debug'
+  Parameters.solution: Microsoft.Bot.Builder.sln
+
+steps:
+- template: ci-build-steps.yml
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish testbot'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.csproj'
+    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot'
+    modifyOutputPath: false
+
+- task: AzureCLI@1
+  displayName: 'Deploy bot to Azure'
+  inputs:
+    azureSubscription: '$(AzureSubscription)'
+    scriptLocation: inlineScript
+    inlineScript: |
+     call az deployment create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId="$(AppId)" appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" facebookVerifyToken="verifyToken" facebookAppSecret="$(FacebookAppSecret)"  facebookAccessToken="$(FacebookAccessToken)"
+     call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot\PublishedBot.zip"
+
+- powershell: |
+   echo '##vso[task.setvariable variable=FACEBOOK_ACCESS_TOKEN]$(FacebookAccessToken)'
+   echo '##vso[task.setvariable variable=FACEBOOK_APP_SECRET]$(FacebookAppSecret)'
+   echo '##vso[task.setvariable variable=BOT_ENDPOINT]https://$(BotName).azurewebsites.net/api/messages'
+   echo '##vso[task.setvariable variable=SENDER_ID]$(SenderId)'
+  displayName: 'Set environment variables'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
+  inputs:
+    command: test
+    projects: '$(System.DefaultWorkingDirectory)\FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj'
+    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter FacebookChatTest'
+
+- task: AzureCLI@1
+  displayName: 'Delete Azure resources'
+  inputs:
+    azureSubscription: '$(AzureSubscription)'
+    scriptLocation: inlineScript
+    inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
+  condition: always()
