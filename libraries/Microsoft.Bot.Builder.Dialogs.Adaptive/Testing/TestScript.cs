@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -40,6 +41,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             NullValueHandling = NullValueHandling.Ignore,
             DefaultValueHandling = DefaultValueHandling.Ignore
         };
+
+        private static IConfiguration defaultConfiguration = new ConfigurationBuilder().Build();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestScript"/> class.
@@ -111,7 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 
             if (adapter == null)
             {
-                TypeFactory.Configuration = configuration ?? new ConfigurationBuilder().Build();
+                TypeFactory.Configuration = configuration ?? defaultConfiguration;
                 var storage = new MemoryStorage();
                 var convoState = new ConversationState(storage);
                 var userState = new UserState(storage);

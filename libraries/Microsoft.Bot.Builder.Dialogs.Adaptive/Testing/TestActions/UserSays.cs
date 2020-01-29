@@ -62,7 +62,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
                 activity.From.Name = this.User;
             }
 
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             await adapter.ProcessActivityAsync(activity, callback, default(CancellationToken)).ConfigureAwait(false);
+            sw.Stop();
+            Trace.TraceInformation($"[Turn Ended => {sw.ElapsedMilliseconds} ms processing UserSays: {this.Text} ]");
         }
     }
 }

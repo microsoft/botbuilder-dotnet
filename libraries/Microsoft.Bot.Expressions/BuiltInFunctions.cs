@@ -2351,6 +2351,57 @@ namespace Microsoft.Bot.Expressions
 
         private static bool IsSameDay(DateTime date1, DateTime date2) => date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day;
 
+        private static bool IsEqual(IReadOnlyList<dynamic> args)
+        {
+            if (args[0] == null)
+            {
+                return args[1] == null;
+            }
+
+            if (TryParseList(args[0], out IList l0) && l0.Count == 0 && (TryParseList(args[1], out IList l1) && l1.Count == 0))
+            {
+                return true;
+            }
+
+            if (GetPropertyCount(args[0]) == 0 && GetPropertyCount(args[1]) == 0)
+            {
+                return true;
+            }
+
+            try
+            {
+                return args[0] == args[1];
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Get the property count of an object.
+        /// </summary>
+        /// <param name="obj">input object.</param>
+        /// <returns>property count.</returns>
+        private static int GetPropertyCount(dynamic obj)
+        {
+            if (obj is IDictionary dictionary)
+            {
+                return dictionary.Count;
+            }
+            else if (obj is JObject jobj)
+            {
+                return jobj.Properties().Count();
+            }
+            else if (!(obj is JValue) && obj.GetType().IsValueType == false && obj.GetType().FullName != "System.String")
+            {
+                // exclude constant type.
+                return obj.GetType().GetProperties().Length;
+            }
+
+            return -1;
+        }
+
         private static Dictionary<string, ExpressionEvaluator> BuildFunctionLookup()
         {
             var functions = new List<ExpressionEvaluator>
@@ -2525,8 +2576,9 @@ namespace Microsoft.Bot.Expressions
                 // Booleans
                 Comparison(ExpressionType.LessThan, args => args[0] < args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
                 Comparison(ExpressionType.LessThanOrEqual, args => args[0] <= args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
-                Comparison(ExpressionType.Equal, args => args[0] == args[1], ValidateBinary),
-                Comparison(ExpressionType.NotEqual, args => args[0] != args[1], ValidateBinary),
+
+                Comparison(ExpressionType.Equal, IsEqual, ValidateBinary),
+                Comparison(ExpressionType.NotEqual, args => !IsEqual(args), ValidateBinary),
                 Comparison(ExpressionType.GreaterThan, args => args[0] > args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
                 Comparison(ExpressionType.GreaterThanOrEqual, args => args[0] >= args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
                 Comparison(ExpressionType.Exists, args => args[0] != null, ValidateUnary, VerifyNotNull),

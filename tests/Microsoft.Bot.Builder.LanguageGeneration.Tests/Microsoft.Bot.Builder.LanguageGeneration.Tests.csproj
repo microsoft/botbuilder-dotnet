@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Examples\EmptyArrayAndObject.lg" />
     <None Remove="Examples\import\import3.lg" />
     <None Remove="Examples\1.lg" />
     <None Remove="Examples\2.lg" />
@@ -38,6 +39,7 @@
     <None Remove="Examples\EvaluateOnce.lg" />
     <None Remove="Examples\LoopScope.lg" />
     <None Remove="Examples\ExpressionExtract.lg" />
+    <None Remove="Examples\ReExecute.lg" />
     <None Remove="ExceptionExamples\NoVariableMatch.lg" />
     <None Remove="ExceptionExamples\ConditionFormatError.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplates.lg" />
@@ -82,6 +84,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\AdaptiveCardActivity.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\EmptyArrayAndObject.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\analyzer.lg">
@@ -141,7 +146,9 @@
     <Content Include="Examples\EvaluateOnce.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-
+    <Content Include="Examples\ReExecute.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Examples\IsTemplate.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

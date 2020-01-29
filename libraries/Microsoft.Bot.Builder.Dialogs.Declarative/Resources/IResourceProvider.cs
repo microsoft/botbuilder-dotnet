@@ -2,8 +2,14 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
+    /// <summary>
+    /// Interface for looking up a resource by id.
+    /// </summary>
     public interface IResourceProvider
     {
+        /// <summary>
+        /// Event which is fired if any resource managed by the resource provider detects changes to the underlining resource.
+        /// </summary>
         event ResourceChangedEventHandler Changed;
 
         /// <summary>

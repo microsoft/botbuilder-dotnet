@@ -377,7 +377,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private List<Diagnostic> CheckExpression(string exp, ParserRuleContext context, string prefix = "")
         {
             var result = new List<Diagnostic>();
-            exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
+            exp = exp.TrimExpression();
 
             try
             {
