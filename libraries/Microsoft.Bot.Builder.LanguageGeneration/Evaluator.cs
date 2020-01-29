@@ -310,7 +310,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             try
             {
-                exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
+                exp = exp.TrimExpression();
                 var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
 
                 if (error != null
@@ -333,7 +333,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private object EvalExpression(string exp)
         {
-            exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
+            exp = exp.TrimExpression();
             var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
             if (error != null)
             {
