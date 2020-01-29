@@ -4,10 +4,9 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -15,7 +14,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
         public static void Help()
@@ -26,56 +25,60 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             System.Environment.Exit(-1);
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration((hostingContext, config) =>
-            {
-                var env = hostingContext.HostingEnvironment;
-                var luisAuthoringRegion = Environment.GetEnvironmentVariable("LUIS_AUTHORING_REGION") ?? "westus";
-                for (var i = 0; i < args.Length; ++i)
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((hostingContext, config) =>
                 {
-                    var arg = args[i];
-                    switch (arg)
+                    var env = hostingContext.HostingEnvironment;
+                    var luisAuthoringRegion = Environment.GetEnvironmentVariable("LUIS_AUTHORING_REGION") ?? "westus";
+                    for (var i = 0; i < args.Length; ++i)
                     {
-                        case "--region":
-                            {
-                                if (++i < args.Length)
+                        var arg = args[i];
+                        switch (arg)
+                        {
+                            case "--region":
                                 {
-                                    luisAuthoringRegion = args[i];
+                                    if (++i < args.Length)
+                                    {
+                                        luisAuthoringRegion = args[i];
+                                    }
                                 }
-                            }
 
-                            break;
-                        case "--root":
-                            {
-                                if (++i < args.Length)
+                                break;
+                            case "--root":
                                 {
-                                    env.ContentRootPath = args[i];
+                                    if (++i < args.Length)
+                                    {
+                                        env.ContentRootPath = args[i];
+                                    }
                                 }
-                            }
 
-                            break;
-                        default: Help(); break;
+                                break;
+                            default:
+                                Help();
+                                break;
+                        }
                     }
-                }
 
-                config.AddUserSecrets<Startup>();
+                    config.AddUserSecrets<Startup>();
 
-                // Add general and then user specific luis.settings files to config
-                var di = new DirectoryInfo(env.ContentRootPath);
-                var generalPattern = $"{env.EnvironmentName}.{luisAuthoringRegion}.json";
-                foreach (var file in di.GetFiles($"luis.settings.{generalPattern}", SearchOption.AllDirectories))
+                    // Add general and then user specific luis.settings files to config
+                    var di = new DirectoryInfo(env.ContentRootPath);
+                    var generalPattern = $"{env.EnvironmentName}.{luisAuthoringRegion}.json";
+                    foreach (var file in di.GetFiles($"luis.settings.{generalPattern}", SearchOption.AllDirectories))
+                    {
+                        config.AddJsonFile(file.FullName, optional: false, reloadOnChange: true);
+                    }
+
+                    var userPattern = $"{Environment.UserName}.{luisAuthoringRegion}.json";
+                    foreach (var file in di.GetFiles($"luis.settings.{userPattern}", SearchOption.AllDirectories))
+                    {
+                        config.AddJsonFile(file.FullName, optional: false, reloadOnChange: true);
+                    }
+                })
+                .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    config.AddJsonFile(file.FullName, optional: false, reloadOnChange: true);
-                }
-
-                var userPattern = $"{Environment.UserName}.{luisAuthoringRegion}.json";
-                foreach (var file in di.GetFiles($"luis.settings.{userPattern}", SearchOption.AllDirectories))
-                {
-                    config.AddJsonFile(file.FullName, optional: false, reloadOnChange: true);
-                }
-            })
-            .UseStartup<Startup>()
-            .Build();
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }
