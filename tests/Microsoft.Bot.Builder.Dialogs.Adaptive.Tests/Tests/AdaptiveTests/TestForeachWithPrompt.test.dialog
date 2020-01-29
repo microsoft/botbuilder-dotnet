@@ -20,9 +20,9 @@
             "value": "=createArray('red', 'blue', 'green')"
           },
           {
-            "$kind": "Microsoft.InitProperty",
+            "$kind": "Microsoft.SetProperty",
             "property": "$userAnswers",
-            "type": "array"
+            "value": "=[]"
           },
           {
             "$kind": "Microsoft.Foreach",

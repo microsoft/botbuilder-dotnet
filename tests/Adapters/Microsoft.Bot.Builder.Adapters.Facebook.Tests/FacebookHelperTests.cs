@@ -42,6 +42,14 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
+        public void GenerateTypingActivityShouldReturnActivityWithTypingOn()
+        {
+            var activity = FacebookHelper.GenerateTypingActivity(string.Empty);
+            Assert.Equal("typing_on", activity.GetChannelData<FacebookMessage>().SenderAction);
+            Assert.Null(activity.GetChannelData<FacebookMessage>().Message);
+        }
+
+        [Fact]
         public void ProcessSingleMessageShouldThrowNullArgumentExceptionWithMessageNull()
         {
             Assert.Throws<ArgumentNullException>(() => { FacebookHelper.ProcessSingleMessage(null); });

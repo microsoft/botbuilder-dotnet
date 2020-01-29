@@ -26,6 +26,7 @@ namespace Microsoft.Bot.Builder.Adapters
         private readonly IList<TokenMagicCode> _magicCodes = new List<TokenMagicCode>();
 
         private int _nextId = 0;
+        private Queue<TaskCompletionSource<IActivity>> _queuedRequests = new Queue<TaskCompletionSource<IActivity>>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestAdapter"/> class.
@@ -157,7 +158,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
 
                 activity.ChannelId = Conversation.ChannelId;
-                
+
                 if (activity.From == null || activity.From.Id == "unknown" || activity.From.Role == RoleTypes.Bot)
                 {
                     activity.From = Conversation.User;
@@ -263,18 +264,12 @@ namespace Microsoft.Bot.Builder.Adapters
                 {
                     if (_sendTraceActivity)
                     {
-                        lock (_activeQueueLock)
-                        {
-                            ActiveQueue.Enqueue(activity);
-                        }
+                        Enqueue(activity);
                     }
                 }
                 else
                 {
-                    lock (_activeQueueLock)
-                    {
-                        ActiveQueue.Enqueue(activity);
-                    }
+                    Enqueue(activity);
                 }
 
                 responses[index] = new ResourceResponse(activity.Id);
@@ -390,6 +385,31 @@ namespace Microsoft.Bot.Builder.Adapters
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Get the next reply async.
+        /// </summary>
+        /// <param name="cancellationToken">cancellation Token.</param>
+        /// <returns>activity when it's available or canceled task if it is canceled.</returns>
+        public Task<IActivity> GetNextReplyAsync(CancellationToken cancellationToken = default)
+        {
+            lock (_activeQueueLock)
+            {
+                if (!_queuedRequests.Any())
+                {
+                    var result = GetNextReply();
+                    if (result != null)
+                    {
+                        return Task.FromResult(result);
+                    }
+                }
+
+                var tcs = new TaskCompletionSource<IActivity>();
+                cancellationToken.Register(() => tcs.SetCanceled());
+                this._queuedRequests.Enqueue(tcs);
+                return tcs.Task;
+            }
         }
 
         /// <summary>
@@ -686,6 +706,26 @@ namespace Microsoft.Bot.Builder.Adapters
         public virtual Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, string connectionName, string[] resourceUrls, string userId = null, CancellationToken cancellationToken = default)
         {
             return GetAadTokensAsync(context, null, connectionName, resourceUrls, userId, cancellationToken);
+        }
+
+        private void Enqueue(Activity activity)
+        {
+            lock (_activeQueueLock)
+            {
+                // if there are pending requests, fulfil them with the activity.
+                while (_queuedRequests.Any())
+                {
+                    var tcs = _queuedRequests.Dequeue();
+                    if (tcs.Task.IsCanceled == false)
+                    {
+                        tcs.SetResult(activity);
+                        return;
+                    }
+                }
+
+                // else we enqueue for next requester
+                ActiveQueue.Enqueue(activity);
+            }
         }
 
         private class UserTokenKey

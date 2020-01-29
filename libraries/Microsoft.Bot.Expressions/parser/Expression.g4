@@ -20,6 +20,7 @@ expression
  
 primaryExpression 
     : '(' expression ')'                      #parenthesisExp
+    | CONSTANT                                #constantAtom
     | NUMBER                                  #numericAtom
     | STRING                                  #stringAtom
     | IDENTIFIER                              #idAtom
@@ -39,10 +40,12 @@ NUMBER : DIGIT + ( '.' DIGIT +)? ;
 
 WHITESPACE : (' '|'\t'|'\ufeff'|'\u00a0') -> skip;
 
-IDENTIFIER : (LETTER | '_' | '#' | '@' | '@@' | '$' | '%') (LETTER | DIGIT | '-' | '_')*;
+IDENTIFIER : (LETTER | '_' | '#' | '@' | '@@' | '$' | '%') (LETTER | DIGIT | '-' | '_')* '!'?;
 
 NEWLINE : '\r'? '\n' -> skip;
 
 STRING : ('\'' (~'\'')* '\'') | ('"' (~'"')* '"');
+
+CONSTANT : ('[' WHITESPACE* ']') | ('{' WHITESPACE* '}');
 
 INVALID_TOKEN_DEFAULT_MODE : . ;

@@ -377,7 +377,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             else
             {
-                exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
+                exp = exp.TrimExpression();
 
                 try
                 {

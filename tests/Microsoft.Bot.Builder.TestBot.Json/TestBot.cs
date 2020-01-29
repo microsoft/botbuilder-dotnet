@@ -64,7 +64,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 Prompt = new ActivityTemplate("What declarative sample do you want to run?"),
                 Property = "conversation.dialogChoice",
                 AlwaysPrompt = true,
-                Choices = new ChoiceSet(new List<Choice>())
             };
 
             var handleChoice = new SwitchCondition()
@@ -94,7 +93,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 }
             }
 
-            choiceInput.Choices = new ChoiceSet();
+            choiceInput.Choices = choices;
             choiceInput.Style = ListStyle.Auto;
             rootDialog.Triggers.Add(new OnBeginDialog()
             {

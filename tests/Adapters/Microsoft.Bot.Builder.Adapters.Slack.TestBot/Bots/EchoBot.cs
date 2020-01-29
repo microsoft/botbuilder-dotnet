@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot.Bots
         {
             if (turnContext.Activity.TryGetChannelData(out SlackRequestBody _))
             {
-                if (turnContext.Activity.GetChannelData<SlackRequestBody>().Command == "/test")
+                if (turnContext.Activity.GetChannelData<SlackRequestBody>().Command == "/block")
                 {
                     var interactiveMessage = MessageFactory.Attachment(
                         CreateInteractiveMessage(
