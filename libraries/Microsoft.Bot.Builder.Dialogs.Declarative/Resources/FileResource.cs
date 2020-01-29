@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
     /// <summary>
-    /// File resource.
+    /// Class which represents a file as a resource.
     /// </summary>
     public class FileResource : IResource
     {
@@ -13,19 +13,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private Task<byte[]> contentTask;
         private Task<string> textTask;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileResource"/> class.
+        /// </summary>
+        /// <param name="path">path to file.</param>
         public FileResource(string path)
         {
             this.path = path;
             this.Id = Path.GetFileName(path);
         }
 
+        /// <summary>
+        /// Gets resource Id for the resource.
+        /// </summary>
+        /// <value>
+        /// ResourceId.
+        /// </value>
         public string Id { get; }
 
+        /// <summary>
+        /// Gets the resource path.
+        /// </summary>
+        /// <value>
+        /// The full path to the resource on disk.
+        /// </value>
         public string FullName
         {
             get { return this.path; }
         }
 
+        /// <summary>
+        /// Open a stream to the resource.
+        /// </summary>
+        /// <returns>Stream for accesssing the content of the resource.</returns>
         public async Task<Stream> OpenStreamAsync()
         {
             if (contentTask == null)

@@ -5,7 +5,7 @@
     "description": "Actions to take when there are multiple possible mappings of entities to properties.",
     "allOf": [
         {
-            "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/TriggerConditions/Microsoft.OnCondition.schema#"
+            "$ref": "./Microsoft.OnCondition.schema#"
         },
         {
             "type": "object",

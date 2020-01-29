@@ -1,4 +1,4 @@
-﻿lexer grammar ExpressionLexer;
+lexer grammar ExpressionLexer;
 
 @lexer::members {
   bool ignoreWS = true;      // usually we ignore whitespace, but inside stringInterpolation, whitespace is significant
@@ -59,11 +59,13 @@ NUMBER : DIGIT + ( '.' DIGIT +)? ;
 
 WHITESPACE : (' '|'\t'|'\ufeff'|'\u00a0') {ignoreWS}? -> skip;
 
-IDENTIFIER : (LETTER | '_' | '#' | '@' | '@@' | '$' | '%') (LETTER | DIGIT | '-' | '_')*;
+IDENTIFIER : (LETTER | '_' | '#' | '@' | '@@' | '$' | '%') (LETTER | DIGIT | '-' | '_')* '!'?;
 
 NEWLINE : '\r'? '\n' -> skip;
 
 STRING : ('\'' (~'\'')* '\'') | ('"' (~'"')* '"');
+
+CONSTANT : ('[' WHITESPACE* ']') | ('{' WHITESPACE* '}');
 
 INVALID_TOKEN_DEFAULT_MODE : . ;
 

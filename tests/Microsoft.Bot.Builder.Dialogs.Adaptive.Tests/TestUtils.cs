@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
@@ -19,6 +18,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     [TestClass]
     public class TestUtils
     {
+        public static IConfiguration DefaultConfiguration { get; set; } = new ConfigurationBuilder().AddInMemoryCollection().Build();
+
         public static string RootFolder { get; set; } = GetProjectPath();
 
         public static ResourceExplorer ResourceExplorer { get; set; }
@@ -44,12 +45,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public static async Task RunTestScript(string resourceId = null, [CallerMemberName] string testName = null, IConfiguration configuration = null)
         {
             TestScript script;
-            
+
             // TODO: For now, serialize type loading because config is static and is used by LUIS type loader.
             lock (RootFolder)
             {
-                if (configuration == null || configuration != TypeFactory.Configuration)
+                if (configuration == null)
                 {
+                    configuration = DefaultConfiguration;
+                }
+
+                if (configuration != TypeFactory.Configuration)
+                {
+                    TypeFactory.Configuration = configuration;
                     DeclarativeTypeLoader.Reset();
                     TypeFactory.Configuration = configuration ?? new ConfigurationBuilder().AddInMemoryCollection().Build();
                     DeclarativeTypeLoader.AddComponent(new DialogComponentRegistration());

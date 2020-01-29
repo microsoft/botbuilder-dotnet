@@ -5,7 +5,7 @@
     "description": "Actions to take when a property needs to be cleared.",
     "allOf": [
         {
-            "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/TriggerConditions/Microsoft.OnCondition.schema#"
+            "$ref": "./Microsoft.OnCondition.schema#"
         },
         {
             "type": "object",

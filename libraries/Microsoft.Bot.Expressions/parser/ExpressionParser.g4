@@ -1,4 +1,4 @@
-﻿parser grammar ExpressionParser;
+parser grammar ExpressionParser;
 
 options { tokenVocab=ExpressionLexer; }
 
@@ -19,6 +19,7 @@ expression
  
 primaryExpression 
     : OPEN_BRACKET expression CLOSE_BRACKET                                  #parenthesisExp
+    | CONSTANT                                                               #constantAtom
     | NUMBER                                                                 #numericAtom
     | STRING                                                                 #stringAtom
     | IDENTIFIER                                                             #idAtom

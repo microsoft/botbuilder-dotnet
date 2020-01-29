@@ -2,17 +2,17 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnAssignEntity",
-    "property": "Ordinal",
-    "entity":"ordinal",
+    "property": "Phonenumber",
+    "entity": "phonenumber",
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "@{setPropertyMessage('Ordinal', @ordinal)}"
+            "activity": "@{setPropertyMessage('Phonenumber', @phonenumber)}"
         }, 
         {
             "$kind": "Microsoft.SetProperty",
-            "property": "$Ordinal",
-            "value": "=@ordinal"          
+            "property": "$Phonenumber",
+            "value": "=@phonenumber"          
         }
     ]               
 }

@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             DeclarativeTypeLoader.AddComponent(new QnAMakerComponentRegistration());
             TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
             string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
-            resourceExplorer = ResourceExplorer.LoadProject(projPath);
+            resourceExplorer = new ResourceExplorer().LoadProject(projPath);
         }
 
         [ClassCleanup]

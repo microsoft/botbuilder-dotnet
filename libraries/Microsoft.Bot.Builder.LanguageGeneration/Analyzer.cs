@@ -227,7 +227,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private AnalyzerResult AnalyzeExpression(string exp)
         {
             var result = new AnalyzerResult();
-            exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
+            exp = exp.TrimExpression();
             var parsed = _expressionParser.Parse(exp);
 
             var references = parsed.References();

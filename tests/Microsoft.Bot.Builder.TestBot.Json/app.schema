@@ -201,11 +201,6 @@
             "$ref": "#/definitions/Microsoft.IfCondition"
         },
         {
-            "title": "Microsoft.InitProperty",
-            "description": "Define and initialize a property to be an array or object.",
-            "$ref": "#/definitions/Microsoft.InitProperty"
-        },
-        {
             "title": "Microsoft.IpEntityRecognizer",
             "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
             "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
@@ -1110,7 +1105,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -1212,7 +1207,10 @@
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
                     "$role": "expression",
-                    "type": "string",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
@@ -1594,7 +1592,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -1994,7 +1992,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -2019,7 +2017,7 @@
                     "title": "Output format",
                     "description": "Expression to format the confirm output.",
                     "examples": [
-                        "concat('confirmation:', this.value)"
+                        "=concat('confirmation:', this.value)"
                     ]
                 },
                 "defaultLocale": {
@@ -2581,7 +2579,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -4489,11 +4487,6 @@
                     "$ref": "#/definitions/Microsoft.IfCondition"
                 },
                 {
-                    "title": "Microsoft.InitProperty",
-                    "description": "Define and initialize a property to be an array or object.",
-                    "$ref": "#/definitions/Microsoft.InitProperty"
-                },
-                {
                     "title": "Microsoft.LogAction",
                     "description": "Log a message to the host application. Send a TraceActivity to Bot Framework Emulator (optional).",
                     "$ref": "#/definitions/Microsoft.LogAction"
@@ -4881,96 +4874,6 @@
                     "required": [
                         "condition",
                         "actions",
-                        "$kind"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.InitProperty": {
-            "$role": "union(Microsoft.IDialog)",
-            "title": "Initialize property",
-            "description": "Define and initialize a property to be an array or object.",
-            "type": "object",
-            "properties": {
-                "$kind": {
-                    "title": "$kind",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.InitProperty"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "Optional id for the dialog"
-                },
-                "disabled": {
-                    "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Disabled",
-                    "description": "Optional condition which if true will disable this action.",
-                    "examples": [
-                        "user.age > 3"
-                    ]
-                },
-                "property": {
-                    "$role": "expression",
-                    "type": "string",
-                    "title": "Property",
-                    "description": "Property (named location to store information).",
-                    "examples": [
-                        "user.age"
-                    ]
-                },
-                "type": {
-                    "$role": "expression",
-                    "type": "string",
-                    "title": "Type",
-                    "description": "Type of value.",
-                    "enum": [
-                        "object",
-                        "array"
-                    ]
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "property",
-                        "type",
                         "$kind"
                     ]
                 }
@@ -5680,7 +5583,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -5705,7 +5608,8 @@
                     "title": "Output format",
                     "description": "Expression to format the number output.",
                     "examples": [
-                        "@{int(this.value)}"
+                        "=this.value",
+                        "=int(this.text)"
                     ]
                 },
                 "defaultLocale": {
@@ -9151,7 +9055,10 @@
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
                     "$role": "expression",
-                    "type": "string",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
@@ -10725,7 +10632,7 @@
                         "string"
                     ],
                     "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
+                    "description": "Collect information even if the specified 'property' is not empty.",
                     "default": false,
                     "examples": [
                         false
@@ -10750,6 +10657,7 @@
                     "title": "Output format",
                     "description": "Expression to format the output.",
                     "examples": [
+                        "=toUpper(this.value)",
                         "@{toUpper(this.value)}"
                     ]
                 }
@@ -11153,32 +11061,49 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "inputBindings": {
-                    "type": "object",
-                    "title": "Input Bindings",
-                    "description": "map of named arguments and the property path to bind to them",
-                    "examples": [
-                        {
-                            "name": "user.name",
-                            "problemId": "conversation.problem.id"
-                        }
-                    ],
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "outputBinding": {
+                "id": {
                     "type": "string",
-                    "title": "Output Binding",
-                    "description": "This will be the property which the result will be put into",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
                     "examples": [
-                        "conversation.resolution"
+                        "user.age > 3"
                     ]
                 },
                 "script": {
                     "type": "string",
                     "title": "Script",
-                    "description": "name of the script file"
+                    "description": "name of the script file, or javascript function with function: doAction(memory, args) => result"
+                },
+                "options": {
+                    "$role": "expression",
+                    "type": [
+                        "string",
+                        "object"
+                    ],
+                    "title": "Options",
+                    "description": "One or more options that are passed to the function as args.",
+                    "additionalProperties": {
+                        "type": "string",
+                        "title": "Options"
+                    }
+                },
+                "resultProperty": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Property",
+                    "description": "Property to store any value returned by the javascript function.",
+                    "examples": [
+                        "dialog.userName"
+                    ]
                 }
             },
             "patternProperties": {

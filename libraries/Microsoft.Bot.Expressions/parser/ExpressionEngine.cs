@@ -9,6 +9,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Microsoft.Bot.Expressions.parser;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Expressions
 {
@@ -180,7 +181,7 @@ namespace Microsoft.Bot.Expressions
                     switch (node.Symbol.Type)
                     {
                         case ExpressionParser.TEMPLATE:
-                            var expressionString = node.GetText().TrimStart('@').TrimStart('{').TrimEnd('}');
+                            var expressionString = TrimExpression(node.GetText());
                             children.Add(new ExpressionEngine(_lookup).Parse(expressionString));
                             break;
                         case ExpressionParser.TEXT_CONTENT:
@@ -195,6 +196,22 @@ namespace Microsoft.Bot.Expressions
                 }
 
                 return MakeExpression(ExpressionType.Concat, children.ToArray());
+            }
+
+            public override Expression VisitConstantAtom([NotNull] ExpressionParser.ConstantAtomContext context)
+            {
+                var text = context.GetText();
+                if (text.StartsWith("[") && text.EndsWith("]") && string.IsNullOrWhiteSpace(text.Substring(1, text.Length - 2))) 
+                {
+                    return Expression.ConstantExpression(new JArray());
+                }
+
+                if (text.StartsWith("{") && text.EndsWith("}") && string.IsNullOrWhiteSpace(text.Substring(1, text.Length - 2)))
+                {
+                    return Expression.ConstantExpression(new JObject());
+                }
+
+                throw new Exception($"Unrecognized constant: {text}");
             }
 
             private Expression MakeExpression(string type, params Expression[] children)
@@ -220,6 +237,18 @@ namespace Microsoft.Bot.Expressions
                 }
 
                 return exp.Substring(1);
+            }
+
+            private string TrimExpression(string expression)
+            {
+                var result = expression.Trim().TrimStart('@').Trim();
+
+                if (result.StartsWith("{") && result.EndsWith("}"))
+                {
+                    result = result.Substring(1, result.Length - 2);
+                }
+
+                return result;
             }
         }
     }
