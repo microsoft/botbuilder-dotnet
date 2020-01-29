@@ -39,10 +39,10 @@ steps:
      call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot\PublishedBot.zip"
 
 - powershell: |
-   echo '##vso[task.setvariable variable=FacebookAccessToken]$(FacebookAccessToken)'
-   echo '##vso[task.setvariable variable=FacebookAppSecret]$(FacebookAppSecret)'
-   echo '##vso[task.setvariable variable=BotEndpoint]https://$(BotName).azurewebsites.net/api/messages'
-   echo '##vso[task.setvariable variable=SenderId]$(SenderId)'
+   echo '##vso[task.setvariable variable=FACEBOOK_ACCESS_TOKEN]$(FacebookAccessToken)'
+   echo '##vso[task.setvariable variable=FACEBOOK_APP_SECRET]$(FacebookAppSecret)'
+   echo '##vso[task.setvariable variable=BOT_ENDPOINT]https://$(BotName).azurewebsites.net/api/messages'
+   echo '##vso[task.setvariable variable=SENDER_ID]$(SenderId)'
   displayName: 'Set environment variables'
 
 - task: DotNetCoreCLI@2

@@ -12,6 +12,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 {
     [TestClass]
     [TestCategory("FunctionalTests")]
+    [TestCategory("Adapters")]
     public class FacebookChatTests
     {
         private const string FacebookUrlBase = "https://graph.facebook.com/v5.0";
@@ -121,28 +122,28 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         {
             if (string.IsNullOrWhiteSpace(_appSecret) || string.IsNullOrWhiteSpace(_accessToken) || string.IsNullOrWhiteSpace(_botEndpoint) || string.IsNullOrWhiteSpace(_senderId))
             {
-                _appSecret = Environment.GetEnvironmentVariable("FacebookAppSecret");
+                _appSecret = Environment.GetEnvironmentVariable("FACEBOOK_APP_SECRET");
                 if (string.IsNullOrWhiteSpace(_appSecret))
                 {
-                    throw new Exception("Environment variable 'FacebookAppSecret' not found.");
+                    throw new Exception("Environment variable 'FACEBOOK_APP_SECRET' not found.");
                 }
 
-                _accessToken = Environment.GetEnvironmentVariable("FacebookAccessToken");
+                _accessToken = Environment.GetEnvironmentVariable("FACEBOOK_ACCESS_TOKEN");
                 if (string.IsNullOrWhiteSpace(_accessToken))
                 {
-                    throw new Exception("Environment variable 'FacebookAccessToken' not found.");
+                    throw new Exception("Environment variable 'FACEBOOK_ACCESS_TOKEN' not found.");
                 }
 
-                _botEndpoint = Environment.GetEnvironmentVariable("BotEndpoint");
+                _botEndpoint = Environment.GetEnvironmentVariable("BOT_ENDPOINT");
                 if (string.IsNullOrWhiteSpace(_botEndpoint))
                 {
-                    throw new Exception("Environment variable 'BotEndpoint' not found.");
+                    throw new Exception("Environment variable 'BOT_ENDPOINT' not found.");
                 }
 
-                _senderId = Environment.GetEnvironmentVariable("UserId");
+                _senderId = Environment.GetEnvironmentVariable("SENDER_ID");
                 if (string.IsNullOrWhiteSpace(_senderId))
                 {
-                    throw new Exception("Environment variable 'UserId' not found.");
+                    throw new Exception("Environment variable 'SENDER_ID' not found.");
                 }
             }
         }
