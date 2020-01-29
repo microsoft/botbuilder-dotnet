@@ -102,16 +102,16 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                     throw new Exception("Environment variable 'TwilioNumber' not found.");
                 }
 
-                _twilioAuthToken = Environment.GetEnvironmentVariable("TwilioAuthToken");
+                _twilioAuthToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN");
                 if (string.IsNullOrWhiteSpace(_twilioAuthToken))
                 {
-                    throw new Exception("Environment variable 'TwilioAuthToken' not found.");
+                    throw new Exception("Environment variable 'TWILIO_AUTH_TOKEN' not found.");
                 }
 
-                _twilioAccountSid = Environment.GetEnvironmentVariable("TwilioAccountSid");
+                _twilioAccountSid = Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID");
                 if (string.IsNullOrWhiteSpace(_twilioAccountSid))
                 {
-                    throw new Exception("Environment variable 'TwilioAccountSid' not found.");
+                    throw new Exception("Environment variable 'TWILIO_ACCOUNT_SID' not found.");
                 }
 
                 _senderNumber = Environment.GetEnvironmentVariable("SenderNumber");
