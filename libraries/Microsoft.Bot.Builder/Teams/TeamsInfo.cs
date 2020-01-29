@@ -55,22 +55,22 @@ namespace Microsoft.Bot.Builder.Teams
         {
             if (turnContext == null)
             {
-                throw new ArgumentException("The turnContext cannot be null");
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
             if (turnContext.Activity == null)
             {
-                throw new ArgumentException("The turnContext.Activity cannot be null");
+                throw new ArgumentNullException(nameof(turnContext.Activity));
             }
 
             if (string.IsNullOrEmpty(teamsChannelId))
             {
-                throw new ArgumentException("teamsChannelId cannot be null or empty");
+                throw new ArgumentNullException(nameof(teamsChannelId));
             }
 
             if (credentials == null)
             {
-                throw new ArgumentException("MicrosoftAppCredentails cannot be null");
+                throw new ArgumentNullException(nameof(credentials));
             }
 
             ConversationReference conversationReference = null;
