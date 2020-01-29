@@ -15,7 +15,6 @@ pool:
 variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'Release'
-  DummyVar: 'dfgdfg'
 
 steps:
 - task: UseDotNet@2
