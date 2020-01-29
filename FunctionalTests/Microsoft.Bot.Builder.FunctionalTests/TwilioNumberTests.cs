@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         {
             if (string.IsNullOrWhiteSpace(_twilioNumber) || string.IsNullOrWhiteSpace(_twilioAuthToken) || string.IsNullOrWhiteSpace(_twilioAccountSid) || string.IsNullOrWhiteSpace(_botEndpoint) || string.IsNullOrWhiteSpace(_senderNumber))
             {
-                _twilioNumber = Environment.GetEnvironmentVariable("TwilioNumber");
+                _twilioNumber = Environment.GetEnvironmentVariable("TWILIO_NUMBER");
                 if (string.IsNullOrWhiteSpace(_twilioNumber))
                 {
                     throw new Exception("Environment variable 'TwilioNumber' not found.");
@@ -114,10 +114,10 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                     throw new Exception("Environment variable 'TWILIO_ACCOUNT_SID' not found.");
                 }
 
-                _senderNumber = Environment.GetEnvironmentVariable("SenderNumber");
+                _senderNumber = Environment.GetEnvironmentVariable("SENDER_NUMBER");
                 if (string.IsNullOrWhiteSpace(_senderNumber))
                 {
-                    throw new Exception("Environment variable 'SenderNumber' not found.");
+                    throw new Exception("Environment variable 'SENDER_NUMBER' not found.");
                 }
 
                 _botEndpoint = Environment.GetEnvironmentVariable("TwilioValidationUrl");
