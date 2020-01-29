@@ -15,7 +15,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(); //.SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
+            services.AddControllers().AddNewtonsoftJson();
 
             // Create the Bot Framework Slack Adapter.
             services.AddSingleton<IBotFrameworkHttpAdapter, SlackAdapter>();
@@ -36,11 +38,14 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot
                 app.UseHsts();
             }
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-
-            // app.UseHttpsRedirection();
-            app.UseMvc();
+            app.UseDefaultFiles()
+                .UseStaticFiles()
+                .UseRouting()
+                .UseAuthorization()
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
         }
     }
 }

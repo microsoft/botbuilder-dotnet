@@ -12,7 +12,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(); //.SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
+            services.AddControllers().AddNewtonsoftJson();
 
             // Create the Bot Framework Facebook Adapter.
             services.AddSingleton<IBotFrameworkHttpAdapter, FacebookAdapter>();
@@ -33,11 +35,14 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot
                 app.UseHsts();
             }
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-
-            // app.UseHttpsRedirection();
-            app.UseMvc();
+            app.UseDefaultFiles()
+                .UseStaticFiles()
+                .UseRouting()
+                .UseAuthorization()
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
         }
     }
 }
