@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <IsPackable>false</IsPackable>
-    <AssemblyName>Microsoft.Bot.Builder.TestBot.Tests</AssemblyName>
+    <AssemblyName>Microsoft.Bot.Builder.TestBot.NetCore21.Tests</AssemblyName>
     <RootNamespace>Microsoft.BotBuilderSamples.Tests</RootNamespace>
   </PropertyGroup>
 
@@ -36,7 +36,6 @@
     <None Update="Properties\launchSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
     <None Update="xunit.runner.json">
