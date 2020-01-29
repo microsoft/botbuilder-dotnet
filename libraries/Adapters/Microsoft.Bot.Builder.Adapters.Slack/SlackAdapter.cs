@@ -261,7 +261,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             using (var sr = new StreamReader(request.Body))
             {
-                body = sr.ReadToEnd();
+                body = await sr.ReadToEndAsync().ConfigureAwait(false);
             }
 
             var slackBody = SlackHelper.DeserializeBody(body);

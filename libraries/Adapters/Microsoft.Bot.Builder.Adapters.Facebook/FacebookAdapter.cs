@@ -217,7 +217,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             using (var sr = new StreamReader(httpRequest.Body))
             {
-                stringifiedBody = sr.ReadToEnd();
+                stringifiedBody = await sr.ReadToEndAsync().ConfigureAwait(false);
             }
 
             if (!_facebookClient.VerifySignature(httpRequest, stringifiedBody))
