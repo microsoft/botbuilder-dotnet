@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 throw new ArgumentException($"\"{applicationId}\" is not a valid LUIS application id.");
             }
 
-            if (!Guid.TryParse(endpointKey, out var subscriptionGuid))
+            if (!Guid.TryParse(endpointKey, out var _))
             {
                 throw new ArgumentException($"\"{endpointKey}\" is not a valid LUIS subscription key.");
             }

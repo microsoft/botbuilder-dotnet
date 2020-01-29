@@ -106,11 +106,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public LuisRecognizerOptionsV3 RecognizerOptions(DialogContext dialogContext)
         {
             var options = PredictionOptions;
+            var dcState = dialogContext.GetState();
             if (DynamicLists != null)
             {
                 options = new AI.LuisV3.LuisPredictionOptions(options);
                 var list = new List<AI.LuisV3.DynamicList>();
-                foreach (var listEntity in DynamicLists.GetValue(dialogContext.GetState()))
+                foreach (var listEntity in DynamicLists.GetValue(dcState))
                 {
                     list.Add(new AI.LuisV3.DynamicList(listEntity.Entity, listEntity.List));
                 }
@@ -118,8 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 options.DynamicLists = list;
             }
 
-            var state = dialogContext.GetState();
-            var application = new LuisApplication(ApplicationId.GetValue(state), EndpointKey.GetValue(state), Endpoint.GetValue(state));
+            var application = new LuisApplication(ApplicationId.GetValue(dcState), EndpointKey.GetValue(dcState), Endpoint.GetValue(dcState));
             return new LuisRecognizerOptionsV3(application)
             {
                 ExternalEntityRecognizer = ExternalEntityRecognizer,

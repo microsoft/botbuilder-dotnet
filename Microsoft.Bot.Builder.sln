@@ -106,6 +106,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Schemas", "Schemas", "{EE56F2B6-4995-4E8F-ACFF-310AF0A4DA0F}"
 	ProjectSection(SolutionItems) = preProject
 		schemas\baseComponent.schema = schemas\baseComponent.schema
+		schemas\component.schema = schemas\component.schema
 		schemas\readme.md = schemas\readme.md
 		schemas\sdk.schema = schemas\sdk.schema
 		schemas\update.cmd = schemas\update.cmd
