@@ -15,7 +15,7 @@
         },
         "disabled": {
             "$role": "expression",
-            "type": [ "boolean", "string" ],
+            "type": "boolean",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -44,13 +44,20 @@
         },
         "eventValue": {
             "$role": "expression",
-            "type": [ "object", "array", "number", "integer", "boolean", "string" ],
+            "type": [
+                "object",
+                "array",
+                "number",
+                "integer",
+                "boolean",
+                "string"
+            ],
             "title": "Event value",
             "description": "Value to emit with the event (optional)."
         },
         "bubbleEvent": {
             "$role": "expression",
-            "type": [ "boolean", "string" ],
+            "type": "boolean",
             "title": "Bubble event",
             "description": "If true this event is passed on to parent dialogs.",
             "default": false

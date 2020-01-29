@@ -31,12 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="System">
-      <HintPath>System</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="TestData\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

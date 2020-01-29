@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": "https://json-schema.org/draft-07/schema#",
     "$id": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
     "title": "JSON Schema definition for dialog schemas.",
     "definitions": {
@@ -45,9 +45,9 @@
         },
         "role": {
             "title": "$role",
-            "description": "Defines the role played in the dialog schema [lg|expression|union()].",
+            "description": "Defines the role played in the dialog schema [expression|union|union(Kind)].",
             "type": "string",
-            "pattern": "^((lg)|(expression)|(memoryPath)|(union)|(union\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
+            "pattern": "^((expression)|(union)|(union\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
         },
         "id": {
             "title": "$id",
@@ -71,19 +71,6 @@
             "title": "$designer",
             "type": "object",
             "description": "Extra information for the Bot Framework Designer."
-        },
-        "expression": {
-            "type": "string",
-            "description": "String must contain an expression."
-        },
-        "lg": {
-            "type": "string",
-            "description": "String is used for language generation."
-        },
-        "memoryPath": {
-            "type": "string",
-            "description": "String must contain a memory path.",
-            "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
         }
     },
     "type": [

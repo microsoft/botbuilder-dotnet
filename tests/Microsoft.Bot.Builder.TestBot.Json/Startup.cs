@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             // Create the Conversation state. (Used by the Dialog system itself.)
             services.AddSingleton<ConversationState>();
 
-            var resourceExplorer = new ResourceExplorer().AddFolder(this.HostingEnvironment.ContentRootPath);
+            var resourceExplorer = new ResourceExplorer().AddFolder(this.Configuration.GetValue<string>("BotRoot"));
             services.AddSingleton(resourceExplorer);
 
             // Create the bot  In this case the ASP Controller is expecting an IBot.

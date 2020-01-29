@@ -24,7 +24,7 @@
         },
         "disabled": {
             "$role": "expression",
-            "type": [ "boolean", "string" ],
+            "type": "boolean",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -40,7 +40,12 @@
                 "properties": {
                     "value": {
                         "$role": "expression",
-                        "type": [ "number", "integer", "boolean", "string" ],
+                        "type": [
+                            "number",
+                            "integer",
+                            "boolean",
+                            "string"
+                        ],
                         "title": "Value",
                         "description": "Value.",
                         "examples": [

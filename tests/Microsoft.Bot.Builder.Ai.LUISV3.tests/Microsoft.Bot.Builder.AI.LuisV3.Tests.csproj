@@ -27,10 +27,4 @@
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.AI.Luis.TestUtils\Microsoft.Bot.Builder.AI.Luis.TestUtils.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System">
-      <HintPath>System</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>

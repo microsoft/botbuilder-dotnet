@@ -7,6 +7,7 @@
     "properties": {
         "condition": {
             "$role": "expression",
+            "type": "boolean",
             "title": "Condition",
             "description": "Condition (expression).",
             "examples": [
@@ -21,7 +22,7 @@
             }
         },
         "priority": {
-            "type": "string",
+            "type": "integer",
             "title": "priority",
             "description": "Priority expression of rule with 0 being the most important",
             "$role": "expression"
