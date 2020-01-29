@@ -11,7 +11,7 @@ variables:
   BuildPlatform: any cpu
   CoverallsToken: define this in Azure
   GitHubCommentApiKey: define this in Azure
-  IsBuildServer: true # This is consumed by projects in Microsoft.Bot.Builder.sln.
+  IsBuildServer: true # This activates package versioning in the projects in Microsoft.Bot.Builder.sln.
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
   Parameters.solution: Microsoft.Bot.Builder.sln
   PreviewPackageVersion: 4.8.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
