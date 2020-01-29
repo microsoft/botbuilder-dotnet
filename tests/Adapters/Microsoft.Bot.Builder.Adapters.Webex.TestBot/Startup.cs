@@ -30,10 +30,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
 
             app.UseDefaultFiles()
                 .UseStaticFiles()
@@ -43,6 +39,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot
                 {
                     endpoints.MapControllers();
                 });
+
+            // app.UseHttpsRedirection();
         }
     }
 }

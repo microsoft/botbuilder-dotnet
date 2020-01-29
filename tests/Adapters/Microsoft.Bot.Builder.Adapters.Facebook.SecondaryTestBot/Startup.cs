@@ -35,10 +35,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
 
             app.UseDefaultFiles()
                 .UseStaticFiles()
@@ -48,6 +44,8 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot
                 {
                     endpoints.MapControllers();
                 });
+
+            // app.UseHttpsRedirection();
         }
     }
 }

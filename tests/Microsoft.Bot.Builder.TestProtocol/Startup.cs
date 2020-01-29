@@ -50,10 +50,6 @@ namespace Microsoft.Bot.Builder.TestProtocol
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
 
             app.UseDefaultFiles()
                 .UseStaticFiles()
@@ -63,6 +59,8 @@ namespace Microsoft.Bot.Builder.TestProtocol
                 {
                     endpoints.MapControllers();
                 });
+
+            // app.UseHttpsRedirection();
         }
     }
 }

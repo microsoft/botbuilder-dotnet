@@ -93,10 +93,6 @@ namespace Microsoft.BotBuilderSamples
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
 
             app.UseDefaultFiles();
             app.UseStaticFiles();

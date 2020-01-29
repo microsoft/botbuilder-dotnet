@@ -63,10 +63,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
 
             app.UseDefaultFiles()
                 .UseStaticFiles()
@@ -76,6 +72,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 {
                     endpoints.MapControllers();
                 });
+
+            // app.UseHttpsRedirection();
         }
     }
 }

@@ -93,10 +93,6 @@ namespace Microsoft.BotBuilderSamples
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
 
             app.UseDefaultFiles()
                 .UseStaticFiles()
@@ -106,6 +102,8 @@ namespace Microsoft.BotBuilderSamples
                 {
                     endpoints.MapControllers();
                 });
+
+            // app.UseHttpsRedirection();
         }
 
         private static void RegisterDialogs(IServiceCollection services)

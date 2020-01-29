@@ -27,10 +27,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
 
             app.UseDefaultFiles()
                 .UseStaticFiles()
@@ -40,6 +36,8 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot
                 {
                     endpoints.MapControllers();
                 });
+
+            // app.UseHttpsRedirection();
         }
     }
 }
