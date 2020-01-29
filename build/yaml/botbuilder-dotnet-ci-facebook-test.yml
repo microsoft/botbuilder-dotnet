@@ -26,7 +26,7 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.csproj'
-    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot --framework netcoreapp2.1'
+    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot'
     modifyOutputPath: false
 
 - task: AzureCLI@1
