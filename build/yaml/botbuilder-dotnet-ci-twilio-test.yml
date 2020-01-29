@@ -39,10 +39,10 @@ steps:
      call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Twilio.TestBot\PublishedBot\PublishedBot.zip"
 
 - powershell: |
-   echo '##vso[task.setvariable variable=SenderNumber]$(SenderNumber)'
-   echo '##vso[task.setvariable variable=TwilioAccountSid]$(TwilioAccountSid)'
-   echo '##vso[task.setvariable variable=TwilioNumber]$(TwilioNumber)'
-   echo '##vso[task.setvariable variable=TwilioAuthToken]$(TwilioAuthToken)'
+   echo '##vso[task.setvariable variable=SENDER_NUMBER]$(SenderNumber)'
+   echo '##vso[task.setvariable variable=TWILIO_ACCOUNT_SID]$(TwilioAccountSid)'
+   echo '##vso[task.setvariable variable=TWILIO_NUMBER]$(TwilioNumber)'
+   echo '##vso[task.setvariable variable=TWILIO_AUTH_TOKEN]$(TwilioAuthToken)'
    echo '##vso[task.setvariable variable=TwilioValidationUrl]https://$(BotName).azurewebsites.net/api/messages'
   displayName: 'Set environment variables'
 
