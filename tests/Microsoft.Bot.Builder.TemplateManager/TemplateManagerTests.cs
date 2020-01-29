@@ -16,6 +16,8 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         private static LanguageTemplateDictionary templates1;
         private static LanguageTemplateDictionary templates2;
 
+        public TestContext TestContext { get; set; }
+
         [AssemblyInitialize]
         public static void SetupDictionaries(TestContext testContext)
         {
@@ -85,7 +87,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         }
 
         [TestMethod]
-        public async Task DictionaryTemplateEngine_SimpleStringBinging()
+        public async Task DictionaryTemplateEngine_SimpleStringBinding()
         {
             var engine = new DictionaryRenderer(templates1);
             var result = await engine.RenderTemplate(null, "en", "stringTemplate", new { name = "joe" });
@@ -107,7 +109,8 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         [TestMethod]
         public async Task TemplateManager_defaultlookup()
         {
-            TestAdapter adapter = new TestAdapter();
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
@@ -124,9 +127,36 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         }
 
         [TestMethod]
+        public async Task TemplateManager_DataDefined()
+        {
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
+            var templateManager = new TemplateManager()
+            {
+                Renderers =
+                {
+                    new DictionaryRenderer(templates1),
+                    new DictionaryRenderer(templates2)
+                }
+            };
+
+            await new TestFlow(adapter, async (context, cancellationToken) =>
+            {
+                var templateId = context.Activity.AsMessageActivity().Text.Trim();
+                await templateManager.ReplyWith(context, templateId, new { name = "joe" });
+            })
+                .Send("stringTemplate").AssertReply("default: joe")
+                .Send("activityTemplate").AssertReply("(Activity)default: joe")
+                .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task TemplateManager_enLookup()
         {
-            TestAdapter adapter = new TestAdapter();
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
                 .Register(new DictionaryRenderer(templates2));
@@ -145,7 +175,9 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         [TestMethod]
         public async Task TemplateManager_frLookup()
         {
-            TestAdapter adapter = new TestAdapter();
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
                 .Register(new DictionaryRenderer(templates2));
@@ -164,7 +196,9 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         [TestMethod]
         public async Task TemplateManager_override()
         {
-            TestAdapter adapter = new TestAdapter();
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
                 .Register(new DictionaryRenderer(templates2));
@@ -183,7 +217,9 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         [TestMethod]
         public async Task TemplateManager_useTemplateEngine()
         {
-            TestAdapter adapter = new TestAdapter();
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
                 .Register(new DictionaryRenderer(templates2));

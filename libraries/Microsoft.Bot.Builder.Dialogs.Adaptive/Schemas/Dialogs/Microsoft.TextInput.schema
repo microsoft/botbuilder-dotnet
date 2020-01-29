@@ -1,0 +1,26 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
+    "type": "object",
+    "title": "Text input dialog",
+    "description": "Collection information - Ask for a word or sentence.",
+    "allOf": [
+        {
+            "$ref": "./Microsoft.InputDialog.json#"
+        },
+        {
+            "properties": {
+                "outputFormat": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Output format",
+                    "description": "Expression to format the output.",
+                    "examples": [
+                        "=toUpper(this.value)",
+                        "@{toUpper(this.value)}"
+                    ]
+                }
+            }
+        }
+    ]
+}

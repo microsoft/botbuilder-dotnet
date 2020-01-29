@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.TemplateManager
 {
@@ -15,7 +12,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// </summary>
         /// <param name="turnContext">context.</param>
         /// <param name="language">language to render.</param>
-        /// <param name="templateId">tenmplate to render.</param>
+        /// <param name="templateId">template to render.</param>
         /// <param name="data">data object to use to render.</param>
         /// <returns>Task.</returns>
         Task<object> RenderTemplate(ITurnContext turnContext, string language, string templateId, object data);

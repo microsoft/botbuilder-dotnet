@@ -1,4 +1,13 @@
-##  Changes
+### Description
+
+This folder includes the changes in recognized utterances resulting from consuming different versions of Recognizers-Text through BotBuilder-DotNet.
+ 
+This way the user will have the comparison after running the tests between versions and will let them know what to expect when they upgrade a BotBuilder version that contains a Recognizers-Text version upgrade.
+
+## Changes made
+The user will find the Utterance Changes divided by entity type. In every entity type subfolder the changes are organized in .json files.
+
+##  Output
 ### V1.2.6
 **DateTime - Recognize**
 

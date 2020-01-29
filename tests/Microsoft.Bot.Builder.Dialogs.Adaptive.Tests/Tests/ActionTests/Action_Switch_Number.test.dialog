@@ -1,0 +1,71 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.age",
+                        "value": "=22"
+                    },
+                    {
+                        "$kind": "Microsoft.SwitchCondition",
+                        "condition": "user.age",
+                        "default": [
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "Who are you?"
+                            }
+                        ],
+                        "cases": [
+                            {
+                                "value": "21",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "Age is 21"
+                                    }
+                                ]
+                            },
+                            {
+                                "value": "22",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "Age is 22"
+                                    }
+                                ]
+                            },
+                            {
+                                "value": "23",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "Age is 23"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Age is 22"
+        }
+    ]
+}

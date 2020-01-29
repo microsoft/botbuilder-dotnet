@@ -1,0 +1,7 @@
+# AskDimension
+- @{askString('Dimension')}
+
+# DimensionName
+- dimension
+
+[unittests-common.lg](unittests-common.lg)

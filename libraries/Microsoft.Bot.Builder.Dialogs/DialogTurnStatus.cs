@@ -26,5 +26,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// dialogs to the current context are on the dialog stack.
         /// </summary>
         Cancelled,
+
+        /// <summary>
+        /// Current dialog completed successfully, but turn should end.
+        /// </summary>
+        CompleteAndWait,
     }
 }

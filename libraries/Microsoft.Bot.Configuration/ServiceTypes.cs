@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+
 namespace Microsoft.Bot.Configuration
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-
+    [Obsolete("This class is deprecated.  See https://aka.ms/bot-file-basics for more information.", false)]
     public class ServiceTypes
     {
         public const string AppInsights = "appInsights";

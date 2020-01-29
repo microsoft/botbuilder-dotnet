@@ -27,13 +27,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Initializes a new instance of the <see cref="WaterfallDialog"/> class.
         /// </summary>
         /// <param name="dialogId">The dialog ID.</param>
-        /// <param name="steps">Optional steps to be defined by the caller.</param>
-        public WaterfallDialog(string dialogId, IEnumerable<WaterfallStep> steps = null)
+        /// <param name="actions">Optional actions to be defined by the caller.</param>
+        public WaterfallDialog(string dialogId, IEnumerable<WaterfallStep> actions = null)
             : base(dialogId)
         {
-            if (steps != null)
+            if (actions != null)
             {
-                _steps = new List<WaterfallStep>(steps);
+                _steps = new List<WaterfallStep>(actions);
             }
             else
             {
@@ -54,6 +54,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
             if (dc == null)
             {
                 throw new ArgumentNullException(nameof(dc));
@@ -126,9 +131,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             if (reason == DialogReason.CancelCalled)
             {
-                var index = Convert.ToInt32(instance.State[StepIndex]);
+                var state = new Dictionary<string, object>((Dictionary<string, object>)instance.State);
+
+                // Create step context
+                var index = Convert.ToInt32(state[StepIndex]);
                 var stepName = WaterfallStepName(index);
-                var instanceId = instance.State[PersistedInstanceId] as string;
+                var instanceId = state[PersistedInstanceId] as string;
 
                 var properties = new Dictionary<string, string>()
                 {
@@ -140,7 +148,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else if (reason == DialogReason.EndCalled)
             {
-                var instanceId = instance.State[PersistedInstanceId] as string;
+                var state = new Dictionary<string, object>((Dictionary<string, object>)instance.State);
+                var instanceId = state[PersistedInstanceId] as string;
                 var properties = new Dictionary<string, string>()
                 {
                     { "DialogId", Id },
@@ -166,7 +175,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return await _steps[stepContext.Index](stepContext, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<DialogTurnResult> RunStepAsync(DialogContext dc, int index, DialogReason reason, object result, CancellationToken cancellationToken)
+        protected async Task<DialogTurnResult> RunStepAsync(DialogContext dc, int index, DialogReason reason, object result, CancellationToken cancellationToken)
         {
             if (dc == null)
             {

@@ -15,23 +15,49 @@ namespace Microsoft.Bot.Builder.TemplateManager
     /// </remarks>
     public class TemplateManager
     {
-        private List<ITemplateRenderer> _templateRenderers = new List<ITemplateRenderer>();
-        private List<string> _languageFallback = new List<string>();
-
         public TemplateManager()
         {
+        }
+
+        /// <summary>
+        /// Gets or sets template renderers.
+        /// </summary>
+        /// <value>
+        /// Template renderers.
+        /// </value>
+        public List<ITemplateRenderer> Renderers { get; set; } = new List<ITemplateRenderer>();
+
+        /// <summary>
+        /// Gets or sets language fall-back policy.
+        /// </summary>
+        /// <value>
+        /// Language fall-back policy.
+        /// </value>
+        public List<string> LanguageFallback { get; set; } = new List<string>();
+
+        public static Activity CreateTemplateActivity(string templateId, object data)
+        {
+            return new Activity()
+            {
+                Type = "Template",
+                Value = new TemplateOptions()
+                {
+                    TemplateId = templateId,
+                    Data = data,
+                },
+            };
         }
 
         /// <summary>
         /// Add a template engine for binding templates.
         /// </summary>
         /// <param name="renderer">Data for binding templates.</param>
-        /// <returns>Reurns a template manager.</returns>
+        /// <returns>Returns a template manager.</returns>
         public TemplateManager Register(ITemplateRenderer renderer)
         {
-            if (!_templateRenderers.Contains(renderer))
+            if (!this.Renderers.Contains(renderer))
             {
-                _templateRenderers.Add(renderer);
+                this.Renderers.Add(renderer);
             }
 
             return this;
@@ -43,23 +69,23 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <returns>List of rendered templates.</returns>
         public IList<ITemplateRenderer> List()
         {
-            return _templateRenderers;
+            return this.Renderers;
         }
 
         public void SetLanguagePolicy(IEnumerable<string> languageFallback)
         {
-            _languageFallback = new List<string>(languageFallback);
+            LanguageFallback = new List<string>(languageFallback);
         }
 
         public IEnumerable<string> GetLanguagePolicy()
         {
-            return _languageFallback;
+            return LanguageFallback;
         }
 
         /// <summary>
         /// Send a reply with the template.
         /// </summary>
-        /// <param name="turnContext">The context of the turn.</param>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="templateId">Id of the template.</param>
         /// <param name="data">Data to render the template.</param>
         /// <returns>Task.</returns>
@@ -81,14 +107,14 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <summary>
         /// Render the template.
         /// </summary>
-        /// <param name="turnContext">Context turn.</param>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="language">Template language.</param>
         /// <param name="templateId">The id of the template.</param>
-        /// <param name="data">Data to render the tempplate with.</param>
+        /// <param name="data">Data to render the template with.</param>
         /// <returns>Task.</returns>
         public async Task<Activity> RenderTemplate(ITurnContext turnContext, string language, string templateId, object data = null)
         {
-            var fallbackLocales = new List<string>(_languageFallback);
+            var fallbackLocales = new List<string>(LanguageFallback);
 
             if (!string.IsNullOrEmpty(language))
             {
@@ -100,7 +126,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
             // try each locale until successful
             foreach (var locale in fallbackLocales)
             {
-                foreach (var renderer in _templateRenderers)
+                foreach (var renderer in this.Renderers)
                 {
                     object templateOutput = await renderer.RenderTemplate(turnContext, locale, templateId, data);
                     if (templateOutput != null)

@@ -4,55 +4,56 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Net;
+using System.Security.Claims;
+using System.Security.Principal;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
     /// <summary>
     /// A <see cref="BotAdapter"/> that can connect to Twilio's SMS service.
     /// </summary>
-    public class TwilioAdapter : BotAdapter
+    public class TwilioAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
-        private readonly TwilioAdapterOptions _options;
-
         private readonly TwilioClientWrapper _twilioClient;
+        private readonly ILogger _logger;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TwilioAdapter"/> class using configuration settings.
+        /// </summary>
+        /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
+        /// <remarks>
+        /// The configuration keys are:
+        /// TwilioNumber: The phone number associated with the Twilio account.
+        /// TwilioAccountSid: The string identifier of the account. See https://www.twilio.com/docs/glossary/what-is-a-sid
+        /// TwilioAuthToken: The authentication token for the account.
+        /// TwilioValidationUrl: The validation URL for incoming requests.
+        /// </remarks>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        public TwilioAdapter(IConfiguration configuration, ILogger logger = null)
+            : this(new TwilioClientWrapper(new TwilioAdapterOptions(configuration["TwilioNumber"], configuration["TwilioAccountSid"], configuration["TwilioAuthToken"], new Uri(configuration["TwilioValidationUrl"]))), logger)
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TwilioAdapter"/> class.
         /// </summary>
-        /// <param name="options">The options to use to authenticate the bot with the Twilio service.</param>
         /// <param name="twilioClient">The Twilio client to connect to.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="options"/> is <c>null</c>.</exception>
-        public TwilioAdapter(TwilioAdapterOptions options, TwilioClientWrapper twilioClient)
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        public TwilioAdapter(TwilioClientWrapper twilioClient, ILogger logger = null)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            if (string.IsNullOrWhiteSpace(options.TwilioNumber))
-            {
-                throw new ArgumentException("TwilioNumber is a required part of the configuration.", nameof(options));
-            }
-
-            if (string.IsNullOrWhiteSpace(options.AccountSid))
-            {
-                throw new ArgumentException("AccountSid is a required part of the configuration.", nameof(options));
-            }
-
-            if (string.IsNullOrWhiteSpace(options.AuthToken))
-            {
-                throw new ArgumentException("AuthToken is a required part of the configuration.", nameof(options));
-            }
-
             _twilioClient = twilioClient ?? throw new ArgumentNullException(nameof(twilioClient));
-            _options = options;
-
-            _twilioClient.LogIn(_options.AccountSid, _options.AuthToken);
+            _logger = logger ?? NullLogger.Instance;
         }
 
         /// <summary>
@@ -72,22 +73,19 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             var responses = new List<ResourceResponse>();
             foreach (var activity in activities)
             {
-                if (activity.Type == ActivityTypes.Message)
+                if (activity.Type != ActivityTypes.Message)
                 {
-                    var messageOptions = TwilioHelper.ActivityToTwilio(activity, _options.TwilioNumber);
-
-                    var res = await _twilioClient.SendMessage(messageOptions).ConfigureAwait(false);
-
-                    var response = new ResourceResponse()
-                    {
-                        Id = res,
-                    };
-
-                    responses.Add(response);
+                    _logger.LogTrace($"Unsupported Activity Type: '{activity.Type}'. Only Activities of type 'Message' are supported.");
                 }
                 else
                 {
-                    throw new ArgumentException("Unknown message type of Activity.", nameof(activities));
+                    var messageOptions = TwilioHelper.ActivityToTwilio(activity, _twilioClient.Options.TwilioNumber);
+
+                    var res = await _twilioClient.SendMessage(messageOptions).ConfigureAwait(false);
+
+                    var response = new ResourceResponse() { Id = res, };
+
+                    responses.Add(response);
                 }
             }
 
@@ -105,7 +103,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="httpRequest"/>,
         /// <paramref name="httpResponse"/>, or <paramref name="bot"/> is <c>null</c>.</exception>
-        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
+        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken)
         {
             if (httpRequest == null)
             {
@@ -122,7 +120,18 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 throw new ArgumentNullException(nameof(bot));
             }
 
-            var activity = TwilioHelper.RequestToActivity(httpRequest, _options.ValidationUrl, _options.AuthToken);
+            Dictionary<string, string> bodyDictionary;
+            using (var bodyStream = new StreamReader(httpRequest.Body))
+            {
+                bodyDictionary = TwilioHelper.QueryStringToDictionary(await bodyStream.ReadToEndAsync().ConfigureAwait(false));
+            }
+
+            if (!_twilioClient.ValidateSignature(httpRequest, bodyDictionary))
+            {
+                throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
+            }
+
+            var activity = TwilioHelper.PayloadToActivity(bodyDictionary);
 
             // create a conversation reference
             using (var context = new TurnContext(this, activity))
@@ -130,11 +139,10 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 context.TurnState.Add("httpStatus", HttpStatusCode.OK.ToString("D"));
                 await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
-                httpResponse.StatusCode = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), CultureInfo.InvariantCulture);
-                httpResponse.ContentType = "text/plain";
+                var statusCode = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), CultureInfo.InvariantCulture);
                 var text = context.TurnState.Get<object>("httpBody") != null ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
 
-                await httpResponse.WriteAsync(text, cancellationToken).ConfigureAwait(false);
+                await TwilioHelper.WriteAsync(httpResponse, statusCode, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -151,7 +159,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
         public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
-            // Twilio adapter does not support updateActivity.
             return Task.FromException<ResourceResponse>(new NotSupportedException("Twilio SMS does not support updating activities."));
         }
 
@@ -168,7 +175,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
         public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
-            // Twilio adapter does not support deleteActivity.
             return Task.FromException<ResourceResponse>(new NotSupportedException("Twilio SMS does not support deleting activities."));
         }
 
@@ -203,6 +209,33 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             using (var context = new TurnContext(this, request))
             {
                 await RunPipelineAsync(context, logic, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Sends a proactive message from the bot to a conversation.
+        /// </summary>
+        /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the conversation.</param>
+        /// <param name="reference">A reference to the conversation to continue.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>Call this method to proactively send a message to a conversation.
+        /// Most _channels require a user to initialize a conversation with a bot
+        /// before the bot can send activities to the user.
+        /// <para>This method registers the following services for the turn.<list type="bullet">
+        /// <item><description><see cref="IIdentity"/> (key = "BotIdentity"), a claims claimsIdentity for the bot.
+        /// </description></item>
+        /// </list></para>
+        /// </remarks>
+        /// <seealso cref="BotAdapter.RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
+        public override async Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            using (var context = new TurnContext(this, reference.GetContinuationActivity()))
+            {
+                context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
+                context.TurnState.Add<BotCallbackHandler>(callback);
+                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
         }
     }

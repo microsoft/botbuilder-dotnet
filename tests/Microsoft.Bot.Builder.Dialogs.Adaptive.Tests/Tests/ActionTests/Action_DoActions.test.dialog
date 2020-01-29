@@ -1,0 +1,101 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "JokeIntent",
+                    "pattern": "joke"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "JokeIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Why did the chicken cross the road?"
+                    },
+                    {
+                        "$kind": "Microsoft.EndTurn",
+                        "id": "EndTurn"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "To get to the other side"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.IfCondition",
+                        "condition": "(user.name == null)",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.TextInput",
+                                "property": "user.name",
+                                "prompt": "Hello, what is your name?"
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Hello @{user.name}, nice to meet you!"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, what is your name?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Carlos"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello Carlos, nice to meet you!"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Do you know a joke?"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Why did the chicken cross the road?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Why?"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "To get to the other side"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello Carlos, nice to meet you!"
+        }
+    ]
+}

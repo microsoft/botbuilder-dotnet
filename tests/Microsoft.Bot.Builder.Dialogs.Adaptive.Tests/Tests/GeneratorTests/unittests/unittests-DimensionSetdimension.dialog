@@ -1,0 +1,23 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$kind": "Microsoft.OnAssignEntity",
+    "property": "Dimension",
+    "entity": "dimension",
+    "actions": [
+        {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "@{setObjectPropertyMessage('Dimension',concat(string(@dimension.number), ' ', @dimension.units))}"
+        }, 
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Dimension.number",
+            "value": "=@dimension.number"          
+        },
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Dimension.units",
+            "value": "=@dimension.units"          
+        }
+    ]               
+}

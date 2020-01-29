@@ -1,0 +1,56 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "enableTrace": true,
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "traceActivity",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.name",
+                        "value": "='frank'"
+                    },
+                    {
+                        "$kind": "Microsoft.TraceActivity",
+                        "name": "test",
+                        "valueType": "user",
+                        "value": "=user"
+                    },
+                    {
+                        "$kind": "Microsoft.TraceActivity",
+                        "name": "test",
+                        "valueType": "memory"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyActivity",
+            "assertions": [
+                "type == 'trace'",
+                "valueType == 'user'",
+                "value.name == 'frank'"
+            ]
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyActivity",
+            "assertions": [
+                "type == 'trace'",
+                "valueType == 'memory'",
+                "value.user.name == 'frank'"
+            ]
+        }
+    ]
+}

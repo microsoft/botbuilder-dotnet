@@ -1,0 +1,33 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
+    "title": "Number input dialog",
+    "description": "Collect information - Ask for a number.",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./Microsoft.InputDialog.json#"
+        },
+        {
+            "properties": {
+                "outputFormat": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Output format",
+                    "description": "Expression to format the number output.",
+                    "examples": [
+                        "=this.value",
+                        "=int(this.text)"
+                    ]
+                },
+                "defaultLocale": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Default locale",
+                    "description": "Default locale.",
+                    "default": "en-us"
+                }
+            }
+        }
+    ]
+}

@@ -4,10 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -57,14 +59,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string PersistedState = "state";
         private const string PersistedExpires = "expires";
 
-        // Default prompt timeout of 15 minutes (in ms)
-        private const int DefaultPromptTimeout = 900000;
-
         // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
         private readonly Regex _magicCodeRegex = new Regex(@"(\d{6})");
 
-        private OAuthPromptSettings _settings;
-        private PromptValidator<TokenResponse> _validator;
+        private readonly OAuthPromptSettings _settings;
+        private readonly PromptValidator<TokenResponse> _validator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuthPrompt"/> class.
@@ -78,6 +77,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         public OAuthPrompt(string dialogId, OAuthPromptSettings settings, PromptValidator<TokenResponse> validator = null)
             : base(dialogId)
         {
+            if (string.IsNullOrWhiteSpace(dialogId))
+            {
+                throw new ArgumentNullException(nameof(dialogId));
+            }
+
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _validator = validator;
         }
@@ -97,6 +101,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (dc == null)
             {
                 throw new ArgumentNullException(nameof(dc));
+            }
+
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
             PromptOptions opt = null;
@@ -123,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Initialize state
-            var timeout = _settings.Timeout ?? DefaultPromptTimeout;
+            var timeout = _settings.Timeout ?? (int)TurnStateConstants.OAuthLoginTimeoutValue.TotalMilliseconds;
             var state = dc.ActiveDialog.State;
             state[PersistedOptions] = opt;
             state[PersistedState] = new Dictionary<string, object>
@@ -134,23 +143,21 @@ namespace Microsoft.Bot.Builder.Dialogs
             state[PersistedExpires] = DateTime.Now.AddMilliseconds(timeout);
 
             // Attempt to get the users token
-            if (!(dc.Context.Adapter is IUserTokenProvider adapter))
+            if (!(dc.Context.Adapter is ICredentialTokenProvider adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
             }
 
-            var output = await adapter.GetUserTokenAsync(dc.Context, _settings.ConnectionName, null, cancellationToken).ConfigureAwait(false);
+            var output = await adapter.GetUserTokenAsync(dc.Context, _settings.OAuthAppCredentials, _settings.ConnectionName, null, cancellationToken).ConfigureAwait(false);
             if (output != null)
             {
                 // Return token
                 return await dc.EndDialogAsync(output, cancellationToken).ConfigureAwait(false);
             }
-            else
-            {
-                // Prompt user to login
-                await SendOAuthCardAsync(dc.Context, opt?.Prompt, cancellationToken).ConfigureAwait(false);
-                return Dialog.EndOfTurn;
-            }
+
+            // Prompt user to login
+            await SendOAuthCardAsync(dc.Context, opt?.Prompt, cancellationToken).ConfigureAwait(false);
+            return EndOfTurn;
         }
 
         /// <summary>
@@ -185,42 +192,38 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // if the token fetch request times out, complete the prompt with no result.
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-            else
+
+            var promptState = state[PersistedState].CastTo<IDictionary<string, object>>();
+            var promptOptions = state[PersistedOptions].CastTo<PromptOptions>();
+
+            // Increment attempt count
+            // Convert.ToInt32 For issue https://github.com/Microsoft/botbuilder-dotnet/issues/1859
+            promptState[Prompt<int>.AttemptCountKey] = Convert.ToInt32(promptState[Prompt<int>.AttemptCountKey]) + 1;
+
+            // Validate the return value
+            var isValid = false;
+            if (_validator != null)
             {
-                var promptState = (IDictionary<string, object>)state[PersistedState];
-                var promptOptions = (PromptOptions)state[PersistedOptions];
-
-                // Increment attempt count
-                // Convert.ToInt32 For issue https://github.com/Microsoft/botbuilder-dotnet/issues/1859
-                promptState[Prompt<int>.AttemptCountKey] = Convert.ToInt32(promptState[Prompt<int>.AttemptCountKey]) + 1;
-
-                // Validate the return value
-                var isValid = false;
-                if (_validator != null)
-                {
-                    var promptContext = new PromptValidatorContext<TokenResponse>(dc.Context, recognized, promptState, promptOptions);
-                    isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
-                }
-                else if (recognized.Succeeded)
-                {
-                    isValid = true;
-                }
-
-                // Return recognized value or re-prompt
-                if (isValid)
-                {
-                    return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
-                }
-                else
-                {
-                    if (!dc.Context.Responded && isMessage && promptOptions != null && promptOptions.RetryPrompt != null)
-                    {
-                        await dc.Context.SendActivityAsync(promptOptions.RetryPrompt, cancellationToken).ConfigureAwait(false);
-                    }
-
-                    return Dialog.EndOfTurn;
-                }
+                var promptContext = new PromptValidatorContext<TokenResponse>(dc.Context, recognized, promptState, promptOptions);
+                isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
             }
+            else if (recognized.Succeeded)
+            {
+                isValid = true;
+            }
+
+            // Return recognized value or re-prompt
+            if (isValid)
+            {
+                return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
+            }
+
+            if (!dc.Context.Responded && isMessage && promptOptions?.RetryPrompt != null)
+            {
+                await dc.Context.SendActivityAsync(promptOptions.RetryPrompt, cancellationToken).ConfigureAwait(false);
+            }
+
+            return EndOfTurn;
         }
 
         /// <summary>
@@ -234,12 +237,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// the result contains the user's token.</remarks>
         public async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (!(turnContext.Adapter is IUserTokenProvider adapter))
+            if (!(turnContext.Adapter is ICredentialTokenProvider adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.GetUserToken(): not supported by the current adapter");
             }
 
-            return await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, null, cancellationToken).ConfigureAwait(false);
+            return await adapter.GetUserTokenAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, null, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -251,20 +254,46 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A task that represents the work queued to execute.</returns>
         public async Task SignOutUserAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (!(turnContext.Adapter is IUserTokenProvider adapter))
+            if (!(turnContext.Adapter is ICredentialTokenProvider adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.SignOutUser(): not supported by the current adapter");
             }
 
             // Sign out user
-            await adapter.SignOutUserAsync(turnContext, _settings.ConnectionName, turnContext.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
+            await adapter.SignOutUserAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, turnContext.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
+        }
+
+        private static bool IsTokenResponseEvent(ITurnContext turnContext)
+        {
+            var activity = turnContext.Activity;
+            return activity.Type == ActivityTypes.Event && activity.Name == "tokens/response";
+        }
+
+        private static bool IsTeamsVerificationInvoke(ITurnContext turnContext)
+        {
+            var activity = turnContext.Activity;
+            return activity.Type == ActivityTypes.Invoke && activity.Name == "signin/verifyState";
+        }
+
+        private static bool ChannelSupportsOAuthCard(string channelId)
+        {
+            switch (channelId)
+            {
+                case Channels.Msteams:
+                case Channels.Cortana:
+                case Channels.Skype:
+                case Channels.Skypeforbusiness:
+                    return false;
+            }
+
+            return true;
         }
 
         private async Task SendOAuthCardAsync(ITurnContext turnContext, IMessageActivity prompt, CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ContextNotNull(turnContext);
 
-            if (!(turnContext.Adapter is IUserTokenProvider adapter))
+            if (!(turnContext.Adapter is ICredentialTokenProvider adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.Prompt(): not supported by the current adapter");
             }
@@ -285,7 +314,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (!prompt.Attachments.Any(a => a.Content is SigninCard))
                 {
-                    var link = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
+                    var link = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
                     prompt.Attachments.Add(new Attachment
                     {
                         ContentType = SigninCard.ContentType,
@@ -307,6 +336,20 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else if (!prompt.Attachments.Any(a => a.Content is OAuthCard))
             {
+                var cardActionType = ActionTypes.Signin;
+                string signInLink = null;
+
+                if (turnContext.Activity.IsFromStreamingConnection())
+                {
+                    signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
+                }
+                else if (turnContext.TurnState.Get<ClaimsIdentity>("BotIdentity") is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
+                {
+                    // Force magic code for Skills (to be addressed in R8)
+                    signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
+                    cardActionType = ActionTypes.OpenUrl;
+                }
+
                 prompt.Attachments.Add(new Attachment
                 {
                     ContentType = OAuthCard.ContentType,
@@ -320,11 +363,18 @@ namespace Microsoft.Bot.Builder.Dialogs
                             {
                                 Title = _settings.Title,
                                 Text = _settings.Text,
-                                Type = ActionTypes.Signin,
-                            },
-                        },
-                    },
+                                Type = cardActionType,
+                                Value = signInLink
+                            }
+                        }
+                    }
                 });
+            }
+
+            // Add the login timeout specified in OAuthPromptSettings to TurnState so it can be referenced if polling is needed
+            if (!turnContext.TurnState.ContainsKey(TurnStateConstants.OAuthLoginTimeoutKey) && _settings.Timeout.HasValue)
+            {
+                turnContext.TurnState.Add<object>(TurnStateConstants.OAuthLoginTimeoutKey, TimeSpan.FromMilliseconds(_settings.Timeout.Value));
             }
 
             // Set input hint
@@ -351,7 +401,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var magicCodeObject = turnContext.Activity.Value as JObject;
                 var magicCode = magicCodeObject.GetValue("state")?.ToString();
 
-                if (!(turnContext.Adapter is IUserTokenProvider adapter))
+                if (!(turnContext.Adapter is ICredentialTokenProvider adapter))
                 {
                     throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
                 }
@@ -365,7 +415,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // progress) retry in that case.
                 try
                 {
-                    var token = await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, magicCode, cancellationToken).ConfigureAwait(false);
+                    var token = await adapter.GetUserTokenAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, magicCode, cancellationToken).ConfigureAwait(false);
 
                     if (token != null)
                     {
@@ -389,12 +439,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var matched = _magicCodeRegex.Match(turnContext.Activity.Text);
                 if (matched.Success)
                 {
-                    if (!(turnContext.Adapter is IUserTokenProvider adapter))
+                    if (!(turnContext.Adapter is ICredentialTokenProvider adapter))
                     {
                         throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
                     }
 
-                    var token = await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, matched.Value, cancellationToken).ConfigureAwait(false);
+                    var token = await adapter.GetUserTokenAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, matched.Value, cancellationToken).ConfigureAwait(false);
                     if (token != null)
                     {
                         result.Succeeded = true;
@@ -404,32 +454,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return result;
-        }
-
-        private bool IsTokenResponseEvent(ITurnContext turnContext)
-        {
-            var activity = turnContext.Activity;
-            return activity.Type == ActivityTypes.Event && activity.Name == "tokens/response";
-        }
-
-        private bool IsTeamsVerificationInvoke(ITurnContext turnContext)
-        {
-            var activity = turnContext.Activity;
-            return activity.Type == ActivityTypes.Invoke && activity.Name == "signin/verifyState";
-        }
-
-        private bool ChannelSupportsOAuthCard(string channelId)
-        {
-            switch (channelId)
-            {
-                case Channels.Msteams:
-                case Channels.Cortana:
-                case Channels.Skype:
-                case Channels.Skypeforbusiness:
-                    return false;
-            }
-
-            return true;
         }
     }
 }

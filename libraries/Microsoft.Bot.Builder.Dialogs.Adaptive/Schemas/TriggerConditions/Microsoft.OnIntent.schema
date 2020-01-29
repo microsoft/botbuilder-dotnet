@@ -1,0 +1,32 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.ITriggerCondition)",
+    "title": "On intent recognition",
+    "description": "Actions to perform when specified intent is recognized.",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./Microsoft.OnCondition.schema#"
+        },
+        {
+            "properties": {
+                "intent": {
+                    "type": "string",
+                    "title": "Intent",
+                    "description": "Name of intent."
+                },
+                "entities": {
+                    "type": "array",
+                    "title": "Entities",
+                    "description": "Required entities.",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    ],
+    "required": [
+        "actions"
+    ]
+}

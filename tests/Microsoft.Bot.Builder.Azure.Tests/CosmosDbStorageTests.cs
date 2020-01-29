@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
@@ -27,7 +28,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         // Endpoint and Authkey for the CosmosDB Emulator running locally
         private const string CosmosServiceEndpoint = "https://localhost:8081";
         private const string CosmosAuthKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
-        private const string CosmosDatabaseName = "test-db";
+        private const string CosmosDatabaseName = "test-CosmosDbStorageTests";
         private const string CosmosCollectionName = "bot-storage";
         private const string DocumentId = "UtteranceLog-001";
 
@@ -37,14 +38,35 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (File.Exists(_emulatorPath))
             {
-                Process p = new Process();
-                p.StartInfo.UseShellExecute = true;
-                p.StartInfo.FileName = _emulatorPath;
-                p.StartInfo.Arguments = "/GetStatus";
-                p.Start();
-                p.WaitForExit();
+                var tries = 5;
 
-                return p.ExitCode == 2;
+                do
+                {
+                    var p = new Process();
+                    p.StartInfo.UseShellExecute = true;
+                    p.StartInfo.FileName = _emulatorPath;
+                    p.StartInfo.Arguments = "/GetStatus";
+                    p.Start();
+                    p.WaitForExit();
+
+                    switch (p.ExitCode)
+                    {
+                        case 1: // starting
+                            Task.Delay(1000).Wait();
+                            tries--;
+                            break;
+
+                        case 2: // started
+                            return true;
+
+                        case 3: // stopped
+                            return false;
+
+                        default:
+                            return false; // unknown status code
+                    }
+                }
+                while (tries > 0);
             }
 
             return false;
@@ -54,6 +76,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private readonly StoreItem itemToTest = new StoreItem { MessageList = new string[] { "hi", "how are u" }, City = "Contoso" };
 
         private IStorage _storage;
+
+        public TestContext TestContext { get; set; }
 
         [TestInitialize]
         public void TestInit()
@@ -347,7 +371,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             {
                 var convoState = new ConversationState(_storage);
 
-                var adapter = new TestAdapter()
+                var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                     .Use(new AutoSaveStateMiddleware(convoState));
 
                 var dialogState = convoState.CreateProperty<DialogState>("dialogState");
@@ -531,8 +555,38 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
                 await storage.WriteAsync(changes, CancellationToken.None);
 
+#if NETCOREAPP2_1
                 // Should throw DocumentClientException: Cross partition query is required but disabled
                 await Assert.ThrowsExceptionAsync<DocumentClientException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));
+#else // required by NETCOREAPP3_0 (have only tested NETCOREAPP2_1 and NETCOREAPP3_0)
+                bool badRequestExceptionThrown = false;
+                try
+                {
+                    await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None);
+                }
+                catch (DocumentClientException ex)
+                {
+                    badRequestExceptionThrown = ex.StatusCode == HttpStatusCode.BadRequest; 
+                }
+
+                Assert.IsTrue(badRequestExceptionThrown, "Expected: DocumentClientException with HttpStatusCode.BadRequest");
+
+                // TODO: netcoreapp3.0 throws Microsoft.Azure.Documents.BadRequestException which derives from DocumentClientException, but it is internal
+                //await Assert.ThrowsExceptionAsync<DocumentClientException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));
+#endif
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone()
+        {
+            if (CheckEmulator())
+            {
+                var storage = new CosmosDbStorage(
+                                   CreateCosmosDbStorageOptions(),
+                                   new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
+                await StatePersistsThroughMultiTurn(storage);
             }
         }
 

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.using System.Security.Claims;
 
+using System;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
@@ -8,10 +10,9 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Logging;
-using Microsoft.Rest.TransientFaultHandling;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Moq.Protected;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Tests
@@ -41,14 +42,53 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task CreateConversastionOverloadProperlySetsTenantId()
+        public async Task TenantIdShouldNotFailIfNoChannelData()
         {
-            var mockClaims = new Mock<ClaimsIdentity>();
+            var activity = await ProcessActivity(Channels.Directline, null, null);
+            Assert.IsNull(activity.Conversation.TenantId);
+        }
+
+        [TestMethod]
+        public async Task CreateConversationOverloadProperlySetsTenantId()
+        {
+            // Arrange
+            const string activityIdName = "ActivityId";
+            const string activityIdValue = "SendActivityId";
+            const string conversationIdName = "Id";
+            const string conversationIdValue = "NewConversationId";
+            const string tenantIdValue = "theTenantId";
+            const string eventActivityName = "CreateConversation";
+
+            Func<Task<HttpResponseMessage>> createResponseMessage = () =>
+            {
+                var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+                response.Content = new StringContent(new JObject { { activityIdName, activityIdValue }, { conversationIdName, conversationIdValue } }.ToString());
+                return Task.FromResult(response);
+            };
+
             var mockCredentialProvider = new Mock<ICredentialProvider>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .Returns((HttpRequestMessage request, CancellationToken cancellationToken) => createResponseMessage());
 
-            var sut = new MockAdapter(mockCredentialProvider.Object);
+            var httpClient = new HttpClient(mockHttpMessageHandler.Object);
 
-            var activity = await ProcessActivity(Channels.Msteams, "theTenantId", null);
+            var adapter = new BotFrameworkAdapter(mockCredentialProvider.Object, customHttpClient: httpClient);
+
+            var activity = new Activity("test")
+            {
+                ChannelId = Channels.Msteams,
+                ServiceUrl = "https://fake.service.url",
+                ChannelData = new JObject
+                {
+                    ["tenant"] = new JObject
+                    { ["id"] = tenantIdValue },
+                },
+                Conversation = new ConversationAccount
+                { TenantId = tenantIdValue },
+            };
+
             var parameters = new ConversationParameters()
             {
                 Activity = new Activity()
@@ -56,17 +96,8 @@ namespace Microsoft.Bot.Builder.Tests
                     ChannelData = activity.ChannelData,
                 },
             };
-            var reference = new ConversationReference()
-            {
-                ActivityId = activity.Id,
-                Bot = activity.Recipient,
-                ChannelId = activity.ChannelId,
-                Conversation = activity.Conversation,
-                ServiceUrl = activity.ServiceUrl,
-                User = activity.From,
-            };
-
-            var credentials = new MicrosoftAppCredentials(string.Empty, string.Empty);
+            var reference = activity.GetConversationReference();
+            var credentials = new MicrosoftAppCredentials(string.Empty, string.Empty, httpClient);
 
             Activity newActivity = null;
 
@@ -76,11 +107,56 @@ namespace Microsoft.Bot.Builder.Tests
                 return Task.CompletedTask;
             }
 
-            await sut.CreateConversationAsync(activity.ChannelId, activity.ServiceUrl, credentials, parameters, UpdateParameters, reference, new CancellationToken());
-            Assert.AreEqual("theTenantId", newActivity.ChannelData.GetType().GetProperty("TenantId").GetValue(newActivity.ChannelData, null));
+            // Act
+            await adapter.CreateConversationAsync(activity.ChannelId, activity.ServiceUrl, credentials, parameters, UpdateParameters, reference, new CancellationToken());
+
+            // Assert - all values set correctly
+            Assert.AreEqual(tenantIdValue, JObject.FromObject(newActivity.ChannelData)["tenant"]["tenantId"]);
+            Assert.AreEqual(activityIdValue, newActivity.Id);
+            Assert.AreEqual(conversationIdValue, newActivity.Conversation.Id);
+            Assert.AreEqual(tenantIdValue, newActivity.Conversation.TenantId);
+            Assert.AreEqual(eventActivityName, newActivity.Name);
         }
 
-        private static async Task<IActivity> ProcessActivity(string channelId, string channelDataTenantId, string conversationTenantId)
+        [TestMethod]
+        public async Task OutgoingActivityIdsAreNotSent()
+        {
+            // Arrange
+            var mockCredentialProvider = new Mock<ICredentialProvider>();
+            var mockConnector = new MemoryConnectorClient();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            var httpClient = new HttpClient(mockHttpMessageHandler.Object);
+            var adapter = new BotFrameworkAdapter(mockCredentialProvider.Object, customHttpClient: httpClient);
+
+            var incomingActivity = new Activity("test")
+            {
+                Id = "testid",
+                ChannelId = Channels.Directline,
+                ServiceUrl = "https://fake.service.url",
+                Conversation = new ConversationAccount
+                {
+                    Id = "cid",
+                }
+            };
+
+            var reply = MessageFactory.Text("test");
+            reply.Id = "TestReplyId";
+            
+            // Act
+            using (var turnContext = new TurnContext(adapter, incomingActivity))
+            {
+                turnContext.TurnState.Add<IConnectorClient>(mockConnector);
+
+                var responseIds = await turnContext.SendActivityAsync(reply, default);
+            }
+
+            var sentActivity = mockConnector.MemoryConversations.SentActivities.FirstOrDefault(f => f.Type == ActivityTypes.Message);
+
+            // Assert - assert the reply's id is not sent
+            Assert.IsNull(sentActivity.Id); 
+        }
+
+        private static async Task<IActivity> ProcessActivity(string channelId, object channelData, string conversationTenantId)
         {
             IActivity activity = null;
             var mockClaims = new Mock<ClaimsIdentity>();
@@ -93,11 +169,7 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     ChannelId = channelId,
                     ServiceUrl = "https://smba.trafficmanager.net/amer/",
-                    ChannelData = new JObject
-                    {
-                        ["tenant"] = new JObject
-                            { ["id"] = channelDataTenantId },
-                    },
+                    ChannelData = channelData,
                     Conversation = new ConversationAccount
                         { TenantId = conversationTenantId },
                 },
@@ -110,32 +182,15 @@ namespace Microsoft.Bot.Builder.Tests
             return activity;
         }
 
-        private class MockAdapter : BotFrameworkAdapter
+        private static async Task<IActivity> ProcessActivity(string channelId, string channelDataTenantId, string conversationTenantId)
         {
-            private const string BotIdentityKey = "BotIdentity";
-
-            public MockAdapter(
-                ICredentialProvider credentialProvider,
-                IChannelProvider channelProvider = null,
-                RetryPolicy connectorClientRetryPolicy = null,
-                HttpClient customHttpClient = null,
-                IMiddleware middleware = null,
-                ILogger logger = null)
-                : base(credentialProvider, channelProvider, connectorClientRetryPolicy, customHttpClient, middleware, logger)
+            var channelData = new JObject
             {
-            }
+                ["tenant"] = new JObject
+                    { ["id"] = channelDataTenantId },
+            };
 
-            public async override Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
-            {
-                var activity = conversationParameters.Activity;
-                activity.ChannelData = new
-                {
-                    conversationParameters.TenantId,
-                };
-                await RunPipelineAsync(new TurnContext(this, conversationParameters.Activity), callback, cancellationToken).ConfigureAwait(false);
-
-                return;
-            }
+            return await ProcessActivity(channelId, channelData, conversationTenantId);
         }
     }
 }

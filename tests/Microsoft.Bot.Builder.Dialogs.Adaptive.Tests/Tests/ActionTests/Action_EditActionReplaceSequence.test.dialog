@@ -1,0 +1,89 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "Replace",
+                    "pattern": "(?i)replace"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.TextInput",
+                        "property": "turn.tempInput",
+                        "prompt": "Say replace to replace these actions"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "You should not see this step if you said replace"
+                    },
+                    {
+                        "$kind": "Microsoft.RepeatDialog"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "Replace",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "I'm going to replace the original actions via EditActions"
+                    },
+                    {
+                        "$kind": "Microsoft.EditActions",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "New actions..."
+                            },
+                            {
+                                "$kind": "Microsoft.TextInput",
+                                "property": "turn.tempInput",
+                                "prompt": "What's your name?"
+                            }
+                        ],
+                        "changeType": "replaceSequence"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Say replace to replace these actions"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "replace"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I'm going to replace the original actions via EditActions"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "New actions..."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "What's your name?"
+        }
+    ]
+}

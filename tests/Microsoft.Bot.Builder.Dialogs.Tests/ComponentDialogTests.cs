@@ -16,14 +16,82 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestCategory("ComponentDialog Tests")]
     public class ComponentDialogTests
     {
+        public TestContext TestContext { get; set; }
+
+        [TestMethod]
+        public async Task CallDialogInParentComponent()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var state = await dialogState.GetAsync(turnContext, () => new DialogState());
+                var dialogs = new DialogSet(dialogState);
+
+                var childComponent = new ComponentDialog("childComponent");
+                var childStep = new WaterfallStep[]
+                    {
+                        async (step, token) =>
+                        {
+                            await step.Context.SendActivityAsync("Child started.");
+                            return await step.BeginDialogAsync("parentDialog", "test");
+                        },
+                        async (step, token) =>
+                        {
+                            await step.Context.SendActivityAsync($"Child finished. Value: {step.Result}");
+                            return await step.EndDialogAsync();
+                        }
+                    };
+                childComponent.AddDialog(new WaterfallDialog("childDialog", childStep));
+
+                var parentComponent = new ComponentDialog("parentComponent");
+                parentComponent.AddDialog(childComponent);
+                var parentStep = new WaterfallStep[]
+                    {
+                        async (step, token) =>
+                        {
+                            await step.Context.SendActivityAsync("Parent called.");
+                            return await step.EndDialogAsync(step.Options);
+                        }
+                    };
+                parentComponent.AddDialog(new WaterfallDialog("parentDialog", parentStep));
+
+                dialogs.Add(parentComponent);
+
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.BeginDialogAsync("parentComponent", null, cancellationToken);
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var value = (int)results.Result;
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{value}'."), cancellationToken);
+                }
+            })
+            .Send("Hi")
+                .AssertReply("Child started.")
+                .AssertReply("Parent called.")
+                .AssertReply("Child finished. Value: test")
+            .StartTestAsync();
+        }
+
         [TestMethod]
         public async Task BasicWaterfallTest()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -128,8 +196,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -167,8 +236,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -228,7 +298,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var options = new Dictionary<string, string> { { "value", "test" } };
 
             var childComponent = new ComponentDialog("childComponent");
-            var childSteps = new WaterfallStep[]
+            var childActions = new WaterfallStep[]
             {
                 async (step, ct) =>
                 {
@@ -244,11 +314,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
             childComponent.AddDialog(new WaterfallDialog(
                 "childDialog",
-                childSteps));
+                childActions));
 
             var parentComponent = new ComponentDialog("parentComponent");
             parentComponent.AddDialog(childComponent);
-            var parentSteps = new WaterfallStep[]
+            var parentActions = new WaterfallStep[]
             {
                 async (step, dc) =>
                 {
@@ -261,7 +331,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
             parentComponent.AddDialog(new WaterfallDialog(
                 "parentDialog",
-                parentSteps));
+                parentActions));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {

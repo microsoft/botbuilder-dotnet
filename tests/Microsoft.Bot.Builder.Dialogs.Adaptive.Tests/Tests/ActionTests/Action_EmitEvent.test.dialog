@@ -1,0 +1,99 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "root",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "activityProcessed": false,
+                        "options": {},
+                        "dialog": {
+                            "$kind": "Microsoft.AdaptiveDialog",
+                            "id": "outer",
+                            "recognizer": {
+                                "$kind": "Microsoft.RegexRecognizer",
+                                "intents": [
+                                    {
+                                        "intent": "EmitIntent",
+                                        "pattern": "emit"
+                                    },
+                                    {
+                                        "intent": "CowboyIntent",
+                                        "pattern": "moo"
+                                    }
+                                ]
+                            },
+                            "triggers": [
+                                {
+                                    "$kind": "Microsoft.OnIntent",
+                                    "intent": "CowboyIntent",
+                                    "actions": [
+                                        {
+                                            "$kind": "Microsoft.SendActivity",
+                                            "activity": "Yippee ki-yay!"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "$kind": "Microsoft.OnIntent",
+                                    "intent": "EmitIntent",
+                                    "actions": [
+                                        {
+                                            "$kind": "Microsoft.EmitEvent",
+                                            "eventName": "CustomEvent",
+                                            "bubbleEvent": true
+                                        }
+                                    ]
+                                }
+                            ],
+                            "defaultResultProperty": "dialog.result"
+                        }
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnCustomEvent",
+                "event": "CustomEvent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "CustomEventFired"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "moo"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Yippee ki-yay!"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "emit"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "CustomEventFired"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "moo"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Yippee ki-yay!"
+        }
+    ]
+}

@@ -1,0 +1,62 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.isVip",
+                        "value": "=true"
+                    },
+                    {
+                        "$kind": "Microsoft.SwitchCondition",
+                        "condition": "user.isVip",
+                        "default": [
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "Who are you?"
+                            }
+                        ],
+                        "cases": [
+                            {
+                                "value": "true",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "User is VIP"
+                                    }
+                                ]
+                            },
+                            {
+                                "value": "false",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "User is NOT VIP"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "User is VIP"
+        }
+    ]
+}

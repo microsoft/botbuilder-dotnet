@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- File name extension must be .runsettings -->
 <RunSettings>
+  <RunConfiguration>
+    <MaxCpuCount>10</MaxCpuCount>
+  </RunConfiguration>
   <DataCollectionRunSettings>
     <DataCollectors>
       <DataCollector friendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0" assemblyQualifiedName="Microsoft.VisualStudio.Coverage.DynamicCoverageDataCollector, Microsoft.VisualStudio.TraceCollector, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -9,20 +12,70 @@
             <ModulePaths>
               <Include>
                 <ModulePath>.*\Microsoft.Bot.Builder.dll$</ModulePath>               
+                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Twilio.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Teams.dll$</ModulePath>               
                 <ModulePath>.*\Microsoft.Bot.Builder.AI.Luis.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.AI.QnA.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.ApplicationInsights.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Azure.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Configuration.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Connector.dll$</ModulePath>                
+                <ModulePath>.*\Microsoft.Bot.Builder.Connector.Teams.dll$</ModulePath>                
                 <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Integration.AspNet.Core.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.TemplateManager.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Testing.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Webex.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Twilio.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Slack.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Facebook.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Expressions.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Adaptive.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Declarative.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.LanguageGeneration.dll$</ModulePath>                
                 <!-- <ModulePath>Microsoft.Bot.Builder.Schema.dll$</ModulePath> -->
               </Include>
             </ModulePaths>
+            <Sources>
+              <Exclude>
+                <Source>.*\\WebexMessageRequest.cs</Source>
+                <Source>.*\\WebexClientWrapper.cs</Source>
+                <Source>.*\\TwilioMessage.cs</Source>
+                <Source>.*\\TwilioAdapterOptions.cs</Source>
+                <Source>.*\\NewSlackMessage.cs</Source>
+                <Source>.*\\SlackResponse.cs</Source>
+                <Source>.*\\ActivityResourceResponse.cs</Source>
+                <Source>.*\\SlackAdapterOptions.cs</Source>
+                <Source>.*\\SlackClientWrapper.cs</Source>
+                <Source>.*\\SlackMessage.cs</Source>
+                <Source>.*\\SlackAction.cs</Source>
+                <Source>.*\\SlackEvent.cs</Source>
+                <Source>.*\\SlackPayload.cs</Source>
+                <Source>.*\\SlackRequestBody.cs</Source>
+                <Source>.*\\Button.cs</Source>
+                <Source>.*\\DefaultAction.cs</Source>
+                <Source>.*\\Element.cs</Source>
+                <Source>.*\\FacebookAttachment.cs</Source>
+                <Source>.*\\FacebookBotUser.cs</Source>
+                <Source>.*\\FacebookEntry.cs</Source>
+                <Source>.*\\FacebookPostback.cs</Source>
+                <Source>.*\\FacebookRecipient.cs</Source>
+                <Source>.*\\FacebookResponseEvent.cs</Source>
+                <Source>.*\\FacebookResponseOk.cs</Source>
+                <Source>.*\\FacebookQuickReply.cs</Source>
+                <Source>.*\\MessagePayload.cs</Source>
+                <Source>.*\\FacebookPassThreadControl.cs</Source>
+                <Source>.*\\FacebookRequestThreadControl.cs</Source>
+                <Source>.*\\FacebookTakeThreadControl.cs</Source>
+                <Source>.*\\FacebookThreadControl.cs</Source>
+                <Source>.*\\HandoverConstants.cs</Source>
+                <Source>.*\\AttachmentPayload.cs</Source>
+                <Source>.*\\CommonRegexParser.cs</Source>
+                <Source>.*\\ExpressionParser.cs</Source>
+                <Source>.*\\LGFileParser.cs</Source>
+              </Exclude>
+            </Sources>
           </CodeCoverage>
         </Configuration>
       </DataCollector>

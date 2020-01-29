@@ -2,10 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -51,7 +49,22 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="messageActivity">Message activity of the turn context.</param>
         /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
+        [Obsolete]
         public async Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext, IMessageActivity messageActivity, QnAMakerOptions options)
+        {
+            var result = await this.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
+
+            return result.Answers;
+        }
+
+        /// <summary>
+        /// Generates an answer from the knowledge base.
+        /// </summary>
+        /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
+        /// <param name="messageActivity">Message activity of the turn context.</param>
+        /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
+        /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
+        public async Task<QueryResults> GetAnswersRawAsync(ITurnContext turnContext, IMessageActivity messageActivity, QnAMakerOptions options)
         {
             if (turnContext == null)
             {
@@ -73,12 +86,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             var result = await QueryQnaServiceAsync((Activity)messageActivity, hydratedOptions).ConfigureAwait(false);
 
-            await EmitTraceInfoAsync(turnContext, (Activity)messageActivity, result, hydratedOptions).ConfigureAwait(false);
+            await EmitTraceInfoAsync(turnContext, (Activity)messageActivity, result.Answers, hydratedOptions).ConfigureAwait(false);
 
             return result;
         }
 
-        private static async Task<QueryResult[]> FormatQnaResultAsync(HttpResponseMessage response, QnAMakerOptions options)
+        private static async Task<QueryResults> FormatQnaResultAsync(HttpResponseMessage response, QnAMakerOptions options)
         {
             var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -89,9 +102,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 answer.Score = answer.Score / 100;
             }
 
-            var result = results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray();
+            results.Answers = results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray();
 
-            return result;
+            return results;
         }
 
         private static void ValidateOptions(QnAMakerOptions options)
@@ -130,6 +143,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
             {
                 options.MetadataBoost = new Metadata[] { };
             }
+
+            if (options.RankerType == null)
+            {
+                options.RankerType = RankerTypes.DefaultRankerType;
+            }
         }
 
         /// <summary>
@@ -165,12 +183,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
                 hydratedOptions.Context = queryOptions.Context;
                 hydratedOptions.QnAId = queryOptions.QnAId;
+                hydratedOptions.IsTest = queryOptions.IsTest;
+
+                hydratedOptions.RankerType = queryOptions.RankerType != null ? queryOptions.RankerType : RankerTypes.DefaultRankerType;
             }
 
             return hydratedOptions;
         }
 
-        private async Task<QueryResult[]> QueryQnaServiceAsync(Activity messageActivity, QnAMakerOptions options)
+        private async Task<QueryResults> QueryQnaServiceAsync(Activity messageActivity, QnAMakerOptions options)
         {
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
             var jsonRequest = JsonConvert.SerializeObject(
@@ -183,6 +204,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     scoreThreshold = options.ScoreThreshold,
                     context = options.Context,
                     qnaId = options.QnAId,
+                    isTest = options.IsTest,
+                    rankerType = options.RankerType
                 }, Formatting.None);
 
             var httpRequestHelper = new HttpRequestUtils(httpClient);
@@ -206,6 +229,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 MetadataBoost = options.MetadataBoost,
                 Context = options.Context,
                 QnAId = options.QnAId,
+                IsTest = options.IsTest,
+                RankerType = options.RankerType
             };
             var traceActivity = Activity.CreateTraceActivity(QnAMaker.QnAMakerName, QnAMaker.QnAMakerTraceType, traceInfo, QnAMaker.QnAMakerTraceLabel);
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);

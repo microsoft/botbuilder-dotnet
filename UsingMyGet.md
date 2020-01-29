@@ -23,5 +23,6 @@ This package source will now be available when managing packages for a solution 
 # Troubleshooting
 If you are experiencing 404 errors when trying to install the MyGet packages check that you set the URL correctly in step 2. The correct URL is:
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`https://botbuilder.myget.org/F/botbuilder-v4-dotnet-daily/api/v3/index.json`
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`https://botbuilder.myget.org/F/botbuilder-v4-dotnet-daily/api/v3/index.json`.
+
 

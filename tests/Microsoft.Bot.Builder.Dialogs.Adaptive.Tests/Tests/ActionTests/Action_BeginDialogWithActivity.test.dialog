@@ -1,0 +1,92 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "root",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "test",
+                    "pattern": "test"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "outer unknown"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "test",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "activityProcessed": false,
+                        "dialog": {
+                            "$kind": "Microsoft.AdaptiveDialog",
+                            "autoEndDialog": false,
+                            "recognizer": {
+                                "$kind": "Microsoft.RegexRecognizer",
+                                "intents": [
+                                    {
+                                        "intent": "test",
+                                        "pattern": "test"
+                                    }
+                                ]
+                            },
+                            "triggers": [
+                                {
+                                    "$kind": "Microsoft.OnIntent",
+                                    "intent": "test",
+                                    "actions": [
+                                        {
+                                            "$kind": "Microsoft.SendActivity",
+                                            "activity": "test intent"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "$kind": "Microsoft.OnUnknownIntent",
+                                    "actions": [
+                                        {
+                                            "$kind": "Microsoft.Test.AssertCondition",
+                                            "condition": "false",
+                                            "description": "Should not fire test intent"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": false
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "moo"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "outer unknown"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "test"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "test intent"
+        }
+    ]
+}

@@ -1,0 +1,48 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "union(Microsoft.IDialog)",
+    "title": "Edit actions.",
+    "description": "Edit the current list of actions.",
+    "type": "object",
+    "required": [
+        "changeType",
+        "actions"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$role": "expression",
+            "type": [ "boolean", "string" ],
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
+        "changeType": {
+            "$role": "expression",
+            "type": "string",
+            "title": "Type of change",
+            "description": "Type of change to apply to the current actions.",
+            "enum": [
+                "insertActions",
+                "insertActionsBeforeTags",
+                "appendActions",
+                "endSequence",
+                "replaceSequence"
+            ]
+        },
+        "actions": {
+            "type": "array",
+            "items": {
+                "$kind": "Microsoft.IDialog"
+            },
+            "title": "Actions",
+            "description": "Actions to apply."
+        }
+    }
+}

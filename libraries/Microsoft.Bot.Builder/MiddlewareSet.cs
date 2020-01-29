@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Contains an ordered set of <see cref="IMiddleware"/>.
     /// </summary>
-    public class MiddlewareSet : IMiddleware
+    public class MiddlewareSet : IMiddleware, IEnumerable<IMiddleware>
     {
         private readonly IList<IMiddleware> _middleware = new List<IMiddleware>();
 
@@ -53,6 +53,16 @@ namespace Microsoft.Bot.Builder
         public async Task ReceiveActivityWithStatusAsync(ITurnContext turnContext, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             await ReceiveActivityInternalAsync(turnContext, callback, 0, cancellationToken).ConfigureAwait(false);
+        }
+
+        public IEnumerator<IMiddleware> GetEnumerator()
+        {
+            return this._middleware.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this._middleware.GetEnumerator();
         }
 
         private Task ReceiveActivityInternalAsync(ITurnContext turnContext, BotCallbackHandler callback, int nextMiddlewareIndex, CancellationToken cancellationToken)

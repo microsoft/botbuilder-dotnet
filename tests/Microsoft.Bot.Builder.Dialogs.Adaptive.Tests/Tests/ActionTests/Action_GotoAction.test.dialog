@@ -1,0 +1,83 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "JokeIntent",
+                    "pattern": "joke"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "I'm a joke bot. To get started say 'tell me a joke'"
+                    },
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "options": {},
+                        "dialog": "AskNameDialog"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "JokeIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "options": {},
+                        "dialog": "TellJokeDialog"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "I'm a joke bot. To get started say 'tell me a joke'"
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserConversationUpdate"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I'm a joke bot. To get started say 'tell me a joke'"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, what is your name?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Carlos"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello Carlos, nice to meet you!"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Cool"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I'm a joke bot. To get started say 'tell me a joke'"
+        }
+    ]
+}

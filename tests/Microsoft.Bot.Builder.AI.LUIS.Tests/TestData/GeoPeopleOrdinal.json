@@ -362,7 +362,10 @@
             "lisa simpson"
           ],
           "endloc": [
-            "jakarta"
+            {
+              "value": "jakarta",
+              "type": "city"
+            }
           ],
           "ordinalV2": [
             {
@@ -374,7 +377,10 @@
             "homer simpson"
           ],
           "startloc": [
-            "london"
+            {
+              "value": "london",
+              "type": "city"
+            }
           ],
           "startpos": [
             {
