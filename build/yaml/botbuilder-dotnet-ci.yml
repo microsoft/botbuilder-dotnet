@@ -22,7 +22,11 @@ pool:
   - msbuild
   - visualstudio
 
-# The following 2 stages run multi-configuration, multi-agent parallel jobs
+# The following 2 stages run multi-configuration, multi-agent parallel jobs.
+# Debug-Windows/Release-Windows => Builds everything in Debug/Release + the ASP.NET Desktop.
+# Debug/Release => would build all .NET Standard libs and test them.
+# The .NET 4.X asp.net integrations libraries do not build and test on non-windows boxes.
+# If we drop support for .NET 4.x then we can drop to just Debug/Release.
 stages:
 - stage: Build
   jobs:
