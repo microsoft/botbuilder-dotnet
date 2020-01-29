@@ -276,7 +276,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             using (var sr = new StreamReader(stream))
             {
-                var content = sr.ReadToEnd();
+                var content = await sr.ReadToEndAsync().ConfigureAwait(false);
                 result = JsonConvert.DeserializeObject<Message>(content);
             }
 
@@ -306,7 +306,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             using (var sr = new StreamReader(stream))
             {
-                var content = sr.ReadToEnd();
+                var content = await sr.ReadToEndAsync().ConfigureAwait(false);
                 result = JsonConvert.DeserializeObject<Message>(content);
             }
 
