@@ -169,6 +169,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling", "tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling\Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling.csproj", "{D9242899-AB3F-46BB-BAB4-386CB8EC535C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Twilio.TestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Twilio.TestBot\Microsoft.Bot.Builder.Adapters.Twilio.TestBot.csproj", "{F98A9787-B175-450F-99FC-EC241EB9D581}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot.NetCore21", "tests\Microsoft.Bot.Builder.TestBot.NetCore21\Microsoft.Bot.Builder.TestBot.NetCore21.csproj", "{99C466C3-1931-4C0E-AA0A-A8D9D140F56E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot.NetCore21.Tests", "tests\Microsoft.Bot.Builder.TestBot.NetCore21.Tests\Microsoft.Bot.Builder.TestBot.NetCore21.Tests.csproj", "{2FBA2BB7-73C8-45CD-99B7-D65F817C9051}"
