@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Channel;
@@ -43,6 +45,7 @@ namespace Microsoft.Bot.ApplicationInsights.WebApi.Tests
             var fromID = "FROMID";
             var channelID = "CHANNELID";
             var conversationID = "CONVERSATIONID";
+            var sessionId = GetHashedConversationId(conversationID);
             var activityID = "ACTIVITYID";
             var activity = Activity.CreateMessageActivity();
             activity.From = new ChannelAccount(fromID);
@@ -62,7 +65,8 @@ namespace Microsoft.Bot.ApplicationInsights.WebApi.Tests
             Assert.IsTrue(telem.Properties["activityId"] == activityID);
             Assert.IsTrue(telem.Properties["activityType"] == "message");
             Assert.IsTrue(telem.Properties["channelId"] == "CHANNELID");
-            Assert.IsTrue(telem.Context.Session.Id == conversationID);
+            Assert.IsTrue(telem.Properties["conversationId"] == conversationID);
+            Assert.IsTrue(telem.Context.Session.Id == sessionId);
             Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
             Assert.IsTrue(telem.Properties["hello"] == "value");
             Assert.IsTrue(telem.Metrics["metric"] == 0.6);
@@ -90,6 +94,7 @@ namespace Microsoft.Bot.ApplicationInsights.WebApi.Tests
             var fromID = "FROMID";
             var channelID = "CHANNELID";
             var conversationID = "CONVERSATIONID";
+            var sessionId = GetHashedConversationId(conversationID);
             var activityID = "ACTIVITYID";
             var activity = Activity.CreateMessageActivity();
             activity.From = new ChannelAccount(fromID);
@@ -109,7 +114,8 @@ namespace Microsoft.Bot.ApplicationInsights.WebApi.Tests
             Assert.IsTrue(telem.Properties["activityId"] == activityID);
             Assert.IsTrue(telem.Properties["activityType"] == "message");
             Assert.IsTrue(telem.Properties["channelId"] == "CHANNELID");
-            Assert.IsTrue(telem.Context.Session.Id == conversationID);
+            Assert.IsTrue(telem.Properties["conversationId"] == conversationID);
+            Assert.IsTrue(telem.Context.Session.Id == sessionId);
             Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
         }
 
@@ -135,6 +141,7 @@ namespace Microsoft.Bot.ApplicationInsights.WebApi.Tests
             var fromID = "FROMID";
             var channelID = "CHANNELID";
             var conversationID = "CONVERSATIONID";
+            var sessionId = GetHashedConversationId(conversationID);
             var activityID = "ACTIVITYID";
             var activity = Activity.CreateMessageActivity();
             activity.From = new ChannelAccount(fromID);
@@ -154,7 +161,8 @@ namespace Microsoft.Bot.ApplicationInsights.WebApi.Tests
             Assert.IsTrue(telem.Properties["activityId"] == activityID);
             Assert.IsTrue(telem.Properties["activityType"] == "message");
             Assert.IsTrue(telem.Properties["channelId"] == "CHANNELID");
-            Assert.IsTrue(telem.Context.Session.Id == conversationID);
+            Assert.IsTrue(telem.Properties["conversationId"] == conversationID);
+            Assert.IsTrue(telem.Context.Session.Id == sessionId);
             Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
         }
 
@@ -180,6 +188,7 @@ namespace Microsoft.Bot.ApplicationInsights.WebApi.Tests
             var fromID = "FROMID";
             var channelID = "CHANNELID";
             var conversationID = "CONVERSATIONID";
+            var sessionId = GetHashedConversationId(conversationID);
             var activityID = "ACTIVITYID";
             var activity = Activity.CreateMessageActivity();
             activity.From = new ChannelAccount(fromID);
@@ -199,7 +208,8 @@ namespace Microsoft.Bot.ApplicationInsights.WebApi.Tests
             Assert.IsTrue(telem.Properties["activityId"] == activityID);
             Assert.IsTrue(telem.Properties["activityType"] == "message");
             Assert.IsTrue(telem.Properties["channelId"] == "CHANNELID");
-            Assert.IsTrue(telem.Context.Session.Id == conversationID);
+            Assert.IsTrue(telem.Properties["conversationId"] == conversationID);
+            Assert.IsTrue(telem.Context.Session.Id == sessionId);
             Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
         }
 
@@ -246,6 +256,15 @@ namespace Microsoft.Bot.ApplicationInsights.WebApi.Tests
             Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
             Assert.IsTrue(properties.Properties["hello"] == "value");
             Assert.IsTrue(telem.Metrics["metric"] == 0.6);
+        }
+
+        private string GetHashedConversationId(string conversationID)
+        {
+            using (var sha256Hash = SHA256.Create())
+            {
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(conversationID));
+                return Convert.ToBase64String(bytes);
+            }
         }
     }
 }
