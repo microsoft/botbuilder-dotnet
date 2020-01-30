@@ -934,19 +934,19 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(userId));
             }
 
+            var activity = turnContext.Activity;
             var appId = GetBotAppId(turnContext);
-
             var tokenExchangeState = new TokenExchangeState()
             {
                 ConnectionName = connectionName,
                 Conversation = new ConversationReference()
                 {
-                    ActivityId = null,
-                    Bot = new ChannelAccount { Role = "bot" },
-                    ChannelId = Channels.Directline,
-                    Conversation = new ConversationAccount(),
-                    ServiceUrl = null,
-                    User = new ChannelAccount { Role = "user", Id = userId, },
+                    ActivityId = activity.Id,
+                    Bot = activity.Recipient,       // Activity is from the user to the bot
+                    ChannelId = activity.ChannelId,
+                    Conversation = activity.Conversation,
+                    ServiceUrl = activity.ServiceUrl,
+                    User = activity.From,
                 },
                 MsAppId = appId,
             };
