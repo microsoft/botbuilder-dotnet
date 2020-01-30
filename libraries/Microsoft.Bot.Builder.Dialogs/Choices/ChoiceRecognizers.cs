@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 if (options == null || options.RecognizeOrdinals)
                 {
                     // Next try finding by ordinal
-                    matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale, NumberOptions.SuppressExtendedTypes).GetOrdinalModel(locale));
+                    matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale).GetOrdinalModel(locale));
                     foreach (var match in matches)
                     {
                         MatchChoiceByIndex(list, matched, match);
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 if (matches.Count == 0 && (options == null || options.RecognizeNumbers))
                 {
                     // Then try by numerical index
-                    matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale, NumberOptions.SuppressExtendedTypes).GetNumberModel(locale));
+                    matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale).GetNumberModel(locale));
                     foreach (var match in matches)
                     {
                         MatchChoiceByIndex(list, matched, match);
