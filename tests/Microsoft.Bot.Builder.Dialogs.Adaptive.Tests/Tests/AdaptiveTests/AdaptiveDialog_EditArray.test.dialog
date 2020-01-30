@@ -15,9 +15,9 @@
                         "prompt": "Please add an item to todos."
                     },
                     {
-                        "$kind": "Microsoft.InitProperty",
+                        "$kind": "Microsoft.SetProperty",
                         "property": "user.todos",
-                        "type": "array"
+                        "value": "=[]"
                     },
                     {
                         "$kind": "Microsoft.EditArray",
