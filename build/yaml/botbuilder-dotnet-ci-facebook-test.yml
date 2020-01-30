@@ -1,14 +1,11 @@
-trigger:
-  - master
+#
+# Runs functional tests against the Facebook channel.
+#
 
-pr:
-  - master
-
+# "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
+name: $(Build.BuildId)
 pool:
-  name: Hosted Windows 2019 with VS2019
-  demands:
-  - msbuild
-  - visualstudio
+  vmImage: 'windows-2019'
 
 variables:
   ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
