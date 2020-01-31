@@ -32,21 +32,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         /// <summary>
         /// Generate the activity.
+        /// Support Both string LG result and structured LG result.
         /// </summary>
-        /// <param name="lgStringResult">string result from languageGenerator.</param>
+        /// <param name="lgResult">lg result from languageGenerator.</param>
         /// <returns>activity.</returns>
-        public static Activity CreateActivity(string lgStringResult)
+        public static Activity CreateActivity(object lgResult)
         {
-            var diagnostics = ActivityChecker.Check(lgStringResult);
+            var diagnostics = ActivityChecker.Check(lgResult);
             var errors = diagnostics.Where(u => u.Severity == DiagnosticSeverity.Error);
             if (errors.Any())
             {
                 throw new Exception(string.Join("\n", errors));
             }
 
-            var isStructuredLG = ParseStructuredLGResult(lgStringResult, out var lgStructuredResult);
-            return isStructuredLG ? BuildActivityFromLGStructuredResult(lgStructuredResult)
-                : BuildActivityFromText(lgStringResult?.Trim());
+            if (lgResult is string lgStringResult)
+            {
+                var isStructuredLG = ParseStructuredLGResult(lgStringResult, out var lgStructuredResult);
+                return isStructuredLG ? BuildActivityFromLGStructuredResult(lgStructuredResult)
+                    : BuildActivityFromText(lgStringResult?.Trim());
+            }
+
+            try
+            {
+                var lgJsonResult = JObject.FromObject(lgResult);
+                return BuildActivityFromLGStructuredResult(lgJsonResult);
+            }
+            catch
+            {
+                return BuildActivityFromText(lgResult?.ToString()?.Trim());
+            }
         }
 
         /// <summary>

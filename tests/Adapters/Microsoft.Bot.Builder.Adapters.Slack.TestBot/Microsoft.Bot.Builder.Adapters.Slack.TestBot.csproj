@@ -4,9 +4,10 @@
     <TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
     <!-- The SlackAPI package isn't signed, so supress the warning. There seems to not be a way to supress this for ONLY SlackAPI. -->
     <NoWarn>$(NoWarn),CS8002</NoWarn>
+    <UserSecretsId>3c783a33-e2a5-4acd-99dd-581d563d47e3</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 

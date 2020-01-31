@@ -143,12 +143,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             state[PersistedExpires] = DateTime.Now.AddMilliseconds(timeout);
 
             // Attempt to get the users token
-            if (!(dc.Context.Adapter is IUserTokenProvider adapter))
+            if (!(dc.Context.Adapter is ICredentialTokenProvider adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
             }
 
-            var output = await adapter.GetUserTokenAsync(dc.Context, _settings.ConnectionName, null, cancellationToken).ConfigureAwait(false);
+            var output = await adapter.GetUserTokenAsync(dc.Context, _settings.OAuthAppCredentials, _settings.ConnectionName, null, cancellationToken).ConfigureAwait(false);
             if (output != null)
             {
                 // Return token
@@ -237,12 +237,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// the result contains the user's token.</remarks>
         public async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (!(turnContext.Adapter is IUserTokenProvider adapter))
+            if (!(turnContext.Adapter is ICredentialTokenProvider adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.GetUserToken(): not supported by the current adapter");
             }
 
-            return await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, null, cancellationToken).ConfigureAwait(false);
+            return await adapter.GetUserTokenAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, null, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -254,13 +254,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A task that represents the work queued to execute.</returns>
         public async Task SignOutUserAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (!(turnContext.Adapter is IUserTokenProvider adapter))
+            if (!(turnContext.Adapter is ICredentialTokenProvider adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.SignOutUser(): not supported by the current adapter");
             }
 
             // Sign out user
-            await adapter.SignOutUserAsync(turnContext, _settings.ConnectionName, turnContext.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
+            await adapter.SignOutUserAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, turnContext.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
         }
 
         private static bool IsTokenResponseEvent(ITurnContext turnContext)
@@ -346,6 +346,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var signInResource = await adapter.GetSignInResourceAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
 
                 if (turnContext.TurnState.Get<ClaimsIdentity>("BotIdentity") is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
+
                 {
                     // Force magic code for Skills (to be addressed in R8)
                     cardActionType = ActionTypes.OpenUrl;
@@ -402,7 +403,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var magicCodeObject = turnContext.Activity.Value as JObject;
                 var magicCode = magicCodeObject.GetValue("state")?.ToString();
 
-                if (!(turnContext.Adapter is IUserTokenProvider adapter))
+                if (!(turnContext.Adapter is ICredentialTokenProvider adapter))
                 {
                     throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
                 }
@@ -416,7 +417,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // progress) retry in that case.
                 try
                 {
-                    var token = await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, magicCode, cancellationToken).ConfigureAwait(false);
+                    var token = await adapter.GetUserTokenAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, magicCode, cancellationToken).ConfigureAwait(false);
 
                     if (token != null)
                     {
@@ -531,12 +532,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var matched = _magicCodeRegex.Match(turnContext.Activity.Text);
                 if (matched.Success)
                 {
-                    if (!(turnContext.Adapter is IUserTokenProvider adapter))
+                    if (!(turnContext.Adapter is ICredentialTokenProvider adapter))
                     {
                         throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
                     }
 
-                    var token = await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, matched.Value, cancellationToken).ConfigureAwait(false);
+                    var token = await adapter.GetUserTokenAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, matched.Value, cancellationToken).ConfigureAwait(false);
                     if (token != null)
                     {
                         result.Succeeded = true;

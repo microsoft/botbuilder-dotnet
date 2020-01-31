@@ -578,7 +578,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
             {
-                dc.Context.SendActivityAsync(dc.GetState().GetValue<string>("conversation.test", () => "unknown"));
+                var data = dc.GetState().GetValue<string>("conversation.test", () => "unknown");
+                dc.Context.SendActivityAsync(data);
                 dc.GetState().SetValue("conversation.test", "havedata");
                 return Task.FromResult(new DialogTurnResult(DialogTurnStatus.Waiting));
             }
@@ -593,7 +594,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         return dc.EndDialogAsync();
                 }
 
-                dc.Context.SendActivityAsync(dc.GetState().GetValue<string>("conversation.test", () => "unknown"));
+                var data = dc.GetState().GetValue<string>("conversation.test", () => "unknown");
+                dc.Context.SendActivityAsync(data);
                 return Task.FromResult(new DialogTurnResult(DialogTurnStatus.Waiting));
             }
         }
@@ -607,7 +609,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var adapter = new TestAdapter()
                 .UseStorage(storage)
-                .UseState(userState, conversationState);
+                .UseState(userState, conversationState)
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
             adapter.OnTurnError = async (context, exception) =>
             {
                 await conversationState.DeleteAsync(context);
@@ -620,15 +624,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 return dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken);
             })
-            .Send("yo")
+            .Send("yo1")
                 .AssertReply("unknown")
-            .Send("yo")
+            .Send("yo2")
                 .AssertReply("havedata")
             .Send("throw")
                 .AssertReply("throwing")
-            .Send("yo")
+            .Send("yo3")
                 .AssertReply("unknown")
-            .Send("yo")
+            .Send("yo4")
                 .AssertReply("havedata")
             .StartTestAsync();
         }
@@ -672,12 +676,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task TestChangeTracking()
+        {
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                var state = dc.GetState();
+                var dialogPaths = state.TrackPaths(new List<string> { "dialog.user.first", "dialog.user.last" });
+
+                state.SetValue("dialog.eventCounter", 0);
+                Assert.IsFalse(state.AnyPathChanged(0, dialogPaths));
+
+                state.SetValue("dialog.eventCounter", 1);
+                state.SetValue("dialog.foo", 3);
+                Assert.IsFalse(state.AnyPathChanged(0, dialogPaths));
+
+                state.SetValue("dialog.eventCounter", 2);
+                state.SetValue("dialog.user.first", "bart");
+                Assert.IsTrue(state.AnyPathChanged(1, dialogPaths));
+
+                state.SetValue("dialog.eventCounter", 3);
+                state.SetValue("dialog.user", new Dictionary<string, object> { { "first", "tom" }, { "last", "starr" } });
+                Assert.IsTrue(state.AnyPathChanged(2, dialogPaths));
+
+                state.SetValue("dialog.eventCounter", 4);
+                Assert.IsFalse(state.AnyPathChanged(3, dialogPaths));
+            }).StartTestAsync();
+        }
+
         private TestFlow CreateFlow(Dialog dialog, ConversationState convoState = null, UserState userState = null, bool sendTrace = false)
         {
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
                 .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
                 .UseState(new UserState(new MemoryStorage()), convoState ?? new ConversationState(new MemoryStorage()))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var dm = new DialogManager(dialog);
 

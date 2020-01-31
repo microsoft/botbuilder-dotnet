@@ -35,21 +35,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!templateMap.ContainsKey(templateName))
             {
-                throw new Exception($"[{templateName}] template not found");
+                throw new Exception(LGErrors.TemplateNotExist(templateName));
             }
 
             if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"Loop detected: {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"{LGErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
-            // Using a stack to track the evalution trace
+            // Using a stack to track the evaluation trace
             evaluationTargetStack.Push(new EvaluationTarget(templateName, null));
 
-            // we don't exclude paratemters any more
+            // we don't exclude parameters any more
             // because given we don't track down for templates have parameters
             // the only scenario that we are still analyzing an parameterized template is
-            // this template is root template to anaylze, in this we also don't have exclude parameters
+            // this template is root template to analyze, in this we also don't have exclude parameters
             var dependencies = Visit(templateMap[templateName].ParseTree);
             evaluationTargetStack.Pop();
 
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
 
-            throw new Exception("template name match failed");
+            return new AnalyzerResult();
         }
 
         public override AnalyzerResult VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
@@ -87,8 +87,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override AnalyzerResult VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
         {
-            // TODO
-            return base.VisitStructuredTemplateBody(context);
+            var result = new AnalyzerResult();
+
+            var bodys = context.structuredBodyContentLine();
+            foreach (var body in bodys)
+            {
+                var isKVPairBody = body.keyValueStructureLine() != null;
+                if (isKVPairBody)
+                {
+                    result.Union(VisitStructureValue(body.keyValueStructureLine()));
+                }
+                else
+                {
+                    result.Union(AnalyzeExpression(body.objectStructureLine().GetText()));
+                }
+            }
+
+            return result;
         }
 
         public override AnalyzerResult VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
@@ -145,6 +160,30 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
+        private AnalyzerResult VisitStructureValue(LGFileParser.KeyValueStructureLineContext context)
+        {
+            var values = context.keyValueStructureValue();
+
+            var result = new AnalyzerResult();
+            foreach (var item in values)
+            {
+                if (item.IsPureExpression(out var text))
+                {
+                    result.Union(AnalyzeExpression(text));
+                }
+                else
+                {
+                    var expressions = item.EXPRESSION_IN_STRUCTURE_BODY();
+                    foreach (var expression in expressions)
+                    {
+                        result.Union(AnalyzeExpression(expression.GetText()));
+                    }
+                }
+            }
+
+            return result;
+        }
+
         private EvaluationTarget CurrentTarget() =>
 
             // just don't want to write evaluationTargetStack.Peek() everywhere
@@ -152,7 +191,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         /// <summary>
         /// Extract the templates ref out from an expression
-        /// return only those without paramaters.
+        /// return only those without parameters.
         /// </summary>
         /// <param name="exp">Expression.</param>
         /// <returns>template refs.</returns>
@@ -172,7 +211,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
-                    // if template has params, just get the templateref without variables.
+                    // if template has parameters, just get the template ref without variables.
                     result.Union(new AnalyzerResult(templateReferences: this.AnalyzeTemplate(templateName).TemplateReferences));
                 }
             }

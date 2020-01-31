@@ -38,11 +38,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public Diagnostic(
             Range range,
             string message,
-            DiagnosticSeverity severity = DiagnosticSeverity.Error)
+            DiagnosticSeverity severity = DiagnosticSeverity.Error,
+            string source = null,
+            string code = null)
         {
             Message = message;
             Range = range;
             Severity = severity;
+            Source = source;
+            Code = code;
         }
 
         /// <summary>
@@ -70,8 +74,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public DiagnosticSeverity Severity { get; set; }
 
         /// <summary>
-        /// Gets or sets a human-readable string describing the source of this
-        /// diagnostic, e.g. 'typescript' or 'super lint'.
+        /// Gets or sets a human-readable string describing the source of this diagnostic.
         /// </summary>
         /// <value>
         /// A human-readable string describing the source.
@@ -88,15 +91,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override string ToString()
         {
-            // ignore error range if source is "inline"
-            if (Source == "inline")
-            {
-                return $"[{Severity}] {Message}";
-            }
-            else
-            {
-                return $"[{Severity}] {Range}: {Message}";
-            }
+            return $"[{Severity}] {Range}: {Message}";
         }
     }
 }

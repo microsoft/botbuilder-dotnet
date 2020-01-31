@@ -1,0 +1,12 @@
+# AskMeat
+- @{askEnum('Meat')}
+
+# MeatName
+- meat
+
+# Meat(val)
+- @{MeatEntity(val)}
+
+[sandwich-MeatEntity.lg](sandwich-MeatEntity.lg)
+
+[sandwich-common.lg](sandwich-common.lg)

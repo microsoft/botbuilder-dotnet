@@ -18,19 +18,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.EndDialog";
 
-        private Expression value;
-
         [JsonConstructor]
-        public EndDialog(string value = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public EndDialog(object value = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
 
-            if (!string.IsNullOrEmpty(value))
+            if (value != null)
             {
-                this.Value = value;
+                this.Value = new ValueExpression(value);
             }
         }
+
+        /// <summary>
+        /// Gets or sets an optional expression which if is true will disable this action.
+        /// </summary>
+        /// <example>
+        /// "user.age > 18".
+        /// </example>
+        /// <value>
+        /// A boolean expression. 
+        /// </value>
+        [JsonProperty("disabled")]
+        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets a value expression for the result to be returned to the caller.
@@ -39,11 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A value expression for the result to be returned to the caller.
         /// </value>
         [JsonProperty("value")]
-        public string Value
-        {
-            get { return value?.ToString(); }
-            set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public ValueExpression Value { get; set; } 
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -52,9 +58,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
+            {
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
             if (this.Value != null)
             {
-                var (result, error) = this.value.TryEvaluate(dc.GetState());
+                var (result, error) = this.Value.TryGetValue(dcState);
                 return await EndParentDialogAsync(dc, result, cancellationToken).ConfigureAwait(false);
             }
 
@@ -82,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}({this.Value ?? string.Empty})";
+            return $"{this.GetType().Name}({this.Value?.ToString() ?? string.Empty})";
         }
     }
 }

@@ -1,13 +1,10 @@
 {
     "$schema": "../../app.schema",
     "$kind": "Microsoft.AdaptiveDialog",
-    "$id": "root",
     "recognizer": {
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-
-                "$kind": "Microsoft.IntentPattern",
                 "intent": "cancel",
                 "pattern": "cancel"
             }
@@ -25,7 +22,7 @@
                     "$kind": "Microsoft.TextInput",
                     "prompt": "Hello, what is your name?",
                     "property": "user.name",
-                    "value": "user.name"
+                    "value": "=user.name"
                 },
                 {
                     "$kind": "Microsoft.SendActivity",

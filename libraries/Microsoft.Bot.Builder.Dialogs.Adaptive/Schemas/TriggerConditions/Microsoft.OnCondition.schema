@@ -19,6 +19,17 @@
             "items": {
                 "$kind": "Microsoft.IDialog"
             }
+        },
+        "priority": {
+            "type": "string",
+            "title": "priority",
+            "description": "Priority expression of rule with 0 being the most important",
+            "$role": "expression"
+        },
+        "runOnce": {
+            "type": "boolean",
+            "title": "Run Once",
+            "description": "True if rule should run once per unique conditions"
         }
     },
     "required": [

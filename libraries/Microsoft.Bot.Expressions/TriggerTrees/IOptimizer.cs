@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
         /// </summary>
         /// <param name="predicate">First predicate.</param>
         /// <param name="other">Second predicate.</param>
-        /// <returns>Relationship beteween predicates.</returns>
+        /// <returns>Relationship between predicates.</returns>
         /// <remarks>
         /// This is useful for doing things like identifying that Range("size", 1, 5) is more specialized than Range("size", 1, 10).
         /// </remarks>

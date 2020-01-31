@@ -191,9 +191,26 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="files">List of files attached to the message.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The created message id.</returns>
-        public virtual async Task<string> CreateMessageAsync(string toPersonOrEmail, string text, IList<Uri> files = null, CancellationToken cancellationToken = default)
+        public virtual async Task<string> CreateDirectMessageAsync(string toPersonOrEmail, string text, IList<Uri> files = null, CancellationToken cancellationToken = default)
         {
             var webexResponse = await _api.CreateDirectMessageAsync(toPersonOrEmail, text, files, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+            return webexResponse.Data.Id;
+        }
+
+        /// <summary>
+        /// Wraps Webex API's CreateMessageAsync method.
+        /// </summary>
+        /// <param name="recipient">Target id of the message.</param>
+        /// <param name="text">Text of the message.</param>
+        /// <param name="files">List of files attached to the message.</param>
+        /// <param name="messageType">Type of message. It can be Text or Markdown.</param>
+        /// <param name="target">Target for the message.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>The created message id.</returns>
+        public virtual async Task<string> CreateMessageAsync(string recipient, string text, IList<Uri> files = null, MessageTextType messageType = MessageTextType.Text, MessageTarget target = MessageTarget.PersonId, CancellationToken cancellationToken = default)
+        {
+            var webexResponse = await _api.CreateMessageAsync(recipient, text, files, target, messageType, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             return webexResponse.Data.Id;
         }
@@ -212,12 +229,14 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <summary>
         /// Creates a message with attachments.
         /// </summary>
-        /// <param name="toPersonOrEmail">Id or email of message recipient.</param>
+        /// <param name="recipient">PersonId, email or roomId of the message.</param>
         /// <param name="text">Text of the message.</param>
         /// <param name="attachments">List of attachments attached to the message.</param>
+        /// <param name="messageType">Type of the message. It can be Text or Markdown.</param>
+        /// <param name="target">Target for the message.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The created message id.</returns>
-        public virtual async Task<string> CreateMessageWithAttachmentsAsync(string toPersonOrEmail, string text, IList<Attachment> attachments, CancellationToken cancellationToken)
+        public virtual async Task<string> CreateMessageWithAttachmentsAsync(string recipient, string text, IList<Attachment> attachments, MessageTextType messageType = MessageTextType.Text, MessageTarget target = MessageTarget.PersonId, CancellationToken cancellationToken = default)
         {
             Message result;
 
@@ -230,7 +249,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             var request = new WebexMessageRequest
             {
-                ToPersonId = toPersonOrEmail,
+                RoomId = target == MessageTarget.SpaceId ? recipient : null,
+                ToPersonId = target == MessageTarget.SpaceId ? null : recipient,
                 Text = text ?? string.Empty,
                 Attachments = attachmentsContent.Count > 0 ? attachmentsContent : null,
             };

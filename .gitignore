@@ -292,3 +292,4 @@ appsettings.local.json
 appsettings.Development.json
 **/*/.luisrc
 /.vscode/launch.json
+/outputpackages

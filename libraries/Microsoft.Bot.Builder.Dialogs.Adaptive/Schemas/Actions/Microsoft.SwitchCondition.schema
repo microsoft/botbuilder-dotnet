@@ -8,12 +8,27 @@
         "condition"
     ],
     "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
         "condition": {
             "$role": "expression",
+            "type": "string",
             "title": "Condition",
             "description": "Property to evaluate.",
             "examples": [
                 "user.favColor"
+            ]
+        },
+        "disabled": {
+            "$role": "expression",
+            "type": [ "boolean", "string" ],
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
             ]
         },
         "cases": {
@@ -25,6 +40,7 @@
                 "properties": {
                     "value": {
                         "$role": "expression",
+                        "type": [ "number", "integer", "boolean", "string" ],
                         "title": "Value",
                         "description": "Value.",
                         "examples": [

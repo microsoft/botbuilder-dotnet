@@ -10,10 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.FunctionalTests
 {
     [TestClass]
-    #if !FUNCTIONALTESTS
-    [Ignore("These integration tests run only when FUNCTIONALTESTS is defined")]
-    #endif
-
+    [TestCategory("FunctionalTests")]
     public class DirectLineClientTests
     {
         private static string directLineSecret = null;
@@ -115,13 +112,13 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 directLineSecret = Environment.GetEnvironmentVariable("DIRECTLINE");
                 if (string.IsNullOrWhiteSpace(directLineSecret))
                 {
-                    throw new Exception("Environment variable 'DIRECTLINE' not found.");
+                    Assert.Inconclusive("Environment variable 'DIRECTLINE' not found.");
                 }
 
                 botId = Environment.GetEnvironmentVariable("BOTID");
                 if (string.IsNullOrWhiteSpace(botId))
                 {
-                    throw new Exception("Environment variable 'BOTID' not found.");
+                    Assert.Inconclusive("Environment variable 'BOTID' not found.");
                 }
             }
         }

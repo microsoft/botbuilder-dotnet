@@ -1,4 +1,5 @@
 {
+    "$schema": "../../../../schemas/sdk.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -7,7 +8,6 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    "$kind": "Microsoft.IntentPattern",
                     "intent": "Start",
                     "pattern": "(?i)start"
                 }
@@ -22,7 +22,6 @@
             {
                 "$kind": "Microsoft.OnIntent",
                 "intent": "Start",
-                
                 "actions": [
                     {
                         "$kind": "Microsoft.NumberInput",
@@ -41,7 +40,6 @@
             {
                 "$kind": "Microsoft.OnIntent",
                 "intent": "None",
-                
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -50,12 +48,12 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "turn.processInput",
-                        "value": "True"
+                        "value": "=True"
                     }
                 ]
             }
         ],
-        "AutoEndDialog": true,
+        "autoEndDialog": true,
         "defaultResultProperty": "dialog.result"
     },
     "script": [

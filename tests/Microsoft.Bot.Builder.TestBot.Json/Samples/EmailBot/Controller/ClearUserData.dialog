@@ -5,23 +5,23 @@
     // Reset data
     {
       "$kind": "Microsoft.SetProperty",
-      "value": "'msgraph'",
+      "value": "msgraph",
       "property": "user.mailType"
     },
     {
       "$kind": "Microsoft.SetProperty",
-      "value": "3",
+      "value": "=3",
       "property": "user.pageSize"
     },
     {
       "$kind": "Microsoft.SetProperty",
-      "value": "0",
+      "value": "=0",
       "property": "user.showIndex"
     },
     {
       "$kind": "Microsoft.SetProperty",
       "property": "user.emailCount",
-      "value": "0"
+      "value": "=0"
     },
     {
       "$kind": "Microsoft.DeleteProperty",
@@ -29,12 +29,12 @@
     },
     {
       "$kind": "Microsoft.EditArray",
-      "changeType": "Clear",
+      "changeType": "clear",
       "itemsProperty": "user.emails"
     },
     {
       "$kind": "Microsoft.EditArray",
-      "changeType": "Clear",
+      "changeType": "clear",
       "itemsProperty": "user.recipients"
     },
     {

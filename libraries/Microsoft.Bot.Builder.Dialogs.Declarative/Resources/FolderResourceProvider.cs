@@ -11,7 +11,7 @@ using System.Threading;
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
     /// <summary>
-    /// Folder/FileResources.
+    /// Class which gives ResourceExplorer access to resources which are stored in file system.
     /// </summary>
     public class FolderResourceProvider : IResourceProvider, IDisposable
     {
@@ -19,21 +19,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private ConcurrentBag<string> changedPaths = new ConcurrentBag<string>();
         private FileSystemWatcher watcher;
         private Dictionary<string, FileResource> resources = new Dictionary<string, FileResource>();
-        private HashSet<string> extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FolderResourceProvider"/> class.
+        /// </summary>
+        /// <param name="folder">Folder.</param>
+        /// <param name="includeSubFolders">Should include sub folders.</param>
+        /// <param name="monitorChanges">Should monitor changes.</param>
         public FolderResourceProvider(string folder, bool includeSubFolders = true, bool monitorChanges = true)
         {
-            foreach (var extension in new string[] { ".lg", ".qna", ".lu", ".dialog", ".schema", ".md" })
-            {
-                this.extensions.Add(extension);
-            }
-
             this.IncludeSubFolders = includeSubFolders;
             folder = PathUtils.NormalizePath(folder);
             this.Directory = new DirectoryInfo(folder);
             SearchOption option = this.IncludeSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
-            foreach (var fileInfo in this.Directory.EnumerateFiles($"*.*", option).Where(fi => this.extensions.Contains(fi.Extension)))
+            foreach (var fileInfo in this.Directory.EnumerateFiles($"*.*", option).Where(fi => Extensions.Contains(fi.Extension)))
             {
                 var fileResource = new FileResource(fileInfo.FullName);
                 this.resources[fileResource.Id] = fileResource;
@@ -51,7 +51,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
         }
 
+        /// <summary>
+        /// Event which fires when monitoring folder for file changes.
+        /// </summary>
         public event ResourceChangedEventHandler Changed;
+
+        /// <summary>
+        /// Gets the extensions that you want the FolderResourceProvider to manage.
+        /// </summary>
+        /// <value>
+        /// The extensions that you want the FolderResourceProvider to manage.
+        /// </value>
+        public static HashSet<string> Extensions { get; private set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".lg", ".qna", ".lu", ".dialog", ".schema", ".md" };
 
         /// <summary>
         /// Gets or sets folder to enumerate.
@@ -61,8 +72,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </value>
         public DirectoryInfo Directory { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to include subfolders.
+        /// </summary>
+        /// <value>
+        /// A value indicating whether to include subfolders.
+        /// </value>
         public bool IncludeSubFolders { get; set; }
 
+        /// <summary>
+        /// Gets the id for this provider (the folder it is bound to).
+        /// </summary>
+        /// <value>
+        /// The id for this provider (the folder it is bound to).
+        /// </value>
         public string Id
         {
             get { return this.Directory.FullName; }
@@ -125,7 +148,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private void Watcher_Deleted(object sender, FileSystemEventArgs e)
         {
             var ext = Path.GetExtension(e.FullPath);
-            if (this.extensions.Contains(ext))
+            if (Extensions.Contains(ext))
             {
                 lock (this.resources)
                 {
@@ -141,7 +164,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private void Watcher_Renamed(object sender, RenamedEventArgs e)
         {
             var ext = Path.GetExtension(e.FullPath);
-            if (this.extensions.Contains(ext))
+            if (Extensions.Contains(ext))
             {
                 lock (this.resources)
                 {
@@ -158,7 +181,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private void Watcher_Changed(object sender, FileSystemEventArgs e)
         {
             var ext = Path.GetExtension(e.FullPath);
-            if (this.extensions.Contains(ext))
+            if (Extensions.Contains(ext))
             {
                 var fileResource = new FileResource(e.FullPath);
 

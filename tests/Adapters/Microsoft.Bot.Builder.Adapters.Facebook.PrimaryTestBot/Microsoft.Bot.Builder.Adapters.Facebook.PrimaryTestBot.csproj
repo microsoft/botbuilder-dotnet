@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
+    <UserSecretsId>594af4a1-e396-4609-8198-d665eb0c1f78</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 

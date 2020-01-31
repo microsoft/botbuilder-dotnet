@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         private Dictionary<string, Expression> caseExpressions = null;
 
-        private Expression condition;
+        private ActionScope defaultScope;
 
         [JsonConstructor]
         public SwitchCondition([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -32,17 +32,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets condition expression against memory Example: "user.age > 18".
+        /// Gets or sets value expression against memory Example: "user.age".
         /// </summary>
         /// <value>
-        /// Condition expression against memory Example: "user.age > 18".
+        /// Value Expression against memory. This value expression will be combined with value expression in case statements to make a bool expression.
         /// </value>
         [JsonProperty("condition")]
-        public string Condition
-        {
-            get { return condition?.ToString(); }
-            set { condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public ValueExpression Condition { get; set; } 
+
+        /// <summary>
+        /// Gets or sets an optional expression which if is true will disable this action.
+        /// </summary>
+        /// <example>
+        /// "user.age > 18".
+        /// </example>
+        /// <value>
+        /// A boolean expression. 
+        /// </value>
+        [JsonProperty("disabled")]
+        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets default case.
@@ -62,23 +70,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("cases")]
         public List<Case> Cases { get; set; } = new List<Case>();
 
+        protected ActionScope DefaultScope
+        {
+            get
+            {
+                if (defaultScope == null)
+                {
+                    defaultScope = new ActionScope() { Actions = this.Default };
+                }
+
+                return defaultScope;
+            }
+        }
+
         public virtual IEnumerable<Dialog> GetDependencies()
         {
-            var dialogs = new List<Dialog>();
-            if (this.Default != null)
-            {
-                dialogs.AddRange(this.Default);
-            }
+            yield return this.DefaultScope;
 
             if (this.Cases != null)
             {
-                foreach (var conidtionalCase in this.Cases)
+                foreach (var caseScope in this.Cases)
                 {
-                    dialogs.AddRange(conidtionalCase.Actions);
+                    yield return caseScope;
                 }
             }
-
-            return dialogs;
         }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -86,6 +101,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             if (options is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
+            {
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             // Ensure planning context
@@ -97,52 +119,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     {
                         this.caseExpressions = new Dictionary<string, Expression>();
 
-                        foreach (var c in this.Cases)
+                        foreach (var cse in this.Cases)
                         {
                             // Values for cases are always coerced to string
-                            var caseCondition = Expression.EqualsExpression(this.condition, c.CreateValueExpression());
+                            var caseCondition = Expression.EqualsExpression(this.Condition.ToExpression(), cse.CreateValueExpression());
 
                             // Map of expression to actions
-                            this.caseExpressions[c.Value] = caseCondition;
+                            this.caseExpressions[cse.Value] = caseCondition;
                         }
                     }
                 }
 
-                List<Dialog> actionsToRun = this.Default;
+                ActionScope actionScope = this.DefaultScope;
 
-                foreach (var caseCondition in this.Cases)
+                foreach (var caseScope in this.Cases)
                 {
-                    var (value, error) = this.caseExpressions[caseCondition.Value].TryEvaluate(dc.GetState());
+                    var (value, error) = this.caseExpressions[caseScope.Value].TryEvaluate(dcState);
 
                     if (error != null)
                     {
-                        throw new Exception($"Expression evaluation resulted in an error. Expression: {caseExpressions[caseCondition.Value].ToString()}. Error: {error}");
+                        throw new Exception($"Expression evaluation resulted in an error. Expression: {caseExpressions[caseScope.Value].ToString()}. Error: {error}");
                     }
 
                     // Compare both expression results. The current switch case triggers if the comparison is true.
                     if (((bool)value) == true)
                     {
-                        actionsToRun = caseCondition.Actions;
+                        actionScope = caseScope;
                         break;
                     }
                 }
 
-                // run condition or default actions
-                var planActions = actionsToRun.Select(s => new ActionState()
-                {
-                    DialogStack = new List<DialogInstance>(),
-                    DialogId = s.Id,
-                    Options = options
-                });
-
-                // Queue up actions that should run after current step
-                planning.QueueChanges(new ActionChangeList()
-                {
-                    ChangeType = ActionChangeType.InsertActions,
-                    Actions = planActions.ToList()
-                });
-
-                return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+                return await dc.ReplaceDialogAsync(actionScope.Id, null, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {

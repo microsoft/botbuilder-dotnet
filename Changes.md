@@ -6,5 +6,3 @@ consolidating using generics with POCO objects and shared base class
 
 ## 4.0.0-alpha201802027a
 * Milan release 
-
-

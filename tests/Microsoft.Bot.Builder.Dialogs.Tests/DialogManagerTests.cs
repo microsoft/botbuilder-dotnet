@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+#pragma warning disable SA1402 // File may only contain a single type
 
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,10 @@ using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,19 +26,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task DialogManager_ConversationState_PersistedAcrossTurns()
         {
-            var conversationId = Guid.NewGuid().ToString();
+            var firstConversationId = Guid.NewGuid().ToString();
             var storage = new MemoryStorage();
 
             var adaptiveDialog = CreateTestDialog(property: "conversation.name");
 
-            await CreateFlow(adaptiveDialog, storage, conversationId)
+            await CreateFlow(adaptiveDialog, storage, firstConversationId)
             .Send("hi")
                 .AssertReply("Hello, what is your name?")
             .Send("Carlos")
                 .AssertReply("Hello Carlos, nice to meet you!")
-            .StartTestAsync();
-
-            await CreateFlow(adaptiveDialog, storage, conversationId)
             .Send("hi")
                 .AssertReply("Hello Carlos, nice to meet you!")
             .StartTestAsync();
@@ -110,6 +112,76 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task DialogManager_OnErrorEvent_Leaf()
+        {
+            await TestUtilities.RunTestScript();
+        }
+
+        [TestMethod]
+        public async Task DialogManager_OnErrorEvent_Parent()
+        {
+            await TestUtilities.RunTestScript();
+        }
+
+        [TestMethod]
+        public async Task DialogManager_OnErrorEvent_Root()
+        {
+            await TestUtilities.RunTestScript();
+        }
+
+        [TestMethod]
+        public async Task DialogManager_DialogSet()
+        {
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+
+            var adapter = new TestAdapter();
+            adapter
+                .UseStorage(storage)
+                .UseState(userState, convoState)
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
+            var rootDialog = new AdaptiveDialog()
+            {
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SetProperty()
+                            {
+                                Property = "conversation.dialogId",
+                                Value = "test"
+                            },
+                            new BeginDialog()
+                            {
+                                Dialog = "=conversation.dialogId"
+                            },
+                            new BeginDialog()
+                            {
+                                Dialog = "test"
+                            }
+                        }
+                    }
+                }
+            };
+
+            DialogManager dm = new DialogManager(rootDialog);
+            dm.Dialogs.Add(new SimpleDialog() { Id = "test" });
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+                {
+                    await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+                })
+                .SendConversationUpdate()
+                    .AssertReply("simple")
+                    .AssertReply("simple")
+                .StartTestAsync();
+        }
+
         private Dialog CreateTestDialog(string property = "user.name")
         {
             return new AskForNameDialog(property.Replace(".", string.Empty), property);
@@ -124,7 +196,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, convoState)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             DialogManager dm = new DialogManager(dialog);
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -173,6 +245,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 outerDc.GetState().SetValue(this.Property, result);
                 await outerDc.Context.SendActivityAsync($"Hello {result.ToString()}, nice to meet you!");
                 return await outerDc.EndDialogAsync(result);
+            }
+        }
+
+        public class SimpleDialog : Dialog
+        {
+            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            {
+                await dc.Context.SendActivityAsync("simple");
+                return await dc.EndDialogAsync();
             }
         }
     }

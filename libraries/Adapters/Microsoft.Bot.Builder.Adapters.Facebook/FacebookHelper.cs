@@ -37,14 +37,21 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             {
                 facebookMessage = activity.GetChannelData<FacebookMessage>();
 
-                // make sure the quick reply has a type
-                if (activity.GetChannelData<FacebookMessage>().Message.QuickReplies.Any())
+                if (facebookMessage.SenderAction != null)
                 {
-                    foreach (var reply in facebookMessage.Message.QuickReplies)
+                    facebookMessage.Message = null;
+                }
+                else
+                {
+                    // make sure the quick reply has a type
+                    if (facebookMessage.Message.QuickReplies.Any())
                     {
-                        if (string.IsNullOrWhiteSpace(reply.ContentType))
+                        foreach (var reply in facebookMessage.Message.QuickReplies)
                         {
-                            reply.ContentType = "text";
+                            if (string.IsNullOrWhiteSpace(reply.ContentType))
+                            {
+                                reply.ContentType = "text";
+                            }
                         }
                     }
                 }
@@ -166,7 +173,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             return attachmentsList;
         }
-
+        
         /// <summary>
         /// Writes the HttpResponse.
         /// </summary>
@@ -199,6 +206,34 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             var data = encoding.GetBytes(text);
 
             await response.Body.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Generates an activity that displays a typing indicator.
+        /// </summary>
+        /// <param name="recipientId">The id of the recipient of the message.</param>
+        /// <returns>An activity with sender_action equal to 'typing_on'.</returns>
+        public static Activity GenerateTypingActivity(string recipientId)
+        {
+            var activity = new Activity()
+            {
+                ChannelId = "facebook",
+                Conversation = new ConversationAccount()
+                {
+                    Id = recipientId,
+                },
+                ChannelData = new FacebookMessage(recipientId, null, string.Empty),
+                Type = ActivityTypes.Message,
+                Text = null,
+            };
+
+            // we need only the sender action (and the recipient id) to be present in the message
+            var message = activity.GetChannelData<FacebookMessage>();
+            message.SenderAction = "typing_on";
+            message.MessagingType = null;
+            message.Sender = null;
+
+            return activity;
         }
     }
 }

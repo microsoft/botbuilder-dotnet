@@ -182,6 +182,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(0, found.Count);
         }
 
+        [TestMethod]
+        public void ShouldNOTFindAChoiceInAnUtteranceByOrdinalPosition_RecognizeOrdinalsFalseAndRecognizeNumbersFalse()
+        {
+            var found = ChoiceRecognizers.RecognizeChoices("the first one please.", colorChoices, new FindChoicesOptions() { RecognizeOrdinals = false, RecognizeNumbers = false });
+            Assert.AreEqual(0, found.Count);
+        }
+
+        [TestMethod]
+        public void ShouldNOTFindAChoiceInAnUtteranceByNumericalIndex_Text_RecognizeNumbersFalse()
+        {
+            var found = ChoiceRecognizers.RecognizeChoices("one", colorChoices, new FindChoicesOptions() { RecognizeNumbers = false });
+            Assert.AreEqual(0, found.Count);
+        }
+
         // Helper functions
         private static void AssertResult<T>(ModelResult<T> result, int start, int end, string text)
         {

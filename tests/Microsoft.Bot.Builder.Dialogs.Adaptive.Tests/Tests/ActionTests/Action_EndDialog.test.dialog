@@ -1,4 +1,5 @@
 {
+    "$schema": "../../../../schemas/sdk.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -7,7 +8,6 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    "$kind": "Microsoft.IntentPattern",
                     "intent": "EndIntent",
                     "pattern": "end"
                 }
@@ -19,7 +19,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.BeginDialog",
-                        "includeActivity": true,
+                        "activityProcessed": false,
                         "options": {},
                         "dialog": {
                             "$kind": "Microsoft.AdaptiveDialog",
@@ -28,7 +28,6 @@
                                 "$kind": "Microsoft.RegexRecognizer",
                                 "intents": [
                                     {
-                                        "$kind": "Microsoft.IntentPattern",
                                         "intent": "EndIntent",
                                         "pattern": "end"
                                     }
@@ -62,7 +61,7 @@
                                     ]
                                 }
                             ],
-                            "AutoEndDialog": true,
+                            "autoEndDialog": true,
                             "defaultResultProperty": "dialog.result"
                         }
                     },
@@ -73,7 +72,7 @@
                 ]
             }
         ],
-        "AutoEndDialog": true,
+        "autoEndDialog": true,
         "defaultResultProperty": "dialog.result"
     },
     "script": [

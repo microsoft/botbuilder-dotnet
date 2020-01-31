@@ -63,10 +63,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
                 var engine = new ExpressionEngine();
                 foreach (var assertion in this.Assertions)
                 {
-                    var (result, error) = engine.Parse(assertion).TryEvaluate(activity);
-                    if ((bool)result != true)
+                    var (result, error) = engine.Parse(assertion).TryEvaluate<bool>(activity);
+                    if (result != true)
                     {
-                        throw new Exception($"{this.Description} {assertion}");
+                        throw new Exception($"{this.Description} {assertion} {activity}");
                     }
                 }
             }
@@ -74,31 +74,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
 
         public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
         {
-            var timeout = Timeout;
+            var timeout = (int)this.Timeout;
 
-            //if (System.Diagnostics.Debugger.IsAttached)
-            //{
-            //    timeout = uint.MaxValue;
-            //}
-
-            var start = DateTime.UtcNow;
-            while (true)
+            if (System.Diagnostics.Debugger.IsAttached)
             {
-                var current = DateTime.UtcNow;
+                timeout = int.MaxValue;
+            }
 
-                if ((current - start).TotalMilliseconds > timeout)
-                {
-                    throw new TimeoutException($"{timeout}ms Timed out waiting for: {GetConditionDescription()}");
-                }
+            CancellationTokenSource cts = new CancellationTokenSource();
+            cts.CancelAfter((int)timeout);
+            IActivity replyActivity = await adapter.GetNextReplyAsync(cts.Token).ConfigureAwait(false);
 
-                IActivity replyActivity = adapter.GetNextReply();
-                if (replyActivity != null)
-                {
-                    ValidateReply((Activity)replyActivity);
-                    return;
-                }
-
-                await Task.Delay(100).ConfigureAwait(false);
+            if (replyActivity != null)
+            {
+                ValidateReply((Activity)replyActivity);
+                return;
             }
         }
     }

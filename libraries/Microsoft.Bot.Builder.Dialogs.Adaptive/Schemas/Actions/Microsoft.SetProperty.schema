@@ -9,8 +9,23 @@
         "value"
     ],
     "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$role": "expression",
+            "type": [ "boolean", "string" ],
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
         "property": {
             "$role": "expression",
+            "type": "string",
             "title": "Property",
             "description": "Property (named location to store information).",
             "examples": [
@@ -19,12 +34,13 @@
         },
         "value": {
             "$role": "expression",
+            "type": [ "object", "array", "number", "integer", "boolean", "string" ],
             "title": "Value",
             "description": "New value or expression.",
             "examples": [
-                "'milk'",
-                "dialog.favColor",
-                "dialog.favColor == 'red'"
+                "='milk'",
+                "=dialog.favColor",
+                "=dialog.favColor == 'red'"
             ]
         }
     }

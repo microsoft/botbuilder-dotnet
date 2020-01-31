@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -63,7 +64,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
                 activity.From.Name = this.User;
             }
 
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            
             await adapter.ProcessActivityAsync(this.Activity, callback, default(CancellationToken)).ConfigureAwait(false);
+            
+            sw.Stop();
+            Trace.TraceInformation($"[Turn Ended => {sw.ElapsedMilliseconds} ms processing UserActivity: {this.Activity.Text} ]");
         }
     }
 }

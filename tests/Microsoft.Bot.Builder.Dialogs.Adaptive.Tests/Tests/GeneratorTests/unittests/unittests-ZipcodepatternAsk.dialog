@@ -1,0 +1,16 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$kind": "Microsoft.OnEndOfActions",
+    "condition":"!$Zipcodepattern",
+    "priority": "indexOf(dialog.requiredProperties, 'Zipcodepattern')",
+    "actions": [
+        {
+            "$kind": "Microsoft.Ask",
+            "activity": "@{AskZipcodepattern()}",
+            "expectedProperties": [
+                "Zipcodepattern"
+            ]
+        }
+    ]
+}

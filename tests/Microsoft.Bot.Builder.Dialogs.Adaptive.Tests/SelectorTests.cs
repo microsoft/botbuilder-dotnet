@@ -9,27 +9,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public async Task SelectorTests_AdaptiveFirstSelector()
+        public async Task SelectorTests_FirstSelector()
         {
-            await TestUtils.RunTestScript("SelectorTests_FirstSelector.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
-        public async Task SelectorTests_AdaptiveRandomSelector()
+        public async Task SelectorTests_RandomSelector()
         {
-            await TestUtils.RunTestScript("SelectorTests_RandomSelector.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
         public async Task SelectorTests_MostSpecificFirstSelector()
         {
-            await TestUtils.RunTestScript("SelectorTests_MostSpecificFirstSelector.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
         public async Task SelectorTests_MostSpecificRandomSelector()
         {
-            await TestUtils.RunTestScript("SelectorTests_MostSpecificRandomSelector.test.dialog");
+            await TestUtils.RunTestScript();
         }
 
         [TestMethod]
@@ -43,6 +43,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task SelectorTests_AdaptiveConditionalSelector()
         {
             await TestUtils.RunTestScript("SelectorTests_ConditionalSelector.test.dialog");
+        }
+
+        [TestMethod]
+        public async Task SelectorTests_RunOnce()
+        {
+            await TestUtils.RunTestScript();
+        }
+
+        [TestMethod]
+        public async Task SelectorTests_Priority()
+        {
+            await TestUtils.RunTestScript();
         }
     }
 }

@@ -53,3 +53,16 @@
 - DEFAULT:
    - @{wPhrase()}, welcome next time!
 
+
+# structureTemplate
+[MyStruct
+    Text = @{text}
+    @{ST2()}
+]
+
+
+# ST2
+[MyStruct
+    Speak = bar
+    Text = @{newText}
+]

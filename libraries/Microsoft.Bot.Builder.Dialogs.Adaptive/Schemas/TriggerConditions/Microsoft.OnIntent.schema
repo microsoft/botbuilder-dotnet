@@ -27,7 +27,6 @@
         }
     ],
     "required": [
-        "intent",
         "actions"
     ]
 }

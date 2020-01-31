@@ -9,8 +9,23 @@
         "type"
     ],
     "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$role": "expression",
+            "type": [ "boolean", "string" ],
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
         "property": {
             "$role": "expression",
+            "type": "string",
             "title": "Property",
             "description": "Property (named location to store information).",
             "examples": [
@@ -18,6 +33,7 @@
             ]
         },
         "type": {
+            "$role": "expression",
             "type": "string",
             "title": "Type",
             "description": "Type of value.",

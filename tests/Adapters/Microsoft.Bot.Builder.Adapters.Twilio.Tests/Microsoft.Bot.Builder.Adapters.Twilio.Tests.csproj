@@ -10,6 +10,10 @@
     <NoWarn>$(NoWarn),CS8002</NoWarn>
   </PropertyGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+    <FrameworkReference  Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
     <PackageReference Include="Moq" Version="4.13.1" />
@@ -28,10 +32,10 @@
     <None Update="Files\Activities.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="files\DictionaryMediaPayload.json">
+    <None Update="Files\DictionaryMediaPayload.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="files\DictionaryPayload.json">
+    <None Update="Files\DictionaryPayload.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Files\MediaPayload.txt">

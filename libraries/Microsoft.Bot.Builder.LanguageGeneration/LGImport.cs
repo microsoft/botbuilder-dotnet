@@ -4,7 +4,7 @@
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
-    /// Here is a data model that can easily understanded and used as the LG import definition in lg files.
+    /// Here is a data model that can easily understand and use the LG import definition in LG files.
     /// </summary>
     public class LGImport
     {
@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="parseTree">The parse tree of this template.</param>
         /// <param name="source">Source of this import.</param>
-        public LGImport(LGFileParser.ImportDefinitionContext parseTree, string source = "")
+        internal LGImport(LGFileParser.ImportDefinitionContext parseTree, string source = "")
         {
             ParseTree = parseTree;
             Source = source;
@@ -54,8 +54,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public LGFileParser.ImportDefinitionContext ParseTree { get; }
 
-        private string ExtractDescription(LGFileParser.ImportDefinitionContext parseTree) => parseTree.IMPORT_DESC()?.GetText()?.Trim('[').Trim(']');
+        private string ExtractDescription(LGFileParser.ImportDefinitionContext parseTree)
+        {
+            // content: [xxx](yyy)
+            var content = parseTree.GetText();
+            var closeSquareBracketIndex = content.IndexOf(']');
+            return content.Substring(1, closeSquareBracketIndex - 1);
+        }
 
-        private string ExtractId(LGFileParser.ImportDefinitionContext parseTree) => parseTree.IMPORT_PATH()?.GetText()?.Trim('(').Trim(')');
+        private string ExtractId(LGFileParser.ImportDefinitionContext parseTree)
+        {
+            // content: [xxx](yyy)
+            var content = parseTree.GetText();
+            var lastOpenBracketIndex = content.LastIndexOf('(');
+            return content.Substring(lastOpenBracketIndex + 1, content.Length - lastOpenBracketIndex - 2);
+        }
     }
 }

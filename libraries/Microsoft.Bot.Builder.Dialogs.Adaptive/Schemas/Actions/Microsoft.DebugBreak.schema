@@ -3,5 +3,21 @@
     "$role": "union(Microsoft.IDialog)",
     "title": "Debugger break",
     "description": "If debugger is attached, stop the execution at this point in the conversation.",
-    "type": "object"
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$role": "expression",
+            "type": [ "boolean", "string" ],
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        }
+    }
 }

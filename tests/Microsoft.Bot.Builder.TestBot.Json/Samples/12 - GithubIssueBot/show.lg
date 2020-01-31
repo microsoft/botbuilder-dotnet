@@ -1,9 +1,13 @@
 # Show
-- You have following issues : \n {join(foreach(dialog.getResponse.content, x, showSingleUrl(x)), '\n')}
+[Activity
+    Text = You have following issues :
+    Attachments = @{foreach(dialog.getResponse.content, x, json(showSingleUrl(x)))}
+    AttachmentLayout = carousel
+]
+
 
 # showSingleUrl(x)
 - ```
-[adaptivecard
 {
     "type": "AdaptiveCard",
     "body": [
@@ -74,5 +78,4 @@
     "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
     "version": "1.0"
 }
-]
 ```

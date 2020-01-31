@@ -1,0 +1,17 @@
+# BreadEntity(value) 
+- SWITCH: @{value}
+- CASE: @{'multiGrainWheat'} 
+ - multi grain wheat
+- CASE: @{'rye'} 
+ - rye
+- CASE: @{'white'} 
+ - white
+- CASE: @{'wholeWheat'} 
+ - whole wheat
+- DEFAULT: 
+ - I don't understand @{value}
+
+# chooseBreadEntity
+- @{chooseEnumEntity('Bread')}
+
+[sandwich-common.lg](sandwich-common.lg)

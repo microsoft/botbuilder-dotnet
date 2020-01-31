@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// <summary>
     /// Format specifier for outputs.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
+    [JsonConverter(typeof(StringEnumConverter), /*camelCase*/ true)]
     public enum AttachmentOutputFormat
     {
         /// <summary>
@@ -38,11 +38,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         [JsonProperty("outputFormat")]
-        public AttachmentOutputFormat OutputFormat { get; set; } = AttachmentOutputFormat.First;
+        public EnumExpression<AttachmentOutputFormat> OutputFormat { get; set; } = AttachmentOutputFormat.First;
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.GetState().GetValue<List<Attachment>>(VALUE_PROPERTY);
+            var dcState = dc.GetState();
+            var input = dcState.GetValue<List<Attachment>>(VALUE_PROPERTY);
             var first = input.Count > 0 ? input[0] : null;
 
             if (first == null || (string.IsNullOrEmpty(first.ContentUrl) && first.Content == null))
@@ -50,13 +51,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return Task.FromResult(InputState.Unrecognized);
             }
 
-            switch (this.OutputFormat)
+            switch (this.OutputFormat.GetValue(dcState))
             {
                 case AttachmentOutputFormat.All:
-                    dc.GetState().SetValue(VALUE_PROPERTY, input);
+                    dcState.SetValue(VALUE_PROPERTY, input);
                     break;
                 case AttachmentOutputFormat.First:
-                    dc.GetState().SetValue(VALUE_PROPERTY, first);
+                    dcState.SetValue(VALUE_PROPERTY, first);
                     break;
             }
 

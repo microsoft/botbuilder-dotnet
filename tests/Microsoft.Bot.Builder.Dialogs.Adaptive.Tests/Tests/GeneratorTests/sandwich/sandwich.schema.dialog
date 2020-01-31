@@ -1,0 +1,169 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "Quantity": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 10,
+            "$entities": [
+                "number:Quantity",
+                "number"
+            ]
+        },
+        "Length": {
+            "type": "object",
+            "$entities": [
+                "dimension:Length",
+                "dimension"
+            ],
+            "required": [
+                "number",
+                "units"
+            ],
+            "properties": {
+                "number": {
+                    "type": "number"
+                },
+                "units": {
+                    "type": "string"
+                }
+            }
+        },
+        "Name": {
+            "type": "string",
+            "$entities": [
+                "personName",
+                "utterance"
+            ]
+        },
+        "Bread": {
+            "type": "string",
+            "enum": [
+                "multiGrainWheat",
+                "rye",
+                "white",
+                "wholeWheat"
+            ],
+            "$entities": [
+                "BreadEntity"
+            ]
+        },
+        "Meat": {
+            "type": "string",
+            "enum": [
+                "bacon",
+                "chicken",
+                "ham",
+                "pulled pork",
+                "roast beef",
+                "salami",
+                "turkey",
+                "none"
+            ],
+            "$entities": [
+                "MeatEntity"
+            ]
+        },
+        "Cheese": {
+            "type": "string",
+            "enum": [
+                "american",
+                "cheddar",
+                "feta",
+                "gouda",
+                "pepper jack",
+                "provolone",
+                "swiss",
+                "none"
+            ],
+            "$entities": [
+                "CheeseEntity"
+            ]
+        },
+        "Price": {
+            "type": "object",
+            "$entities": [
+                "money:Price",
+                "money"
+            ],
+            "required": [
+                "number",
+                "units"
+            ],
+            "properties": {
+                "number": {
+                    "type": "number"
+                },
+                "units": {
+                    "type": "string"
+                }
+            }
+        },
+        "CancelConfirmation": {
+            "type": "string",
+            "$entities": [
+                "Confirmation"
+            ]
+        },
+        "ChangePropertyConfirmation": {
+            "type": "string",
+            "$entities": [
+                "Confirmation"
+            ]
+        },
+        "CompleteConfirmation": {
+            "type": "string",
+            "$entities": [
+                "Confirmation",
+                "PROPERTYName"
+            ]
+        },
+        "PropertyToChange": {
+            "type": "string",
+            "enum": "properties",
+            "$entities": [
+                "PROPERTYName"
+            ]
+        },
+        "PropertyToRemember": {
+            "type": "string",
+            "enum": "properties",
+            "$entities": [
+                "PROPERTYName"
+            ]
+        }
+    },
+    "required": [
+        "Name",
+        "Bread",
+        "Cheese",
+        "Meat",
+        "Price"
+    ],
+    "$expectedOnly": [
+        "Confirmation",
+        "PROPERTYName",
+        "utterance",
+        "keyPhrase",
+        "personName"
+    ],
+    "$public": [
+        "Quantity",
+        "Length",
+        "Name",
+        "Bread",
+        "Meat",
+        "Cheese",
+        "Price"
+    ],
+    "definitions": {
+        "PROPERTYName": {
+            "type": "string",
+            "enum": "properties",
+            "$entities": [
+                "PROPERTYName"
+            ]
+        }
+    }
+}
