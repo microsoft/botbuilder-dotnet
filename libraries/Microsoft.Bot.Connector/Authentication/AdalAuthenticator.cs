@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Connector.Authentication
             Initialize(configurationOAuth, customHttpClient);
         }
 
-        public async Task<AuthenticatorResult> GetTokenAsync(bool forceRefresh = false)
+        public async Task<AuthenticationResult> GetTokenAsync(bool forceRefresh = false)
         {
             var watch = Stopwatch.StartNew();
 
@@ -73,6 +73,12 @@ namespace Microsoft.Bot.Connector.Authentication
             watch.Stop();
             logger?.LogInformation($"GetTokenAsync: Acquired token using ADAL in {watch.ElapsedMilliseconds}.");
 
+            return result;
+        }
+
+        async Task<AuthenticatorResult> IAuthenticator.GetTokenAsync(bool forceRefresh)
+        {
+            var result = await GetTokenAsync(forceRefresh);
             return new AuthenticatorResult() 
             {
                 AccessToken = result.AccessToken,

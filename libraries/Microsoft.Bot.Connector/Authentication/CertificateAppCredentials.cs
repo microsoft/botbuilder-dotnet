@@ -64,9 +64,9 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <inheritdoc/>
-        protected override Lazy<IAuthenticator> BuildAuthenticator()
+        protected override Lazy<AdalAuthenticator> BuildAuthenticator()
         {
-            return new Lazy<IAuthenticator>(
+            return new Lazy<AdalAuthenticator>(
                 () =>
                 new AdalAuthenticator(
                     this.clientCertificate,

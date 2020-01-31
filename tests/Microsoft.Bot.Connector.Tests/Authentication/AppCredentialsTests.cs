@@ -34,9 +34,9 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             {
             }
 
-            protected override Lazy<IAuthenticator> BuildAuthenticator()
+            protected override Lazy<AdalAuthenticator> BuildAuthenticator()
             {
-                return new Mock<Lazy<IAuthenticator>>().Object;
+                return new Mock<Lazy<AdalAuthenticator>>().Object;
             }
         }
     }

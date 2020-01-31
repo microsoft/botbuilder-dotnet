@@ -15,9 +15,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests.Mocks
         {
         }
 
-        protected override Lazy<IAuthenticator> BuildAuthenticator()
+        protected override Lazy<AdalAuthenticator> BuildAuthenticator()
         {
-            return new Lazy<IAuthenticator>();
+            return new Lazy<AdalAuthenticator>();
         }
     }
 }

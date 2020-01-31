@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Connector.Authentication
         public AppCredentials(string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null, string oAuthScope = null)
         {
             OAuthScope = string.IsNullOrWhiteSpace(oAuthScope) ? AuthenticationConstants.ToChannelFromBotOAuthScope : oAuthScope;
-            authenticator = BuildAuthenticator();
+            authenticator = BuildIAuthenticator();
             ChannelAuthTenant = channelAuthTenant;
             CustomHttpClient = customHttpClient;
             Logger = logger;
@@ -205,10 +205,25 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <summary>
+        /// Builds the lazy <see cref="AdalAuthenticator" /> to be used for token acquisition.
+        /// </summary>
+        /// <returns>A lazy <see cref="AdalAuthenticator"/>.</returns>
+        protected abstract Lazy<AdalAuthenticator> BuildAuthenticator();
+
+        /// <summary>
         /// Builds the lazy <see cref="IAuthenticator" /> to be used for token acquisition.
         /// </summary>
         /// <returns>A lazy <see cref="IAuthenticator"/>.</returns>
-        protected abstract Lazy<IAuthenticator> BuildAuthenticator();
+        protected virtual Lazy<IAuthenticator> BuildIAuthenticator()
+        {
+            return new Lazy<IAuthenticator>(
+                () =>
+                {
+                    var lazyAuthenticator = BuildAuthenticator();
+                    return lazyAuthenticator.Value;
+                },
+                LazyThreadSafetyMode.ExecutionAndPublication);
+        }
 
         private static bool IsTrustedUrl(Uri uri)
         {
