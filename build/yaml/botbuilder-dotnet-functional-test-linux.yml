@@ -70,24 +70,13 @@ steps:
    echo "##vso[task.setvariable variable=BOTID;]$(BotName)"
   displayName: 'Get Bot Keys'
 
-- powershell: |
-   echo '##vso[task.setvariable variable=TESTAPPID]$(AppId)'
-   echo '##vso[task.setvariable variable=TESTPASSWORD]$(AppSecret)'
-   echo '##vso[task.setvariable variable=LUISAPPID]$(LUISAPPIDSECRET)'
-   echo '##vso[task.setvariable variable=LUISSUBSCRIPTIONKEY]$(LUISSUBSCRIPTIONKEYSECRET)'
-  displayName: 'Set Environment Variables'
-
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet test'
+  displayName: 'Run Functional tests'
   inputs:
     command: test
-    projects: |
-     **/**Tests.csproj
-     !**/Microsoft.Bot.Builder.Classic.Tests.csproj
-     !**/Microsoft.Bot.ApplicationInsights.WebApi.Tests.csproj
-     !**/Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests.csproj
-    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=Adapters"'
-    workingDirectory: tests
+    projects: '$(System.DefaultWorkingDirectory)\FunctionalTests\**\*FunctionalTests.csproj'
+    arguments: '-v n  --configuration $(BuildConfiguration) --no-build --no-restore --filter TestCategory=FunctionalTests --collect:"Code Coverage" --settings $(System.DefaultWorkingDirectory)\CodeCoverage.runsettings '
+    workingDirectory: '$(System.DefaultWorkingDirectory)\'
 
 - task: AzureCLI@1
   displayName: 'Delete Resources'
