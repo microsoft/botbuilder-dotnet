@@ -322,6 +322,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task WaterfallCancel()
+        {
+            const string id = "waterfall";
+            const int index = 1;
+
+            var dialog = new MyWaterfallDialog(id);
+            var trackEventCalled = false;
+
+            dialog.TelemetryClient = new MyBotTelemetryClient(stepName =>
+            {
+                Assert.AreEqual(stepName, "Waterfall2_Step2");
+                trackEventCalled = true;
+            });
+
+            await dialog.EndDialogAsync(
+                new TurnContext(new TestAdapter(), new Activity()),
+                new DialogInstance
+                {
+                    Id = id,
+                    State = new Dictionary<string, object>
+                    {
+                        { "stepIndex", index },
+                        { "instanceId", "(guid)" },
+                    }
+                },
+                DialogReason.CancelCalled);
+
+            Assert.IsTrue(trackEventCalled, "TrackEvent was never called.");
+        }
+
         private static WaterfallDialog Create_Waterfall2()
         {
             var steps = new WaterfallStep[]
@@ -409,6 +440,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             await stepContext.Context.SendActivityAsync(MessageFactory.Text("step2.2"), cancellationToken);
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+        }
+
+        private class MyBotTelemetryClient : IBotTelemetryClient
+        {
+            public MyBotTelemetryClient(Action<string> trackEventAction)
+            {
+                TrackEventAction = trackEventAction;
+            }
+
+            public Action<string> TrackEventAction { get; set; }
+
+            public void Flush()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void TrackAvailability(string name, DateTimeOffset timeStamp, TimeSpan duration, string runLocation, bool success, string message = null, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void TrackDependency(string dependencyTypeName, string target, string dependencyName, string data, DateTimeOffset startTime, TimeSpan duration, string resultCode, bool success)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void TrackEvent(string eventName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+            {
+                TrackEventAction(properties["StepName"]);
+            }
+
+            public void TrackException(Exception exception, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void TrackTrace(string message, Severity severityLevel, IDictionary<string, string> properties)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

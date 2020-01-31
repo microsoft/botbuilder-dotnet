@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
@@ -15,6 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public static BotAdapter UseAdaptiveDialogs(this BotAdapter botAdapter)
         {
             DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
+            DeclarativeTypeLoader.AddComponent(new LuisComponentRegistration());
             return botAdapter;
         }
     }

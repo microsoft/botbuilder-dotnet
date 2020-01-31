@@ -7,6 +7,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -64,6 +65,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 Prompt = new ActivityTemplate("What declarative sample do you want to run?"),
                 Property = "conversation.dialogChoice",
                 AlwaysPrompt = true,
+                Choices = new ChoiceSet(new List<Choice>())
             };
 
             var handleChoice = new SwitchCondition()
@@ -72,6 +74,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 Cases = new List<Case>()
             };
 
+            Dialog lastDialog = null;
             var choices = new ChoiceSet();
 
             foreach (var resource in this.resourceExplorer.GetResources(".dialog").Where(r => r.Id.EndsWith(".main.dialog")))
@@ -81,6 +84,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
                     choices.Add(new Choice(name));
                     var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, this.resourceExplorer, DebugSupport.SourceMap);
+                    lastDialog = dialog;
                     handleChoice.Cases.Add(new Case($"{name}", new List<Dialog>() { dialog }));
                 }
                 catch (SyntaxErrorException err)
@@ -93,22 +97,36 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 }
             }
 
-            choiceInput.Choices = choices;
-            choiceInput.Style = ListStyle.Auto;
-            rootDialog.Triggers.Add(new OnBeginDialog()
+            if (handleChoice.Cases.Count() == 1)
             {
-                Actions = new List<Dialog>()
+                rootDialog.Triggers.Add(new OnBeginDialog()
+                {
+                    Actions = new List<Dialog>()
+                {
+                    lastDialog,
+                    new RepeatDialog()
+                }
+                });
+            }
+            else
+            {
+                choiceInput.Choices = choices;
+                choiceInput.Style = ListStyle.Auto;
+                rootDialog.Triggers.Add(new OnBeginDialog()
+                {
+                    Actions = new List<Dialog>()
                 {
                     choiceInput,
                     new SendActivity("# Running @{conversation.dialogChoice}.main.dialog"),
                     handleChoice,
                     new RepeatDialog()
                 }
-            });
+                });
+            }
 
             this.dialogManager = new DialogManager(rootDialog);
 
-            System.Diagnostics.Trace.TraceInformation("Done loading resources.");
+            Trace.TraceInformation("Done loading resources.");
         }
     }
 }

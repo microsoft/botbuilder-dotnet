@@ -94,6 +94,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public bool EnableTrace { get; set; } = false;
 
         /// <summary>
+        /// Build default test adapter.
+        /// </summary>
+        /// <param name="testName">Name of test.</param>
+        /// <param name="resourceExplorer">Resource explorer to use.</param>
+        /// <param name="configuration">Bot Framework configuration.</param>
+        /// <returns>Test adapter.</returns>
+        public TestAdapter DefaultTestAdapter([CallerMemberName] string testName = null, ResourceExplorer resourceExplorer = null, IConfiguration configuration = null)
+        {
+            if (resourceExplorer == null)
+            {
+                resourceExplorer = new ResourceExplorer()
+                    .AddFolder(GetProjectPath());
+            }
+
+            TypeFactory.Configuration = configuration ?? defaultConfiguration;
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var adapter = (TestAdapter)new TestAdapter(TestAdapter.CreateConversation(testName))
+                .Use(new RegisterClassMiddleware<IConfiguration>(TypeFactory.Configuration))
+                .UseStorage(storage)
+                .UseState(userState, convoState)
+                .UseResourceExplorer(resourceExplorer)
+                .UseAdaptiveDialogs()
+                .UseLanguageGeneration(resourceExplorer)
+                .UseMockLuis()
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
+            adapter.OnTurnError += (context, err) => context.SendActivityAsync(err.Message);
+            return adapter;
+        }
+
+        /// <summary>
         /// Starts the execution of the test sequence.
         /// </summary>
         /// <remarks>This methods sends the activities from the user to the bot and
@@ -106,29 +139,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <returns>Runs the exchange between the user and the bot.</returns>
         public async Task ExecuteAsync([CallerMemberName] string testName = null, ResourceExplorer resourceExplorer = null, BotCallbackHandler callback = null, TestAdapter adapter = null, IConfiguration configuration = null)
         {
-            if (resourceExplorer == null)
-            {
-                resourceExplorer = new ResourceExplorer()
-                    .AddFolder(GetProjectPath());
-            }
-
             if (adapter == null)
             {
-                TypeFactory.Configuration = configuration ?? defaultConfiguration;
-                var storage = new MemoryStorage();
-                var convoState = new ConversationState(storage);
-                var userState = new UserState(storage);
-                adapter = (TestAdapter)new TestAdapter(TestAdapter.CreateConversation(testName))
-                    .Use(new RegisterClassMiddleware<IConfiguration>(TypeFactory.Configuration))
-                    .UseStorage(storage)
-                    .UseState(userState, convoState)
-                    .UseResourceExplorer(resourceExplorer)
-                    .UseAdaptiveDialogs()
-                    .UseLanguageGeneration(resourceExplorer)
-                    .UseMockLuis()
-                    .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
-
-                adapter.OnTurnError += (context, err) => context.SendActivityAsync(err.Message);
+                adapter = DefaultTestAdapter(testName, resourceExplorer, configuration);
             }
 
             adapter.EnableTrace = this.EnableTrace;

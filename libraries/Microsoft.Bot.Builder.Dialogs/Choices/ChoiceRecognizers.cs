@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.Number;
@@ -53,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 if (options == null || options.RecognizeOrdinals)
                 {
                     // Next try finding by ordinal
-                    matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale, NumberOptions.SuppressExtendedTypes).GetOrdinalModel(locale));
+                    matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale).GetOrdinalModel(locale));
                     foreach (var match in matches)
                     {
                         MatchChoiceByIndex(list, matched, match);
@@ -63,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 if (matches.Count == 0 && (options == null || options.RecognizeNumbers))
                 {
                     // Then try by numerical index
-                    matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale, NumberOptions.SuppressExtendedTypes).GetNumberModel(locale));
+                    matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale).GetNumberModel(locale));
                     foreach (var match in matches)
                     {
                         MatchChoiceByIndex(list, matched, match);
@@ -83,7 +84,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         {
             try
             {
-                var index = int.Parse(match.Resolution.Value) - 1;
+                // converts Resolution Values containing "end" (e.g. utterance "last") in numeric values.
+                var value = match.Resolution.Value.Replace("end", list.Count.ToString());
+                var dt = new DataTable();
+                var result = (int)dt.Compute(value, string.Empty);
+
+                var index = result - 1;
                 if (index >= 0 && index < list.Count)
                 {
                     var choice = list[index];
