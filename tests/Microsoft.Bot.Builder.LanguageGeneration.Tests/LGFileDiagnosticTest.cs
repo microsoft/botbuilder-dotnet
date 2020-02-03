@@ -249,14 +249,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(exception.Message.Contains("Error occurs when evaluating expression"));
         }
 
-        [TestMethod]
-        public void TestNoVariableMatch()
-        {
-            var lgFile = GetLGFile("NoVariableMatch.lg");
-            var exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("NoVariableMatch"));
-            Assert.IsTrue(exception.Message.Contains("Error occurs when evaluating expression 'Name': Name is evaluated to null"));
-        }
-
         private string GetExceptionExampleFilePath(string fileName)
         {
             return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "ExceptionExamples" + Path.DirectorySeparatorChar + fileName;
