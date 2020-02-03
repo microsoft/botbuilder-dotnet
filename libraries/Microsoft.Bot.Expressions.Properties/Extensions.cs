@@ -40,10 +40,9 @@ namespace Microsoft.Bot.Expressions.Properties
 
             var newLgFile = LGParser.ParseText(newContent, lgFile.Id, lgFile.ImportResolver);
 
-            var memory = SimpleObjectMemory.Wrap(scope);
             var allTemplates = lgFile.AllTemplates.Union(newLgFile.AllTemplates).ToList();
             var evaluator = new Evaluator(allTemplates, lgFile.ExpressionEngine);
-            return evaluator.EvaluateTemplate(fakeTemplateId, new CustomizedMemory(memory));
+            return evaluator.EvaluateTemplate(fakeTemplateId, scope);
         }
 
         private static void CheckErrors(IList<Diagnostic> diagnostics)

@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// we want to make sure the global memory (the first memory passed in) can be
     /// accessible at any sub evaluation process. 
     /// </summary>
-    public class CustomizedMemory : IMemory
+    internal class CustomizedMemory : IMemory
     {
         public CustomizedMemory(object scope)
         {
