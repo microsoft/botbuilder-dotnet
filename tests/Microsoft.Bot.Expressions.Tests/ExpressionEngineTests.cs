@@ -366,9 +366,8 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("replaceIgnoreCase(nullObj, 'L', 'k')", string.Empty),
             Test("split('hello','e')", new string[] { "h", "llo" }),
             Test("split(nullObj,'e')", new string[] { string.Empty }),
-
-            //Test("split('hello',nullObj)", new string[] { "h", "e", "l", "l", "o" }),
-            Test("split('hello',nullObj)", new string[] { "hello" }),
+            Test("split('hello')", new string[] { "h", "e", "l", "l", "o" }),
+            Test("split('hello',nullObj)", new string[] { "h", "e", "l", "l", "o" }),
             Test("substring('hello', 0, 5)", "hello"),
             Test("substring('hello', 0, 3)", "hel"),
             Test("substring('hello', 3)", "lo"),
