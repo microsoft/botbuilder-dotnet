@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Store Skill information for this dialog instance
-            await _activeSkillProperty.SetAsync(dc.Context, _dialogOptions.SkillInfo, cancellationToken).ConfigureAwait(false);
+            await _activeSkillProperty.SetAsync(dc.Context, dialogArgs.Skill, cancellationToken).ConfigureAwait(false);
 
             await dc.Context.TraceActivityAsync($"{GetType().Name}.BeginDialogAsync()", label: $"Using activity of type: {dialogArgs.ActivityType}", cancellationToken: cancellationToken).ConfigureAwait(false);
 
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             ApplyParentActivityProperties(dc, skillActivity, dialogArgs);
-            return await SendToSkillAsync(dc, skillActivity, _dialogOptions.SkillInfo, cancellationToken).ConfigureAwait(false);
+            return await SendToSkillAsync(dc, skillActivity, dialogArgs.Skill, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
@@ -75,18 +75,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             var skillInfo = await _activeSkillProperty.GetAsync(dc.Context, () => null, cancellationToken).ConfigureAwait(false);
 
-            if (dc.Context.Activity.Type == ActivityTypes.Message && dc.Context.Activity.Text.Equals("abort", StringComparison.CurrentCultureIgnoreCase))
-            {
-                // Send a message to the skill to let it do some cleanup
-                var eocActivity = Activity.CreateEndOfConversationActivity();
-                eocActivity.ApplyConversationReference(dc.Context.Activity.GetConversationReference(), true);
-                await SendToSkillAsync(dc, (Activity)eocActivity, _dialogOptions.SkillInfo, cancellationToken).ConfigureAwait(false);
-
-                // End this dialog and return (we don't care if the skill responds or not)
-                await dc.Context.TraceActivityAsync($"{GetType().Name}.ContinueDialogAsync()", label: "Canceled", cancellationToken: cancellationToken).ConfigureAwait(false);
-                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-
             if (dc.Context.Activity.Type == ActivityTypes.EndOfConversation)
             {
                 await dc.Context.TraceActivityAsync($"{GetType().Name}.ContinueDialogAsync()", label: "Got EndOfConversation", cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -94,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Just forward to the remote skill
-            return await SendToSkillAsync(dc, dc.Context.Activity, _dialogOptions.SkillInfo, cancellationToken).ConfigureAwait(false);
+            return await SendToSkillAsync(dc, dc.Context.Activity, skillInfo, cancellationToken).ConfigureAwait(false);
         }
 
         private static void ApplyParentActivityProperties(DialogContext dc, Activity skillActivity, SkillDialogArgs dialogArgs)
