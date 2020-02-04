@@ -5,6 +5,11 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Expressions
 {
+    /// <summary>
+    /// A least-recently-used cache stored like a dictionary.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key to the cached item.</typeparam>
+    /// <typeparam name="TValue">The type of the cached item.</typeparam>
     public sealed class LRUCache<TKey, TValue>
     {
         private const int DefaultCapacity = 255;
@@ -14,11 +19,18 @@ namespace Microsoft.Bot.Expressions
         private readonly Dictionary<TKey, Entry> cacheMap;
         private readonly LinkedList<TKey> cacheList;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LRUCache{TKey, TValue}"/> class.
+        /// </summary>
         public LRUCache()
             : this(DefaultCapacity)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LRUCache{TKey, TValue}"/> class.
+        /// </summary>
+        /// <param name="capacity">Maximum number of elements to cache.</param>
         public LRUCache(int capacity)
         {
             this.capacity = capacity > 0 ? capacity : DefaultCapacity;
@@ -26,6 +38,14 @@ namespace Microsoft.Bot.Expressions
             this.cacheList = new LinkedList<TKey>();
         }
 
+        /// <summary>
+        /// Gets the value associated with the specified key.
+        /// </summary>
+        /// <param name="key">The key of the value to get.</param>
+        /// <param name="value">When this method returns, contains the value associated with
+        /// the specified key, if the key is found; otherwise, the default value for the 
+        /// type of the <paramref name="value" /> parameter.</param>
+        /// <returns>true if contains an element with the specified key; otherwise, false.</returns>
         public bool TryGet(TKey key, out TValue value)
         {
             lock (lockObj)
@@ -42,6 +62,11 @@ namespace Microsoft.Bot.Expressions
             return false;
         }
 
+        /// <summary>
+        /// Adds the specified key and value to the cache.
+        /// </summary>
+        /// <param name="key">The key of the element to add.</param>
+        /// <param name="value">The value of the element to add.</param>
         public void Set(TKey key, TValue value)
         {
             lock (lockObj)

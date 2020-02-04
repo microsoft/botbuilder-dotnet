@@ -8,10 +8,18 @@ using Antlr4.Runtime.Tree;
 
 namespace Microsoft.Bot.Expressions
 {
+    /// <summary>
+    /// Convert PCRE regex string to <see cref="Regex"/> object.
+    /// </summary>
     public static class CommonRegex
     {
         private static readonly LRUCache<string, Regex> RegexCache = new LRUCache<string, Regex>(15);
 
+        /// <summary>
+        /// Convert PCRE regex string to <see cref="Regex"/> object.
+        /// </summary>
+        /// <param name="pattern">PCRE pattern string.</param>
+        /// <returns>Regex object.</returns>
         public static Regex CreateRegex(string pattern)
         {
             Regex result;

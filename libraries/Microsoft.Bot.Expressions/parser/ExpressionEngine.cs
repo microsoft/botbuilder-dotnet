@@ -27,6 +27,12 @@ namespace Microsoft.Bot.Expressions
             EvaluatorLookup = lookup ?? BuiltInFunctions.Lookup;
         }
 
+        /// <summary>
+        /// Gets the elegate to lookup function information from the type.
+        /// </summary>
+        /// <value>
+        /// The elegate to lookup function information from the type.
+        /// </value>
         public EvaluatorLookup EvaluatorLookup { get; }
 
         /// <summary>

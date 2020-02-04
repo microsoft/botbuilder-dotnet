@@ -8,6 +8,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Expressions.Memory
 {
+    /// <summary>
+    /// Simple implement of <see cref="IMemory"/>.
+    /// </summary>
     public class SimpleObjectMemory : IMemory
     {
         private object memory = null;
@@ -23,6 +26,11 @@ namespace Microsoft.Bot.Expressions.Memory
             this.memory = memory;
         }
 
+        /// <summary>
+        /// Transfer an common object to simple memory.
+        /// </summary>
+        /// <param name="obj">common object.</param>
+        /// <returns>Simple memory instance.</returns>
         public static IMemory Wrap(object obj)
         {
             if (obj is IMemory)
@@ -33,6 +41,12 @@ namespace Microsoft.Bot.Expressions.Memory
             return new SimpleObjectMemory(obj);
         }
 
+        /// <summary>
+        /// Try get value from a given path.
+        /// </summary>
+        /// <param name="path">Given path.</param>
+        /// <param name="value">resolved value.</param>
+        /// <returns>true if the memory contains an element with the specified key; otherwise, false.</returns>
         public bool TryGetValue(string path, out object value)
         {
             value = null;
@@ -77,6 +91,12 @@ namespace Microsoft.Bot.Expressions.Memory
         // if you set dialog.a.b = x, but dialog.a don't exist, this will result in an error
         // because we can't and shouldn't smart create structure in the middle
         // you can implement a customized Scope that support such behavior
+
+        /// <summary>
+        /// Set value to a given path.
+        /// </summary>
+        /// <param name="path">memory path.</param>
+        /// <param name="value">value to set.</param>
         public void SetValue(string path, object value)
         {
             if (memory == null)
