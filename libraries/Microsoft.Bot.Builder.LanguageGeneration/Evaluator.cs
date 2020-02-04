@@ -331,7 +331,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private object EvalExpression(string exp, bool tolerant = true)
+        private object EvalExpression(string exp, bool nullable = true)
         {
             exp = exp.TrimExpression();
             var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
@@ -342,13 +342,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (result == null)
             {
-                if (tolerant)
+                if (nullable)
                 {
-                    // temporary solution
-                    return "null";
+                    result = "null";
                 }
-
-                throw new Exception(LGErrors.NullExpression(exp));
+                else
+                {
+                    throw new Exception(LGErrors.NullExpression(exp));
+                }
             }
 
             return result;
