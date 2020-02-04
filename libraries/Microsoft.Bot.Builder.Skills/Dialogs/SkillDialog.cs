@@ -51,7 +51,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 case ActivityTypes.Event:
                     var eventActivity = Activity.CreateEventActivity();
                     eventActivity.Name = dialogArgs.Name;
-                    eventActivity.ApplyConversationReference(dc.Context.Activity.GetConversationReference(), true);
                     skillActivity = (Activity)eventActivity;
                     break;
 
@@ -61,12 +60,22 @@ namespace Microsoft.Bot.Builder.Dialogs
                     skillActivity = (Activity)messageActivity;
                     break;
 
+                case ActivityTypes.Invoke:
+                    // Invoke activities are request/response, so just call the skill and we return the response.
+                    var invokeActivity = Activity.CreateInvokeActivity();
+                    invokeActivity.Name = dialogArgs.Name;
+                    ApplyParentActivityProperties(dc, (Activity)invokeActivity, dialogArgs);
+                    var response = await SendToSkillAsync(dc, (Activity)invokeActivity, dialogArgs.Skill, cancellationToken).ConfigureAwait(false);
+
+                    return await dc.EndDialogAsync(response, cancellationToken).ConfigureAwait(false);
+
                 default:
                     throw new ArgumentException($"Invalid activity type in {dialogArgs.ActivityType} in {nameof(SkillDialogArgs)}");
             }
 
             ApplyParentActivityProperties(dc, skillActivity, dialogArgs);
-            return await SendToSkillAsync(dc, skillActivity, dialogArgs.Skill, cancellationToken).ConfigureAwait(false);
+            await SendToSkillAsync(dc, skillActivity, dialogArgs.Skill, cancellationToken).ConfigureAwait(false);
+            return EndOfTurn;
         }
 
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
@@ -82,7 +91,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Just forward to the remote skill
-            return await SendToSkillAsync(dc, dc.Context.Activity, skillInfo, cancellationToken).ConfigureAwait(false);
+            await SendToSkillAsync(dc, dc.Context.Activity, skillInfo, cancellationToken).ConfigureAwait(false);
+            return EndOfTurn;
         }
 
         private static void ApplyParentActivityProperties(DialogContext dc, Activity skillActivity, SkillDialogArgs dialogArgs)
@@ -94,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             skillActivity.Properties = dc.Context.Activity.Properties;
         }
 
-        private async Task<DialogTurnResult> SendToSkillAsync(DialogContext dc, Activity activity, BotFrameworkSkill skillInfo, CancellationToken cancellationToken)
+        private async Task<InvokeResponse> SendToSkillAsync(DialogContext dc, Activity activity, BotFrameworkSkill skillInfo, CancellationToken cancellationToken)
         {
             // Always save state before forwarding
             // (the dialog stack won't get updated with the skillDialog and things won't work if you don't)
@@ -107,7 +117,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new HttpRequestException($"Error invoking the skill id: \"{skillInfo.Id}\" at \"{skillInfo.SkillEndpoint}\" (status is {response.Status}). \r\n {response.Body}");
             }
 
-            return EndOfTurn;
+            return response;
         }
     }
 }

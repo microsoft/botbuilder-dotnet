@@ -175,6 +175,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot31.Dialogs
                     choices.Add(new Choice("OAuthTest"));
                     choices.Add(new Choice("mv:some message with value"));
                     choices.Add(new Choice("BookFlightWithValues"));
+                    choices.Add(new Choice("GetWeather"));
                     break;
             }
 
@@ -242,6 +243,21 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot31.Dialogs
                     {
                         Destination = "New York",
                         Origin = "Seattle"
+                    }
+                };
+                return dialogArgs;
+            }
+
+            // Send an invoke activity to the skill "GetWeather" in the name and some testing values.
+            if (selectedOption.Equals("GetWeather", StringComparison.CurrentCultureIgnoreCase))
+            {
+                var dialogArgs = new SkillDialogArgs
+                {
+                    ActivityType = ActivityTypes.Invoke,
+                    Name = "GetWeather",
+                    Value = new Location
+                    {
+                        PostalCode = "11218"
                     }
                 };
                 return dialogArgs;
