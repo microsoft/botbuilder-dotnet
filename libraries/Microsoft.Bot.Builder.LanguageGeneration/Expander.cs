@@ -10,6 +10,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Microsoft.Bot.Expressions;
+using Microsoft.Bot.Expressions.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -37,6 +38,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public List<string> EvaluateTemplate(string templateName, object scope)
         {
+            if (!(scope is CustomizedMemory))
+            {
+                scope = new CustomizedMemory(SimpleObjectMemory.Wrap(scope));
+            }
+
             if (!TemplateMap.ContainsKey(templateName))
             {
                 throw new Exception(LGErrors.TemplateNotExist(templateName));

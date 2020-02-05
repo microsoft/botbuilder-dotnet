@@ -2710,12 +2710,27 @@ namespace Microsoft.Bot.Expressions
                     Apply(
                         args =>
                         {
-                            string inputStr = ParseStringOrNull(args[0]);
-                            string segStr = ParseStringOrNull(args[1]);
-                            return inputStr.Split(segStr.ToCharArray());
+                            var inputStr = string.Empty;
+                            var seperator = string.Empty;
+                            if (args.Count == 1)
+                            {
+                                inputStr = ParseStringOrNull(args[0]);
+                            } 
+                            else
+                            {
+                                inputStr = ParseStringOrNull(args[0]);
+                                seperator = ParseStringOrNull(args[1]);
+                            }
+
+                            if (seperator == string.Empty)
+                            {
+                                return inputStr.Select(c => c.ToString()).ToArray();
+                            }
+
+                            return inputStr.Split(seperator.ToCharArray());
                         }, VerifyStringOrNull),
                     ReturnType.Object,
-                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
+                    (expression) => ValidateArityAndAnyType(expression, 1, 2, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.Substring,
                     Substring,

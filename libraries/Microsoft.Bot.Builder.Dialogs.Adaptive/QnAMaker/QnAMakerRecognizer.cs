@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.QnA;
+using Microsoft.Bot.Expressions.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

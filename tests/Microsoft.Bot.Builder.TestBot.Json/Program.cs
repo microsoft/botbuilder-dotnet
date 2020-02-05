@@ -2,12 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection.Emit;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -15,67 +17,91 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
         public static void Help()
         {
-            Trace.TraceInformation("--region <REGION>: LUIS Authoring region.  Default westus");
+            Trace.TraceInformation("--root <PATH>: Absolute path to the root directory for declarative resources all *.main.dialog be options.  Default current directory");
+            Trace.TraceInformation("--region <REGION>: LUIS endpoint region.  Default westus");
+            Trace.TraceInformation("--environment <ENVIRONMENT>: LUIS environment settings to use.  Default 'devlopment' or user alias.");
             Trace.TraceInformation("--help: This help.");
-            Trace.TraceInformation("--root: Root directory for declartive resources.");
             System.Environment.Exit(-1);
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration((hostingContext, config) =>
             {
-                var env = hostingContext.HostingEnvironment;
-                var luisAuthoringRegion = Environment.GetEnvironmentVariable("LUIS_AUTHORING_REGION") ?? "westus";
+                var luisRegion = Environment.GetEnvironmentVariable("LUIS_AUTHORING_REGION") ?? "westus";
+                var environment = "development";
+                var botRoot = ".";
                 for (var i = 0; i < args.Length; ++i)
                 {
                     var arg = args[i];
-                    switch (arg)
+
+                    // No args has %LAUNCHER_ARGS% as the single argument so ignore it
+                    if (!arg.StartsWith("%"))
                     {
-                        case "--region":
-                            {
-                                if (++i < args.Length)
+                        switch (arg)
+                        {
+                            case "--region":
                                 {
-                                    luisAuthoringRegion = args[i];
+                                    if (++i < args.Length)
+                                    {
+                                        luisRegion = args[i];
+                                    }
                                 }
-                            }
 
-                            break;
-                        case "--root":
-                            {
-                                if (++i < args.Length)
+                                break;
+                            case "--root":
                                 {
-                                    env.ContentRootPath = args[i];
+                                    if (++i < args.Length)
+                                    {
+                                        botRoot = args[i];
+                                    }
                                 }
-                            }
 
-                            break;
-                        default: Help(); break;
+                                break;
+                            case "--environment":
+                                {
+                                    if (++i < args.Length)
+                                    {
+                                        environment = args[i];
+                                    }
+                                }
+
+                                break;
+
+                            default: Help(); break;
+                        }
                     }
                 }
+
+                var settings = new Dictionary<string, string>();
+                settings["luis:endpoint"] = $"https://{luisRegion}.api.cognitive.microsoft.com";
+                settings["BotRoot"] = botRoot;
+                config.AddInMemoryCollection(settings);
 
                 config.AddUserSecrets<Startup>();
 
                 // Add general and then user specific luis.settings files to config
-                var di = new DirectoryInfo(env.ContentRootPath);
-                var generalPattern = $"{env.EnvironmentName}.{luisAuthoringRegion}.json";
+                var di = new DirectoryInfo(botRoot);
+                var generalPattern = $"{environment}.{luisRegion}.json";
                 foreach (var file in di.GetFiles($"luis.settings.{generalPattern}", SearchOption.AllDirectories))
                 {
                     config.AddJsonFile(file.FullName, optional: false, reloadOnChange: true);
                 }
 
-                var userPattern = $"{Environment.UserName}.{luisAuthoringRegion}.json";
+                var userPattern = $"{Environment.UserName}.{luisRegion}.json";
                 foreach (var file in di.GetFiles($"luis.settings.{userPattern}", SearchOption.AllDirectories))
                 {
                     config.AddJsonFile(file.FullName, optional: false, reloadOnChange: true);
                 }
             })
-            .UseStartup<Startup>()
-            .Build();
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
     }
 }

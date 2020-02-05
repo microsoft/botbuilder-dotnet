@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -37,12 +38,71 @@ namespace Microsoft.Bot.Builder.AI.Luis
         }
 
         /// <summary>
+        /// Gets or sets entity recognizer to recognize external entities to pass to LUIS.
+        /// </summary>
+        /// <value>External entity recognizer.</value>
+        [JsonProperty("externalEntityRecognizer")]
+        public Recognizer ExternalEntityRecognizer { get; set; }
+
+        /// <summary>
         /// Gets or sets the Luis Prediction Options for the V3 endpoint.
         /// </summary>
         /// <value> This settings will be used to call Luis.</value>
         public LuisV3.LuisPredictionOptions PredictionOptions { get; set; } = new LuisV3.LuisPredictionOptions();
 
+        internal override async Task<RecognizerResult> RecognizeInternalAsync(DialogContext context, HttpClient httpClient, CancellationToken cancellationToken)
+        {
+            var utterance = Utterance(context.Context);
+            var options = PredictionOptions;
+            if (ExternalEntityRecognizer != null)
+            {
+                var matches = await ExternalEntityRecognizer.RecognizeAsync(context, cancellationToken).ConfigureAwait(false);
+                if (matches.Entities != null && matches.Entities.Count > 2)
+                {
+                    options = new LuisV3.LuisPredictionOptions(options);
+                    options.ExternalEntities = new List<LuisV3.ExternalEntity>();
+                    var entities = matches.Entities;
+                    var instance = entities["$instance"].ToObject<JObject>();
+                    if (instance != null)
+                    {
+                        foreach (var child in entities)
+                        {
+                            // TODO: Checking for "text" because we get an extra non-real entity from the text recognizers
+                            if (child.Key != "text" && child.Key != "$instance")
+                            {
+                                var instances = instance[child.Key]?.ToObject<JArray>();
+                                var values = child.Value.ToObject<JArray>();
+                                if (instances != null && values != null
+                                    && instances.Count == values.Count)
+                                {
+                                    for (var i = 0; i < values.Count; ++i)
+                                    {
+                                        var childInstance = instances[i].ToObject<JObject>();
+                                        if (childInstance != null
+                                            && childInstance.ContainsKey("startIndex")
+                                            && childInstance.ContainsKey("endIndex"))
+                                        {
+                                            var start = childInstance["startIndex"].Value<int>();
+                                            var end = childInstance["endIndex"].Value<int>();
+                                            options.ExternalEntities.Add(new LuisV3.ExternalEntity(child.Key, start, end - start, child.Value));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return await RecognizeAsync(context.Context, utterance, options, httpClient, cancellationToken).ConfigureAwait(false);
+        }
+
         internal override async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, HttpClient httpClient, CancellationToken cancellationToken)
+        {
+            return await RecognizeAsync(turnContext, Utterance(turnContext), PredictionOptions, httpClient, cancellationToken).ConfigureAwait(false);
+        }
+
+        private string Utterance(ITurnContext turnContext)
         {
             BotAssert.ContextNotNull(turnContext);
             if (turnContext.Activity == null || turnContext.Activity.Type != ActivityTypes.Message)
@@ -50,8 +110,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 return null;
             }
 
-            var options = PredictionOptions;
-            var utterance = turnContext.Activity?.AsMessageActivity()?.Text;
+            return turnContext.Activity?.AsMessageActivity()?.Text;
+        }
+
+        private async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, string utterance, LuisV3.LuisPredictionOptions options, HttpClient httpClient, CancellationToken cancellationToken)
+        {
             RecognizerResult recognizerResult;
             JObject luisResponse = null;
 
@@ -66,8 +129,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
             else
             {
-                var uri = BuildUri();
-                var content = BuildRequestBody(utterance);
+                var uri = BuildUri(options);
+                var content = BuildRequestBody(utterance, options);
                 httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", Application.EndpointKey);
                 var response = await httpClient.PostAsync(uri.Uri, new StringContent(content.ToString(), System.Text.Encoding.UTF8, "application/json")).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
@@ -80,7 +143,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 recognizerResult.AlteredText = prediction["alteredQuery"]?.Value<string>();
                 recognizerResult.Intents = LuisV3.LuisUtil.GetIntents(prediction);
                 recognizerResult.Entities = LuisV3.LuisUtil.ExtractEntitiesAndMetadata(prediction);
-        
+
                 LuisV3.LuisUtil.AddProperties(prediction, recognizerResult);
                 if (IncludeAPIResults)
                 {
@@ -113,9 +176,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return recognizerResult;
         }
 
-        private UriBuilder BuildUri()
+        private UriBuilder BuildUri(LuisV3.LuisPredictionOptions options)
         {
-            var options = PredictionOptions;
             var path = new StringBuilder(Application.Endpoint);
             path.Append($"/luis/prediction/v3.0/apps/{Application.ApplicationId}");
 
@@ -138,9 +200,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return uri;
         }
 
-        private JObject BuildRequestBody(string utterance)
+        private JObject BuildRequestBody(string utterance, LuisV3.LuisPredictionOptions options)
         {
-            var options = PredictionOptions;
             var content = new JObject
                 {
                     { "query", utterance },

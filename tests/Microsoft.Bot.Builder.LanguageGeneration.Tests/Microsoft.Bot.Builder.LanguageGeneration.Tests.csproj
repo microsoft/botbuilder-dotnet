@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
 
@@ -219,12 +219,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.LanguageGeneration\Microsoft.Bot.Builder.LanguageGeneration.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System">
-      <HintPath>System</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
