@@ -309,7 +309,7 @@ namespace Microsoft.Bot.Expressions
 
             if (!TryParseList(value, out var list))
             {
-                error = $"{expression} is neither a list neither nor a number.";
+                error = $"{expression} is neither a list nor a number.";
             }
             else
             {
