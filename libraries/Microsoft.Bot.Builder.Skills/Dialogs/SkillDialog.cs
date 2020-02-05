@@ -60,16 +60,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                     skillActivity = (Activity)messageActivity;
                     break;
 
-                // Move to a function.
-                case ActivityTypes.Invoke:
-                    // Invoke activities are request/response, so just call the skill and we return the response.
-                    var invokeActivity = Activity.CreateInvokeActivity();
-                    invokeActivity.Name = dialogArgs.Name;
-                    ApplyParentActivityProperties(dc, (Activity)invokeActivity, dialogArgs);
-                    var response = await SendToSkillAsync(dc, (Activity)invokeActivity, dialogArgs.Skill, cancellationToken).ConfigureAwait(false);
-
-                    return await dc.EndDialogAsync(response, cancellationToken).ConfigureAwait(false);
-
                 default:
                     throw new ArgumentException($"Invalid activity type in {dialogArgs.ActivityType} in {nameof(SkillDialogArgs)}");
             }
