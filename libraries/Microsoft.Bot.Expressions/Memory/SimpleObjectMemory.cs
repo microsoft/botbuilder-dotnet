@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Expressions.Memory
         /// Initializes a new instance of the <see cref="SimpleObjectMemory"/> class.
         /// This wraps a simple object as IMemory.
         /// </summary>
-        /// <param name="memory">the object to wrap.</param>
+        /// <param name="memory">The object to wrap.</param>
         public SimpleObjectMemory(object memory)
         {
             this.memory = memory;
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Expressions.Memory
         /// <summary>
         /// Transfer an common object to simple memory.
         /// </summary>
-        /// <param name="obj">common object.</param>
+        /// <param name="obj">Common object.</param>
         /// <returns>Simple memory instance.</returns>
         public static IMemory Wrap(object obj)
         {
@@ -45,8 +45,8 @@ namespace Microsoft.Bot.Expressions.Memory
         /// Try get value from a given path.
         /// </summary>
         /// <param name="path">Given path.</param>
-        /// <param name="value">resolved value.</param>
-        /// <returns>true if the memory contains an element with the specified key; otherwise, false.</returns>
+        /// <param name="value">Resolved value.</param>
+        /// <returns>True if the memory contains an element with the specified key; otherwise, false.</returns>
         public bool TryGetValue(string path, out object value)
         {
             value = null;
@@ -95,8 +95,8 @@ namespace Microsoft.Bot.Expressions.Memory
         /// <summary>
         /// Set value to a given path.
         /// </summary>
-        /// <param name="path">memory path.</param>
-        /// <param name="value">value to set.</param>
+        /// <param name="path">Memory path.</param>
+        /// <param name="value">Value to set.</param>
         public void SetValue(string path, object value)
         {
             if (memory == null)

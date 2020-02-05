@@ -10,13 +10,15 @@ namespace Microsoft.Bot.Expressions
 {
     /// <summary>
     /// Convert PCRE regex string to <see cref="Regex"/> object.
+    /// PCRE ref: http://www.pcre.org/.
+    /// PCRE antlr g4 file: CommonRegex.g4.
     /// </summary>
     public static class CommonRegex
     {
         private static readonly LRUCache<string, Regex> RegexCache = new LRUCache<string, Regex>(15);
 
         /// <summary>
-        /// Convert PCRE regex string to <see cref="Regex"/> object.
+        /// Create <see cref="Regex"/> object from PCRE pattern string.
         /// </summary>
         /// <param name="pattern">PCRE pattern string.</param>
         /// <returns>Regex object.</returns>

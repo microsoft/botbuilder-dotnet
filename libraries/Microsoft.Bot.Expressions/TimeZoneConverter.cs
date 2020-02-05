@@ -10,10 +10,11 @@ namespace Microsoft.Bot.Expressions
 {
     /// <summary>
     /// Time zone converter.
-    /// (1) From Windows (.NET) timezone to IANA timezone.
-    /// (2) From IANA timezone to windows (.NET) timezone.
-    /// https://support.microsoft.com/en-us/help/22803/daylight-saving-time.
-    /// https://www.iana.org/time-zones.
+    /// (1) From Windows (.NET) timezone to iana timezone.
+    /// (2) From iana timezone to windows (.NET) timezone.
+    /// windows ref: https://support.microsoft.com/en-us/help/22803/daylight-saving-time.
+    /// iana ref: https://www.iana.org/time-zones.
+    /// See database dictionary in file WindowsIanaMapping.
     /// </summary>
     public static class TimeZoneConverter
     {
@@ -37,10 +38,10 @@ namespace Microsoft.Bot.Expressions
         }
 
         /// <summary>
-        /// convert windows timezone format to  IANA timezone format.
+        /// Convert windows timezone to iana timezone.
         /// </summary>
-        /// <param name="windowsTimeZoneId">windows timezone format.</param>
-        /// <returns>IANA timezone format.</returns>
+        /// <param name="windowsTimeZoneId">Windows timezone format.</param>
+        /// <returns>Iana timezone format.</returns>
         public static string WindowsToIana(string windowsTimeZoneId)
         {
             LoadData();

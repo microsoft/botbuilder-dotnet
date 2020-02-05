@@ -30,8 +30,8 @@ namespace Microsoft.Bot.Expressions.Memory
         /// Try get value from a given path.
         /// </summary>
         /// <param name="path">Given path.</param>
-        /// <param name="value">resolved value.</param>
-        /// <returns>true if the memory contains an element with the specified key; otherwise, false.</returns>
+        /// <param name="value">Resolved value.</param>
+        /// <returns>True if the memory contains an element with the specified key; otherwise, false.</returns>
         public bool TryGetValue(string path, out object value)
         {
             value = null;
@@ -58,8 +58,8 @@ namespace Microsoft.Bot.Expressions.Memory
         /// <summary>
         /// Set value to a given path.
         /// </summary>
-        /// <param name="path">memory path.</param>
-        /// <param name="value">value to set.</param>
+        /// <param name="path">Memory path.</param>
+        /// <param name="value">Value to set.</param>
         public void SetValue(string path, object value)
         {
             throw new Exception($"Can't set value to {path}, stacked memory is read-only");

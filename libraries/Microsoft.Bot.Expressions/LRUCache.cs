@@ -12,6 +12,9 @@ namespace Microsoft.Bot.Expressions
     /// <typeparam name="TValue">The type of the cached item.</typeparam>
     public sealed class LRUCache<TKey, TValue>
     {
+        /// <summary>
+        /// Default maximum number of elements to cache.
+        /// </summary>
         private const int DefaultCapacity = 255;
 
         private readonly object lockObj = new object();
