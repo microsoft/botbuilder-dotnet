@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.Bot.Builder.Dialogs.Memory;
-using Microsoft.Recognizers.Text.DateTime.Chinese;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {

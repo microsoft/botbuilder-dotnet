@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.TraceExtensions;
+using Microsoft.Bot.Expressions.Properties;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;

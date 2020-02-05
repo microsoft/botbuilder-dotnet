@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("replaceIgnoreCase(one, 'l', 'k')"), // replaceIgnoreCase only accept string parameter
             Test("replaceIgnoreCase('hi', 1, 'k')"), // replaceIgnoreCase only accept string parameter
             Test("replaceIgnoreCase('hi', 'l', 1)"), // replaceIgnoreCase only accept string parameter
-            Test("split(hello)"), // split need two parameters
+            Test("split(hello, 'a', 'b')"), // split need one or two parameters
             Test("split(one, 'l')"), // split only accept string parameter
             Test("split(hello, 1)"), // split only accept string parameter
             Test("substring(hello, 0.5)"), // the second parameter of substring must be integer

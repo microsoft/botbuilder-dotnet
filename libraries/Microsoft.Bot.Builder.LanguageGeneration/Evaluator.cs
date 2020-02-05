@@ -40,6 +40,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public object EvaluateTemplate(string inputTemplateName, object scope)
         {
+            if (!(scope is CustomizedMemory))
+            {
+                scope = new CustomizedMemory(SimpleObjectMemory.Wrap(scope));
+            }
+            
             (var reExecute, var templateName) = ParseTemplateName(inputTemplateName);
 
             if (!TemplateMap.ContainsKey(templateName))

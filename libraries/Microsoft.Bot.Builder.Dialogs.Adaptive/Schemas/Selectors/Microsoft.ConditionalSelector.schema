@@ -6,7 +6,8 @@
     "type": "object",
     "properties": {
         "condition": {
-            "$role": "expression"
+            "$role": "expression",
+            "type": "boolean"
         },
         "ifTrue": {
             "$kind": "Microsoft.ITriggerSelector"

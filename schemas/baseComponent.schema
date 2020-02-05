@@ -6,9 +6,9 @@
     "definitions": {
         "role": {
             "title": "$role",
-            "description": "Defines the role played in the dialog schema [lg|expression|union()].",
+            "description": "Defines the role played in the dialog schema [expression|union|union(Kind)].",
             "type": "string",
-            "pattern": "^((lg)|(expression)|(memoryPath)|(union)|(union\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
+            "pattern": "^((expression)|(union)|(union\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
         },
         "id": {
             "title": "$id",
@@ -32,27 +32,6 @@
             "title": "$designer",
             "type": "object",
             "description": "Extra information for the Bot Framework Designer."
-        },
-        "lg": {
-            "type": "string",
-            "description": "String is used for language generation."
-        },
-        "memoryPath": {
-            "type": "string",
-            "description": "String must contain a memory path.",
-            "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
-        },
-        "boolExpression": {
-            "type": [ "boolean", "string"]
-        },
-        "integerExpression": {
-            "type": [ "integer", "string" ]
-        },
-        "numberExpression": {
-            "type": [ "number", "string" ]
-        },
-        "valueExpression": {
-            "type": [ "object", "array", "number", "integer", "boolean", "string"]
         }
     },
     "properties": {

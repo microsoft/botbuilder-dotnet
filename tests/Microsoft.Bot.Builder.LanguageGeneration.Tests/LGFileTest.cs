@@ -713,6 +713,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.IsTrue(
                 JToken.DeepEquals(JObject.Parse("{\"lgType\":\"Struct\",\"text\":\"Acme Co\"}"), evaled as JObject));
+
+            evaled = lgFile.EvaluateTemplate("ValueWithEqualsMark", new { name = "Jack" });
+
+            Assert.IsTrue(
+                JToken.DeepEquals(JObject.Parse("{\"lgType\": \"Activity\",\"text\": \"Hello! welcome back. I have your name = Jack\"}"), evaled as JObject));
         }
 
         [TestMethod]
