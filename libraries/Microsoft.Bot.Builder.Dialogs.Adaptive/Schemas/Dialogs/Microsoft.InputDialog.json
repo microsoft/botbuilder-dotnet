@@ -27,7 +27,7 @@
     "unrecognizedPrompt": {
       "$kind": "Microsoft.IActivityTemplate",
       "title": "Unrecognized prompt",
-      "description": "Message to send if user response is not recognized.",
+      "description": "Message to send when the recognizer does not understand the user input.",
       "examples": [
         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
       ]
@@ -35,7 +35,7 @@
     "invalidPrompt": {
       "$kind": "Microsoft.IActivityTemplate",
       "title": "Invalid prompt",
-      "description": "Message to send if user response is invalid. Relies on specified validation expressions.",
+      "description": "Message to send when the user input does not meet the validation rules.",
       "examples": [
         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
       ]
@@ -87,7 +87,7 @@
       "$role": "expression",
       "type": [ "object", "array", "number", "integer", "boolean", "string" ],
       "title": "Default value",
-      "description": "Expression to examine on each turn of the conversation as possible value to the property.",
+      "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
       "examples": [
         "@userName",
         "coalesce(@number, @partySize)"
@@ -97,7 +97,7 @@
       "$role": "expression",
       "type": [ "object", "array", "number", "integer", "boolean", "string" ],
       "title": "Value",
-      "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
+      "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
       "examples": [
         "@userName"
       ]
