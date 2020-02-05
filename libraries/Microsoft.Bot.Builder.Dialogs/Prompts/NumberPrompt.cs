@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private static List<ModelResult> RecognizeNumberWithUnit(string utterance, string culture)
         {
-            var number = NumberRecognizer.RecognizeNumber(utterance, culture, NumberOptions.SuppressExtendedTypes);
+            var number = NumberRecognizer.RecognizeNumber(utterance, culture);
 
             if (number.Any())
             {

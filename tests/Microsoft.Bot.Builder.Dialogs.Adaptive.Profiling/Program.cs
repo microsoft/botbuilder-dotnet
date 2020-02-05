@@ -20,9 +20,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling
     {
         public static void Help()
         {
-            Console.Error.WriteLine("[-secret <id=profile>] [-luis <luisDir>] testscripts...");
-            Console.Error.WriteLine("-secret This is your secret id for luis keys.");
-            Console.Error.WriteLine("-luis This is the directory where luis settings arg.");
+            Console.Error.WriteLine("[-n <iterations>] [-secret <id>] [-luis <luisDir>] testscripts...");
+            Console.Error.WriteLine("-secret This is your dotnet secret id for luis keys. [default = 'profile']");
+            Console.Error.WriteLine("-luis This is the directory where luis settings are.");
+            Console.Error.WriteLine("-n Is number of iterations to do.");
+            Console.Error.WriteLine("The - parameters are applied to each testscript in order so you can change them per testscript.");
+            Console.Error.WriteLine("Example: -secret GeneratorId -luis sandwich/luis generator_sandwich.test.dialog");
             System.Environment.Exit(-1);
         }
 
@@ -30,6 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling
         {
             var secret = "profile";
             string luis = null;
+            var iterations = 1;
             if (args.Length == 0)
             {
                 Help();
@@ -48,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling
                         }
                         else
                         {
-                            throw new System.ArgumentException("Missing --secret value");
+                            throw new System.ArgumentException("Missing -secret value");
                         }
                     }
                     else if (arg == "-luis")
@@ -59,7 +63,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling
                         }
                         else
                         {
-                            throw new System.ArgumentException("Missing --luis value");
+                            throw new System.ArgumentException("Missing -luis value");
+                        }
+                    }
+                    else if (arg == "-n")
+                    {
+                        if (++i < args.Length)
+                        {
+                            iterations = int.Parse(args[i]);
+                        }
+                        else
+                        {
+                            throw new System.ArgumentException("Missing -n value");
                         }
                     }
                     else
@@ -87,11 +102,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling
                     DeclarativeTypeLoader.AddComponent(new MockLuisComponentRegistration());
                     var script = explorer.LoadType<TestScript>(name);
                     var timer = new System.Diagnostics.Stopwatch();
-                    Console.Write($"Executing {arg}");
+                    Console.WriteLine($"Executing {arg} for {iterations} iterations");
                     timer.Start();
-                    script.ExecuteAsync(testName: name, configuration: config, resourceExplorer: explorer).Wait();
+                    var adapter = script.DefaultTestAdapter(testName: name, resourceExplorer: explorer, configuration: config);
                     timer.Stop();
-                    Console.WriteLine($" took {timer.ElapsedMilliseconds} ms");
+                    var loading = timer.ElapsedMilliseconds;
+                    Console.WriteLine($" loading took {loading} ms");
+
+                    var iterationTime = 0L;
+                    var firstTime = 0l;
+                    for (var iter = 0; iter < iterations; ++iter)
+                    {
+                        timer.Restart();
+                        script.ExecuteAsync(adapter: adapter).Wait();
+                        timer.Stop();
+                        if (firstTime > 0)
+                        {
+                            iterationTime += timer.ElapsedMilliseconds;
+                        }
+                        else
+                        {
+                            firstTime = timer.ElapsedMilliseconds;
+                        }
+
+                        Console.WriteLine($"  {iter}: {timer.ElapsedMilliseconds} ms");
+                    }
+
+                    Console.Write($" Total time={loading + firstTime + iterationTime} ms");
+                    if (iterations > 1)
+                    {
+                        Console.WriteLine($", per iteration after 1st={iterationTime / ((float)iterations - 1)} ms");
+                    }
                 }
             }
         }

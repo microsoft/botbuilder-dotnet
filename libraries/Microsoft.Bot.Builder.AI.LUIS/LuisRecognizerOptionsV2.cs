@@ -7,9 +7,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.AI.Luis
 {
@@ -39,6 +41,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <value> This settings will be used to call Luis.</value>
         public LuisPredictionOptions PredictionOptions { get; set; } = new LuisPredictionOptions();
+
+        internal override async Task<RecognizerResult> RecognizeInternalAsync(DialogContext context, HttpClient httpClient, CancellationToken cancellationToken)
+            => await RecognizeInternalAsync(context.Context, httpClient, cancellationToken).ConfigureAwait(false);
 
         internal override async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, HttpClient httpClient, CancellationToken cancellationToken)
         {

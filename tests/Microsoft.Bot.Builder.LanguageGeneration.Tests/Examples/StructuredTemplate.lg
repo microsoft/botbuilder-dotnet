@@ -124,3 +124,9 @@
     Speak = @{GetAge()}
     Text = zoo
 ]
+
+> treat everything after the first = as value.
+# ValueWithEqualsMark
+[Activity
+    Text = Hello! welcome back. I have your name = @{name}
+]

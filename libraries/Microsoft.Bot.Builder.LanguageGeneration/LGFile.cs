@@ -128,9 +128,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             CheckErrors();
 
-            var memory = SimpleObjectMemory.Wrap(scope);
             var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionEngine);
-            return evaluator.EvaluateTemplate(templateName, new CustomizedMemory(memory));
+            return evaluator.EvaluateTemplate(templateName, scope);
         }
 
         /// <summary>
@@ -144,7 +143,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             CheckErrors();
             var expander = new Expander(AllTemplates.ToList(), ExpressionEngine);
-            return expander.EvaluateTemplate(templateName, new CustomizedMemory(scope));
+            return expander.EvaluateTemplate(templateName, scope);
         }
 
         /// <summary>

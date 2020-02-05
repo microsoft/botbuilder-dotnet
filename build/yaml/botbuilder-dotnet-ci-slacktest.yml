@@ -8,37 +8,14 @@ pool:
   vmImage: 'windows-2019'
 
 variables:
+  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
+  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
   BuildConfiguration: 'debug'
   BuildPlatform: 'any cpu'
+  Parameters.solution: Microsoft.Bot.Builder.sln
 
 steps:
-- task: UseDotNet@2
-  displayName: 'Use .Net Core sdk 2.1.x'
-  inputs:
-    version: 2.1.x
-
-- task: UseDotNet@2
-  displayName: 'Use .Net Core sdk 3.1.x'
-  inputs:
-    version: 3.1.x
-
-- task: NuGetToolInstaller@0
-  displayName: 'Use NuGet 4.9.1'
-  inputs:
-    versionSpec: 4.9.1
-
-- task: NuGetCommand@2
-  displayName: 'NuGet restore'
-  inputs:
-    restoreSolution: '$(System.DefaultWorkingDirectory)\Microsoft.Bot.Builder.sln'
-
-- task: VSBuild@1
-  displayName: 'Build solution Microsoft.Bot.Builder.sln'
-  inputs:
-    solution: Microsoft.Bot.Builder.sln
-    vsVersion: 16.0
-    platform: '$(BuildPlatform)'
-    configuration: '$(BuildConfiguration)'
+- template: ci-build-steps.yml
 
 - task: DotNetCoreCLI@2
   displayName: 'Dotnet Publish TestBot'
@@ -46,7 +23,7 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\Microsoft.Bot.Builder.Adapters.Slack.TestBot.csproj'
-    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\PublishedBot --framework netcoreapp2.1'
+    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\PublishedBot'
     modifyOutputPath: false
 
 - task: AzureCLI@1

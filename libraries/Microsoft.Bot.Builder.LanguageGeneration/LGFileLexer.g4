@@ -228,7 +228,7 @@ STRUCTURE_IDENTIFIER
   ;
 
 STRUCTURE_EQUALS
-  : '=' {inStructuredValue = true;} 
+  : '=' {!inStructuredValue}? {inStructuredValue = true;} 
   ;
 
 STRUCTURE_OR_MARK
