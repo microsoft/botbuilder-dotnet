@@ -35,7 +35,7 @@
     "invalidPrompt": {
       "$kind": "Microsoft.IActivityTemplate",
       "title": "Invalid prompt",
-      "description": "Message to send when the user input does not meet the validation rules.",
+      "description": "Message to send when the user input does not meet any validation expression.",
       "examples": [
         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
       ]
