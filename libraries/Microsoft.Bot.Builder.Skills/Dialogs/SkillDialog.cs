@@ -60,6 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     skillActivity = (Activity)messageActivity;
                     break;
 
+                // Move to a function.
                 case ActivityTypes.Invoke:
                     // Invoke activities are request/response, so just call the skill and we return the response.
                     var invokeActivity = Activity.CreateInvokeActivity();
@@ -90,8 +91,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return await dc.EndDialogAsync(dc.Context.Activity.Value, cancellationToken).ConfigureAwait(false);
             }
 
-            // Just forward to the remote skill
-            await SendToSkillAsync(dc, dc.Context.Activity, skillInfo, cancellationToken).ConfigureAwait(false);
+            if (dc.Context.Activity.Type == ActivityTypes.Message || dc.Context.Activity.Type == ActivityTypes.Event)
+            {
+                // Just forward to the remote skill
+                await SendToSkillAsync(dc, dc.Context.Activity, skillInfo, cancellationToken).ConfigureAwait(false);
+            }
+
             return EndOfTurn;
         }
 

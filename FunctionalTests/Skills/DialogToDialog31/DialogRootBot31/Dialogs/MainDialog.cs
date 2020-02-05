@@ -175,13 +175,13 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot31.Dialogs
                     choices.Add(new Choice("OAuthTest"));
                     choices.Add(new Choice("mv:some message with value"));
                     choices.Add(new Choice("BookFlightWithValues"));
-                    choices.Add(new Choice("GetWeather"));
                     break;
             }
 
             return choices;
         }
 
+        // Helper method to create the DialogSkillArgs for the actions supported by the DialogSkillBot
         private SkillDialogArgs GetDialogSkillBotArgs(string selectedOption)
         {
             // Note: in a real bot, the dialogArgs will be created dynamically based on the conversation
@@ -248,77 +248,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot31.Dialogs
                 return dialogArgs;
             }
 
-            // Send an invoke activity to the skill "GetWeather" in the name and some testing values.
-            if (selectedOption.Equals("GetWeather", StringComparison.CurrentCultureIgnoreCase))
-            {
-                var dialogArgs = new SkillDialogArgs
-                {
-                    ActivityType = ActivityTypes.Invoke,
-                    Name = "GetWeather",
-                    Value = new Location
-                    {
-                        PostalCode = "11218"
-                    }
-                };
-                return dialogArgs;
-            }
-
             throw new Exception($"Unable to create dialogArgs for \"{selectedOption}\".");
-        }
-
-        private Activity CreateTaskPromptMessageWithActions(string messageText)
-        {
-            var activity = MessageFactory.Text(messageText, messageText, InputHints.ExpectingInput);
-
-            activity.SuggestedActions = new SuggestedActions
-            {
-                Actions = new List<CardAction>
-                {
-                    new CardAction
-                    {
-                        Title = "Hi",
-                        Type = ActionTypes.ImBack,
-                        Value = "Hi"
-                    },
-                    new CardAction
-                    {
-                        Title = "m:some message",
-                        Type = ActionTypes.ImBack,
-                        Value = "m:some message for tomorrow"
-                    },
-                    new CardAction
-                    {
-                        Title = "Book a flight",
-                        Type = ActionTypes.ImBack,
-                        Value = "BookFlight"
-                    },
-                    new CardAction
-                    {
-                        Title = "Get Weather",
-                        Type = ActionTypes.ImBack,
-                        Value = "GetWeather"
-                    },
-                    new CardAction
-                    {
-                        Title = "OAuthTest",
-                        Type = ActionTypes.ImBack,
-                        Value = "OAuthTest"
-                    },
-                    new CardAction
-                    {
-                        Title = "mv:some message with value",
-                        Type = ActionTypes.ImBack,
-                        Value = "mv:some message with value"
-                    },
-                    new CardAction
-                    {
-                        Title = "Book a flight with values",
-                        Type = ActionTypes.ImBack,
-                        Value = "BookFlightWithValues"
-                    }
-                }
-            };
-            return activity;
         }
     }
 }
