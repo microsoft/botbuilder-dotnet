@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Try get value from a given path. Firstly, get result from global memory,
+        /// Try to get the value from a given path. Firstly, get result from global memory,
         /// if global memory does not contain, get from local memory.
         /// </summary>
         /// <param name="path">memory path.</param>

@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public Dictionary<string, LGTemplate> TemplateMap { get; }
 
         /// <summary>
-        /// Expand a template with given name and scope.
+        /// Expand the results of a template with given name and scope.
         /// </summary>
         /// <param name="templateName">Given template name.</param>
         /// <param name="scope">Given scope.</param>
