@@ -250,13 +250,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(exception.Message.Contains("Error occurred when evaluating"));
         }
 
-        [TestMethod]
-        public void TestNoVariableMatch()
-        {
-            var lgFile = GetLGFile("NoVariableMatch.lg");
-            var exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("NoVariableMatch"));
-            Assert.IsTrue(exception.Message.Contains("Error occurred when evaluating"));
-        }
 
         [TestMethod]
         public void TestRunTimeErrors()

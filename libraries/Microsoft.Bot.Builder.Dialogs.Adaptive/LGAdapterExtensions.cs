@@ -9,6 +9,9 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
+    /// <summary>
+    /// LG middleware.
+    /// </summary>
     public static class LGAdapterExtensions
     {
         private static Dictionary<ResourceExplorer, LanguageGeneratorManager> languageGeneratorManagers = new Dictionary<ResourceExplorer, LanguageGeneratorManager>();

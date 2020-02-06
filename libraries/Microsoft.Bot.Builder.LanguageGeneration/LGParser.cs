@@ -18,14 +18,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public delegate (string content, string id) ImportResolverDelegate(string sourceId, string resourceId);
 
     /// <summary>
-    /// Parser to turn lg content into an <see cref="LGFile"/>.
+    /// Parser to turn lg content into a <see cref="LGFile"/>.
     /// </summary>
     public static class LGParser
     {
         /// <summary>
-        /// Parser to turn lg content into an <see cref="LGFile"/>.
+        /// Parser to turn lg content into a <see cref="LGFile"/>.
         /// </summary>
-        /// <param name="filePath">LG absolute file path.</param>
+        /// <param name="filePath"> absolut path of a LG file.</param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <returns>new <see cref="LGFile"/> entity.</returns>
         public static LGFile ParseFile(string filePath, ImportResolverDelegate importResolver = null)
@@ -37,10 +37,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Parser to turn lg content into an <see cref="LGFile"/>.
+        /// Parser to turn lg content into a <see cref="LGFile"/>.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
-        /// <param name="id">id is the content identifier. If importResolver is null, id must be a full path string. </param>
+        /// <param name="id">id is the identifier of content. If importResolver is null, id must be a full path string. </param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <returns>new <see cref="LGFile"/> entity.</returns>
         public static LGFile ParseText(string content, string id = "", ImportResolverDelegate importResolver = null)
@@ -124,10 +124,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Get parsed tree node from text by antlr4 engine.
+        /// Get parsed tree nodes from text by antlr4 engine.
         /// </summary>
         /// <param name="text">Original text which will be parsed.</param>
-        /// <returns>Parsed tree node.</returns>
+        /// <returns>Parsed tree nodes.</returns>
         private static LGFileParser.FileContext GetFileContentContext(string text, string id)
         {
             if (string.IsNullOrEmpty(text))
@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Extract LG templates from a file parse tree.
+        /// Extract LG templates from the parse tree of a file.
         /// </summary>
         /// <param name="file">LG file context from ANTLR parser.</param>
         /// <param name="lgfileContent">LG file content.</param>

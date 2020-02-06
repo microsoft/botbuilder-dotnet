@@ -21,12 +21,18 @@ namespace Microsoft.Bot.Expressions
         /// Initializes a new instance of the <see cref="ExpressionEngine"/> class.
         /// Constructor.
         /// </summary>
-        /// <param name="lookup">If present delegate to lookup evaluation information from type string.</param>
+        /// <param name="lookup">Delegate to lookup evaluation information from type string.</param>
         public ExpressionEngine(EvaluatorLookup lookup = null)
         {
             EvaluatorLookup = lookup ?? BuiltInFunctions.Lookup;
         }
 
+        /// <summary>
+        /// Gets the elegate to lookup function information from the type.
+        /// </summary>
+        /// <value>
+        /// The elegate to lookup function information from the type.
+        /// </value>
         public EvaluatorLookup EvaluatorLookup { get; }
 
         /// <summary>
