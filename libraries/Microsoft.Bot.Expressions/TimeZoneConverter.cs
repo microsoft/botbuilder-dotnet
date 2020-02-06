@@ -8,11 +8,24 @@ using System.Reflection;
 
 namespace Microsoft.Bot.Expressions
 {
+    /// <summary>
+    /// Time zone converter.
+    /// (1) From Windows (.NET) timezone to iana timezone.
+    /// (2) From iana timezone to windows (.NET) timezone.
+    /// windows ref: https://support.microsoft.com/en-us/help/22803/daylight-saving-time.
+    /// iana ref: https://www.iana.org/time-zones.
+    /// See database dictionary in file WindowsIanaMapping.
+    /// </summary>
     public static class TimeZoneConverter
     {
         private static IDictionary<string, string> ianaToWindowsMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private static IDictionary<string, string> windowsToIanaMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>
+        /// convert IANA timezone format to windows timezone format.
+        /// </summary>
+        /// <param name="ianaTimeZoneId">IANA timezone format.</param>
+        /// <returns>windows timezone format.</returns>
         public static string IanaToWindows(string ianaTimeZoneId)
         {
             LoadData();
@@ -24,6 +37,11 @@ namespace Microsoft.Bot.Expressions
             return ianaTimeZoneId;
         }
 
+        /// <summary>
+        /// Convert windows timezone to iana timezone.
+        /// </summary>
+        /// <param name="windowsTimeZoneId">Windows timezone format.</param>
+        /// <returns>Iana timezone format.</returns>
         public static string WindowsToIana(string windowsTimeZoneId)
         {
             LoadData();

@@ -237,10 +237,13 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             activity.Recipient.Id = await client.GetBotUserByTeamAsync(activity, cancellationToken).ConfigureAwait(false);
 
             // If this is conclusively a message originating from a user, we'll mark it as such
-            if (slackEvent.Type == "message" && slackEvent.SubType == null)
+            if (slackEvent.Type == "message" && slackEvent.BotId == null)
             {
-                activity.Type = ActivityTypes.Message;
-                activity.Text = slackEvent.Text;
+                if (slackEvent.SubType == null)
+                {
+                    activity.Type = ActivityTypes.Message;
+                    activity.Text = slackEvent.Text;
+                }
             }
 
             return activity;

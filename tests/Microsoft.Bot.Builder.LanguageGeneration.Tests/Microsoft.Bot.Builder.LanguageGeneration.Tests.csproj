@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
 
@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Examples\EmptyArrayAndObject.lg" />
     <None Remove="Examples\import\import3.lg" />
     <None Remove="Examples\1.lg" />
     <None Remove="Examples\2.lg" />
@@ -39,7 +40,7 @@
     <None Remove="Examples\LoopScope.lg" />
     <None Remove="Examples\ExpressionExtract.lg" />
     <None Remove="Examples\ReExecute.lg" />
-    <None Remove="ExceptionExamples\NoVariableMatch.lg" />
+    <None Remove="Examples\NullTolerant.lg" />
     <None Remove="ExceptionExamples\ConditionFormatError.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplates.lg" />
     <None Remove="ExceptionExamples\EmptyLGFile.lg" />
@@ -82,6 +83,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\AdaptiveCardActivity.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\EmptyArrayAndObject.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\analyzer.lg">
@@ -147,7 +151,7 @@
     <Content Include="Examples\IsTemplate.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ExceptionExamples\NoVariableMatch.lg">
+    <Content Include="Examples\NullTolerant.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\ConditionFormatError.lg">
@@ -211,12 +215,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.LanguageGeneration\Microsoft.Bot.Builder.LanguageGeneration.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System">
-      <HintPath>System</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>

@@ -20,6 +20,18 @@ namespace Microsoft.Bot.Expressions.Tests
         private readonly object scope = new Dictionary<string, object>
         {
             {
+                "emptyList", new List<object>()
+            },
+            {
+                "emptyObject", new Dictionary<string, object>()
+            },
+            {
+                "emptyJObject", new JObject()
+            },
+            {
+                "emptyAnonymousObject", new { }
+            },
+            {
                 "path", new Dictionary<string, object>()
                 {
                     {
@@ -246,6 +258,7 @@ namespace Microsoft.Bot.Expressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
+            Test("hello == 'hello'", true),
             #region SetPathToProperty test
             Test("setPathToValue(path.simple, 3) + path.simple", 6),
             Test("setPathToValue(path.simple, 5) + path.simple", 10),
@@ -352,10 +365,11 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("replaceIgnoreCase('hello', 'L', 'k')", "hekko"),
             Test("replaceIgnoreCase(nullObj, 'L', 'k')", string.Empty),
             Test("split('hello','e')", new string[] { "h", "llo" }),
+            Test("split('hello','')", new string[] { "h", "e", "l", "l", "o" }),
+            Test("split('','')", new string[] { }),
             Test("split(nullObj,'e')", new string[] { string.Empty }),
-
-            //Test("split('hello',nullObj)", new string[] { "h", "e", "l", "l", "o" }),
-            Test("split('hello',nullObj)", new string[] { "hello" }),
+            Test("split('hello')", new string[] { "h", "e", "l", "l", "o" }),
+            Test("split('hello',nullObj)", new string[] { "h", "e", "l", "l", "o" }),
             Test("substring('hello', 0, 5)", "hello"),
             Test("substring('hello', 0, 3)", "hel"),
             Test("substring('hello', 3)", "lo"),
@@ -432,6 +446,8 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("equals(hello, 'hello')", true),
             Test("equals(bag.index, 3)", true),
             Test("equals(bag.index, 2)", false),
+            Test("equals(max(createArray(1, 2, 3, 4)), 4.0)", true),
+            Test("equals(max(createArray(1, 2, 3, 4), 5.0), 5)", true),
             Test("equals(hello == 'world', bool('true'))", false), // false, true
             Test("equals(hello == 'world', bool(0))", false), // false, true
             Test("if(!exists(one), 'r1', 'r2')", "r2"), // false
@@ -465,6 +481,22 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("if(null, 'r1', 'r2')", "r2"),
             Test("if(hello * 5, 'r1', 'r2')", "r2"),
             Test("if(10, 'r1', 'r2')", "r1"),
+            Test("emptyList == []", true),
+            Test("emptyList != []", false),
+            Test("emptyList == {}", false),
+            Test("emptyObject == {}", true),
+            Test("emptyObject != {}", false),
+            Test("emptyObject == []", false),
+            Test("emptyJObject == {}", true),
+            Test("emptyJObject != {}", false),
+            Test("emptyJObject == []", false),
+            Test("emptyAnonymousObject == {}", true),
+            Test("emptyAnonymousObject != {}", false),
+            Test("emptyAnonymousObject == []", false),
+            Test("emptyList == [ ]", true),
+            Test("emptyList == {  }", false),
+            Test("emptyObject == {  }", true),
+            Test("emptyObject == [  ]", false),
             #endregion
 
             #region  Conversion functions test
@@ -505,7 +537,12 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("max(mul(1, 2), 5) ", 5),
             Test("max(5) ", 5),
             Test("max(4, 5) ", 5),
+            Test("max(createArray(1, 2, 3, 4))", 4),
+            Test("max(createArray(1, 2, 3, 4),5.0)", 5.0),
+            Test("max(1, 4, 5) ", 5),
             Test("min(mul(1, 2), 5) ", 2),
+            Test("min(createArray(1, 2, 3, 4))", 1),
+            Test("min(createArray(1, 2, 3, 4),5)", 1),
             Test("min(4, 5) ", 4),
             Test("min(4) ", 4),
             Test("min(1.0, two) + max(one, 2.0)", 3.0, OneTwo),

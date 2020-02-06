@@ -24,6 +24,7 @@
             "description": "Sequence of expressions which must evaluate to true.",
             "items": {
                 "$role": "expression",
+                "type": "boolean",
                 "title": "Assertion",
                 "description": "Assertion as an expression, which must evaluate to true or it will fail the test script.",
                 "examples": [

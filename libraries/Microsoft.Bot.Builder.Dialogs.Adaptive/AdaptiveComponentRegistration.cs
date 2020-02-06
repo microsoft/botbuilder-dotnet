@@ -22,6 +22,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Expressions.Properties.Converters;
 using Newtonsoft.Json;
 using static Microsoft.Bot.Builder.Dialogs.Adaptive.Actions.EditArray;
 
@@ -79,7 +80,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<ForeachPage>(ForeachPage.DeclarativeType);
             yield return new TypeRegistration<HttpRequest>(HttpRequest.DeclarativeType);
             yield return new TypeRegistration<IfCondition>(IfCondition.DeclarativeType);
-            yield return new TypeRegistration<InitProperty>(InitProperty.DeclarativeType);
             yield return new TypeRegistration<LogAction>(LogAction.DeclarativeType);
             yield return new TypeRegistration<RepeatDialog>(RepeatDialog.DeclarativeType);
             yield return new TypeRegistration<ReplaceDialog>(ReplaceDialog.DeclarativeType);
@@ -108,7 +108,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<Ask>(Ask.DeclarativeType);
 
             // Recognizers
-            yield return new TypeRegistration<LuisRecognizer>(LuisRecognizer.DeclarativeType) { CustomDeserializer = new LuisRecognizerLoader(TypeFactory.Configuration) };
             yield return new TypeRegistration<RegexRecognizer>(RegexRecognizer.DeclarativeType);
             yield return new TypeRegistration<MultiLanguageRecognizer>(MultiLanguageRecognizer.DeclarativeType);
             yield return new TypeRegistration<RecognizerSet>(RecognizerSet.DeclarativeType);

@@ -21,6 +21,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private IExpressionParser _expressionParser;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StaticChecker"/> class.
+        /// </summary>
+        /// <param name="lgFile">the lgFile wihch would be checked.</param>
+        /// <param name="expressionEngine">Init expression engine.</param>
         public StaticChecker(LGFile lgFile, ExpressionEngine expressionEngine = null)
         {
             this.lgFile = lgFile;
@@ -371,7 +376,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private List<Diagnostic> CheckExpression(string exp, ParserRuleContext context)
         {
             var result = new List<Diagnostic>();
-            exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
+            exp = exp.TrimExpression();
 
             try
             {

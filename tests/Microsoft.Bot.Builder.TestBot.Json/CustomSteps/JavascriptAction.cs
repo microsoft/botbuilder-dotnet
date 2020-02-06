@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Jint;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Expressions.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

@@ -43,9 +43,11 @@ fragment NUMBER: '0'..'9';
 
 fragment WHITESPACE : ' '|'\t'|'\ufeff'|'\u00a0';
 
+fragment EMPTY_OBJECT: '{' WHITESPACE* '}';
+
 fragment STRING_LITERAL : ('\'' (~['\r\n])* '\'') | ('"' (~["\r\n])* '"');
 
-fragment EXPRESSION_FRAGMENT : '@' '{' (STRING_LITERAL| ~[\r\n{}'"] )*? '}';
+fragment EXPRESSION_FRAGMENT : '@' '{' (STRING_LITERAL| ~[\r\n{}'"] | EMPTY_OBJECT )*? '}';
 
 fragment ESCAPE_CHARACTER_FRAGMENT : '\\' ~[\r\n]?;
 
@@ -226,7 +228,7 @@ STRUCTURE_IDENTIFIER
   ;
 
 STRUCTURE_EQUALS
-  : '=' {inStructuredValue = true;} 
+  : '=' {!inStructuredValue}? {inStructuredValue = true;} 
   ;
 
 STRUCTURE_OR_MARK

@@ -7,6 +7,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Expressions.Properties;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -40,6 +41,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
             Assert.AreEqual("text", activity.Text);
             Assert.AreEqual("text", activity.Speak);
+
+            var data = new JObject();
+            data["title"] = "titleContent";
+            data["text"] = "textContent";
+            var cardActionLgResult = GetLGFile().Evaluate("@{HerocardWithCardAction()}", data);
+            activity = ActivityFactory.CreateActivity(cardActionLgResult);
+            AssertCardActionActivity(activity);
         }
 
         [TestMethod]

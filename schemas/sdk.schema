@@ -201,11 +201,6 @@
             "$ref": "#/definitions/Microsoft.IfCondition"
         },
         {
-            "title": "Microsoft.InitProperty",
-            "description": "Define and initialize a property to be an array or object.",
-            "$ref": "#/definitions/Microsoft.InitProperty"
-        },
-        {
             "title": "Microsoft.IpEntityRecognizer",
             "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
             "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
@@ -758,14 +753,14 @@
                 "schema": {
                     "anyOf": [
                         {
-                            "$comment": "Eventually we should allow at least some subset of JSON schema here.",
                             "title": "The schema to be filled in.",
                             "type": "object",
                             "additionalProperties": true
                         },
                         {
                             "type": "string",
-                            "title": "String pointing to schema file."
+                            "title": "Reference to JSON schema",
+                            "description": "Reference to JSON schema .dialog file."
                         }
                     ]
                 }
@@ -880,14 +875,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "activity": {
@@ -911,10 +913,10 @@
                         },
                         {
                             "type": "string",
-                            "title": "string"
+                            "title": "Expression",
+                            "description": "Expression evaluating to array."
                         }
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -997,7 +999,7 @@
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
-                    "description": "Message to send if user response is not recognized.",
+                    "description": "Message to send when the recognizer does not understand the user input.",
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
@@ -1006,7 +1008,7 @@
                 "invalidPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Invalid prompt",
-                    "description": "Message to send if user response is invalid. Relies on specified validation expressions.",
+                    "description": "Message to send when the user input does not meet any validation expression.",
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
@@ -1044,8 +1046,7 @@
                     ],
                     "items": {
                         "$role": "expression",
-                        "type": "string",
-                        "description": "String must contain an expression."
+                        "type": "string"
                     }
                 },
                 "property": {
@@ -1071,7 +1072,7 @@
                         "string"
                     ],
                     "title": "Default value",
-                    "description": "Expression to examine on each turn of the conversation as possible value to the property.",
+                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
@@ -1088,7 +1089,7 @@
                         "string"
                     ],
                     "title": "Value",
-                    "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
+                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
                     "examples": [
                         "@userName"
                     ]
@@ -1189,52 +1190,80 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "dialog": {
-                    "$kind": "Microsoft.IDialog",
                     "$role": "expression",
-                    "type": [
-                        "string",
-                        "object"
-                    ],
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
                         "AddToDoDialog"
                     ],
-                    "$ref": "#/definitions/Microsoft.IDialog"
+                    "oneOf": [
+                        {
+                            "$kind": "Microsoft.IDialog",
+                            "type": "object",
+                            "title": "object",
+                            "$ref": "#/definitions/Microsoft.IDialog"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to object."
+                        }
+                    ]
                 },
                 "options": {
                     "$role": "expression",
-                    "type": [
-                        "string",
-                        "object"
-                    ],
                     "title": "Options",
                     "description": "One or more options that are passed to the dialog that is called.",
-                    "additionalProperties": {
-                        "type": "string",
-                        "title": "Options"
-                    }
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string",
+                                "title": "Options"
+                            },
+                            "title": "object"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to object."
+                        }
+                    ]
                 },
                 "activityProcessed": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Activity Processed",
                     "description": "When set to false, the dialog that is called can process the current activity.",
-                    "default": true
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "resultProperty": {
                     "$role": "expression",
@@ -1304,14 +1333,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 }
             },
@@ -1373,14 +1409,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "eventName": {
@@ -1484,7 +1527,7 @@
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
-                    "description": "Message to send if user response is not recognized.",
+                    "description": "Message to send when the recognizer does not understand the user input.",
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
@@ -1493,7 +1536,7 @@
                 "invalidPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Invalid prompt",
-                    "description": "Message to send if user response is invalid. Relies on specified validation expressions.",
+                    "description": "Message to send when the user input does not meet any validation expression.",
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
@@ -1531,8 +1574,7 @@
                     ],
                     "items": {
                         "$role": "expression",
-                        "type": "string",
-                        "description": "String must contain an expression."
+                        "type": "string"
                     }
                 },
                 "property": {
@@ -1558,7 +1600,7 @@
                         "string"
                     ],
                     "title": "Default value",
-                    "description": "Expression to examine on each turn of the conversation as possible value to the property.",
+                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
@@ -1575,7 +1617,7 @@
                         "string"
                     ],
                     "title": "Value",
-                    "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
+                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
                     "examples": [
                         "@userName"
                     ]
@@ -1618,19 +1660,17 @@
                     "default": "value"
                 },
                 "choices": {
-                    "anyOf": [
-                        {
-                            "$role": "expression",
-                            "type": "string",
-                            "description": "String must contain an expression."
-                        },
+                    "$role": "expression",
+                    "oneOf": [
                         {
                             "type": "array",
                             "items": [
                                 {
-                                    "type": "string"
+                                    "type": "string",
+                                    "title": "string"
                                 }
-                            ]
+                            ],
+                            "title": "array"
                         },
                         {
                             "type": "array",
@@ -1654,12 +1694,18 @@
                                             "title": "Synonyms",
                                             "description": "List of synonyms to recognize in addition to the value (optional).",
                                             "items": {
-                                                "type": "string"
+                                                "type": "string",
+                                                "title": "string"
                                             }
                                         }
                                     }
                                 }
-                            ]
+                            ],
+                            "title": "array"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression"
                         }
                     ]
                 },
@@ -1789,8 +1835,17 @@
                 },
                 "condition": {
                     "$role": "expression",
-                    "type": "string",
-                    "description": "String must contain an expression."
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "ifTrue": {
                     "$kind": "Microsoft.ITriggerSelector",
@@ -1884,7 +1939,7 @@
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
-                    "description": "Message to send if user response is not recognized.",
+                    "description": "Message to send when the recognizer does not understand the user input.",
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
@@ -1893,7 +1948,7 @@
                 "invalidPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Invalid prompt",
-                    "description": "Message to send if user response is invalid. Relies on specified validation expressions.",
+                    "description": "Message to send when the user input does not meet any validation expression.",
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
@@ -1931,8 +1986,7 @@
                     ],
                     "items": {
                         "$role": "expression",
-                        "type": "string",
-                        "description": "String must contain an expression."
+                        "type": "string"
                     }
                 },
                 "property": {
@@ -1958,7 +2012,7 @@
                         "string"
                     ],
                     "title": "Default value",
-                    "description": "Expression to examine on each turn of the conversation as possible value to the property.",
+                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
@@ -1975,7 +2029,7 @@
                         "string"
                     ],
                     "title": "Value",
-                    "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
+                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
                     "examples": [
                         "@userName"
                     ]
@@ -2039,64 +2093,84 @@
                 },
                 "choiceOptions": {
                     "$role": "expression",
-                    "type": "object",
-                    "properties": {
-                        "inlineSeparator": {
-                            "type": "string",
-                            "title": "Inline separator",
-                            "description": "Character used to separate individual choices when there are more than 2 choices",
-                            "default": ", "
-                        },
-                        "inlineOr": {
-                            "type": "string",
-                            "title": "Inline or",
-                            "description": "Separator inserted between the choices when their are only 2 choices",
-                            "default": " or "
-                        },
-                        "inlineOrMore": {
-                            "type": "string",
-                            "title": "Inline or more",
-                            "description": "Separator inserted between the last 2 choices when their are more than 2 choices.",
-                            "default": ", or "
-                        },
-                        "includeNumbers": {
-                            "type": "boolean",
-                            "title": "Include numbers",
-                            "description": "If true, inline and list style choices will be prefixed with the index of the choice.",
-                            "default": true
-                        }
-                    },
-                    "description": "String must contain an expression."
-                },
-                "confirmChoices": {
-                    "$role": "expression",
-                    "type": "array",
-                    "items": [
+                    "oneOf": [
                         {
                             "type": "object",
                             "properties": {
-                                "value": {
+                                "inlineSeparator": {
                                     "type": "string",
-                                    "title": "Value",
-                                    "description": "Value to return when this choice is selected."
+                                    "title": "Inline separator",
+                                    "description": "Character used to separate individual choices when there are more than 2 choices",
+                                    "default": ", "
                                 },
-                                "action": {
-                                    "type": "object",
-                                    "title": "Action",
-                                    "description": "Card action for the choice"
+                                "inlineOr": {
+                                    "type": "string",
+                                    "title": "Inline or",
+                                    "description": "Separator inserted between the choices when their are only 2 choices",
+                                    "default": " or "
                                 },
-                                "synonyms": {
-                                    "type": "array",
-                                    "title": "Synonyms",
-                                    "description": "List of synonyms to recognize in addition to the value (optional)",
-                                    "items": {
-                                        "type": "string"
-                                    }
+                                "inlineOrMore": {
+                                    "type": "string",
+                                    "title": "Inline or more",
+                                    "description": "Separator inserted between the last 2 choices when their are more than 2 choices.",
+                                    "default": ", or "
+                                },
+                                "includeNumbers": {
+                                    "type": "boolean",
+                                    "title": "Include numbers",
+                                    "description": "If true, inline and list style choices will be prefixed with the index of the choice.",
+                                    "default": true
                                 }
-                            }
+                            },
+                            "title": "object"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to object."
                         }
-                    ],
-                    "description": "String must contain an expression."
+                    ]
+                },
+                "confirmChoices": {
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "title": "Value",
+                                            "description": "Value to return when this choice is selected."
+                                        },
+                                        "action": {
+                                            "type": "object",
+                                            "title": "Action",
+                                            "description": "Card action for the choice"
+                                        },
+                                        "synonyms": {
+                                            "type": "array",
+                                            "title": "Synonyms",
+                                            "description": "List of synonyms to recognize in addition to the value (optional)",
+                                            "items": {
+                                                "type": "string",
+                                                "title": "string"
+                                            }
+                                        }
+                                    },
+                                    "title": "object"
+                                }
+                            ],
+                            "title": "array"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to array."
+                        }
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -2209,14 +2283,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 }
             },
@@ -2471,7 +2552,7 @@
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
-                    "description": "Message to send if user response is not recognized.",
+                    "description": "Message to send when the recognizer does not understand the user input.",
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
@@ -2480,7 +2561,7 @@
                 "invalidPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Invalid prompt",
-                    "description": "Message to send if user response is invalid. Relies on specified validation expressions.",
+                    "description": "Message to send when the user input does not meet any validation expression.",
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
@@ -2518,8 +2599,7 @@
                     ],
                     "items": {
                         "$role": "expression",
-                        "type": "string",
-                        "description": "String must contain an expression."
+                        "type": "string"
                     }
                 },
                 "property": {
@@ -2545,7 +2625,7 @@
                         "string"
                     ],
                     "title": "Default value",
-                    "description": "Expression to examine on each turn of the conversation as possible value to the property.",
+                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
@@ -2562,7 +2642,7 @@
                         "string"
                     ],
                     "title": "Value",
-                    "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
+                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
                     "examples": [
                         "@userName"
                     ]
@@ -2668,14 +2748,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 }
             },
@@ -2746,14 +2833,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 }
             },
@@ -2817,14 +2911,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "properties": {
@@ -2898,14 +2999,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "property": {
@@ -3026,14 +3134,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "changeType": {
@@ -3132,14 +3247,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "itemsProperty": {
@@ -3285,14 +3407,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "eventName": {
@@ -3330,13 +3459,20 @@
                 },
                 "bubbleEvent": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Bubble event",
                     "description": "If true this event is passed on to parent dialogs.",
-                    "default": false
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -3398,14 +3534,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "value": {
@@ -3484,14 +3627,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 }
             },
@@ -3611,6 +3761,11 @@
                     "title": "Microsoft.UrlEntityRecognizer",
                     "description": "Recognizer which recognizes urls (example: http://bing.com)",
                     "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
+                },
+                {
+                    "type": "string",
+                    "title": "Reference to Microsoft.EntityRecognizers",
+                    "description": "Reference to Microsoft.EntityRecognizers .dialog file."
                 }
             ]
         },
@@ -3703,21 +3858,26 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "itemsProperty": {
                     "$role": "expression",
-                    "type": [
-                        "string"
-                    ],
+                    "type": "string",
                     "title": "Items property",
                     "description": "Property that holds the array.",
                     "examples": [
@@ -3794,14 +3954,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "itemsProperty": {
@@ -3824,13 +3991,20 @@
                 },
                 "pageSize": {
                     "$role": "expression",
-                    "type": [
-                        "integer",
-                        "string"
-                    ],
                     "title": "Page size",
                     "description": "Number of items in each page.",
-                    "default": 10
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "default": 10,
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -3902,14 +4076,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 }
             },
@@ -3971,14 +4152,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 }
             },
@@ -4040,14 +4228,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "actionId": {
@@ -4220,14 +4415,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "method": {
@@ -4284,8 +4486,7 @@
                     "description": "One or more headers to include in the request (supports data binding).",
                     "additionalProperties": {
                         "$role": "expression",
-                        "type": "string",
-                        "description": "String must contain an expression."
+                        "type": "string"
                     }
                 },
                 "responseType": {
@@ -4480,11 +4681,6 @@
                     "title": "Microsoft.IfCondition",
                     "description": "Two-way branch the conversation flow based on a condition.",
                     "$ref": "#/definitions/Microsoft.IfCondition"
-                },
-                {
-                    "title": "Microsoft.InitProperty",
-                    "description": "Define and initialize a property to be an array or object.",
-                    "$ref": "#/definitions/Microsoft.InitProperty"
                 },
                 {
                     "title": "Microsoft.LogAction",
@@ -4733,6 +4929,11 @@
                     "title": "Microsoft.OnUnknownIntent",
                     "description": "Action to perform when user input is unrecognized and if none of the 'on intent recognition' triggers match recognized intent.",
                     "$ref": "#/definitions/Microsoft.OnUnknownIntent"
+                },
+                {
+                    "type": "string",
+                    "title": "Reference to Microsoft.ITriggerCondition",
+                    "description": "Reference to Microsoft.ITriggerCondition .dialog file."
                 }
             ]
         },
@@ -4765,6 +4966,11 @@
                     "title": "Microsoft.TrueSelector",
                     "description": "Selector for all true events",
                     "$ref": "#/definitions/Microsoft.TrueSelector"
+                },
+                {
+                    "type": "string",
+                    "title": "Reference to Microsoft.ITriggerSelector",
+                    "description": "Reference to Microsoft.ITriggerSelector .dialog file."
                 }
             ]
         },
@@ -4805,26 +5011,40 @@
                 },
                 "condition": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Condition",
                     "description": "Expression to evaluate.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "actions": {
@@ -4864,96 +5084,6 @@
                     "required": [
                         "condition",
                         "actions",
-                        "$kind"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.InitProperty": {
-            "$role": "union(Microsoft.IDialog)",
-            "title": "Initialize property",
-            "description": "Define and initialize a property to be an array or object.",
-            "type": "object",
-            "properties": {
-                "$kind": {
-                    "title": "$kind",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.InitProperty"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "Optional id for the dialog"
-                },
-                "disabled": {
-                    "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Disabled",
-                    "description": "Optional condition which if true will disable this action.",
-                    "examples": [
-                        "user.age > 3"
-                    ]
-                },
-                "property": {
-                    "$role": "expression",
-                    "type": "string",
-                    "title": "Property",
-                    "description": "Property (named location to store information).",
-                    "examples": [
-                        "user.age"
-                    ]
-                },
-                "type": {
-                    "$role": "expression",
-                    "type": "string",
-                    "title": "Type",
-                    "description": "Type of value.",
-                    "enum": [
-                        "object",
-                        "array"
-                    ]
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "property",
-                        "type",
                         "$kind"
                     ]
                 }
@@ -5099,14 +5229,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "text": {
@@ -5123,13 +5260,20 @@
                 },
                 "traceActivity": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Send Trace Activity",
                     "description": "If true, automatically sends a TraceActivity (view in Bot Framework Emulator).",
-                    "default": false
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -5207,6 +5351,65 @@
                     "title": "LUIS prediction key",
                     "description": "LUIS prediction key used to call endpoint.",
                     "$role": "expression"
+                },
+                "externalEntityRecognizer": {
+                    "title": "External Entity Recognizer",
+                    "description": "Entities recognized by this recognizer will be passed to LUIS as external entities.",
+                    "$kind": "Microsoft.Recognizer",
+                    "$ref": "#/definitions/Microsoft.Recognizer"
+                },
+                "dynamicLists": {
+                    "$role": "expression",
+                    "title": "Dynamic lists",
+                    "description": "Runtime defined entity lists.",
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "title": "Entity list",
+                                "description": "Lists of canonical values and synonyms for an entity.",
+                                "type": "object",
+                                "properties": {
+                                    "entity": {
+                                        "title": "Entity",
+                                        "description": "Entity to extend with a dynamic list.",
+                                        "type": "string"
+                                    },
+                                    "list": {
+                                        "title": "Dynamic list",
+                                        "description": "List of canonical forms and synonyms.",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "canonicalForm": {
+                                                    "title": "Canonical form",
+                                                    "description": "Resolution if any synonym matches.",
+                                                    "type": "string"
+                                                },
+                                                "synonyms": {
+                                                    "title": "Synonyms",
+                                                    "description": "List of synonyms for a canonical form.",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "title": "string"
+                                                    }
+                                                }
+                                            },
+                                            "title": "object"
+                                        }
+                                    }
+                                }
+                            },
+                            "title": "array"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to array."
+                        }
+                    ]
                 },
                 "predictionOptions": {
                     "type": "object",
@@ -5560,7 +5763,7 @@
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
-                    "description": "Message to send if user response is not recognized.",
+                    "description": "Message to send when the recognizer does not understand the user input.",
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
@@ -5569,7 +5772,7 @@
                 "invalidPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Invalid prompt",
-                    "description": "Message to send if user response is invalid. Relies on specified validation expressions.",
+                    "description": "Message to send when the user input does not meet any validation expression.",
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
@@ -5607,8 +5810,7 @@
                     ],
                     "items": {
                         "$role": "expression",
-                        "type": "string",
-                        "description": "String must contain an expression."
+                        "type": "string"
                     }
                 },
                 "property": {
@@ -5634,7 +5836,7 @@
                         "string"
                     ],
                     "title": "Default value",
-                    "description": "Expression to examine on each turn of the conversation as possible value to the property.",
+                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
@@ -5651,7 +5853,7 @@
                         "string"
                     ],
                     "title": "Value",
-                    "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
+                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
                     "examples": [
                         "@userName"
                     ]
@@ -5814,14 +6016,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "text": {
@@ -5844,13 +6053,20 @@
                 },
                 "timeout": {
                     "$role": "expression",
-                    "type": [
-                        "integer",
-                        "string"
-                    ],
                     "title": "Timeout",
                     "description": "Time out setting for the OAuth signin card.",
-                    "default": "900000"
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "default": "900000",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "property": {
                     "$role": "expression",
@@ -5881,15 +6097,22 @@
                 },
                 "maxTurnCount": {
                     "$role": "expression",
-                    "type": [
-                        "integer",
-                        "string"
-                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
-                    "default": 3,
                     "examples": [
                         3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "default": 3,
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
                     ]
                 },
                 "defaultValue": {
@@ -5910,15 +6133,22 @@
                 },
                 "allowInterruptions": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-                    "default": "true",
                     "examples": [
                         "true"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": "true",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 }
             },
@@ -5981,7 +6211,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -5992,10 +6232,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -6068,7 +6318,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -6079,10 +6339,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -6163,7 +6433,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -6174,10 +6454,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -6244,7 +6534,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -6255,10 +6555,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -6325,7 +6635,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -6336,10 +6656,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -6416,7 +6746,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -6427,10 +6767,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -6505,7 +6855,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -6516,10 +6876,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -6609,7 +6979,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -6620,10 +7000,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -6695,7 +7085,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -6706,10 +7106,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -6776,7 +7186,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -6787,10 +7207,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -6857,7 +7287,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -6868,10 +7308,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -6944,7 +7394,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -6955,10 +7415,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -7031,7 +7501,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -7042,10 +7522,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -7112,7 +7602,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -7123,10 +7623,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -7193,7 +7703,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -7204,10 +7724,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -7274,7 +7804,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -7285,10 +7825,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -7355,7 +7905,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -7366,10 +7926,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -7436,7 +8006,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -7447,10 +8027,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -7530,7 +8120,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -7541,10 +8141,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -7611,7 +8221,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -7622,10 +8242,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -7692,7 +8322,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -7703,10 +8343,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -7773,7 +8423,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -7784,10 +8444,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -7854,7 +8524,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -7865,10 +8545,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -7935,7 +8625,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -7946,10 +8646,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -8016,7 +8726,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -8027,10 +8747,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -8097,7 +8827,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -8108,10 +8848,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -8178,7 +8928,17 @@
                     "examples": [
                         "user.vip == true"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "actions": {
                     "type": "array",
@@ -8189,10 +8949,20 @@
                     }
                 },
                 "priority": {
-                    "type": "string",
                     "title": "priority",
                     "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
+                    ]
                 },
                 "runOnce": {
                     "type": "boolean",
@@ -8442,13 +9212,20 @@
                 },
                 "threshold": {
                     "$role": "expression",
-                    "type": [
-                        "number",
-                        "string"
-                    ],
                     "title": "Threshold",
                     "description": "Threshold score to filter results.",
-                    "default": 0.3
+                    "oneOf": [
+                        {
+                            "type": "number",
+                            "default": 0.3,
+                            "title": "number"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to number."
+                        }
+                    ]
                 },
                 "activeLearningCardTitle": {
                     "$role": "expression",
@@ -8473,37 +9250,52 @@
                 },
                 "strictFilters": {
                     "$role": "expression",
-                    "type": [
-                        "array",
-                        "string"
-                    ],
                     "title": "Strict Filters",
                     "description": "Metadata filters to use when calling the QnA Maker KB.",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "name": {
-                                "type": "string",
-                                "title": "Name",
-                                "maximum": 100
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "title": "Name",
+                                        "maximum": 100
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "title": "Value",
+                                        "maximum": 100
+                                    }
+                                },
+                                "title": "object"
                             },
-                            "value": {
-                                "type": "string",
-                                "title": "Value",
-                                "maximum": 100
-                            }
+                            "title": "array"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to array."
                         }
-                    }
+                    ]
                 },
                 "top": {
                     "$role": "expression",
-                    "type": [
-                        "number",
-                        "string"
-                    ],
                     "title": "Top",
                     "description": "The number of answers you want to retrieve.",
-                    "default": 3
+                    "oneOf": [
+                        {
+                            "type": "number",
+                            "default": 3,
+                            "title": "number"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to number."
+                        }
+                    ]
                 },
                 "isTest": {
                     "type": "boolean",
@@ -8583,27 +9375,27 @@
                 },
                 "knowledgeBaseId": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "KnowledgeBase Id",
                     "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
-                    "default": "settings.qna.knowledgebaseid",
-                    "type": "string"
+                    "default": "settings.qna.knowledgebaseid"
                 },
                 "endpointKey": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Endpoint Key",
                     "description": "Endpoint key for the QnA Maker KB.",
-                    "default": "settings.qna.endpointkey",
-                    "type": "string"
+                    "default": "settings.qna.endpointkey"
                 },
                 "hostname": {
                     "$role": "expression",
+                    "type": "string",
                     "title": "Hostname",
                     "description": "Hostname for your QnA Maker service.",
                     "default": "settings.qna.hostname",
                     "examples": [
                         "https://yourserver.azurewebsites.net/qnamaker"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "threshold": {
                     "type": "number",
@@ -9030,38 +9822,59 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "options": {
                     "$role": "expression",
-                    "type": [
-                        "string",
-                        "object"
-                    ],
                     "title": "Options",
                     "description": "One or more options that are passed to the dialog that is called.",
-                    "additionalProperties": {
-                        "type": "string",
-                        "title": "Options"
-                    }
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string",
+                                "title": "Options"
+                            },
+                            "title": "object"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to object."
+                        }
+                    ]
                 },
                 "activityProcessed": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Activity Processed",
                     "description": "When set to false, the dialog that is called can process the current activity.",
-                    "default": true
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -9122,23 +9935,27 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
                     "$role": "expression",
-                    "type": [
-                        "string",
-                        "object"
-                    ],
+                    "type": "string",
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
@@ -9148,26 +9965,40 @@
                 },
                 "options": {
                     "$role": "expression",
-                    "type": [
-                        "string",
-                        "object"
-                    ],
                     "title": "Options",
                     "description": "One or more options that are passed to the dialog that is called.",
-                    "additionalProperties": {
-                        "type": "string",
-                        "title": "Options"
-                    }
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string",
+                                "title": "Options"
+                            },
+                            "title": "object"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to object."
+                        }
+                    ]
                 },
                 "activityProcessed": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Activity Processed",
                     "description": "When set to false, the dialog that is called can process the current activity.",
-                    "default": true
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -9228,14 +10059,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "activity": {
@@ -9303,14 +10141,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "assignments": {
@@ -9410,14 +10255,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "property": {
@@ -9523,14 +10375,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 }
             },
@@ -9659,14 +10518,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "cases": {
@@ -9828,7 +10694,17 @@
                     "examples": [
                         "user.age > 10"
                     ],
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
                 },
                 "description": {
                     "type": "string",
@@ -9918,7 +10794,17 @@
                         "examples": [
                             "user.vip == true"
                         ],
-                        "type": "string"
+                        "oneOf": [
+                            {
+                                "type": "boolean",
+                                "title": "boolean"
+                            },
+                            {
+                                "type": "string",
+                                "title": "Expression",
+                                "description": "Expression evaluating to boolean."
+                            }
+                        ]
                     }
                 }
             },
@@ -9995,7 +10881,17 @@
                         "examples": [
                             "user.vip == true"
                         ],
-                        "type": "string"
+                        "oneOf": [
+                            {
+                                "type": "boolean",
+                                "title": "boolean"
+                            },
+                            {
+                                "type": "string",
+                                "title": "Expression",
+                                "description": "Expression evaluating to boolean."
+                            }
+                        ]
                     }
                 }
             },
@@ -10085,7 +10981,17 @@
                         "examples": [
                             "user.vip == true"
                         ],
-                        "type": "string"
+                        "oneOf": [
+                            {
+                                "type": "boolean",
+                                "title": "boolean"
+                            },
+                            {
+                                "type": "string",
+                                "title": "Expression",
+                                "description": "Expression evaluating to boolean."
+                            }
+                        ]
                     }
                 }
             },
@@ -10155,6 +11061,11 @@
                     "title": "Microsoft.Test.UserTyping",
                     "description": "Sends typing activity to the bot.",
                     "$ref": "#/definitions/Microsoft.Test.UserTyping"
+                },
+                {
+                    "type": "string",
+                    "title": "Reference to Microsoft.Test.ITestAction",
+                    "description": "Reference to Microsoft.Test.ITestAction .dialog file."
                 }
             ]
         },
@@ -10609,7 +11520,7 @@
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
-                    "description": "Message to send if user response is not recognized.",
+                    "description": "Message to send when the recognizer does not understand the user input.",
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
@@ -10618,7 +11529,7 @@
                 "invalidPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Invalid prompt",
-                    "description": "Message to send if user response is invalid. Relies on specified validation expressions.",
+                    "description": "Message to send when the user input does not meet any validation expression.",
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
@@ -10656,8 +11567,7 @@
                     ],
                     "items": {
                         "$role": "expression",
-                        "type": "string",
-                        "description": "String must contain an expression."
+                        "type": "string"
                     }
                 },
                 "property": {
@@ -10683,7 +11593,7 @@
                         "string"
                     ],
                     "title": "Default value",
-                    "description": "Expression to examine on each turn of the conversation as possible value to the property.",
+                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
                     "examples": [
                         "@userName",
                         "coalesce(@number, @partySize)"
@@ -10700,7 +11610,7 @@
                         "string"
                     ],
                     "title": "Value",
-                    "description": "Gets or sets a value expression which can be used to intialize the input prompt.",
+                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
                     "examples": [
                         "@userName"
                     ]
@@ -10858,14 +11768,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "name": {
@@ -11010,14 +11927,21 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
                         "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "activityId": {
@@ -11027,8 +11951,7 @@
                     "dDescription": "An string expression with the activity id to update.",
                     "examples": [
                         "=dialog.lastActivityId"
-                    ],
-                    "description": "String must contain an expression."
+                    ]
                 },
                 "activity": {
                     "$kind": "Microsoft.IActivityTemplate",

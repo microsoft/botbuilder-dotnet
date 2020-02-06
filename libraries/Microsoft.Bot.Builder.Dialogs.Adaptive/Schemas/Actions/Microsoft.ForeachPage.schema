@@ -12,7 +12,7 @@
         },
         "disabled": {
             "$role": "expression",
-            "type": [ "boolean", "string" ],
+            "type": "boolean",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -38,7 +38,7 @@
         },
         "pageSize": {
             "$role": "expression",
-            "type": [ "integer", "string" ],
+            "type": "integer",
             "title": "Page size",
             "description": "Number of items in each page.",
             "default": 10
