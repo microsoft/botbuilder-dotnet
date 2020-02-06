@@ -58,7 +58,6 @@
     <None Remove="ExceptionExamples\TemplateAsFunction.lg" />
     <None Remove="ExceptionExamples\ErrorStructuredTemplate.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplatesInImportFiles.lg" />
-    <None Remove="ExceptionExamples\RunTimeErrors.lg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -204,9 +203,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\DuplicatedTemplatesInImportFiles.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ExceptionExamples\RunTimeErrors.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
