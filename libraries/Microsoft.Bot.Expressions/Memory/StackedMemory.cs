@@ -6,6 +6,10 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Expressions.Memory
 {
+    /// <summary>
+    /// Stack implements of <see cref="IMemory"/>.
+    /// Memory variables have a hierarchical relationship.
+    /// </summary>
     public class StackedMemory : Stack<IMemory>, IMemory
     {
         public static StackedMemory Wrap(IMemory memory)
@@ -22,6 +26,12 @@ namespace Microsoft.Bot.Expressions.Memory
             }
         }
 
+        /// <summary>
+        /// Try get value from a given path.
+        /// </summary>
+        /// <param name="path">Given path.</param>
+        /// <param name="value">Resolved value.</param>
+        /// <returns>True if the memory contains an element with the specified key; otherwise, false.</returns>
         public bool TryGetValue(string path, out object value)
         {
             value = null;
@@ -45,6 +55,11 @@ namespace Microsoft.Bot.Expressions.Memory
             return true;
         }
 
+        /// <summary>
+        /// Set value to a given path.
+        /// </summary>
+        /// <param name="path">Memory path.</param>
+        /// <param name="value">Value to set.</param>
         public void SetValue(string path, object value)
         {
             throw new Exception($"Can't set value to {path}, stacked memory is read-only");

@@ -16,6 +16,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
+    /// <summary>
+    /// LG template Evaluator.
+    /// </summary>
     public class Evaluator : LGFileParserBaseVisitor<object>
     {
         public const string LGType = "lgType";
@@ -23,6 +26,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private const string ReExecuteSuffix = "!";
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Evaluator"/> class.
+        /// </summary>
+        /// <param name="templates">Template list.</param>
+        /// <param name="expressionEngine">expression engine.</param>
         public Evaluator(List<LGTemplate> templates, ExpressionEngine expressionEngine)
         {
             Templates = templates;
@@ -32,12 +40,36 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ExpressionEngine = new ExpressionEngine(CustomizedEvaluatorLookup(expressionEngine.EvaluatorLookup));
         }
 
+        /// <summary>
+        /// Gets templates.
+        /// </summary>
+        /// <value>
+        /// Templates.
+        /// </value>
         public List<LGTemplate> Templates { get; }
 
+        /// <summary>
+        /// Gets expression engine.
+        /// </summary>
+        /// <value>
+        /// Expression engine.
+        /// </value>
         public ExpressionEngine ExpressionEngine { get; }
 
+        /// <summary>
+        /// Gets templateMap.
+        /// </summary>
+        /// <value>
+        /// TemplateMap.
+        /// </value>
         public Dictionary<string, LGTemplate> TemplateMap { get; }
 
+        /// <summary>
+        /// Evaluate a template with given name and scope.
+        /// </summary>
+        /// <param name="inputTemplateName">template name.</param>
+        /// <param name="scope">scope.</param>
+        /// <returns>Evaluate result.</returns>
         public object EvaluateTemplate(string inputTemplateName, object scope)
         {
             if (!(scope is CustomizedMemory))

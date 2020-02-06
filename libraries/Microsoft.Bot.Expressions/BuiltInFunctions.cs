@@ -417,6 +417,13 @@ namespace Microsoft.Bot.Expressions
             return error;
         }
 
+        /// <summary>
+        /// Verify an object is neither a string nor null.
+        /// </summary>
+        /// <param name="value">instance.</param>
+        /// <param name="expression">expression.</param>
+        /// <param name="number">number.</param>
+        /// <returns>error message.</returns>
         public static string VerifyStringOrNull(object value, Expression expression, int number)
         {
             string error = null;
@@ -865,6 +872,13 @@ namespace Microsoft.Bot.Expressions
             return isPresent;
         }
 
+        /// <summary>
+        /// Set the property into a given instance.
+        /// </summary>
+        /// <param name="instance">Given instance.</param>
+        /// <param name="property">Property be set.</param>
+        /// <param name="value">Value be set.</param>
+        /// <returns>Value and error information if any.</returns>
         public static (object result, string error) SetProperty(object instance, string property, object value)
         {
             object result = value;
@@ -911,6 +925,11 @@ namespace Microsoft.Bot.Expressions
             return (result, error);
         }
 
+        /// <summary>
+        /// Convert constant JValue to base type value.
+        /// </summary>
+        /// <param name="obj">input object.</param>
+        /// <returns>Corresponding base type if input is a JValue.</returns>
         public static object ResolveValue(object obj)
         {
             object value;
@@ -942,8 +961,12 @@ namespace Microsoft.Bot.Expressions
             return value;
         }
 
-        // Try to accumulate the path from an Accessor or Element, from right to left
-        // return the accumulated path and the expression left unable to accumulate
+        /// <summary>
+        /// Try to accumulate the path from an Accessor or Element, from right to left.
+        /// </summary>
+        /// <param name="expression">expression.</param>
+        /// <param name="state">scope.</param>
+        /// <returns>return the accumulated path and the expression left unable to accumulate.</returns>
         public static (string path, Expression left, string error) TryAccumulatePath(Expression expression, IMemory state)
         {
             string path = string.Empty;

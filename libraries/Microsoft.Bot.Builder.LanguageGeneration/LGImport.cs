@@ -4,7 +4,7 @@
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
-    /// Here is a data model that can easily understand and use the LG import definition in LG files.
+    /// Here is a data model that can help users understand and use the LG import definition in LG files easily. 
     /// </summary>
     public class LGImport
     {
