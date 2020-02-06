@@ -446,6 +446,8 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("equals(hello, 'hello')", true),
             Test("equals(bag.index, 3)", true),
             Test("equals(bag.index, 2)", false),
+            Test("equals(max(createArray(1, 2, 3, 4)), 4.0)", true),
+            Test("equals(max(createArray(1, 2, 3, 4), 5.0), 5)", true),
             Test("equals(hello == 'world', bool('true'))", false), // false, true
             Test("equals(hello == 'world', bool(0))", false), // false, true
             Test("if(!exists(one), 'r1', 'r2')", "r2"), // false
