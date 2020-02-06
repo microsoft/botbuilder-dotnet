@@ -171,7 +171,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 if (!dcState.ContainsKey(ConditionTracker))
                 {
-                    var parser = Selector.Parser;
                     foreach (var trigger in Triggers)
                     {
                         if (trigger.RunOnce && trigger.Condition != null)
@@ -698,7 +697,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 var evt = selection.First();
                 await sequenceContext.DebuggerStepAsync(evt, dialogEvent, cancellationToken).ConfigureAwait(false);
-                Trace.TraceInformation($"Executing Dialog: {Id} Rule[{evt.Id}]: {evt.GetType().Name}: {evt.GetExpression(new ExpressionEngine())}");
+                Trace.TraceInformation($"Executing Dialog: {Id} Rule[{evt.Id}]: {evt.GetType().Name}: {evt.GetExpression()}");
                 var changes = await evt.ExecuteAsync(sequenceContext).ConfigureAwait(false);
 
                 if (changes != null && changes.Any())

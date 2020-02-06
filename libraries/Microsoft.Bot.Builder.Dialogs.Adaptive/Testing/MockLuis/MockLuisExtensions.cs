@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.MockLuis
         /// <returns>Modified adapter.</returns>
         public static BotAdapter UseMockLuis(this BotAdapter botAdapter)
         {
-            DeclarativeTypeLoader.AddComponent(new MockLuisComponentRegistration());
+             //botAdapter.ComponentRegistrations.Add(new MockLuisComponentRegistration());
             return botAdapter;
         }
 
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.MockLuis
         /// <param name="environment">Environment where LUIS models are deployed.</param>
         /// <param name="endpoint">Endpoint to use with a default of westus.</param>
         /// <returns>Modified configuration builder.</returns>
-        public static IConfigurationBuilder UseLuisSettings(this IConfigurationBuilder builder, string directory, string userSecretId, string environment = null, string endpoint = "https://westus.api.cognitive.microsoft.com")
+        public static IConfigurationBuilder UseMockLuisSettings(this IConfigurationBuilder builder, string directory, string userSecretId, string environment = null, string endpoint = "https://westus.api.cognitive.microsoft.com")
         {
             if (environment == null)
             {

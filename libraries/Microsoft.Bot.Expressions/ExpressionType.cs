@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Expressions
 {
-    /// NOTE: If you add a built-in type here, you also need to make sure it can be evaluated as well either by adding to BuiltInFunctions or when you construct the expression.
+    /// NOTE: If you add a built-in type here, you also need to make sure it can be evaluated as well either by adding to ExpressionFunctions or when you construct the expression.
     /// <summary>
     /// Built-in expression types.
     /// </summary>
@@ -148,5 +148,9 @@ namespace Microsoft.Bot.Expressions
 
         // Regular expression
         public const string IsMatch = "isMatch";
+
+        // trigger tree 
+        public const string Optional = "optional";
+        public const string Ignore = "ignore";
     }
 }

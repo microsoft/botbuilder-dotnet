@@ -68,8 +68,7 @@ namespace Microsoft.Bot.Builder
         /// <typeparam name="T">The type of the service.</typeparam>
         /// <param name="key">The name of the service.</param>
         /// <param name="value">The value to add.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="key"/> or <paramref name="value"/>
-        /// is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> or <paramref name="value"/>is null.</exception>
         public void Add<T>(string key, T value)
             where T : class
         {
@@ -92,7 +91,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <typeparam name="T">The type of the service.</typeparam>
         /// <param name="value">The service object to add.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/>is null.</exception>
         /// <remarks>The default service key is the <see cref="Type.FullName"/> of the service type.</remarks>
         public void Add<T>(T value)
             where T : class
@@ -100,10 +99,39 @@ namespace Microsoft.Bot.Builder
             Add(typeof(T).FullName, value);
         }
 
+        /// <summary>
+        /// Set a value to the turn's context.
+        /// </summary>
+        /// <typeparam name="T">The type of the service.</typeparam>
+        /// <param name="key">The name of the service.</param>
+        /// <param name="value">The value to add.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> or <paramref name="value"/>is null.</exception>
+        public void Set<T>(string key, T value)
+            where T : class
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            this[key] = value;
+        }
+
+        /// <summary>
+        /// Set a value to the turn's context.
+        /// </summary>
+        /// <typeparam name="T">The type of the service.</typeparam>
+        /// <param name="value">The value to add.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/>is null.</exception>
         public void Set<T>(T value)
             where T : class
         {
-            this[typeof(T).FullName] = value;
+            Set(typeof(T).FullName, value);
         }
 
         public void Dispose()

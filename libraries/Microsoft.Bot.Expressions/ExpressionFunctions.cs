@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Expressions
     /// Evaluators are called to evaluate an expression and should try not to throw.
     /// There are some evaluators in this file that take in a verifier that is called at runtime to verify arguments are proper.
     /// </remarks>
-    public static class BuiltInFunctions
+    public static class ExpressionFunctions
     {
         /// <summary>
         /// Random number generator used for expressions.
@@ -48,9 +48,9 @@ namespace Microsoft.Bot.Expressions
         public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
         /// <summary>
-        /// Dictionary of built-in functions.
+        /// Dictionary of function => ExpressionEvaluator.
         /// </summary>
-        private static readonly Dictionary<string, ExpressionEvaluator> _functions = BuildFunctionLookup();
+        public static readonly Dictionary<string, ExpressionEvaluator> Functions = GetExpressionFunctions();
 
         /// <summary>
         /// Object used to lock Randomizer.
@@ -708,7 +708,7 @@ namespace Microsoft.Bot.Expressions
         /// <returns>Information about expression type.</returns>
         public static ExpressionEvaluator Lookup(string type)
         {
-            if (!_functions.TryGetValue(type, out var eval))
+            if (!Functions.TryGetValue(type, out var eval))
             {
                 throw new SyntaxErrorException($"{type} does not have an evaluator, it's not a built-in function or a customized function");
             }
@@ -2398,7 +2398,7 @@ namespace Microsoft.Bot.Expressions
             return -1;
         }
 
-        private static Dictionary<string, ExpressionEvaluator> BuildFunctionLookup()
+        private static Dictionary<string, ExpressionEvaluator> GetExpressionFunctions()
         {
             var functions = new List<ExpressionEvaluator>
             {
@@ -2469,7 +2469,7 @@ namespace Microsoft.Bot.Expressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Range,
-                    BuiltInFunctions.ApplyWithError(
+                    ExpressionFunctions.ApplyWithError(
                         args =>
                         {
                             string error = null;
@@ -2486,9 +2486,9 @@ namespace Microsoft.Bot.Expressions
 
                             return (result, error);
                         },
-                        BuiltInFunctions.VerifyInteger),
+                        ExpressionFunctions.VerifyInteger),
                     ReturnType.Object,
-                    BuiltInFunctions.ValidateBinaryNumber),
+                    ExpressionFunctions.ValidateBinaryNumber),
 
                 // Collection Functions
                 new ExpressionEvaluator(
@@ -2544,29 +2544,29 @@ namespace Microsoft.Bot.Expressions
                     ValidateAtLeastOne),
                 new ExpressionEvaluator(
                     ExpressionType.Skip,
-                    BuiltInFunctions.Skip,
+                    ExpressionFunctions.Skip,
                     ReturnType.Object,
-                    (expression) => BuiltInFunctions.ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
+                    (expression) => ExpressionFunctions.ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.Take,
-                    BuiltInFunctions.Take,
+                    ExpressionFunctions.Take,
                     ReturnType.Object,
-                    (expression) => BuiltInFunctions.ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
+                    (expression) => ExpressionFunctions.ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.SubArray,
-                    BuiltInFunctions.SubArray,
+                    ExpressionFunctions.SubArray,
                     ReturnType.Object,
-                    (expression) => BuiltInFunctions.ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Object, ReturnType.Number)),
+                    (expression) => ExpressionFunctions.ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Object, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.SortBy,
                     SortBy(false),
                     ReturnType.Object,
-                    (expression) => BuiltInFunctions.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
+                    (expression) => ExpressionFunctions.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
                 new ExpressionEvaluator(
                     ExpressionType.SortByDescending,
                     SortBy(true),
                     ReturnType.Object,
-                    (expression) => BuiltInFunctions.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
+                    (expression) => ExpressionFunctions.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
                 new ExpressionEvaluator(ExpressionType.IndicesAndValues, IndicesAndValues, ReturnType.Object, ValidateUnary),
 
                 // Booleans
@@ -2838,9 +2838,9 @@ namespace Microsoft.Bot.Expressions
                     expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.NewGuid,
-                    BuiltInFunctions.Apply(args => Guid.NewGuid().ToString()),
+                    ExpressionFunctions.Apply(args => Guid.NewGuid().ToString()),
                     ReturnType.String,
-                    (exprssion) => BuiltInFunctions.ValidateArityAndAnyType(exprssion, 0, 0)),
+                    (exprssion) => ExpressionFunctions.ValidateArityAndAnyType(exprssion, 0, 0)),
                 new ExpressionEvaluator(
                     ExpressionType.IndexOf,
                     (expression, state) =>
@@ -3118,7 +3118,7 @@ namespace Microsoft.Bot.Expressions
                             var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
                             if (args[0] is string timestamp && args[1] is string targetTimeZone)
                             {
-                                (value, error) = BuiltInFunctions.ConvertFromUTC(timestamp, targetTimeZone, format);
+                                (value, error) = ExpressionFunctions.ConvertFromUTC(timestamp, targetTimeZone, format);
                             }
                             else
                             {
@@ -3143,7 +3143,7 @@ namespace Microsoft.Bot.Expressions
                             var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
                             if (args[0] is string timestamp && args[1] is string sourceTimeZone)
                             {
-                                (value, error) = BuiltInFunctions.ConvertToUTC(timestamp, sourceTimeZone, format);
+                                (value, error) = ExpressionFunctions.ConvertToUTC(timestamp, sourceTimeZone, format);
                             }
                             else
                             {
@@ -3430,20 +3430,20 @@ namespace Microsoft.Bot.Expressions
                 new ExpressionEvaluator(ExpressionType.Float, Apply(args => (float)Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Int, Apply(args => (int)Convert.ToInt64(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Array, Apply(args => new[] { args[0] }, VerifyString), ReturnType.Object, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Binary, Apply(args => BuiltInFunctions.ToBinary(args[0]), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ExpressionFunctions.ToBinary(args[0]), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64, Apply(args => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0])), VerifyString), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => BuiltInFunctions.ToBinary(args[0]), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => ExpressionFunctions.ToBinary(args[0]), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64ToString, Apply(args => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(args[0])), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.UriComponent, Apply(args => Uri.EscapeDataString(args[0]), VerifyString), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.DataUri, Apply(args => "data:text/plain;charset=utf-8;base64," + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0])), VerifyString), ReturnType.String, BuiltInFunctions.ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.DataUriToBinary, Apply(args => BuiltInFunctions.ToBinary(args[0]), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.DataUri, Apply(args => "data:text/plain;charset=utf-8;base64," + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0])), VerifyString), ReturnType.String, ExpressionFunctions.ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.DataUriToBinary, Apply(args => ExpressionFunctions.ToBinary(args[0]), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.DataUriToString, Apply(args => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(args[0].Substring(args[0].IndexOf(",") + 1))), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.UriComponentToString, Apply(args => Uri.UnescapeDataString(args[0]), VerifyString), ReturnType.String, ValidateUnary),
 
                 // TODO: Is this really the best way?
                 new ExpressionEvaluator(ExpressionType.String, Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary),
                 Comparison(ExpressionType.Bool, args => IsLogicTrue(args[0]), ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Xml, ApplyWithError(args => BuiltInFunctions.ToXml(args[0])), ReturnType.String, BuiltInFunctions.ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Xml, ApplyWithError(args => ExpressionFunctions.ToXml(args[0])), ReturnType.String, ExpressionFunctions.ValidateUnary),
 
                 // Misc
                 new ExpressionEvaluator(ExpressionType.Accessor, Accessor, ReturnType.Object, ValidateAccessor),
@@ -3593,6 +3593,14 @@ namespace Microsoft.Bot.Expressions
                     ReturnType.Boolean,
                     ValidateIsMatch),
             };
+
+            var eval = new ExpressionEvaluator(ExpressionType.Optional, null, ReturnType.Boolean, ExpressionFunctions.ValidateUnaryBoolean);
+            eval.Negation = eval;
+            functions.Add(eval);
+            
+            eval = new ExpressionEvaluator(ExpressionType.Ignore, null, ReturnType.Boolean, ExpressionFunctions.ValidateUnaryBoolean);
+            eval.Negation = eval;
+            functions.Add(eval);
 
             var lookup = new Dictionary<string, ExpressionEvaluator>();
             foreach (var function in functions)

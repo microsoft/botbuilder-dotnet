@@ -386,7 +386,7 @@ namespace Microsoft.Bot.Expressions.Tests
         {
             try
             {
-                new ExpressionEngine().Parse(exp);
+                Expression.Parse(exp);
             }
             catch (Exception e)
             {
@@ -462,7 +462,7 @@ namespace Microsoft.Bot.Expressions.Tests
 
             try
             {
-                var (value, error) = new ExpressionEngine().Parse(exp).TryEvaluate(scope);
+                var (value, error) = Expression.Parse(exp).TryEvaluate(scope);
                 if (error != null)
                 {
                     isFail = true;

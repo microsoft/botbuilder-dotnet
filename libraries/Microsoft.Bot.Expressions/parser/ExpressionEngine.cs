@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Expressions
         /// <param name="lookup">If present delegate to lookup evaluation information from type string.</param>
         public ExpressionEngine(EvaluatorLookup lookup = null)
         {
-            EvaluatorLookup = lookup ?? BuiltInFunctions.Lookup;
+            EvaluatorLookup = lookup ?? ExpressionFunctions.Lookup;
         }
 
         public EvaluatorLookup EvaluatorLookup { get; }

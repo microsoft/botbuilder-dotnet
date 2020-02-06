@@ -4,17 +4,16 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public class LanguageGeneratorConverter : InterfaceConverter<ILanguageGenerator>
     {
-        public LanguageGeneratorConverter(IRefResolver refResolver, ISourceMap sourceMap, Stack<string> paths)
-            : base(refResolver, sourceMap, paths)
+        public LanguageGeneratorConverter(ResourceExplorer resourceExplorer, Stack<string> paths)
+            : base(resourceExplorer, paths)
         {
         }
 

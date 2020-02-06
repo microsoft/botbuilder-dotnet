@@ -73,10 +73,12 @@ namespace Microsoft.Bot.Expressions.Properties
 
             if (stringOrExpression != null)
             {
+                this.SetValue(null);
+
                 // if it starts with = it always is an expression
                 if (stringOrExpression.StartsWith("="))
                 {
-                    Expression = new ExpressionEngine().Parse(stringOrExpression.TrimStart('='));
+                    ExpressionText = stringOrExpression;
                     return;
                 }
                 else if (stringOrExpression.StartsWith("\\="))

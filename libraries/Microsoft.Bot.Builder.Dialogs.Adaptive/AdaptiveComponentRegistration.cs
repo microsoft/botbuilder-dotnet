@@ -2,14 +2,11 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Converters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
@@ -19,18 +16,19 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Memory;
+using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
+using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Expressions.Properties.Converters;
 using Newtonsoft.Json;
 using static Microsoft.Bot.Builder.Dialogs.Adaptive.Actions.EditArray;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
-    public class AdaptiveComponentRegistration : ComponentRegistration
+    public class AdaptiveComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes, IComponentMemoryScopes, IComponentPathResolvers
     {
-        public override IEnumerable<TypeRegistration> GetTypes()
+        public virtual IEnumerable<TypeRegistration> GetTypes()
         {
             // Conditionals
             yield return new TypeRegistration<OnCondition>(OnCondition.DeclarativeType);
@@ -163,19 +161,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<AssertReplyActivity>(AssertReplyActivity.DeclarativeType);
         }
 
-        public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)
+        public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<string> paths)
         {
-            yield return new InterfaceConverter<OnCondition>(refResolver, sourceMap, paths);
-            yield return new InterfaceConverter<TestAction>(refResolver, sourceMap, paths);
-            yield return new InterfaceConverter<EntityRecognizer>(refResolver, sourceMap, paths);
-            yield return new InterfaceConverter<ITriggerSelector>(refResolver, sourceMap, paths);
+            yield return new InterfaceConverter<OnCondition>(resourceExplorer, paths);
+            yield return new InterfaceConverter<TestAction>(resourceExplorer, paths);
+            yield return new InterfaceConverter<EntityRecognizer>(resourceExplorer, paths);
+            yield return new InterfaceConverter<ITriggerSelector>(resourceExplorer, paths);
 
             yield return new IntExpressionConverter();
             yield return new NumberExpressionConverter();
             yield return new StringExpressionConverter();
             yield return new ValueExpressionConverter();
             yield return new BoolExpressionConverter();
-            yield return new DialogExpressionConverter(refResolver, sourceMap, paths);
+            yield return new DialogExpressionConverter(resourceExplorer, paths);
 
             yield return new ObjectExpressionConverter<ChoiceSet>();
             yield return new ObjectExpressionConverter<ChoiceFactoryOptions>();
@@ -192,7 +190,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             yield return new ChoiceSetConverter();
             yield return new ActivityTemplateConverter();
-            yield return new JObjectConverter(refResolver);
+            yield return new JObjectConverter(resourceExplorer);
+        }
+
+        public virtual IEnumerable<MemoryScope> GetMemoryScopes(IDictionary<string, object> dependencies)
+        {
+            yield return new TurnMemoryScope();
+            yield return new SettingsMemoryScope();
+            yield return new DialogMemoryScope();
+            yield return new DialogClassMemoryScope();
+            yield return new ClassMemoryScope();
+            yield return new ThisMemoryScope();
+            yield return new ConversationMemoryScope();
+            yield return new UserMemoryScope();
+        }
+
+        public virtual IEnumerable<IPathResolver> GetPathResolvers(IDictionary<string, object> dependencies)
+        {
+            yield return new DollarPathResolver();
+            yield return new HashPathResolver();
+            yield return new AtAtPathResolver();
+            yield return new AtPathResolver();
+            yield return new PercentPathResolver();
         }
     }
 }

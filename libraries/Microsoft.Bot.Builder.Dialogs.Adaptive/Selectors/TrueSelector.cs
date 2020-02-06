@@ -22,9 +22,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private List<OnCondition> _conditionals;
         private bool _evaluate;
 
-        [Newtonsoft.Json.JsonIgnore]
-        public IExpressionParser Parser { get; set; } = new ExpressionEngine();
-
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate = true)
         {
             _conditionals = conditionals.ToList();
@@ -39,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 candidates = new List<OnCondition>();
                 foreach (var conditional in _conditionals)
                 {
-                    var expression = conditional.GetExpression(Parser);
+                    var expression = conditional.GetExpression();
                     var (value, error) = expression.TryEvaluate(context.GetState());
                     var result = error == null && (bool)value;
                     if (result == true)

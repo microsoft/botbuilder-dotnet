@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Expressions.Tests
             }
             else
             {
-                eval = BuiltInFunctions.Lookup(type);
+                eval = ExpressionFunctions.Lookup(type);
             }
 
             return eval;

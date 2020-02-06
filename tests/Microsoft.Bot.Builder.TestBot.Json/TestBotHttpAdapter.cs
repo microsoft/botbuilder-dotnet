@@ -25,17 +25,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             this.UseStorage(storage);
             this.UseState(userState, conversationState);
 
-            var registrations = new TypeRegistration[]
-            {
-                new TypeRegistration<MultiplyDialog>("Testbot.Multiply"),
-                new TypeRegistration<JavascriptAction>("Testbot.JavascriptAction")
-            };
+            HostContext.Current.Set<IConfiguration>(configuration);
 
-            this.UseResourceExplorer(resourceExplorer, registrations);
-            this.UseAdaptiveDialogs();
-            this.UseQnAMaker();
-            this.UseLanguageGeneration(resourceExplorer);
-            this.Use(new RegisterClassMiddleware<IConfiguration>(configuration));
+            resourceExplorer.RegisterType<MultiplyDialog>("Testbot.Multiply");
+            resourceExplorer.RegisterType<JavascriptAction>("Testbot.JavascriptAction");
 
             // this.UseDebugger(configuration.GetValue<int>("debugport", 4712), events: new Events<AdaptiveEvents>());
 

@@ -25,11 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-            DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
-            DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
-
-            resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder());
+            resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
         }
 
         [TestMethod]

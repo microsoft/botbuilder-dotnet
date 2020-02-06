@@ -1,6 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Tests;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 

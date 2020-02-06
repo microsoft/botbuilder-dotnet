@@ -8,15 +8,26 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
+    /// <summary>
+    /// TypeRegistration object which is $kind => type.
+    /// </summary>
     public class TypeRegistration
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TypeRegistration"/> class.
+        /// </summary>
         public TypeRegistration()
         {
         }
 
-        public TypeRegistration(string name, Type type)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TypeRegistration"/> class.
+        /// </summary>
+        /// <param name="kind">$kind.</param>
+        /// <param name="type">type.</param>
+        public TypeRegistration(string kind, Type type)
         {
-            this.Name = name;
+            this.Kind = kind;
             this.Type = type;
         }
 
@@ -26,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         /// <value>
         /// The declarative id for this type.
         /// </value>
-        public string Name { get; set; }
+        public string Kind { get; set; }
 
         /// <summary>
         /// Gets or sets the type for this registration.
@@ -45,17 +56,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         public ICustomDeserializer CustomDeserializer { get; set; }
     }
 
+    /// <summary>
+    /// TypeRegistration of Kind => type using generic.
+    /// </summary>
+    /// <typeparam name="T">type.</typeparam>
     public class TypeRegistration<T> : TypeRegistration
     {
-        public TypeRegistration()
+        public TypeRegistration(string kind)
+            : base(kind, typeof(T))
         {
-            this.Type = typeof(T);
-        }
-
-        public TypeRegistration(string name)
-        {
-            this.Name = name;
-            Type = typeof(T);
         }
     }
 }
