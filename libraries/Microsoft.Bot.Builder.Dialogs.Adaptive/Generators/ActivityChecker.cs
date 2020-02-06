@@ -11,6 +11,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
+    /// <summary>
+    /// Structure LG result checker.
+    /// </summary>
     public static class ActivityChecker
     {
         private static readonly IList<string> ActivityTypes = GetAllPublicConstantValues<string>(typeof(ActivityTypes));
