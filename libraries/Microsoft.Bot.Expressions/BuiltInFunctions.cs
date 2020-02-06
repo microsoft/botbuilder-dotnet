@@ -293,7 +293,7 @@ namespace Microsoft.Bot.Expressions
         }
 
         /// <summary>
-        /// Verify value is numeric list or numeric value.
+        /// Verify value is a numeric list or a numeric value.
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
