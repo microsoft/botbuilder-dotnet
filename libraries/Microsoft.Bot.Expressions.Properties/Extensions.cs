@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Expressions.Memory;
 
 namespace Microsoft.Bot.Expressions.Properties
 {
@@ -35,12 +36,13 @@ namespace Microsoft.Bot.Expressions.Properties
             inlineStr = !inlineStr.Trim().StartsWith(multiLineMark) && inlineStr.Contains('\n')
                    ? $"{multiLineMark}{inlineStr}{multiLineMark}" : inlineStr;
 
-            var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
-
-            var newContent = $"{lgFile.Content}\r\n{wrappedStr}";
+            var newContent = $"# {fakeTemplateId} \r\n - {inlineStr}";
 
             var newLgFile = LGParser.ParseText(newContent, lgFile.Id, lgFile.ImportResolver);
-            return newLgFile.EvaluateTemplate(fakeTemplateId, scope);
+
+            var allTemplates = lgFile.AllTemplates.Union(newLgFile.AllTemplates).ToList();
+            var evaluator = new Evaluator(allTemplates, lgFile.ExpressionEngine);
+            return evaluator.EvaluateTemplate(fakeTemplateId, scope);
         }
 
         private static void CheckErrors(IList<Diagnostic> diagnostics)

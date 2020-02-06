@@ -713,6 +713,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.IsTrue(
                 JToken.DeepEquals(JObject.Parse("{\"lgType\":\"Struct\",\"text\":\"Acme Co\"}"), evaled as JObject));
+
+            evaled = lgFile.EvaluateTemplate("ValueWithEqualsMark", new { name = "Jack" });
+
+            Assert.IsTrue(
+                JToken.DeepEquals(JObject.Parse("{\"lgType\": \"Activity\",\"text\": \"Hello! welcome back. I have your name = Jack\"}"), evaled as JObject));
         }
 
         [TestMethod]
@@ -921,6 +926,24 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = lgFile.EvaluateTemplate("template", new { list = new JArray() { new JObject() }, obj = new JObject { ["a"] = "b" } });
             Assert.AreEqual("list and obj are both not empty.", evaled);
+        }
+
+        [TestMethod]
+        public void TestNullTolerant()
+        {
+            var lgFile = LGParser.ParseFile(GetExampleFilePath("NullTolerant.lg"));
+
+            var evaled = lgFile.EvaluateTemplate("template1");
+
+            Assert.AreEqual("null", evaled);
+
+            evaled = lgFile.EvaluateTemplate("template2");
+
+            Assert.AreEqual("result is 'null'", evaled);
+
+            var jObjEvaled = lgFile.EvaluateTemplate("template3") as JObject;
+
+            Assert.AreEqual("null", jObjEvaled["key1"]);
         }
 
         public class LoopClass

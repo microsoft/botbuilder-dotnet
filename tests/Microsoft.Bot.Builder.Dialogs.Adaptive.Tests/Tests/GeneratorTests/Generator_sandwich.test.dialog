@@ -213,7 +213,11 @@
         },
         {
             "$kind": "Microsoft.Test.UserSays",
-            "text": "no"
+            "text": "no whole wheat"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "bread is changed from rye to whole wheat."
         }
     ]
 }
