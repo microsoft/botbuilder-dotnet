@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 else
                 {
                     // When the same property exists in both the calling template as well as callee, the content in caller will trump any content in 
-                    var propertyObject = JObject.FromObject(EvalExpression(body.objectStructureLine().GetText(), false));
+                    var propertyObject = JObject.FromObject(EvalExpression(body.objectStructureLine().GetText(), true));
 
                     // Full reference to another structured template is limited to the structured template with same type 
                     if (propertyObject[LGType] != null && propertyObject[LGType].ToString() == typeName)
@@ -336,7 +336,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private object EvalExpression(string exp, bool nullable = true)
+        private object EvalExpression(string exp, bool throwOnNull = false)
         {
             exp = exp.TrimExpression();
             var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
@@ -347,13 +347,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (result == null)
             {
-                if (nullable)
+                if (throwOnNull)
                 {
-                    result = "null";
+                    throw new Exception(LGErrors.NullExpression(exp));
                 }
                 else
                 {
-                    throw new Exception(LGErrors.NullExpression(exp));
+                    result = "null";
                 }
             }
 
