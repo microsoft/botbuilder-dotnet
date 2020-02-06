@@ -951,6 +951,24 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual("list and obj are both not empty.", evaled);
         }
 
+        [TestMethod]
+        public void TestNullTolerant()
+        {
+            var lgFile = LGParser.ParseFile(GetExampleFilePath("NullTolerant.lg"));
+
+            var evaled = lgFile.EvaluateTemplate("template1");
+
+            Assert.AreEqual("null", evaled);
+
+            evaled = lgFile.EvaluateTemplate("template2");
+
+            Assert.AreEqual("result is 'null'", evaled);
+
+            var jObjEvaled = lgFile.EvaluateTemplate("template3") as JObject;
+
+            Assert.AreEqual("null", jObjEvaled["key1"]);
+        }
+
         public class LoopClass
         {
             public string Name { get; set; }

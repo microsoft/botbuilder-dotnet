@@ -15,12 +15,20 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
+    /// <summary>
+    /// LG template expander.
+    /// </summary>
     public class Expander : LGFileParserBaseVisitor<List<string>>
     {
         private readonly ExpressionEngine expanderExpressionEngine;
         private readonly ExpressionEngine evaluatorExpressionEngine;
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Expander"/> class.
+        /// </summary>
+        /// <param name="templates">template list.</param>
+        /// <param name="expressionEngine">Given expression engine.</param>
         public Expander(List<LGTemplate> templates, ExpressionEngine expressionEngine)
         {
             Templates = templates;
@@ -31,10 +39,28 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.evaluatorExpressionEngine = new ExpressionEngine(CustomizedEvaluatorLookup(expressionEngine.EvaluatorLookup, false));
         }
 
+        /// <summary>
+        /// Gets templates.
+        /// </summary>
+        /// <value>
+        /// Templates.
+        /// </value>
         public List<LGTemplate> Templates { get; }
 
+        /// <summary>
+        /// Gets templateMap.
+        /// </summary>
+        /// <value>
+        /// TemplateMap.
+        /// </value>
         public Dictionary<string, LGTemplate> TemplateMap { get; }
 
+        /// <summary>
+        /// Expand the results of a template with given name and scope.
+        /// </summary>
+        /// <param name="templateName">Given template name.</param>
+        /// <param name="scope">Given scope.</param>
+        /// <returns>All possiable results.</returns>
         public List<string> EvaluateTemplate(string templateName, object scope)
         {
             if (!(scope is CustomizedMemory))

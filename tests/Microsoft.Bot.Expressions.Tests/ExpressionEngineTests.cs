@@ -457,6 +457,8 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("equals(hello, 'hello')", true),
             Test("equals(bag.index, 3)", true),
             Test("equals(bag.index, 2)", false),
+            Test("equals(max(createArray(1, 2, 3, 4)), 4.0)", true),
+            Test("equals(max(createArray(1, 2, 3, 4), 5.0), 5)", true),
             Test("equals(hello == 'world', bool('true'))", false), // false, true
             Test("equals(hello == 'world', bool(0))", false), // false, true
             Test("if(!exists(one), 'r1', 'r2')", "r2"), // false
@@ -546,7 +548,12 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("max(mul(1, 2), 5) ", 5),
             Test("max(5) ", 5),
             Test("max(4, 5) ", 5),
+            Test("max(createArray(1, 2, 3, 4))", 4),
+            Test("max(createArray(1, 2, 3, 4),5.0)", 5.0),
+            Test("max(1, 4, 5) ", 5),
             Test("min(mul(1, 2), 5) ", 2),
+            Test("min(createArray(1, 2, 3, 4))", 1),
+            Test("min(createArray(1, 2, 3, 4),5)", 1),
             Test("min(4, 5) ", 4),
             Test("min(4) ", 4),
             Test("min(1.0, two) + max(one, 2.0)", 3.0, OneTwo),
