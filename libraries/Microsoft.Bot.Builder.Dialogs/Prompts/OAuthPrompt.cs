@@ -344,12 +344,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 var cardActionType = ActionTypes.Signin;
                 var signInResource = await adapter.GetSignInResourceAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
+                var value = signInResource.SignInLink;
 
                 if (turnContext.TurnState.Get<ClaimsIdentity>("BotIdentity") is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
 
                 {
                     // Force magic code for Skills (to be addressed in R8)
                     cardActionType = ActionTypes.OpenUrl;
+                }
+                else
+                {
+                    value = null;
                 }
 
                 prompt.Attachments.Add(new Attachment
@@ -366,6 +371,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                                 Title = _settings.Title,
                                 Text = _settings.Text,
                                 Type = cardActionType,
+                                Value = value
                             },
                         },
                         TokenExchangeResource = signInResource.TokenExchangeResource,
