@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(value));
             }
 
-            // note this can throw if teh key is already present
+            // note this can throw if the key is already present
             base.Add(key, value);
         }
 

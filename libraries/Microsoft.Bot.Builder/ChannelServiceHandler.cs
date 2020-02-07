@@ -240,9 +240,9 @@ namespace Microsoft.Bot.Builder
         /// * IsGroup set to true if this is not a direct message (default is false)
         /// * Array containing the members to include in the conversation
         ///
-        /// The return value is a ResourceResponse which contains a conversation id
+        /// The return value is a ResourceResponse which contains a conversation ID
         /// which is suitable for use
-        /// in the message payload and REST API uris.
+        /// in the message payload and REST API URIs.
         ///
         /// Most channels only support the semantics of bots initiating a direct
         /// message conversation.  An example of how to do that would be:
@@ -410,13 +410,13 @@ namespace Microsoft.Bot.Builder
                 var isAuthDisabled = await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false);
                 if (isAuthDisabled)
                 {
-                    // In the scenario where Auth is disabled, we still want to have the
+                    // In the scenario where auth is disabled, we still want to have the
                     // IsAuthenticated flag set in the ClaimsIdentity. To do this requires
                     // adding in an empty claim.
                     return new ClaimsIdentity(new List<Claim>(), "anonymous");
                 }
 
-                // No Auth Header. Auth is required. Request is not authorized.
+                // No auth header. Auth is required. Request is not authorized.
                 throw new UnauthorizedAccessException();
             }
 

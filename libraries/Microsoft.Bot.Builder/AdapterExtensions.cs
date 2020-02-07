@@ -6,24 +6,34 @@ namespace Microsoft.Bot.Builder
     public static class AdapterExtensions
     {
         /// <summary>
-        /// Register storage with the adapter so that is available via TurnContext.Get&lt;IStorage&gt;().
+        /// Registers a storage layer with the adapter. The storage object will be available via the turn context's
+        /// <see cref="TurnContext.TurnState"/>.<see cref="TurnContextStateCollection.Get{IStorage}"/> method.
         /// </summary>
-        /// <param name="botAdapter">bot adapter to register storage with.</param>
-        /// <param name="storage">IStorage implementation to register.</param>
-        /// <returns>bot adapter.</returns>
+        /// <param name="botAdapter">The <see cref="BotAdapter"/> on which to register the storage object.</param>
+        /// <param name="storage">The <see cref="IStorage"/> object to register.</param>
+        /// <returns>The updated adapter.</returns>
+        /// <remarks>
+        /// This adds <see cref="IMiddleware"/> to the adapter to register the storage layer.
+        /// </remarks>
         public static BotAdapter UseStorage(this BotAdapter botAdapter, IStorage storage)
         {
             return botAdapter.Use(new RegisterClassMiddleware<IStorage>(storage));
         }
 
         /// <summary>
-        /// Register UserState and ConversationState objects so they are accessible via TurnContext.Get&lt;UserState&gt;() and add auto save middleware.
+        /// Registers user and conversation state objects with the adapter. These objects will be available via the turn context's
+        /// <see cref="TurnContext.TurnState"/>.<see cref="TurnContextStateCollection.Get{T}"/> method.
         /// </summary>
-        /// <param name="botAdapter">bot adapater to add save state to.</param>
-        /// <param name="userState">UserState to use (default is new UserState(registered storage)).</param>
-        /// <param name="conversationState">ConversationState to use (default is new ConversationState (registered storage)).</param>
-        /// <param name="auto">automatically manage state (default is true), if set to false, it is your responsibility to load and save state.</param>
-        /// <returns>Botadapter.</returns>
+        /// <param name="botAdapter">The <see cref="BotAdapter"/> on which to register the storage object.</param>
+        /// <param name="userState">The <see cref="UserState"/> object to register.</param>
+        /// <param name="conversationState">The <see cref="ConversationState"/> object to register.</param>
+        /// <param name="auto">`true` to automatically persist state each turn; otherwise, `false`.
+        /// When false, it is your responsibility to persist state each turn.</param>
+        /// <returns>The updated adapter.</returns>
+        /// <remarks>
+        /// This adds <see cref="IMiddleware"/> to register the user and conversation state management objects.
+        /// If <paramref name="auto"/> is true, this also adds middleware to automatically persist state before each turn ends.
+        /// </remarks>
         public static BotAdapter UseState(this BotAdapter botAdapter, UserState userState, ConversationState conversationState, bool auto = true)
         {
             if (botAdapter == null)
