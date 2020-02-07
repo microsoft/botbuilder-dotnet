@@ -9,10 +9,17 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 {
+    /// <summary>
+    /// JsonConverter which handles resolving declarative types in JObjects using the ResourceExplorer.
+    /// </summary>
     public class JObjectConverter : JsonConverter
     {
         private readonly ResourceExplorer resourceExplorer;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JObjectConverter"/> class.
+        /// </summary>
+        /// <param name="resourceExplorer">ResourceExplorer to use to resolve references.</param>
         public JObjectConverter(ResourceExplorer resourceExplorer)
         {
             this.resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));

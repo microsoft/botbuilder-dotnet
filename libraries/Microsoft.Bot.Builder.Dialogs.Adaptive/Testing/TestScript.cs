@@ -119,9 +119,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// </summary>
         /// <remarks>This methods sends the activities from the user to the bot and
         /// checks the responses from the bot based on the TestActions.</remarks>
-        /// <param name="resourceExplorer">resource explorer.</param>
-        /// <param name="testName">testName.</param>
-        /// <param name="callback">bot logic.</param>
+        /// <param name="resourceExplorer">The resource explorer to use.</param>
+        /// <param name="testName">Name of the test.</param>
+        /// <param name="callback">The bot logic.</param>
         /// <param name="adapter">optional test adapter.</param>
         /// <returns>Runs the exchange between the user and the bot.</returns>
         public async Task ExecuteAsync(ResourceExplorer resourceExplorer, [CallerMemberName] string testName = null, BotCallbackHandler callback = null, TestAdapter adapter = null)

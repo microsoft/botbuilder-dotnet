@@ -758,6 +758,10 @@ namespace Microsoft.Bot.Expressions.Tests
             Test(string.Empty, string.Empty),
             Test(string.Empty, string.Empty),
             #endregion
+
+#region TriggerTree Tests
+            Test("optional(true)", true),
+#endregion
         };
 
         public static object[] Test(string input, object value, HashSet<string> paths = null) => new object[] { input, value, paths };

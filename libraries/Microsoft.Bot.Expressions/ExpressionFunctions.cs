@@ -3748,11 +3748,11 @@ namespace Microsoft.Bot.Expressions
                     ValidateIsMatch),
             };
 
-            var eval = new ExpressionEvaluator(ExpressionType.Optional, null, ReturnType.Boolean, ExpressionFunctions.ValidateUnaryBoolean);
+            var eval = new ExpressionEvaluator(ExpressionType.Optional, (expression, state) => expression.Children[0].TryEvaluate(state), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryBoolean);
             eval.Negation = eval;
             functions.Add(eval);
             
-            eval = new ExpressionEvaluator(ExpressionType.Ignore, null, ReturnType.Boolean, ExpressionFunctions.ValidateUnaryBoolean);
+            eval = new ExpressionEvaluator(ExpressionType.Ignore, (expression, state) => throw new NotImplementedException(), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryBoolean);
             eval.Negation = eval;
             functions.Add(eval);
 

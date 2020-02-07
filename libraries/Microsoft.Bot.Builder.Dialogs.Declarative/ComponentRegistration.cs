@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,13 +10,34 @@ using Microsoft.Bot.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
+    /// <summary>
+    /// ComponentRegistration is a placeholder class for discovering assets from components.  To make your components 
+    /// available to the system you derive from ComponentRegistration and implement the interfaces which define
+    /// the components.  These components then are consumed in appropriate places by the systems that need them.
+    /// For example, to add declarative types to the system you simply add class that implements IComponentDeclarativeTypes
+    /// <code>
+    /// public class MyComponentRegistration : IComponentDeclarativeTypes
+    /// {
+    ///     public IEnumerable&lt;DeclarativeType&gt;()
+    ///     {  
+    ///          yield return new DeclarativeType&lt;MyType&gt;("Contoso.MyType");
+    ///          ...
+    ///     }
+    /// }
+    /// </code>
+    /// </summary>
     public class ComponentRegistration
     {
         /// <summary>
-        /// Gets component registrations.
+        /// Gets list of all classes in process which are derived from ComponentRegistration.
         /// </summary>
+        /// <remarks>
+        /// This is a lazy list because we only want to do this work once.  This calculates this by
+        /// using Reflection over all of the assemblies in the AppDomain (and their references) to discover
+        /// all of the ComponentRegistrationClasses and build a list of them.
+        /// </remarks>
         /// <value>
-        /// Component registrations object which implement IComponentRegistration or derived interface.
+        /// A list of ComponentRegistration objects.
         /// </value>
         public static Lazy<List<ComponentRegistration>> Registrations { get; private set; } = new Lazy<List<ComponentRegistration>>(() =>
         {
@@ -59,11 +83,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                 .Select(t => (ComponentRegistration)Activator.CreateInstance(t))
                 .ToList<ComponentRegistration>();
 
-            // register custom functions 
+            // ExpressionFunctions.Functions is global table of functions that are callable from an Expression
+            // This is an appropriate place for us to go ahead and process any IComponentExpressionFunctions
+            // that we found in the global components list.
             foreach (var component in components.OfType<IComponentExpressionFunctions>())
             {
                 foreach (var function in component.GetExpressionEvaluators())
                 {
+                    // add the custom function to the global ExpressionFunctions table.
                     ExpressionFunctions.Functions[function.Type] = function;
                 }
             }

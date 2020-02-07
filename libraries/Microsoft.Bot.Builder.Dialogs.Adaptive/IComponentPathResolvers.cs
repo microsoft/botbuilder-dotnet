@@ -1,9 +1,7 @@
-﻿using System;
+﻿// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Bot.Builder.Dialogs.Memory;
-using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
@@ -15,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         /// <summary>
         /// Return enumeration of pathresolvers.
         /// </summary>
-        /// <returns>collection of IPathResolver.</returns>
+        /// <returns>collection of <see ref="IPathResolver>IPathResolver</see>.</returns>
         IEnumerable<IPathResolver> GetPathResolvers();
     }
 }

@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.QnA;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -92,7 +93,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling
                         .AddInMemoryCollection()
                         .UseMockLuisSettings(luis ?? dir, secret)
                         .Build();
-                    var explorer = new ResourceExplorer().AddFolder(dir, monitorChanges: false);
+
+                    var explorer = new ResourceExplorer()
+                        .AddFolder(dir, monitorChanges: false)
+                        .RegisterType(LuisAdaptiveRecognizer.DeclarativeType, typeof(MockLuisRecognizer), new MockLuisLoader()); 
                     HostContext.Current.Set(config);
                     var script = explorer.LoadType<TestScript>(name);
                     var timer = new System.Diagnostics.Stopwatch();

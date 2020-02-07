@@ -69,12 +69,12 @@ namespace Microsoft.Bot.Expressions.Properties
 
         public override void SetValue(object value)
         {
-            var stringOrExpression = (value as string) ?? (value as JValue)?.Value as string;
+            // reset state to no value or expression.
+            base.SetValue(null);
 
+            var stringOrExpression = (value as string) ?? (value as JValue)?.Value as string;
             if (stringOrExpression != null)
             {
-                this.SetValue(null);
-
                 // if it starts with = it always is an expression
                 if (stringOrExpression.StartsWith("="))
                 {
@@ -90,8 +90,6 @@ namespace Microsoft.Bot.Expressions.Properties
                 this.Value = stringOrExpression;
                 return;
             }
-
-            base.SetValue(value);
         }
     }
 }

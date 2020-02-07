@@ -11,6 +11,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.Luis
 {
+    /// <summary>
+    /// Define component assets for Luis.
+    /// </summary>
     public class LuisComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
         public IEnumerable<DeclarativeType> GetDeclarativeTypes()

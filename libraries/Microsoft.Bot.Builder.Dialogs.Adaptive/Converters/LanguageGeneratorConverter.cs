@@ -10,8 +10,16 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
+    /// <summary>
+    /// JsonConverter which understands how to deal with strings when assigning to ILanguageGenerator.
+    /// </summary>
     public class LanguageGeneratorConverter : InterfaceConverter<ILanguageGenerator>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LanguageGeneratorConverter"/> class.
+        /// </summary>
+        /// <param name="resourceExplorer">resourcexplorer to use to resolve references.</param>
+        /// <param name="paths">path stack to build debugger call graph.</param>
         public LanguageGeneratorConverter(ResourceExplorer resourceExplorer, Stack<string> paths)
             : base(resourceExplorer, paths)
         {

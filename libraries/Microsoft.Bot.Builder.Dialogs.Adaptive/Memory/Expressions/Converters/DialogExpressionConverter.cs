@@ -17,6 +17,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
     {
         private readonly InterfaceConverter<Dialog> converter;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogExpressionConverter"/> class.
+        /// </summary>
+        /// <param name="resourceExplorer">resource explorer to use for resolving references.</param>
+        /// <param name="paths">Path stack to use for building debugger call graph.</param>
         public DialogExpressionConverter(ResourceExplorer resourceExplorer, Stack<string> paths)
         {
             this.converter = new InterfaceConverter<Dialog>(resourceExplorer, paths);

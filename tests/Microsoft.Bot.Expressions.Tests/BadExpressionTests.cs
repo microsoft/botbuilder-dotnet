@@ -362,7 +362,11 @@ namespace Microsoft.Bot.Expressions.Tests
 
 #region SetPathToValue tests
             Test("setPathToValue(2+3, 4)"), // Not a real path
-            Test("setPathToValue(a)") // Missing value
+            Test("setPathToValue(a)"), // Missing value
+#endregion
+
+#region TriggerTree Tests
+            Test("ignore(true)"),
 #endregion
         };
 

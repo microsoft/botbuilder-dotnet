@@ -1,6 +1,6 @@
-﻿using System;
+﻿// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 using System.Collections.Generic;
-using System.Text;
 
 namespace Microsoft.Bot.Expressions
 {

@@ -1,6 +1,8 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Microsoft.Bot.Builder
 {
@@ -17,20 +19,20 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Gets the HostContext for the current process.
         /// </summary>
-        /// <remarks>This class is always a singleton for the process.</remarks>
+        /// <remarks>This class is always a singleton for the process =.</remarks>
         /// <value>
         /// The HostContext for the current process.
         /// </value>
         public static HostContext Current { get; private set; } = new HostContext();
 
         /// <summary>
-        /// Gets a cached value by name from the turn's context.
+        /// Gets a cached value by name from the HostContext.
         /// </summary>
-        /// <typeparam name="T">The type of the service.</typeparam>
-        /// <param name="key">The name of the service.</param>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <param name="key">The name of the object.</param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        /// <returns>The service object; or null if no service is registered by the key, or
-        /// the retrieved object does not match the service type.</returns>
+        /// <returns>The object; or null if no object is registered by the key, or
+        /// the retrieved object does not match the type.</returns>
         public T Get<T>(string key)
             where T : class
         {
@@ -39,9 +41,9 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(key));
             }
 
-            if (TryGetValue(key, out var service))
+            if (TryGetValue(key, out var obj))
             {
-                if (service is T result)
+                if (obj is T result)
                 {
                     return result;
                 }
@@ -52,11 +54,11 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Gets the default value by type from the turn's context.
+        /// Gets the default value by type from the HostContext.
         /// </summary>
-        /// <typeparam name="T">The type of the service.</typeparam>
-        /// <returns>The service object; or null if no default service of the type is registered.</returns>
-        /// <remarks>The default service key is the <see cref="Type.FullName"/> of the service type.</remarks>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <returns>The object; or null if no default object of the type is registered.</returns>
+        /// <remarks>The default object key is the <see cref="Type.FullName"/> of the object type.</remarks>
         public T Get<T>()
             where T : class
         {
@@ -64,10 +66,10 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Set a value to the turn's context.
+        /// Set a value to the HostContext.
         /// </summary>
-        /// <typeparam name="T">The type of the service.</typeparam>
-        /// <param name="key">The name of the service.</param>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <param name="key">The name of the object.</param>
         /// <param name="value">The value to add.</param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> or <paramref name="value"/>is null.</exception>
         public void Set<T>(string key, T value)
@@ -87,9 +89,9 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Set a value to the turn's context.
+        /// Set a value to the HostContext.
         /// </summary>
-        /// <typeparam name="T">The type of the service.</typeparam>
+        /// <typeparam name="T">The type of the object.</typeparam>
         /// <param name="value">The value to add.</param>
         /// <exception cref="ArgumentNullException"><paramref name="value"/>is null.</exception>
         public void Set<T>(T value)

@@ -150,7 +150,24 @@ namespace Microsoft.Bot.Expressions
         public const string IsMatch = "isMatch";
 
         // trigger tree 
+        /// <summary>
+        /// Mark a sub-expression as optional.
+        /// </summary>
+        /// <remarks>
+        /// When an expression is being processed, optional creates a disjunction where the expression is both included and not
+        /// included with the rest of the expression.  This is a simple way to express this common relationship.  By generating
+        /// both clauses then matching the expression can be more specific when the optional expression is true.
+        /// </remarks>
         public const string Optional = "optional";
+
+        /// <summary>
+        /// Any predicate expression wrapped in this will be ignored for specialization.
+        /// </summary>
+        /// <remarks>
+        /// This is useful for when you need to add expression to the trigger that are part of rule mechanics rather than of intent.
+        /// For example, if you have a counter for how often a particular message is displayed, then that is part of the triggering condition, 
+        /// but all such rules would be incomparable because they counter is per-rule. 
+        /// </remarks>
         public const string Ignore = "ignore";
     }
 }

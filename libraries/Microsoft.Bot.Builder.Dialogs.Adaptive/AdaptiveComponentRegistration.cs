@@ -13,7 +13,6 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -23,7 +22,6 @@ using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Expressions.Properties.Converters;
 using Newtonsoft.Json;
-using static Microsoft.Bot.Builder.Dialogs.Adaptive.Actions.EditArray;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
@@ -184,7 +182,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new ArrayExpressionConverter<Choice>();
 
             yield return new EnumExpressionConverter<ActionChangeType>();
-            yield return new EnumExpressionConverter<ArrayChangeType>();
+            yield return new EnumExpressionConverter<EditArray.ArrayChangeType>();
             yield return new EnumExpressionConverter<AttachmentOutputFormat>();
             yield return new EnumExpressionConverter<ListStyle>();
             yield return new EnumExpressionConverter<ChoiceOutputFormat>();

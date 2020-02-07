@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             if (resourceExplorer.IsRef(jsonObject))
             {
                 // We can't do this asynchronously as the Json.NET interface is synchronous
-                jsonObject = resourceExplorer.ResolveRefAsync(jsonObject).GetAwaiter().GetResult();
+                jsonObject = this.resourceExplorer.ResolveRefAsync(jsonObject).GetAwaiter().GetResult();
             }
 
             var kind = (string)jsonObject["$kind"] ?? (string)jsonObject["$type"];
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 paths.Push(range.Path);
             }
 
-            T result = resourceExplorer.BuildType<T>(kind, jsonObject, serializer);
+            T result = this.resourceExplorer.BuildType<T>(kind, jsonObject, serializer);
             
             // DeclarativeTypeLoader.LoadAsync only adds FileResource to the paths stack
             if (paths.Count > 0)
