@@ -13,6 +13,14 @@ variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'debug'
   Parameters.solution: Microsoft.Bot.Builder.sln
+#  AppId: define this in Azure
+#  AppSecret: define this in Azure
+#  AzureSubscription: define this in Azure
+#  BotGroup: define this in Azure
+#  BotName: define this in Azure
+#  FacebookAccessToken: define this in Azure
+#  FacebookAppSecret: define this in Azure
+#  SenderId: define this in Azure
 
 steps:
 - template: ci-build-steps.yml
@@ -56,3 +64,4 @@ steps:
     scriptLocation: inlineScript
     inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
   condition: always()
+  enabled: false
