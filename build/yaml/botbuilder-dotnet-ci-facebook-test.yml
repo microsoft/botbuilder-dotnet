@@ -20,9 +20,21 @@ variables:
 #  BotName: define this in Azure
 #  FacebookAccessToken: define this in Azure
 #  FacebookAppSecret: define this in Azure
+#  FacebookVerifyToken: define this in Azure
 #  SenderId: define this in Azure
 
 steps:
+- powershell: |
+   # Set values in appsettings.json file.
+   $file = "$(Build.SourcesDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\appsettings.json";
+   
+   $content = Get-Content -Raw $file | ConvertFrom-Json;
+   $content.FacebookVerifyToken = "$(FacebookVerifyToken)";
+   $content.FacebookAppSecret = "$(FacebookAppSecret)";
+   $content.FacebookAccessToken = "$(FacebookAccessToken)";
+   $content | ConvertTo-Json | Set-Content $file;
+  displayName: 'Set values in appsettings.json file.'
+
 - template: ci-build-steps.yml
 
 - task: DotNetCoreCLI@2
@@ -64,4 +76,4 @@ steps:
     scriptLocation: inlineScript
     inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
   condition: always()
-  enabled: false
+  enabled: true
