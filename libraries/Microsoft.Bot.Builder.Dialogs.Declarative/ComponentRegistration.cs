@@ -11,10 +11,13 @@ using Microsoft.Bot.Expressions;
 namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
     /// <summary>
-    /// ComponentRegistration is a placeholder class for discovering assets from components.  To make your components 
-    /// available to the system you derive from ComponentRegistration and implement the interfaces which define
-    /// the components.  These components then are consumed in appropriate places by the systems that need them.
-    /// For example, to add declarative types to the system you simply add class that implements IComponentDeclarativeTypes
+    /// ComponentRegistration is a placeholder class for discovering assets from components. 
+    /// </summary>
+    /// <remarks>
+    /// To make your components available to the system you derive from ComponentRegistration and implement the 
+    /// interfaces which definethe components.  These components then are consumed in appropriate places by the 
+    /// systems that need them. For example, to add declarative types to the system you simply add class that 
+    /// implements IComponentDeclarativeTypes.
     /// <code>
     /// public class MyComponentRegistration : IComponentDeclarativeTypes
     /// {
@@ -25,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
     ///     }
     /// }
     /// </code>
-    /// </summary>
+    /// </remarks>
     public class ComponentRegistration
     {
         /// <summary>
