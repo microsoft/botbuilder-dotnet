@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Tests
                     RelatesTo = context.Activity.RelatesTo
                 };
                 await context.SendActivityAsync(typingActivity);
-                await Task.Delay(500);
+                await Task.Delay(50);
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("foo")
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Tests
                     .AssertReply("echo:bar")
                 .StartTestAsync();
 
-            await Task.Delay(1000);
+            await Task.Delay(100);
 
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
             Assert.AreEqual(6, pagedResult.Items.Length);
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Tests
                     .AssertReply("new response")
                 .StartTestAsync();
 
-            await Task.Delay(1000);
+            await Task.Delay(100);
 
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
             Assert.AreEqual(3, pagedResult.Items.Length);
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Tests
                     .AssertReply("new response")
                 .StartTestAsync();
 
-            await Task.Delay(1000);
+            await Task.Delay(100);
 
             // Perform some queries
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id, null, dateTimeStartOffset1.DateTime);
@@ -236,7 +236,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Send("deleteIt")
                 .StartTestAsync();
 
-            await Task.Delay(1000);
+            await Task.Delay(100);
 
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
             Assert.AreEqual(3, pagedResult.Items.Length);
