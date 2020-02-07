@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// An empty set of credentials.
         /// </summary>
-        public static new readonly MicrosoftGovernmentAppCredentials Empty = new MicrosoftGovernmentAppCredentials(null, null);
+        public static new readonly MicrosoftGovernmentAppCredentials Empty = new MicrosoftGovernmentAppCredentials(null, null, null, null, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MicrosoftGovernmentAppCredentials"/> class.
@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="password">The Microsoft app password.</param>
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         public MicrosoftGovernmentAppCredentials(string appId, string password, HttpClient customHttpClient = null)
-            : base(appId, password, customHttpClient)
+            : this(appId, password, customHttpClient, null, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope)
         {
         }
 
@@ -35,7 +35,12 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
         public MicrosoftGovernmentAppCredentials(string appId, string password, HttpClient customHttpClient, ILogger logger)
-            : base(appId, password, customHttpClient, logger)
+            : this(appId, password, customHttpClient, logger, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope)
+        {
+        }
+
+        public MicrosoftGovernmentAppCredentials(string appId, string password, HttpClient customHttpClient, ILogger logger, string oAuthScope = null)
+            : base(appId, password, customHttpClient, logger, oAuthScope ?? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope)
         {
         }
 
@@ -48,17 +53,6 @@ namespace Microsoft.Bot.Connector.Authentication
         public override string OAuthEndpoint
         {
             get { return GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl; }
-        }
-
-        /// <summary>
-        /// Gets the OAuth scope to use.
-        /// </summary>
-        /// <value>
-        /// The OAuth scope to use.
-        /// </value>
-        public override string OAuthScope
-        {
-            get { return GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope; }
         }
     }
 }
