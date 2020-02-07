@@ -76,4 +76,4 @@ steps:
     scriptLocation: inlineScript
     inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
   condition: always()
-  enabled: false
+  enabled: true
