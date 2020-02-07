@@ -43,14 +43,12 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("'1' / 2"), // params should be number
             Test("'1' % 2"), // params should be number
             Test("'1' ^ 2"), // params should be number
-            Test("'string'&one"), // $ can only accept string parameter
             Test("1/0"), // $ can not divide 0
             #endregion
             
             #region String functions test
-            Test("concat(one, hello)"), // concat can only accept string parameter
             Test("length(one, 1)"), // length can only have one param
-            Test("length(concat(one, hello))"), // children func error
+            Test("length(replace(hello))"), // children func error
             Test("replace(hello)"), // replace need three parameters
             Test("replace(one, 'l', 'k')"), // replace only accept string parameter
             Test("replace('hi', 1, 'k')"), // replace only accept string parameter
