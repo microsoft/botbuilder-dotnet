@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Expressions
 {
-    /// NOTE: If you add a built-in type here, you also need to make sure it can be evaluated as well either by adding to ExpressionFunctions or when you construct the expression.
     /// <summary>
     /// Built-in expression types.
     /// </summary>
@@ -150,6 +149,7 @@ namespace Microsoft.Bot.Expressions
         public const string IsMatch = "isMatch";
 
         // trigger tree 
+        
         /// <summary>
         /// Mark a sub-expression as optional.
         /// </summary>
