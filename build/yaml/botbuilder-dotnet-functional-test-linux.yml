@@ -1,0 +1,87 @@
+#
+# Run functional tests on bot deployed to Azure Unix
+#
+
+# "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
+name: $(Build.BuildId)
+
+trigger: none
+
+pr: none
+
+pool:
+  vmImage: 'windows-2019'
+
+variables:
+  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
+  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
+  BuildPlatform: 'any cpu'
+  BuildConfiguration: 'Release'
+  Parameters.solution: Microsoft.Bot.Builder.sln
+#  AzureSubscription: define this in Azure
+#  AzureDeploymentUser: define this in Azure
+#  AzureDeploymentPassword: define this in Azure
+
+steps:
+- template: ci-build-steps.yml
+
+- task: DotNetCoreCLI@2
+  displayName: 'Dotnet Publish TestBot'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj'
+    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot'
+    zipAfterPublish: false
+    modifyOutputPath: false
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Azure Deployment:Create Or Update Resource Group action on $(BotGroup)'
+  inputs:
+    azureSubscription: $(AzureSubscription)
+    resourceGroupName: '$(BotGroup)'
+    location: 'West US'
+    csmFile: FunctionalTests/ExportedTemplate/LinuxDotNet/template.json
+    overrideParameters: '-botName "$(BotName)" -appId "$(AppId)" -appSecret "$(AppSecret)"'
+
+- task: AzureCLI@1
+  displayName: 'Create Azure DirectLine channel for test bot'
+  inputs:
+    azureSubscription: $(AzureSubscription)
+    scriptLocation: inlineScript
+    inlineScript: 'call az bot directline create -n "$(BotName)" -g "$(BotGroup)" > "$(System.DefaultWorkingDirectory)\DirectLineCreate.json"'
+
+- script: |
+   Move $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\DeploymentScripts\Linux\* $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot
+   git config --global user.name "BotBuilderDotNetPipeline"
+   git config --global user.email BotBuilderDotNet@Pipeline.com
+   git init
+   git add .
+   git commit -m "cibuildtest"
+   git remote add azure https://$(AzureDeploymentUser):$(AzureDeploymentPassword)@$(BotName).scm.azurewebsites.net:443/$(BotName).git
+   git push azure master
+  workingDirectory: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot'
+  displayName: 'Git Bot Deployment'
+
+- powershell: |
+   $json = Get-Content '$(System.DefaultWorkingDirectory)\DirectLineCreate.json' | Out-String | ConvertFrom-Json
+   $key = $json.properties.properties.sites.key
+   echo "##vso[task.setvariable variable=DIRECTLINE;]$key"
+   echo "##vso[task.setvariable variable=BOTID;]$(BotName)"
+  displayName: 'Get Bot Keys'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run Functional tests'
+  inputs:
+    command: test
+    projects: '$(System.DefaultWorkingDirectory)\FunctionalTests\**\*FunctionalTests.csproj'
+    arguments: '-v n  --configuration $(BuildConfiguration) --no-build --no-restore --filter "TestCategory=FunctionalTests&TestCategory!=Adapters" --collect:"Code Coverage" --settings $(System.DefaultWorkingDirectory)\CodeCoverage.runsettings '
+    workingDirectory: '$(System.DefaultWorkingDirectory)\'
+
+#- task: AzureCLI@1
+#  displayName: 'Delete Resources'
+#  inputs:
+#    azureSubscription: $(AzureSubscription)
+#    scriptLocation: inlineScript
+#    inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
+#  condition: always()

@@ -63,9 +63,16 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             {
                 var httpResponse = await client.GetAsync(retrieveMessagesUri);
                 var response = httpResponse.Content.ReadAsStringAsync().Result;
-                var messages = JObject.Parse(response);
 
-                result = messages.SelectToken("data[0].messages.data[0].message").ToString();
+                try
+                {
+                    var messages = JObject.Parse(response);
+                    result = messages.SelectToken("data[0].messages.data[0].message").ToString();
+                }
+                catch
+                {
+                    result = response;
+                }
             }
 
             return result;

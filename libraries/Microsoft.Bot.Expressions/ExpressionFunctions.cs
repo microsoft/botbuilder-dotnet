@@ -293,6 +293,40 @@ namespace Microsoft.Bot.Expressions
         }
 
         /// <summary>
+        /// Verify value is a numeric list or a numeric value.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="expression">Expression that led to value.</param>
+        /// <param name="number">No function.</param>
+        /// <returns>Error or null if valid.</returns>
+        public static string VerifyNumericListOrNumber(object value, Expression expression, int number)
+        {
+            string error = null;
+            if (value.IsNumber())
+            {
+                return error;
+            }
+
+            if (!TryParseList(value, out var list))
+            {
+                error = $"{expression} is neither a list nor a number.";
+            }
+            else
+            {
+                foreach (var elt in list)
+                {
+                    if (!elt.IsNumber())
+                    {
+                        error = $"{elt} is not a number in {expression}";
+                        break;
+                    }
+                }
+            }
+
+            return error;
+        }
+
+        /// <summary>
         /// Verify value contains elements.
         /// </summary>
         /// <param name="value">Value to check.</param>
@@ -383,6 +417,13 @@ namespace Microsoft.Bot.Expressions
             return error;
         }
 
+        /// <summary>
+        /// Verify an object is neither a string nor null.
+        /// </summary>
+        /// <param name="value">instance.</param>
+        /// <param name="expression">expression.</param>
+        /// <param name="number">number.</param>
+        /// <returns>error message.</returns>
         public static string VerifyStringOrNull(object value, Expression expression, int number)
         {
             string error = null;
@@ -579,6 +620,16 @@ namespace Microsoft.Bot.Expressions
         /// <returns>Delegate for evaluating an expression.</returns>
         public static ExpressionEvaluator Numeric(string type, Func<IReadOnlyList<dynamic>, object> function)
             => new ExpressionEvaluator(type, ApplySequence(function, VerifyNumber), ReturnType.Number, ValidateNumber);
+
+        /// <summary>
+        /// Numeric or Collection operators that can have 1 or more args. It can be apply numeric values or a collection of numeric
+        /// values, or a mixing of  numeric values and a collection.
+        /// </summary>
+        /// <param name="type">Expression type.</param>
+        /// <param name="function">Function to apply.</param>
+        /// <returns>Delegate for evaluating an expression.</returns>
+        public static ExpressionEvaluator NumericOrCollection(string type, Func<IReadOnlyList<dynamic>, object> function)
+            => new ExpressionEvaluator(type, Apply(function, VerifyNumericListOrNumber), ReturnType.Number, ValidateAtLeastOne);
 
         /// <summary>
         /// Numeric operators that can have 2 or more args.
@@ -821,6 +872,13 @@ namespace Microsoft.Bot.Expressions
             return isPresent;
         }
 
+        /// <summary>
+        /// Set the property into a given instance.
+        /// </summary>
+        /// <param name="instance">Given instance.</param>
+        /// <param name="property">Property be set.</param>
+        /// <param name="value">Value be set.</param>
+        /// <returns>Value and error information if any.</returns>
         public static (object result, string error) SetProperty(object instance, string property, object value)
         {
             object result = value;
@@ -867,6 +925,11 @@ namespace Microsoft.Bot.Expressions
             return (result, error);
         }
 
+        /// <summary>
+        /// Convert constant JValue to base type value.
+        /// </summary>
+        /// <param name="obj">input object.</param>
+        /// <returns>Corresponding base type if input is a JValue.</returns>
         public static object ResolveValue(object obj)
         {
             object value;
@@ -898,8 +961,12 @@ namespace Microsoft.Bot.Expressions
             return value;
         }
 
-        // Try to accumulate the path from an Accessor or Element, from right to left
-        // return the accumulated path and the expression left unable to accumulate
+        /// <summary>
+        /// Try to accumulate the path from an Accessor or Element, from right to left.
+        /// </summary>
+        /// <param name="expression">expression.</param>
+        /// <param name="state">scope.</param>
+        /// <returns>return the accumulated path and the expression left unable to accumulate.</returns>
         public static (string path, Expression left, string error) TryAccumulatePath(Expression expression, IMemory state)
         {
             string path = string.Empty;
@@ -2420,8 +2487,80 @@ namespace Microsoft.Bot.Expressions
 
                         return error;
                     }),
-                Numeric(ExpressionType.Min, args => Math.Min(args[0], args[1])),
-                Numeric(ExpressionType.Max, args => Math.Max(args[0], args[1])),
+                NumericOrCollection(ExpressionType.Min, (args) =>
+                {
+                    var result = double.MaxValue;
+                    if (args.Count == 1)
+                    {
+                        if (TryParseList(args[0], out IList ilist))
+                        {
+                            foreach (var value in args[0])
+                            {
+                                result = Math.Min(result, value);
+                            }
+                        }
+                        else
+                        {
+                            result = Math.Min(result, args[0]);
+                        }
+                    }
+                    else
+                    {
+                        foreach (var arg in args)
+                        {
+                            if (TryParseList(arg, out IList ilist))
+                            {
+                                foreach (var value in arg)
+                                {
+                                    result = Math.Min(result, value);
+                                }
+                            }
+                            else
+                            {
+                                result = Math.Min(result, arg);
+                            }
+                        }
+                    }
+
+                    return result;
+                }),
+                NumericOrCollection(ExpressionType.Max, args =>
+                {
+                    var result = double.MinValue;
+                    if (args.Count == 1)
+                    {
+                        if (TryParseList(args[0], out IList ilist))
+                        {
+                            foreach (var value in args[0])
+                            {
+                                result = Math.Max(result, value);
+                            }
+                        }
+                        else
+                        {
+                            result = Math.Max(result, args[0]);
+                        }
+                    }
+                    else
+                    {
+                        foreach (var arg in args)
+                        {
+                            if (TryParseList(arg, out IList ilist))
+                            {
+                                foreach (var value in arg)
+                                {
+                                    result = Math.Max(result, value);
+                                }
+                            }
+                            else
+                            {
+                                result = Math.Max(result, arg);
+                            }
+                        }
+                    }
+
+                    return result;
+                }),
                 MultivariateNumeric(ExpressionType.Power, args => Math.Pow(args[0], args[1])),
                 new ExpressionEvaluator(
                     ExpressionType.Mod,
@@ -2706,12 +2845,27 @@ namespace Microsoft.Bot.Expressions
                     Apply(
                         args =>
                         {
-                            string inputStr = ParseStringOrNull(args[0]);
-                            string segStr = ParseStringOrNull(args[1]);
-                            return inputStr.Split(segStr.ToCharArray());
+                            var inputStr = string.Empty;
+                            var seperator = string.Empty;
+                            if (args.Count == 1)
+                            {
+                                inputStr = ParseStringOrNull(args[0]);
+                            } 
+                            else
+                            {
+                                inputStr = ParseStringOrNull(args[0]);
+                                seperator = ParseStringOrNull(args[1]);
+                            }
+
+                            if (seperator == string.Empty)
+                            {
+                                return inputStr.Select(c => c.ToString()).ToArray();
+                            }
+
+                            return inputStr.Split(seperator.ToCharArray());
                         }, VerifyStringOrNull),
                     ReturnType.Object,
-                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
+                    (expression) => ValidateArityAndAnyType(expression, 1, 2, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.Substring,
                     Substring,

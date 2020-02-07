@@ -76,6 +76,12 @@ namespace Microsoft.Bot.Expressions
         /// </value>
         public string Type => Evaluator.Type;
 
+        /// <summary>
+        /// Gets expression evaluator.
+        /// </summary>
+        /// <value>
+        /// expression evaluator.
+        /// </value>
         public ExpressionEvaluator Evaluator { get; }
 
         /// <summary>

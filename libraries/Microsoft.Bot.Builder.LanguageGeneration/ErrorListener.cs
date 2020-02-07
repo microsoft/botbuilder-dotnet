@@ -8,6 +8,9 @@ using Antlr4.Runtime.Misc;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
+    /// <summary>
+    /// LG parser error listener.
+    /// </summary>
     public class ErrorListener : BaseErrorListener
     {
         private readonly string source;

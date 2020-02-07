@@ -5,6 +5,9 @@ using System;
 
 namespace Microsoft.Bot.Expressions.Memory
 {
+    /// <summary>
+    /// Memory interface.
+    /// </summary>
     public interface IMemory
     {
         /// <summary>

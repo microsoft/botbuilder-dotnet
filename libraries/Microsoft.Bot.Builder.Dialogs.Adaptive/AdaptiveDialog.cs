@@ -1021,7 +1021,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 else
                 {
                     mapping.Entity.Value = arr[0];
-                    queues.AssignEntities.Add(mapping);
+                    var i = 0;
+                    for (; i < queues.AssignEntities.Count(); i++)
+                    {
+                        var assign = queues.AssignEntities[i];
+                        if (assign.IsExpected)
+                        {
+                            // Assign in front of first expected so unexpected assignments can be confirmed
+                            queues.AssignEntities.Insert(i, mapping);
+                            break;
+                        }
+                    }
+
+                    if (i == queues.AssignEntities.Count())
+                    {
+                        queues.AssignEntities.Add(mapping);
+                    }
                 }
             }
             else

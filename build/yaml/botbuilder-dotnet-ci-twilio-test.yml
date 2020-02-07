@@ -13,6 +13,15 @@ variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'debug'
   Parameters.solution: Microsoft.Bot.Builder.sln
+#  AppId: define this in Azure
+#  AppSecret: define this in Azure
+#  AzureSubscription: define this in Azure
+#  BotGroup: define this in Azure
+#  BotName: define this in Azure
+#  SenderNumber: define this in Azure
+#  TwilioAccountSid: define this in Azure
+#  TwilioAuthToken: define this in Azure
+#  TwilioNumber: define this in Azure
 
 steps:
 - template: ci-build-steps.yml

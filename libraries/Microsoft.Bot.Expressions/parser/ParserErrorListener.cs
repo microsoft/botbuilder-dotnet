@@ -8,6 +8,9 @@ using Antlr4.Runtime.Misc;
 
 namespace Microsoft.Bot.Expressions
 {
+    /// <summary>
+    /// Expression parser error listener.
+    /// </summary>
     public class ParserErrorListener : BaseErrorListener
     {
         public static readonly ParserErrorListener Instance = new ParserErrorListener();
