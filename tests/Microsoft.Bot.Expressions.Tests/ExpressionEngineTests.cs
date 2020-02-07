@@ -760,7 +760,7 @@ namespace Microsoft.Bot.Expressions.Tests
             #endregion
 
 #region TriggerTree Tests
-            Test("optional(true)", true),
+            Test("ignore(true)", true),
 #endregion
         };
 

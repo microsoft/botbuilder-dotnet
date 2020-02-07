@@ -366,7 +366,9 @@ namespace Microsoft.Bot.Expressions.Tests
 #endregion
 
 #region TriggerTree Tests
-            Test("ignore(true)"),
+
+            // optional throws because it's a placeholder only interpreted by trigger tree and is removed before evaluation
+            Test("optional(true)"), 
 #endregion
         };
 
