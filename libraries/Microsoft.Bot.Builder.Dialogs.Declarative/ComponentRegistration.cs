@@ -41,10 +41,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
             }
 
             var components = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(assembly =>
+                {
+                    try
+                    {
+                        // verify it's an assembly we can get types from.
+                        assembly.GetTypes();
+                        return !assembly.GetName().Name.StartsWith("System");
+                    }
+                    catch (System.Reflection.ReflectionTypeLoadException)
+                    {
+                        return false;
+                    }
+                })
                 .SelectMany(x => x.GetTypes())
-                    .Where(type => typeof(ComponentRegistration).IsAssignableFrom(type))
-                    .Select(t => (ComponentRegistration)Activator.CreateInstance(t))
-                    .ToList<ComponentRegistration>();
+                .Where(type => typeof(ComponentRegistration).IsAssignableFrom(type))
+                .Select(t => (ComponentRegistration)Activator.CreateInstance(t))
+                .ToList<ComponentRegistration>();
 
             // register custom functions 
             foreach (var component in components.OfType<IComponentExpressionFunctions>())
@@ -57,35 +70,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
 
             return components;
         });
-
-        ///// <summary>
-        ///// Get external resource by key (or by type fullname if no key is provided).
-        ///// </summary>
-        ///// <typeparam name="T">type of object.</typeparam>
-        ///// <param name="dependencies">dependencies.</param>
-        ///// <param name="key">key (default is fullname of T).</param>
-        ///// <param name="factory">function to create default value, add it and return it as the result.</param>
-        ///// <returns>instance of T if it is there or default(T) if not.</returns>
-        //public T GetDependency<T>(IDictionary<string, object> dependencies, string key = null, Func<T> factory = null)
-        //{
-        //    if (key == null)
-        //    {
-        //        key = typeof(T).FullName;
-        //    }
-
-        //    if (dependencies.TryGetValue(key, out object val))
-        //    {
-        //        return (T)val;
-        //    }
-
-        //    if (factory != null)
-        //    {
-        //        var result = factory();
-        //        dependencies.Add(key, result);
-        //        return result;
-        //    }
-
-        //    return default(T);
-        //}
     }
 }

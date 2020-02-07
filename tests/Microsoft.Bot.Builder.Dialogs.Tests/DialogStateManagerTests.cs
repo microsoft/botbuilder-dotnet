@@ -81,10 +81,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public void TestPathResolverNullChecks()
         {
-            var dep = new TurnContextStateCollection();
             var ac = new AdaptiveComponentRegistration();
             
-            foreach (var resolver in ac.GetPathResolvers(dep))
+            foreach (var resolver in ac.GetPathResolvers())
             {
                 try
                 {
