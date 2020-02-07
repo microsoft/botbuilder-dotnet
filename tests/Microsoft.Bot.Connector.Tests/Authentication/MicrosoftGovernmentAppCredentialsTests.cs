@@ -25,6 +25,14 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
+        public void MicrosoftGovernmentAppCredentials_Uses_Custom_Scope()
+        {
+            var cred = new MicrosoftGovernmentAppCredentials(string.Empty, string.Empty, null, null, "my Custom oAuthScope");
+
+            Assert.Equal("my Custom oAuthScope", cred.OAuthScope);
+        }
+
+        [Fact]
         public void GovernmentAuthenticationConstants_ChannelService_IsRight()
         {
             // This value should not change
