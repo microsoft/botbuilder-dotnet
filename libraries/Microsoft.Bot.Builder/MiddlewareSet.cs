@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder
             // Check if we're at the end of the middleware list yet
             if (nextMiddlewareIndex == _middleware.Count)
             {
-                // If all the Middlware ran, the "leading edge" of the tree is now complete.
+                // If all the middleware ran, the "leading edge" of the tree is now complete.
                 // This means it's time to run any developer specified callback.
                 // Once this callback is done, the "trailing edge" calls are then completed. This
                 // allows code that looks like:
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder
             // Get the next piece of middleware
             var nextMiddleware = _middleware[nextMiddlewareIndex];
 
-            // Execute the next middleware passing a closure that will recurse back into this method at the next piece of middlware as the NextDelegate
+            // Execute the next middleware passing a closure that will recurse back into this method at the next piece of middleware as the NextDelegate
             return nextMiddleware.OnTurnAsync(
                 turnContext,
                 (ct) => ReceiveActivityInternalAsync(turnContext, callback, nextMiddlewareIndex + 1, ct),
