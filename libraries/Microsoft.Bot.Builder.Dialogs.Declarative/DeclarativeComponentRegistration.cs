@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Newtonsoft.Json;
@@ -8,7 +7,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
     public class DeclarativeComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
-        public virtual IEnumerable<TypeRegistration> GetTypes()
+        public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes()
         {
             yield break;
         }

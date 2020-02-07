@@ -13,11 +13,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public class LanguageGenerationComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
-        public IEnumerable<TypeRegistration> GetTypes()
+        public IEnumerable<DeclarativeType> GetDeclarativeTypes()
         {
-            yield return new TypeRegistration<TextTemplate>(TextTemplate.DeclarativeType);
-            yield return new TypeRegistration<ActivityTemplate>(ActivityTemplate.DeclarativeType);
-            yield return new TypeRegistration<StaticActivityTemplate>(StaticActivityTemplate.DeclarativeType);
+            yield return new DeclarativeType<TextTemplate>(TextTemplate.DeclarativeType);
+            yield return new DeclarativeType<ActivityTemplate>(ActivityTemplate.DeclarativeType);
+            yield return new DeclarativeType<StaticActivityTemplate>(StaticActivityTemplate.DeclarativeType);
         }
 
         public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<string> paths)

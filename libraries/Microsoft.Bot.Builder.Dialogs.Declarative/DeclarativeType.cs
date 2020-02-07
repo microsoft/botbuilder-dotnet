@@ -9,23 +9,23 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
     /// <summary>
-    /// TypeRegistration object which is $kind => type.
+    /// DeclarativeType object which is $kind => type.
     /// </summary>
-    public class TypeRegistration
+    public class DeclarativeType
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TypeRegistration"/> class.
+        /// Initializes a new instance of the <see cref="DeclarativeType"/> class.
         /// </summary>
-        public TypeRegistration()
+        public DeclarativeType()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TypeRegistration"/> class.
+        /// Initializes a new instance of the <see cref="DeclarativeType"/> class.
         /// </summary>
         /// <param name="kind">$kind.</param>
         /// <param name="type">type.</param>
-        public TypeRegistration(string kind, Type type)
+        public DeclarativeType(string kind, Type type)
         {
             this.Kind = kind;
             this.Type = type;
@@ -60,9 +60,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
     /// TypeRegistration of Kind => type using generic.
     /// </summary>
     /// <typeparam name="T">type.</typeparam>
-    public class TypeRegistration<T> : TypeRegistration
+    public class DeclarativeType<T> : DeclarativeType
     {
-        public TypeRegistration(string kind)
+        public DeclarativeType(string kind)
             : base(kind, typeof(T))
         {
         }

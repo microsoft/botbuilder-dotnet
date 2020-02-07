@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 if (component != null)
                 {
                     // add types
-                    foreach (var typeRegistration in component.GetTypes())
+                    foreach (var typeRegistration in component.GetDeclarativeTypes())
                     {
                         RegisterType(typeRegistration.Kind, typeRegistration.Type, typeRegistration.CustomDeserializer);
                     }

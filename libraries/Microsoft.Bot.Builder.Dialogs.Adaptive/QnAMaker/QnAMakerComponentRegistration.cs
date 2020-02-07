@@ -13,13 +13,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
 {
     public class QnAMakerComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
-        public IEnumerable<TypeRegistration> GetTypes()
+        public IEnumerable<DeclarativeType> GetDeclarativeTypes()
         {
             // Dialogs
-            yield return new TypeRegistration<QnAMakerDialog2>(QnAMakerDialog2.DeclarativeType);
+            yield return new DeclarativeType<QnAMakerDialog2>(QnAMakerDialog2.DeclarativeType);
 
             // Recognizers
-            yield return new TypeRegistration<QnAMakerRecognizer>(QnAMakerRecognizer.DeclarativeType);
+            yield return new DeclarativeType<QnAMakerRecognizer>(QnAMakerRecognizer.DeclarativeType);
         }
 
         public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<string> paths)

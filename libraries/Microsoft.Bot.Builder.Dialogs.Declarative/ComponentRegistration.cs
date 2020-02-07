@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Text;
+using Microsoft.Bot.Expressions;
 
-namespace Microsoft.Bot.Builder
+namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
     public class ComponentRegistration
     {
@@ -40,11 +40,22 @@ namespace Microsoft.Bot.Builder
                 LoadReferencedAssembly(assembly);
             }
 
-            return AppDomain.CurrentDomain.GetAssemblies()
+            var components = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(x => x.GetTypes())
                     .Where(type => typeof(ComponentRegistration).IsAssignableFrom(type))
                     .Select(t => (ComponentRegistration)Activator.CreateInstance(t))
                     .ToList<ComponentRegistration>();
+
+            // register custom functions 
+            foreach (var component in components.OfType<IComponentExpressionFunctions>())
+            {
+                foreach (var function in component.GetExpressionEvaluators())
+                {
+                    ExpressionFunctions.Functions[function.Type] = function;
+                }
+            }
+
+            return components;
         });
 
         ///// <summary>

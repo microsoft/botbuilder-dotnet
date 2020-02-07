@@ -13,9 +13,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
 {
     public class LuisComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
-        public IEnumerable<TypeRegistration> GetTypes()
+        public IEnumerable<DeclarativeType> GetDeclarativeTypes()
         {
-            yield return new TypeRegistration<LuisAdaptiveRecognizer>(LuisAdaptiveRecognizer.DeclarativeType);
+            yield return new DeclarativeType<LuisAdaptiveRecognizer>(LuisAdaptiveRecognizer.DeclarativeType);
         }
 
         public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<string> paths)

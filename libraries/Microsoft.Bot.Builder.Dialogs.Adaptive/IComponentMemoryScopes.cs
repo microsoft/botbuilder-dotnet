@@ -8,6 +8,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
     public interface IComponentMemoryScopes
     {
-        IEnumerable<MemoryScope> GetMemoryScopes(IDictionary<string, object> namedAssets);
+        IEnumerable<MemoryScope> GetMemoryScopes();
     }
 }

@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 // get all of the component memory scopes
                 foreach (var component in ComponentRegistration.Registrations.Value.OfType<IComponentMemoryScopes>())
                 {
-                    foreach (var memoryScope in component.GetMemoryScopes(dc.Context.TurnState))
+                    foreach (var memoryScope in component.GetMemoryScopes())
                     {
                         this.Configuration.MemoryScopes.Add(memoryScope);
                     }
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 // get all of the component path resolvers
                 foreach (var component in ComponentRegistration.Registrations.Value.OfType<IComponentPathResolvers>())
                 {
-                    foreach (var pathResolver in component.GetPathResolvers(dc.Context.TurnState))
+                    foreach (var pathResolver in component.GetPathResolvers())
                     {
                         this.Configuration.PathResolvers.Add(pathResolver);
                     }

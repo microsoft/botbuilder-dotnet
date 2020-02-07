@@ -7,8 +7,15 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
+    /// <summary>
+    /// Interface for declaring path resolvers in the memory system.
+    /// </summary>
     public interface IComponentPathResolvers
     {
-        IEnumerable<IPathResolver> GetPathResolvers(IDictionary<string, object> dependencies);
+        /// <summary>
+        /// Return enumeration of pathresolvers.
+        /// </summary>
+        /// <returns>collection of IPathResolver.</returns>
+        IEnumerable<IPathResolver> GetPathResolvers();
     }
 }

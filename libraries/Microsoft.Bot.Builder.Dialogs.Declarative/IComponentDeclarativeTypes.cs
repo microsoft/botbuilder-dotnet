@@ -7,12 +7,22 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
     /// <summary>
-    /// Interface for definition component types.
+    /// Interface for registering declarative kinds and jsonconverters to support them.
     /// </summary>
     public interface IComponentDeclarativeTypes 
     {
-        IEnumerable<TypeRegistration> GetTypes();
+        /// <summary>
+        /// Return an enumeration of KindRegistrations $kind => Type.
+        /// </summary>
+        /// <returns>declarative type registration.</returns>
+        IEnumerable<DeclarativeType> GetDeclarativeTypes();
 
+        /// <summary>
+        /// Return an enumeration of JsonConverters for supporting loading declarative types.
+        /// </summary>
+        /// <param name="resourceExplorer">resourceExplorer.</param>
+        /// <param name="paths">paths.</param>
+        /// <returns>jsonsconverters.</returns>
         IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<string> paths);
     }
 }
