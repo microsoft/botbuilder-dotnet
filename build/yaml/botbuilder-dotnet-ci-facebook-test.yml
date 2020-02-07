@@ -29,9 +29,9 @@ steps:
    $file = "$(Build.SourcesDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\appsettings.json";
    
    $content = Get-Content -Raw $file | ConvertFrom-Json
-   $content.FacebookVerifyToken = $(FacebookVerifyToken)
-   $content.FacebookAppSecret = $(FacebookAppSecret)
-   $content.FacebookAccessToken = $(FacebookAccessToken)
+   $content.FacebookVerifyToken = "$(FacebookVerifyToken)"
+   $content.FacebookAppSecret = "$(FacebookAppSecret)"
+   $content.FacebookAccessToken = "$(FacebookAccessToken)"
    $content | ConvertTo-Json | Set-Content $file
   displayName: 'Set values in appsettings.json file.'
 
