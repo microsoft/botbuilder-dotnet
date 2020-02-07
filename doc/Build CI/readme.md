@@ -100,21 +100,6 @@ Matrix to show the build pipelines that currently run on every repository of the
         <td></td>
     </tr>
     <tr align="center">
-        <td rowspan="2">Browser Compatibility</td>
-        <td>Chrome</td>
-        <td></td>
-        <td>✔️</td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr align="center">
-        <td>Firefox</td>
-        <td></td>
-        <td>✔️</td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr align="center">
         <td rowspan="2">Misc</td>
         <td>Functional Test Bot Image</td>
         <td></td>
