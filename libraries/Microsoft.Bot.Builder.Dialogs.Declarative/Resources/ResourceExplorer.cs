@@ -226,7 +226,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// Register a declarative type with the resource loader system.
         /// </summary>
         /// <param name="kind">the $kind name to map to this type.</param>
-        /// <param name="type">type of object to create.</typeparam>
+        /// <param name="type">type of object to create.</param>
         /// <param name="loader">optional custom deserializer.</param>
         /// <returns>Resource explorer for fluent style multiple calls.</returns>
         public ResourceExplorer RegisterType(string kind, Type type, ICustomDeserializer loader = null)

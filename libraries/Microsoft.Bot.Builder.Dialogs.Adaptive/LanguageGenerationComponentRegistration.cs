@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Return JsonConverters for LanguageGeneration resources.
         /// </summary>
         /// <param name="resourceExplorer">resource explorer to use for resolving references.</param>
-        /// <param name="paths">contextual path stack to use to build debugger.sourcemap</param>
+        /// <param name="paths">contextual path stack to use to build debugger.sourcemap.</param>
         /// <returns>enumeration of jsonconverters.</returns>
         public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<string> paths)
         {

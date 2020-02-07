@@ -104,7 +104,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <summary>
         /// Get the expression for this rule by calling GatherConstraints().
         /// </summary>
-        /// <param name="parser">Expression parser.</param>
         /// <returns>Expression which will be cached and used to evaluate this rule.</returns>
         public virtual Expression GetExpression()
         {

@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         /// <summary>
         /// Return enumeration of pathresolvers.
         /// </summary>
-        /// <returns>collection of <see ref="IPathResolver>IPathResolver</see>.</returns>
+        /// <returns>collection of IPathResolvers.</returns>
         IEnumerable<IPathResolver> GetPathResolvers();
     }
 }
