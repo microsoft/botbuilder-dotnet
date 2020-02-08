@@ -10,7 +10,8 @@ namespace Microsoft.Bot.Builder
     /// Values persisted for the lifetime of the turn as part of the <see cref="ITurnContext"/>.
     /// </summary>
     /// <remarks>
-    /// TODO: add more details on what kind of values can/should be stored here, by whom and what the lifetime semantics are, etc.
+    /// Typical values which are stored here are objects which are needed for the lifetime of a turn, such
+    /// as IStorage, BotState, ConversationState, ILanguageGenerator, ResourceExplorer etc.
     /// </remarks>
     public class TurnContextStateCollection : Dictionary<string, object>, IDisposable
     {
@@ -25,11 +26,11 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Gets a cached value by name from the turn's context.
         /// </summary>
-        /// <typeparam name="T">The type of the service.</typeparam>
-        /// <param name="key">The name of the service.</param>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <param name="key">The name of the object.</param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        /// <returns>The service object; or null if no service is registered by the key, or
-        /// the retrieved object does not match the service type.</returns>
+        /// <returns>The object; or null if no service is registered by the key, or
+        /// the retrieved object does not match the object type.</returns>
         public T Get<T>(string key)
             where T : class
         {
@@ -53,9 +54,9 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Gets the default value by type from the turn's context.
         /// </summary>
-        /// <typeparam name="T">The type of the service.</typeparam>
-        /// <returns>The service object; or null if no default service of the type is registered.</returns>
-        /// <remarks>The default service key is the <see cref="Type.FullName"/> of the service type.</remarks>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <returns>The object; or null if no default service of the type is registered.</returns>
+        /// <remarks>The default service key is the <see cref="Type.FullName"/> of the object type.</remarks>
         public T Get<T>()
             where T : class
         {
@@ -65,11 +66,10 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Adds a value to the turn's context.
         /// </summary>
-        /// <typeparam name="T">The type of the service.</typeparam>
-        /// <param name="key">The name of the service.</param>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <param name="key">The name of the object.</param>
         /// <param name="value">The value to add.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="key"/> or <paramref name="value"/>
-        /// is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> or <paramref name="value"/>is null.</exception>
         public void Add<T>(string key, T value)
             where T : class
         {
@@ -90,20 +90,49 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Adds a value to the turn's context.
         /// </summary>
-        /// <typeparam name="T">The type of the service.</typeparam>
-        /// <param name="value">The service object to add.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
-        /// <remarks>The default service key is the <see cref="Type.FullName"/> of the service type.</remarks>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <param name="value">The object to add.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/>is null.</exception>
+        /// <remarks>The default service key is the <see cref="Type.FullName"/> of the object type.</remarks>
         public void Add<T>(T value)
             where T : class
         {
             Add(typeof(T).FullName, value);
         }
 
+        /// <summary>
+        /// Set a value to the turn's context.
+        /// </summary>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <param name="key">The name of the object.</param>
+        /// <param name="value">The value to add.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> or <paramref name="value"/>is null.</exception>
+        public void Set<T>(string key, T value)
+            where T : class
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            this[key] = value;
+        }
+
+        /// <summary>
+        /// Set a value to the turn's context.
+        /// </summary>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <param name="value">The value to add.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/>is null.</exception>
         public void Set<T>(T value)
             where T : class
         {
-            this[typeof(T).FullName] = value;
+            Set(typeof(T).FullName, value);
         }
 
         public void Dispose()

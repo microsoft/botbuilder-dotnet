@@ -345,7 +345,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{Method} {Url}]";
+            return $"{this.GetType().Name}[{Method} {Url?.ToString()}]";
         }
 
         private async Task ReplaceJTokenRecursively(DialogContext dc, JToken token)

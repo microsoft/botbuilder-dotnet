@@ -96,32 +96,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <summary>
         /// Build default test adapter.
         /// </summary>
-        /// <param name="testName">Name of test.</param>
         /// <param name="resourceExplorer">Resource explorer to use.</param>
-        /// <param name="configuration">Bot Framework configuration.</param>
+        /// <param name="testName">Name of test.</param>
         /// <returns>Test adapter.</returns>
-        public TestAdapter DefaultTestAdapter([CallerMemberName] string testName = null, ResourceExplorer resourceExplorer = null, IConfiguration configuration = null)
+        public TestAdapter DefaultTestAdapter(ResourceExplorer resourceExplorer, [CallerMemberName] string testName = null)
         {
-            if (resourceExplorer == null)
-            {
-                resourceExplorer = new ResourceExplorer()
-                    .AddFolder(GetProjectPath());
-            }
-
-            TypeFactory.Configuration = configuration ?? defaultConfiguration;
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
+           
             var adapter = (TestAdapter)new TestAdapter(TestAdapter.CreateConversation(testName))
-                .Use(new RegisterClassMiddleware<IConfiguration>(TypeFactory.Configuration))
                 .UseStorage(storage)
                 .UseState(userState, convoState)
-                .UseResourceExplorer(resourceExplorer)
-                .UseAdaptiveDialogs()
-                .UseLanguageGeneration(resourceExplorer)
-                .UseMockLuis()
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
-
+            
             adapter.OnTurnError += (context, err) => context.SendActivityAsync(err.Message);
             return adapter;
         }
@@ -131,17 +119,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// </summary>
         /// <remarks>This methods sends the activities from the user to the bot and
         /// checks the responses from the bot based on the TestActions.</remarks>
-        /// <param name="testName">testName.</param>
-        /// <param name="resourceExplorer">resource explorer.</param>
-        /// <param name="callback">bot logic.</param>
+        /// <param name="resourceExplorer">The resource explorer to use.</param>
+        /// <param name="testName">Name of the test.</param>
+        /// <param name="callback">The bot logic.</param>
         /// <param name="adapter">optional test adapter.</param>
-        /// <param name="configuration">configuration.</param>
         /// <returns>Runs the exchange between the user and the bot.</returns>
-        public async Task ExecuteAsync([CallerMemberName] string testName = null, ResourceExplorer resourceExplorer = null, BotCallbackHandler callback = null, TestAdapter adapter = null, IConfiguration configuration = null)
+        public async Task ExecuteAsync(ResourceExplorer resourceExplorer, [CallerMemberName] string testName = null, BotCallbackHandler callback = null, TestAdapter adapter = null)
         {
             if (adapter == null)
             {
-                adapter = DefaultTestAdapter(testName, resourceExplorer, configuration);
+                adapter = DefaultTestAdapter(resourceExplorer, testName);
             }
 
             adapter.EnableTrace = this.EnableTrace;
@@ -156,7 +143,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             }
             else
             {
-                var dm = new DialogManager(this.Dialog);
+                var dm = new DialogManager(this.Dialog)
+                    .UseResourceExplorer(resourceExplorer)
+                    .UseLanguageGeneration();
+
                 foreach (var testAction in this.Script)
                 {
                     await testAction.ExecuteAsync(adapter, dm.OnTurnAsync).ConfigureAwait(false);
@@ -350,21 +340,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             return Task.CompletedTask;
         }
 
-        private void SaveContainerDialogs(DialogContainer container, string folder)
-        {
-            foreach (var dialog in container.Dialogs.GetDialogs())
-            {
-                var filePath = Path.GetFullPath(Path.Combine(folder, $"{dialog.Id}.dialog"));
-                File.WriteAllText(filePath, JsonConvert.SerializeObject(dialog, serializerSettings));
-
-                if (dialog is DialogContainer container2)
-                {
-                    SaveContainerDialogs(container2, folder);
-                }
-            }
-        }
-
-        private string GetProjectPath()
+        private static string GetProjectPath()
         {
             var parent = Environment.CurrentDirectory;
             while (!string.IsNullOrEmpty(parent))
@@ -380,6 +356,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             }
 
             return parent;
+        }
+
+        private void SaveContainerDialogs(DialogContainer container, string folder)
+        {
+            foreach (var dialog in container.Dialogs.GetDialogs())
+            {
+                var filePath = Path.GetFullPath(Path.Combine(folder, $"{dialog.Id}.dialog"));
+                File.WriteAllText(filePath, JsonConvert.SerializeObject(dialog, serializerSettings));
+
+                if (dialog is DialogContainer container2)
+                {
+                    SaveContainerDialogs(container2, folder);
+                }
+            }
         }
 
         internal class IgnoreEmptyEnumerablesResolver : DefaultContractResolver

@@ -64,9 +64,9 @@ namespace Microsoft.Bot.Expressions.Memory
             foreach (var part in parts)
             {
                 string error = null;
-                if (int.TryParse(part, out var idx) && BuiltInFunctions.TryParseList(curScope, out var li))
+                if (int.TryParse(part, out var idx) && ExpressionFunctions.TryParseList(curScope, out var li))
                 {
-                    (value, error) = BuiltInFunctions.AccessIndex(li, idx);
+                    (value, error) = ExpressionFunctions.AccessIndex(li, idx);
                     if (error != null)
                     {
                         return false;
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Expressions.Memory
                 }
                 else
                 {
-                    if (!BuiltInFunctions.TryAccessProperty(curScope, part, out value))
+                    if (!ExpressionFunctions.TryAccessProperty(curScope, part, out value))
                     {
                         return false;
                     }
@@ -115,15 +115,15 @@ namespace Microsoft.Bot.Expressions.Memory
             // find the 2nd last value, the container
             for (var i = 0; i < parts.Length - 1; i++)
             {
-                if (int.TryParse(parts[i], out var index) && BuiltInFunctions.TryParseList(curScope, out var li))
+                if (int.TryParse(parts[i], out var index) && ExpressionFunctions.TryParseList(curScope, out var li))
                 {
                     curPath += $"[{parts[i]}]";
-                    (curScope, error) = BuiltInFunctions.AccessIndex(li, index);
+                    (curScope, error) = ExpressionFunctions.AccessIndex(li, index);
                 }
                 else
                 {
                     curPath += $".{parts[i]}";
-                    if (BuiltInFunctions.TryAccessProperty(curScope, parts[i], out var newScope))
+                    if (ExpressionFunctions.TryAccessProperty(curScope, parts[i], out var newScope))
                     {
                         curScope = newScope;
                     }
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Expressions.Memory
             // set the last value
             if (int.TryParse(parts.Last(), out var idx))
             {
-                if (BuiltInFunctions.TryParseList(curScope, out var li))
+                if (ExpressionFunctions.TryParseList(curScope, out var li))
                 {
                     if (li is JArray)
                     {
@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Expressions.Memory
             }
             else
             {
-                (_, error) = BuiltInFunctions.SetProperty(curScope, parts.Last(), value);
+                (_, error) = ExpressionFunctions.SetProperty(curScope, parts.Last(), value);
                 if (error != null)
                 {
                     return;

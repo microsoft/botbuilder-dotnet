@@ -362,7 +362,13 @@ namespace Microsoft.Bot.Expressions.Tests
 
 #region SetPathToValue tests
             Test("setPathToValue(2+3, 4)"), // Not a real path
-            Test("setPathToValue(a)") // Missing value
+            Test("setPathToValue(a)"), // Missing value
+#endregion
+
+#region TriggerTree Tests
+
+            // optional throws because it's a placeholder only interpreted by trigger tree and is removed before evaluation
+            Test("optional(true)"), 
 #endregion
         };
 
@@ -386,7 +392,7 @@ namespace Microsoft.Bot.Expressions.Tests
         {
             try
             {
-                new ExpressionEngine().Parse(exp);
+                Expression.Parse(exp);
             }
             catch (Exception e)
             {
@@ -462,7 +468,7 @@ namespace Microsoft.Bot.Expressions.Tests
 
             try
             {
-                var (value, error) = new ExpressionEngine().Parse(exp).TryEvaluate(scope);
+                var (value, error) = Expression.Parse(exp).TryEvaluate(scope);
                 if (error != null)
                 {
                     isFail = true;

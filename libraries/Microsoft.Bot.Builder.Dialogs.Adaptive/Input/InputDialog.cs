@@ -431,7 +431,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     foreach (var validation in this.Validations)
                     {
-                        var exp = new ExpressionEngine().Parse(validation.TrimStart('='));
+                        var exp = Expression.Parse(validation.TrimStart('='));
                         var (value, error) = exp.TryEvaluate(dcState);
                         if (value == null || (value is bool && (bool)value == false))
                         {

@@ -4,17 +4,24 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
+    /// <summary>
+    /// JsonConverter which understands how to deal with strings when assigning to ILanguageGenerator.
+    /// </summary>
     public class LanguageGeneratorConverter : InterfaceConverter<ILanguageGenerator>
     {
-        public LanguageGeneratorConverter(IRefResolver refResolver, ISourceMap sourceMap, Stack<string> paths)
-            : base(refResolver, sourceMap, paths)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LanguageGeneratorConverter"/> class.
+        /// </summary>
+        /// <param name="resourceExplorer">resourcexplorer to use to resolve references.</param>
+        /// <param name="paths">path stack to build debugger call graph.</param>
+        public LanguageGeneratorConverter(ResourceExplorer resourceExplorer, Stack<string> paths)
+            : base(resourceExplorer, paths)
         {
         }
 

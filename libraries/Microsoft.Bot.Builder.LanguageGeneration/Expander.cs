@@ -438,11 +438,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (isExpander)
                 {
-                    return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateExpander(name)), ReturnType.String, this.ValidTemplateReference);
+                    return new ExpressionEvaluator(name, ExpressionFunctions.Apply(this.TemplateExpander(name)), ReturnType.String, this.ValidTemplateReference);
                 }
                 else
                 {
-                    return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
+                    return new ExpressionEvaluator(name, ExpressionFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
                 }
             }
 

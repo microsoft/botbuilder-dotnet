@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 var foundProject = Directory.EnumerateFiles(projectFile, "*.*proj").FirstOrDefault();
                 if (foundProject == null)
                 {
-                    resourceExplorer.AddFolder(Path.GetDirectoryName(projectFile));
+                    resourceExplorer.AddFolder(Path.GetDirectoryName(projectFile), monitorChanges: monitorChanges);
                     return resourceExplorer;
                 }
                 else

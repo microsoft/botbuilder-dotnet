@@ -9,23 +9,18 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
-    /// <summary>
-    /// LG middleware.
-    /// </summary>
-    public static class LGAdapterExtensions
+    public static class LGExtensions
     {
         private static Dictionary<ResourceExplorer, LanguageGeneratorManager> languageGeneratorManagers = new Dictionary<ResourceExplorer, LanguageGeneratorManager>();
 
         /// <summary>
         /// Register default LG file as language generation.
         /// </summary>
-        /// <param name="botAdapter">The <see cref="BotAdapter"/> to add services to.</param>
-        /// <param name="resourceExplorer">resource explorer to use for .lg based resources.</param>
+        /// <param name="dialogManager">The <see cref="BotAdapter"/> to add services to.</param>
         /// <param name="defaultLg">Default LG Resource Id (default: main.lg).</param>
         /// <returns>The BotAdapter.</returns>
-        public static BotAdapter UseLanguageGeneration(
-            this BotAdapter botAdapter,
-            ResourceExplorer resourceExplorer = null,
+        public static DialogManager UseLanguageGeneration(
+            this DialogManager dialogManager,
             string defaultLg = null)
         {
             if (defaultLg == null)
@@ -33,33 +28,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 defaultLg = "main.lg";
             }
 
-            if (resourceExplorer == null)
-            {
-                resourceExplorer = new ResourceExplorer();
-            }
+            var resourceExplorer = dialogManager.TurnState.Get<ResourceExplorer>();
 
             if (resourceExplorer.TryGetResource(defaultLg, out var resource))
             {
-                botAdapter.UseLanguageGeneration(resourceExplorer, new ResourceMultiLanguageGenerator(defaultLg));
+                dialogManager.UseLanguageGeneration(new ResourceMultiLanguageGenerator(defaultLg));
             }
             else
             {
-                botAdapter.UseLanguageGeneration(resourceExplorer, new TemplateEngineLanguageGenerator());
+                dialogManager.UseLanguageGeneration(new TemplateEngineLanguageGenerator());
             }
 
-            return botAdapter;
+            return dialogManager;
         }
 
         /// <summary>
         /// Register ILanguageGenerator as default langugage generator.
         /// </summary>
-        /// <param name="botAdapter">botAdapter to add services to.</param>
-        /// <param name="resourceExplorer">resourceExporer to provide to LanguageGenerator.</param>
+        /// <param name="dialogManager">botAdapter to add services to.</param>
         /// <param name="languageGenerator">LanguageGenerator to use.</param>
         /// <returns>botAdapter.</returns>
-        public static BotAdapter UseLanguageGeneration(this BotAdapter botAdapter, ResourceExplorer resourceExplorer, ILanguageGenerator languageGenerator)
+        public static DialogManager UseLanguageGeneration(this DialogManager dialogManager, ILanguageGenerator languageGenerator)
         {
-            DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
+            var resourceExplorer = dialogManager.TurnState.Get<ResourceExplorer>();
 
             lock (languageGeneratorManagers)
             {
@@ -69,9 +60,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     languageGeneratorManagers[resourceExplorer] = lgm;
                 }
 
-                botAdapter.Use(new RegisterClassMiddleware<LanguageGeneratorManager>(lgm));
-                botAdapter.Use(new RegisterClassMiddleware<ILanguageGenerator>(languageGenerator ?? throw new ArgumentNullException(nameof(languageGenerator))));
-                return botAdapter;
+                dialogManager.TurnState.Add<LanguageGeneratorManager>(lgm);
+                dialogManager.TurnState.Add<ILanguageGenerator>(languageGenerator ?? throw new ArgumentNullException(nameof(languageGenerator)));
+
+                return dialogManager;
             }
         }
     }

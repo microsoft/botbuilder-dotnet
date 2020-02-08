@@ -276,7 +276,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 test = "joe"
             };
             var str = new StringExpression("test");
-            Assert.IsNull(str.Expression);
+            Assert.IsNull(str.ExpressionText);
             Assert.IsNotNull(str.Value);
             Assert.AreEqual(str.ToString(), JsonConvert.DeserializeObject<StringExpression>(JsonConvert.SerializeObject(str, settings: settings), settings: settings).ToString());
             var (result, error) = str.TryGetValue(data);
@@ -284,7 +284,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             str = new StringExpression("=test");
-            Assert.IsNotNull(str.Expression);
+            Assert.IsNotNull(str.ExpressionText);
             Assert.IsNull(str.Value);
             Assert.AreEqual(str.ToString(), JsonConvert.DeserializeObject<StringExpression>(JsonConvert.SerializeObject(str, settings: settings), settings: settings).ToString());
             (result, error) = str.TryGetValue(data);
@@ -292,7 +292,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             str = new StringExpression("Hello @{test}");
-            Assert.IsNull(str.Expression);
+            Assert.IsNull(str.ExpressionText);
             Assert.IsNotNull(str.Value);
             Assert.AreEqual(str.ToString(), JsonConvert.DeserializeObject<StringExpression>(JsonConvert.SerializeObject(str, settings: settings), settings: settings).ToString());
             (result, error) = str.TryGetValue(data);
@@ -309,7 +309,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             };
 
             var val = new ValueExpression("test");
-            Assert.IsNull(val.Expression);
+            Assert.IsNull(val.ExpressionText);
             Assert.IsNotNull(val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<ValueExpression>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             var (result, error) = val.TryGetValue(data);
@@ -317,7 +317,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val = new ValueExpression("=test");
-            Assert.IsNotNull(val.Expression);
+            Assert.IsNotNull(val.ExpressionText);
             Assert.IsNull(val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<ValueExpression>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             (result, error) = val.TryGetValue(data);
@@ -325,7 +325,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val = new ValueExpression(data.test);
-            Assert.IsNull(val.Expression);
+            Assert.IsNull(val.ExpressionText);
             Assert.IsNotNull(val.Value);
             Assert.AreEqual(JsonConvert.SerializeObject(data.test, settings), JsonConvert.DeserializeObject<ValueExpression>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             (result, error) = val.TryGetValue(data);
@@ -333,7 +333,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val = new ValueExpression("Hello @{test.x}");
-            Assert.IsNull(val.Expression);
+            Assert.IsNull(val.ExpressionText);
             Assert.IsNotNull(val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<ValueExpression>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             (result, error) = val.TryGetValue(data);
@@ -350,7 +350,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             };
 
             var val = new BoolExpression("true");
-            Assert.IsNotNull(val.Expression);
+            Assert.IsNotNull(val.ExpressionText);
             Assert.AreEqual(default(bool), val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<BoolExpression>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             var (result, error) = val.TryGetValue(data);
@@ -358,7 +358,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val = new BoolExpression("=true");
-            Assert.IsNotNull(val.Expression);
+            Assert.IsNotNull(val.ExpressionText);
             Assert.AreEqual(default(bool), val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<BoolExpression>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             (result, error) = val.TryGetValue(data);
@@ -366,7 +366,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val = new BoolExpression(true);
-            Assert.IsNull(val.Expression);
+            Assert.IsNull(val.ExpressionText);
             Assert.IsTrue(val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<BoolExpression>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             (result, error) = val.TryGetValue(data);
@@ -374,7 +374,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val = new BoolExpression("=test");
-            Assert.IsNotNull(val.Expression);
+            Assert.IsNotNull(val.ExpressionText);
             Assert.AreEqual(default(bool), val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<BoolExpression>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             (result, error) = val.TryGetValue(data);
@@ -391,7 +391,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             };
 
             var val = new EnumExpression<TestEnum>("three");
-            Assert.IsNull(val.Expression);
+            Assert.IsNull(val.ExpressionText);
             Assert.AreEqual(TestEnum.Three, val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<EnumExpression<TestEnum>>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             var (result, error) = val.TryGetValue(data);
@@ -399,7 +399,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val = new EnumExpression<TestEnum>("=three");
-            Assert.IsNull(val.Expression);
+            Assert.IsNull(val.ExpressionText);
             Assert.AreEqual(TestEnum.Three, val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<EnumExpression<TestEnum>>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             (result, error) = val.TryGetValue(data);
@@ -407,7 +407,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val = new EnumExpression<TestEnum>("=test");
-            Assert.IsNotNull(val.Expression);
+            Assert.IsNotNull(val.ExpressionText);
             Assert.AreEqual(default(TestEnum), val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<EnumExpression<TestEnum>>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             (result, error) = val.TryGetValue(data);
@@ -415,7 +415,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val = new EnumExpression<TestEnum>(TestEnum.Three);
-            Assert.IsNull(val.Expression);
+            Assert.IsNull(val.ExpressionText);
             Assert.AreEqual(TestEnum.Three, val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<EnumExpression<TestEnum>>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             (result, error) = val.TryGetValue(data);
@@ -423,7 +423,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val = new EnumExpression<TestEnum>("garbage");
-            Assert.IsNotNull(val.Expression);
+            Assert.IsNotNull(val.ExpressionText);
             Assert.AreEqual(default(TestEnum), val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<EnumExpression<TestEnum>>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             (result, error) = val.TryGetValue(data);
@@ -431,7 +431,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val = new EnumExpression<TestEnum>("=sum(garbage)");
-            Assert.IsNotNull(val.Expression);
+            Assert.IsNotNull(val.ExpressionText);
             Assert.AreEqual(default(TestEnum), val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<EnumExpression<TestEnum>>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             (result, error) = val.TryGetValue(data);
@@ -460,7 +460,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             };
 
             val.SetValue("test");
-            Assert.IsNotNull(val.Expression);
+            Assert.IsNotNull(val.ExpressionText);
             Assert.AreEqual(default(TValue), val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<TExpression>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             var (result, error) = val.TryGetValue(data);
@@ -468,7 +468,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val.SetValue("=test");
-            Assert.IsNotNull(val.Expression);
+            Assert.IsNotNull(val.ExpressionText);
             Assert.AreEqual(default(TValue), val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<TExpression>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             (result, error) = val.TryGetValue(data);
@@ -476,7 +476,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val.SetValue($"{expected}");
-            Assert.IsNotNull(val.Expression);
+            Assert.IsNotNull(val.ExpressionText);
             Assert.AreEqual(default(TValue), val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<TExpression>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             (result, error) = val.TryGetValue(data);
@@ -484,7 +484,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val.SetValue($"={expected}");
-            Assert.IsNotNull(val.Expression);
+            Assert.IsNotNull(val.ExpressionText);
             Assert.AreEqual(default(TValue), val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<TExpression>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             (result, error) = val.TryGetValue(data);
@@ -492,7 +492,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val.SetValue(expected);
-            Assert.IsNull(val.Expression);
+            Assert.IsNull(val.ExpressionText);
             Assert.AreEqual(expected, val.Value);
             Assert.AreEqual(val.ToString(), JsonConvert.DeserializeObject<TExpression>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             (result, error) = val.TryGetValue(data);
@@ -513,7 +513,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             };
 
             var val = new ObjectExpression<Foo>("test");
-            Assert.IsNotNull(val.Expression);
+            Assert.IsNotNull(val.ExpressionText);
             Assert.IsNull(val.Value);
             var (result, error) = val.TryGetValue(data);
             Assert.AreEqual(13, result.Age);
@@ -521,7 +521,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val = new ObjectExpression<Foo>("=test");
-            Assert.IsNotNull(val.Expression);
+            Assert.IsNotNull(val.ExpressionText);
             Assert.IsNull(val.Value);
             (result, error) = val.TryGetValue(data);
             Assert.AreEqual(13, result.Age);
@@ -529,7 +529,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val = new ObjectExpression<Foo>(data.test);
-            Assert.IsNull(val.Expression);
+            Assert.IsNull(val.ExpressionText);
             Assert.IsNotNull(val.Value);
             (result, error) = val.TryGetValue(data);
             Assert.AreEqual(13, result.Age);
@@ -537,7 +537,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             val = new ObjectExpression<Foo>(JObject.FromObject(data.test));
-            Assert.IsNull(val.Expression);
+            Assert.IsNull(val.ExpressionText);
             Assert.IsNotNull(val.Value);
             (result, error) = val.TryGetValue(data);
             Assert.AreEqual(13, result.Age);
@@ -560,28 +560,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             };
 
             var val = new ArrayExpression<string>("test.Strings");
-            Assert.IsNotNull(val.Expression);
+            Assert.IsNotNull(val.ExpressionText);
             Assert.IsNull(val.Value);
             var (result, error) = val.TryGetValue(data);
             Assert.AreEqual(JsonConvert.SerializeObject(data.test.Strings, settings), JsonConvert.SerializeObject(result, settings: settings));
             CollectionAssert.AreEqual(data.test.Strings, result);
 
             val = new ArrayExpression<string>("=test.Strings");
-            Assert.IsNotNull(val.Expression);
+            Assert.IsNotNull(val.ExpressionText);
             Assert.IsNull(val.Value);
             (result, error) = val.TryGetValue(data);
             Assert.AreEqual(JsonConvert.SerializeObject(data.test.Strings, settings), JsonConvert.SerializeObject(result, settings: settings));
             CollectionAssert.AreEqual(data.test.Strings, result);
 
             val = new ArrayExpression<string>(data.test.Strings);
-            Assert.IsNull(val.Expression);
+            Assert.IsNull(val.ExpressionText);
             Assert.IsNotNull(val.Value);
             (result, error) = val.TryGetValue(data);
             Assert.AreEqual(JsonConvert.SerializeObject(data.test.Strings, settings), JsonConvert.SerializeObject(result, settings: settings));
             CollectionAssert.AreEqual(data.test.Strings, result);
 
             val = new ArrayExpression<string>(data.test.Strings);
-            Assert.IsNull(val.Expression);
+            Assert.IsNull(val.ExpressionText);
             Assert.IsNotNull(val.Value);
             (result, error) = val.TryGetValue(data);
             Assert.AreEqual(JsonConvert.SerializeObject(data.test.Strings, settings), JsonConvert.SerializeObject(result, settings: settings));
@@ -607,25 +607,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             };
 
             var val = new ArrayExpression<Foo>("test.Objects");
-            Assert.IsNotNull(val.Expression);
+            Assert.IsNotNull(val.ExpressionText);
             Assert.IsNull(val.Value);
             var (result, error) = val.TryGetValue(data);
             CollectionAssert.AreEqual(data.test.Objects, result);
 
             val = new ArrayExpression<Foo>("=test.Objects");
-            Assert.IsNotNull(val.Expression);
+            Assert.IsNotNull(val.ExpressionText);
             Assert.IsNull(val.Value);
             (result, error) = val.TryGetValue(data);
             CollectionAssert.AreEqual(data.test.Objects, result);
 
             val = new ArrayExpression<Foo>(data.test.Objects);
-            Assert.IsNull(val.Expression);
+            Assert.IsNull(val.ExpressionText);
             Assert.IsNotNull(val.Value);
             (result, error) = val.TryGetValue(data);
             Assert.AreEqual(JsonConvert.SerializeObject(data.test.Objects, settings), JsonConvert.SerializeObject(result, settings));
 
             val = new ArrayExpression<Foo>(JArray.FromObject(data.test.Objects));
-            Assert.IsNull(val.Expression);
+            Assert.IsNull(val.ExpressionText);
             Assert.IsNotNull(val.Value);
             (result, error) = val.TryGetValue(data);
             Assert.AreEqual(JsonConvert.SerializeObject(data.test.Objects, settings), JsonConvert.SerializeObject(result, settings));

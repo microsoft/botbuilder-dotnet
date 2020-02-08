@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Win32.SafeHandles;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -12,6 +13,8 @@ namespace Microsoft.Bot.Expressions.Properties
     /// <typeparam name="T">type of object the expression should evaluate to.</typeparam>
     public class ExpressionProperty<T>
     {
+        private Expression expression;
+
         public ExpressionProperty()
         {
         }
@@ -21,15 +24,27 @@ namespace Microsoft.Bot.Expressions.Properties
             SetValue(value);
         }
 
-        public T Value { get; set; } = default(T);
+        /// <summary>
+        /// Gets or sets the raw value of the expression property.
+        /// </summary>
+        /// <value>
+        /// the value to return when someone calls GetValue().
+        /// </value>
+        public T Value { get; protected set; } = default(T);
 
-        public Expression Expression { get; set; }
+        /// <summary>
+        /// Gets or sets the expression text to evaluate to get the value.
+        /// </summary>
+        /// <value>
+        /// The expression text.
+        /// </value>
+        public string ExpressionText { get; set; }
 
         public new string ToString()
         {
-            if (this.Expression != null)
+            if (this.ExpressionText != null)
             {
-                return $"={this.Expression}";
+                return $"={this.ExpressionText.TrimStart('=')}";
             }
 
             return this.Value?.ToString();
@@ -39,20 +54,29 @@ namespace Microsoft.Bot.Expressions.Properties
         /// This will return the existing expression or ConstantExpression(Value) if the value is non-complex type.
         /// </summary>
         /// <returns>expression.</returns>
-        public Expression ToExpression()
+        public virtual Expression ToExpression()
         {
-            if (this.Expression != null)
+            if (this.expression != null)
             {
-                return this.Expression;
+                return expression;
             }
 
-            if (this.Value is string || this.Value.IsNumber() || this.Value.IsInteger() || this.Value is bool || this.Value.GetType().IsEnum)
+            if (this.ExpressionText != null)
             {
-                return new ExpressionEngine().Parse(this.Value.ToString());
+                this.expression = Expression.Parse(this.ExpressionText.TrimStart('='));
+                return expression;
+            }
+
+            if (this.Value == null || this.Value is string || this.Value.IsNumber() || this.Value.IsInteger() || this.Value is bool || this.Value.GetType().IsEnum)
+            {
+                // return expression as constant
+                this.expression = Expression.Parse(this.Value.ToString());
+                return expression;
             }
 
             // return expression for json object
-            return new ExpressionEngine().Parse($"json({JsonConvert.SerializeObject(this.Value)})");
+            this.expression = Expression.Parse($"json({JsonConvert.SerializeObject(this.Value)})");
+            return expression;
         }
 
         /// <summary>
@@ -72,9 +96,14 @@ namespace Microsoft.Bot.Expressions.Properties
         /// <returns>value.</returns>
         public virtual (T Value, string Error) TryGetValue(object data)
         {
-            if (Expression != null)
+            if (expression == null && ExpressionText != null)
             {
-                return Expression.TryEvaluate<T>(data);
+                this.expression = Expression.Parse(this.ExpressionText.TrimStart('='));
+            }
+
+            if (expression != null)
+            {
+                return expression.TryEvaluate<T>(data);
             }
 
             return (Value, null);
@@ -86,19 +115,24 @@ namespace Microsoft.Bot.Expressions.Properties
         /// <param name="value">value to set.</param>
         public virtual void SetValue(object value)
         {
+            this.expression = null;
             this.Value = default(T);
-            this.Expression = null;
+            this.ExpressionText = null;
 
             if (value == null)
             {
-                this.Value = default(T);
-                this.Expression = null;
                 return;
+            }
+
+            if (value is Expression exp)
+            {
+                this.expression = exp;
+                this.ExpressionText = exp.ToString();
             }
 
             if (value is string stringOrExpression)
             {
-                Expression = new ExpressionEngine().Parse(stringOrExpression.TrimStart('='));
+                this.ExpressionText = stringOrExpression.TrimStart('=');
                 return;
             }
 

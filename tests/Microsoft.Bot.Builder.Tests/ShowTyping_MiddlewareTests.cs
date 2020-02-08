@@ -19,11 +19,11 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task ShowTyping_TestMiddleware_1_Second_Interval()
         {
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new ShowTypingMiddleware(100, 1000));
+                .Use(new ShowTypingMiddleware(100, 100));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
-                    await Task.Delay(TimeSpan.FromMilliseconds(2500));
+                    await Task.Delay(TimeSpan.FromMilliseconds(350));
 
                     // note the ShowTypingMiddleware should not cause the Responded flag to be set
                     Assert.IsFalse(context.Responded);
@@ -44,11 +44,11 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task ShowTyping_TestMiddleware_Context_Completes_Before_Typing_Interval()
         {
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new ShowTypingMiddleware(100, 5000));
+                .Use(new ShowTypingMiddleware(10, 50));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
-                    await Task.Delay(TimeSpan.FromMilliseconds(2000));
+                    await Task.Delay(TimeSpan.FromMilliseconds(55));
                     await context.SendActivityAsync("Message sent after delay");
                     await Task.CompletedTask;
                 })
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task ShowTyping_TestMiddleware_ImmediateResponse_5SecondInterval()
         {
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new ShowTypingMiddleware(2000, 5000));
+                .Use(new ShowTypingMiddleware(2000, 500));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Tests
             try
             {
                 TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                    .Use(new ShowTypingMiddleware(-100, 1000));
+                    .Use(new ShowTypingMiddleware(-100, 100));
             }
             catch (Exception ex)
             {
