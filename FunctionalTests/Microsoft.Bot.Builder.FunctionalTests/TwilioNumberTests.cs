@@ -41,10 +41,12 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         {
             var parameters = GetParameters(message);
             var signature = ComputeSignature(parameters);
-            using var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("X-Twilio-Signature", signature);
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("X-Twilio-Signature", signature);
 
-            await client.PostAsync(_botEndpoint, new FormUrlEncodedContent(parameters));
+                await client.PostAsync(_botEndpoint, new FormUrlEncodedContent(parameters));
+            }
         }
 
         private string ComputeSignature(IDictionary<string, string> parameters)

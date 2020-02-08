@@ -41,8 +41,7 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="ITurnContext"/>
     /// <seealso cref="IActivity"/>
     /// <seealso cref="IBot"/>
-    /// <seealso cref="IMiddleware"/>
-
+    /// <seealso cref="IMiddleware"/>h
     public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, ICredentialTokenProvider, ITokenExchangeProvider
     {
         internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
@@ -1062,24 +1061,11 @@ namespace Microsoft.Bot.Builder
 
             if (result is ErrorResponse errorResponse)
             {
-                result = new TokenResponse();
+                throw new InvalidOperationException($"Unable to exchange token: ({errorResponse?.Error?.Code}) {errorResponse?.Error?.Message}");
             }
 
             if (result is TokenResponse tokenResponse)
             {
-                // todo: temporary
-                if (string.IsNullOrEmpty(tokenResponse.Token))
-                {
-                    if (!string.IsNullOrEmpty(exchangeRequest.Uri))
-                    {
-                        tokenResponse.Token = "exchangeableToken" + Guid.NewGuid().ToString().Replace("-", string.Empty);
-                    }
-                    else
-                    {
-                        tokenResponse.Token = "token" + Guid.NewGuid().ToString().Replace("-", string.Empty);
-                    }
-                }
-
                 return tokenResponse;
             }
             else
@@ -1088,6 +1074,7 @@ namespace Microsoft.Bot.Builder
             }
         }
 
+        /// <summary>
         /// Retrieves Azure Active Directory tokens for particular resources on a configured connection, using the bot's AppCredentials.
         /// </summary>
         /// <param name="context">Context for the current turn of conversation with the user.</param>

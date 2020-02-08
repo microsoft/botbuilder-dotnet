@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -347,7 +348,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var value = signInResource.SignInLink;
 
                 if (turnContext.TurnState.Get<ClaimsIdentity>("BotIdentity") is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
-
                 {
                     // Force magic code for Skills (to be addressed in R8)
                     cardActionType = ActionTypes.OpenUrl;
@@ -434,29 +434,29 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                     else
                     {
-                        await this.SendInvokeResponseAsync(turnContext, cancellationToken, 404).ConfigureAwait(false);
+                        await this.SendInvokeResponseAsync(turnContext, cancellationToken, HttpStatusCode.NotFound).ConfigureAwait(false);
                     }
                 }
                 catch
                 {
-                    await this.SendInvokeResponseAsync(turnContext, cancellationToken, 500).ConfigureAwait(false);
+                    await this.SendInvokeResponseAsync(turnContext, cancellationToken, HttpStatusCode.InternalServerError).ConfigureAwait(false);
                 }
             }
             else if (IsTokenExchangeRequestInvoke(turnContext))
             {
-                var tokenExchangeRequest = ((JObject)turnContext.Activity.Value).ToObject<TokenExchangeInvokeRequest>();
+                var tokenExchangeRequest = ((JObject)turnContext.Activity.Value)?.ToObject<TokenExchangeInvokeRequest>();
 
                 if (tokenExchangeRequest == null)
                 {
                     await this.SendInvokeResponseAsync(
                         turnContext,
                         cancellationToken,
-                        400,
+                        HttpStatusCode.BadRequest,
                         new TokenExchangeInvokeResponse()
                         {
-                            Id = tokenExchangeRequest.Id,
+                            Id = null,
                             ConnectionName = _settings.ConnectionName,
-                            FailureDetail = "Missing TokenExchangeInvokeRequest",
+                            FailureDetail = "The bot received an InvokeActivity that is missing a TokenExchangeInvokeRequest value. This is required to be sent with the InvokeActivity.",
                         }).ConfigureAwait(false);
                 }
                 else if (tokenExchangeRequest.ConnectionName != _settings.ConnectionName)
@@ -464,12 +464,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                     await this.SendInvokeResponseAsync(
                         turnContext,
                         cancellationToken,
-                        400,
+                        HttpStatusCode.BadRequest,
                         new TokenExchangeInvokeResponse()
                         {
                             Id = tokenExchangeRequest.Id,
                             ConnectionName = _settings.ConnectionName,
-                            FailureDetail = "Invalid ConnectionName in the TokenExchangeInvokeRequest",
+                            FailureDetail = "The bot received an InvokeActivity with a TokenExchangeInvokeRequest containing a ConnectionName that does not match the ConnectionName expected by the bot's active OAuthPrompt. Ensure these names match when sending the InvokeActivityInvalid ConnectionName in the TokenExchangeInvokeRequest",
                         }).ConfigureAwait(false);
                 }
                 else if (!(turnContext.Adapter is ITokenExchangeProvider adapter))
@@ -477,12 +477,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                     await this.SendInvokeResponseAsync(
                            turnContext,
                            cancellationToken,
-                           502,
+                           HttpStatusCode.BadGateway,
                            new TokenExchangeInvokeResponse()
                            {
                                Id = tokenExchangeRequest.Id,
                                ConnectionName = _settings.ConnectionName,
-                               FailureDetail = "Bot Adapter does not support token exchange.",
+                               FailureDetail = "The bot's BotAdapter does not support token exchange operations. Ensure the bot's Adapter supports the ITokenExchangeProvider interface.",
                            }).ConfigureAwait(false);
                     throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
                 }
@@ -503,12 +503,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                         await this.SendInvokeResponseAsync(
                            turnContext,
                            cancellationToken,
-                           409,
+                           HttpStatusCode.Conflict,
                            new TokenExchangeInvokeResponse()
                            {
                                Id = tokenExchangeRequest.Id,
                                ConnectionName = _settings.ConnectionName,
-                               FailureDetail = "Unable to exchange token.",
+                               FailureDetail = "The bot is unable to exchange token. Proceed with regular login.",
                            }).ConfigureAwait(false);
                     }
                     else
@@ -516,7 +516,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         await this.SendInvokeResponseAsync(
                            turnContext,
                            cancellationToken,
-                           200,
+                           HttpStatusCode.OK,
                            new TokenExchangeInvokeResponse()
                            {
                                Id = tokenExchangeRequest.Id,
@@ -555,7 +555,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return result;
         }
 
-        private async Task SendInvokeResponseAsync(ITurnContext turnContext, CancellationToken cancellationToken, int statusCode, object body = null)
+        private async Task SendInvokeResponseAsync(ITurnContext turnContext, CancellationToken cancellationToken, HttpStatusCode statusCode, object body = null)
         {
             await turnContext.SendActivityAsync(
                 new Activity
@@ -563,7 +563,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     Type = ActivityTypesEx.InvokeResponse,
                     Value = new InvokeResponse
                     {
-                        Status = statusCode,
+                        Status = (int)statusCode,
                         Body = body,
                     },
                 }, cancellationToken).ConfigureAwait(false);
