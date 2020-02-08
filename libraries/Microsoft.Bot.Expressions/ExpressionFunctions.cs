@@ -2759,20 +2759,16 @@ namespace Microsoft.Bot.Expressions
                             var builder = new StringBuilder();
                             foreach (var arg in args)
                             {
-                                if (arg is string str)
+                                if (arg != null)
                                 {
-                                    builder.Append(str);
-                                }
-                                else
-                                {
-                                    builder.Append(string.Empty);
+                                    builder.Append(arg.ToString());
                                 }
                             }
 
                             return builder.ToString();
-                        }, VerifyStringOrNull),
+                        }),
                     ReturnType.String,
-                    ValidateString),
+                    ValidateAtLeastOne),
                 new ExpressionEvaluator(
                     ExpressionType.Length,
                     Apply(
