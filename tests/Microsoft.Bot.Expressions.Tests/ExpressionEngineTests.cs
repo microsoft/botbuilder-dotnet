@@ -259,6 +259,17 @@ namespace Microsoft.Bot.Expressions.Tests
         public static IEnumerable<object[]> Data => new[]
         {
             Test("hello == 'hello'", true),
+
+            #region string interpolation test
+            Test("`hi`", "hi"),
+            Test(@"`hi\``", "hi`"),
+            Test("`@{world}`", "world"),
+            Test(@"`hi @{string('jack\`')}`", "hi jack`"),
+            Test(@"`\@{world}`", "@{world}"), // use escape character
+            Test("length(`hello @{world}`)", "hello world".Length),
+            Test("json(`{'foo': '@{hello}','item': '@{world}'}`).foo", "hello"),
+            #endregion
+
             #region SetPathToProperty test
             Test("setPathToValue(path.simple, 3) + path.simple", 6),
             Test("setPathToValue(path.simple, 5) + path.simple", 10),

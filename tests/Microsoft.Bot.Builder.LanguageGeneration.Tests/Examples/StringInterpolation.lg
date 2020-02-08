@@ -1,0 +1,17 @@
+﻿# simpleStringTemplate
+- say @{`hi`}
+
+# StringTemplateWithVariable(w)
+- hello @{`@{w}`}
+
+# StringTemplateWithMixing(name)
+- I know @{`your name is @{name}`}
+
+# StringTemplateWithJson(h, w)
+- get 'h' value : @{json(`{'foo': '@{h}','bar': '@{w}'}`).foo}
+
+# StringTemplateWithEscape()
+- just want to output @{`\@{bala\`bala}`}
+
+# StringTemplateWithTemplateRef
+- @{`@{StringTemplateWithVariable('jack')} , welcome.`} nice weather!
