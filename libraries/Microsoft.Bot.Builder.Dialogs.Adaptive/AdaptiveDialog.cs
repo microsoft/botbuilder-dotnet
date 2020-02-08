@@ -171,7 +171,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 if (!dcState.ContainsKey(ConditionTracker))
                 {
-                    var parser = Selector.Parser;
                     foreach (var trigger in Triggers)
                     {
                         if (trigger.RunOnce && trigger.Condition != null)
@@ -698,7 +697,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 var evt = selection.First();
                 await sequenceContext.DebuggerStepAsync(evt, dialogEvent, cancellationToken).ConfigureAwait(false);
-                Trace.TraceInformation($"Executing Dialog: {Id} Rule[{evt.Id}]: {evt.GetType().Name}: {evt.GetExpression(new ExpressionEngine())}");
+                Trace.TraceInformation($"Executing Dialog: {Id} Rule[{evt.Id}]: {evt.GetType().Name}: {evt.GetExpression()}");
                 var changes = await evt.ExecuteAsync(sequenceContext).ConfigureAwait(false);
 
                 if (changes != null && changes.Any())
@@ -1101,6 +1100,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                               orderby candidate.IsExpected descending
                               select candidate).ToList();
             var usedEntities = new HashSet<EntityInfo>(from candidate in candidates select candidate.Entity);
+            var expectedChoices = new List<string>();
             while (candidates.Any())
             {
                 var candidate = candidates.First();
@@ -1122,17 +1122,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 else if (lastEvent == AdaptiveEvents.ChooseProperty && candidate.Entity.Name == "PROPERTYName")
                 {
                     // NOTE: This assumes the existence of an entity named PROPERTYName for resolving this ambiguity
-                    // See if one of the choices corresponds to an alternative
                     var choices = queues.ChooseProperties[0];
                     var entity = (candidate.Entity.Value as JArray)?[0]?.ToObject<string>();
                     var choice = choices.Find(p => p.Property == entity);
                     if (choice != null)
                     {
-                        // Resolve choice and add to queues
-                        queues.ChooseProperties.Dequeue();
-                        dcState.SetValue(DialogPath.ExpectedProperties, new List<string> { choice.Property });
+                        // Resolve choice, pretend it was expected and add to queues
                         choice.IsExpected = true;
+                        expectedChoices.Add(choice.Property);
                         AddMappingToQueue(choice, queues);
+                        choices.RemoveAll(c => c.Entity.Overlaps(choice.Entity));
                         mapped = true;
                     }
                 }
@@ -1154,6 +1153,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         queues.ChooseProperties.Add(alternatives);
                     }
                 }
+            }
+
+            if (expectedChoices.Any())
+            {
+                // When choosing between property assignments, make the assignments be expected.
+                dcState.SetValue(DialogPath.ExpectedProperties, expectedChoices);
+                var choices = queues.ChooseProperties[0];
+
+                // Add back in any non-overlapping choices
+                while (choices.Any())
+                {
+                    var choice = choices.First();
+                    AddMappingToQueue(choice, queues);
+                    choices.RemoveAll(c => c.Entity.Overlaps(choice.Entity));
+                }
+
+                queues.ChooseProperties.Dequeue();
             }
 
             return (from entity in usedEntities orderby entity.Start ascending select entity).ToList();

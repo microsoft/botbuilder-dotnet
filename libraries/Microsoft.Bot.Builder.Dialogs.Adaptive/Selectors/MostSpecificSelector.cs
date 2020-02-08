@@ -31,14 +31,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         [JsonProperty("selector")]
         public ITriggerSelector Selector { get; set; }
 
-        [Newtonsoft.Json.JsonIgnore]
-        public IExpressionParser Parser { get; set; } = new ExpressionEngine(TriggerTree.LookupFunction);
-
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
             foreach (var conditional in conditionals)
             {
-                _tree.AddTrigger(conditional.GetExpression(Parser), conditional);
+                _tree.AddTrigger(conditional.GetExpression(), conditional);
             }
         }
 

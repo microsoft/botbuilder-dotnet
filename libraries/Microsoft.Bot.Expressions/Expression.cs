@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Expressions
         /// <param name="children">Child expressions.</param>
         public Expression(string type, params Expression[] children)
         {
-            Evaluator = BuiltInFunctions.Lookup(type);
+            Evaluator = ExpressionFunctions.Lookup(type);
             Children = children;
         }
 
@@ -99,6 +99,16 @@ namespace Microsoft.Bot.Expressions
         /// Expected result of evaluating expression.
         /// </value>
         public ReturnType ReturnType => Evaluator.ReturnType;
+
+        /// <summary>
+        /// Parse an string into an expression object.
+        /// </summary>
+        /// <param name="expression">expression string.</param>
+        /// <returns>resulting expression.</returns>
+        public static Expression Parse(string expression)
+        {
+            return new ExpressionEngine().Parse(expression);
+        }
 
         /// <summary>
         /// Make an expression and validate it.

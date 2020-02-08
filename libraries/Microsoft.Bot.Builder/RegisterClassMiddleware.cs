@@ -4,31 +4,31 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Middleware for injecting a class into the turn context.
+    /// Middleware for adding an object to or registering a service with the current turn context.
     /// </summary>
-    /// <typeparam name="T">The type to register.</typeparam>
+    /// <typeparam name="T">The type of object or service to add.</typeparam>
     public class RegisterClassMiddleware<T> : IMiddleware
         where T : class
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RegisterClassMiddleware{T}"/> class.
         /// </summary>
-        /// <param name="service">The service instance to register.</param>
+        /// <param name="service">The object or service to add.</param>
         public RegisterClassMiddleware(T service)
         {
             this.Service = service;
         }
 
         /// <summary>
-        /// Gets or sets the Service to be registered into turn context.
+        /// Gets or sets the object or service to add to the turn context.
         /// </summary>
         /// <value>
-        /// The Service to be registered into turn context.
+        /// The object or service to add.
         /// </value>
         public T Service { get; set; }
 
         /// <summary>
-        /// registers into the turncontext.
+        /// Adds the associated object or service to the current turn context.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="nextTurn">The delegate to call to continue the bot middleware pipeline.</param>

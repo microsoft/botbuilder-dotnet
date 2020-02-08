@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}({ConnectionName}, {UserId})";
+            return $"{this.GetType().Name}({ConnectionName?.ToString()}, {UserId?.ToString()})";
         }
     }
 }

@@ -24,8 +24,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     {
         private static string rootFolder = PathUtils.NormalizePath(@"..\..\..");
 
-        public static ResourceExplorer ResourceExplorer { get; set; }
-
         public static TurnContext CreateEmptyContext()
         {
             var b = new TestAdapter();
@@ -54,28 +52,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             return Directory.EnumerateFiles(testFolder, "*.test.dialog", SearchOption.AllDirectories).Select(s => new object[] { Path.GetFileName(s) }).ToArray();
         }
 
-        [AssemblyInitialize]
-        public static void AssemblyInit(TestContext context)
-        {
-            lock (rootFolder)
-            {
-                if (ResourceExplorer == null)
-                {
-                    ResourceExplorer = new ResourceExplorer().AddFolder(rootFolder);
-                    TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-                    DeclarativeTypeLoader.AddComponent(new DialogComponentRegistration());
-                    DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
-                    DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
-                    DeclarativeTypeLoader.AddComponent(new QnAMakerComponentRegistration());
-                }
-            }
-        }
-
         public static async Task RunTestScript(string resourceId = null, [CallerMemberName] string testName = null, IConfiguration configuration = null)
         {
-            var script = TestUtilities.ResourceExplorer.LoadType<TestScript>(resourceId ?? $"{testName}.test.dialog");
+            if (configuration == null)
+            {
+                configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
+            }
+
+            var resourceExplorer = new ResourceExplorer().AddFolder(rootFolder, monitorChanges: false);
+            HostContext.Current.Set(configuration);
+            var script = resourceExplorer.LoadType<TestScript>(resourceId ?? $"{testName}.test.dialog");
             script.Description = script.Description ?? resourceId;
-            await script.ExecuteAsync(testName: testName, configuration: configuration).ConfigureAwait(false);
+            await script.ExecuteAsync(testName: testName, resourceExplorer: resourceExplorer).ConfigureAwait(false);
         }
     }
 }

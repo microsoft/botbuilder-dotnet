@@ -14,11 +14,8 @@ namespace Microsoft.Bot.Builder.MockLuis
 {
     public class MockLuisLoader : ICustomDeserializer
     {
-        private IConfiguration configuration;
-
-        public MockLuisLoader(IConfiguration configuration)
+        public MockLuisLoader()
         {
-            this.configuration = configuration;
         }
 
         public object Load(JToken obj, JsonSerializer serializer, Type type)
@@ -31,6 +28,7 @@ namespace Microsoft.Bot.Builder.MockLuis
                 name = name.Substring(start);
             }
 
+            var configuration = HostContext.Current.Get<IConfiguration>();
             return new MockLuisRecognizer(recognizer, configuration.GetValue<string>("luis:resources"), name);
         }
     }

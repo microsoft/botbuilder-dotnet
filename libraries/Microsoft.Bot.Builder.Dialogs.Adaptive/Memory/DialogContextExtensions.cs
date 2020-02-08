@@ -17,10 +17,5 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             return new DialogStateManager(dc);
         }
-
-        public static void SetStateConfiguration(this DialogContext dc, DialogStateManagerConfiguration configuration)
-        {
-            dc.Context.TurnState.Set(configuration ?? throw new ArgumentNullException(nameof(configuration)));
-        }
     }
 }

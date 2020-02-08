@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
         {
             var dcState = dc.GetState();
 
-            var (result, error) = new ExpressionEngine().Parse(Condition).TryEvaluate(dcState);
+            var (result, error) = Expression.Parse(Condition).TryEvaluate(dcState);
             if ((bool)result == false)
             {
                 var desc = await new TemplateEngineLanguageGenerator()

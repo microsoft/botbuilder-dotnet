@@ -15,10 +15,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// BotStateMemoryScope represents a BotState scoped memory.
     /// </summary>
     /// <remarks>This relies on the BotState object being accessible from turnContext.TurnState.Get&lt;T&gt;().</remarks>
-    /// <typeparam name="T">botState type.</typeparam>
+    /// <typeparam name="T">BotState type.</typeparam>
     public class BotStateMemoryScope<T> : MemoryScope
         where T : BotState
     {
+        private string propertyName;
         private IStatePropertyAccessor<JObject> property;
         private JObject state;
 
@@ -26,12 +27,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// Initializes a new instance of the <see cref="BotStateMemoryScope{T}"/> class.
         /// </summary>
         /// <param name="name">name of the property.</param>
-        /// <param name="botState">bot state that is storage for this memoryscope.</param>
         /// <param name="propertyName">optional propertyname.</param>
-        public BotStateMemoryScope(string name, BotState botState, string propertyName = null)
+        public BotStateMemoryScope(string name, string propertyName = null)
             : base(name, includeInSnapshot: true)
         {
-            this.property = botState.CreateProperty<JObject>(propertyName ?? name ?? throw new ArgumentNullException("BotStateMemoryScope must have name or propertyname"));
+            this.propertyName = propertyName ?? name ?? throw new ArgumentNullException("BotStateMemoryScope must have name or propertyname");
         }
 
         /// <summary>
@@ -64,19 +64,49 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             this.state = JObject.FromObject(memory);
         }
 
-        public override async Task LoadAsync(DialogContext dc, bool force = false, CancellationToken cancellationToken = default)
+        public override async Task LoadAsync(DialogContext dialogContext, bool force = false, CancellationToken cancellationToken = default)
         {
-            this.state = await this.property.GetAsync(dc.Context, () => new JObject(), cancellationToken).ConfigureAwait(false);
+            EnsurePropertyAccessor(dialogContext);
+            if (this.property != null)
+            {
+                this.state = await this.property.GetAsync(dialogContext.Context, () => new JObject(), cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                this.state = new JObject();
+            }
         }
 
         public override async Task SaveChangesAsync(DialogContext dialogContext, bool force = false, CancellationToken cancellationToken = default)
         {
-            await this.property.SetAsync(dialogContext.Context, this.state, cancellationToken).ConfigureAwait(false);
+            EnsurePropertyAccessor(dialogContext);
+
+            if (this.property != null)
+            {
+                await this.property.SetAsync(dialogContext.Context, this.state, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         public override async Task DeleteAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
         {
-            await this.property.DeleteAsync(dialogContext.Context, cancellationToken).ConfigureAwait(false);
+            EnsurePropertyAccessor(dialogContext);
+
+            if (this.property != null)
+            {
+                await this.property.DeleteAsync(dialogContext.Context, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        private void EnsurePropertyAccessor(DialogContext dialogContext)
+        {
+            if (this.property == null)
+            {
+                var botState = dialogContext.Context.TurnState.Get<T>();
+                if (botState != null)
+                {
+                    this.property = botState.CreateProperty<JObject>(this.propertyName);
+                }
+            }
         }
     }
 }
