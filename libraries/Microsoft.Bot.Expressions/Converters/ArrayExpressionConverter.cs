@@ -2,11 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
+using Microsoft.Bot.Expressions.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Expressions.Properties.Converters
+namespace Microsoft.Bot.Expressions.Converters
 {
     /// <summary>
     /// Converter which allows json to be expression to object or static object.

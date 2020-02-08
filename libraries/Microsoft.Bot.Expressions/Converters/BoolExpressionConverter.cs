@@ -2,32 +2,36 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Expressions.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Expressions.Properties.Converters
+namespace Microsoft.Bot.Expressions.Converters
 {
     /// <summary>
     /// Converter which allows json to be expression to object or static object.
     /// </summary>
-    /// <typeparam name="T">The property type to construct.</typeparam>
-    public class ExpressionPropertyConverter<T> : JsonConverter<ExpressionProperty<T>>
+    public class BoolExpressionConverter : JsonConverter<BoolExpression>
     {
+        public BoolExpressionConverter()
+        {
+        }
+        
         public override bool CanRead => true;
 
-        public override ExpressionProperty<T> ReadJson(JsonReader reader, Type objectType, ExpressionProperty<T> existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override BoolExpression ReadJson(JsonReader reader, Type objectType, BoolExpression existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.ValueType == typeof(string))
             {
-                return new ExpressionProperty<T>((string)reader.Value);
+                return new BoolExpression((string)reader.Value);
             }
             else
             {
-                return new ExpressionProperty<T>(JToken.Load(reader));
+                return new BoolExpression(JToken.Load(reader));
             }
         }
 
-        public override void WriteJson(JsonWriter writer, ExpressionProperty<T> value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, BoolExpression value, JsonSerializer serializer)
         {
             if (value.ExpressionText != null)
             {

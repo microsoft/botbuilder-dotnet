@@ -8,15 +8,12 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
-using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Expressions.Converters;
 using Microsoft.Bot.Expressions.Properties;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using static Microsoft.Bot.Builder.Dialogs.Adaptive.Actions.EditArray;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -272,15 +269,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 test = "joe"
             };
             var str = new StringExpression("test");
-            Assert.IsNull(str.ExpressionText);
-            Assert.IsNotNull(str.Value);
+            Assert.AreEqual("=`test`", str.ExpressionText);
+            Assert.IsNull(str.Value);
             Assert.AreEqual(str.ToString(), JsonConvert.DeserializeObject<StringExpression>(JsonConvert.SerializeObject(str, settings: settings), settings: settings).ToString());
             var (result, error) = str.TryGetValue(data);
             Assert.AreEqual("test", result);
             Assert.IsNull(error);
 
             str = new StringExpression("=test");
-            Assert.IsNotNull(str.ExpressionText);
+            Assert.AreEqual("=test", str.ExpressionText);
             Assert.IsNull(str.Value);
             Assert.AreEqual(str.ToString(), JsonConvert.DeserializeObject<StringExpression>(JsonConvert.SerializeObject(str, settings: settings), settings: settings).ToString());
             (result, error) = str.TryGetValue(data);
@@ -288,8 +285,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.IsNull(error);
 
             str = new StringExpression("Hello @{test}");
-            Assert.IsNull(str.ExpressionText);
-            Assert.IsNotNull(str.Value);
+            Assert.AreEqual("=`Hello @{test}`", str.ExpressionText);
+            Assert.IsNull(str.Value);
             Assert.AreEqual(str.ToString(), JsonConvert.DeserializeObject<StringExpression>(JsonConvert.SerializeObject(str, settings: settings), settings: settings).ToString());
             (result, error) = str.TryGetValue(data);
             Assert.AreEqual("Hello joe", result);
@@ -643,11 +640,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                      new ExpressionPropertyConverter<ulong>(),
                      new ExpressionPropertyConverter<long>(),
                      new ExpressionPropertyConverter<double>(),
-                     new ExpressionPropertyConverter<ChoiceSet>(),
                      new EnumExpressionConverter<TestEnum>(),
-                     new EnumExpressionConverter<ArrayChangeType>(),
-                     new EnumExpressionConverter<ListStyle>(),
-                     new ChoiceSetConverter()
                 }
         };
 
