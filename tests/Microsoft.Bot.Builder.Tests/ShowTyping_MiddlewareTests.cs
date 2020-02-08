@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
-                    await Task.Delay(TimeSpan.FromMilliseconds(350));
+                    await Task.Delay(TimeSpan.FromMilliseconds(400));
 
                     // note the ShowTypingMiddleware should not cause the Responded flag to be set
                     Assert.IsFalse(context.Responded);
@@ -44,11 +44,11 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task ShowTyping_TestMiddleware_Context_Completes_Before_Typing_Interval()
         {
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new ShowTypingMiddleware(10, 50));
+                .Use(new ShowTypingMiddleware(100, 100));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
-                    await Task.Delay(TimeSpan.FromMilliseconds(55));
+                    await Task.Delay(TimeSpan.FromMilliseconds(150));
                     await context.SendActivityAsync("Message sent after delay");
                     await Task.CompletedTask;
                 })
