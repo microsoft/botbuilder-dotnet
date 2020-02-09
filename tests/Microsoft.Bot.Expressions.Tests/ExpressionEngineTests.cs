@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Expressions.Tests
                 "user",
                 new
                 {
-                    name = "John",
+                    nickname = "John",
                     lists = new
                     {
                         todo = new[]
@@ -261,8 +261,8 @@ namespace Microsoft.Bot.Expressions.Tests
         {
             Test("`hello @{world}` == 'hello world'", true),
             Test("`hello @{world}` != 'hello hello'", true),
-            Test("`hello @{user.name}` == 'John'", true),
-            Test("`hello @{user.name}` != 'Dong'", true),
+            Test("`hello @{user.nickname}` == 'hello John'", true),
+            Test("`hello @{user.nickname}` != 'hello Dong'", true),
 
             #region string interpolation test
             Test("`hi`", "hi"),
