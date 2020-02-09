@@ -4,9 +4,6 @@
     <TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <Configurations>Debug;Release;</Configurations>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
 
