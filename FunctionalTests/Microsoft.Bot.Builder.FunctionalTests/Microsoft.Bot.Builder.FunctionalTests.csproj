@@ -6,7 +6,7 @@
     <Configurations>Debug;Release;</Configurations>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
 
