@@ -71,6 +71,7 @@ namespace Microsoft.Bot.Expressions.Tests
                 "user",
                 new
                 {
+                    name = "John",
                     lists = new
                     {
                         todo = new[]
@@ -258,7 +259,10 @@ namespace Microsoft.Bot.Expressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
-            Test("hello == 'hello'", true),
+            Test("`hello @{world}` == 'hello world'", true),
+            Test("`hello @{world}` != 'hello hello'", true),
+            Test("`hello @{user.name}` == 'John'", true),
+            Test("`hello @{user.name}` != 'Dong'", true),
 
             #region string interpolation test
             Test("`hi`", "hi"),
