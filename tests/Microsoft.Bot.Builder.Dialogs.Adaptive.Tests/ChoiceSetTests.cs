@@ -4,8 +4,10 @@
 #pragma warning disable SA1649 // File name should match first type name
 
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Expressions.Properties;
 using Microsoft.Bot.Expressions.Properties.Converters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -34,8 +36,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new ObjectExpressionConverter<ChoiceSet>()
             }
         };
-
-        public TestContext TestContext { get; set; }
 
         [TestMethod]
         public void TestExpressionAccess()

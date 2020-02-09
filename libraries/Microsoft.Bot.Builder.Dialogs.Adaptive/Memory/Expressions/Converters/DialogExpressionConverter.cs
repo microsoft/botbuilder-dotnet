@@ -3,14 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.IO;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
-using Microsoft.Bot.Expressions;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
 {
@@ -21,9 +17,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
     {
         private readonly InterfaceConverter<Dialog> converter;
 
-        public DialogExpressionConverter(IRefResolver refResolver, ISourceMap sourceMap, Stack<string> paths)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogExpressionConverter"/> class.
+        /// </summary>
+        /// <param name="resourceExplorer">resource explorer to use for resolving references.</param>
+        /// <param name="paths">Path stack to use for building debugger call graph.</param>
+        public DialogExpressionConverter(ResourceExplorer resourceExplorer, Stack<string> paths)
         {
-            this.converter = new InterfaceConverter<Dialog>(refResolver, sourceMap, paths);
+            this.converter = new InterfaceConverter<Dialog>(resourceExplorer, paths);
         }
 
         public override bool CanRead => true;
@@ -53,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
 
         public override void WriteJson(JsonWriter writer, DialogExpression value, JsonSerializer serializer)
         {
-            if (value.Expression != null)
+            if (value.ExpressionText != null)
             {
                 serializer.Serialize(writer, value.ToString());
             }

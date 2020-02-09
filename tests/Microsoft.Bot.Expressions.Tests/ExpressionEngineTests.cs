@@ -259,6 +259,17 @@ namespace Microsoft.Bot.Expressions.Tests
         public static IEnumerable<object[]> Data => new[]
         {
             Test("hello == 'hello'", true),
+
+            #region string interpolation test
+            Test("`hi`", "hi"),
+            Test(@"`hi\``", "hi`"),
+            Test("`@{world}`", "world"),
+            Test(@"`hi @{string('jack\`')}`", "hi jack`"),
+            Test(@"`\@{world}`", "@{world}"), // use escape character
+            Test("length(`hello @{world}`)", "hello world".Length),
+            Test("json(`{'foo': '@{hello}','item': '@{world}'}`).foo", "hello"),
+            #endregion
+
             #region SetPathToProperty test
             Test("setPathToValue(path.simple, 3) + path.simple", 6),
             Test("setPathToValue(path.simple, 5) + path.simple", 10),
@@ -758,6 +769,10 @@ namespace Microsoft.Bot.Expressions.Tests
             Test(string.Empty, string.Empty),
             Test(string.Empty, string.Empty),
             #endregion
+
+#region TriggerTree Tests
+            Test("ignore(true)", true),
+#endregion
         };
 
         public static object[] Test(string input, object value, HashSet<string> paths = null) => new object[] { input, value, paths };
@@ -779,7 +794,7 @@ namespace Microsoft.Bot.Expressions.Tests
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
         {
-            var parsed = new ExpressionEngine().Parse(input);
+            var parsed = Expression.Parse(input);
             Assert.IsNotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(scope);
             Assert.AreEqual(null, msg);
@@ -796,7 +811,7 @@ namespace Microsoft.Bot.Expressions.Tests
         public void EvaluateJson(string input, object expected, HashSet<string> expectedRefs)
         {
             var jsonScope = JToken.FromObject(scope);
-            var parsed = new ExpressionEngine().Parse(input);
+            var parsed = Expression.Parse(input);
             Assert.IsNotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(jsonScope);
             Assert.AreEqual(null, msg);
@@ -822,26 +837,24 @@ namespace Microsoft.Bot.Expressions.Tests
                 n = 2
             });
 
-            var parser = new ExpressionEngine();
-
             // normal case, note, we doesn't append a " yet
-            var exp = parser.Parse("a[f].b[n].z");
-            var (path, left, err) = BuiltInFunctions.TryAccumulatePath(exp, memory);
+            var exp = Expression.Parse("a[f].b[n].z");
+            var (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory);
             Assert.AreEqual(path, "a['foo'].b[2].z");
 
             // normal case
-            exp = parser.Parse("a[z.z][z.z].y");
-            (path, left, err) = BuiltInFunctions.TryAccumulatePath(exp, memory);
+            exp = Expression.Parse("a[z.z][z.z].y");
+            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory);
             Assert.AreEqual(path, "a['zar']['zar'].y");
 
             // normal case
-            exp = parser.Parse("a.b[z.z]");
-            (path, left, err) = BuiltInFunctions.TryAccumulatePath(exp, memory);
+            exp = Expression.Parse("a.b[z.z]");
+            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory);
             Assert.AreEqual(path, "a.b['zar']");
 
             // stop evaluate at middle
-            exp = parser.Parse("json(x).b");
-            (path, left, err) = BuiltInFunctions.TryAccumulatePath(exp, memory);
+            exp = Expression.Parse("json(x).b");
+            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory);
             Assert.AreEqual(path, "b");
         }
 
@@ -865,7 +878,7 @@ namespace Microsoft.Bot.Expressions.Tests
         private void AssertResult<T>(string text, T expected)
         {
             var memory = new object();
-            var (result, error) = new ExpressionEngine().Parse(text).TryEvaluate<T>(memory);
+            var (result, error) = Expression.Parse(text).TryEvaluate<T>(memory);
             Assert.AreEqual(expected, result);
             Assert.IsNull(error);
         }

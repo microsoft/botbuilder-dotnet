@@ -268,7 +268,8 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
                     }
 
                     break;
-                case TriggerTree.Optional:
+
+                case ExpressionType.Optional:
                     yield return new Clause();
                     foreach (var clause in GenerateClauses(expression.Children[0]))
                     {

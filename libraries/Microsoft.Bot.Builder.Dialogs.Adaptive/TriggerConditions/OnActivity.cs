@@ -43,12 +43,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             return $"{this.GetType().Name}[{this.Condition}]";
         }
 
-        public override Expression GetExpression(IExpressionParser factory)
+        public override Expression GetExpression()
         {
             // add constraints for activity type
-            return Expression.AndExpression(
-                factory.Parse($"{TurnPath.ACTIVITY}.type == '{this.Type}'"),
-                base.GetExpression(factory));
+            return Expression.AndExpression(Expression.Parse($"{TurnPath.ACTIVITY}.type == '{this.Type}'"), base.GetExpression());
         }
     }
 }

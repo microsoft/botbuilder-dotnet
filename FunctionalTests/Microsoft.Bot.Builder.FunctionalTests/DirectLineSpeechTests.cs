@@ -91,14 +91,14 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             speechBotSecret = Environment.GetEnvironmentVariable("SPEECHBOTSECRET");
             if (string.IsNullOrWhiteSpace(speechBotSecret))
             {
-                throw new Exception("Environment variable 'SPEECHBOTSECRET' not found.");
+                Assert.Inconclusive("Environment variable 'SPEECHBOTSECRET' not found.");
             }
 
             // The cog services key for use with DLS.
             speechSubscription = Environment.GetEnvironmentVariable("SPEECHSUBSCRIPTION");
             if (string.IsNullOrWhiteSpace(speechSubscription))
             {
-                throw new Exception("Environment variable 'SPEECHSUBSCRIPTION' not found.");
+                Assert.Inconclusive("Environment variable 'SPEECHSUBSCRIPTION' not found.");
             }
         }
 

@@ -34,16 +34,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         [JsonProperty("intents")]
         public List<string> Intents { get; set; } = new List<string>();
 
-        public override Expression GetExpression(IExpressionParser factory)
+        public override Expression GetExpression()
         {
             // add constraints for the intents property if set
             if (this.Intents?.Any() == true)
             {
-                var constraints = this.Intents.Select(subIntent => factory.Parse($"{TurnPath.RECOGNIZED}.intents.chooseintent.{subIntent} != null"));
-                return Expression.AndExpression(base.GetExpression(factory), Expression.AndExpression(constraints.ToArray()));
+                var constraints = this.Intents.Select(subIntent => Expression.Parse($"{TurnPath.RECOGNIZED}.intents.chooseintent.{subIntent} != null"));
+                return Expression.AndExpression(base.GetExpression(), Expression.AndExpression(constraints.ToArray()));
             }
 
-            return base.GetExpression(factory);
+            return base.GetExpression();
         }
     }
 }

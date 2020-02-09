@@ -63,11 +63,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             var expected = this.ExpectedProperties?.GetValue(dcState);
             if (expected != null
-                         && dcState.TryGetValue(DialogPath.ExpectedProperties, out List<string> lastExpectedProperties)
-                         && !expected.Any(prop => !lastExpectedProperties.Contains(prop))
-                         && !lastExpectedProperties.Any(prop => !expected.Contains(prop))
-                         && dcState.TryGetValue(DialogPath.LastTriggerEvent, out DialogEvent lastTrigger)
-                         && lastTrigger.Name.Equals(trigger.Name))
+                && dcState.TryGetValue(DialogPath.ExpectedProperties, out List<string> lastExpectedProperties)
+                && !expected.Any(prop => !lastExpectedProperties.Contains(prop))
+                && !lastExpectedProperties.Any(prop => !expected.Contains(prop))
+                && dcState.TryGetValue(DialogPath.LastTriggerEvent, out DialogEvent lastTrigger)
+                && lastTrigger.Name.Equals(trigger.Name))
             {
                 retries++;
             }

@@ -104,9 +104,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <summary>
         /// Get the expression for this rule by calling GatherConstraints().
         /// </summary>
-        /// <param name="parser">Expression parser.</param>
         /// <returns>Expression which will be cached and used to evaluate this rule.</returns>
-        public virtual Expression GetExpression(IExpressionParser parser)
+        public virtual Expression GetExpression()
         {
             lock (this.extraConstraints)
             {
@@ -138,7 +137,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                         this.fullConstraint = Expression.AndExpression(
                             this.fullConstraint,
                             new Expression(
-                                TriggerTree.LookupFunction("ignore"),
+                                ExpressionFunctions.Lookup(ExpressionType.Ignore),
                                 new Expression(new ExpressionEvaluator(
                                     $"runOnce{Id}",
                                     (expression, os) =>
@@ -151,7 +150,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                                         return (changed, null);
                                     },
                                     ReturnType.Boolean,
-                                    BuiltInFunctions.ValidateUnary))));
+                                    ExpressionFunctions.ValidateUnary))));
                     }
                 }
             }
@@ -187,7 +186,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 {
                     lock (this.extraConstraints)
                     {
-                        this.extraConstraints.Add(new ExpressionEngine().Parse(condition.TrimStart('=')));
+                        this.extraConstraints.Add(Expression.Parse(condition.TrimStart('=')));
                         this.fullConstraint = null; // reset to force it to be recalcaulated
                     }
                 }

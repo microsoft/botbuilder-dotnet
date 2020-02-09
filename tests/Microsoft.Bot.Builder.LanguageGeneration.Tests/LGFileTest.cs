@@ -854,6 +854,29 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestStringInterpolation()
+        {
+            var lgFile = LGParser.ParseFile(GetExampleFilePath("StringInterpolation.lg"));
+
+            var evaled = lgFile.EvaluateTemplate("simpleStringTemplate");
+            Assert.AreEqual("say hi", evaled);
+
+            evaled = lgFile.EvaluateTemplate("StringTemplateWithVariable", new { w = "world" });
+            Assert.AreEqual("hello world", evaled);
+
+            evaled = lgFile.EvaluateTemplate("StringTemplateWithMixing", new { name = "jack" });
+            Assert.AreEqual("I know your name is jack", evaled);
+
+            evaled = lgFile.EvaluateTemplate("StringTemplateWithJson", new { h = "hello", w = "world" });
+            Assert.AreEqual("get 'h' value : hello", evaled);
+
+            evaled = lgFile.EvaluateTemplate("StringTemplateWithEscape");
+            Assert.AreEqual("just want to output @{bala`bala}", evaled);
+
+            evaled = lgFile.EvaluateTemplate("StringTemplateWithTemplateRef");
+            Assert.AreEqual("hello jack , welcome. nice weather!", evaled);
+        }
+
         public void TestMemoryAccessPath()
         {
             var lgFile = LGParser.ParseFile(GetExampleFilePath("MemoryAccess.lg"));

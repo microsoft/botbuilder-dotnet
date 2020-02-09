@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Representas a transcript logger that writes activites to a <see cref="Trace"/> object.
+    /// Represents a transcript logger that writes activities to a <see cref="Trace"/> object.
     /// </summary>
     public class TraceTranscriptLogger : ITranscriptLogger
     {
