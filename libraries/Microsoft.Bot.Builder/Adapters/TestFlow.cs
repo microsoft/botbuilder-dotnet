@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </summary>
         /// <param name="task">The exchange to add to the exchanges in the existing flow.</param>
         /// <param name="flow">The flow to build up from. This provides the test adapter to use,
-        /// the bot turn processing locig to test, and a set of exchanges to model and test.</param>
+        /// the bot turn processing logic to test, and a set of exchanges to model and test.</param>
         public TestFlow(Task task, TestFlow flow)
         {
             _testTask = task ?? Task.CompletedTask;
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </summary>
         /// <param name="getTask">The exchange to add to the exchanges in the existing flow.</param>
         /// <param name="flow">The flow to build up from. This provides the test adapter to use,
-        /// the bot turn processing locig to test, and a set of exchanges to model and test.</param>
+        /// the bot turn processing logic to test, and a set of exchanges to model and test.</param>
         public TestFlow(Func<Task> getTask, TestFlow flow)
         {
             _testTask = getTask != null ? getTask() : Task.CompletedTask;
@@ -309,7 +309,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// Adds an assertion that the turn processing logic responds as expected.
         /// </summary>
         /// <param name="validateActivity">A validation method to apply to an activity from the bot.
-        /// This activity should throw an exception if validation wfails.</param>
+        /// This activity should throw an exception if validation fails.</param>
         /// <param name="description">A message to send if the actual response is not as expected.</param>
         /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
         /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>

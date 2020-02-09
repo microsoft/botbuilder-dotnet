@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             return $"{this.GetType().Name}({this.Intent})[{string.Join(",", this.Entities)}]";
         }
 
-        public override Expression GetExpression(IExpressionParser factory)
+        public override Expression GetExpression()
         {
             // add constraints for the intents property
             if (string.IsNullOrEmpty(this.Intent))
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 throw new ArgumentNullException(nameof(this.Intent));
             }
 
-            var intentExpression = factory.Parse($"{TurnPath.RECOGNIZED}.intent == '{this.Intent.TrimStart('#')}'");
+            var intentExpression = Expression.Parse($"{TurnPath.RECOGNIZED}.intent == '{this.Intent.TrimStart('#')}'");
 
             // build expression to be INTENT AND (@ENTITY1 != null AND @ENTITY2 != null)
             if (this.Entities.Any())
@@ -74,14 +74,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                     {
                         if (entity.StartsWith("@") || entity.StartsWith(TurnPath.RECOGNIZED, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            return factory.Parse($"exists({entity})");
+                            return Expression.Parse($"exists({entity})");
                         }
 
-                        return factory.Parse($"exists(@{entity})");
+                        return Expression.Parse($"exists(@{entity})");
                     }).ToArray()));
             }
 
-            return Expression.AndExpression(intentExpression, base.GetExpression(factory));
+            return Expression.AndExpression(intentExpression, base.GetExpression());
         }
 
         protected override ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)

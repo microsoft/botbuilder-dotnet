@@ -16,10 +16,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// <summary>
         /// Initializes a new instance of the <see cref="UserMemoryScope"/> class.
         /// </summary>
-        /// <param name="userState">UserState to bind the UserMemory to.</param>
         /// <param name="propertyName">Optional alternate propertyName to store UserMemoryScope in.</param>
-        public UserMemoryScope(UserState userState, string propertyName = null)
-            : base(ScopePath.USER, userState, propertyName)
+        public UserMemoryScope(string propertyName = null)
+            : base(ScopePath.USER, propertyName)
         {
         }
     }

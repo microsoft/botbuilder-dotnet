@@ -8,8 +8,12 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    ///  Middleware to automatically call .SaveChanges() at the end of the turn for all BotState class it is managing.
+    ///  Middleware to automatically persist state before the end of each turn.
     /// </summary>
+    /// <remarks>
+    /// This calls <see cref="BotState.SaveChangesAsync(ITurnContext, bool, CancellationToken)"/>
+    /// on each state object it manages.
+    /// </remarks>
     public class AutoSaveStateMiddleware : IMiddleware
     {
         /// <summary>
@@ -33,10 +37,10 @@ namespace Microsoft.Bot.Builder
         public BotStateSet BotStateSet { get; set; }
 
         /// <summary>
-        /// Add a BotState to the list of sources to load.
+        /// Adds a state management object to the list of states to manage.
         /// </summary>
-        /// <param name="botState">botState to manage.</param>
-        /// <returns>botstateset for chaining more .Use().</returns>
+        /// <param name="botState">The bot state to add.</param>
+        /// <returns>The updated <see cref="BotStateSet"/> object.</returns>
         public AutoSaveStateMiddleware Add(BotState botState)
         {
             if (botState == null)
@@ -49,12 +53,15 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Middleware implementation which calls savesChanges automatically at the end of the turn.
+        /// Before the turn ends, calls <see cref="BotState.SaveChangesAsync(ITurnContext, bool, CancellationToken)"/>
+        /// on each state object.
         /// </summary>
-        /// <param name="turnContext">turn context.</param>
-        /// <param name="next">next middlware.</param>
-        /// <param name="cancellationToken">cancellationToken.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>This middleware persists state after the bot logic completes and before the turn ends.</remarks>
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
             await next(cancellationToken).ConfigureAwait(false);

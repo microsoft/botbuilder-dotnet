@@ -63,9 +63,16 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             {
                 var httpResponse = await client.GetAsync(retrieveMessagesUri);
                 var response = httpResponse.Content.ReadAsStringAsync().Result;
-                var messages = JObject.Parse(response);
 
-                result = messages.SelectToken("data[0].messages.data[0].message").ToString();
+                try
+                {
+                    var messages = JObject.Parse(response);
+                    result = messages.SelectToken("data[0].messages.data[0].message").ToString();
+                }
+                catch
+                {
+                    result = response;
+                }
             }
 
             return result;
@@ -125,25 +132,25 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 _appSecret = Environment.GetEnvironmentVariable("FACEBOOK_APP_SECRET");
                 if (string.IsNullOrWhiteSpace(_appSecret))
                 {
-                    throw new Exception("Environment variable 'FACEBOOK_APP_SECRET' not found.");
+                    Assert.Inconclusive("Environment variable 'FACEBOOK_APP_SECRET' not found.");
                 }
 
                 _accessToken = Environment.GetEnvironmentVariable("FACEBOOK_ACCESS_TOKEN");
                 if (string.IsNullOrWhiteSpace(_accessToken))
                 {
-                    throw new Exception("Environment variable 'FACEBOOK_ACCESS_TOKEN' not found.");
+                    Assert.Inconclusive("Environment variable 'FACEBOOK_ACCESS_TOKEN' not found.");
                 }
 
                 _botEndpoint = Environment.GetEnvironmentVariable("BOT_ENDPOINT");
                 if (string.IsNullOrWhiteSpace(_botEndpoint))
                 {
-                    throw new Exception("Environment variable 'BOT_ENDPOINT' not found.");
+                    Assert.Inconclusive("Environment variable 'BOT_ENDPOINT' not found.");
                 }
 
                 _senderId = Environment.GetEnvironmentVariable("SENDER_ID");
                 if (string.IsNullOrWhiteSpace(_senderId))
                 {
-                    throw new Exception("Environment variable 'SENDER_ID' not found.");
+                    Assert.Inconclusive("Environment variable 'SENDER_ID' not found.");
                 }
             }
         }

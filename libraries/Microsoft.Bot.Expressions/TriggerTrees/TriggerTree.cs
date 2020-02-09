@@ -59,28 +59,6 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
     public class TriggerTree
     {
         /// <summary>
-        /// Mark a sub-expression as optional.
-        /// </summary>
-        /// <remarks>
-        /// When an expression is being processed, optional creates a disjunction where the expression is both included and not
-        /// included with the rest of the expression.  This is a simple way to express this common relationship.  By generating
-        /// both clauses then matching the expression can be more specific when the optional expression is true.
-        /// </remarks>
-        public const string Optional = "optional";
-
-        /// <summary>
-        /// Any predicate expression wrapped in this will be ignored for specialization.
-        /// </summary>
-        /// <remarks>
-        /// This is useful for when you need to add expression to the trigger that are part of rule mechanics rather than of intent.
-        /// For example, if you have a counter for how often a particular message is displayed, then that is part of the triggering condition, 
-        /// but all such rules would be incomparable because they counter is per-rule. 
-        /// </remarks>
-        public const string Ignore = "ignore";
-
-        private static readonly IExpressionParser _parser = new ExpressionEngine(LookupFunction);
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="TriggerTree"/> class.
         /// </summary>
         public TriggerTree()
@@ -96,24 +74,6 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
 
         public int TotalTriggers { get; set; }
 
-        public static ExpressionEvaluator LookupFunction(string type)
-        {
-            ExpressionEvaluator eval;
-            if (type == Optional || type == Ignore)
-            {
-                eval = new ExpressionEvaluator(type, null, ReturnType.Boolean, BuiltInFunctions.ValidateUnaryBoolean);
-                eval.Negation = eval;
-            }
-            else
-            {
-                eval = BuiltInFunctions.Lookup(type);
-            }
-
-            return eval;
-        }
-
-        public static Expression Parse(string expr) => _parser.Parse(expr);
-
         public override string ToString() => $"TriggerTree with {TotalTriggers} triggers";
 
         /// <summary>
@@ -124,7 +84,7 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
         /// <param name="quantifiers">Quantifiers to use when expanding expressions.</param>
         /// <returns>New trigger.</returns>
         public Trigger AddTrigger(string expression, object action, params Quantifier[] quantifiers)
-            => AddTrigger(_parser.Parse(expression), action, quantifiers);
+            => AddTrigger(Expression.Parse(expression), action, quantifiers);
 
         /// <summary>
         /// Add a trigger expression to the tree.

@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected override string OnComputeId()
         {
             var idList = Actions.Select(s => s.Id);
-            return $"{this.GetType().Name}[{this.ChangeType}|{string.Join(",", idList)}]";
+            return $"{this.GetType().Name}[{this.ChangeType?.ToString()}|{string.Join(",", idList)}]";
         }
     }
 }

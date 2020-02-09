@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Expressions.Memory;
@@ -34,7 +35,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public DialogStateManager(DialogContext dc)
         {
             dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
-            this.Configuration = dc.Context.TurnState.Get<DialogStateManagerConfiguration>() ?? CreateStandardConfiguration();
+            this.Configuration = dc.Context.TurnState.Get<DialogStateManagerConfiguration>();
+            if (this.Configuration == null)
+            {
+                this.Configuration = new DialogStateManagerConfiguration();
+
+                // get all of the component memory scopes
+                foreach (var component in ComponentRegistration.Registrations.Value.OfType<IComponentMemoryScopes>())
+                {
+                    foreach (var memoryScope in component.GetMemoryScopes())
+                    {
+                        this.Configuration.MemoryScopes.Add(memoryScope);
+                    }
+                }
+
+                // get all of the component path resolvers
+                foreach (var component in ComponentRegistration.Registrations.Value.OfType<IComponentPathResolvers>())
+                {
+                    foreach (var pathResolver in component.GetPathResolvers())
+                    {
+                        this.Configuration.PathResolvers.Add(pathResolver);
+                    }
+                }
+
+                // cache for any other new dialogStatemanager instances in this turn.  
+                dc.Context.TurnState.Set<DialogStateManagerConfiguration>(this.Configuration);
+            }
         }
 
         public DialogStateManagerConfiguration Configuration { get; set; }
@@ -63,42 +89,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                     SetValue(key, value);
                 }
             }
-        }
-
-        public static DialogStateManagerConfiguration CreateStandardConfiguration(ConversationState conversationState = null, UserState userState = null)
-        {
-            var result = new DialogStateManagerConfiguration()
-            {
-                PathResolvers = new List<IPathResolver>
-                {
-                    new DollarPathResolver(),
-                    new HashPathResolver(),
-                    new AtAtPathResolver(),
-                    new AtPathResolver(),
-                    new PercentPathResolver()
-                },
-                MemoryScopes = new List<MemoryScope>
-                {
-                    new TurnMemoryScope(),
-                    new SettingsMemoryScope(),
-                    new DialogMemoryScope(),
-                    new DialogClassMemoryScope(),
-                    new ClassMemoryScope(),
-                    new ThisMemoryScope()
-                }
-            };
-
-            if (conversationState != null)
-            {
-                result.MemoryScopes.Add(new ConversationMemoryScope(conversationState));
-            }
-
-            if (userState != null)
-            {
-                result.MemoryScopes.Add(new UserMemoryScope(userState));
-            }
-
-            return result;
         }
 
         /// <summary>

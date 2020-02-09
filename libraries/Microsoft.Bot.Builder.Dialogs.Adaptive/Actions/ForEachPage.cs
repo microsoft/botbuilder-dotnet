@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}({this.ItemsProperty})";
+            return $"{this.GetType().Name}({this.ItemsProperty?.ToString()})";
         }
 
         private async Task<DialogTurnResult> NextPageAsync(DialogContext dc, CancellationToken cancellationToken)

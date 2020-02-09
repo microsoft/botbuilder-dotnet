@@ -41,6 +41,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
+            await Task.CompletedTask;
+
             if (template == null)
             {
                 throw new ArgumentNullException(nameof(template));

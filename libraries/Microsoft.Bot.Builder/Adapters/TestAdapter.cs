@@ -712,7 +712,7 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             lock (_activeQueueLock)
             {
-                // if there are pending requests, fulfil them with the activity.
+                // if there are pending requests, fulfill them with the activity.
                 while (_queuedRequests.Any())
                 {
                     var tcs = _queuedRequests.Dequeue();

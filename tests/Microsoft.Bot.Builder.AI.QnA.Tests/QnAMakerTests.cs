@@ -42,7 +42,6 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
         public AdaptiveDialog QnAMakerAction_ActiveLearningDialogBase()
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
                 .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
@@ -109,7 +108,6 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
         public AdaptiveDialog QnAMakerAction_MultiTurnDialogBase()
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_withPrompts.json"));
