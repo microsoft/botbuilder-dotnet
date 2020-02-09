@@ -2,21 +2,27 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 {
+    /// <summary>
+    /// JsonConverter which handles resolving declarative types in JObjects using the ResourceExplorer.
+    /// </summary>
     public class JObjectConverter : JsonConverter
     {
-        private readonly IRefResolver refResolver;
+        private readonly ResourceExplorer resourceExplorer;
 
-        public JObjectConverter(IRefResolver refResolver)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JObjectConverter"/> class.
+        /// </summary>
+        /// <param name="resourceExplorer">ResourceExplorer to use to resolve references.</param>
+        public JObjectConverter(ResourceExplorer resourceExplorer)
         {
-            this.refResolver = refResolver ?? throw new ArgumentNullException(nameof(refResolver));
+            this.resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
         }
 
         public override bool CanRead => true;
@@ -28,10 +34,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         {
             var jsonObject = SourcePoint.ReadObjectWithSourcePoints(reader, JToken.Load, out var start, out var after);
 
-            if (refResolver.IsRef(jsonObject))
+            if (resourceExplorer.IsRef(jsonObject))
             {
                 // We can't do this asynchronously as the Json.NET interface is synchronous
-                jsonObject = refResolver.ResolveAsync(jsonObject).GetAwaiter().GetResult();
+                jsonObject = resourceExplorer.ResolveRefAsync(jsonObject).GetAwaiter().GetResult();
             }
 
             return jsonObject as JObject;

@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Expressions.Properties.Converters
 
         public override void WriteJson(JsonWriter writer, IntExpression value, JsonSerializer serializer)
         {
-            if (value.Expression != null)
+            if (value.ExpressionText != null)
             {
                 serializer.Serialize(writer, value.ToString());
             }

@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
@@ -35,8 +37,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             ICoercion coercion = null)
         {
             codeModel = codeModel ?? new CodeModel();
-            var debuggerSourceMap = new DebuggerSourceMap(codeModel);
-            DebugSupport.SourceMap = sourceMap ?? debuggerSourceMap;
+            DebugSupport.SourceMap = sourceMap ?? new DebuggerSourceMap(codeModel);
+
             return botAdapter.Use(
                 new DialogDebugAdapter(
                     port: port, 

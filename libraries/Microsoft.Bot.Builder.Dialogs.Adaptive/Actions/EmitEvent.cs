@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{EventName.ToString() ?? string.Empty}]";
+            return $"{this.GetType().Name}[{EventName?.ToString() ?? string.Empty}]";
         }
     }
 }

@@ -110,31 +110,31 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             _roomId = Environment.GetEnvironmentVariable("WEBEX_ROOM_ID");
             if (string.IsNullOrWhiteSpace(_roomId))
             {
-                throw new Exception("Environment variable 'WEBEX_ROOM_ID' not found.");
+                Assert.Inconclusive("Environment variable 'WEBEX_ROOM_ID' not found.");
             }
 
             _refreshToken = Environment.GetEnvironmentVariable("REFRESH_TOKEN");
             if (string.IsNullOrWhiteSpace(_refreshToken))
             {
-                throw new Exception("Environment variable 'REFRESH_TOKEN' not found.");
+                Assert.Inconclusive("Environment variable 'REFRESH_TOKEN' not found.");
             }
 
             _integrationClientId = Environment.GetEnvironmentVariable("WebexIntegrationClientId");
             if (string.IsNullOrWhiteSpace(_integrationClientId))
             {
-                throw new Exception("Environment variable 'WebexIntegrationClientId' not found.");
+                Assert.Inconclusive("Environment variable 'WebexIntegrationClientId' not found.");
             }
 
             _integrationClientSecret = Environment.GetEnvironmentVariable("INTEGRATION_CLIENT_SECRET");
             if (string.IsNullOrWhiteSpace(_integrationClientSecret))
             {
-                throw new Exception("Environment variable 'INTEGRATION_CLIENT_SECRET' not found.");
+                Assert.Inconclusive("Environment variable 'INTEGRATION_CLIENT_SECRET' not found.");
             }
 
             _targetBotEmail = Environment.GetEnvironmentVariable("WebexBotUserName");
             if (string.IsNullOrWhiteSpace(_targetBotEmail))
             {
-                throw new Exception("Environment variable 'WebexBotUserName' not found.");
+                Assert.Inconclusive("Environment variable 'WebexBotUserName' not found.");
             }
         }
     }

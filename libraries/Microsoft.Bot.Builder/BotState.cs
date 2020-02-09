@@ -345,8 +345,8 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Implements IPropertyAccessor for an IPropertyContainer.
-        /// Note the semantic of this accessor are intended to be lazy, this means teh Get, Set and Delete
+        /// Implements an <see cref="IStatePropertyAccessor{T}"/> for a property container.
+        /// Note the semantics of this accessor are intended to be lazy, this means the Get, Set and Delete
         /// methods will first call LoadAsync. This will be a no-op if the data is already loaded.
         /// The implication is you can just use this accessor in the application code directly without first calling LoadAsync
         /// this approach works with the AutoSaveStateMiddleware which will save as needed at the end of a turn.

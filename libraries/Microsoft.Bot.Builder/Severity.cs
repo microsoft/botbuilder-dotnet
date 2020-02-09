@@ -4,7 +4,7 @@
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// This enumeration is used by TrackTrace to identify severity level.
+    /// Defines trace severity levels for use with a <see cref="IBotTelemetryClient"/> object.
     /// </summary>
     public enum Severity
     {

@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -14,14 +14,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
     public class InterfaceConverter<T> : JsonConverter
         where T : class
     {
-        private readonly IRefResolver refResolver;
-        private readonly ISourceMap sourceMap;
+        private readonly ResourceExplorer resourceExplorer;
         private readonly Stack<string> paths;
 
-        public InterfaceConverter(IRefResolver refResolver, ISourceMap sourceMap, Stack<string> paths)
+        public InterfaceConverter(ResourceExplorer resourceExplorer, Stack<string> paths)
         {
-            this.refResolver = refResolver ?? throw new ArgumentNullException(nameof(refResolver));
-            this.sourceMap = sourceMap ?? throw new ArgumentNullException(nameof(sourceMap));
+            this.resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(InterfaceConverter<T>.resourceExplorer));
             this.paths = paths ?? throw new ArgumentNullException(nameof(paths));
         }
 
@@ -36,10 +34,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         {
             var jsonObject = SourcePoint.ReadObjectWithSourcePoints(reader, JToken.Load, out SourcePoint startPoint, out SourcePoint endPoint);
 
-            if (refResolver.IsRef(jsonObject))
+            if (resourceExplorer.IsRef(jsonObject))
             {
                 // We can't do this asynchronously as the Json.NET interface is synchronous
-                jsonObject = refResolver.ResolveAsync(jsonObject).GetAwaiter().GetResult();
+                jsonObject = this.resourceExplorer.ResolveRefAsync(jsonObject).GetAwaiter().GetResult();
             }
 
             var kind = (string)jsonObject["$kind"] ?? (string)jsonObject["$type"];
@@ -50,13 +48,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
             // if IdRefResolver made a path available for the JToken, then add it to the path stack
             // this maintains the stack of paths used as the source of json data
-            var found = this.sourceMap.TryGetValue(jsonObject, out var range);
+            var found = DebugSupport.SourceMap.TryGetValue(jsonObject, out var range);
             if (found)
             {
                 paths.Push(range.Path);
             }
 
-            T result = TypeFactory.Build<T>(kind, jsonObject, serializer);
+            T result = this.resourceExplorer.BuildType<T>(kind, jsonObject, serializer);
             
             // DeclarativeTypeLoader.LoadAsync only adds FileResource to the paths stack
             if (paths.Count > 0)
@@ -64,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 // combine the "path for the most recent JToken from IdRefResolver" or the "top root path"
                 // with the line information for this particular json fragment and add it to the sourceMap
                 range = new SourceRange() { Path = paths.Peek(), StartPoint = startPoint, EndPoint = endPoint };
-                this.sourceMap.Add(result, range);
+                DebugSupport.SourceMap.Add(result, range);
             }
 
             if (found)

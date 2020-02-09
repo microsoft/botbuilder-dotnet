@@ -2,8 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,37 +16,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     [TestClass]
     public class ConditionalsTests
     {
+        public static ResourceExplorer ResourceExplorer { get; set; }
+
         public TestContext TestContext { get; set; }
 
-        public ExpressionEngine ExpressionEngine { get; set; } = new ExpressionEngine();
-
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
+        {
+            ResourceExplorer = new ResourceExplorer()
+                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(ConditionalsTests)), monitorChanges: false);
+        }
+        
         [TestMethod]
         public async Task ConditionalsTests_OnIntent()
         {
-            await TestUtils.RunTestScript();
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task ConditionalsTests_OnIntentWithEntities()
         {
-            await TestUtils.RunTestScript();
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task ConditionalsTests_OnActivityTypes()
         {
-            await TestUtils.RunTestScript();
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task ConditionalsTests_OnChooseIntent()
         {
-            await TestUtils.RunTestScript();
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         public void AssertExpression(OnCondition condition, string expectedExpression)
         {
-            var exp = condition.GetExpression(new ExpressionEngine());
+            var exp = condition.GetExpression();
             dbg.Trace.TraceInformation(exp.ToString());
             Assert.AreEqual(expectedExpression, exp.ToString());
         }
