@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Expressions.Properties.Converters;
+using Microsoft.Bot.Expressions.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

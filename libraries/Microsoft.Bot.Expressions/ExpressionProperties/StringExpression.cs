@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.LanguageGeneration;
-using Microsoft.Bot.Expressions.Properties.Converters;
+using System;
+using Microsoft.Bot.Expressions.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -25,8 +25,6 @@ namespace Microsoft.Bot.Expressions.Properties
     [JsonConverter(typeof(StringExpressionConverter))]
     public class StringExpression : ExpressionProperty<string>
     {
-        private LGFile lg = new LGFile();
-
         /// <summary>
         /// Initializes a new instance of the <see cref="StringExpression"/> class.
         /// </summary>
@@ -56,17 +54,6 @@ namespace Microsoft.Bot.Expressions.Properties
 
         public static implicit operator StringExpression(JToken value) => new StringExpression(value);
 
-        public override (string Value, string Error) TryGetValue(object data)
-        {
-            if (this.Value != null)
-            {
-                // interpolated string
-                return (lg.Evaluate(this.Value, data).ToString(), null);
-            }
-
-            return base.TryGetValue(data);
-        }
-
         public override void SetValue(object value)
         {
             // reset state to no value or expression.
@@ -87,9 +74,12 @@ namespace Microsoft.Bot.Expressions.Properties
                     stringOrExpression = stringOrExpression.TrimStart('\\');
                 }
 
-                this.Value = stringOrExpression;
+                // keep the string as quoted expression, which will be literal unless string interpolation is used.
+                this.ExpressionText = $"=`{stringOrExpression}`";
                 return;
             }
+
+            throw new ArgumentNullException("Value is not a string");
         }
     }
 }

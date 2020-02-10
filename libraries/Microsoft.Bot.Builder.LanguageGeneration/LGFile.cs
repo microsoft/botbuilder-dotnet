@@ -133,6 +133,37 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
+        /// Use to evaluate an inline template str.
+        /// </summary>
+        /// <param name="inlineStr">inline string which will be evaluated.</param>
+        /// <param name="scope">scope object or JToken.</param>
+        /// <returns>Evaluate result.</returns>
+        public object Evaluate(string inlineStr, object scope = null)
+        {
+            if (inlineStr == null)
+            {
+                throw new ArgumentException("inline string is null.");
+            }
+
+            CheckErrors();
+
+            // wrap inline string with "# name and -" to align the evaluation process
+            var fakeTemplateId = Guid.NewGuid().ToString();
+            var multiLineMark = "```";
+
+            inlineStr = !inlineStr.Trim().StartsWith(multiLineMark) && inlineStr.Contains('\n')
+                   ? $"{multiLineMark}{inlineStr}{multiLineMark}" : inlineStr;
+
+            var newContent = $"# {fakeTemplateId} \r\n - {inlineStr}";
+
+            var newLgFile = LGParser.ParseText(newContent, this.Id, this.ImportResolver);
+
+            var allTemplates = this.AllTemplates.Union(newLgFile.AllTemplates).ToList();
+            var evaluator = new Evaluator(allTemplates, this.ExpressionEngine);
+            return evaluator.EvaluateTemplate(fakeTemplateId, scope);
+        }
+
+        /// <summary>
         /// Expand a template with given name and scope.
         /// Return all possible responses instead of random one.
         /// </summary>
