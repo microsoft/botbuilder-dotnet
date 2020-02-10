@@ -33,14 +33,9 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="icon.png">
-      <PackagePath>\</PackagePath>
-      <Pack>true</Pack>
-    </None>
   </ItemGroup>
 </Project>
