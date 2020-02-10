@@ -18,9 +18,13 @@ variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'Release'
   Parameters.solution: Microsoft.Bot.Builder.sln
+#  AppId: define this in Azure
+#  AppSecret: define this in Azure
 #  AzureSubscription: define this in Azure
 #  AzureDeploymentUser: define this in Azure
 #  AzureDeploymentPassword: define this in Azure
+#  BotGroup: define this in Azure
+#  BotName: define this in Azure
 
 steps:
 - template: ci-build-steps.yml
