@@ -68,12 +68,6 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual(handoffEvent.Name, HandoffEventNames.InitiateHandoff);
 
             Assert.AreEqual(handoffEvent.From.Id, fromID);
-
-            // Make sure ChannelId is fixed up in the transcript
-            var transcriptFromEvent = (Transcript)(handoffEvent as Activity).Attachments[0].Content;
-            Assert.IsNotNull(transcriptFromEvent.Activities[0].ChannelId);
-            Assert.IsNotNull(transcriptFromEvent.Activities[0].ServiceUrl);
-            Assert.IsNotNull(transcriptFromEvent.Activities[0].Conversation);
         }
 
         [TestMethod]

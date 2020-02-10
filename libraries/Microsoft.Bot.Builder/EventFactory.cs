@@ -37,11 +37,9 @@ namespace Microsoft.Bot.Builder
 
             if (transcript != null)
             {
-                var conversationReference = turnContext.Activity.GetConversationReference();
-                var bufferedActivities = transcript.Activities.Select(a => a.ApplyConversationReference(conversationReference)).ToArray();
                 var attchment = new Attachment
                 {
-                    Content = new Transcript(bufferedActivities),
+                    Content = transcript,
                     ContentType = "application/json",
                     Name = "Transcript",
                 };
