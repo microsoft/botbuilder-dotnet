@@ -182,22 +182,26 @@ namespace Microsoft.Bot.Expressions
             public override Expression VisitStringInterpolationAtom([NotNull] ExpressionParser.StringInterpolationAtomContext context)
             {
                 var children = new List<Expression>();
-                foreach (ITerminalNode node in context.stringInterpolation().children)
+                foreach (var child in context.stringInterpolation().children)
                 {
-                    switch (node.Symbol.Type)
+                    if (child is ITerminalNode node)
                     {
-                        case ExpressionParser.TEMPLATE:
-                            var expressionString = TrimExpression(node.GetText());
-                            children.Add(new ExpressionEngine(_lookup).Parse(expressionString));
-                            break;
-                        case ExpressionParser.TEXT_CONTENT:
-                            children.Add(Expression.ConstantExpression(node.GetText()));
-                            break;
-                        case ExpressionParser.ESCAPE_CHARACTER:
-                            children.Add(Expression.ConstantExpression(EvalEscape(node.GetText())));
-                            break;
-                        default:
-                            break;
+                        switch (node.Symbol.Type)
+                        {
+                            case ExpressionParser.TEMPLATE:
+                                var expressionString = TrimExpression(node.GetText());
+                                children.Add(new ExpressionEngine(_lookup).Parse(expressionString));
+                                break;
+                            case ExpressionParser.ESCAPE_CHARACTER:
+                                children.Add(Expression.ConstantExpression(EvalEscape(node.GetText())));
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        children.Add(Expression.ConstantExpression(child.GetText()));
                     }
                 }
 
