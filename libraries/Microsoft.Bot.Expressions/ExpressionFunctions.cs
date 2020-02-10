@@ -3780,8 +3780,7 @@ namespace Microsoft.Bot.Expressions
             lookup.Add("lessOrEquals", lookup[ExpressionType.LessThanOrEqual]);
             lookup.Add("not", lookup[ExpressionType.Not]);
             lookup.Add("or", lookup[ExpressionType.Or]);
-
-            lookup.Add("concat", lookup[ExpressionType.Concat]);
+            lookup.Add("&", lookup[ExpressionType.Concat]);
             return lookup;
         }
     }

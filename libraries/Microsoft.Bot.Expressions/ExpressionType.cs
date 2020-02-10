@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Expressions
         public const string Not = "!";
 
         // String
-        public const string Concat = "&";
+        public const string Concat = "concat";
         public const string Length = "length";
         public const string Replace = "replace";
         public const string ReplaceIgnoreCase = "replaceIgnoreCase";
