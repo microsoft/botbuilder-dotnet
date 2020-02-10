@@ -775,6 +775,7 @@ namespace Microsoft.Bot.Builder
                     ServiceUrl = activity.ServiceUrl,
                     User = activity.From,
                 },
+                RelatesTo = activity.RelatesTo,
                 MsAppId = appId,
             };
 
@@ -846,6 +847,7 @@ namespace Microsoft.Bot.Builder
                     ServiceUrl = activity.ServiceUrl,
                     User = activity.From,
                 },
+                RelatesTo = activity.RelatesTo,
                 MsAppId = appId,
             };
 
