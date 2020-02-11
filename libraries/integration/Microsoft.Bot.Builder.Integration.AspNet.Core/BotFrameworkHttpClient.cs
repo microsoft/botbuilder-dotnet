@@ -73,6 +73,23 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var originalCallerId = activity.CallerId;
             try
             {
+                activity.RelatesTo = new ConversationReference()
+                {
+                    ServiceUrl = activity.ServiceUrl,
+                    ActivityId = activity.Id,
+                    ChannelId = activity.ChannelId,
+                    Conversation = new ConversationAccount()
+                    {
+                        Id = activity.Conversation.Id,
+                        Name = activity.Conversation.Name,
+                        ConversationType = activity.Conversation.ConversationType,
+                        AadObjectId = activity.Conversation.AadObjectId,
+                        IsGroup = activity.Conversation.IsGroup,
+                        Properties = activity.Conversation.Properties,
+                        Role = activity.Conversation.Role,
+                        TenantId = activity.Conversation.TenantId,
+                    },
+                };
                 activity.Conversation.Id = conversationId;
                 activity.ServiceUrl = serviceUrl.ToString();
                 activity.CallerId = fromBotId;
