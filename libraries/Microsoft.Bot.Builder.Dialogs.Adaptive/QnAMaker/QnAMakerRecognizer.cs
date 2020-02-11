@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         public const string DeclarativeType = "Microsoft.QnAMakerRecognizer";
 
         public const string QnAMatchIntent = "QnAMatch";
-        
+
         private const string IntentPrefix = "intent=";
 
         public QnAMakerRecognizer()
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// The host name of the QnA Maker knowledgebase.
         /// </value>
         [JsonProperty("hostname")]
-        public StringExpression HostName { get; set; } 
+        public StringExpression HostName { get; set; }
 
         /// <summary>
         /// Gets or sets the Endpoint key for the QnA Maker KB.
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// The endpoint key for the QnA service.
         /// </value>
         [JsonProperty("endpointKey")]
-        public StringExpression EndpointKey { get; set; } 
+        public StringExpression EndpointKey { get; set; }
 
         /// <summary>
         /// Gets or sets the number of results you want.
@@ -96,6 +96,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         [JsonProperty("rankerType")]
         public StringExpression RankerType { get; set; } = RankerTypes.DefaultRankerType;
 
+        /// <summary>
+        /// Gets or sets the whether to include the dialog name metadata for QnA context.
+        /// </summary>
+        /// <value>
+        /// A bool or boolean expression.
+        /// </value>
+        [DefaultValue(true)]
+        [JsonProperty("includeDialogNameInMetaData")]
+        public BoolExpression IncludeDialogNameInMetaData { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets an expression to evaluate to set additional metadata name value pairs.
+        /// </summary>
+        /// <value>An expression to evaluate for pairs of metadata</value>
+        [JsonProperty("metadata")]
+        public ArrayExpression<Metadata> Metadata { get; set; }
+
+        /// <summary>
+        /// Gets or sets an expression to evaluate to set the context.
+        /// </summary>
+        /// <value>An expression to evaluate to to qnaId to pass as context.</value>
+        [JsonProperty("context")]
+        public ObjectExpression<QnARequestContext> Context { get; set; }
+
         [JsonIgnore]
         public HttpClient HttpClient { get; set; }
 
@@ -112,13 +136,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                 Intents = new Dictionary<string, IntentScore>(),
             };
 
-            List<Metadata> filters = new List<Metadata>()
+            List<Metadata> filters = new List<Metadata>();
+            if (IncludeDialogNameInMetaData.GetValue(dcState))
             {
-                new Metadata() { Name = "dialogName", Value = dialogContext.ActiveDialog.Id }
-            };
+                filters.Add(new Metadata() { Name = "dialogName", Value = dialogContext.ActiveDialog.Id });
+            }
 
             // if there is $qna.metadata set add to filters
-            var externalMetadata = dcState.GetValue<Metadata[]>("$qna.metadata");
+            var externalMetadata = this.Metadata?.GetValue(dcState);
             if (externalMetadata != null)
             {
                 filters.AddRange(externalMetadata);
@@ -130,7 +155,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                 dialogContext.Context,
                 new QnAMakerOptions
                 {
-                    Context = dcState.GetValue<QnARequestContext>("$qna.context"),
+                    Context = this.Context?.GetValue(dcState),
                     ScoreThreshold = this.Threshold.TryGetValue(dcState).Value,
                     StrictFilters = filters.ToArray(),
                     Top = this.Top.TryGetValue(dcState).Value,

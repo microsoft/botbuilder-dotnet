@@ -56,23 +56,38 @@
                 "$kind": "Microsoft.OnChooseIntent",
                 "actions": [
                     {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.intents.chooseintent.x != null",
+                        "description": "Should have x result"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.intents.chooseintent.x.intents.DeferToRecognizer_y != null",
+                        "description": "x Should have DeferToRecognizer_y intent"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.intents.chooseintent.y != null",
+                        "description": "Should have y result"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.intents.chooseintent.y.intents.DeferToRecognizer_z != null",
+                        "description": "y Should have DeferToRecognizer_z intent"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.intents.chooseintent.z != null",
+                        "description": "Should have z result"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.intents.chooseintent.z.intents.DeferToRecognizer_x != null",
+                        "description": "z Should have DeferToRecognizer_x intent"
+                    },
+                    {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "ChooseIntent"
-                    },
-                    {
-                        "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "turn.recognized.intent.chooseintent.DeferToRecognizer_x != null",
-                        "description": "Should have DeferToRecognizer_x intent"
-                    },
-                    {
-                        "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "turn.recognized.intent.chooseintent.DeferToRecognizer_y != null",
-                        "description": "Should have DeferToRecognizer_y intent"
-                    },
-                    {
-                        "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "turn.recognized.intent.chooseintent.DeferToRecognizer_z != null",
-                        "description": "Should have DeferToRecognizer_z intent"
                     }
                 ]
             },

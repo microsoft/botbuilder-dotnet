@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
         /// Condition which must be true.
         /// </value>
         [JsonProperty("condition")]
-        public string Condition { get; set; }
+        public Expression Condition { get; set; }
 
         /// <summary>
         /// Gets or sets description of assertion.
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
         {
             var dcState = dc.GetState();
 
-            var (result, error) = Expression.Parse(Condition).TryEvaluate(dcState);
+            var (result, error) = Condition.TryEvaluate(dcState);
             if ((bool)result == false)
             {
                 var desc = await new TemplateEngineLanguageGenerator()

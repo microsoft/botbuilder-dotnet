@@ -38,6 +38,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<string> paths)
         {
             yield return new ArrayExpressionConverter<Metadata>();
+            yield return new ObjectExpressionConverter<QnARequestContext>();
         }
     }
 }

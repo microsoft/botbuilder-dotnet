@@ -4,12 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Antlr4.Runtime;
 using Microsoft.Bot.Schema;
-using Microsoft.Recognizers.Text.NumberWithUnit;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -77,7 +74,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             EnsureRecognizerIds();
 
             // run all of the recognizers in parallel
-            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, cancellationToken)));
+            var results = await Task.WhenAll(Recognizers.Select(async recognizer =>
+               {
+                   var result = await recognizer.RecognizeAsync(dialogContext, cancellationToken).ConfigureAwait(false);
+                   result.Properties["id"] = recognizer.Id;
+                   return result;
+               }));
 
             return ProcessResults(results);
         }
@@ -97,7 +99,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             EnsureRecognizerIds();
 
             // run all of the recognizers in parallel
-            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, activity, cancellationToken)));
+            var results = await Task.WhenAll(Recognizers.Select(async recognizer =>
+            {
+                var result = await recognizer.RecognizeAsync(dialogContext, activity, cancellationToken).ConfigureAwait(false);
+                result.Properties["id"] = recognizer.Id;
+                return result;
+            }));
 
             return ProcessResults(results);
         }
@@ -117,27 +124,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             EnsureRecognizerIds();
 
             // run all of the recognizers in parallel
-            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, text, locale, cancellationToken)));
+            var results = await Task.WhenAll(Recognizers.Select(async r =>
+            {
+                var result = await r.RecognizeAsync(dialogContext, text, locale, cancellationToken).ConfigureAwait(false);
+
+                // add the recognizer id on to the recognizer result.
+                result.Properties["id"] = r.Id;
+                return result;
+            }));
 
             return ProcessResults(results);
         }
 
-        private RecognizerResult ProcessResults(RecognizerResult[] results)
+        private RecognizerResult ProcessResults(IEnumerable<RecognizerResult> results)
         {
             // put results into a dictionary for easier lookup while processing.
-            var recognizerResults = new Dictionary<string, RecognizerResult>(System.StringComparer.OrdinalIgnoreCase);
-            var intents = new Dictionary<string, string>(System.StringComparer.OrdinalIgnoreCase);
-            
-            string text = string.Empty;
-            for (int iRecognizer = 0; iRecognizer < Recognizers.Count; iRecognizer++)
-            {
-                var recognizer = Recognizers[iRecognizer];
-                var result = results[iRecognizer];
-                recognizerResults[recognizer.Id] = result;
-                var (topIntent, score) = result.GetTopScoringIntent();
-                intents[recognizer.Id] = topIntent;
-                text = result.Text ?? string.Empty;
-            }
+            var recognizerResults = results.ToDictionary(result => (string)result.Properties["id"], System.StringComparer.OrdinalIgnoreCase);
+            var intents = results.ToDictionary(result => (string)result.Properties["id"], result => result.GetTopScoringIntent().intent, System.StringComparer.OrdinalIgnoreCase);
 
             // this is the consensusRecognizer to use
             string consensusRecognizerId = null;
@@ -170,7 +173,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                         else
                         {
                             // ambigious because of 2 real intents, and neither are None so return AmbigiousIntent
-                            return CreateChooseIntentResult(text, recognizerResults);
+                            return CreateChooseIntentResult(recognizerResults);
                         }
                     }
                 }
@@ -184,7 +187,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     if (IsRedirect(redirectIntent))
                     {
                         // we have ambiguity, return AmbigiousIntent
-                        return CreateChooseIntentResult(text, recognizerResults);
+                        return CreateChooseIntentResult(recognizerResults);
                     }
                 }
             }
@@ -193,27 +196,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             return recognizerResults[consensusRecognizerId];
         }
 
-        private RecognizerResult CreateChooseIntentResult(string text, Dictionary<string, RecognizerResult> recognizerResults)
+        private RecognizerResult CreateChooseIntentResult(Dictionary<string, RecognizerResult> recognizerResults)
         {
-            // create IntentScore with { "recognizerId" : { ...RecognizerResult.. } }
-            var chooseIntentResult = new IntentScore()
-            {
-                Score = 0.5F
-            };
+            var intentScore = JObject.FromObject(recognizerResults).ToObject<IntentScore>();
+            intentScore.Score = 1.0;
 
-            var intents = new JObject();
-            foreach (var recognizerResult in recognizerResults.Values)
-            {
-                var (topIntent, score) = recognizerResult.GetTopScoringIntent();
-                chooseIntentResult.Properties[topIntent] = recognizerResult;
-            }
-
+            // ChooseIntent payload is simply dictionary of { "recognizerId": recgonizerResult, ... }
             return new RecognizerResult()
             {
-                Text = text,
                 Intents = new Dictionary<string, IntentScore>()
                 {
-                    { ChooseIntent, (IntentScore)chooseIntentResult }
+                    { ChooseIntent,  intentScore }
                 }
             };
         }
