@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// <summary>
         /// Gets or sets an expression to evaluate to set the context.
         /// </summary>
-        /// <value>An expression to evaluate to to qnaId to pass as context.</value>
+        /// <value>An expression to evaluate to QnARequestContext to pass as context.</value>
         [JsonProperty("context")]
         public ObjectExpression<QnARequestContext> Context { get; set; }
 
