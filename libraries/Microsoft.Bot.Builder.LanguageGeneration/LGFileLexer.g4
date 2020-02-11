@@ -55,6 +55,10 @@ fragment ESCAPE_CHARACTER_FRAGMENT : '\\' ~[\r\n]?;
 
 
 // top level elements
+OPTIONS
+  : '>' WHITESPACE* '!#' ~('\r'|'\n')+
+  ;
+
 COMMENTS
   : ('>'|'$') ~('\r'|'\n')+ -> skip
   ;

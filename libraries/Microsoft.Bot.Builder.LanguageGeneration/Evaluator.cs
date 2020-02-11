@@ -26,16 +26,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public static readonly Regex ExpressionRecognizeRegex = new Regex(@"(?<!\\)@{((\'[^\r\n\']*\')|(\""[^\""\r\n]*\"")|(\`(\\\`|[^\`])*\`)|([^\r\n{}'""`]))*?}", RegexOptions.Compiled);
         private const string ReExecuteSuffix = "!";
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
+        private readonly bool strictMode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Evaluator"/> class.
         /// </summary>
         /// <param name="templates">Template list.</param>
         /// <param name="expressionEngine">expression engine.</param>
-        public Evaluator(List<LGTemplate> templates, ExpressionEngine expressionEngine)
+        /// <param name="strictMode">strict mode. If strictMode == true, exception in expression would throw outside.</param>
+        public Evaluator(List<LGTemplate> templates, ExpressionEngine expressionEngine, bool strictMode = false)
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
+            this.strictMode = strictMode;
 
             // generate a new customized expression engine by injecting the template as functions
             ExpressionEngine = new ExpressionEngine(CustomizedEvaluatorLookup(expressionEngine.EvaluatorLookup));
@@ -149,7 +152,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 else
                 {
                     // When the same property exists in both the calling template as well as callee, the content in caller will trump any content in 
-                    var propertyObject = JObject.FromObject(EvalExpression(body.objectStructureLine().GetText(), body.objectStructureLine(), throwOnNull: true));
+                    var propertyObject = JObject.FromObject(EvalExpression(body.objectStructureLine().GetText(), body.objectStructureLine()));
 
                     // Full reference to another structured template is limited to the structured template with same type 
                     if (propertyObject[LGType] != null && propertyObject[LGType].ToString() == typeName)
@@ -341,7 +344,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var expression = condition.EXPRESSION(0);
             if (expression == null || // no expression means it's else
-                EvalExpressionInCondition(expression.GetText()))
+                EvalExpressionInCondition(expression.GetText(), condition, "Condition '" + expression.GetText() + "':"))
             {
                 return true;
             }
@@ -349,37 +352,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return false;
         }
 
-        private bool EvalExpressionInCondition(string exp)
-        {
-            try
-            {
-                exp = exp.TrimExpression();
-                var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
-
-                if (error != null
-                    || result == null
-                    || (result is bool r1 && r1 == false)
-                    || (result is int r2 && r2 == 0))
-                {
-                    return false;
-                }
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine($"Expression {exp} evaled as false due to exception");
-                Debug.WriteLine(e.Message);
-                return false;
-            }
-        }
-
-        private object EvalExpression(string exp, ParserRuleContext context = null, string errorPrefix = "", bool throwOnNull = false)
+        private bool EvalExpressionInCondition(string exp, ParserRuleContext context = null, string errorPrefix = "")
         {
             exp = exp.TrimExpression();
             var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
 
-            if (error != null || (result == null && throwOnNull))
+            if (strictMode && (error != null || result == null))
             {
                 var errorMsg = string.Empty;
 
@@ -405,7 +383,49 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 throw new Exception(childErrorMsg + errorMsg);
             }
-            else if (result == null && !throwOnNull)
+            else if (error != null
+                || result == null
+                || (result is bool r1 && r1 == false)
+                || (result is int r2 && r2 == 0))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private object EvalExpression(string exp, ParserRuleContext context = null, string errorPrefix = "")
+        {
+            exp = exp.TrimExpression();
+            var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
+
+            if (error != null || (result == null && strictMode))
+            {
+                var errorMsg = string.Empty;
+
+                var childErrorMsg = string.Empty;
+                if (error != null)
+                {
+                    childErrorMsg += error;
+                }
+                else if (result == null)
+                {
+                    childErrorMsg += LGErrors.NullExpression(exp);
+                }
+
+                if (context != null)
+                {
+                    errorMsg += LGErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
+                }
+
+                if (evaluationTargetStack.Count > 0)
+                {
+                    evaluationTargetStack.Pop();
+                }
+
+                throw new Exception(childErrorMsg + errorMsg);
+            }
+            else if (result == null && !strictMode)
             {
                 result = "null";
             }

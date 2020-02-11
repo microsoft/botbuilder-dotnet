@@ -24,16 +24,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private readonly ExpressionEngine expanderExpressionEngine;
         private readonly ExpressionEngine evaluatorExpressionEngine;
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
+        private readonly bool strictMode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Expander"/> class.
         /// </summary>
         /// <param name="templates">template list.</param>
         /// <param name="expressionEngine">Given expression engine.</param>
-        public Expander(List<LGTemplate> templates, ExpressionEngine expressionEngine)
+        /// <param name="strictMode">strict mode. If strictMode == true, exception in expression would throw outside.</param>
+        public Expander(List<LGTemplate> templates, ExpressionEngine expressionEngine, bool strictMode = false)
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
+            this.strictMode = strictMode;
 
             // generate a new customized expression engine by injecting the template as functions
             this.expanderExpressionEngine = new ExpressionEngine(CustomizedEvaluatorLookup(expressionEngine.EvaluatorLookup, true));
