@@ -39,7 +39,6 @@
                 "type": "object",
                 "properties": {
                     "value": {
-                        "$role": "expression",
                         "type": [
                             "number",
                             "integer",
@@ -49,8 +48,9 @@
                         "title": "Value",
                         "description": "Value.",
                         "examples": [
-                            "'red'",
-                            "dialog.colors.red"
+                            "red",
+                            "true",
+                            "13"
                         ]
                     },
                     "actions": {
