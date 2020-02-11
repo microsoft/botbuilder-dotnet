@@ -162,7 +162,7 @@ Python 3.7.6
 
 This pipeline will run every pull request pointing to the master branch.
 
-**Get fail in this pipeline means:**
+**Possible build failure causes:**
 
 - Error in the compile process
 - Error installing project dependencies
@@ -176,7 +176,7 @@ This pipeline aims to verify the interaction of a bot deployed in Azure using a 
 
 This pipeline will run every night 
 
-**Get fail in this pipeline means:**
+**Possible build failure causes:**
 
 - Error in the compile process
 - Error installing project dependencies
@@ -192,7 +192,7 @@ This pipeline aims to verify the browser compatibility of the BotBuilder-JS repo
 
 This pipeline will run every pull request pointing to the master branch.
 
-**Get fail in this pipeline means:**
+**Possible build failure causes:**
 
 - Error in the compile process
 - Error installing project dependencies
@@ -214,7 +214,7 @@ Each adapter has its bot and test suite.
 
 This pipelines will run every night
 
-**Get fail in this pipeline means:**
+**Possible build failure causes:**
 
 - Error in the compile process
 - Error installing project dependencies
@@ -236,7 +236,7 @@ This pipeline aims to verify the correct deployment of a bot created using BotBu
 
 This pipeline will run every pull request pointing to the master branch.
 
-**Get fail in this pipeline means:**
+**Possible build failure causes:**
 
 - Error installing project dependencies
 - Deployment process not completed
