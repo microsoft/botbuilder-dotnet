@@ -307,7 +307,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var expression = condition.EXPRESSION(0);
             if (expression == null || // no expression means it's else
-                EvalExpressionInCondition(expression.GetText()))
+                EvalExpressionInCondition(expression.GetText(), condition, "Condition '" + expression.GetText() + "':"))
             {
                 return true;
             }
@@ -353,37 +353,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        private bool EvalExpressionInCondition(string exp)
-        {
-            try
-            {
-                exp = exp.TrimExpression();
-                var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
-
-                if (error != null
-                    || result == null
-                    || (result is bool r1 && r1 == false)
-                    || (result is int r2 && r2 == 0))
-                {
-                    return false;
-                }
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine($"Expression {exp} evaled as false due to exception");
-                Debug.WriteLine(e.Message);
-                return false;
-            }
-        }
-
-        private List<string> EvalExpression(string exp, ParserRuleContext context, string errorPrefix = "")
+        private bool EvalExpressionInCondition(string exp, ParserRuleContext context = null, string errorPrefix = "")
         {
             exp = exp.TrimExpression();
             var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
 
-            if (error != null || result == null)
+            if (strictMode && (error != null || result == null))
             {
                 var errorMsg = string.Empty;
 
@@ -408,6 +383,52 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
 
                 throw new Exception(childErrorMsg + errorMsg);
+            }
+            else if (error != null
+                || result == null
+                || (result is bool r1 && r1 == false)
+                || (result is int r2 && r2 == 0))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private List<string> EvalExpression(string exp, ParserRuleContext context, string errorPrefix = "")
+        {
+            exp = exp.TrimExpression();
+            var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
+
+            if (error != null || (result == null && strictMode))
+            {
+                var errorMsg = string.Empty;
+
+                var childErrorMsg = string.Empty;
+                if (error != null)
+                {
+                    childErrorMsg += error;
+                }
+                else if (result == null)
+                {
+                    childErrorMsg += LGErrors.NullExpression(exp);
+                }
+
+                if (context != null)
+                {
+                    errorMsg += LGErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
+                }
+
+                if (evaluationTargetStack.Count > 0)
+                {
+                    evaluationTargetStack.Pop();
+                }
+
+                throw new Exception(childErrorMsg + errorMsg);
+            }
+            else if (result == null && !strictMode)
+            {
+                result = "null";
             }
 
             if (result is IList &&
