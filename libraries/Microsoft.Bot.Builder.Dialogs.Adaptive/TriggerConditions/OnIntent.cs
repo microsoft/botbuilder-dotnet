@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Microsoft.Bot.Expressions;
+using AdaptiveExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

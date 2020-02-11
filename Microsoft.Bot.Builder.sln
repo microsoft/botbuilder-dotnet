@@ -80,9 +80,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Declarative", "libraries\Microsoft.Bot.Builder.Dialogs.Declarative\Microsoft.Bot.Builder.Dialogs.Declarative.csproj", "{1BC05915-044E-4776-8956-B44BBEFF2F84}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Expressions.Tests", "tests\Microsoft.Bot.Expressions.Tests\Microsoft.Bot.Expressions.Tests.csproj", "{AE3FC7F6-B212-4438-B1D7-C121BB4C15ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaptiveExpressions.Tests", "tests\AdaptiveExpressions.Tests\AdaptiveExpressions.Tests.csproj", "{AE3FC7F6-B212-4438-B1D7-C121BB4C15ED}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Expressions", "libraries\Microsoft.Bot.Expressions\Microsoft.Bot.Expressions.csproj", "{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaptiveExpressions", "libraries\AdaptiveExpressions\AdaptiveExpressions.csproj", "{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Declarative.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Declarative.Tests\Microsoft.Bot.Builder.Dialogs.Declarative.Tests.csproj", "{D5E70443-4BA2-42ED-992A-010268440B08}"
 EndProject

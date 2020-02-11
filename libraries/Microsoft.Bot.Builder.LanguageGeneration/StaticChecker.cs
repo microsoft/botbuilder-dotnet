@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AdaptiveExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
-using Microsoft.Bot.Expressions;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
