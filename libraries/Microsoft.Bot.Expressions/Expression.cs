@@ -101,6 +101,12 @@ namespace Microsoft.Bot.Expressions
         public ReturnType ReturnType => Evaluator.ReturnType;
 
         /// <summary>
+        /// allow a string to be implicitly assigned to an expression property.
+        /// </summary>
+        /// <param name="expression">string expression.</param>
+        public static implicit operator Expression(string expression) => Expression.Parse(expression);
+
+        /// <summary>
         /// Parse an string into an expression object.
         /// </summary>
         /// <param name="expression">expression string.</param>

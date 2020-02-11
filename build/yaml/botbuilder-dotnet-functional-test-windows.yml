@@ -18,7 +18,14 @@ variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'Release'
   Parameters.solution: Microsoft.Bot.Builder.sln
-  AzureSubscription: define this in Azure
+#  AppId: define this in Azure
+#  AppSecret: define this in Azure
+#  AzureSubscription: define this in Azure
+#  BotGroup: define this in Azure
+#  BotName: define this in Azure
+#  LUISAPPIDSECRET: define this in Azure
+#  LUISSUBSCRIPTIONKEYSECRET: define this in Azure
+
 
 steps:
 - template: ci-build-steps.yml
@@ -65,7 +72,7 @@ steps:
      !**/Microsoft.Bot.Builder.Classic.Tests.csproj
      !**/Microsoft.Bot.ApplicationInsights.WebApi.Tests.csproj
      !**/Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests.csproj
-    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=Adapters"'
+    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter "TestCategory=FunctionalTests&TestCategory!=Adapters"'
     workingDirectory: tests
 
 - task: AzureCLI@1
