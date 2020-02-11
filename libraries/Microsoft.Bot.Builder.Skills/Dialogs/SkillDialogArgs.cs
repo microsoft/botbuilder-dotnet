@@ -36,19 +36,19 @@ namespace Microsoft.Bot.Builder.Dialogs
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the value property for the activity to send to the skill.
-        /// </summary>
-        /// <value>
-        /// The value property for the activity to send to the skill.
-        /// </value>
-        public object Value { get; set; }
-
-        /// <summary>
         /// Gets or sets the text property for the <see cref="ActivityTypes.Message"/> to send to the skill (ignored for other types of activities).
         /// </summary>
         /// <value>
         /// The text property for the <see cref="ActivityTypes.Message"/> to send to the skill (ignored for other types of activities).
         /// </value>
         public string Text { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value property for the activity to send to the skill.
+        /// </summary>
+        /// <value>
+        /// The value property for the activity to send to the skill.
+        /// </value>
+        public object Value { get; set; }
     }
 }
