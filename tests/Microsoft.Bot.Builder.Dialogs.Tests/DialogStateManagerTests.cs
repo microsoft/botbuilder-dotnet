@@ -7,6 +7,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
 using Microsoft.Extensions.Configuration;
@@ -39,11 +42,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             adapter
                 .UseStorage(new MemoryStorage())
                 .UseState(new UserState(new MemoryStorage()), new ConversationState(new MemoryStorage()));
+
             DialogManager dm = new DialogManager(new LamdaDialog(handler));
-            return new TestFlow(adapter, (context, ct) =>
-            {
-                return dm.OnTurnAsync(context, ct);
-            }).SendConversationUpdate();
+            dm.TurnState.Set<ResourceExplorer>(new ResourceExplorer());
+            return new TestFlow(adapter, dm.OnTurnAsync).SendConversationUpdate();
         }
 
         [TestMethod]
@@ -51,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             await CreateDialogContext(async (context, ct) =>
             {
-                var dsm = new DialogStateManager(context);
+                var dsm = context.GetState() as DialogStateManager;
                 foreach (var memoryScope in dsm.Configuration.MemoryScopes)
                 {
                     try
@@ -79,8 +81,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public void TestPathResolverNullChecks()
         {
-            var config = DialogStateManager.CreateStandardConfiguration();
-            foreach (var resolver in config.PathResolvers)
+            var ac = new AdaptiveComponentRegistration();
+            
+            foreach (var resolver in ac.GetPathResolvers())
             {
                 try
                 {
@@ -647,6 +650,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .UseStorage(storage)
                 .UseState(userState, conversationState);
+
             adapter.OnTurnError = async (context, exception) =>
             {
                 await conversationState.DeleteAsync(context);
@@ -707,7 +711,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private TestFlow CreateFlow(Dialog dialog, ConversationState convoState = null, UserState userState = null, bool sendTrace = false)
         {
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
-                .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
+                .UseStorage(new MemoryStorage())
                 .UseState(new UserState(new MemoryStorage()), convoState ?? new ConversationState(new MemoryStorage()))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 

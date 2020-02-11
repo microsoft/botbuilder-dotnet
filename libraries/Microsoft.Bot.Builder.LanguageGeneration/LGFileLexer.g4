@@ -47,7 +47,9 @@ fragment EMPTY_OBJECT: '{' WHITESPACE* '}';
 
 fragment STRING_LITERAL : ('\'' (~['\r\n])* '\'') | ('"' (~["\r\n])* '"');
 
-fragment EXPRESSION_FRAGMENT : '@' '{' (STRING_LITERAL| ~[\r\n{}'"] | EMPTY_OBJECT )*? '}';
+fragment STRING_INTERPOLATION : '`' ('\\`' | ~'`')* '`';
+
+fragment EXPRESSION_FRAGMENT : '@' '{' (STRING_LITERAL | STRING_INTERPOLATION | EMPTY_OBJECT | ~[\r\n{}'"`] )*? '}';
 
 fragment ESCAPE_CHARACTER_FRAGMENT : '\\' ~[\r\n]?;
 
@@ -168,6 +170,7 @@ EXPRESSION
 TEXT
   : ~[\r\n]+?  { ignoreWS = false; beginOfTemplateLine = false;}
   ;
+
 
 mode MULTILINE_MODE;
 

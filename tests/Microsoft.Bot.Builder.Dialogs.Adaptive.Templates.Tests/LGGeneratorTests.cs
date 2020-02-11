@@ -24,24 +24,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
     [TestClass]
     public class LGGeneratorTests
     {
-        private static ResourceExplorer resourceExplorer;
-
         public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
-        {
-            TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-            DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
-            DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
-            resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder());
-        }
-
-        [ClassCleanup]
-        public static void ClassCleanup()
-        {
-            resourceExplorer.Dispose();
-        }
 
         [TestMethod]
         [ExpectedException(typeof(System.Data.SyntaxErrorException))]
@@ -55,6 +38,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public async Task TestMultiLangImport()
         {
+            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
+
             // use LG file as entrance
             var lgResourceGroup = LGResourceLoader.GroupByLocale(resourceExplorer);
 
@@ -95,8 +80,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public async Task TestMultiLanguageE2E()
         {
-            await CreateFlow("a.lg", async (turnContext, cancellationToken) =>
+            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
+            DialogManager dm = new DialogManager()
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration("a.lg");
+
+            await CreateFlow(async (turnContext, cancellationToken) =>
             {
+                foreach (var pair in dm.TurnState)
+                {
+                    turnContext.TurnState.Set(pair.Key, pair.Value);
+                }
+
                 var lg = turnContext.TurnState.Get<ILanguageGenerator>();
 
                 // en-us locale
@@ -161,6 +156,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public async Task TestMultiLanguageGenerator()
         {
+            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
+
             var lg = new MultiLanguageGenerator();
             var multilanguageresources = LGResourceLoader.GroupByLocale(resourceExplorer);
             lg.LanguageGenerators[string.Empty] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.lg").ReadTextAsync().Result, "test.lg", multilanguageresources);
@@ -209,8 +206,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public async Task TestLanguageGeneratorMiddleware()
         {
-            await CreateFlow("test.lg", async (turnContext, cancellationToken) =>
+            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
+            var dm = new DialogManager()
+               .UseResourceExplorer(resourceExplorer)
+               .UseLanguageGeneration("test.lg");
+
+            await CreateFlow(async (turnContext, cancellationToken) =>
             {
+                foreach (var pair in dm.TurnState)
+                {
+                    turnContext.TurnState.Set(pair.Key, pair.Value);
+                }
+
                 var lg = turnContext.TurnState.Get<ILanguageGenerator>();
                 Assert.IsNotNull(lg, "ILanguageGenerator should not be null");
                 Assert.IsNotNull(turnContext.TurnState.Get<ResourceExplorer>(), "ResourceExplorer should not be null");
@@ -281,9 +288,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     }
                 }
             };
+            var resourceExplorer = new ResourceExplorer()
+                .LoadProject(GetProjectFolder(), monitorChanges: false);
 
-            DialogManager dm = new DialogManager(dialog);
-            await CreateFlow("test.lg", async (turnContext, cancellationToken) =>
+            DialogManager dm = new DialogManager(dialog)
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration("test.lg");
+            await CreateFlow(async (turnContext, cancellationToken) =>
             {
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             })
@@ -306,11 +317,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public async Task TestDialogInjectionDeclarative()
         {
-            await CreateFlow("test.lg", async (turnContext, cancellationToken) =>
+            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
+            DialogManager dm = new DialogManager()
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration("test.lg");
+            dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("test.dialog");
+
+            await CreateFlow(async (turnContext, cancellationToken) =>
             {
-                var resource = resourceExplorer.GetResource("test.dialog");
-                var dialog = (AdaptiveDialog)DeclarativeTypeLoader.Load<Dialog>(resource, resourceExplorer, DebugSupport.SourceMap);
-                DialogManager dm = new DialogManager(dialog);
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             })
             .Send("hello")
@@ -322,9 +336,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public async Task TestNoResourceExplorerLanguageGeneration()
         {
+            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
+            DialogManager dm = new DialogManager()
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration();
+
             await CreateNoResourceExplorerFlow(async (turnContext, cancellationToken) =>
             {
-                var lg = turnContext.TurnState.Get<ILanguageGenerator>();
+                var lg = dm.TurnState.Get<ILanguageGenerator>();
                 var result = await lg.Generate(turnContext, "This is @{test.name}", new
                 {
                     test = new
@@ -346,12 +365,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         private ITurnContext GetTurnContext(string locale = null, ILanguageGenerator generator = null)
         {
-            var context = new TurnContext(
-                new TestAdapter()
-                .UseResourceExplorer(resourceExplorer)
-                .UseAdaptiveDialogs()
-                .UseLanguageGeneration(resourceExplorer, generator ?? new MockLanguageGenerator()), new Activity() { Locale = locale ?? string.Empty, Text = string.Empty });
+            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
+
+            var context = new TurnContext(new TestAdapter(), new Activity() { Locale = locale ?? string.Empty, Text = string.Empty });
+            context.TurnState.Add(resourceExplorer);
             context.TurnState.Add(new LanguageGeneratorManager(resourceExplorer));
+            generator = generator ?? new MockLanguageGenerator();
             if (generator != null)
             {
                 context.TurnState.Add<ILanguageGenerator>(generator);
@@ -360,9 +379,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             return context;
         }
 
-        private TestFlow CreateFlow(string lgFile, BotCallbackHandler handler)
+        private TestFlow CreateFlow(BotCallbackHandler handler)
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
@@ -371,9 +389,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, convoState)
-                .UseResourceExplorer(resourceExplorer)
-                .UseAdaptiveDialogs()
-                .UseLanguageGeneration(resourceExplorer, lgFile)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             return new TestFlow(adapter, handler);
@@ -381,7 +396,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         private TestFlow CreateNoResourceExplorerFlow(BotCallbackHandler handler)
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
@@ -390,8 +404,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, convoState)
-                .UseAdaptiveDialogs()
-                .UseLanguageGeneration()
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             return new TestFlow(adapter, handler);

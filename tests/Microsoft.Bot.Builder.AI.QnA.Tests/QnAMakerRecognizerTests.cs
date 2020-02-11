@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -20,6 +21,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
@@ -39,11 +41,32 @@ namespace Microsoft.Bot.Builder.AI.Tests
         private const string _endpointKey = "dummy-key";
         private const string _hostname = "https://dummy-hostname.azurewebsites.net/qnamaker";
 
+        public static ResourceExplorer ResourceExplorer { get; set; }
+
         public TestContext TestContext { get; set; }
+
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
+        {
+            var parent = Environment.CurrentDirectory;
+            while (!string.IsNullOrEmpty(parent))
+            {
+                if (Directory.EnumerateFiles(parent, "*proj").Any())
+                {
+                    break;
+                }
+                else
+                {
+                    parent = Path.GetDirectoryName(parent);
+                }
+            }
+
+            ResourceExplorer = new ResourceExplorer()
+                .AddFolder(parent, monitorChanges: false);
+        }
 
         public AdaptiveDialog QnAMakerRecognizer_DialogBase()
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .WithContent("{\"question\":\"QnaMaker_ReturnsAnswer\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
@@ -124,11 +147,11 @@ namespace Microsoft.Bot.Builder.AI.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, conversationState)
-                .UseLanguageGeneration()
-                .UseAdaptiveDialogs()
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
-            DialogManager dm = new DialogManager(rootDialog);
+            DialogManager dm = new DialogManager(rootDialog)
+                .UseResourceExplorer(ResourceExplorer)
+                .UseLanguageGeneration();
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {

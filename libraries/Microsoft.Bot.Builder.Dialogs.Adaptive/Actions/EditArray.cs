@@ -231,7 +231,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{ChangeType + ": " + ItemsProperty}]";
+            return $"{this.GetType().Name}[{ChangeType?.ToString() + ": " + ItemsProperty?.ToString()}]";
         }
 
         private void EnsureValue()

@@ -39,6 +39,7 @@
     <None Remove="Examples\EvaluateOnce.lg" />
     <None Remove="Examples\LoopScope.lg" />
     <None Remove="Examples\ExpressionExtract.lg" />
+    <None Remove="Examples\StringInterpolation.lg" />
     <None Remove="Examples\ReExecute.lg" />
     <None Remove="Examples\NullTolerant.lg" />
     <None Remove="ExceptionExamples\ConditionFormatError.lg" />
@@ -98,6 +99,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\BasicList.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\StringInterpolation.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\CaseInsensitive.lg">

@@ -22,15 +22,15 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(new ShowTypingMiddleware(100, 1000));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
-                {
-                    await Task.Delay(TimeSpan.FromMilliseconds(2500));
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(2500));
 
-                    // note the ShowTypingMiddleware should not cause the Responded flag to be set
-                    Assert.IsFalse(context.Responded);
+                // note the ShowTypingMiddleware should not cause the Responded flag to be set
+                Assert.IsFalse(context.Responded);
 
-                    await context.SendActivityAsync("Message sent after delay");
-                    await Task.CompletedTask;
-                })
+                await context.SendActivityAsync("Message sent after delay");
+                await Task.CompletedTask;
+            })
                 .Send("foo")
                 .AssertReply(ValidateTypingActivity, "check typing activity")
                 .AssertReply(ValidateTypingActivity, "check typing activity")
@@ -47,11 +47,11 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(new ShowTypingMiddleware(100, 5000));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
-                {
-                    await Task.Delay(TimeSpan.FromMilliseconds(2000));
-                    await context.SendActivityAsync("Message sent after delay");
-                    await Task.CompletedTask;
-                })
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(2000));
+                await context.SendActivityAsync("Message sent after delay");
+                await Task.CompletedTask;
+            })
                 .Send("foo")
                 .AssertReply(ValidateTypingActivity, "check typing activity")
                 .AssertReply("Message sent after delay")
@@ -66,10 +66,10 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(new ShowTypingMiddleware(2000, 5000));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
-                {
-                    await context.SendActivityAsync("Message sent after delay");
-                    await Task.CompletedTask;
-                })
+            {
+                await context.SendActivityAsync("Message sent after delay");
+                await Task.CompletedTask;
+            })
                 .Send("foo")
                 .AssertReply("Message sent after delay")
                 .StartTestAsync();

@@ -207,7 +207,7 @@ namespace Microsoft.Bot.Expressions.TriggerTrees
             var ignores = new List<Expression>();
             foreach (var child in Children)
             {
-                if (child.Type == TriggerTree.Ignore)
+                if (child.Type == ExpressionType.Ignore)
                 {
                     ignores.Add(child.Children[0]);
                 }

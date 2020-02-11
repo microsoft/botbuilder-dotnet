@@ -2,180 +2,177 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Converters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Bot.Expressions.Properties.Converters;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Memory;
+using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
+using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
+using Microsoft.Bot.Expressions;
+using Microsoft.Bot.Expressions.Converters;
 using Newtonsoft.Json;
-using static Microsoft.Bot.Builder.Dialogs.Adaptive.Actions.EditArray;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
-    public class AdaptiveComponentRegistration : ComponentRegistration
+    public class AdaptiveComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes, IComponentMemoryScopes, IComponentPathResolvers, IComponentExpressionFunctions
     {
-        public override IEnumerable<TypeRegistration> GetTypes()
+        public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes()
         {
             // Conditionals
-            yield return new TypeRegistration<OnCondition>(OnCondition.DeclarativeType);
-            yield return new TypeRegistration<OnError>(OnError.DeclarativeType);
+            yield return new DeclarativeType<OnCondition>(OnCondition.DeclarativeType);
+            yield return new DeclarativeType<OnError>(OnError.DeclarativeType);
 
-            yield return new TypeRegistration<OnDialogEvent>(OnDialogEvent.DeclarativeType);
-            yield return new TypeRegistration<OnCustomEvent>(OnCustomEvent.DeclarativeType);
+            yield return new DeclarativeType<OnDialogEvent>(OnDialogEvent.DeclarativeType);
+            yield return new DeclarativeType<OnCustomEvent>(OnCustomEvent.DeclarativeType);
 
-            yield return new TypeRegistration<OnBeginDialog>(OnBeginDialog.DeclarativeType);
-            yield return new TypeRegistration<OnCancelDialog>(OnCancelDialog.DeclarativeType);
-            yield return new TypeRegistration<OnRepromptDialog>(OnRepromptDialog.DeclarativeType);
+            yield return new DeclarativeType<OnBeginDialog>(OnBeginDialog.DeclarativeType);
+            yield return new DeclarativeType<OnCancelDialog>(OnCancelDialog.DeclarativeType);
+            yield return new DeclarativeType<OnRepromptDialog>(OnRepromptDialog.DeclarativeType);
 
-            yield return new TypeRegistration<OnIntent>(OnIntent.DeclarativeType);
-            yield return new TypeRegistration<OnUnknownIntent>(OnUnknownIntent.DeclarativeType);
+            yield return new DeclarativeType<OnIntent>(OnIntent.DeclarativeType);
+            yield return new DeclarativeType<OnUnknownIntent>(OnUnknownIntent.DeclarativeType);
 
-            yield return new TypeRegistration<OnActivity>(OnActivity.DeclarativeType);
-            yield return new TypeRegistration<OnMessageActivity>(OnMessageActivity.DeclarativeType);
-            yield return new TypeRegistration<OnMessageUpdateActivity>(OnMessageUpdateActivity.DeclarativeType);
-            yield return new TypeRegistration<OnMessageDeleteActivity>(OnMessageDeleteActivity.DeclarativeType);
-            yield return new TypeRegistration<OnMessageReactionActivity>(OnMessageReactionActivity.DeclarativeType);
-            yield return new TypeRegistration<OnEventActivity>(OnEventActivity.DeclarativeType);
-            yield return new TypeRegistration<OnInvokeActivity>(OnInvokeActivity.DeclarativeType);
-            yield return new TypeRegistration<OnConversationUpdateActivity>(OnConversationUpdateActivity.DeclarativeType);
-            yield return new TypeRegistration<OnEndOfConversationActivity>(OnEndOfConversationActivity.DeclarativeType);
-            yield return new TypeRegistration<OnTypingActivity>(OnTypingActivity.DeclarativeType);
-            yield return new TypeRegistration<OnHandoffActivity>(OnHandoffActivity.DeclarativeType);
-            yield return new TypeRegistration<OnChooseIntent>(OnChooseIntent.DeclarativeType);
+            yield return new DeclarativeType<OnActivity>(OnActivity.DeclarativeType);
+            yield return new DeclarativeType<OnMessageActivity>(OnMessageActivity.DeclarativeType);
+            yield return new DeclarativeType<OnMessageUpdateActivity>(OnMessageUpdateActivity.DeclarativeType);
+            yield return new DeclarativeType<OnMessageDeleteActivity>(OnMessageDeleteActivity.DeclarativeType);
+            yield return new DeclarativeType<OnMessageReactionActivity>(OnMessageReactionActivity.DeclarativeType);
+            yield return new DeclarativeType<OnEventActivity>(OnEventActivity.DeclarativeType);
+            yield return new DeclarativeType<OnInvokeActivity>(OnInvokeActivity.DeclarativeType);
+            yield return new DeclarativeType<OnConversationUpdateActivity>(OnConversationUpdateActivity.DeclarativeType);
+            yield return new DeclarativeType<OnEndOfConversationActivity>(OnEndOfConversationActivity.DeclarativeType);
+            yield return new DeclarativeType<OnTypingActivity>(OnTypingActivity.DeclarativeType);
+            yield return new DeclarativeType<OnHandoffActivity>(OnHandoffActivity.DeclarativeType);
+            yield return new DeclarativeType<OnChooseIntent>(OnChooseIntent.DeclarativeType);
 
-            yield return new TypeRegistration<OnEndOfActions>(OnEndOfActions.DeclarativeType);
-            yield return new TypeRegistration<OnChooseProperty>(OnChooseProperty.DeclarativeType);
-            yield return new TypeRegistration<OnChooseEntity>(OnChooseEntity.DeclarativeType);
-            yield return new TypeRegistration<OnClearProperty>(OnClearProperty.DeclarativeType);
-            yield return new TypeRegistration<OnAssignEntity>(OnAssignEntity.DeclarativeType);
+            yield return new DeclarativeType<OnEndOfActions>(OnEndOfActions.DeclarativeType);
+            yield return new DeclarativeType<OnChooseProperty>(OnChooseProperty.DeclarativeType);
+            yield return new DeclarativeType<OnChooseEntity>(OnChooseEntity.DeclarativeType);
+            yield return new DeclarativeType<OnClearProperty>(OnClearProperty.DeclarativeType);
+            yield return new DeclarativeType<OnAssignEntity>(OnAssignEntity.DeclarativeType);
 
             // Actions
-            yield return new TypeRegistration<BeginDialog>(BeginDialog.DeclarativeType);
-            yield return new TypeRegistration<CancelAllDialogs>(CancelAllDialogs.DeclarativeType);
-            yield return new TypeRegistration<DebugBreak>(DebugBreak.DeclarativeType);
-            yield return new TypeRegistration<DeleteProperty>(DeleteProperty.DeclarativeType);
-            yield return new TypeRegistration<DeleteProperties>(DeleteProperties.DeclarativeType);
-            yield return new TypeRegistration<EditArray>(EditArray.DeclarativeType);
-            yield return new TypeRegistration<EditActions>(EditActions.DeclarativeType);
-            yield return new TypeRegistration<EmitEvent>(EmitEvent.DeclarativeType);
-            yield return new TypeRegistration<EndDialog>(EndDialog.DeclarativeType);
-            yield return new TypeRegistration<EndTurn>(EndTurn.DeclarativeType);
-            yield return new TypeRegistration<Foreach>(Foreach.DeclarativeType);
-            yield return new TypeRegistration<ForeachPage>(ForeachPage.DeclarativeType);
-            yield return new TypeRegistration<HttpRequest>(HttpRequest.DeclarativeType);
-            yield return new TypeRegistration<IfCondition>(IfCondition.DeclarativeType);
-            yield return new TypeRegistration<LogAction>(LogAction.DeclarativeType);
-            yield return new TypeRegistration<RepeatDialog>(RepeatDialog.DeclarativeType);
-            yield return new TypeRegistration<ReplaceDialog>(ReplaceDialog.DeclarativeType);
-            yield return new TypeRegistration<SendActivity>(SendActivity.DeclarativeType);
-            yield return new TypeRegistration<SetProperty>(SetProperty.DeclarativeType);
-            yield return new TypeRegistration<SetProperties>(SetProperties.DeclarativeType);
-            yield return new TypeRegistration<SwitchCondition>(SwitchCondition.DeclarativeType);
-            yield return new TypeRegistration<TraceActivity>(TraceActivity.DeclarativeType);
-            yield return new TypeRegistration<GotoAction>(GotoAction.DeclarativeType);
-            yield return new TypeRegistration<BreakLoop>(BreakLoop.DeclarativeType);
-            yield return new TypeRegistration<ContinueLoop>(ContinueLoop.DeclarativeType);
-            yield return new TypeRegistration<UpdateActivity>(UpdateActivity.DeclarativeType);
-            yield return new TypeRegistration<DeleteActivity>(DeleteActivity.DeclarativeType);
-            yield return new TypeRegistration<GetActivityMembers>(GetActivityMembers.DeclarativeType);
-            yield return new TypeRegistration<GetConversationMembers>(GetConversationMembers.DeclarativeType);
-            yield return new TypeRegistration<SignOutUser>(SignOutUser.DeclarativeType);
+            yield return new DeclarativeType<BeginDialog>(BeginDialog.DeclarativeType);
+            yield return new DeclarativeType<CancelAllDialogs>(CancelAllDialogs.DeclarativeType);
+            yield return new DeclarativeType<DebugBreak>(DebugBreak.DeclarativeType);
+            yield return new DeclarativeType<DeleteProperty>(DeleteProperty.DeclarativeType);
+            yield return new DeclarativeType<DeleteProperties>(DeleteProperties.DeclarativeType);
+            yield return new DeclarativeType<EditArray>(EditArray.DeclarativeType);
+            yield return new DeclarativeType<EditActions>(EditActions.DeclarativeType);
+            yield return new DeclarativeType<EmitEvent>(EmitEvent.DeclarativeType);
+            yield return new DeclarativeType<EndDialog>(EndDialog.DeclarativeType);
+            yield return new DeclarativeType<EndTurn>(EndTurn.DeclarativeType);
+            yield return new DeclarativeType<Foreach>(Foreach.DeclarativeType);
+            yield return new DeclarativeType<ForeachPage>(ForeachPage.DeclarativeType);
+            yield return new DeclarativeType<HttpRequest>(HttpRequest.DeclarativeType);
+            yield return new DeclarativeType<IfCondition>(IfCondition.DeclarativeType);
+            yield return new DeclarativeType<LogAction>(LogAction.DeclarativeType);
+            yield return new DeclarativeType<RepeatDialog>(RepeatDialog.DeclarativeType);
+            yield return new DeclarativeType<ReplaceDialog>(ReplaceDialog.DeclarativeType);
+            yield return new DeclarativeType<SendActivity>(SendActivity.DeclarativeType);
+            yield return new DeclarativeType<SetProperty>(SetProperty.DeclarativeType);
+            yield return new DeclarativeType<SetProperties>(SetProperties.DeclarativeType);
+            yield return new DeclarativeType<SwitchCondition>(SwitchCondition.DeclarativeType);
+            yield return new DeclarativeType<TraceActivity>(TraceActivity.DeclarativeType);
+            yield return new DeclarativeType<GotoAction>(GotoAction.DeclarativeType);
+            yield return new DeclarativeType<BreakLoop>(BreakLoop.DeclarativeType);
+            yield return new DeclarativeType<ContinueLoop>(ContinueLoop.DeclarativeType);
+            yield return new DeclarativeType<UpdateActivity>(UpdateActivity.DeclarativeType);
+            yield return new DeclarativeType<DeleteActivity>(DeleteActivity.DeclarativeType);
+            yield return new DeclarativeType<GetActivityMembers>(GetActivityMembers.DeclarativeType);
+            yield return new DeclarativeType<GetConversationMembers>(GetConversationMembers.DeclarativeType);
+            yield return new DeclarativeType<SignOutUser>(SignOutUser.DeclarativeType);
 
             // Inputs
-            yield return new TypeRegistration<AttachmentInput>(AttachmentInput.DeclarativeType);
-            yield return new TypeRegistration<ConfirmInput>(ConfirmInput.DeclarativeType);
-            yield return new TypeRegistration<NumberInput>(NumberInput.DeclarativeType);
-            yield return new TypeRegistration<TextInput>(TextInput.DeclarativeType);
-            yield return new TypeRegistration<ChoiceInput>(ChoiceInput.DeclarativeType);
-            yield return new TypeRegistration<DateTimeInput>(DateTimeInput.DeclarativeType);
-            yield return new TypeRegistration<OAuthInput>(OAuthInput.DeclarativeType);
-            yield return new TypeRegistration<Ask>(Ask.DeclarativeType);
+            yield return new DeclarativeType<AttachmentInput>(AttachmentInput.DeclarativeType);
+            yield return new DeclarativeType<ConfirmInput>(ConfirmInput.DeclarativeType);
+            yield return new DeclarativeType<NumberInput>(NumberInput.DeclarativeType);
+            yield return new DeclarativeType<TextInput>(TextInput.DeclarativeType);
+            yield return new DeclarativeType<ChoiceInput>(ChoiceInput.DeclarativeType);
+            yield return new DeclarativeType<DateTimeInput>(DateTimeInput.DeclarativeType);
+            yield return new DeclarativeType<OAuthInput>(OAuthInput.DeclarativeType);
+            yield return new DeclarativeType<Ask>(Ask.DeclarativeType);
 
             // Recognizers
-            yield return new TypeRegistration<RegexRecognizer>(RegexRecognizer.DeclarativeType);
-            yield return new TypeRegistration<MultiLanguageRecognizer>(MultiLanguageRecognizer.DeclarativeType);
-            yield return new TypeRegistration<RecognizerSet>(RecognizerSet.DeclarativeType);
-            yield return new TypeRegistration<CrossTrainedRecognizerSet>(CrossTrainedRecognizerSet.DeclarativeType);
-            yield return new TypeRegistration<ValueRecognizer>(ValueRecognizer.DeclarativeType);
+            yield return new DeclarativeType<RegexRecognizer>(RegexRecognizer.DeclarativeType);
+            yield return new DeclarativeType<MultiLanguageRecognizer>(MultiLanguageRecognizer.DeclarativeType);
+            yield return new DeclarativeType<RecognizerSet>(RecognizerSet.DeclarativeType);
+            yield return new DeclarativeType<CrossTrainedRecognizerSet>(CrossTrainedRecognizerSet.DeclarativeType);
+            yield return new DeclarativeType<ValueRecognizer>(ValueRecognizer.DeclarativeType);
 
             // Entity recognizers
-            yield return new TypeRegistration<AgeEntityRecognizer>(AgeEntityRecognizer.DeclarativeType);
-            yield return new TypeRegistration<ConfirmationEntityRecognizer>(ConfirmationEntityRecognizer.DeclarativeType);
-            yield return new TypeRegistration<CurrencyEntityRecognizer>(CurrencyEntityRecognizer.DeclarativeType);
-            yield return new TypeRegistration<DateTimeEntityRecognizer>(DateTimeEntityRecognizer.DeclarativeType);
-            yield return new TypeRegistration<DimensionEntityRecognizer>(DimensionEntityRecognizer.DeclarativeType);
-            yield return new TypeRegistration<EmailEntityRecognizer>(EmailEntityRecognizer.DeclarativeType);
-            yield return new TypeRegistration<EntityRecognizerSet>(EntityRecognizerSet.DeclarativeType);
-            yield return new TypeRegistration<GuidEntityRecognizer>(GuidEntityRecognizer.DeclarativeType);
-            yield return new TypeRegistration<HashtagEntityRecognizer>(HashtagEntityRecognizer.DeclarativeType);
-            yield return new TypeRegistration<IpEntityRecognizer>(IpEntityRecognizer.DeclarativeType);
-            yield return new TypeRegistration<MentionEntityRecognizer>(MentionEntityRecognizer.DeclarativeType);
-            yield return new TypeRegistration<NumberEntityRecognizer>(NumberEntityRecognizer.DeclarativeType);
-            yield return new TypeRegistration<NumberRangeEntityRecognizer>(NumberRangeEntityRecognizer.DeclarativeType);
-            yield return new TypeRegistration<OrdinalEntityRecognizer>(OrdinalEntityRecognizer.DeclarativeType);
-            yield return new TypeRegistration<PercentageEntityRecognizer>(PercentageEntityRecognizer.DeclarativeType);
-            yield return new TypeRegistration<PhoneNumberEntityRecognizer>(PhoneNumberEntityRecognizer.DeclarativeType);
-            yield return new TypeRegistration<RegexEntityRecognizer>(RegexEntityRecognizer.DeclarativeType);
-            yield return new TypeRegistration<TemperatureEntityRecognizer>(TemperatureEntityRecognizer.DeclarativeType);
-            yield return new TypeRegistration<UrlEntityRecognizer>(UrlEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<AgeEntityRecognizer>(AgeEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<ConfirmationEntityRecognizer>(ConfirmationEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<CurrencyEntityRecognizer>(CurrencyEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<DateTimeEntityRecognizer>(DateTimeEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<DimensionEntityRecognizer>(DimensionEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<EmailEntityRecognizer>(EmailEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<EntityRecognizerSet>(EntityRecognizerSet.DeclarativeType);
+            yield return new DeclarativeType<GuidEntityRecognizer>(GuidEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<HashtagEntityRecognizer>(HashtagEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<IpEntityRecognizer>(IpEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<MentionEntityRecognizer>(MentionEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<NumberEntityRecognizer>(NumberEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<NumberRangeEntityRecognizer>(NumberRangeEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<OrdinalEntityRecognizer>(OrdinalEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<PercentageEntityRecognizer>(PercentageEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<PhoneNumberEntityRecognizer>(PhoneNumberEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<RegexEntityRecognizer>(RegexEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<TemperatureEntityRecognizer>(TemperatureEntityRecognizer.DeclarativeType);
+            yield return new DeclarativeType<UrlEntityRecognizer>(UrlEntityRecognizer.DeclarativeType);
 
             // selectors
-            yield return new TypeRegistration<ConditionalSelector>(ConditionalSelector.DeclarativeType);
-            yield return new TypeRegistration<FirstSelector>(FirstSelector.DeclarativeType);
-            yield return new TypeRegistration<MostSpecificSelector>(MostSpecificSelector.DeclarativeType);
-            yield return new TypeRegistration<RandomSelector>(RandomSelector.DeclarativeType);
-            yield return new TypeRegistration<TrueSelector>(TrueSelector.DeclarativeType);
+            yield return new DeclarativeType<ConditionalSelector>(ConditionalSelector.DeclarativeType);
+            yield return new DeclarativeType<FirstSelector>(FirstSelector.DeclarativeType);
+            yield return new DeclarativeType<MostSpecificSelector>(MostSpecificSelector.DeclarativeType);
+            yield return new DeclarativeType<RandomSelector>(RandomSelector.DeclarativeType);
+            yield return new DeclarativeType<TrueSelector>(TrueSelector.DeclarativeType);
 
             // Generators
-            yield return new TypeRegistration<ResourceMultiLanguageGenerator>(ResourceMultiLanguageGenerator.DeclarativeType);
-            yield return new TypeRegistration<MultiLanguageGenerator>(MultiLanguageGenerator.DeclarativeType);
-            yield return new TypeRegistration<TemplateEngineLanguageGenerator>(TemplateEngineLanguageGenerator.DeclarativeType);
+            yield return new DeclarativeType<ResourceMultiLanguageGenerator>(ResourceMultiLanguageGenerator.DeclarativeType);
+            yield return new DeclarativeType<MultiLanguageGenerator>(MultiLanguageGenerator.DeclarativeType);
+            yield return new DeclarativeType<TemplateEngineLanguageGenerator>(TemplateEngineLanguageGenerator.DeclarativeType);
 
             // Dialogs
-            yield return new TypeRegistration<AdaptiveDialog>(AdaptiveDialog.DeclarativeType);
+            yield return new DeclarativeType<AdaptiveDialog>(AdaptiveDialog.DeclarativeType);
 
             // test actions
-            yield return new TypeRegistration<AssertCondition>(AssertCondition.DeclarativeType);
-            yield return new TypeRegistration<TestScript>(TestScript.DeclarativeType);
-            yield return new TypeRegistration<UserSays>(UserSays.DeclarativeType);
-            yield return new TypeRegistration<UserTyping>(UserTyping.DeclarativeType);
-            yield return new TypeRegistration<UserConversationUpdate>(UserConversationUpdate.DeclarativeType);
-            yield return new TypeRegistration<UserActivity>(UserActivity.DeclarativeType);
-            yield return new TypeRegistration<UserDelay>(UserDelay.DeclarativeType);
-            yield return new TypeRegistration<AssertReply>(AssertReply.DeclarativeType);
-            yield return new TypeRegistration<AssertReplyOneOf>(AssertReplyOneOf.DeclarativeType);
-            yield return new TypeRegistration<AssertReplyActivity>(AssertReplyActivity.DeclarativeType);
+            yield return new DeclarativeType<AssertCondition>(AssertCondition.DeclarativeType);
+            yield return new DeclarativeType<TestScript>(TestScript.DeclarativeType);
+            yield return new DeclarativeType<UserSays>(UserSays.DeclarativeType);
+            yield return new DeclarativeType<UserTyping>(UserTyping.DeclarativeType);
+            yield return new DeclarativeType<UserConversationUpdate>(UserConversationUpdate.DeclarativeType);
+            yield return new DeclarativeType<UserActivity>(UserActivity.DeclarativeType);
+            yield return new DeclarativeType<UserDelay>(UserDelay.DeclarativeType);
+            yield return new DeclarativeType<AssertReply>(AssertReply.DeclarativeType);
+            yield return new DeclarativeType<AssertReplyOneOf>(AssertReplyOneOf.DeclarativeType);
+            yield return new DeclarativeType<AssertReplyActivity>(AssertReplyActivity.DeclarativeType);
         }
 
-        public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)
+        public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<string> paths)
         {
-            yield return new InterfaceConverter<OnCondition>(refResolver, sourceMap, paths);
-            yield return new InterfaceConverter<TestAction>(refResolver, sourceMap, paths);
-            yield return new InterfaceConverter<EntityRecognizer>(refResolver, sourceMap, paths);
-            yield return new InterfaceConverter<ITriggerSelector>(refResolver, sourceMap, paths);
+            yield return new InterfaceConverter<OnCondition>(resourceExplorer, paths);
+            yield return new InterfaceConverter<TestAction>(resourceExplorer, paths);
+            yield return new InterfaceConverter<EntityRecognizer>(resourceExplorer, paths);
+            yield return new InterfaceConverter<ITriggerSelector>(resourceExplorer, paths);
 
             yield return new IntExpressionConverter();
             yield return new NumberExpressionConverter();
             yield return new StringExpressionConverter();
             yield return new ValueExpressionConverter();
             yield return new BoolExpressionConverter();
-            yield return new DialogExpressionConverter(refResolver, sourceMap, paths);
+            yield return new DialogExpressionConverter(resourceExplorer, paths);
 
             yield return new ObjectExpressionConverter<ChoiceSet>();
             yield return new ObjectExpressionConverter<ChoiceFactoryOptions>();
@@ -185,14 +182,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new ArrayExpressionConverter<Choice>();
 
             yield return new EnumExpressionConverter<ActionChangeType>();
-            yield return new EnumExpressionConverter<ArrayChangeType>();
+            yield return new EnumExpressionConverter<EditArray.ArrayChangeType>();
             yield return new EnumExpressionConverter<AttachmentOutputFormat>();
             yield return new EnumExpressionConverter<ListStyle>();
             yield return new EnumExpressionConverter<ChoiceOutputFormat>();
 
             yield return new ChoiceSetConverter();
             yield return new ActivityTemplateConverter();
-            yield return new JObjectConverter(refResolver);
+            yield return new JObjectConverter(resourceExplorer);
+        }
+
+        public virtual IEnumerable<MemoryScope> GetMemoryScopes()
+        {
+            yield return new TurnMemoryScope();
+            yield return new SettingsMemoryScope();
+            yield return new DialogMemoryScope();
+            yield return new DialogClassMemoryScope();
+            yield return new ClassMemoryScope();
+            yield return new ThisMemoryScope();
+            yield return new ConversationMemoryScope();
+            yield return new UserMemoryScope();
+        }
+
+        public virtual IEnumerable<IPathResolver> GetPathResolvers()
+        {
+            yield return new DollarPathResolver();
+            yield return new HashPathResolver();
+            yield return new AtAtPathResolver();
+            yield return new AtPathResolver();
+            yield return new PercentPathResolver();
+        }
+
+        public IEnumerable<ExpressionEvaluator> GetExpressionEvaluators()
+        {
+            yield break;
         }
     }
 }

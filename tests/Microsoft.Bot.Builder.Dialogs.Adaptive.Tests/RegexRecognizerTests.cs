@@ -2,11 +2,13 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Tests;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,12 +18,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
     [TestClass]
     public class RegexRecognizerTests
     {
+        public static ResourceExplorer ResourceExplorer { get; set; }
+
         public TestContext TestContext { get; set; }
+
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
+        {
+            ResourceExplorer = new ResourceExplorer()
+                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(RegexRecognizerTests)), monitorChanges: false);
+        }
 
         [TestMethod]
         public async Task RegexRecognizerTests_Entities()
         {
-            await TestUtils.RunTestScript();
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]

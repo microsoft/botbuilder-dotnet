@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using Microsoft.Bot.Expressions.parser;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Expressions
@@ -24,7 +25,7 @@ namespace Microsoft.Bot.Expressions
         /// <param name="lookup">Delegate to lookup evaluation information from type string.</param>
         public ExpressionEngine(EvaluatorLookup lookup = null)
         {
-            EvaluatorLookup = lookup ?? BuiltInFunctions.Lookup;
+            EvaluatorLookup = lookup ?? ExpressionFunctions.Lookup;
         }
 
         /// <summary>
@@ -64,7 +65,7 @@ namespace Microsoft.Bot.Expressions
             return parser.file()?.expression();
         }
 
-        private class ExpressionTransformer : ExpressionBaseVisitor<Expression>
+        private class ExpressionTransformer : ExpressionParserBaseVisitor<Expression>
         {
             private readonly EvaluatorLookup _lookup;
 
@@ -178,15 +179,40 @@ namespace Microsoft.Bot.Expressions
                 }
             }
 
+            public override Expression VisitStringInterpolationAtom([NotNull] ExpressionParser.StringInterpolationAtomContext context)
+            {
+                var children = new List<Expression>();
+                foreach (ITerminalNode node in context.stringInterpolation().children)
+                {
+                    switch (node.Symbol.Type)
+                    {
+                        case ExpressionParser.TEMPLATE:
+                            var expressionString = TrimExpression(node.GetText());
+                            children.Add(new ExpressionEngine(_lookup).Parse(expressionString));
+                            break;
+                        case ExpressionParser.TEXT_CONTENT:
+                            children.Add(Expression.ConstantExpression(node.GetText()));
+                            break;
+                        case ExpressionParser.ESCAPE_CHARACTER:
+                            children.Add(Expression.ConstantExpression(EvalEscape(node.GetText())));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                return MakeExpression(ExpressionType.Concat, children.ToArray());
+            }
+
             public override Expression VisitConstantAtom([NotNull] ExpressionParser.ConstantAtomContext context)
             {
                 var text = context.GetText();
-                if (string.IsNullOrWhiteSpace(text.TrimStart('[').TrimEnd(']')))
+                if (text.StartsWith("[") && text.EndsWith("]") && string.IsNullOrWhiteSpace(text.Substring(1, text.Length - 2))) 
                 {
                     return Expression.ConstantExpression(new JArray());
                 }
 
-                if (string.IsNullOrWhiteSpace(text.TrimStart('{').TrimEnd('}')))
+                if (text.StartsWith("{") && text.EndsWith("}") && string.IsNullOrWhiteSpace(text.Substring(1, text.Length - 2)))
                 {
                     return Expression.ConstantExpression(new JObject());
                 }
@@ -206,6 +232,29 @@ namespace Microsoft.Bot.Expressions
                         yield return Visit(expression);
                     }
                 }
+            }
+
+            private string EvalEscape(string exp)
+            {
+                var commonEscapes = new List<string>() { "\\r", "\\n", "\\t" };
+                if (commonEscapes.Contains(exp))
+                {
+                    return Regex.Unescape(exp);
+                }
+
+                return exp.Substring(1);
+            }
+
+            private string TrimExpression(string expression)
+            {
+                var result = expression.Trim().TrimStart('@').Trim();
+
+                if (result.StartsWith("{") && result.EndsWith("}"))
+                {
+                    result = result.Substring(1, result.Length - 2);
+                }
+
+                return result;
             }
         }
     }

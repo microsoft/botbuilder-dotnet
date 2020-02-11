@@ -9,6 +9,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
+    /// <summary>
+    /// JsonConverter to load ITemplate&lt;Activity&gt;.
+    /// </summary>
     public class ActivityTemplateConverter : JsonConverter
     {
         public override bool CanRead => true;

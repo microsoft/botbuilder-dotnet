@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Middleware for logging incoming and outgoing activitites to an <see cref="ITranscriptStore"/>.
+    /// Middleware for logging incoming and outgoing activities to an <see cref="ITranscriptStore"/>.
     /// </summary>
     public class TranscriptLoggerMiddleware : IMiddleware
     {
@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder
             {
                 var activity = transcript.Dequeue();
 
-                // As we are deliberately not using await, disable teh associated warning.
+                // As we are deliberately not using await, disable the associated warning.
 #pragma warning disable 4014
                 logger.LogActivityAsync(activity).ContinueWith(
                     task =>

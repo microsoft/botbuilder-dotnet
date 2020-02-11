@@ -50,13 +50,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         [JsonProperty("ifFalse")]
         public ITriggerSelector IfFalse { get; set; }
 
-        /// <summary>
-        /// Gets or sets the expression parser to use.
-        /// </summary>
-        /// <value>Expression parser.</value>
-        [Newtonsoft.Json.JsonIgnore]
-        public IExpressionParser Parser { get; set; } = new ExpressionEngine();
-
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate = true)
         {
             _conditionals = conditionals.ToList();

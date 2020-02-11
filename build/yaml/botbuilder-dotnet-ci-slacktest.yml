@@ -13,6 +13,17 @@ variables:
   BuildConfiguration: 'debug'
   BuildPlatform: 'any cpu'
   Parameters.solution: Microsoft.Bot.Builder.sln
+#  AppId: define this in Azure
+#  AppSecret: define this in Azure
+#  AzureSubscription: define this in Azure
+#  BotGroup: define this in Azure
+#  BotName: define this in Azure
+#  FacebookAccessToken: define this in Azure
+#  FacebookAppSecret: define this in Azure
+#  SlackVerificationToken: define this in Azure
+#  SlackBotToken: define this in Azure
+#  SlackClientSigningSecret: define this in Azure
+#  SlackChannel: define this in Azure
 
 steps:
 - template: ci-build-steps.yml

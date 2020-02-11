@@ -1286,7 +1286,7 @@ namespace Microsoft.Bot.Builder
             var appPassword = await CredentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
 
             // Construct an AppCredentials using the app + password combination. If government, we create a government specific credential.
-            return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
+            return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
         }
 
         /// <summary>
@@ -1366,11 +1366,11 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Gets the application credentials. App Credentials are cached so as to ensure we are not refreshing
-        /// token every time.
+        /// Gets the application credentials. App credentials are cached to avoid refreshing the
+        /// token each time.
         /// </summary>
-        /// <param name="appId">The application identifier (AAD Id for the bot).</param>
-        /// <param name="oAuthScope">The scope for the token, skills will use the Skill App Id. </param>
+        /// <param name="appId">The application identifier (AAD ID for the bot).</param>
+        /// <param name="oAuthScope">The scope for the token. Skills use the skill's app ID. </param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>App credentials.</returns>
         private async Task<AppCredentials> GetAppCredentialsAsync(string appId, string oAuthScope = null, CancellationToken cancellationToken = default)

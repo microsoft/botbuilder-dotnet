@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
@@ -19,17 +20,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests
     public class ActivityCheckerTest
     {
         private static ResourceExplorer resourceExplorer;
-
+        
         public TestContext TestContext { get; set; }
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-            DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
-            DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
-
-            resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder());
+            resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
         }
 
         [TestMethod]
