@@ -18,10 +18,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
     public static class FacebookHelper
     {
         /// <summary>
-        /// Converts an Activity object to a Facebook messenger outbound message ready for the API.
+        /// Converts a Bot Framework activity to a Facebook messenger outbound message ready for the API.
         /// </summary>
         /// <param name="activity">The activity to be converted to Facebook message.</param>
         /// <returns>The resulting message.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="activity"/> is null.</exception>
         public static FacebookMessage ActivityToFacebook(Activity activity)
         {
             if (activity == null)
@@ -80,10 +81,12 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         }
 
         /// <summary>
-        /// Handles each individual message inside a webhook payload (webhook may deliver more than one message at a time).
+        /// Converts a single Facebook messenger message to a Bot Framework activity.
         /// </summary>
         /// <param name="message">The message to be processed.</param>
         /// <returns>An Activity with the result.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="message"/> is null.</exception>
+        /// <remarks>A webhook call may deliver more than one message at a time.</remarks>
         public static Activity ProcessSingleMessage(FacebookMessage message)
         {
             if (message == null)
@@ -152,10 +155,10 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         }
 
         /// <summary>
-        /// Extracts attachments from the facebook message.
+        /// Extracts attachments from a Facebook message.
         /// </summary>
-        /// <param name="message">The <see cref="Message"/>used for input.</param>
-        /// <returns>A List of <see cref="Attachment"/>.</returns>
+        /// <param name="message">The message to get attachments from.</param>
+        /// <returns>A List of the attachments contained within the message.</returns>
         public static List<Attachment> HandleMessageAttachments(Message message)
         {
             var attachmentsList = new List<Attachment>();
@@ -173,16 +176,19 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             return attachmentsList;
         }
-        
+
         /// <summary>
-        /// Writes the HttpResponse.
+        /// Writes an HTTP response payload.
         /// </summary>
-        /// <param name="response">The httpResponse.</param>
-        /// <param name="code">The status code to be written.</param>
+        /// <param name="response">The HTTP response to write to.</param>
+        /// <param name="code">The status code to apply.</param>
         /// <param name="text">The text to be written.</param>
         /// <param name="encoding">The encoding for the text.</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="response"/>, <paramref name="text"/>,
+        /// or <paramref name="encoding"/> is null.</exception>
         public static async Task WriteAsync(HttpResponse response, HttpStatusCode code, string text, Encoding encoding, CancellationToken cancellationToken)
         {
             if (response == null)
@@ -211,8 +217,8 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <summary>
         /// Generates an activity that displays a typing indicator.
         /// </summary>
-        /// <param name="recipientId">The id of the recipient of the message.</param>
-        /// <returns>An activity with sender_action equal to 'typing_on'.</returns>
+        /// <param name="recipientId">The ID of the recipient of the message.</param>
+        /// <returns>An activity with sender_action equal to "typing_on".</returns>
         public static Activity GenerateTypingActivity(string recipientId)
         {
             var activity = new Activity()

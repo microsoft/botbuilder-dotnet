@@ -8,30 +8,30 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
     public class FacebookRecipient
     {
         /// <summary>
-        /// Gets or sets the Id.
+        /// Gets or sets the message recipient ID.
         /// </summary>
-        /// <value>Page Scoped User ID (PSID) of the message recipient.</value>
+        /// <value>The Page-scoped ID (PSID) of the message recipient.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the UserRef.
+        /// Gets or sets the value for the `user_ref` parameter of the checkbox plugin.
         /// </summary>
         /// <value>Used for the checkbox plugin.</value>
         [JsonProperty(PropertyName = "user_ref")]
         public string UserRef { get; set; }
 
         /// <summary>
-        /// Gets or sets the PostId.
+        /// Gets or sets the post ID.
         /// </summary>
-        /// <value>Used for Private Replies to reference the visitor post to reply to.</value>
+        /// <value>Used for private replies to reference the visitor post to reply to.</value>
         [JsonProperty(PropertyName = "post_id")]
         public string PostId { get; set; }
 
         /// <summary>
-        /// Gets or sets the CommentId.
+        /// Gets or sets the comment ID.
         /// </summary>
-        /// <value>Used for Private Replies to reference the post comment to reply to.</value>
+        /// <value>Used for private replies to reference the visitor comment to reply to.</value>
         [JsonProperty(PropertyName = "comment_id")]
         public string CommentId { get; set; }
     }
