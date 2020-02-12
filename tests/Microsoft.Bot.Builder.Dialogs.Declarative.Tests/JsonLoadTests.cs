@@ -4,21 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.QnA;
-using Microsoft.Bot.Builder.AI.QnA.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
@@ -34,13 +26,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-            DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
-            DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration()); 
-            DeclarativeTypeLoader.AddComponent(new QnAMakerComponentRegistration());
-            TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
             string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
-            resourceExplorer = new ResourceExplorer().LoadProject(projPath);
+            resourceExplorer = new ResourceExplorer()
+                .LoadProject(projPath, monitorChanges: false);
         }
 
         [ClassCleanup]
@@ -382,52 +370,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
         private TestFlow BuildQnAMakerTestFlow()
         {
-            var adapter = InitializeAdapter()
-                .Use(new RegisterClassMiddleware<IQnAMakerClient>(new MockQnAMakerClient()));
-            var resource = resourceExplorer.GetResource("QnAMakerBot.main.dialog");
-            var dialog = DeclarativeTypeLoader.Load<AdaptiveDialog>(resource, resourceExplorer, DebugSupport.SourceMap);
+            var adapter = InitializeAdapter();
+            var dialog = resourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
             var qnaMakerDialog = (QnAMakerDialog2)dialog.Triggers[0].Actions[0];
-            
+
             dialog.Triggers[0].Actions[0] = qnaMakerDialog;
 
-            return GetTestAdapter(dialog, adapter);
+            return GetTestFlow(dialog, adapter);
         }
 
         private TestFlow BuildQnAMakerTestFlow_IsTest_True()
         {
-            var adapter = InitializeAdapter()
-                .Use(new RegisterClassMiddleware<IQnAMakerClient>(new MockQnAMakerClient()));
-            var resource = resourceExplorer.GetResource("QnAMakerBot.main.dialog");
-            var dialog = DeclarativeTypeLoader.Load<AdaptiveDialog>(resource, resourceExplorer, DebugSupport.SourceMap);
+            var adapter = InitializeAdapter();
+            var dialog = resourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
             var qnaMakerDialog = (QnAMakerDialog2)dialog.Triggers[0].Actions[0];
             qnaMakerDialog.IsTest = true;
             dialog.Triggers[0].Actions[0] = qnaMakerDialog;
 
-            return GetTestAdapter(dialog, adapter);
+            return GetTestFlow(dialog, adapter);
         }
 
         private TestFlow BuildQnAMakerTestFlow_RankerType_QuestionOnly()
         {
-            var adapter = InitializeAdapter()
-                .Use(new RegisterClassMiddleware<IQnAMakerClient>(new MockQnAMakerClient()));
-            var resource = resourceExplorer.GetResource("QnAMakerBot.main.dialog");
-            var dialog = DeclarativeTypeLoader.Load<AdaptiveDialog>(resource, resourceExplorer, DebugSupport.SourceMap);
+            var adapter = InitializeAdapter();
+            var dialog = resourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
             var qnaMakerDialog = (QnAMakerDialog2)dialog.Triggers[0].Actions[0];
             qnaMakerDialog.RankerType = RankerTypes.QuestionOnly;
             dialog.Triggers[0].Actions[0] = qnaMakerDialog;
 
-            return GetTestAdapter(dialog, adapter);
-        }
-
-        private Stream GetResponse(string fileName)
-        {
-            var path = Path.Combine(Environment.CurrentDirectory, "resources", fileName);
-            return File.OpenRead(path);
+            return GetTestFlow(dialog, adapter);
         }
 
         private TestAdapter InitializeAdapter(bool sendTrace = false)
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
@@ -435,23 +410,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, convoState)
-                .UseResourceExplorer(resourceExplorer)
-                .UseAdaptiveDialogs()
-                .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             return adapter;
         }
 
-        private Dialog FetchDialogFromResource(string resourceName)
+        private TestFlow GetTestFlow(Dialog dialog, TestAdapter adapter)
         {
-            var resource = resourceExplorer.GetResource(resourceName);
-            return DeclarativeTypeLoader.Load<Dialog>(resource, resourceExplorer, DebugSupport.SourceMap);
-        }
-
-        private TestFlow GetTestAdapter(Dialog dialog, TestAdapter adapter)
-        {
-            var dm = new DialogManager(dialog);
+            var dm = new DialogManager(dialog)
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration();
+            dm.TurnState.Add<IQnAMakerClient>(new MockQnAMakerClient()); 
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -462,8 +431,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         private TestFlow BuildTestFlow(string resourceName, bool sendTrace = false)
         {
             var adapter = InitializeAdapter(sendTrace);
-            var dialog = FetchDialogFromResource(resourceName);
-            return GetTestAdapter(dialog, adapter);
+            var dialog = resourceExplorer.LoadType<Dialog>(resourceName);
+            return GetTestFlow(dialog, adapter);
         }
     }
 }

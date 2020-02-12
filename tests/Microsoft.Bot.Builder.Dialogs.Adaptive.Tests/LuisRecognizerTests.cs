@@ -2,12 +2,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Luis;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.MockLuis;
+using Microsoft.Bot.Expressions.Converters;
 using Microsoft.Bot.Expressions.Properties;
-using Microsoft.Bot.Expressions.Properties.Converters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -65,32 +67,47 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             'endpointKey': '=settings.luis.endpointKey', 'dynamicLists': " + DynamicListJSon + "}";
 
         private readonly string dynamicListsDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\LuisRecognizerTests");
+        
+        public static ResourceExplorer ResourceExplorer { get; set; }
+
+        public TestContext TestContext { get; set; }
+
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
+        {
+            ResourceExplorer = new ResourceExplorer()
+                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(LuisRecognizerTests)), monitorChanges: false)
+                .RegisterType(LuisAdaptiveRecognizer.DeclarativeType, typeof(MockLuisRecognizer), new MockLuisLoader());
+        }
 
         [TestMethod]
         public async Task DynamicLists()
         {
             var config = new ConfigurationBuilder()
-                .UseLuisSettings(dynamicListsDirectory, "TestBot")
+                .UseMockLuisSettings(dynamicListsDirectory, "TestBot")
                 .Build();
-            await TestUtils.RunTestScript(configuration: config);
+            HostContext.Current.Set<IConfiguration>(config);
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task DynamicListsExpression()
         {
             var config = new ConfigurationBuilder()
-                .UseLuisSettings(dynamicListsDirectory, "TestBot")
+                .UseMockLuisSettings(dynamicListsDirectory, "TestBot")
                 .Build();
-            await TestUtils.RunTestScript(configuration: config);
+            HostContext.Current.Set<IConfiguration>(config);
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task ExternalEntities()
         {
             var config = new ConfigurationBuilder()
-                .UseLuisSettings(dynamicListsDirectory, "TestBot")
+                .UseMockLuisSettings(dynamicListsDirectory, "TestBot")
                 .Build();
-            await TestUtils.RunTestScript(configuration: config);
+            HostContext.Current.Set<IConfiguration>(config);
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]

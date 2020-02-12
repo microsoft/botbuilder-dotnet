@@ -4,22 +4,24 @@
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Luis;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
-using Microsoft.Bot.Expressions.Properties.Converters;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Expressions.Converters;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.Luis
 {
-    public class LuisComponentRegistration : ComponentRegistration
+    /// <summary>
+    /// Define component assets for Luis.
+    /// </summary>
+    public class LuisComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
-        public override IEnumerable<TypeRegistration> GetTypes()
+        public IEnumerable<DeclarativeType> GetDeclarativeTypes()
         {
-            yield return new TypeRegistration<LuisAdaptiveRecognizer>(LuisAdaptiveRecognizer.DeclarativeType);
+            yield return new DeclarativeType<LuisAdaptiveRecognizer>(LuisAdaptiveRecognizer.DeclarativeType);
         }
 
-        public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)
+        public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<string> paths)
         {
             yield return new ArrayExpressionConverter<DynamicList>();
         }

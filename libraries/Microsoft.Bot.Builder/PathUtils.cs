@@ -5,11 +5,12 @@ namespace Microsoft.Bot.Builder
     public static class PathUtils
     {
         /// <summary>
-        /// Normalize authored path to os path.
+        /// Normalizes authored path to OS-compatible path.
         /// </summary>
         /// <remarks>
-        /// path is from authored content which doesn't know what OS it is running on.
-        /// This method treats / and \ both as separators regardless of OS, for windows that means / -> \ and for linux/mac \ -> /.
+        /// Path is from authored content which doesn't know what OS it is running on.
+        /// This method treats / and \ both as separators regardless of OS, for Windows that means
+        /// changing all `/` characters to `/`, and for Linux/Mac `\` to `/`.
         /// This allows author to use ../foo.lg or ..\foo.lg as equivalents for importing.
         /// </remarks>
         /// <param name="ambigiousPath">authoredPath.</param>
@@ -18,12 +19,12 @@ namespace Microsoft.Bot.Builder
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                // map linux/mac sep -> windows
+                // Map Linux/Mac separator to Windows.
                 return ambigiousPath.Replace("/", "\\");
             }
             else
             {
-                // map windows sep -> linux/mac
+                // Map Windows separator to Linux/Mac.
                 return ambigiousPath.Replace("\\", "/");
             }
         }

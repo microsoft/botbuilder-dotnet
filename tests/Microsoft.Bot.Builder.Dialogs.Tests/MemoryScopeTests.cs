@@ -10,6 +10,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Extensions.Configuration;
@@ -41,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             await CreateDialogContext(async (dc, ct) =>
             {
-                var dsm = new DialogStateManager(dc);
+                var dsm = dc.GetState() as DialogStateManager;
                 foreach (var memoryScope in dsm.Configuration.MemoryScopes.Where(ms => !(ms is ThisMemoryScope || ms is DialogMemoryScope || ms is ClassMemoryScope || ms is DialogClassMemoryScope)))
                 {
                     var memory = memoryScope.GetMemory(dc);
@@ -91,10 +94,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .AddInMemoryCollection(new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("test", "yoyo") })
                 .AddJsonFile(@"test.settings.json")
                 .Build();
+            
+            HostContext.Current.Set<IConfiguration>(configuration);
+
             var storage = new MemoryStorage();
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .UseStorage(storage)
-                .Use(new RegisterClassMiddleware<Extensions.Configuration.IConfiguration>(configuration))
                 .UseState(new UserState(storage), new ConversationState(storage))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
@@ -140,7 +145,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .UseState(new UserState(storage), new ConversationState(storage))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
-            DialogManager dm = new DialogManager(new PathResolverTestDialog());
+            DialogManager dm = new DialogManager(new PathResolverTestDialog())
+                .UseResourceExplorer(new ResourceExplorer())
+                .UseLanguageGeneration();
 
             await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
             {

@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Value Expression against memory. This value expression will be combined with value expression in case statements to make a bool expression.
         /// </value>
         [JsonProperty("condition")]
-        public ValueExpression Condition { get; set; } 
+        public Expression Condition { get; set; }
 
         /// <summary>
         /// Gets or sets an optional expression which if is true will disable this action.
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } 
+        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets default case.
@@ -121,8 +121,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                         foreach (var cse in this.Cases)
                         {
-                            // Values for cases are always coerced to string
-                            var caseCondition = Expression.EqualsExpression(this.Condition.ToExpression(), cse.CreateValueExpression());
+                            Expression caseExpression = null;
+
+                            // Values for cases are always coerced to constant
+                            if (long.TryParse(cse.Value, out long i))
+                            {
+                                caseExpression = Expression.ConstantExpression(i);
+                            }
+                            else if (float.TryParse(cse.Value, out float f))
+                            {
+                                caseExpression = Expression.ConstantExpression(f);
+                            }
+                            else if (bool.TryParse(cse.Value, out bool b))
+                            {
+                                caseExpression = Expression.ConstantExpression(b);
+                            }
+                            else
+                            {
+                                caseExpression = Expression.ConstantExpression(cse.Value);
+                            }
+
+                            var caseCondition = Expression.EqualsExpression(this.Condition, caseExpression);
 
                             // Map of expression to actions
                             this.caseExpressions[cse.Value] = caseCondition;
@@ -159,7 +178,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}({this.Condition})";
+            return $"{this.GetType().Name}({this.Condition?.ToString()})";
         }
     }
 }

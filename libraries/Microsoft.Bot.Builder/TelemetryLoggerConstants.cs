@@ -4,7 +4,7 @@
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// The Telemetry Logger Event names.
+    /// Defines names of common events for use with a <see cref="IBotTelemetryClient"/> object.
     /// </summary>
     public static class TelemetryLoggerConstants
     {

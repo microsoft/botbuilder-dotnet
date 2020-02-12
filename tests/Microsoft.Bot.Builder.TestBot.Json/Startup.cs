@@ -20,9 +20,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         {
             this.Configuration = configuration;
             this.HostingEnvironment = env;
-
-            // TODO get rid of this dependency
-            TypeFactory.Configuration = Configuration;
         }
 
         private IConfiguration Configuration { get; set; }

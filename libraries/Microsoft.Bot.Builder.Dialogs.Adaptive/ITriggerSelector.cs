@@ -15,12 +15,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     public interface ITriggerSelector
     {
         /// <summary>
-        /// Gets or sets the expression parser for expressions.
-        /// </summary>
-        /// <value>Expression parser.</value>
-        IExpressionParser Parser { get; set; }
-
-        /// <summary>
         /// Initialize the selector with the set of rules.
         /// </summary>
         /// <param name="conditionHandlers">Possible rules to match.</param>

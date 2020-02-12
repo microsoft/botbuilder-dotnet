@@ -71,8 +71,11 @@
                 <Source>.*\\FacebookThreadControl.cs</Source>
                 <Source>.*\\HandoverConstants.cs</Source>
                 <Source>.*\\AttachmentPayload.cs</Source>
+                <Source>.*\\CommonRegexLexer.cs</Source>
                 <Source>.*\\CommonRegexParser.cs</Source>
+                <Source>.*\\ExpressionLexer.cs</Source>
                 <Source>.*\\ExpressionParser.cs</Source>
+                <Source>.*\\LGFileLexer.cs</Source>
                 <Source>.*\\LGFileParser.cs</Source>
               </Exclude>
             </Sources>

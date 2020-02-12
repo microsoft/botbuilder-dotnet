@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         protected virtual async Task<AppCredentials> BuildCredentialsAsync(string appId, string oAuthScope = null)
         {
             var appPassword = await CredentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
-            return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
+            return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
         }
 
         private static object GetBodyContent(string content)

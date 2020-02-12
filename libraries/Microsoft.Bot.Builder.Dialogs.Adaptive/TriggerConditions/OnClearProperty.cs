@@ -38,12 +38,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public override string GetIdentity()
             => $"{this.GetType().Name}({this.Property})";
 
-        public override Expression GetExpression(IExpressionParser factory)
+        public override Expression GetExpression()
         {
-            var expressions = new List<Expression> { base.GetExpression(factory) };
+            var expressions = new List<Expression> { base.GetExpression() };
             if (this.Property != null)
             {
-                expressions.Add(factory.Parse($"{TurnPath.DIALOGEVENT}.value.property == '{this.Property}'"));
+                expressions.Add(Expression.Parse($"{TurnPath.DIALOGEVENT}.value.property == '{this.Property}'"));
             }
 
             return Expression.AndExpression(expressions.ToArray());
