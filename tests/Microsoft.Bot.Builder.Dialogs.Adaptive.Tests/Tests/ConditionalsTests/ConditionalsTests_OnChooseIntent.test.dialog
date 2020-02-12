@@ -12,7 +12,7 @@
                     "id": "x",
                     "intents": [
                         {
-                            "intent": "DeferToRecognizer_y",
+                            "intent": "x",
                             "pattern": "test"
                         },
                         {
@@ -26,7 +26,7 @@
                     "id": "y",
                     "intents": [
                         {
-                            "intent": "DeferToRecognizer_z",
+                            "intent": "y",
                             "pattern": "test"
                         },
                         {
@@ -40,7 +40,7 @@
                     "id": "z",
                     "intents": [
                         {
-                            "intent": "DeferToRecognizer_x",
+                            "intent": "z",
                             "pattern": "test"
                         },
                         {
@@ -59,6 +59,32 @@
                         "$kind": "Microsoft.Test.AssertCondition",
                         "condition": "false",
                         "description": "Empty condition should not trigger"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnChooseIntent",
+                "intents": [
+                    "x",
+                    "y"
+                ],
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ChooseIntent:x,y"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnChooseIntent",
+                "intents": [
+                    "x",
+                    "z"
+                ],
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ChooseIntent:x,z"
                     }
                 ]
             },
