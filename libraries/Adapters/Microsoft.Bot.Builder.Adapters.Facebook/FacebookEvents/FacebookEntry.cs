@@ -44,12 +44,12 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
 
         public bool ShouldSerializeStandby()
         {
-            return Messaging.Count > 0;
+            return Standby.Count > 0;
         }
 
         public bool ShouldSerializeChanges()
         {
-            return Messaging.Count > 0;
+            return Changes.Count > 0;
         }
     }
 }
