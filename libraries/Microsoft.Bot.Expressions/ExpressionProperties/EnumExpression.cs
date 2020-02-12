@@ -42,15 +42,35 @@ namespace Microsoft.Bot.Expressions.Properties
         /// <summary>
         /// Initializes a new instance of the <see cref="EnumExpression{T}"/> class.
         /// </summary>
-        /// <param name="value">jtoken value to resolve to an enum.</param>
-        public EnumExpression(JToken value)
-            : base(value)
+        /// <param name="expression">expression to resolve to an enum.</param>
+        public EnumExpression(Expression expression)
+            : base(expression)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EnumExpression{T}"/> class.
+        /// </summary>
+        /// <param name="lambda">function (data) which evaluates to enum.</param>
+        public EnumExpression(Func<object, object> lambda)
+            : this(Expression.Lambda(lambda))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EnumExpression{T}"/> class.
+        /// </summary>
+        /// <param name="expressionOrValue">jtoken value to resolve to an enum.</param>
+        public EnumExpression(JToken expressionOrValue)
+            : base(expressionOrValue)
         {
         }
 
         public static implicit operator EnumExpression<T>(T value) => new EnumExpression<T>(value);
 
-        public static implicit operator EnumExpression<T>(string enumOrExpression) => new EnumExpression<T>(enumOrExpression);
+        public static implicit operator EnumExpression<T>(string expressionOrValue) => new EnumExpression<T>(expressionOrValue);
+
+        public static implicit operator EnumExpression<T>(Expression expression) => new EnumExpression<T>(expression);
 
         public static implicit operator EnumExpression<T>(JToken value) => new EnumExpression<T>(value);
 

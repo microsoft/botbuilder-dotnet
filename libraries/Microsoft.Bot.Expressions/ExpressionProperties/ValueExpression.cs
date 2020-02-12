@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.Bot.Expressions.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -41,10 +42,21 @@ namespace Microsoft.Bot.Expressions.Properties
             : base(value)
         {
         }
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ValueExpression"/> class.
+        /// </summary>
+        /// <param name="lambda">function (data) which evaluates to value.</param>
+        public ValueExpression(Func<object, object> lambda)
+            : this(Expression.Lambda(lambda))
+        {
+        }
 
         public static implicit operator ValueExpression(string valueOrExpression) => new ValueExpression(valueOrExpression);
 
-        public static implicit operator ValueExpression(JToken value) => new ValueExpression(value);
+        public static implicit operator ValueExpression(JToken valueOrExpression) => new ValueExpression(valueOrExpression);
+        
+        public static implicit operator ValueExpression(Expression expression) => new ValueExpression(expression);
 
         public override void SetValue(object value)
         {

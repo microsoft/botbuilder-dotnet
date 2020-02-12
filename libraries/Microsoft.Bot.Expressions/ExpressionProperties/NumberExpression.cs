@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.Bot.Expressions.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -42,16 +43,36 @@ namespace Microsoft.Bot.Expressions.Properties
         /// <summary>
         /// Initializes a new instance of the <see cref="NumberExpression"/> class.
         /// </summary>
-        /// <param name="value">jtoken to interpret as expression or number.</param>
-        public NumberExpression(JToken value)
-            : base(value)
+        /// <param name="expression">expression.</param>
+        public NumberExpression(Expression expression)
+            : base(expression)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NumberExpression"/> class.
+        /// </summary>
+        /// <param name="lambda">expression.</param>
+        public NumberExpression(Func<object, object> lambda)
+            : this(Expression.Lambda(lambda))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NumberExpression"/> class.
+        /// </summary>
+        /// <param name="expressionOrValue">jtoken to interpret as expression or number.</param>
+        public NumberExpression(JToken expressionOrValue)
+            : base(expressionOrValue)
         {
         }
 
         public static implicit operator NumberExpression(float value) => new NumberExpression(value);
         
-        public static implicit operator NumberExpression(string value) => new NumberExpression(value);
+        public static implicit operator NumberExpression(string expression) => new NumberExpression(expression);
         
-        public static implicit operator NumberExpression(JToken value) => new NumberExpression(value);
+        public static implicit operator NumberExpression(Expression expression) => new NumberExpression(expression);
+
+        public static implicit operator NumberExpression(JToken expressionOrValue) => new NumberExpression(expressionOrValue);
     }
 }

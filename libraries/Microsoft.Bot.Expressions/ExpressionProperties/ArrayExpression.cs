@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
@@ -41,16 +42,36 @@ namespace Microsoft.Bot.Expressions.Properties
         /// <summary>
         /// Initializes a new instance of the <see cref="ArrayExpression{T}"/> class.
         /// </summary>
-        /// <param name="value">JToken which is either a collection of (T) or expression which evaluates to array.</param>
-        public ArrayExpression(JToken value)
-            : base(value)
+        /// <param name="expression">expression which evaluates to array.</param>
+        public ArrayExpression(Expression expression)
+            : base(expression)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ArrayExpression{T}"/> class.
+        /// </summary>
+        /// <param name="lambda">function (data) which evaluates to array.</param>
+        public ArrayExpression(Func<object, object> lambda)
+            : this(Expression.Lambda(lambda))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ArrayExpression{T}"/> class.
+        /// </summary>
+        /// <param name="expressionOrValue">JToken which is either a collection of (T) or expression which evaluates to array.</param>
+        public ArrayExpression(JToken expressionOrValue)
+            : base(expressionOrValue)
         {
         }
 
         public static implicit operator ArrayExpression<T>(List<T> value) => new ArrayExpression<T>(value);
 
-        public static implicit operator ArrayExpression<T>(string value) => new ArrayExpression<T>(value);
+        public static implicit operator ArrayExpression<T>(string expression) => new ArrayExpression<T>(expression);
+        
+        public static implicit operator ArrayExpression<T>(Expression expression) => new ArrayExpression<T>(expression);
 
-        public static implicit operator ArrayExpression<T>(JToken value) => new ArrayExpression<T>(value);
+        public static implicit operator ArrayExpression<T>(JToken expressionOrValue) => new ArrayExpression<T>(expressionOrValue);
     }
 }

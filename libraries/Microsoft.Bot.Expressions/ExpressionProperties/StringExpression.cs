@@ -35,29 +35,55 @@ namespace Microsoft.Bot.Expressions.Properties
         /// <summary>
         /// Initializes a new instance of the <see cref="StringExpression"/> class.
         /// </summary>
-        /// <param name="valueOrExpression">string to interpret as string or expression to a string.</param>
-        public StringExpression(string valueOrExpression)
-            : base(valueOrExpression)
+        /// <param name="expressionOrValue">string to interpret as string or expression to a string.</param>
+        public StringExpression(string expressionOrValue)
+            : base(expressionOrValue)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StringExpression"/> class.
         /// </summary>
-        /// <param name="value">value to interpret as a string or expression to a string.</param>
-        public StringExpression(JToken value)
-            : base(value)
+        /// <param name="expressionOrValue">value to interpret as a string or expression to a string.</param>
+        public StringExpression(JToken expressionOrValue)
+            : base(expressionOrValue)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringExpression"/> class.
+        /// </summary>
+        /// <param name="expression">expression to a string.</param>
+        public StringExpression(Expression expression)
+            : base(expression)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringExpression"/> class.
+        /// </summary>
+        /// <param name="lambda">function (data) which evaluates to string.</param>
+        public StringExpression(Func<object, object> lambda)
+            : this(Expression.Lambda(lambda))
         {
         }
 
         public static implicit operator StringExpression(string valueOrExpression) => new StringExpression(valueOrExpression);
 
-        public static implicit operator StringExpression(JToken value) => new StringExpression(value);
+        public static implicit operator StringExpression(JToken valueOrExpression) => new StringExpression(valueOrExpression);
+
+        public static implicit operator StringExpression(Expression expression) => new StringExpression(expression);
 
         public override void SetValue(object value)
         {
             // reset state to no value or expression.
             base.SetValue(null);
+
+            if (value is Expression exp)
+            {
+                base.SetValue(value);
+                return;
+            }
 
             var stringOrExpression = (value as string) ?? (value as JValue)?.Value as string;
             if (stringOrExpression != null)

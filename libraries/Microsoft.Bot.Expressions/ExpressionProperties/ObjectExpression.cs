@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Expressions.Properties
@@ -12,29 +13,64 @@ namespace Microsoft.Bot.Expressions.Properties
     /// <remarks>String values are always interpreted as an expression, whether it has '=' prefix or not.</remarks>
     public class ObjectExpression<T> : ExpressionProperty<T>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectExpression{T}"/> class.
+        /// </summary>
         public ObjectExpression()
         {
         }
 
-        public ObjectExpression(T value) 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectExpression{T}"/> class.
+        /// </summary>
+        /// <param name="value">value.</param>
+        public ObjectExpression(T value)
             : base(value)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectExpression{T}"/> class.
+        /// </summary>
+        /// <param name="expressionOrString">expression or string.</param>
         public ObjectExpression(string expressionOrString)
             : base(expressionOrString)
         {
         }
 
-        public ObjectExpression(JToken value)
-            : base(value)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectExpression{T}"/> class.
+        /// </summary>
+        /// <param name="expression">expression.</param>
+        public ObjectExpression(Expression expression)
+            : base(expression)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectExpression{T}"/> class.
+        /// </summary>
+        /// <param name="lambda">function (data) which evaluates to object.</param>
+        public ObjectExpression(Func<object, object> lambda)
+            : this(Expression.Lambda(lambda))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectExpression{T}"/> class.
+        /// </summary>
+        /// <param name="expressionOrValue">expression or value.</param>
+        public ObjectExpression(JToken expressionOrValue)
+            : base(expressionOrValue)
         {
         }
 
         public static implicit operator ObjectExpression<T>(T value) => new ObjectExpression<T>(value);
 
-        public static implicit operator ObjectExpression<T>(string value) => new ObjectExpression<T>(value);
+        public static implicit operator ObjectExpression<T>(string expressionOrString) => new ObjectExpression<T>(expressionOrString);
 
-        public static implicit operator ObjectExpression<T>(JToken value) => new ObjectExpression<T>(value);
+        public static implicit operator ObjectExpression<T>(Expression expression) => new ObjectExpression<T>(expression);
+
+        public static implicit operator ObjectExpression<T>(JToken expressionOrvalue) => new ObjectExpression<T>(expressionOrvalue);
     }
 }
