@@ -119,24 +119,33 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
         {
             var selectedSkill = (BotFrameworkSkill)stepContext.Values[_selectedSkillKey];
 
-            var skillDialogArgs = new SkillDialogArgs();
+            Activity skillActivity = null;
             switch (selectedSkill.Id)
             {
                 case "EchoSkillBot":
                     // Echo skill only handles message activities, send a dummy utterance to get it started.
-                    skillDialogArgs = new SkillDialogArgs
-                    {
-                        ActivityType = ActivityTypes.Message,
-                        Text = "Start echo skill"
-                    };
+                    skillActivity = (Activity)Activity.CreateMessageActivity();
+                    skillActivity.Text = "Start echo skill";
                     break;
                 case "DialogSkillBot":
-                    skillDialogArgs = GetDialogSkillBotArgs(((FoundChoice)stepContext.Result).Value);
+                    skillActivity = GetDialogSkillBotActivity(((FoundChoice)stepContext.Result).Value);
                     break;
+                default:
+                    throw new Exception($"Unknown target skill id: {selectedSkill.Id}.");
             }
 
-            // Set the skill to invoke in the dialogArgs
-            skillDialogArgs.Skill = selectedSkill;
+            // Create the SkillDialogArgs
+            var skillDialogArgs = new SkillDialogArgs
+            {
+                Skill = selectedSkill,
+                Activity = skillActivity
+            };
+
+            // We are manually creating the activity to send to the skill, ensure we add the ChannelData and Properties 
+            // from the original activity so the skill gets them.
+            // Note: this is not necessary if we are just forwarding the current activity from context. 
+            skillDialogArgs.Activity.ChannelData = stepContext.Context.Activity.ChannelData;
+            skillDialogArgs.Activity.Properties = stepContext.Context.Activity.Properties;
 
             // Start the skillDialog with the arguments. 
             return await stepContext.BeginDialogAsync(nameof(SkillDialog), skillDialogArgs, cancellationToken);
@@ -181,8 +190,8 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             return choices;
         }
 
-        // Helper method to create the DialogSkillArgs for the actions supported by the DialogSkillBot
-        private SkillDialogArgs GetDialogSkillBotArgs(string selectedOption)
+        // Helper method to create the activity to be sent to the DialogSkillBot
+        private Activity GetDialogSkillBotActivity(string selectedOption)
         {
             // Note: in a real bot, the dialogArgs will be created dynamically based on the conversation
             // and what each action requires, this code hardcodes the values to make things simpler.
@@ -190,62 +199,47 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             // Send a message activity to the skill.
             if (selectedOption.StartsWith("m:", StringComparison.CurrentCultureIgnoreCase))
             {
-                var dialogArgs = new SkillDialogArgs
-                {
-                    ActivityType = ActivityTypes.Message,
-                    Text = selectedOption.Substring(2).Trim()
-                };
-                return dialogArgs;
+                var activity = (Activity)Activity.CreateMessageActivity();
+                activity.Text = selectedOption.Substring(2).Trim();
+                return activity;
             }
 
             // Send a message activity to the skill with some artificial parameters in value
             if (selectedOption.StartsWith("mv:", StringComparison.CurrentCultureIgnoreCase))
             {
-                var dialogArgs = new SkillDialogArgs
-                {
-                    ActivityType = ActivityTypes.Message,
-                    Text = selectedOption.Substring(3).Trim(),
-                    Value = new BookingDetails { Destination = "New York" }
-                };
-                return dialogArgs;
+                var activity = (Activity)Activity.CreateMessageActivity();
+                activity.Text = selectedOption.Substring(3).Trim();
+                activity.Value = new BookingDetails { Destination = "New York" };
+                return activity;
             }
 
             // Send an event activity to the skill with "OAuthTest" in the name.
             if (selectedOption.Equals("OAuthTest", StringComparison.CurrentCultureIgnoreCase))
             {
-                var dialogArgs = new SkillDialogArgs
-                {
-                    ActivityType = ActivityTypes.Event,
-                    Name = "OAuthTest"
-                };
-                return dialogArgs;
+                var activity = (Activity)Activity.CreateEventActivity();
+                activity.Name = "OAuthTest";
+                return activity;
             }
 
             // Send an event activity to the skill with "BookFlight" in the name.
             if (selectedOption.Equals("BookFlight", StringComparison.CurrentCultureIgnoreCase))
             {
-                var dialogArgs = new SkillDialogArgs
-                {
-                    ActivityType = ActivityTypes.Event,
-                    Name = "BookFlight"
-                };
-                return dialogArgs;
+                var activity = (Activity)Activity.CreateEventActivity();
+                activity.Name = "BookFlight";
+                return activity;
             }
 
             // Send an event activity to the skill "BookFlight" in the name and some testing values.
             if (selectedOption.Equals("BookFlightWithValues", StringComparison.CurrentCultureIgnoreCase))
             {
-                var dialogArgs = new SkillDialogArgs
+                var activity = (Activity)Activity.CreateEventActivity();
+                activity.Name = "BookFlight";
+                activity.Value = new BookingDetails
                 {
-                    ActivityType = ActivityTypes.Event,
-                    Name = "BookFlight",
-                    Value = new BookingDetails
-                    {
-                        Destination = "New York",
-                        Origin = "Seattle"
-                    }
+                    Destination = "New York",
+                    Origin = "Seattle"
                 };
-                return dialogArgs;
+                return activity;
             }
 
             throw new Exception($"Unable to create dialogArgs for \"{selectedOption}\".");
