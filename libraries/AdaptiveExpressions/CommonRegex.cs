@@ -61,6 +61,7 @@ namespace AdaptiveExpressions
         {
             var inputStream = new AntlrInputStream(pattern);
             var lexer = new CommonRegexLexer(inputStream);
+            lexer.RemoveErrorListeners();
             var tokenStream = new CommonTokenStream(lexer);
             var parser = new CommonRegexParser(tokenStream);
             parser.RemoveErrorListeners();

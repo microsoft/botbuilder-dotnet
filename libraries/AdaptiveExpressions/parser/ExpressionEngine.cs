@@ -57,6 +57,7 @@ namespace AdaptiveExpressions
         {
             var inputStream = new AntlrInputStream(expression);
             var lexer = new ExpressionLexer(inputStream);
+            lexer.RemoveErrorListeners();
             var tokenStream = new CommonTokenStream(lexer);
             var parser = new ExpressionParser(tokenStream);
             parser.RemoveErrorListeners();

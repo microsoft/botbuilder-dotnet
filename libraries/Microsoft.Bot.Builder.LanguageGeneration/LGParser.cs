@@ -144,6 +144,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var input = new AntlrInputStream(text);
             var lexer = new LGFileLexer(input);
+            lexer.RemoveErrorListeners();
+
             var tokens = new CommonTokenStream(lexer);
             var parser = new LGFileParser(tokens);
             parser.RemoveErrorListeners();
