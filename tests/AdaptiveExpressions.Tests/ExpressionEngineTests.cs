@@ -71,6 +71,7 @@ namespace AdaptiveExpressions.Tests
                 "user",
                 new
                 {
+                    nickname = "John",
                     lists = new
                     {
                         todo = new[]
@@ -258,8 +259,6 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
-            Test("hello == 'hello'", true),
-
             #region string interpolation test
             Test("`hi`", "hi"),
             Test(@"`hi\``", "hi`"),
@@ -268,6 +267,10 @@ namespace AdaptiveExpressions.Tests
             Test(@"`\${world}`", "${world}"), // use escape character
             Test("length(`hello ${world}`)", "hello world".Length),
             Test("json(`{'foo': '${hello}','item': '${world}'}`).foo", "hello"),
+            Test("`hello ${world}` == 'hello world'", true),
+            Test("`hello ${world}` != 'hello hello'", true),
+            Test("`hello ${user.nickname}` == 'hello John'", true),
+            Test("`hello ${user.nickname}` != 'hello Dong'", true),
             #endregion
 
             #region SetPathToProperty test
