@@ -1,40 +1,40 @@
 # PROPERTYName(value) 
-- SWITCH: @{value}
-- CASE: @{'Personname'} 
+- SWITCH: ${value}
+- CASE: ${'Personname'} 
  - personname
-- CASE: @{'Age'} 
+- CASE: ${'Age'} 
  - age
-- CASE: @{'Ordinalv2'} 
+- CASE: ${'Ordinalv2'} 
  - ordinalv2
-- CASE: @{'Geographyv2'} 
+- CASE: ${'Geographyv2'} 
  - geographyv2
-- CASE: @{'Keyphraseproperty'} 
+- CASE: ${'Keyphraseproperty'} 
  - keyphraseproperty
-- CASE: @{'Money'} 
+- CASE: ${'Money'} 
  - money
-- CASE: @{'Percentage'} 
+- CASE: ${'Percentage'} 
  - percentage
-- CASE: @{'Temperature'} 
+- CASE: ${'Temperature'} 
  - temperature
-- CASE: @{'Url'} 
+- CASE: ${'Url'} 
  - url
-- CASE: @{'Quantity'} 
+- CASE: ${'Quantity'} 
  - quantity
-- CASE: @{'Utteranceproperty'} 
+- CASE: ${'Utteranceproperty'} 
  - utteranceproperty
-- CASE: @{'Dimension'} 
+- CASE: ${'Dimension'} 
  - dimension
-- CASE: @{'Enum1'} 
+- CASE: ${'Enum1'} 
  - enum1
-- CASE: @{'Enum2'} 
+- CASE: ${'Enum2'} 
  - enum2
-- CASE: @{'Zipcodepattern'} 
+- CASE: ${'Zipcodepattern'} 
  - zipcodepattern
-- CASE: @{'Email'} 
+- CASE: ${'Email'} 
  - email
-- CASE: @{'Phonenumber'} 
+- CASE: ${'Phonenumber'} 
  - phonenumber
-- CASE: @{'Datetimev2'} 
+- CASE: ${'Datetimev2'} 
  - datetimev2
 - DEFAULT: 
- - I don't understand @{value}
+ - I don't understand ${value}

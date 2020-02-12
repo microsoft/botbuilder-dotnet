@@ -247,7 +247,7 @@ namespace AdaptiveExpressions
 
             private string TrimExpression(string expression)
             {
-                var result = expression.Trim().TrimStart('@').Trim();
+                var result = expression.Trim().TrimStart('$').Trim();
 
                 if (result.StartsWith("{") && result.EndsWith("}"))
                 {

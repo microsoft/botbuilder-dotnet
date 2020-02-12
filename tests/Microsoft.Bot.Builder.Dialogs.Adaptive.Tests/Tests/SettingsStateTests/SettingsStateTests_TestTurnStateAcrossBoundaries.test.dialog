@@ -31,7 +31,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{turn.recognized.intent}"
+                        "activity": "${turn.recognized.intent}"
                     }
                 ]
             }

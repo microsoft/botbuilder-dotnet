@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                         {
                             new SendActivity()
                             {
-                                Activity = new ActivityTemplate("@{@answer}")
+                                Activity = new ActivityTemplate("${@answer}")
                             },
                             new AssertCondition()
                             {

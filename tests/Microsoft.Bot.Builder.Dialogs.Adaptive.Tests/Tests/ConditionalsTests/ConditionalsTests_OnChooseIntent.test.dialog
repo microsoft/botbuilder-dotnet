@@ -97,7 +97,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Intent:@{turn.recognized.intent}"
+                        "activity": "Intent:${turn.recognized.intent}"
                     }
                 ]
             },
@@ -107,7 +107,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Intent:@{turn.recognized.intent}"
+                        "activity": "Intent:${turn.recognized.intent}"
                     }
                 ]
             },
@@ -117,7 +117,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Intent:@{turn.recognized.intent}"
+                        "activity": "Intent:${turn.recognized.intent}"
                     }
                 ]
             },
@@ -126,7 +126,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "UnknownIntent:@{turn.recognized.intent}"
+                        "activity": "UnknownIntent:${turn.recognized.intent}"
                     }
                 ]
             }

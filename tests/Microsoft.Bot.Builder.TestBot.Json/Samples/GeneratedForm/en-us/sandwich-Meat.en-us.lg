@@ -1,11 +1,11 @@
 # AskMeat
-- @{askEnum('Meat')}
+- ${askEnum('Meat')}
 
 # MeatName
 - meat
 
 # Meat(val)
-- @{MeatEntity(val)}
+- ${MeatEntity(val)}
 
 [sandwich-MeatEntity.lg](sandwich-MeatEntity.lg)
 

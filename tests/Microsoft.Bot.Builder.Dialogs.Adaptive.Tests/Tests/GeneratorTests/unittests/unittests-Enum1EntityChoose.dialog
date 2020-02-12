@@ -6,7 +6,7 @@
     "actions": [
         {
             "$kind": "Microsoft.Ask",
-            "activity": "@{chooseEnum1Entity()}",
+            "activity": "${chooseEnum1Entity()}",
             "expectedProperties": ["Enum1"]
         }
     ]

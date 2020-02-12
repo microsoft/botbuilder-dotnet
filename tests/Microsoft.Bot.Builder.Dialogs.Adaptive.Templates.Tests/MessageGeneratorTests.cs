@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var data = new JObject();
             data["title"] = "titleContent";
             data["text"] = "textContent";
-            var cardActionLgResult = GetLGFile().Evaluate("@{HerocardWithCardAction()}", data);
+            var cardActionLgResult = GetLGFile().Evaluate("${HerocardWithCardAction()}", data);
             activity = ActivityFactory.CreateActivity(cardActionLgResult);
             AssertCardActionActivity(activity);
         }

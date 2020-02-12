@@ -17,7 +17,7 @@
                 },
                 {
                     "$kind": "Microsoft.LogAction",
-                    "text": "@{user.name}"
+                    "text": "${user.name}"
                 }
             ]
         }

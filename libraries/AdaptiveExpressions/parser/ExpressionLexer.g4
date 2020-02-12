@@ -73,7 +73,7 @@ mode STRING_INTERPOLATION_MODE;
 
 STRING_INTERPOLATION_END : '`' {ignoreWS = true;} -> type(STRING_INTERPOLATION_START), popMode;
 
-TEMPLATE : '@' '{' (STRING | ~[\r\n{}'"])*? '}';
+TEMPLATE : '$' '{' (STRING | ~[\r\n{}'"])*? '}';
 
 ESCAPE_CHARACTER : '\\' ~[\r\n]?;
 

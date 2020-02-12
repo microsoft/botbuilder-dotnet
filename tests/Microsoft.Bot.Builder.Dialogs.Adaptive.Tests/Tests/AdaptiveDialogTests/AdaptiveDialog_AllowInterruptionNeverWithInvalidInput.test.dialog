@@ -28,7 +28,7 @@
                         "allowInterruptions": "False",
                         "property": "user.age",
                         "prompt": "What is your age?",
-                        "invalidPrompt": "Sorry. @{this.value} does not work. I'm looking for a value between 1-150. What is your age?",
+                        "invalidPrompt": "Sorry. ${this.value} does not work. I'm looking for a value between 1-150. What is your age?",
                         "validations": [
                             "int(this.value) >= 1",
                             "int(this.value) <= 150"
@@ -36,7 +36,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "I have @{user.age} as your age"
+                        "activity": "I have ${user.age} as your age"
                     }
                 ]
             },
