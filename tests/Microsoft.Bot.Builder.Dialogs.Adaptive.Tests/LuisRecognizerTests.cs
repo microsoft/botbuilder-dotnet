@@ -4,12 +4,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Converters;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Luis;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.MockLuis;
-using Microsoft.Bot.Expressions.Converters;
-using Microsoft.Bot.Expressions.Properties;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;

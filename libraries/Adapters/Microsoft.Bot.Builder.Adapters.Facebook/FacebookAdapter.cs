@@ -100,15 +100,15 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                         if (activity.Name.Equals(HandoverConstants.PassThreadControl, StringComparison.Ordinal))
                         {
                             var recipient = (string)activity.Value == "inbox" ? HandoverConstants.PageInboxId : (string)activity.Value;
-                            await _facebookClient.PassThreadControlAsync(recipient, activity.Conversation.Id, HandoverConstants.MetadataPassThreadControl).ConfigureAwait(false);
+                            await _facebookClient.PassThreadControlAsync(recipient, activity.Conversation.Id, HandoverConstants.MetadataPassThreadControl, cancellationToken).ConfigureAwait(false);
                         }
                         else if (activity.Name.Equals(HandoverConstants.TakeThreadControl, StringComparison.Ordinal))
                         {
-                            await _facebookClient.TakeThreadControlAsync(activity.Conversation.Id, HandoverConstants.MetadataTakeThreadControl).ConfigureAwait(false);
+                            await _facebookClient.TakeThreadControlAsync(activity.Conversation.Id, HandoverConstants.MetadataTakeThreadControl, cancellationToken).ConfigureAwait(false);
                         }
                         else if (activity.Name.Equals(HandoverConstants.RequestThreadControl, StringComparison.Ordinal))
                         {
-                            await _facebookClient.RequestThreadControlAsync(activity.Conversation.Id, HandoverConstants.MetadataRequestThreadControl).ConfigureAwait(false);
+                            await _facebookClient.RequestThreadControlAsync(activity.Conversation.Id, HandoverConstants.MetadataRequestThreadControl, cancellationToken).ConfigureAwait(false);
                         }
                     }
 
@@ -155,11 +155,13 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// </summary>
         /// <param name="reference">A reference to the conversation to continue.</param>
         /// <param name="logic">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>Call this method to proactively send a message to a conversation.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="logic"/> or
         /// <paramref name="reference"/> is null.</exception>
-        public async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic)
+        public async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic, CancellationToken cancellationToken)
         {
             if (reference == null)
             {
@@ -175,7 +177,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             using (var context = new TurnContext(this, request))
             {
-                await RunPipelineAsync(context, logic, default).ConfigureAwait(false);
+                await RunPipelineAsync(context, logic, cancellationToken).ConfigureAwait(false);
             }
         }
 

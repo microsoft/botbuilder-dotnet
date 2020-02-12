@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
         /// <returns>`true` to serialize the property; otherwise, `false`.</returns>
         public bool ShouldSerializeStandby()
         {
-            return Messaging.Count > 0;
+            return Standby.Count > 0;
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
         /// <returns>`true` to serialize the property; otherwise, `false`.</returns>
         public bool ShouldSerializeChanges()
         {
-            return Messaging.Count > 0;
+            return Changes.Count > 0;
         }
     }
 }
