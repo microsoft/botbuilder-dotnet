@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Bot.Expressions;
-using Microsoft.Bot.Expressions.Memory;
+using AdaptiveExpressions;
+using AdaptiveExpressions.Memory;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {

@@ -286,6 +286,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual("'dialog.abc' evaluated to null. [switchcase2] Case 'Default': Error occurred when evaluating '-I want @{dialog.abc}'. ", exception.Message);
         }
 
+        [TestMethod]
+        public void TestExpressionFormatError()
+        {
+            var diagnostics = GetDiagnostics("ExpressionFormatError.lg");
+            Assert.AreEqual(1, diagnostics.Count);
+            Assert.IsTrue(diagnostics[0].Message.Contains("Close } is missing in Expression"));
+        }
+
         private string GetExceptionExampleFilePath(string fileName)
         {
             return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "ExceptionExamples" + Path.DirectorySeparatorChar + fileName;

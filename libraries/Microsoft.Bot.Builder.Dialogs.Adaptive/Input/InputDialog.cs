@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.Bot.Expressions;
-using Microsoft.Bot.Expressions.Properties;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 

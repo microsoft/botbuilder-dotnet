@@ -58,6 +58,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public const string NoEndingInMultiline = "Expecting '```' to close the multi-line block. ";
 
+        public const string NoCloseBracket = "Close } is missing in Expression";
+
         public const string LoopDetected = "Loop detected:";
 
         public const string SyntaxError = "Unexpected content. Expecting either a comment or a template definition or an import statement. ";

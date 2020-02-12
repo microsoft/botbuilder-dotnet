@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Microsoft.Bot.Expressions.Properties;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

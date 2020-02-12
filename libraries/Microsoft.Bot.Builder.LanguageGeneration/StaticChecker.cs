@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AdaptiveExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
-using Microsoft.Bot.Expressions;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -382,18 +382,25 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private List<Diagnostic> CheckExpression(string exp, ParserRuleContext context, string prefix = "")
         {
             var result = new List<Diagnostic>();
-            exp = exp.TrimExpression();
-
-            try
+            if (!exp.EndsWith("}"))
             {
-                ExpressionParser.Parse(exp);
+                result.Add(BuildLGDiagnostic(LGErrors.NoCloseBracket, context: context));
             }
-            catch (Exception e)
+            else
             {
-                var errorMsg = prefix + LGErrors.ExpressionParseError(exp) + e.Message;
+                exp = exp.TrimExpression();
 
-                result.Add(BuildLGDiagnostic(errorMsg, context: context));
-                return result;
+                try
+                {
+                    ExpressionParser.Parse(exp);
+                }
+                catch (Exception e)
+                {
+                    var errorMsg = prefix + LGErrors.ExpressionParseError(exp) + e.Message;
+
+                    result.Add(BuildLGDiagnostic(errorMsg, context: context));
+                    return result;
+                }
             }
 
             return result;

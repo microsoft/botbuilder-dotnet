@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Antlr4.Runtime;
+using AdaptiveExpressions;
+using AdaptiveExpressions.Memory;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using Microsoft.Bot.Expressions;
-using Microsoft.Bot.Expressions.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

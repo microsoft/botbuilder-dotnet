@@ -169,8 +169,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// </summary>
         /// <param name="postType">The REST post type (GET, PUT, POST, etc).</param>
         /// <param name="content">The string content to be posted to Facebook.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A bool indicating the success of the operation.</returns>
-        public virtual async Task<bool> PostToFacebookApiAsync(string postType, string content)
+        public virtual async Task<bool> PostToFacebookApiAsync(string postType, string content, CancellationToken cancellationToken)
         {
             if (postType == null)
             {
@@ -195,7 +196,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
                 using (var client = new HttpClient())
                 {
-                    var res = await client.SendAsync(requestMessage, CancellationToken.None).ConfigureAwait(false);
+                    var res = await client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
                     return res.IsSuccessStatusCode;
                 }
             }
@@ -206,8 +207,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// </summary>
         /// <param name="userId">The sender user Id.</param>
         /// <param name="message">An optional message for the metadata paremter.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A bool value indicating the success of the operation.</returns>
-        public virtual async Task<bool> RequestThreadControlAsync(string userId, string message)
+        public virtual async Task<bool> RequestThreadControlAsync(string userId, string message, CancellationToken cancellationToken)
         {
             if (userId == null)
             {
@@ -215,7 +217,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
 
             var content = new { recipient = new { id = userId }, metadata = message };
-            return await PostToFacebookApiAsync($"/me/{HandoverConstants.RequestThreadControl}", JsonConvert.SerializeObject(content)).ConfigureAwait(false);
+            return await PostToFacebookApiAsync($"/me/{HandoverConstants.RequestThreadControl}", JsonConvert.SerializeObject(content), cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -223,8 +225,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// </summary>
         /// <param name="userId">The sender user Id.</param>
         /// <param name="message">An optional message for the metadata paremter.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A bool value indicating the success of the operation.</returns>
-        public virtual async Task<bool> TakeThreadControlAsync(string userId, string message)
+        public virtual async Task<bool> TakeThreadControlAsync(string userId, string message, CancellationToken cancellationToken)
         {
             if (userId == null)
             {
@@ -232,7 +235,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
 
             var content = new { recipient = new { id = userId }, metadata = message };
-            return await PostToFacebookApiAsync($"/me/{HandoverConstants.TakeThreadControl}", JsonConvert.SerializeObject(content)).ConfigureAwait(false);
+            return await PostToFacebookApiAsync($"/me/{HandoverConstants.TakeThreadControl}", JsonConvert.SerializeObject(content), cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -241,8 +244,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <param name="targetAppId">The Id of the target app to pass control to.</param>
         /// <param name="userId">The sender user Id.</param>
         /// <param name="message">An optional message for the metadata paremter.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A bool value indicating the success of the operation.</returns>
-        public virtual async Task<bool> PassThreadControlAsync(string targetAppId, string userId, string message)
+        public virtual async Task<bool> PassThreadControlAsync(string targetAppId, string userId, string message, CancellationToken cancellationToken)
         {
             if (targetAppId == null)
             {
@@ -255,7 +259,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
 
             var content = new { recipient = new { id = userId }, target_app_id = targetAppId, metadata = message };
-            return await PostToFacebookApiAsync($"/me/{HandoverConstants.PassThreadControl}", JsonConvert.SerializeObject(content)).ConfigureAwait(false);
+            return await PostToFacebookApiAsync($"/me/{HandoverConstants.PassThreadControl}", JsonConvert.SerializeObject(content), cancellationToken).ConfigureAwait(false);
         }
     }
 }

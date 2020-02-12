@@ -9,10 +9,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime;
+using AdaptiveExpressions;
+using AdaptiveExpressions.Memory;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using Microsoft.Bot.Expressions;
-using Microsoft.Bot.Expressions.Memory;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class Evaluator : LGFileParserBaseVisitor<object>
     {
         public const string LGType = "lgType";
-        public static readonly Regex ExpressionRecognizeRegex = new Regex(@"(?<!\\)@{((\'[^\r\n\']*\')|(\""[^\""\r\n]*\"")|(\`(\\\`|[^\`])*\`)|([^\r\n{}'""`]))*?}", RegexOptions.Compiled);
+        public static readonly Regex ExpressionRecognizeRegex = new Regex(@"(?<!\\)@{((\'[^\r\n\']*\')|(\""[^\""\r\n]*\"")|(\`(\\\`|[^\`])*\`)|([^\r\n{}'""`]))+}?", RegexOptions.Compiled);
         private const string ReExecuteSuffix = "!";
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
         private readonly bool strictMode;

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Bot.Expressions;
+using AdaptiveExpressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
