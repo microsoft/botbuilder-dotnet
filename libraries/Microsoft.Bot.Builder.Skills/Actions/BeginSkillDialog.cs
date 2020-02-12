@@ -15,9 +15,6 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
-    //SkillDialogConverter
-    //ComponentRegistration (Implement IComponentDeclarativeTypes)
-
     public class BeginSkillDialog : Dialog
     {
         [JsonProperty("$kind")]
@@ -87,9 +84,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             var activity = await Activity.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
             await dc.Context.TraceActivityAsync($"{GetType().Name}.BeginDialogAsync()", label: $"Using activity of type: {activity.Type}", cancellationToken: cancellationToken).ConfigureAwait(false);
-            if (activity.Type != ActivityTypes.Message || activity.Type != ActivityTypes.Event)
+            if (activity.Type != ActivityTypes.Message && activity.Type != ActivityTypes.Event)
             {
-                throw new ArgumentException($"Invalid activity type in {activity.Type} in {nameof(Activity)}");
+                throw new ArgumentException($"Invalid activity type {activity.Type} in {nameof(Activity)} property");
             }
 
             ApplyParentActivityProperties(dc, activity);
