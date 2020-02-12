@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Tests
         public void TestCreateHandoffInitiation()
         {
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
-            string fromID = "fred";
+            string fromID = "test";
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
