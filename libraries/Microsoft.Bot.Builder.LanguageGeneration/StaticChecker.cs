@@ -376,16 +376,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private List<Diagnostic> CheckExpression(string exp, ParserRuleContext context)
         {
             var result = new List<Diagnostic>();
-            exp = exp.TrimExpression();
-
-            try
+            if (!exp.EndsWith("}"))
             {
-                ExpressionParser.Parse(exp);
+                result.Add(BuildLGDiagnostic(LGErrors.NoCloseBracket, context: context));
             }
-            catch (Exception e)
+            else
             {
-                result.Add(BuildLGDiagnostic(e.Message + $" in expression `{exp}`", context: context));
-                return result;
+                exp = exp.TrimExpression();
+
+                try
+                {
+                    ExpressionParser.Parse(exp);
+                }
+                catch (Exception e)
+                {
+                    result.Add(BuildLGDiagnostic(e.Message + $" in expression `{exp}`", context: context));
+                    return result;
+                }
             }
 
             return result;
