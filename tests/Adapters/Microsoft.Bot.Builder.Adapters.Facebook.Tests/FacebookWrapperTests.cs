@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         {
             var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookClientWrapper.PassThreadControlAsync(null, "fakeUserId", "Test Pass Thread Control"); });
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookClientWrapper.PassThreadControlAsync(null, "fakeUserId", "Test Pass Thread Control", default); });
         }
 
         [Fact]
@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         {
             var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookClientWrapper.PassThreadControlAsync("fakeAppId", null, "Test Pass Thread Control"); });
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookClientWrapper.PassThreadControlAsync("fakeAppId", null, "Test Pass Thread Control", default); });
         }
 
         [Fact]
@@ -182,7 +182,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         {
             var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookClientWrapper.RequestThreadControlAsync(null, "Test Pass Thread Control"); });
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookClientWrapper.RequestThreadControlAsync(null, "Test Pass Thread Control", default); });
         }
 
         [Fact]
@@ -190,7 +190,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         {
             var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookClientWrapper.TakeThreadControlAsync(null, "Test Pass Thread Control"); });
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookClientWrapper.TakeThreadControlAsync(null, "Test Pass Thread Control", default); });
         }
 
         [Fact]
@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         {
             var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookClientWrapper.PostToFacebookApiAsync(null, "fakeContent"); });
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookClientWrapper.PostToFacebookApiAsync(null, "fakeContent", default); });
         }
 
         [Fact]
@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         {
             var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookClientWrapper.PostToFacebookApiAsync("fakePostType", null); });
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookClientWrapper.PostToFacebookApiAsync("fakePostType", null, default); });
         }
     }
 }

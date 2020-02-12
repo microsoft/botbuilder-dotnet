@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
                 return Task.CompletedTask;
             }
 
-            await facebookAdapter.ContinueConversationAsync(conversationReference, BotsLogic);
+            await facebookAdapter.ContinueConversationAsync(conversationReference, BotsLogic, default);
             Assert.True(callbackInvoked);
         }
 
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
                 return Task.CompletedTask;
             }
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookAdapter.ContinueConversationAsync(null, BotsLogic); });
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookAdapter.ContinueConversationAsync(null, BotsLogic, default); });
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
             var facebookAdapter = new FacebookAdapter(new Mock<FacebookClientWrapper>(_testOptions).Object);
             var conversationReference = new ConversationReference();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookAdapter.ContinueConversationAsync(conversationReference, null); });
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookAdapter.ContinueConversationAsync(conversationReference, null, default); });
         }
 
         [Fact]
@@ -279,7 +279,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
             ResourceResponse[] responses = null;
 
             facebookClientWrapper.Setup(api => api.SendMessageAsync(It.IsAny<string>(), It.IsAny<FacebookMessage>(), It.IsAny<HttpMethod>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(testResponse));
-            facebookClientWrapper.Setup(api => api.PassThreadControlAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
+            facebookClientWrapper.Setup(api => api.PassThreadControlAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), default)).Returns(Task.FromResult(true));
 
             using (var turnContext = new TurnContext(facebookAdapter, activity))
             {
@@ -287,7 +287,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
             }
 
             Assert.Equal(testResponse, responses[0].Id);
-            facebookClientWrapper.Verify(api => api.PassThreadControlAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            facebookClientWrapper.Verify(api => api.PassThreadControlAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), default), Times.Once);
         }
 
         [Fact]
@@ -311,7 +311,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
             ResourceResponse[] responses = null;
 
             facebookClientWrapper.Setup(api => api.SendMessageAsync(It.IsAny<string>(), It.IsAny<FacebookMessage>(), It.IsAny<HttpMethod>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(testResponse));
-            facebookClientWrapper.Setup(api => api.TakeThreadControlAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
+            facebookClientWrapper.Setup(api => api.TakeThreadControlAsync(It.IsAny<string>(), It.IsAny<string>(), default)).Returns(Task.FromResult(true));
 
             using (var turnContext = new TurnContext(facebookAdapter, activity))
             {
@@ -319,7 +319,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
             }
 
             Assert.Equal(testResponse, responses[0].Id);
-            facebookClientWrapper.Verify(api => api.TakeThreadControlAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            facebookClientWrapper.Verify(api => api.TakeThreadControlAsync(It.IsAny<string>(), It.IsAny<string>(), default), Times.Once);
         }
 
         [Fact]
@@ -343,7 +343,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
             ResourceResponse[] responses = null;
 
             facebookClientWrapper.Setup(api => api.SendMessageAsync(It.IsAny<string>(), It.IsAny<FacebookMessage>(), It.IsAny<HttpMethod>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(testResponse));
-            facebookClientWrapper.Setup(api => api.RequestThreadControlAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
+            facebookClientWrapper.Setup(api => api.RequestThreadControlAsync(It.IsAny<string>(), It.IsAny<string>(), default)).Returns(Task.FromResult(true));
 
             using (var turnContext = new TurnContext(facebookAdapter, activity))
             {
@@ -351,7 +351,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
             }
 
             Assert.Equal(testResponse, responses[0].Id);
-            facebookClientWrapper.Verify(api => api.RequestThreadControlAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            facebookClientWrapper.Verify(api => api.RequestThreadControlAsync(It.IsAny<string>(), It.IsAny<string>(), default), Times.Once);
         }
         
         [Fact]
