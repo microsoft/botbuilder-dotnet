@@ -128,13 +128,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
             var dcState = dialogContext.GetState();
 
             // Identify matched intents
-            var utterance = text ?? string.Empty;
+            var utterance = text;
 
             var recognizerResult = new RecognizerResult()
             {
                 Text = utterance,
                 Intents = new Dictionary<string, IntentScore>(),
             };
+
+            if (string.IsNullOrEmpty(utterance))
+            {
+                recognizerResult.Intents.Add("None", new IntentScore());
+                return recognizerResult;
+            }
 
             List<Metadata> filters = new List<Metadata>();
             if (IncludeDialogNameInMetadata.GetValue(dcState))
