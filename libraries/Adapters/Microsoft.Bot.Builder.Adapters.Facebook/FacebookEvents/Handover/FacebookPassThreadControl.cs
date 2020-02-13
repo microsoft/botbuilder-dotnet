@@ -8,26 +8,26 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Handover
     public class FacebookPassThreadControl : FacebookThreadControl
     {
         /// <summary>
-        /// Gets or Sets the app id of the new owner.
+        /// Gets or sets the app ID of the new owner.
         /// </summary>
         /// <remarks>
         /// 263902037430900 for the page inbox.
         /// </remarks>
-        /// <value>The app id of the new owner.</value>
+        /// <value>The app ID of the new owner.</value>
         [JsonProperty("new_owner_app_id")]
         public string NewOwnerAppId { get; set; }
 
         /// <summary>
-        /// Gets or Sets the app id of the previous owner.
+        /// Gets or sets the app ID of the previous owner.
         /// </summary>
-        /// <value>The app id of the previous owner.</value>
+        /// <value>The app ID of the previous owner.</value>
         [JsonProperty("previous_owner_app_id")]
         public string PreviousOwnerAppId { get; set; }
 
         /// <summary>
-        /// Gets or Sets the app id of the requested owner.
+        /// Gets or sets the app ID of the requested owner.
         /// </summary>
-        /// <value>The app id of the requested owner.</value>
+        /// <value>The app ID of the requested owner.</value>
         [JsonProperty("requested_owner_app_id")]
         public string RequestedOwnerAppId { get; set; }
     }
