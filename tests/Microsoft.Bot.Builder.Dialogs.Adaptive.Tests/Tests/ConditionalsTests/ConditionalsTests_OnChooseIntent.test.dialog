@@ -99,6 +99,11 @@
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "ChooseIntent:x,y,z"
+                    },
+                    {
+                        "$kind": "Microsoft.EmitEvent",
+                        "eventName": "recognizedIntent",
+                        "eventValue": "=turn.dialogEvent.value.candidates[1].result"
                     }
                 ]
             },
@@ -185,6 +190,10 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "ChooseIntent:x,y,z"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Intent:y"
         }
     ]
 }

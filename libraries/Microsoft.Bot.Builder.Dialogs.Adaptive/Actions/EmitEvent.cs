@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
-            
+
             if (eventName != null)
             {
                 this.EventName = eventName;
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } 
+        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the event to emit.
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The name of the event to emit.
         /// </value>
         [JsonProperty("eventName")]
-        public StringExpression EventName { get; set; } 
+        public StringExpression EventName { get; set; }
 
         /// <summary>
         /// Gets or sets the memory property path to use to get the value to send as part of the event.
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The memory property path to use to get the value to send as part of the event.
         /// </value>
         [JsonProperty("eventValue")]
-        public ValueExpression EventValue { get; set; } 
+        public ValueExpression EventValue { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the event should bubble to parents or not.
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A value indicating whether gets or sets whether the event should bubble to parents or not.
         /// </value>
         [JsonProperty("bubbleEvent")]
-        public BoolExpression BubbleEvent { get; set; } 
+        public BoolExpression BubbleEvent { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -93,21 +93,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             bool handled;
             var eventName = EventName?.GetValue(dcState);
             var bubbleEvent = BubbleEvent.GetValue(dcState);
+            object value = null;
+            
             if (EventValue != null)
             {
-                var (value, valueError) = this.EventValue.TryGetValue(dcState);
-                if (valueError == null)
-                {
-                    handled = await dc.EmitEventAsync(eventName, value, bubbleEvent, false, cancellationToken).ConfigureAwait(false);
-                } 
-                else 
-                {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {EventValue.ToString()}. Error: {valueError}");
-                }               
+                value = this.EventValue.GetValue(dcState);
+            }
+
+            if (dc.Parent != null)
+            {
+                handled = await dc.Parent.EmitEventAsync(eventName, value, bubbleEvent, false, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                handled = await dc.EmitEventAsync(eventName, EventValue, bubbleEvent, false, cancellationToken).ConfigureAwait(false);
+                handled = await dc.EmitEventAsync(eventName, value, bubbleEvent, false, cancellationToken).ConfigureAwait(false);
             }
 
             return await dc.EndDialogAsync(handled, cancellationToken).ConfigureAwait(false);
