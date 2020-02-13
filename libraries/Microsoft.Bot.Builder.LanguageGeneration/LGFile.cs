@@ -156,11 +156,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var newContent = $"# {fakeTemplateId} \r\n - {inlineStr}";
 
-            var newLgFile = LGParser.ParseText(newContent, this.Id, this.ImportResolver);
+            var newLgFile = LGParser.ParseTextWithRef(newContent, this);
 
-            var allTemplates = this.AllTemplates.Union(newLgFile.AllTemplates).ToList();
-            var evaluator = new Evaluator(allTemplates, this.ExpressionEngine);
-            return evaluator.EvaluateTemplate(fakeTemplateId, scope);
+            return newLgFile.EvaluateTemplate(fakeTemplateId, scope);
         }
 
         /// <summary>

@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        [ExpectedException(typeof(System.Data.SyntaxErrorException))]
+        [ExpectedException(typeof(Exception))]
         public async Task TestNotFoundTemplate()
         {
             var context = GetTurnContext(string.Empty);
