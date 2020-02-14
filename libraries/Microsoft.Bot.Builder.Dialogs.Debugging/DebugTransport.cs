@@ -44,6 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                 // output is parsed on launch by "vscode-dialog-debugger\src\ts\extension.ts"
                 Console.WriteLine($"{nameof(DebugTransport)}\t{local.Address}\t{local.Port}");
+                System.Diagnostics.Trace.TraceInformation($"{nameof(DebugTransport)}\t{local.Address}\t{local.Port}");
 
                 while (!cancellationToken.IsCancellationRequested)
                 {
