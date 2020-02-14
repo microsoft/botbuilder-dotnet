@@ -31,7 +31,7 @@ steps:
 - template: ci-build-steps.yml
 
 - task: DotNetCoreCLI@2
-  displayName: 'Dotnet Publish TestBot'
+  displayName: 'Dotnet publish test bot'
   inputs:
     command: publish
     publishWebProjects: false
@@ -41,7 +41,7 @@ steps:
     modifyOutputPath: false
 
 - task: AzureResourceGroupDeployment@2
-  displayName: 'Azure Deployment:Create Or Update Resource Group action on $(BotGroup)'
+  displayName: 'Azure deployment: Create or update resource group $(BotGroup)'
   inputs:
     azureSubscription: $(AzureSubscription)
     resourceGroupName: '$(BotGroup)'
@@ -66,14 +66,14 @@ steps:
    git remote add azure https://$(AzureDeploymentUser):$(AzureDeploymentPassword)@$(BotName).scm.azurewebsites.net:443/$(BotName).git
    git push azure master
   workingDirectory: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot'
-  displayName: 'Git Bot Deployment'
+  displayName: 'Git bot deployment'
 
 - powershell: |
    $json = Get-Content '$(System.DefaultWorkingDirectory)\DirectLineCreate.json' | Out-String | ConvertFrom-Json
    $key = $json.properties.properties.sites.key
    echo "##vso[task.setvariable variable=DIRECTLINE;]$key"
    echo "##vso[task.setvariable variable=BOTID;]$(BotName)"
-  displayName: 'Get Bot Keys'
+  displayName: 'Get bot keys'
 
 - task: DotNetCoreCLI@2
   displayName: 'Run Functional tests'
@@ -84,7 +84,7 @@ steps:
     workingDirectory: '$(System.DefaultWorkingDirectory)\'
 
 - task: AzureCLI@1
-  displayName: 'Delete Resources'
+  displayName: 'Delete test resource group'
   inputs:
     azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
