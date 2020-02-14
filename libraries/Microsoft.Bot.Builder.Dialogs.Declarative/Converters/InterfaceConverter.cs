@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             var kind = (string)jsonObject["$kind"] ?? (string)jsonObject["$type"];
             if (kind == null)
             {
-                throw new ArgumentNullException(JsonConvert.SerializeObject(jsonObject));
+                throw new ArgumentNullException($"$kind was not found: {JsonConvert.SerializeObject(jsonObject)}");
             }
 
             // if IdRefResolver made a path available for the JToken, then add it to the path stack

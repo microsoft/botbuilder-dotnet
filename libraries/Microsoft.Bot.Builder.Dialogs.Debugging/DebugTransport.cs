@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Debug;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -28,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         protected DebugTransport(ILogger logger)
         {
-            this.Logger = logger ?? new DebugLogger("Dialog");
+            this.Logger = logger ?? NullLogger.Instance;
         }
 
         protected ILogger Logger { get; set; }

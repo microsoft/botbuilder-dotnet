@@ -1,7 +1,5 @@
 ﻿using System;
-using Microsoft.Bot.Builder.AI.QnA;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
@@ -24,6 +22,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         {
             this.UseStorage(storage);
             this.UseState(userState, conversationState);
+            this.UseDebugger(4712, logger: logger);
 
             HostContext.Current.Set<IConfiguration>(configuration);
 
