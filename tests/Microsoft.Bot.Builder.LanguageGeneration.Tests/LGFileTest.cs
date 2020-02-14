@@ -6,9 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AdaptiveExpressions.Memory;
 using Microsoft.Bot.Builder.LanguageGeneration;
-using Microsoft.Bot.Expressions.Memory;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
@@ -967,6 +966,22 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var jObjEvaled = lgFile.EvaluateTemplate("template3") as JObject;
 
             Assert.AreEqual("null", jObjEvaled["key1"]);
+        }
+
+        [TestMethod]
+        public void TestInlineEvaluate()
+        {
+            var lgFile = LGParser.ParseFile(GetExampleFilePath("2.lg"));
+            var evaled = lgFile.Evaluate("hello");
+            Assert.AreEqual("hello", evaled);
+
+            // test template reference
+            evaled = lgFile.Evaluate("@{wPhrase()}");
+            var options = new List<string> { "Hi", "Hello", "Hiya" };
+            Assert.IsTrue(options.Contains(evaled), $"The result `{evaled}` is not in those options [{string.Join(",", options)}]");
+
+            var exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("@{ErrrorTemplate()}"));
+            Assert.IsTrue(exception.Message.Contains("it's not a built-in function or a customized function"));
         }
 
         public class LoopClass

@@ -249,6 +249,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(exception.Message.Contains("Error occurs when evaluating expression"));
         }
 
+        [TestMethod]
+        public void TestExpressionFormatError()
+        {
+            var diagnostics = GetDiagnostics("ExpressionFormatError.lg");
+            Assert.AreEqual(1, diagnostics.Count);
+            Assert.IsTrue(diagnostics[0].Message.Contains("Close } is missing in Expression"));
+        }
+
         private string GetExceptionExampleFilePath(string fileName)
         {
             return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "ExceptionExamples" + Path.DirectorySeparatorChar + fileName;

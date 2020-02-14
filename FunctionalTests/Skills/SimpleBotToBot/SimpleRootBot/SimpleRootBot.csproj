@@ -2,8 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
     <AssemblyName>Microsoft.BotBuilderSamples.SimpleRootBot31</AssemblyName>
     <RootNamespace>Microsoft.BotBuilderSamples.SimpleRootBot31</RootNamespace>
+    <UserSecretsId>a52d1fa1-0d90-42d7-bbfc-2d776e8b7804</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

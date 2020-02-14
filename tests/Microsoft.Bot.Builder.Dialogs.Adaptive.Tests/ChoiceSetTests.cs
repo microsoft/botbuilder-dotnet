@@ -4,10 +4,10 @@
 #pragma warning disable SA1649 // File name should match first type name
 
 using System.Collections.Generic;
+using AdaptiveExpressions.Converters;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.Bot.Expressions.Converters;
-using Microsoft.Bot.Expressions.Properties;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
