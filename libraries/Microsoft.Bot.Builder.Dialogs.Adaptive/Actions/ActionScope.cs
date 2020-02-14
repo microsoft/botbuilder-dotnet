@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             // We're being continued after an interruption so just run next action
-            return await OnNextActionAsync(dc, null, cancellationToken);
+            return await OnNextActionAsync(dc, null, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await OnActionScopeResultAsync(dc, actionScopeResult, cancellationToken).ConfigureAwait(false);
             }
 
-            return await OnNextActionAsync(dc, result, cancellationToken);
+            return await OnNextActionAsync(dc, result, cancellationToken).ConfigureAwait(false);
         }
 
         public virtual IEnumerable<Dialog> GetDependencies()
