@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         {
             this.UseStorage(storage);
             this.UseState(userState, conversationState);
-            this.UseDebugger(4712, logger: logger);
+            this.UseDebugger(configuration.GetValue("debugport", 4712), logger: logger);
 
             HostContext.Current.Set<IConfiguration>(configuration);
 
