@@ -328,7 +328,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="OnEventAsync(ITurnContext{IEventActivity}, CancellationToken)"/>
         protected virtual Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.Name == "tokens/response")
+            if (turnContext.Activity.Name == SignInConstants.TokenResponseEventName)
             {
                 return OnTokenResponseEventAsync(turnContext, cancellationToken);
             }
@@ -408,7 +408,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
         protected virtual Task OnInvokeActivityAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.Name == SignInOperations.VerifyStateOperationName || turnContext.Activity.Name == SignInOperations.TokenExchangeOperationName)
+            if (turnContext.Activity.Name == SignInConstants.VerifyStateOperationName || turnContext.Activity.Name == SignInConstants.TokenExchangeOperationName)
             {
                 return OnSignInInvokeAsync(turnContext, cancellationToken);
             }

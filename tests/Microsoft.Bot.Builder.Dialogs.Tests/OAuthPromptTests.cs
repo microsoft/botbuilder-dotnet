@@ -195,7 +195,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send(new Activity()
             {
                 Type = ActivityTypes.Invoke,
-                Name = SignInOperations.TokenExchangeOperationName,
+                Name = SignInConstants.TokenExchangeOperationName,
                 Value = JObject.FromObject(new TokenExchangeInvokeRequest()
                 {
                     ConnectionName = connectionName,
@@ -267,7 +267,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send(new Activity()
             {
                 Type = ActivityTypes.Invoke,
-                Name = SignInOperations.TokenExchangeOperationName,
+                Name = SignInConstants.TokenExchangeOperationName,
                 Value = JObject.FromObject(new TokenExchangeInvokeRequest()
                 {
                     ConnectionName = connectionName,
@@ -337,7 +337,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send(new Activity()
             {
                 Type = ActivityTypes.Invoke,
-                Name = SignInOperations.TokenExchangeOperationName,
+                Name = SignInConstants.TokenExchangeOperationName,
 
                 // send no body
             })
@@ -405,7 +405,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send(new Activity()
             {
                 Type = ActivityTypes.Invoke,
-                Name = SignInOperations.TokenExchangeOperationName,
+                Name = SignInConstants.TokenExchangeOperationName,
                 Value = JObject.FromObject(new TokenExchangeInvokeRequest()
                 {
                     ConnectionName = "beepboop",
@@ -534,7 +534,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var from = eventActivity.From;
             eventActivity.From = eventActivity.Recipient;
             eventActivity.Recipient = from;
-            eventActivity.Name = "tokens/response";
+            eventActivity.Name = SignInConstants.TokenResponseEventName;
             eventActivity.Value = JObject.FromObject(new TokenResponse()
             {
                 ConnectionName = connectionName,

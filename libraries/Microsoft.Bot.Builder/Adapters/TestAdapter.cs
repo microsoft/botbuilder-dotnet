@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Adapters
     /// A mock adapter that can be used for unit testing of bot logic.
     /// </summary>
     /// <seealso cref="TestFlow"/>
-    public class TestAdapter : BotAdapter, ICredentialTokenProvider, ITokenExchangeProvider
+    public class TestAdapter : BotAdapter, IExtendedUserTokenProvider
     {
         private bool _sendTraceActivity;
         private readonly object _conversationLock = new object();
@@ -760,6 +760,21 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns>A SignInResource with the link and token exchange info.</returns>
         public Task<SignInResource> GetSignInResourceAsync(ITurnContext turnContext, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default)
         {
+            return GetSignInResourceAsync(turnContext, null, connectionName, userId, finalRedirect, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets a sign in resource.
+        /// </summary>
+        /// <param name="turnContext">The TurnContext.</param>
+        /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
+        /// <param name="connectionName">The connectionName.</param>
+        /// <param name="userId">The user id.</param>
+        /// <param name="finalRedirect">A final redirect URL.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>A SignInResource with the link and token exchange info.</returns>
+        public Task<SignInResource> GetSignInResourceAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default)
+        {
             return Task.FromResult(new SignInResource()
             {
                 SignInLink = $"https://fake.com/oauthsignin/{connectionName}/{turnContext.Activity.ChannelId}/{userId}",
@@ -774,6 +789,11 @@ namespace Microsoft.Bot.Builder.Adapters
 
         public Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, string connectionName, string userId, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken = default)
         {
+            return ExchangeTokenAsync(turnContext, null, connectionName, userId, exchangeRequest, cancellationToken);
+        }
+
+        public Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken = default)
+        {
             var exchangableValue = !string.IsNullOrEmpty(exchangeRequest?.Token) ?
                 exchangeRequest?.Token :
                 exchangeRequest?.Uri;
@@ -783,7 +803,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 ChannelId = turnContext?.Activity?.ChannelId,
                 ConnectionName = connectionName,
                 ExchangableItem = exchangableValue,
-                UserId = userId
+                UserId = userId,
             };
 
             if (_exchangableToken.TryGetValue(key, out string token))

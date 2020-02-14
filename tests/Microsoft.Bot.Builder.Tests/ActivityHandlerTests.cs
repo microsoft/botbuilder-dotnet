@@ -291,7 +291,7 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.Event,
-                Name = "tokens/response",
+                Name = SignInConstants.TokenResponseEventName,
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
