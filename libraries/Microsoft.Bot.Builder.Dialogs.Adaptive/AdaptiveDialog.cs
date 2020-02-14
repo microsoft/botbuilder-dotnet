@@ -271,7 +271,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (state.Actions != null && state.Actions.Any())
             {
-                var ctx = new SequenceContext(this.Dialogs, dc, state.Actions.First(), state.Actions, changeTurnKey, this.Dialogs);
+                var ctx = new SequenceContext(this.Dialogs, dc, state.Actions.First(), state.Actions, changeTurnKey);
                 ctx.Parent = dc;
                 return ctx;
             }
@@ -804,7 +804,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 state.Actions = new List<ActionState>();
             }
 
-            var sequenceContext = new SequenceContext(dc.Dialogs, dc, new DialogState { DialogStack = dc.Stack }, state.Actions, changeTurnKey, this.Dialogs);
+            var sequenceContext = new SequenceContext(dc.Dialogs, dc, new DialogState { DialogStack = dc.Stack }, state.Actions, changeTurnKey);
             sequenceContext.Parent = dc.Parent;
             return sequenceContext;
         }

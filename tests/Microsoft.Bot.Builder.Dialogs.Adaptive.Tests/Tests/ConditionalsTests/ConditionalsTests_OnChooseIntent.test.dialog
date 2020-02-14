@@ -104,6 +104,10 @@
                         "$kind": "Microsoft.EmitEvent",
                         "eventName": "recognizedIntent",
                         "eventValue": "=turn.dialogEvent.value.candidates[1].result"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "emit done"
                     }
                 ]
             },
@@ -194,6 +198,10 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Intent:y"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "emit done"
         }
     ]
 }
