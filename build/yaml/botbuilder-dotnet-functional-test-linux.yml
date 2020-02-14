@@ -82,10 +82,11 @@ steps:
     arguments: '-v n  --configuration $(BuildConfiguration) --no-build --no-restore --filter "TestCategory=FunctionalTests&TestCategory!=Adapters" --collect:"Code Coverage" --settings $(System.DefaultWorkingDirectory)\CodeCoverage.runsettings '
     workingDirectory: '$(System.DefaultWorkingDirectory)\'
 
-#- task: AzureCLI@1
-#  displayName: 'Delete Resources'
-#  inputs:
-#    azureSubscription: $(AzureSubscription)
-#    scriptLocation: inlineScript
-#    inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
-#  condition: always()
+- task: AzureCLI@1
+  displayName: 'Delete Resources'
+  inputs:
+    azureSubscription: $(AzureSubscription)
+    scriptLocation: inlineScript
+    inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
+  condition: always()
+  enabled: $(DeleteResourceGroup)
