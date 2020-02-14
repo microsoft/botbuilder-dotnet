@@ -25,6 +25,7 @@ variables:
 #  AzureDeploymentPassword: define this in Azure
 #  BotGroup: define this in Azure
 #  BotName: define this in Azure
+#  DeleteResourceGroup: define this in Azure. Normally set to true.
 
 steps:
 - template: ci-build-steps.yml
