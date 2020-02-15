@@ -976,11 +976,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual("hello", evaled);
 
             // test template reference
-            evaled = lgFile.Evaluate("@{wPhrase()}");
+            evaled = lgFile.Evaluate("${wPhrase()}");
             var options = new List<string> { "Hi", "Hello", "Hiya" };
             Assert.IsTrue(options.Contains(evaled), $"The result `{evaled}` is not in those options [{string.Join(",", options)}]");
 
-            var exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("@{ErrrorTemplate()}"));
+            var exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("${ErrrorTemplate()}"));
             Assert.IsTrue(exception.Message.Contains("it's not a built-in function or a customized function"));
         }
 
