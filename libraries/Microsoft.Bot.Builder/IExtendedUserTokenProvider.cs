@@ -125,7 +125,6 @@ namespace Microsoft.Bot.Builder
         /// <remarks>If the task completes successfully, the result contains the raw signin link.</remarks>
         Task<SignInResource> GetSignInResourceAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default(CancellationToken));
 
-
         /// <summary>
         /// Performs a token exchange operation such as for single sign-on.
         /// </summary>
@@ -150,6 +149,5 @@ namespace Microsoft.Bot.Builder
         /// or threads to receive notice of cancellation.</param>
         /// <returns>If the task completes, the exchanged token is returned.</returns>
         Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken = default(CancellationToken));
-
     }
 }

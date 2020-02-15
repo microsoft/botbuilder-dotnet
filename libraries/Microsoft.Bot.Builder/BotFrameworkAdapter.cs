@@ -829,11 +829,6 @@ namespace Microsoft.Bot.Builder
 
             var activity = turnContext.Activity;
 
-            if (!userId.Equals(activity.From?.Id))
-            {
-                throw new ArgumentException("cannot retrieve OAuth signin link for a user that's different from the conversation");
-            }
-
             var appId = GetBotAppId(turnContext);
             var tokenExchangeState = new TokenExchangeState()
             {
@@ -1039,11 +1034,6 @@ namespace Microsoft.Bot.Builder
 
             var activity = turnContext.Activity;
 
-            if (!userId.Equals(activity.From?.Id))
-            {
-                throw new ArgumentException("Cannot get signin resource for a user that's different from the conversation.");
-            }
-
             var appId = GetBotAppId(turnContext);
             var tokenExchangeState = new TokenExchangeState()
             {
@@ -1120,11 +1110,6 @@ namespace Microsoft.Bot.Builder
             }
 
             var activity = turnContext.Activity;
-
-            if (!userId.Equals(activity.From?.Id))
-            {
-                throw new ArgumentException("Cannot exchange token for a user that's different from the conversation.");
-            }
 
             var client = await CreateOAuthApiClientAsync(turnContext, oAuthAppCredentials).ConfigureAwait(false);
             var result = await client.ExchangeAsyncAsync(userId, connectionName, turnContext.Activity.ChannelId, exchangeRequest, cancellationToken).ConfigureAwait(false);

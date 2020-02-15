@@ -349,7 +349,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 if (turnContext.TurnState.Get<ClaimsIdentity>("BotIdentity") is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
                 {
-                    // Force magic code for Skills (to be addressed in R8)
                     cardActionType = ActionTypes.OpenUrl;
                 }
                 else

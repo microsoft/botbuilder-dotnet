@@ -17,6 +17,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     {
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
+        public void OAuthPromptWithEmptySettingsShouldFail()
+        {
+            var confirmPrompt = new OAuthPrompt("abc", null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
         public void OAuthPromptWithEmptyIdShouldFail()
         {
             var emptyId = string.Empty;
@@ -27,6 +34,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task OAuthPromptWithDefaultTypeHandlingForStorage()
         {
             await OAuthPrompt(new MemoryStorage());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async Task OAuthPromptBeginDialogWithNoDialogContext()
+        {
+            var prompt = new OAuthPrompt("abc", new OAuthPromptSettings());
+            await prompt.BeginDialogAsync(null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public async Task OAuthPromptBeginDialogWithWrongOptions()
+        {
+            var prompt = new OAuthPrompt("abc", new OAuthPromptSettings());
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(prompt);
+
+            var tc = new TurnContext(adapter, new Activity() { Type = ActivityTypes.Message, Conversation = new ConversationAccount() { Id = "123" }, ChannelId = "test" });
+
+            var dc = await dialogs.CreateContextAsync(tc);
+
+            await prompt.BeginDialogAsync(dc, CancellationToken.None);
         }
 
         [TestMethod]
