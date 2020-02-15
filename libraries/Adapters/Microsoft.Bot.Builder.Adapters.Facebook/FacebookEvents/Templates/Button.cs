@@ -16,9 +16,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Templates
         public string Type { get; set; }
 
         /// <summary>
-        /// Gets or sets the url of the button.
+        /// Gets or sets the URL of the button.
         /// </summary>
-        /// <value>Url of the button.</value>
+        /// <value>The URL of the button.</value>
         [JsonProperty(PropertyName = "url")]
         public Uri Url { get; set; }
 
