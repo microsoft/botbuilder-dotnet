@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.AI.QnA;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -123,20 +124,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         [JsonIgnore]
         public HttpClient HttpClient { get; set; }
 
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken)
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken)
         {
             var dcState = dialogContext.GetState();
 
             // Identify matched intents
-            var utterance = text;
-
             var recognizerResult = new RecognizerResult()
             {
-                Text = utterance,
+                Text = activity.Text,
                 Intents = new Dictionary<string, IntentScore>(),
             };
 
-            if (string.IsNullOrEmpty(utterance))
+            if (string.IsNullOrEmpty(activity.Text))
             {
                 recognizerResult.Intents.Add("None", new IntentScore());
                 return recognizerResult;

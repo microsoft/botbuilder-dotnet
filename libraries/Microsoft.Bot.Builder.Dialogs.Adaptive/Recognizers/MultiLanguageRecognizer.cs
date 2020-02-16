@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
@@ -40,9 +41,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         [JsonProperty("recognizers")]
         public IDictionary<string, Recognizer> Recognizers { get; set; } = new Dictionary<string, Recognizer>();
 
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken)
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken)
         {
-            if (!LanguagePolicy.TryGetValue(locale ?? string.Empty, out string[] policy))
+            if (!LanguagePolicy.TryGetValue(activity.Locale ?? string.Empty, out string[] policy))
             {
                 policy = new string[] { string.Empty };
             }
@@ -51,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             {
                 if (this.Recognizers.TryGetValue(option, out var recognizer))
                 {
-                    return await recognizer.RecognizeAsync(dialogContext, text, locale, cancellationToken).ConfigureAwait(false);
+                    return await recognizer.RecognizeAsync(dialogContext, activity, cancellationToken).ConfigureAwait(false);
                 }
             }
 

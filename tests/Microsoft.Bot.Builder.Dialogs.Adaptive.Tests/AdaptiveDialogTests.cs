@@ -237,6 +237,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task AdaptiveDialog_EmitEventActivityReceived()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
         [Ignore]
         public async Task TestForeachWithLargeItems()
         {

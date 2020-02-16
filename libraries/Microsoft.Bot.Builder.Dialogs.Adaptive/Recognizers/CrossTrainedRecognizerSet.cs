@@ -65,26 +65,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         [JsonProperty("recognizers")]
         public List<Recognizer> Recognizers { get; set; } = new List<Recognizer>();
 
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
-        {
-            if (dialogContext == null)
-            {
-                throw new ArgumentNullException(nameof(dialogContext));
-            }
-
-            EnsureRecognizerIds();
-
-            // run all of the recognizers in parallel
-            var results = await Task.WhenAll(Recognizers.Select(async recognizer =>
-               {
-                   var result = await recognizer.RecognizeAsync(dialogContext, cancellationToken).ConfigureAwait(false);
-                   result.Properties["id"] = recognizer.Id;
-                   return result;
-               }));
-
-            return ProcessResults(results);
-        }
-
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default)
         {
             if (dialogContext == null)
@@ -104,33 +84,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             {
                 var result = await recognizer.RecognizeAsync(dialogContext, activity, cancellationToken).ConfigureAwait(false);
                 result.Properties["id"] = recognizer.Id;
-                return result;
-            }));
-
-            return ProcessResults(results);
-        }
-
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale = null, CancellationToken cancellationToken = default)
-        {
-            if (dialogContext == null)
-            {
-                throw new ArgumentNullException(nameof(dialogContext));
-            }
-
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
-
-            EnsureRecognizerIds();
-
-            // run all of the recognizers in parallel
-            var results = await Task.WhenAll(Recognizers.Select(async r =>
-            {
-                var result = await r.RecognizeAsync(dialogContext, text, locale, cancellationToken).ConfigureAwait(false);
-
-                // add the recognizer id on to the recognizer result.
-                result.Properties["id"] = r.Id;
                 return result;
             }));
 

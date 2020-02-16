@@ -86,16 +86,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public IBotTelemetryClient TelemetryClient { get; set; } = new NullBotTelemetryClient();
 
         /// <inheritdoc/>
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken = default)
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default)
         {
             var wrapper = new LuisRecognizer(RecognizerOptions(dialogContext), HttpClient);
-            var context = dialogContext.Context;
-            if (context.Activity == null || context.Activity.Type != ActivityTypes.Message || context.Activity.Text != text || context.Activity.Locale != locale)
-            {
-                throw new ArgumentException("TurnContext is different than text");
-            }
-
-            return await wrapper.RecognizeAsync(dialogContext.Context, cancellationToken).ConfigureAwait(false);
+            var tempContext = new TurnContext(dialogContext.Context.Adapter, activity);
+            return await wrapper.RecognizeAsync(tempContext, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

@@ -41,20 +41,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         [JsonProperty("recognizers")]
         public List<Recognizer> Recognizers { get; set; } = new List<Recognizer>();
 
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
-        {
-            if (dialogContext == null)
-            {
-                throw new ArgumentNullException(nameof(dialogContext));
-            }
-
-            // run all of the recognizers in parallel
-            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, cancellationToken)));
-
-            // merge intents
-            return MergeResults(results);
-        }
-
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default)
         {
             if (dialogContext == null)
@@ -69,30 +55,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             // run all of the recognizers in parallel
             var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, activity, cancellationToken)));
-
-            // merge intents
-            return MergeResults(results);
-        }
-
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale = null, CancellationToken cancellationToken = default)
-        {
-            if (dialogContext == null)
-            {
-                throw new ArgumentNullException(nameof(dialogContext));
-            }
-
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
-
-            if (locale == null)
-            {
-                locale = string.Empty;
-            }
-
-            // run all of the recognizers in parallel
-            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, text, locale, cancellationToken)));
 
             // merge intents
             return MergeResults(results);
