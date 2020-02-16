@@ -7,7 +7,7 @@
     "actions": [
         {
             "$kind": "Microsoft.Ask",
-            "activity": "@{AskOrdinalv2()}",
+            "activity": "${AskOrdinalv2()}",
             "expectedProperties": [
                 "Ordinalv2"
             ]

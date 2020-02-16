@@ -17,7 +17,7 @@ namespace AdaptiveExpressions.Properties
     /// * a string without '=' then value is treated as string with string interpolation.
     /// * You can escape the '=' prefix by putting a backslash.  
     /// Examples: 
-    ///     prop = "Hello @{user.name}" => "Hello Joe"
+    ///     prop = "Hello ${user.name}" => "Hello Joe"
     ///     prop = "=length(user.name)" => "3"
     ///     prop = "=user.name" => "Joe"
     ///     prop = "\=user" => "=user".

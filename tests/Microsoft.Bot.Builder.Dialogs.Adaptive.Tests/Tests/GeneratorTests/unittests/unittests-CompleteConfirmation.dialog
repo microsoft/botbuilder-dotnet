@@ -6,11 +6,11 @@
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "@{readForm()}"
+            "activity": "${readForm()}"
         },
         {
             "$kind": "Microsoft.Ask",
-            "activity": "@{confirmChange()}",
+            "activity": "${confirmChange()}",
             "expectedProperties": [
                 "CompleteConfirmation"
             ]

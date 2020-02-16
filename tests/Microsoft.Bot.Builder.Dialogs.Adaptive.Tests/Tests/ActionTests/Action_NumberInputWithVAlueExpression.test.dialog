@@ -31,7 +31,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "You said @{turn.age}"
+                        "activity": "You said ${turn.age}"
                     }
                 ]
             }

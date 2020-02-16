@@ -5,11 +5,11 @@
     "GetDisplayEmails",
     {
       "$kind": "Microsoft.SendActivity",
-      "activity": "@{ShowEmailList(user)}"
+      "activity": "${ShowEmailList(user)}"
     },
     {
       "$kind": "Microsoft.TextInput",
-      "prompt": "@{SelectEmail()}",
+      "prompt": "${SelectEmail()}",
       "property": "dialog.choice"
     },
     {

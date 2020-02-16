@@ -56,7 +56,7 @@
             "actions": [
               {
                 "$kind": "Microsoft.SendActivity",
-                "activity": "This page have @{count(dialog.foreach.page)} items"
+                "activity": "This page have ${count(dialog.foreach.page)} items"
               },
               {
                 "$kind": "Microsoft.Foreach",
@@ -64,7 +64,7 @@
                 "actions": [
                   {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "index is: @{dialog.foreach.index} and value is: @{dialog.foreach.value}"
+                    "activity": "index is: ${dialog.foreach.index} and value is: ${dialog.foreach.value}"
                   }
                 ]
               }

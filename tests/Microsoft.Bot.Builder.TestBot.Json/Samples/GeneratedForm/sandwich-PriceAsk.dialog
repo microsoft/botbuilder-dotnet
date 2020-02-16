@@ -7,7 +7,7 @@
     "actions": [
         {
             "$kind": "Microsoft.Ask",
-            "activity": "@{AskPrice()}",
+            "activity": "${AskPrice()}",
             "expectedProperties": [
                 "Price"
             ]

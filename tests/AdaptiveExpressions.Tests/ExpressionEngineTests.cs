@@ -262,15 +262,15 @@ namespace AdaptiveExpressions.Tests
             #region string interpolation test
             Test("`hi`", "hi"),
             Test(@"`hi\``", "hi`"),
-            Test("`@{world}`", "world"),
-            Test(@"`hi @{string('jack\`')}`", "hi jack`"),
-            Test(@"`\@{world}`", "@{world}"), // use escape character
-            Test("length(`hello @{world}`)", "hello world".Length),
-            Test("json(`{'foo': '@{hello}','item': '@{world}'}`).foo", "hello"),
-            Test("`hello @{world}` == 'hello world'", true),
-            Test("`hello @{world}` != 'hello hello'", true),
-            Test("`hello @{user.nickname}` == 'hello John'", true),
-            Test("`hello @{user.nickname}` != 'hello Dong'", true),
+            Test("`${world}`", "world"),
+            Test(@"`hi ${string('jack\`')}`", "hi jack`"),
+            Test(@"`\${world}`", "${world}"), // use escape character
+            Test("length(`hello ${world}`)", "hello world".Length),
+            Test("json(`{'foo': '${hello}','item': '${world}'}`).foo", "hello"),
+            Test("`hello ${world}` == 'hello world'", true),
+            Test("`hello ${world}` != 'hello hello'", true),
+            Test("`hello ${user.nickname}` == 'hello John'", true),
+            Test("`hello ${user.nickname}` != 'hello Dong'", true),
             #endregion
 
             #region SetPathToProperty test

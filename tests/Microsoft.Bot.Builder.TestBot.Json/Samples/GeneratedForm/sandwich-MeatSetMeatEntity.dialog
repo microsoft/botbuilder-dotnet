@@ -7,7 +7,7 @@
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "@{setPropertyMessage('Meat', @MeatEntity)}"
+            "activity": "${setPropertyMessage('Meat', @MeatEntity)}"
         },    
         {
             "$kind": "Microsoft.SetProperty",

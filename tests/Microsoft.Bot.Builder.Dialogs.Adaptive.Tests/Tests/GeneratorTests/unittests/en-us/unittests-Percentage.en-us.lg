@@ -1,11 +1,11 @@
 # AskPercentage
-- @{askString('Percentage')}
+- ${askString('Percentage')}
 
 # PercentageName
 - percentage
 
 # Percentage(val)
-- @{PercentageEntity(val)}
+- ${PercentageEntity(val)}
 
 [unittests-PercentageEntity.lg](unittests-PercentageEntity.lg)
 

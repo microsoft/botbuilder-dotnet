@@ -27,7 +27,7 @@
                                     "actions": [
                                         {
                                             "$kind": "Microsoft.NumberInput",
-                                            "prompt": "Hello @{$userName}, how old are you?",
+                                            "prompt": "Hello ${$userName}, how old are you?",
                                             "property": "$age"
                                         },
                                         {
@@ -41,7 +41,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Hello @{$name}, you are @{$age} years old!"
+                        "activity": "Hello ${$name}, you are ${$age} years old!"
                     }
                 ]
             }

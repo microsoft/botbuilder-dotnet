@@ -1,11 +1,11 @@
 # AskUtteranceproperty
-- @{askString('Utteranceproperty')}
+- ${askString('Utteranceproperty')}
 
 # UtterancepropertyName
 - utteranceproperty
 
 # Utteranceproperty(val)
-- @{UtterancepropertyEntity(val)}
+- ${UtterancepropertyEntity(val)}
 
 [unittests-UtterancepropertyEntity.lg](unittests-UtterancepropertyEntity.lg)
 

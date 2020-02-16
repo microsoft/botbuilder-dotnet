@@ -17,7 +17,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Your age is @{user.age}."
+                        "activity": "Your age is ${user.age}."
                     }
                 ]
             }

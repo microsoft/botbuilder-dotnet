@@ -32,7 +32,7 @@
                 "$kind": "Microsoft.TextInput",
                 "alwaysPrompt": true,
                 "property": "$answer",
-                "prompt": "Give me something that is '@{$foreach.value}' in color"
+                "prompt": "Give me something that is '${$foreach.value}' in color"
               },
               {
                 "$kind": "Microsoft.EditArray",
@@ -41,13 +41,13 @@
               },
               {
                 "$kind": "Microsoft.SendActivity",
-                "activity": "You said '@{$answer}' is '@{$foreach.value}'."
+                "activity": "You said '${$answer}' is '${$foreach.value}'."
               }
             ]
           },
           {
             "$kind": "Microsoft.SendActivity",
-            "activity": "Here is all I have: @{join($userAnswers, ', ')}."
+            "activity": "Here is all I have: ${join($userAnswers, ', ')}."
           }
         ]
       }

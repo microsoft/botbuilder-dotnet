@@ -18,7 +18,7 @@ namespace AdaptiveExpressions.Properties
     /// You can escape the '=' prefix by putting a backslash.  
     /// Examples: 
     ///     prop = true ==> true
-    ///     prop = "Hello @{user.name}" => "Hello Joe"
+    ///     prop = "Hello ${user.name}" => "Hello Joe"
     ///     prop = "=length(user.name)" => 3
     ///     prop = "=user.age" => 45.
     ///     prop = "\=user.age" => "=user.age".

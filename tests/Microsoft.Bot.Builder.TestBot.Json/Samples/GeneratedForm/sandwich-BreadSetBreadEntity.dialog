@@ -7,7 +7,7 @@
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "@{setPropertyMessage('Bread', @BreadEntity)}"
+            "activity": "${setPropertyMessage('Bread', @BreadEntity)}"
         },    
         {
             "$kind": "Microsoft.SetProperty",

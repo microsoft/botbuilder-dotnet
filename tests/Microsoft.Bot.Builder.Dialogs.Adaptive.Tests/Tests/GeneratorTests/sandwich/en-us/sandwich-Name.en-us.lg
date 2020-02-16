@@ -1,11 +1,11 @@
 # AskName
-- @{askString('Name')}
+- ${askString('Name')}
 
 # NameName
 - name
 
 # Name(val)
-- @{NameEntity(val)}
+- ${NameEntity(val)}
 
 [sandwich-NameEntity.lg](sandwich-NameEntity.lg)
 

@@ -134,16 +134,16 @@ Here is an example -
     ```
 ```
 
-Multi-line variation can request template expansion and entity substitution by enclosing the requested operation in @{}.
+Multi-line variation can request template expansion and entity substitution by enclosing the requested operation in ${}.
 
 Here is an example - 
 ```markdown
 # MultiLineExample
     - ```
         Here is what I have for the order
-        - Title: @{reservation.title}
-        - Location: @{reservation.location}
-        - Date/ time: @{reservation.dateTimeReadBack}
+        - Title: ${reservation.title}
+        - Location: ${reservation.location}
+        - Date/ time: ${reservation.dateTimeReadBack}
     ```
 ```
 
@@ -173,16 +173,16 @@ Here is an example of complex object that your bot's code will parse out and ren
     # ImageGalleryTemplate
     - ```
     {
-        "titleText": "@{[TitleText]}",
-        "subTitle": "@{[SubText]}",
+        "titleText": "${[TitleText]}",
+        "subTitle": "${[SubText]}",
         "images": [
             {
             "type": "Image",
-            "url": "@{[CardImages]}"
+            "url": "${[CardImages]}"
             },
             {
             "type": "Image",
-            "url": "@{[CardImages]}"
+            "url": "${[CardImages]}"
             }
         ]
     }

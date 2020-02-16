@@ -7,7 +7,7 @@
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "@{setPropertyMessage('Email', @email)}"
+            "activity": "${setPropertyMessage('Email', @email)}"
         },
         {
             "$kind": "Microsoft.SetProperty",
