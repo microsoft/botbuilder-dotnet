@@ -71,7 +71,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>activity with text.</returns>
         private static Activity BuildActivityFromText(string text)
         {
-            return MessageFactory.Text(text, text);
+            var ma = Activity.CreateMessageActivity();
+            ma.Text = !string.IsNullOrWhiteSpace(text) ? text : null;
+            ma.Speak = !string.IsNullOrWhiteSpace(text) ? text : null;
+            return ma as Activity;
         }
 
         /// <summary>

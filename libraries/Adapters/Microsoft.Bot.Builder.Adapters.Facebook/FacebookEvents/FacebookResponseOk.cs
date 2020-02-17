@@ -8,16 +8,16 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
     public class FacebookResponseOk
     {
         /// <summary>
-        /// Gets or sets the recipient Id.
+        /// Gets or sets the recipient ID.
         /// </summary>
-        /// <value>The Id of the recipient.</value>
+        /// <value>The ID of the recipient.</value>
         [JsonProperty(PropertyName = "recipient_id")]
         public string RecipientId { get; set; }
 
         /// <summary>
-        /// Gets or sets the message Id.
+        /// Gets or sets the message ID.
         /// </summary>
-        /// <value>The message id.</value>
+        /// <value>The message ID.</value>
         [JsonProperty(PropertyName = "message_id")]
         public string MessageId { get; set; }
     }

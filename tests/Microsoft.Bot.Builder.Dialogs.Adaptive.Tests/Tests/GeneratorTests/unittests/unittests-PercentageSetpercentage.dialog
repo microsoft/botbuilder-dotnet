@@ -7,7 +7,7 @@
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "@{setPropertyMessage('Percentage', @percentage)}"
+            "activity": "${setPropertyMessage('Percentage', @percentage)}"
         }, 
         {
             "$kind": "Microsoft.SetProperty",

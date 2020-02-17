@@ -1,11 +1,11 @@
 # AskEmail
-- @{askString('Email')}
+- ${askString('Email')}
 
 # EmailName
 - email
 
 # Email(val)
-- @{EmailEntity(val)}
+- ${EmailEntity(val)}
 
 [unittests-EmailEntity.lg](unittests-EmailEntity.lg)
 

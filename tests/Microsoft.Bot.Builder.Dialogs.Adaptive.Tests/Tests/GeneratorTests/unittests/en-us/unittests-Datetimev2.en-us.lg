@@ -1,5 +1,5 @@
 # AskDatetimev2
-- @{askString('Datetimev2')}
+- ${askString('Datetimev2')}
 
 # Datetimev2Name
 - datetimev2

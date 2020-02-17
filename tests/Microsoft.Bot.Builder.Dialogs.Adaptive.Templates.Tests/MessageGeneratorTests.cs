@@ -32,11 +32,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
             Assert.AreEqual("text", activity.Text);
             Assert.AreEqual("text", activity.Speak);
+            Assert.IsNull(activity.InputHint);
 
             var data = new JObject();
             data["title"] = "titleContent";
             data["text"] = "textContent";
-            var cardActionLgResult = GetLGFile().Evaluate("@{HerocardWithCardAction()}", data);
+            var cardActionLgResult = GetLGFile().Evaluate("${HerocardWithCardAction()}", data);
             activity = ActivityFactory.CreateActivity(cardActionLgResult);
             AssertCardActionActivity(activity);
         }

@@ -43,7 +43,7 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "@{welcome()}"
+                    "activity": "${welcome()}"
                 },
                 "ExternalLanguage.Greeting"
             ]
@@ -75,7 +75,7 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "@{help()}"
+                    "activity": "${help()}"
                 }
             ]
         },
@@ -97,7 +97,7 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "@{help()}"
+                    "activity": "${help()}"
                 }
             ]
         }

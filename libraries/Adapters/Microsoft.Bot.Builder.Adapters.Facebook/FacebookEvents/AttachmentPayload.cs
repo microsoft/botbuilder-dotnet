@@ -11,23 +11,23 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
     public class AttachmentPayload
     {
         /// <summary>
-        /// Gets or sets the url of the attachment.
+        /// Gets or sets the URL of the attachment.
         /// </summary>
-        /// <value>Url of the attachment.</value>
+        /// <value>The URL of the attachment.</value>
         [JsonProperty(PropertyName = "url")]
         public Uri Url { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the attachment is reusable or not. Default false.
         /// </summary>
-        /// <value>Indicates the reusable condition.</value>
+        /// <value>Indicates whether the attachment is reusable.</value>
         [JsonProperty(PropertyName = "is_reusable")]
         public bool IsReusable { get; set; }
 
         /// <summary>
-        /// Gets or sets the Id of the attachment (for reusable attachments).
+        /// Gets or sets the ID of the attachment (for reusable attachments).
         /// </summary>
-        /// <value>The id of the saved attachment.</value>
+        /// <value>The ID of the saved attachment.</value>
         [JsonProperty(PropertyName = "attachment_id")]
         public string AttachmentId { get; set; }
 
@@ -60,27 +60,27 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
         public List<Element> Elements { get; } = new List<Element>();
 
         /// <summary>
-        /// Newtonsoft Json method for conditionally serializing IsReusable property.
+        /// Newtonsoft JSON method for conditionally serializing the <see cref="IsReusable"/> property.
         /// </summary>
-        /// <returns>A boolean with the value.</returns>
+        /// <returns>`true` to serialize the property; otherwise, `false`.</returns>
         public bool ShouldSerializeIsReusable()
         {
             return IsReusable;
         }
 
         /// <summary>
-        /// Newtonsoft Json method for conditionally serializing Buttons property.
+        /// Newtonsoft JSON method for conditionally serializing the <see cref="Buttons"/> property.
         /// </summary>
-        /// <returns>A boolean with the value.</returns>
+        /// <returns>`true` to serialize the property; otherwise, `false`.</returns>
         public bool ShouldSerializeButtons()
         {
             return Buttons.Count > 0;
         }
 
         /// <summary>
-        /// Newtonsoft Json method for conditionally serializing Elements property.
+        /// Newtonsoft JSON method for conditionally serializing the <see cref="Elements"/> property.
         /// </summary>
-        /// <returns>A boolean with the value.</returns>
+        /// <returns>`true` to serialize the property; otherwise, `false`.</returns>
         public bool ShouldSerializeElements()
         {
             return Elements.Count > 0;

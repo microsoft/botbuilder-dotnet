@@ -54,35 +54,39 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <summary>
         /// Gets or sets a value indicating whether the message was sent from the page itself.
         /// </summary>
-        /// <value>A value indicating whether the message was sent from the page itself.</value>
+        /// <value>`true` if the message was sent from the page itself; otherwise, `false`.</value>
         [JsonProperty(PropertyName = "is_echo")]
         public bool IsEcho { get; set; }
 
         /// <summary>
-        /// Gets or sets the Mid.
+        /// Gets or sets the message ID.
         /// </summary>
-        /// <value>Message ID.</value>
+        /// <value>The message ID.</value>
         [JsonProperty(PropertyName = "mid")]
         public string Mid { get; set; }
 
         /// <summary>
-        /// Newtonsoft Json method for conditionally serializing the QuickReplies property.
+        /// Newtonsoft JSON method for conditionally serializing the <see cref="QuickReplies"/> property.
         /// </summary>
-        /// <returns>A boolean with the value.</returns>
+        /// <returns>`true` to serialize the property; otherwise, `false`.</returns>
         public bool ShouldSerializeQuickReplies()
         {
             return QuickReplies.Count > 0;
         }
 
         /// <summary>
-        /// Newtonsoft Json method for conditionally serializing the IsEcho property.
+        /// Newtonsoft JSON method for conditionally serializing the <see cref="IsEcho"/> property.
         /// </summary>
-        /// <returns>A boolean with the value.</returns>
+        /// <returns>`true` to serialize the property; otherwise, `false`.</returns>
         public bool ShouldSerializeIsEcho()
         {
             return IsEcho;
         }
 
+        /// <summary>
+        /// Newtonsoft JSON method for conditionally serializing the <see cref="Attachments"/> property.
+        /// </summary>
+        /// <returns>`true` to serialize the property; otherwise, `false`.</returns>
         public bool ShouldSerializeAttachments()
         {
             return Attachments.Count > 0;

@@ -49,7 +49,7 @@ fragment STRING_LITERAL : ('\'' (~['\r\n])* '\'') | ('"' (~["\r\n])* '"');
 
 fragment STRING_INTERPOLATION : '`' ('\\`' | ~'`')* '`';
 
-fragment EXPRESSION_FRAGMENT : '@' '{' (STRING_LITERAL | STRING_INTERPOLATION | EMPTY_OBJECT | ~[\r\n{}'"`] )+ '}'?;
+fragment EXPRESSION_FRAGMENT : '$' '{' (STRING_LITERAL | STRING_INTERPOLATION | EMPTY_OBJECT | ~[\r\n{}'"`] )+ '}'?;
 
 fragment ESCAPE_CHARACTER_FRAGMENT : '\\' ~[\r\n]?;
 
@@ -60,7 +60,7 @@ OPTIONS
   ;
 
 COMMENTS
-  : ('>'|'$') ~('\r'|'\n')+ -> skip
+  : '>' ~('\r'|'\n')+ -> skip
   ;
 
 WS
@@ -214,7 +214,7 @@ TEXT_IN_STRUCTURE_NAME
 mode STRUCTURE_BODY_MODE;
 
 STRUCTURED_COMMENTS
-  : ('>'|'$') ~[\r\n]* '\r'?'\n' { !inStructuredValue && beginOfStructureProperty}? -> skip
+  : '>' ~[\r\n]* '\r'?'\n' { !inStructuredValue && beginOfStructureProperty}? -> skip
   ;
 
 WS_IN_STRUCTURE_BODY

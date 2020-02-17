@@ -1,8 +1,8 @@
 ﻿﻿# templateWithSameParams(param)
-- @{listTemplate1(param)} @{listTemplate1(param)}
+- ${listTemplate1(param)} ${listTemplate1(param)}
 
 # templateWithDifferentParams(param1, param2)
-- @{listTemplate1(param1)} @{listTemplate1(param2)}
+- ${listTemplate1(param1)} ${listTemplate1(param2)}
 
 # listTemplate1(param)
 - item1

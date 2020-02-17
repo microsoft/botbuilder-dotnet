@@ -16,9 +16,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Templates
         public string ActionType { get; set; }
 
         /// <summary>
-        /// Gets or sets the default url to open.
+        /// Gets or sets the default URL to open.
         /// </summary>
-        /// <value>Url of the action.</value>
+        /// <value>The URL of the action.</value>
         [JsonProperty(PropertyName = "url")]
         public Uri ActionUrl { get; set; }
 
@@ -30,9 +30,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Templates
         public bool MessengerExtensions { get; set; }
 
         /// <summary>
-        /// Gets or sets the height ratio for the webview. It can be COMPACT, TALL or FULL.
+        /// Gets or sets the height ratio for the WebView. It can be "COMPACT", "TALL", or "FULL".
         /// </summary>
-        /// <value>the height ratio for the webview.</value>
+        /// <value>The height ratio for the WebView.</value>
         [JsonProperty(PropertyName = "webview_height_ratio")]
         public string WebviewHeightRatio { get; set; }
     }

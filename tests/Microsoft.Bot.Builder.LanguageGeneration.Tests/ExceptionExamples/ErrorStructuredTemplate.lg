@@ -11,12 +11,12 @@
 
 # errorExpression1
 [Activity
-  @{NOTemplate()}
+  ${NOTemplate()}
 ]
 
 # errorExpression2
 [Activity
-  Text = @{NOTemplate()}
+  Text = ${NOTemplate()}
 ]
 
 # errorStructuredType

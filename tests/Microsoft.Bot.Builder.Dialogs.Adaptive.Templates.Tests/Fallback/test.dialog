@@ -7,7 +7,7 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "@{test()}"
+                    "activity": "${test()}"
                 },
                 {
                     "$kind": "Microsoft.AdaptiveDialog",
@@ -18,7 +18,7 @@
                             "actions": [
                                 {
                                     "$kind": "Microsoft.SendActivity",
-                                    "activity": "@{test()}"
+                                    "activity": "${test()}"
                                 }
                             ]
                         }

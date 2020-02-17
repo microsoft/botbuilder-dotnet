@@ -8,27 +8,28 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
     public class FacebookEntry
     {
         /// <summary>
-        /// Gets or sets the Id.
+        /// Gets or sets the page ID.
         /// </summary>
-        /// <value>The page ID of the page.</value>
+        /// <value>The ID of the page.</value>
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the time of the update.
         /// </summary>
-        /// <value>Time of update (epoch time in milliseconds).</value>
+        /// <value>The time of update (epoch time in milliseconds).</value>
         public long Time { get; set; }
 
         /// <summary>
         /// Gets the messaging list.
         /// </summary>
-        /// <value>List containing one messaging object. Note that even though this is an enumerable, it will only contain one object.</value>
+        /// <value>List containing one messaging object.</value>
+        /// <remarks>Note that even though this is an enumerable, it will only contain one object.</remarks>
         public List<FacebookMessage> Messaging { get; } = new List<FacebookMessage>();
 
         /// <summary>
         /// Gets the changes list.
         /// </summary>
-        /// <value>List containing the list of changes.</value>
+        /// <value>The list of changes.</value>
         public List<FacebookMessage> Changes { get; } = new List<FacebookMessage>();
 
         /// <summary>
@@ -37,16 +38,28 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
         /// <value>List containing the messages sent while in standby mode.</value>
         public List<FacebookMessage> Standby { get; } = new List<FacebookMessage>();
 
+        /// <summary>
+        /// Newtonsoft JSON method for conditionally serializing the <see cref="Messaging"/> property.
+        /// </summary>
+        /// <returns>`true` to serialize the property; otherwise, `false`.</returns>
         public bool ShouldSerializeMessaging()
         {
             return Messaging.Count > 0;
         }
 
+        /// <summary>
+        /// Newtonsoft JSON method for conditionally serializing the <see cref="Standby"/> property.
+        /// </summary>
+        /// <returns>`true` to serialize the property; otherwise, `false`.</returns>
         public bool ShouldSerializeStandby()
         {
             return Standby.Count > 0;
         }
 
+        /// <summary>
+        /// Newtonsoft JSON method for conditionally serializing the <see cref="Changes"/> property.
+        /// </summary>
+        /// <returns>`true` to serialize the property; otherwise, `false`.</returns>
         public bool ShouldSerializeChanges()
         {
             return Changes.Count > 0;

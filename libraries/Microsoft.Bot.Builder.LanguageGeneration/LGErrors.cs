@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public const string EmptyStrucContent = "Invalid structure body. Body cannot be empty. ";
 
-        public const string InvalidStrucBody = "Invalid structure body. Body can include <PropertyName> = <Value> pairs or @{reference()} template reference. ";
+        public const string InvalidStrucBody = "Invalid structure body. Body can include <PropertyName> = <Value> pairs or ${reference()} template reference. ";
 
         public const string InvalidWhitespaceInCondition = "Invalid condition: At most 1 whitespace allowed between 'IF/ELSEIF/ELSE' and ':'. ";
 

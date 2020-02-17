@@ -39,7 +39,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{user.counter}"
+                        "activity": "${user.counter}"
                     },
                     {
                         "$kind": "Microsoft.SetProperty",

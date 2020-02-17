@@ -51,7 +51,7 @@
                                     },
                                     {
                                         "$kind": "Microsoft.SendActivity",
-                                        "activity": "@{user.name}"
+                                        "activity": "${user.name}"
                                     },
                                     {
                                         "$kind": "Microsoft.NumberInput",
@@ -68,7 +68,7 @@
                                     },
                                     {
                                         "$kind": "Microsoft.SendActivity",
-                                        "activity": "@{user.age}"
+                                        "activity": "${user.age}"
                                     }
                                 ]
                             },

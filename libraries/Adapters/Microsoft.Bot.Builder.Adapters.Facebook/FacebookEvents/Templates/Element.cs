@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Templates
 {
     /// <summary>
-    /// Represents an element of a Template Message.
+    /// Represents an element of a template message.
     /// </summary>
     public class Element
     {
@@ -20,9 +20,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Templates
         public string MediaType { get; set; }
 
         /// <summary>
-        /// Gets or sets the url of the media element.
+        /// Gets or sets the URL of the media element.
         /// </summary>
-        /// <value>Url of the media element.</value>
+        /// <value>The URL of the media element.</value>
         [JsonProperty(PropertyName = "url")]
         public Uri Url { get; set; }
 
@@ -41,9 +41,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Templates
         public string Subtitle { get; set; }
 
         /// <summary>
-        /// Gets or sets the url of the image.
+        /// Gets or sets the URL of the image.
         /// </summary>
-        /// <value>The url of the image.</value>
+        /// <value>The URL of the image.</value>
         [JsonProperty(PropertyName = "image_url")]
         public Uri ImageUrl { get; set; }
 
@@ -62,9 +62,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Templates
         public List<Button> Buttons { get; } = new List<Button>();
 
         /// <summary>
-        /// Newtonsoft Json method for conditionally serializing Buttons property.
+        /// Newtonsoft JSON method for conditionally serializing the <see cref="Buttons"/> property.
         /// </summary>
-        /// <returns>A boolean with the value.</returns>
+        /// <returns>`true` to serialize the property; otherwise, `false`.</returns>
         public bool ShouldSerializeButtons()
         {
             return Buttons.Count > 0;

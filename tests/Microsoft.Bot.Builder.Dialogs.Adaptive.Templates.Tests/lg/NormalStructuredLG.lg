@@ -11,7 +11,7 @@
 ﻿# HeroCardTemplate(type)
 [HeroCard 
         title=Cheese gromit!
-        subtitle=@{type}
+        subtitle=${type}
         text=This is some text describing the card, it's cool because it's cool
         image=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
         images=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
@@ -21,7 +21,7 @@
 # ThumbnailCardTemplate(type)
 [ThumbnailCard 
         title=Cheese gromit!
-        subtitle=@{type}
+        subtitle=${type}
         text=This is some text describing the card, it's cool because it's cool
         image=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
         images=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
@@ -31,7 +31,7 @@
 # AudioCardTemplate(type)
 [Audiocard
         title=Cheese gromit!
-        subtitle=@{type}
+        subtitle=${type}
         text=This is some text describing the card, it's cool because it's cool
         image=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
         buttons=Option 1| Option 2| Option 3
@@ -47,15 +47,15 @@
         Title = John Doe
         Tax = $ 7.50
         Total = $ 90.95
-        buttons = @{ReceiptButton()}
-        Facts = @{json(ReceiptFacts())}
-        items = @{receiptItems}
+        buttons = ${ReceiptButton()}
+        Facts = ${json(ReceiptFacts())}
+        items = ${receiptItems}
 ]
 
 # VideoCardTemplate(type)
 [VideoCard
         title=Cheese gromit!
-        subtitle=@{type}
+        subtitle=${type}
         text=This is some text describing the card, it's cool because it's cool
         image=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
         buttons=Option 1| Option 2| Option 3
@@ -69,14 +69,14 @@
 # SigninCardTemplate(signinlabel, url)
 [SigninCard
         text=This is some text describing the card, it's cool because it's cool
-        buttons=@{signinButton(signinlabel, url)}
+        buttons=${signinButton(signinlabel, url)}
 ]
 
 # OAuthCardTemplate(signinlabel, url, connectionName)
 [OAuthCard
         text=This is some text describing the card, it's cool because it's cool
-        buttons=@{cardActionTemplate('signin', signinlabel, url)}
-        ConnectionName=@{connectionName}
+        buttons=${cardActionTemplate('signin', signinlabel, url)}
+        ConnectionName=${connectionName}
 ]
 
 # AnimationCardTemplate
@@ -99,117 +99,117 @@
 
 # eventActivity(text)
 [Activity
-    Name = @{text}
-    Value = @{text}
+    Name = ${text}
+    Value = ${text}
     Type = event
 ]
 
 # handoffActivity(text)
 [Activity
-    Name = @{text}
-    Value = @{text}
+    Name = ${text}
+    Value = ${text}
     Type = handoff
 ]
 
 # messageActivityAll(title, text)
 [Activity
-    Text = @{text}
-    Speak = @{text}
+    Text = ${text}
+    Speak = ${text}
     InputHint = accepting
-    Attachments = @{HerocardWithCardAction(title, text)}
-    SuggestedActions = firstItem | @{cardActionTemplate(null, title, text)}
+    Attachments = ${HerocardWithCardAction(title, text)}
+    SuggestedActions = firstItem | ${cardActionTemplate(null, title, text)}
     AttachmentLayout = list
-    SemanticAction = @{json(SemanticActionTemplate())}
+    SemanticAction = ${json(SemanticActionTemplate())}
 ]
 
 > --------------------External File reference samples-----------------------
 # externalAdaptiveCardActivity
 [Activity
-    attachments = @{ActivityAttachment(json(fromFile('../adaptiveCard.json')), 'adaptiveCard')}
+    attachments = ${ActivityAttachment(json(fromFile('../adaptiveCard.json')), 'adaptiveCard')}
 ]
 
 # multiExternalAdaptiveCardActivity
 [Activity
-    attachments = @{foreach(titles, x, ActivityAttachment(externalAdaptiveCard(x), 'adaptiveCard'))}
+    attachments = ${foreach(titles, x, ActivityAttachment(externalAdaptiveCard(x), 'adaptiveCard'))}
 ]
 
 # externalAdaptiveCard(adaptiveCardTitle)
-- @{json(fromFile('../adaptiveCard.json'))}
+- ${json(fromFile('../adaptiveCard.json'))}
 
 # externalHeroCardActivity(type, title, value)
 [Activity
-    attachments = @{ActivityAttachment(json(fromFile('.\\herocard.json')), 'herocard')}
+    attachments = ${ActivityAttachment(json(fromFile('.\\herocard.json')), 'herocard')}
 ]
 
 # herocardActivityWithAttachmentStructure
 [Activity
-    attachments = @{herocardAttachment('imBack', 'taptitle', 'tapvalue')}
+    attachments = ${herocardAttachment('imBack', 'taptitle', 'tapvalue')}
 ]
 
 # herocardAttachment(type, title, value)
 [Attachment
     contenttype = herocard
-    content = @{json(fromFile('.\\herocard.json'))}
+    content = ${json(fromFile('.\\herocard.json'))}
 ]
 
 
 > --------------------------Other samples---------------------------
 # HerocardWithCardAction(title, text)
 [herocard
-    Title = @{title}
-    Text = @{text}
-    tap = @{cardActionTemplate('imBack', 'taptitle', 'tapvalue')}
-    Buttons = @{cardActionTemplate(null, title, text)}
+    Title = ${title}
+    Text = ${text}
+    tap = ${cardActionTemplate('imBack', 'taptitle', 'tapvalue')}
+    Buttons = ${cardActionTemplate(null, title, text)}
 ]
 
 # activityWithHeroCardAttachment(title, text)
 [Activity
-    Attachments = @{HerocardWithCardAction(title, text)}
+    Attachments = ${HerocardWithCardAction(title, text)}
 ]
 
 # activityWithMultiAttachments(title, text)
 [activity
-    Attachments = @{HerocardWithCardAction(title, text)} | @{ThumbnailCardTemplate('type')}
+    Attachments = ${HerocardWithCardAction(title, text)} | ${ThumbnailCardTemplate('type')}
 ]
 
 # activityWithSuggestionActions(title, text)
 [Activity
-    Text = @{text}
-    SuggestedActions = firstItem | @{cardActionTemplate(null, title, text)}
+    Text = ${text}
+    SuggestedActions = firstItem | ${cardActionTemplate(null, title, text)}
 ]
 
 # activityWithMultiStringSuggestionActions(title, text)
 [Activity
-    Text = @{text}
-    SuggestedActions = @{getSuggestions()}
+    Text = ${text}
+    SuggestedActions = ${getSuggestions()}
 ]
 
 # activityWithMultiStructuredSuggestionActions(text)
 [Activity
-    Text = @{text}
-    SuggestedActions = @{foreach(getSuggestions(), x, cardActionTemplate(null, x, x))}
+    Text = ${text}
+    SuggestedActions = ${foreach(getSuggestions(), x, cardActionTemplate(null, x, x))}
 ]
 
 # adaptivecardActivity
 [Activity
-    Attachments = @{json(adaptivecardjson())}
+    Attachments = ${json(adaptivecardjson())}
 ]
 
 # adaptivecardActivityWithAttachmentStructure
 [Activity
-    Attachments = @{adaptiveAttachment()}
+    Attachments = ${adaptiveAttachment()}
 ]
 
 # adaptiveAttachment
 [Attachment
     contenttype = adaptivecard
-    content = @{json(adaptivecardjson())}
+    content = ${json(adaptivecardjson())}
 ]
 
 # SuggestedActionsReference(text)
 [  Activity 
-    Text = @{text}
-    @{WelcomeActions()}
+    Text = ${text}
+    ${WelcomeActions()}
 ]
 
 # WelcomeActions
@@ -221,16 +221,16 @@
 > --------------internal cardaction templates----------------------
 # cardActionTemplate(type, title, value)
 [CardAction
-    Type = @{if(type == null, 'imBack', type)}
-    Title = @{title}
-    Value = @{value}
-    Text = @{title}
+    Type = ${if(type == null, 'imBack', type)}
+    Title = ${title}
+    Value = ${value}
+    Text = ${title}
 ]
 
 # signinButton(signinlabel, url)
 [CardAction
-    Title = @{signinlabel}
-    Value = @{url}
+    Title = ${signinlabel}
+    Value = ${url}
     type = signin
 ]
 
@@ -244,7 +244,7 @@
 
 > --------------------Internal string templates-------------------------
 # getSuggestions
-- @{foreach(split(stringSuggestions(), '$'), x, trim(x))}
+- ${foreach(split(stringSuggestions(), '$'), x, trim(x))}
 
 # stringSuggestions
 - first suggestion $ second suggestion $ third suggestion
@@ -285,7 +285,7 @@
   "body": [
     {
       "type": "TextBlock",
-      "text": "@{adaptiveCardTitle}",
+      "text": "${adaptiveCardTitle}",
       "weight": "bolder",
       "size": "medium"
     },

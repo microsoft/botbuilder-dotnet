@@ -61,7 +61,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{join(turn.recognized.entities.code, ',')}"
+                        "activity": "${join(turn.recognized.entities.code, ',')}"
                     },
                     {
                         "$kind": "Microsoft.Test.AssertCondition",
@@ -79,7 +79,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{join(turn.recognized.entities.color, ',')}"
+                        "activity": "${join(turn.recognized.entities.color, ',')}"
                     },
                     {
                         "$kind": "Microsoft.Test.AssertCondition",
@@ -96,7 +96,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{join(turn.recognized.entities.age, ',')}"
+                        "activity": "${join(turn.recognized.entities.age, ',')}"
                     }
                 ]
             }

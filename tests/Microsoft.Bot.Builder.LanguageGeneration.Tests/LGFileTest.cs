@@ -237,7 +237,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(evaled, "Hi \r\n\t[]{}\\");
 
             evaled = lgFile.EvaluateTemplate("AtEscapeChar", null);
-            Assert.AreEqual(evaled, "Hi{1+1}[wPhrase]{wPhrase()}@{wPhrase()}2@{1+1} ");
+            Assert.AreEqual(evaled, "Hi{1+1}[wPhrase]{wPhrase()}${wPhrase()}2${1+1} ");
 
             evaled = lgFile.EvaluateTemplate("otherEscape", null);
             Assert.AreEqual(evaled, "Hi y ");
@@ -673,7 +673,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             evaled = lgFile.EvaluateTemplate("AskForAge.prompt3");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"lgType\":\"Activity\",\"text\":\"@{GetAge()}\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"lgType\":\"Activity\",\"text\":\"${GetAge()}\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject));
 
             evaled = lgFile.EvaluateTemplate("T1");
 
@@ -870,7 +870,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual("get 'h' value : hello", evaled);
 
             evaled = lgFile.EvaluateTemplate("StringTemplateWithEscape");
-            Assert.AreEqual("just want to output @{bala`bala}", evaled);
+            Assert.AreEqual("just want to output ${bala`bala}", evaled);
 
             evaled = lgFile.EvaluateTemplate("StringTemplateWithTemplateRef");
             Assert.AreEqual("hello jack , welcome. nice weather!", evaled);
@@ -966,6 +966,22 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var jObjEvaled = lgFile.EvaluateTemplate("template3") as JObject;
 
             Assert.AreEqual("null", jObjEvaled["key1"]);
+        }
+
+        [TestMethod]
+        public void TestInlineEvaluate()
+        {
+            var lgFile = LGParser.ParseFile(GetExampleFilePath("2.lg"));
+            var evaled = lgFile.Evaluate("hello");
+            Assert.AreEqual("hello", evaled);
+
+            // test template reference
+            evaled = lgFile.Evaluate("${wPhrase()}");
+            var options = new List<string> { "Hi", "Hello", "Hiya" };
+            Assert.IsTrue(options.Contains(evaled), $"The result `{evaled}` is not in those options [{string.Join(",", options)}]");
+
+            var exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("${ErrrorTemplate()}"));
+            Assert.IsTrue(exception.Message.Contains("it's not a built-in function or a customized function"));
         }
 
         public class LoopClass
