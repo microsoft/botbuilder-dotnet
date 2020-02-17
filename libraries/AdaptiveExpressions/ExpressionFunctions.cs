@@ -2471,7 +2471,6 @@ namespace AdaptiveExpressions
             {
                 // Math
                 new ExpressionEvaluator(ExpressionType.Element, ExtractElement, ReturnType.Object, ValidateBinary),
-                MultivariateNumeric(ExpressionType.Add, args => args[0] + args[1]),
                 MultivariateNumeric(ExpressionType.Subtract, args => args[0] - args[1]),
                 MultivariateNumeric(ExpressionType.Multiply, args => args[0] * args[1]),
                 MultivariateNumeric(
@@ -2595,6 +2594,52 @@ namespace AdaptiveExpressions
                         VerifyNumericList),
                     ReturnType.Number,
                     ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.Add,
+                    Apply(
+                        args =>
+                        {
+                            object result = null;
+                            var stringConcat = false;
+
+                            foreach (object arg in args)
+                            {
+                                if (!arg.IsNumber())
+                                {
+                                    stringConcat = true;
+                                    break;
+                                }
+                            }
+
+                            if (stringConcat)
+                            {
+                                var builder = new StringBuilder();
+                                foreach (var arg in args)
+                                {
+                                    if (arg != null)
+                                    {
+                                        builder.Append(arg.ToString());
+                                    }
+                                }
+
+                                result = builder.ToString();
+                            }
+                            else
+                            {
+                                var arithmeticSum = args[0];
+
+                                for (var i = 1; i < args.Count; i++)
+                                {
+                                    arithmeticSum += args[i];
+                                }
+
+                                result = arithmeticSum;
+                            }
+
+                            return result;
+                        }),
+                    ReturnType.Object,
+                    (expression) => ValidateArityAndAnyType(expression, 2, int.MaxValue)),
                 new ExpressionEvaluator(
                     ExpressionType.Sum,
                     Apply(
