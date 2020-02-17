@@ -89,7 +89,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default)
         {
             var wrapper = new LuisRecognizer(RecognizerOptions(dialogContext), HttpClient);
+
+            // temp clone of turn context because luisrecognizer always pulls activity from turn context.
             var tempContext = new TurnContext(dialogContext.Context.Adapter, activity);
+            foreach (var keyValue in dialogContext.Context.TurnState)
+            {
+                tempContext.TurnState[keyValue.Key] = keyValue.Value;
+            }
+
             return await wrapper.RecognizeAsync(tempContext, cancellationToken).ConfigureAwait(false);
         }
 
