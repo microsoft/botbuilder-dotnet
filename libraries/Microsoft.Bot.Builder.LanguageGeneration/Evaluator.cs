@@ -522,8 +522,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
            var resourcePath = GetResourcePath(filePath);
            var stringContent = File.ReadAllText(resourcePath);
 
-           var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
-           var result = ExpressionRecognizeRegex.Replace(stringContent, evalutor);
+           var evaluator = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
+           var result = ExpressionRecognizeRegex.Replace(stringContent, evaluator);
            return result.Escape();
        };
 
