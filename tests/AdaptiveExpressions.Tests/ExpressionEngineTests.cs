@@ -289,6 +289,7 @@ namespace AdaptiveExpressions.Tests
             #endregion
 
             #region Operators test
+            Test("1 + 2", 3),
             Test("- 1 + 2", 1),
             Test("+ 1 + 2", 3),
             Test("1 - 2", -1),
@@ -304,11 +305,8 @@ namespace AdaptiveExpressions.Tests
             Test("(one + two) * bag.three", 9.0, new HashSet<string> { "one", "two", "bag.three" }),
             Test("(one + two) * bag.set.four", 12.0, new HashSet<string> { "one", "two", "bag.set.four" }),
             Test("hello + nullObj", "hello"),
-            Test("add(add(one, two), hello, world)", "3helloworld"),
-            Test("add(one, two, hello, world)", "3helloworld"),
-            Test("(one + two) + hello + world", "3helloworld"),
             Test("one + two + hello + world", "3helloworld"),
-            Test("one + hello + one + two", "1hello12"),
+            Test("one + two + hello + one + two", "3hello12"),
 
             Test("2^2", 4.0),
             Test("3^2^2", 81.0),

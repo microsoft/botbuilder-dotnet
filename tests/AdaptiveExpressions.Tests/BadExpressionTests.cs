@@ -38,6 +38,7 @@ namespace AdaptiveExpressions.Tests
 
             #region Operators test
             Test("istrue + 1"), // params should be number or string
+            Test("one + two + nullObj"), // Operator '+' or add cannot be applied to operands of type 'number' and null object.
             Test("'1' * 2"), // params should be number
             Test("'1' - 2"), // params should be number
             Test("'1' / 2"), // params should be number

@@ -631,6 +631,36 @@ namespace AdaptiveExpressions
                 }, verify);
 
         /// <summary>
+        /// Generate an expression delegate that applies function on the accumulated value after verifying all children.
+        /// </summary>
+        /// <param name="function">Function to apply.</param>
+        /// <param name="verify">Function to check each arg for validity.</param>
+        /// <returns>Delegate for evaluating an expression.</returns>
+        public static EvaluateExpressionDelegate ApplySequenceWithError(Func<IReadOnlyList<dynamic>, (object, string)> function, VerifyExpression verify = null)
+            => ApplyWithError(
+                args =>
+                {
+                    var binaryArgs = new List<object> { null, null };
+                    var sofar = args[0];
+                    for (var i = 1; i < args.Count; ++i)
+                    {
+                        binaryArgs[0] = sofar;
+                        binaryArgs[1] = args[i];
+                        var (result, error) = function(binaryArgs);
+                        if (error != null)
+                        {
+                            return (result, error);
+                        }
+                        else
+                        {
+                            sofar = result;
+                        }
+                    }
+
+                    return (sofar, null);
+                }, verify);
+
+        /// <summary>
         /// Numeric operators that can have 1 or more args.
         /// </summary>
         /// <param name="type">Expression type.</param>
@@ -2614,13 +2644,27 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Add,
-                    ApplySequence(
+                    ApplySequenceWithError(
                         args =>
                         {
-                            var stringConcat = !((object)args[0]).IsNumber() || !((object)args[1]).IsNumber();
+                            object result = null;
+                            string error = null;
+                            var firstItem = (object)args[0];
+                            var secondItem = (object)args[1];
+                            var stringConcat = !firstItem.IsNumber() || !secondItem.IsNumber();
 
-                            return stringConcat ? args[0]?.ToString() + args[1]?.ToString()
+                            if ((firstItem == null && secondItem.IsNumber())
+                                || (secondItem == null && firstItem.IsNumber()))
+                            {
+                                error = "Operator '+' or add cannot be applied to operands of type 'number' and null object.";
+                            }
+                            else
+                            {
+                                result = stringConcat ? firstItem?.ToString() + secondItem?.ToString()
                                                 : args[0] + args[1];
+                            }
+
+                            return (result, error);
                         }, VerifyNumberOrStringOrNull),
                     ReturnType.Object,
                     (expression) => ValidateArityAndAnyType(expression, 2, int.MaxValue)),
