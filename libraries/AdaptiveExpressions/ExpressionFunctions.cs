@@ -472,6 +472,24 @@ namespace AdaptiveExpressions
         }
 
         /// <summary>
+        /// Verify value is a number or string or null.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="expression">Expression that led to value.</param>
+        /// <param name="number">No function.</param>
+        /// <returns>Error.</returns>
+        public static string VerifyNumberOrStringOrNull(object value, Expression expression, int number)
+        {
+            string error = null;
+            if (value != null && !value.IsNumber() && !(value is string))
+            {
+                error = $"{expression} is not string or number.";
+            }
+
+            return error;
+        }
+
+        /// <summary>
         /// Verify value is boolean.
         /// </summary>
         /// <param name="value">Value to check.</param>
@@ -2603,7 +2621,7 @@ namespace AdaptiveExpressions
 
                             return stringConcat ? args[0]?.ToString() + args[1]?.ToString()
                                                 : args[0] + args[1];
-                        }),
+                        }, VerifyNumberOrStringOrNull),
                     ReturnType.Object,
                     (expression) => ValidateArityAndAnyType(expression, 2, int.MaxValue)),
                 new ExpressionEvaluator(

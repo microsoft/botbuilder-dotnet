@@ -37,6 +37,7 @@ namespace AdaptiveExpressions.Tests
             #endregion
 
             #region Operators test
+            Test("istrue + 1"), // params should be number or string
             Test("'1' * 2"), // params should be number
             Test("'1' - 2"), // params should be number
             Test("'1' / 2"), // params should be number
@@ -143,6 +144,7 @@ namespace AdaptiveExpressions.Tests
             Test("max()"), // function need 1 or more than 1 parameters
             Test("min(hello, one)"), // param should be number
             Test("min()"), // function need 1 or more than 1 parameters
+            Test("add(istrue, 2)"), // param should be number or string
             Test("add()"), // arg count doesn't match
             Test("add(one)"), // add function need 2 or more than two parameters
             Test("sub(hello, 2)"), // param should be number
