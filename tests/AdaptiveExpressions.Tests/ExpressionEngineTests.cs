@@ -304,12 +304,11 @@ namespace AdaptiveExpressions.Tests
             Test("(1 + 2) * 3", 9),
             Test("(one + two) * bag.three", 9.0, new HashSet<string> { "one", "two", "bag.three" }),
             Test("(one + two) * bag.set.four", 12.0, new HashSet<string> { "one", "two", "bag.set.four" }),
-            Test("istrue + nullObj", "ture"),
-            Test("add(one + two, hello, world)", "3helloworld"),
+            Test("istrue + nullObj", "True"),
+            Test("add(add(one, two), hello, world)", "3helloworld"),
+            Test("add(one, two, hello, world)", "3helloworld"),
             Test("(one + two) + hello + world", "3helloworld"),
-
-            // the result should be "12helloworld" or "3helloworld"?
-            //Test("one + two + hello + world", "12helloworld"),
+            Test("one + two + hello + world", "3helloworld"),
 
             Test("2^2", 4.0),
             Test("3^2^2", 81.0),

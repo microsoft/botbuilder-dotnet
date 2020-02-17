@@ -2596,47 +2596,13 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Add,
-                    Apply(
+                    ApplySequence(
                         args =>
                         {
-                            object result = null;
-                            var stringConcat = false;
+                            var stringConcat = !((object)args[0]).IsNumber() || !((object)args[1]).IsNumber();
 
-                            foreach (object arg in args)
-                            {
-                                if (!arg.IsNumber())
-                                {
-                                    stringConcat = true;
-                                    break;
-                                }
-                            }
-
-                            if (stringConcat)
-                            {
-                                var builder = new StringBuilder();
-                                foreach (var arg in args)
-                                {
-                                    if (arg != null)
-                                    {
-                                        builder.Append(arg.ToString());
-                                    }
-                                }
-
-                                result = builder.ToString();
-                            }
-                            else
-                            {
-                                var arithmeticSum = args[0];
-
-                                for (var i = 1; i < args.Count; i++)
-                                {
-                                    arithmeticSum += args[i];
-                                }
-
-                                result = arithmeticSum;
-                            }
-
-                            return result;
+                            return stringConcat ? args[0]?.ToString() + args[1]?.ToString()
+                                                : args[0] + args[1];
                         }),
                     ReturnType.Object,
                     (expression) => ValidateArityAndAnyType(expression, 2, int.MaxValue)),
