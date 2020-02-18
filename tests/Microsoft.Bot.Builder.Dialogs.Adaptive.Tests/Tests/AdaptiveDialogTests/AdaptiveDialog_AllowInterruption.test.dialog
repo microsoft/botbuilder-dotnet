@@ -34,7 +34,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "I have @{user.name1} as your name"
+                        "activity": "I have ${user.name1} as your name"
                     }
                 ]
             },
@@ -50,7 +50,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "I have @{user.name2} as your name"
+                        "activity": "I have ${user.name2} as your name"
                     }
                 ]
             },
