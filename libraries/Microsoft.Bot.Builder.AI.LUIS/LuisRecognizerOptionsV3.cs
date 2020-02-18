@@ -50,13 +50,13 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value> This settings will be used to call Luis.</value>
         public LuisV3.LuisPredictionOptions PredictionOptions { get; set; } = new LuisV3.LuisPredictionOptions();
 
-        internal override async Task<RecognizerResult> RecognizeInternalAsync(DialogContext context, HttpClient httpClient, CancellationToken cancellationToken)
+        internal override async Task<RecognizerResult> RecognizeInternalAsync(DialogContext dialogContext, HttpClient httpClient, CancellationToken cancellationToken)
         {
-            var utterance = Utterance(context.Context);
+            var utterance = dialogContext.Context.Activity?.AsMessageActivity()?.Text;
             var options = PredictionOptions;
             if (ExternalEntityRecognizer != null)
             {
-                var matches = await ExternalEntityRecognizer.RecognizeAsync(context, cancellationToken).ConfigureAwait(false);
+                var matches = await ExternalEntityRecognizer.RecognizeAsync(dialogContext, dialogContext.Context.Activity, cancellationToken).ConfigureAwait(false);
                 if (matches.Entities != null && matches.Entities.Count > 2)
                 {
                     options = new LuisV3.LuisPredictionOptions(options);
@@ -94,23 +94,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 }
             }
 
-            return await RecognizeAsync(context.Context, utterance, options, httpClient, cancellationToken).ConfigureAwait(false);
+            return await RecognizeAsync(dialogContext.Context, utterance, options, httpClient, cancellationToken).ConfigureAwait(false);
         }
 
         internal override async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, HttpClient httpClient, CancellationToken cancellationToken)
         {
-            return await RecognizeAsync(turnContext, Utterance(turnContext), PredictionOptions, httpClient, cancellationToken).ConfigureAwait(false);
-        }
-
-        private string Utterance(ITurnContext turnContext)
-        {
-            BotAssert.ContextNotNull(turnContext);
-            if (turnContext.Activity == null || turnContext.Activity.Type != ActivityTypes.Message)
-            {
-                return null;
-            }
-
-            return turnContext.Activity?.AsMessageActivity()?.Text;
+            return await RecognizeAsync(turnContext, turnContext?.Activity?.AsMessageActivity()?.Text, PredictionOptions, httpClient, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, string utterance, LuisV3.LuisPredictionOptions options, HttpClient httpClient, CancellationToken cancellationToken)

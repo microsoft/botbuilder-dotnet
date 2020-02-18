@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using RichardSzalay.MockHttp;
 
@@ -43,17 +44,17 @@ namespace Microsoft.Bot.Builder.MockLuis
             }
         }
 
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken = default)
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default)
         {
             var recognizer = _recognizer.RecognizerOptions(dialogContext);
             recognizer.IncludeAPIResults = true;
-            var client = GetMockedClient(text, recognizer);
+            var client = GetMockedClient(activity.Text, recognizer);
             var wrapper = new LuisRecognizer(recognizer, client);
             var result = await wrapper.RecognizeAsync(dialogContext.Context, cancellationToken).ConfigureAwait(false);
             if (client == null)
             {
                 // Save response
-                var outPath = ResponsePath(text, recognizer);
+                var outPath = ResponsePath(activity.Text, recognizer);
                 File.WriteAllText(outPath, JsonConvert.SerializeObject(result.Properties["luisResult"]));
             }
 

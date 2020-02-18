@@ -8,6 +8,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using AdaptiveExpressions;
 using AdaptiveExpressions.Converters;
 using AdaptiveExpressions.Properties;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -225,6 +226,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public void ExpressionPropertyTests_TestImplicitCasts()
         {
             var data = new object();
+            
+            // test implicit casts as string
             var test = new ImplicitCastTest()
             {
                 Str = "test",
@@ -240,6 +243,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual(TestEnum.Two, test.Enm.TryGetValue(data).Value);
             Assert.AreEqual(true, test.Bool.TryGetValue(data).Value);
 
+            // Test expressions with =
             test.Str = "='test2'";
             test.Int = "=113";
             test.Number = "=13.14";
@@ -252,6 +256,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual(TestEnum.Three, test.Enm.TryGetValue(data).Value);
             Assert.AreEqual(true, test.Bool.TryGetValue(data).Value);
 
+            // test serialization
             var json = JsonConvert.SerializeObject(test, settings: settings);
             var test2 = JsonConvert.DeserializeObject<ImplicitCastTest>(json, settings: settings);
             Assert.AreEqual("test2", test2.Str.TryGetValue(data).Value);
@@ -259,6 +264,45 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual(13.14F, test2.Number.TryGetValue(data).Value);
             Assert.AreEqual(TestEnum.Three, test2.Enm.TryGetValue(data).Value);
             Assert.AreEqual(true, test2.Bool.TryGetValue(data).Value);
+
+            // Test constant expressions.
+            test.Str = Expression.ConstantExpression("test2");
+            test.Int = Expression.ConstantExpression(113);
+            test.Number = Expression.ConstantExpression(13.14);
+            test.Enm = Expression.ConstantExpression(TestEnum.Three);
+            test.Bool = Expression.ConstantExpression(true);
+
+            Assert.AreEqual("test2", test.Str.TryGetValue(data).Value);
+            Assert.AreEqual(113, test.Int.TryGetValue(data).Value);
+            Assert.AreEqual(13.14F, test.Number.TryGetValue(data).Value);
+            Assert.AreEqual(TestEnum.Three, test.Enm.TryGetValue(data).Value);
+            Assert.AreEqual(true, test.Bool.TryGetValue(data).Value);
+
+            // Test Lamda expressions.
+            test.Str = Expression.Lambda((data) => "test2");
+            test.Int = Expression.Lambda((data) => 113);
+            test.Number = Expression.Lambda((data) => 13.14);
+            test.Enm = Expression.Lambda((data) => TestEnum.Three);
+            test.Bool = Expression.Lambda((data) => true);
+
+            Assert.AreEqual("test2", test.Str.TryGetValue(data).Value);
+            Assert.AreEqual(113, test.Int.TryGetValue(data).Value);
+            Assert.AreEqual(13.14F, test.Number.TryGetValue(data).Value);
+            Assert.AreEqual(TestEnum.Three, test.Enm.TryGetValue(data).Value);
+            Assert.AreEqual(true, test.Bool.TryGetValue(data).Value);
+
+            // Test func expressions.
+            test.Str = new StringExpression(data => "test2");
+            test.Int = new IntExpression(data => 113);
+            test.Number = new NumberExpression(data => 13.14);
+            test.Enm = new EnumExpression<TestEnum>(data => TestEnum.Three);
+            test.Bool = new BoolExpression(data => true);
+
+            Assert.AreEqual("test2", test.Str.TryGetValue(data).Value);
+            Assert.AreEqual(113, test.Int.TryGetValue(data).Value);
+            Assert.AreEqual(13.14F, test.Number.TryGetValue(data).Value);
+            Assert.AreEqual(TestEnum.Three, test.Enm.TryGetValue(data).Value);
+            Assert.AreEqual(true, test.Bool.TryGetValue(data).Value);
         }
 
         [TestMethod]

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.Win32.SafeHandles;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -39,6 +40,12 @@ namespace AdaptiveExpressions.Properties
         /// The expression text.
         /// </value>
         public string ExpressionText { get; set; }
+
+        public static implicit operator ExpressionProperty<T>(T value) => new ExpressionProperty<T>(value);
+
+        public static implicit operator ExpressionProperty<T>(string expression) => new ExpressionProperty<T>(expression);
+
+        public static implicit operator ExpressionProperty<T>(Expression expression) => new ExpressionProperty<T>(expression);
 
         public new string ToString()
         {
@@ -128,6 +135,7 @@ namespace AdaptiveExpressions.Properties
             {
                 this.expression = exp;
                 this.ExpressionText = exp.ToString();
+                return;
             }
 
             if (value is string stringOrExpression)
