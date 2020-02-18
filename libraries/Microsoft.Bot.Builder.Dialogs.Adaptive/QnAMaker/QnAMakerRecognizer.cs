@@ -121,6 +121,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         [JsonProperty("context")]
         public ObjectExpression<QnARequestContext> Context { get; set; }
 
+        /// <summary>
+        /// Gets or sets an expression or numberto use for the QnAId paratmer.
+        /// </summary>
+        /// <value>The expression or number.</value>
+        [JsonProperty("qnaId")]
+        public IntExpression QnAId { get; set; } = 0;
+
         [JsonIgnore]
         public HttpClient HttpClient { get; set; }
 
@@ -161,11 +168,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                 new QnAMakerOptions
                 {
                     Context = this.Context?.GetValue(dcState),
-                    ScoreThreshold = this.Threshold.TryGetValue(dcState).Value,
+                    ScoreThreshold = this.Threshold.GetValue(dcState),
                     StrictFilters = filters.ToArray(),
-                    Top = this.Top.TryGetValue(dcState).Value,
-                    QnAId = 0,
-                    RankerType = this.RankerType.TryGetValue(dcState).Value,
+                    Top = this.Top.GetValue(dcState),
+                    QnAId = this.QnAId.GetValue(dcState),
+                    RankerType = this.RankerType.GetValue(dcState),
                     IsTest = this.IsTest
                 },
                 null).ConfigureAwait(false);
