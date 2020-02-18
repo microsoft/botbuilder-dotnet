@@ -262,15 +262,15 @@ namespace AdaptiveExpressions.Tests
             #region string interpolation test
             Test("`hi`", "hi"),
             Test(@"`hi\``", "hi`"),
-            Test("`@{world}`", "world"),
-            Test(@"`hi @{string('jack\`')}`", "hi jack`"),
-            Test(@"`\@{world}`", "@{world}"), // use escape character
-            Test("length(`hello @{world}`)", "hello world".Length),
-            Test("json(`{'foo': '@{hello}','item': '@{world}'}`).foo", "hello"),
-            Test("`hello @{world}` == 'hello world'", true),
-            Test("`hello @{world}` != 'hello hello'", true),
-            Test("`hello @{user.nickname}` == 'hello John'", true),
-            Test("`hello @{user.nickname}` != 'hello Dong'", true),
+            Test("`${world}`", "world"),
+            Test(@"`hi ${string('jack\`')}`", "hi jack`"),
+            Test(@"`\${world}`", "${world}"), // use escape character
+            Test("length(`hello ${world}`)", "hello world".Length),
+            Test("json(`{'foo': '${hello}','item': '${world}'}`).foo", "hello"),
+            Test("`hello ${world}` == 'hello world'", true),
+            Test("`hello ${world}` != 'hello hello'", true),
+            Test("`hello ${user.nickname}` == 'hello John'", true),
+            Test("`hello ${user.nickname}` != 'hello Dong'", true),
             #endregion
 
             #region SetPathToProperty test
@@ -304,6 +304,9 @@ namespace AdaptiveExpressions.Tests
             Test("(1 + 2) * 3", 9),
             Test("(one + two) * bag.three", 9.0, new HashSet<string> { "one", "two", "bag.three" }),
             Test("(one + two) * bag.set.four", 12.0, new HashSet<string> { "one", "two", "bag.set.four" }),
+            Test("hello + nullObj", "hello"),
+            Test("one + two + hello + world", "3helloworld"),
+            Test("one + two + hello + one + two", "3hello12"),
 
             Test("2^2", 4.0),
             Test("3^2^2", 81.0),
@@ -358,10 +361,16 @@ namespace AdaptiveExpressions.Tests
             Test("concat(nullObj,'world')", "world"),
             Test("concat('hello',nullObj)", "hello"),
             Test("concat(\"hello\",\"world\")", "helloworld"),
+            Test("add(hello,world)", "helloworld"),
+            Test("add('hello','world')", "helloworld"),
+            Test("add(nullObj,'world')", "world"),
+            Test("add('hello',nullObj)", "hello"),
+            Test("add(\"hello\",\"world\")", "helloworld"),
             Test("length('hello')", 5),
             Test("length(\"hello\")", 5),
             Test("length(nullObj)", 0),
             Test("length(concat(hello,world))", 10),
+            Test("length(hello + world)", 10),
             Test("count('hello')", 5),
             Test("count(\"hello\")", 5),
             Test("count(concat(hello,world))", 10),

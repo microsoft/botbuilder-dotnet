@@ -7,7 +7,7 @@
     "actions": [
         {
             "$kind": "Microsoft.Ask",
-            "activity": "@{AskEmail()}",
+            "activity": "${AskEmail()}",
             "expectedProperties": [
                 "Email"
             ]

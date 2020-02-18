@@ -61,13 +61,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {
                             Actions = new List<Dialog>()
                             {
-                                new SendActivity("You said '@{turn.activity.text}'"),
+                                new SendActivity("You said '${turn.activity.text}'"),
                                 new TextInput()
                                 {
                                     Prompt = new ActivityTemplate("Enter age"),
                                     Property = "$age"
                                 },
-                                new SendActivity("You said @{$age}")
+                                new SendActivity("You said ${$age}")
                             }
                         }
                     }

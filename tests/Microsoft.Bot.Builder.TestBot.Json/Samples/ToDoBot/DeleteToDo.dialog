@@ -31,13 +31,13 @@
                     "actions": [
                         {
                             "$kind": "Microsoft.SendActivity",
-                            "activity": "Successfully removed a todo named \"@{dialog.todo}\""
+                            "activity": "Successfully removed a todo named \"${dialog.todo}\""
                         }
                     ],
                     "elseActions": [
                         {
                             "$kind": "Microsoft.SendActivity",
-                            "activity": "\"@{dialog.todo}\" is not in the Todo List"
+                            "activity": "\"${dialog.todo}\" is not in the Todo List"
                         }
                     ]
                 }

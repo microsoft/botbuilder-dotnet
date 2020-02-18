@@ -11792,7 +11792,7 @@
                     "description": "Expression to format the output.",
                     "examples": [
                         "=toUpper(this.value)",
-                        "@{toUpper(this.value)}"
+                        "${toUpper(this.value)}"
                     ]
                 }
             },

@@ -76,7 +76,7 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "@{help()}"
+                    "activity": "${help()}"
                 }
             ]
         },

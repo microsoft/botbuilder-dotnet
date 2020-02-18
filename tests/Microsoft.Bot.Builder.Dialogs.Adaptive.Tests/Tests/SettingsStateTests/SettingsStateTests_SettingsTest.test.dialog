@@ -9,7 +9,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{settings.ApplicationInsights.InstrumentationKey}"
+                        "activity": "${settings.ApplicationInsights.InstrumentationKey}"
                     }
                 ]
             }

@@ -15,7 +15,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{$p1}"
+                        "activity": "${$p1}"
                     },
                     {
                         "$kind": "Microsoft.DeleteProperty",

@@ -6,7 +6,7 @@
     "actions": [
         {
             "$kind": "Microsoft.Ask",
-            "activity": "@{chooseCheeseEntity()}",
+            "activity": "${chooseCheeseEntity()}",
             "expectedProperties": ["Cheese"]
         }
     ]

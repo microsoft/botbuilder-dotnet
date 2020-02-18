@@ -12,7 +12,7 @@
             "GetDisplayMeetings",
             {
               "$kind": "Microsoft.SendActivity",
-              "activity": "@{ShowMeetingList(user)}"
+              "activity": "${ShowMeetingList(user)}"
             },
             {
               "$kind": "Microsoft.TextInput",

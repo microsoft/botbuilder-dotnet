@@ -20,7 +20,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "You said @{$number}"
+                        "activity": "You said ${$number}"
                     }
                 ]
             }

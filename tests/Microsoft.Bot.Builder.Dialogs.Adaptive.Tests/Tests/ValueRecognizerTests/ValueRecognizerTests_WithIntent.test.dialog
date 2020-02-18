@@ -32,7 +32,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "CardResponse:@{@age}"
+                        "activity": "CardResponse:${@age}"
                     }
                 ]
             },
@@ -51,7 +51,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "UnknownIntent:@{turn.recognized.intent}"
+                        "activity": "UnknownIntent:${turn.recognized.intent}"
                     }
                 ]
             }

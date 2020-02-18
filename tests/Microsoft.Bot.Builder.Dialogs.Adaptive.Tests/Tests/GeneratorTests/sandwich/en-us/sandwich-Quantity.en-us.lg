@@ -1,11 +1,11 @@
 # AskQuantity
-- @{askNumber('Quantity')}
+- ${askNumber('Quantity')}
 
 # QuantityName
 - quantity
 
 # Quantity(val)
-- @{QuantityEntity(val)}
+- ${QuantityEntity(val)}
 
 [sandwich-QuantityEntity.lg](sandwich-QuantityEntity.lg)
 

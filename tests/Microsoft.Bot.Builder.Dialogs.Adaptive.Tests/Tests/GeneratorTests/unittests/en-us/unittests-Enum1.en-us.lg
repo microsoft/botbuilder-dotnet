@@ -1,11 +1,11 @@
 # AskEnum1
-- @{askEnum('Enum1')}
+- ${askEnum('Enum1')}
 
 # Enum1Name
 - enum1
 
 # Enum1(val)
-- @{Enum1Entity(val)}
+- ${Enum1Entity(val)}
 
 [unittests-Enum1Entity.lg](unittests-Enum1Entity.lg)
 

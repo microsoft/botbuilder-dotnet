@@ -13,7 +13,7 @@
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "Your age is: @{user.age}"
+                    "activity": "Your age is: ${user.age}"
                 },
                 {
                     "$kind": "Testbot.JavascriptAction",
@@ -33,11 +33,11 @@
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "Your age in dog years is: @{conversation.dogyears}"
+                    "activity": "Your age in dog years is: ${conversation.dogyears}"
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "Your age in cat years is: @{conversation.catyears}"
+                    "activity": "Your age in cat years is: ${conversation.catyears}"
                 }
             ]
         }

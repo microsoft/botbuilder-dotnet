@@ -1,11 +1,11 @@
 # AskZipcodepattern
-- @{askString('Zipcodepattern')}
+- ${askString('Zipcodepattern')}
 
 # ZipcodepatternName
 - zipcodepattern
 
 # Zipcodepattern(val)
-- @{ZipcodepatternEntity(val)}
+- ${ZipcodepatternEntity(val)}
 
 [unittests-ZipcodepatternEntity.lg](unittests-ZipcodepatternEntity.lg)
 
