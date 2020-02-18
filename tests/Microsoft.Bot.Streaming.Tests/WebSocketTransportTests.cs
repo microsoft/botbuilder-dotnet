@@ -90,6 +90,15 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
+        public async Task WebSocketClient_ConnectAsyncExThrowsIfUrlIsBad()
+        {
+            WebSocketClient reader = null;
+            using var webSocketClient = new WebSocketClient("fakeurl");
+            reader = webSocketClient;
+            await Assert.ThrowsAsync<UriFormatException>(async () => await reader.ConnectAsyncEx(null, CancellationToken.None));
+        }
+
+        [Fact]
         public async Task WebSocketTransport_Connects()
         {
             var sock = new FauxSock();
