@@ -90,4 +90,4 @@ steps:
     scriptLocation: inlineScript
     inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
   condition: always()
-  enabled: '$(DeleteResourceGroup)'
+  enabled: "$(DeleteResourceGroup)"
