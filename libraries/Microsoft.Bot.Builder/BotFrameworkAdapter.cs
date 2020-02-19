@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -312,7 +313,49 @@ namespace Microsoft.Bot.Builder
                 context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 context.TurnState.Add<BotCallbackHandler>(callback);
                 await EnsureChannelConnectorClientIsCreatedAsync(reference.ServiceUrl, claimsIdentity, cancellationToken).ConfigureAwait(false);
-                var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity, cancellationToken).ConfigureAwait(false);
+                var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity, cancellationToken: cancellationToken).ConfigureAwait(false);
+                context.TurnState.Add(connectorClient);
+
+                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        public virtual async Task ContinueSkillConversationAsync(ClaimsIdentity claimsIdentity, SkillConversationReference skillReference, BotCallbackHandler callback, string audience = null, CancellationToken cancellationToken = default)
+        {
+            if (claimsIdentity == null)
+            {
+                throw new ArgumentNullException(nameof(claimsIdentity));
+            }
+
+            if (skillReference == null)
+            {
+                throw new ArgumentNullException(nameof(skillReference));
+            }
+
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            if (string.IsNullOrWhiteSpace(audience))
+            {
+                audience = skillReference.Audience;
+            }
+
+            if (string.IsNullOrWhiteSpace(audience))
+            {
+                throw new ArgumentNullException($"{nameof(audience)} cannot be null. You must provide a {nameof(skillReference)} with an {nameof(skillReference.Audience)} or {nameof(audience)}.");
+            }
+
+            // Reusing the code from the above override, ContinueConversationAsync()
+            using (var context = new TurnContext(this, skillReference.GetContinuationActivity()))
+            {
+                context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
+                context.TurnState.Add<BotCallbackHandler>(callback);
+                await EnsureChannelConnectorClientIsCreatedAsync(skillReference.ServiceUrl, claimsIdentity, cancellationToken).ConfigureAwait(false);
+
+                // This is the only difference from ContinueConversationAsync, we explicitly pass in an audience
+                var connectorClient = await CreateConnectorClientAsync(skillReference.ServiceUrl, claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
 
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
@@ -386,7 +429,7 @@ namespace Microsoft.Bot.Builder
                 context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 context.TurnState.Add<BotCallbackHandler>(callback);
                 
-                var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity, cancellationToken).ConfigureAwait(false);
+                var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity, cancellationToken: cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
 
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
@@ -1202,7 +1245,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>ConnectorClient instance.</returns>
         /// <exception cref="NotSupportedException">ClaimsIdentity cannot be null. Pass Anonymous ClaimsIdentity if authentication is turned off.</exception>
-        private async Task<IConnectorClient> CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
+        private async Task<IConnectorClient> CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity, string audience = null, CancellationToken cancellationToken = default)
         {
             if (claimsIdentity == null)
             {
@@ -1350,7 +1393,7 @@ namespace Microsoft.Bot.Builder
                 
                 // The CreateConnectorClientAsync will create a ConnectorClient with an associated MicrosoftAppId for that claim and will
                 // initialize the dictionaries that contain the cache instances.
-                await CreateConnectorClientAsync(serviceUrl, connectorClaimsIdentity, cancellationToken).ConfigureAwait(false);
+                await CreateConnectorClientAsync(serviceUrl, connectorClaimsIdentity, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
