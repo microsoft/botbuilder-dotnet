@@ -15,7 +15,7 @@ steps:
 # Variables ReleasePackageVersion and PreviewPackageVersion are consumed by projects in Microsoft.Bot.Builder.sln.
 # For the signed build, they should be settable at queue time. To set that up, define the variables in Azure on the Variables tab.
 - task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
-  displayName: 'Tag Build with PackageVersion'
+  displayName: 'Tag build with package version'
   inputs:
     tags: 'Version=$(ReleasePackageVersion)'
   continueOnError: true

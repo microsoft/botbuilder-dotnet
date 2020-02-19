@@ -271,7 +271,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (state.Actions != null && state.Actions.Any())
             {
-                var ctx = new SequenceContext(this.Dialogs, dc, state.Actions.First(), state.Actions, changeTurnKey, this.Dialogs);
+                var ctx = new SequenceContext(this.Dialogs, dc, state.Actions.First(), state.Actions, changeTurnKey);
                 ctx.Parent = dc;
                 return ctx;
             }
@@ -309,6 +309,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Save into turn
             dcState.SetValue(TurnPath.DIALOGEVENT, dialogEvent);
 
+            var activity = dcState.GetValue<Activity>(TurnPath.ACTIVITY);
+
+            // some dialogevents get promoted into turn state for general access outside of the dialogevent.
+            // This allows events to be fired (in the case of ChooseIntent), or in interruption (Activity) 
+            // Triggers all expressed against turn.recognized or turn.activity, and this mapping maintains that 
+            // any event that is emitted updates those for the rest of rule evaluation.
+            switch (dialogEvent.Name)
+            {
+                case AdaptiveEvents.RecognizedIntent:
+                    {
+                        // we have received a RecognizedIntent event
+                        // get the value and promote to turn.recognized, topintent,topscore and lastintent
+                        var recognizedResult = dcState.GetValue<RecognizerResult>($"{TurnPath.DIALOGEVENT}.value");
+                        var (name, score) = recognizedResult.GetTopScoringIntent();
+                        dcState.SetValue(TurnPath.RECOGNIZED, recognizedResult);
+                        dcState.SetValue(TurnPath.TOPINTENT, name);
+                        dcState.SetValue(TurnPath.TOPSCORE, score);
+                        dcState.SetValue(DialogPath.LastIntent, name);
+
+                        // process entities for ambiguity processing (We do this regardless of who handles the event)
+                        ProcessEntities(sequenceContext, activity);
+                        break;
+                    }
+
+                case AdaptiveEvents.ActivityReceived:
+                    {
+                        // We received an ActivityReceived event, promote the activity into turn.activity
+                        dcState.SetValue(TurnPath.ACTIVITY, dialogEvent.Value);
+                        activity = ObjectPath.GetPathValue<Activity>(dialogEvent, "Value");
+                        break;
+                    }
+            }
+
             EnsureDependenciesInstalled();
 
             // Count of events processed
@@ -345,14 +378,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         break;
 
                     case AdaptiveEvents.ActivityReceived:
-
-                        if (sequenceContext.Context.Activity.Type == ActivityTypes.Message)
+                        if (activity.Type == ActivityTypes.Message)
                         {
                             // Recognize utterance (ignore handled)
                             var recognizeUtteranceEvent = new DialogEvent
                             {
                                 Name = AdaptiveEvents.RecognizeUtterance,
-                                Value = sequenceContext.Context.Activity,
+                                Value = activity,
                                 Bubble = false
                             };
                             await ProcessEventAsync(sequenceContext, dialogEvent: recognizeUtteranceEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -365,7 +397,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                                 Value = recognized,
                                 Bubble = false
                             };
-                            ProcessEntities(sequenceContext);
                             handled = await ProcessEventAsync(sequenceContext, dialogEvent: recognizedIntentEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
 
@@ -381,25 +412,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         break;
 
                     case AdaptiveEvents.RecognizeUtterance:
-
-                        if (sequenceContext.Context.Activity.Type == ActivityTypes.Message)
                         {
-                            // Recognize utterance
-                            var recognized = await OnRecognize(sequenceContext, cancellationToken).ConfigureAwait(false);
-
-                            dcState.SetValue(TurnPath.RECOGNIZED, recognized);
-
-                            var (name, score) = recognized.GetTopScoringIntent();
-                            dcState.SetValue(TurnPath.TOPINTENT, name);
-                            dcState.SetValue(DialogPath.LastIntent, name);
-                            dcState.SetValue(TurnPath.TOPSCORE, score);
-
-                            if (Recognizer != null)
+                            if (activity.Type == ActivityTypes.Message)
                             {
-                                await sequenceContext.DebuggerStepAsync(Recognizer, AdaptiveEvents.RecognizeUtterance, cancellationToken).ConfigureAwait(false);
-                            }
+                                // Recognize utterance
+                                var recognized = await OnRecognize(sequenceContext, activity, cancellationToken).ConfigureAwait(false);
 
-                            handled = true;
+                                // TODO figure out way to not use turn state to pass this value back to caller.
+                                dcState.SetValue(TurnPath.RECOGNIZED, recognized);
+
+                                if (Recognizer != null)
+                                {
+                                    await sequenceContext.DebuggerStepAsync(Recognizer, AdaptiveEvents.RecognizeUtterance, cancellationToken).ConfigureAwait(false);
+                                }
+
+                                handled = true;
+                            }
                         }
 
                         break;
@@ -415,7 +443,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             var activityReceivedEvent = new DialogEvent
                             {
                                 Name = AdaptiveEvents.ActivityReceived,
-                                Value = sequenceContext.Context.Activity,
+                                Value = activity,
                                 Bubble = false
                             };
 
@@ -425,9 +453,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         break;
 
                     case AdaptiveEvents.ActivityReceived:
-
-                        var activity = sequenceContext.Context.Activity;
-
                         if (activity.Type == ActivityTypes.Message)
                         {
                             // Empty sequence?
@@ -581,12 +606,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return new DialogTurnResult(DialogTurnStatus.Cancelled);
         }
 
-        protected async Task<RecognizerResult> OnRecognize(SequenceContext sequenceContext, CancellationToken cancellationToken = default)
+        protected async Task<RecognizerResult> OnRecognize(SequenceContext sequenceContext, Activity activity, CancellationToken cancellationToken = default)
         {
-            var context = sequenceContext.Context;
             if (Recognizer != null)
             {
-                var result = await Recognizer.RecognizeAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
+                var result = await Recognizer.RecognizeAsync(sequenceContext, activity, cancellationToken).ConfigureAwait(false);
 
                 if (result.Intents.Any())
                 {
@@ -616,7 +640,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // none intent if there is no recognizer
             return new RecognizerResult
             {
-                Text = context.Activity.Text ?? string.Empty,
+                Text = activity.Text ?? string.Empty,
                 Intents = new Dictionary<string, IntentScore> { { "None", new IntentScore { Score = 0.0 } } },
             };
         }
@@ -779,7 +803,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 state.Actions = new List<ActionState>();
             }
 
-            var sequenceContext = new SequenceContext(dc.Dialogs, dc, new DialogState { DialogStack = dc.Stack }, state.Actions, changeTurnKey, this.Dialogs);
+            var sequenceContext = new SequenceContext(dc.Dialogs, dc, new DialogState { DialogStack = dc.Stack }, state.Actions, changeTurnKey);
             sequenceContext.Parent = dc.Parent;
             return sequenceContext;
         }
@@ -817,7 +841,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         // Check to see if an entity is in response to a previous ambiguity event
         // Assign entities to possible properties
         // Merge new queues into existing queues of ambiguity events
-        private void ProcessEntities(SequenceContext context)
+        private void ProcessEntities(SequenceContext context, Activity activity)
         {
             var dcState = context.GetState();
 
@@ -830,7 +854,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                 var queues = EntityEvents.Read(context);
                 var entities = NormalizeEntities(context);
-                var utterance = context.Context.Activity?.AsMessageActivity()?.Text;
+                var utterance = activity?.AsMessageActivity()?.Text;
                 if (!dcState.TryGetValue<string[]>(DialogPath.ExpectedProperties, out var expected))
                 {
                     expected = new string[0];

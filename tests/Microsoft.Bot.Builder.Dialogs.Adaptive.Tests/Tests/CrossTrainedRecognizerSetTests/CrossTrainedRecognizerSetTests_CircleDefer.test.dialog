@@ -56,23 +56,9 @@
                 "$kind": "Microsoft.OnChooseIntent",
                 "actions": [
                     {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": "ChooseIntent"
-                    },
-                    {
                         "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "turn.recognized.intent.chooseintent.DeferToRecognizer_x != null",
-                        "description": "Should have DeferToRecognizer_x intent"
-                    },
-                    {
-                        "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "turn.recognized.intent.chooseintent.DeferToRecognizer_y != null",
-                        "description": "Should have DeferToRecognizer_y intent"
-                    },
-                    {
-                        "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "turn.recognized.intent.chooseintent.DeferToRecognizer_z != null",
-                        "description": "Should have DeferToRecognizer_z intent"
+                        "condition": "false",
+                        "description": "Should not generate choose intent for circlular reference."
                     }
                 ]
             },
@@ -158,7 +144,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "ChooseIntent"
+            "text": "UnknownIntent:None"
         }
     ]
 }

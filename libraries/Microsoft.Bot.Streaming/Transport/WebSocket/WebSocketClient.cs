@@ -89,6 +89,19 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
         /// <returns>A <see cref="Task"/> that will not resolve until the client stops listening for incoming messages.</returns>
         public async Task ConnectAsync(IDictionary<string, string> requestHeaders = null)
         {
+            await ConnectAsyncEx(requestHeaders);
+        }
+
+        /// <summary>
+        /// Establish a connection with optional custom headers.
+        /// </summary>
+        /// <param name="requestHeaders">An optional <see cref="IDictionary{TKey, TValue}"/> of string header names and string header values to include when sending the
+        /// initial request to establish this connection.
+        /// </param>
+        /// <param name="cancellationToken">An optional <see cref="CancellationToken"/> used to signal this operation should be cancelled.</param>
+        /// <returns>A <see cref="Task"/> that will not resolve until the client stops listening for incoming messages.</returns>
+        public async Task ConnectAsyncEx(IDictionary<string, string> requestHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
             if (IsConnected)
             {
                 return;
@@ -103,7 +116,7 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
                 }
             }
 
-            await clientWebSocket.ConnectAsync(new Uri(_url), CancellationToken.None).ConfigureAwait(false);
+            await clientWebSocket.ConnectAsync(new Uri(_url), cancellationToken).ConfigureAwait(false);
             var socketTransport = new WebSocketTransport(clientWebSocket);
 
             // Listen for disconnected events.

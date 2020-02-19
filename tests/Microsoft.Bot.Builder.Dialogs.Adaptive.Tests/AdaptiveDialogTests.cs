@@ -49,6 +49,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             await TestUtils.RunTestScript(ResourceExplorer);
         }
+        
+        [TestMethod]
+        public async Task AdaptiveDialog_AllowInterruption()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
 
         [TestMethod]
         public async Task AdaptiveDialog_AllowInterruptionAlwaysWithFailedValidation()
@@ -226,6 +232,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         [TestMethod]
         public async Task TestBindingTwoWayAcrossAdaptiveDialogsDefaultResultProperty()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_EmitEventActivityReceived()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
         }

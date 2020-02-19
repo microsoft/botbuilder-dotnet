@@ -72,11 +72,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 
             // test with DC
             var dc = CreateContext("intent a1 b2");
-            var result = await recognizer.RecognizeAsync(dc, CancellationToken.None);
+            var result = await recognizer.RecognizeAsync(dc, dc.Context.Activity, CancellationToken.None);
             ValidateCodeIntent(result);
 
             dc = CreateContext("I would like color red and orange");
-            result = await recognizer.RecognizeAsync(dc, CancellationToken.None);
+            result = await recognizer.RecognizeAsync(dc, dc.Context.Activity, CancellationToken.None);
             ValidateColorIntent(result);
 
             dc = CreateContext(string.Empty);
@@ -90,13 +90,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 
             activity.Text = "I would like color red and orange";
             result = await recognizer.RecognizeAsync(dc, (Activity)activity, CancellationToken.None);
-            ValidateColorIntent(result);
-
-            // test text, locale
-            result = await recognizer.RecognizeAsync(dc, "intent a1 b2", Culture.English, CancellationToken.None);
-            ValidateCodeIntent(result);
-
-            result = await recognizer.RecognizeAsync(dc, "I would like color red and orange", Culture.English, CancellationToken.None);
             ValidateColorIntent(result);
         }
 

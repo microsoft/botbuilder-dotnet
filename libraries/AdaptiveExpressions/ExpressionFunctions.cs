@@ -472,6 +472,24 @@ namespace AdaptiveExpressions
         }
 
         /// <summary>
+        /// Verify value is a number or string or null.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="expression">Expression that led to value.</param>
+        /// <param name="number">No function.</param>
+        /// <returns>Error.</returns>
+        public static string VerifyNumberOrStringOrNull(object value, Expression expression, int number)
+        {
+            string error = null;
+            if (value != null && !value.IsNumber() && !(value is string))
+            {
+                error = $"{expression} is not string or number.";
+            }
+
+            return error;
+        }
+
+        /// <summary>
         /// Verify value is boolean.
         /// </summary>
         /// <param name="value">Value to check.</param>
@@ -610,6 +628,36 @@ namespace AdaptiveExpressions
                     }
 
                     return sofar;
+                }, verify);
+
+        /// <summary>
+        /// Generate an expression delegate that applies function on the accumulated value after verifying all children.
+        /// </summary>
+        /// <param name="function">Function to apply.</param>
+        /// <param name="verify">Function to check each arg for validity.</param>
+        /// <returns>Delegate for evaluating an expression.</returns>
+        public static EvaluateExpressionDelegate ApplySequenceWithError(Func<IReadOnlyList<dynamic>, (object, string)> function, VerifyExpression verify = null)
+            => ApplyWithError(
+                args =>
+                {
+                    var binaryArgs = new List<object> { null, null };
+                    var sofar = args[0];
+                    for (var i = 1; i < args.Count; ++i)
+                    {
+                        binaryArgs[0] = sofar;
+                        binaryArgs[1] = args[i];
+                        var (result, error) = function(binaryArgs);
+                        if (error != null)
+                        {
+                            return (result, error);
+                        }
+                        else
+                        {
+                            sofar = result;
+                        }
+                    }
+
+                    return (sofar, null);
                 }, verify);
 
         /// <summary>
@@ -2475,7 +2523,6 @@ namespace AdaptiveExpressions
             {
                 // Math
                 new ExpressionEvaluator(ExpressionType.Element, ExtractElement, ReturnType.Object, ValidateBinary),
-                MultivariateNumeric(ExpressionType.Add, args => args[0] + args[1]),
                 MultivariateNumeric(ExpressionType.Subtract, args => args[0] - args[1]),
                 MultivariateNumeric(ExpressionType.Multiply, args => args[0] * args[1]),
                 MultivariateNumeric(
@@ -2599,6 +2646,32 @@ namespace AdaptiveExpressions
                         VerifyNumericList),
                     ReturnType.Number,
                     ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.Add,
+                    ApplySequenceWithError(
+                        args =>
+                        {
+                            object result = null;
+                            string error = null;
+                            var firstItem = (object)args[0];
+                            var secondItem = (object)args[1];
+                            var stringConcat = !firstItem.IsNumber() || !secondItem.IsNumber();
+
+                            if ((firstItem == null && secondItem.IsNumber())
+                                || (secondItem == null && firstItem.IsNumber()))
+                            {
+                                error = "Operator '+' or add cannot be applied to operands of type 'number' and null object.";
+                            }
+                            else
+                            {
+                                result = stringConcat ? firstItem?.ToString() + secondItem?.ToString()
+                                                : args[0] + args[1];
+                            }
+
+                            return (result, error);
+                        }, VerifyNumberOrStringOrNull),
+                    ReturnType.Object,
+                    (expression) => ValidateArityAndAnyType(expression, 2, int.MaxValue)),
                 new ExpressionEvaluator(
                     ExpressionType.Sum,
                     Apply(
