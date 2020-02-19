@@ -320,16 +320,16 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        public virtual async Task ContinueSkillConversationAsync(ClaimsIdentity claimsIdentity, SkillConversationReference skillReference, BotCallbackHandler callback, string audience = null, CancellationToken cancellationToken = default)
+        public virtual async Task ContinueSkillConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, BotCallbackHandler callback, string audience, CancellationToken cancellationToken)
         {
             if (claimsIdentity == null)
             {
                 throw new ArgumentNullException(nameof(claimsIdentity));
             }
 
-            if (skillReference == null)
+            if (reference == null)
             {
-                throw new ArgumentNullException(nameof(skillReference));
+                throw new ArgumentNullException(nameof(reference));
             }
 
             if (callback == null)
@@ -339,24 +339,22 @@ namespace Microsoft.Bot.Builder
 
             if (string.IsNullOrWhiteSpace(audience))
             {
-                audience = skillReference.Audience;
-            }
-
-            if (string.IsNullOrWhiteSpace(audience))
-            {
-                throw new ArgumentNullException($"{nameof(audience)} cannot be null. You must provide a {nameof(skillReference)} with an {nameof(skillReference.Audience)} or {nameof(audience)}.");
+                throw new ArgumentNullException($"{nameof(audience)} cannot be null or white space.");
             }
 
             // Reusing the code from the above override, ContinueConversationAsync()
-            using (var context = new TurnContext(this, skillReference.GetContinuationActivity()))
+            using (var context = new TurnContext(this, reference.GetContinuationActivity()))
             {
                 context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 context.TurnState.Add<BotCallbackHandler>(callback);
 
-                // This is the only difference from ContinueConversationAsync, we explicitly pass in an audience
-                var connectorClient = await CreateConnectorClientAsync(skillReference.ServiceUrl, claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
+                // Add the channel service URL to the trusted services list so we can send messages back.
+                // the service URL for skills is trusted because it is applied by the SkillHandler based on the original request
+                // received by the root bot
+                AppCredentials.TrustServiceUrl(reference.ServiceUrl);
+
+                var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
-                await EnsureChannelConnectorClientIsCreatedAsync(skillReference.ServiceUrl, claimsIdentity, cancellationToken).ConfigureAwait(false);
 
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }

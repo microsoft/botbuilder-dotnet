@@ -167,14 +167,13 @@ namespace Microsoft.Bot.Builder.Tests
         {
             // Arrange
             var mockCredentialProvider = new Mock<ICredentialProvider>();
-            var mockConnector = new MemoryConnectorClient();
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
             var adapter = new BotFrameworkAdapter(mockCredentialProvider.Object, customHttpClient: httpClient);
 
             // Create ClaimsIdentity that represents Skill2-to-Skill1 communication
-            var skill2AppId = Guid.NewGuid().ToString();
-            var skill1AppId = Guid.NewGuid().ToString();
+            var skill2AppId = "000skill2-aaaa-aaaa-aaaa-1a7454675036";
+            var skill1AppId = "000skill1-bbbb-bbbb-bbbb-c8f7cfd51093";
 
             var skillClaims = new List<Claim>
             {
@@ -193,13 +192,7 @@ namespace Microsoft.Bot.Builder.Tests
 
                 var credsCacheField = typeof(BotFrameworkAdapter).GetField("_appCredentialMap", BindingFlags.NonPublic | BindingFlags.Instance);
                 var credsCache = (ConcurrentDictionary<string, AppCredentials>)credsCacheField.GetValue(adapter);
-                Assert.AreEqual(2, credsCache.Count);
-
-                // The first credentials that are created are for "skill1-to-channel" communications
-                AppCredentials appCreds;
-                credsCache.TryGetValue(skill1AppId, out appCreds);
-                Assert.AreEqual(appCreds.MicrosoftAppId, skill1AppId);
-                Assert.AreEqual(appCreds.OAuthScope, AuthenticationConstants.ToChannelFromBotOAuthScope);
+                Assert.AreEqual(1, credsCache.Count);
 
                 // Get AppCredentials for "skill1-to-skill2" communications
                 AppCredentials skill2AppCreds;
@@ -225,15 +218,10 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.AreEqual(skill1AppId, clientCreds.MicrosoftAppId);
             });
 
-            // Create ConversationReference with standard ServiceUrl to replicate continuing a conversation with the end user
+            // Create ConversationReference to send a proactive message from Skill1 to Skill2
+            var refs = new ConversationReference(serviceUrl: skill2ServiceUrl);
 
-            var refs = new SkillConversationReference()
-            {
-                ServiceUrl = skill2ServiceUrl,
-                Audience = skill2AppId
-            };
-
-            await adapter.ContinueSkillConversationAsync(skillsIdentity, refs, callback, default);
+            await adapter.ContinueSkillConversationAsync(skillsIdentity, refs, callback, skill2AppId, default);
         }
 
         private static async Task<IActivity> ProcessActivity(string channelId, object channelData, string conversationTenantId)
