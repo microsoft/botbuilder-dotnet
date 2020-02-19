@@ -352,11 +352,11 @@ namespace Microsoft.Bot.Builder
             {
                 context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 context.TurnState.Add<BotCallbackHandler>(callback);
-                await EnsureChannelConnectorClientIsCreatedAsync(skillReference.ServiceUrl, claimsIdentity, cancellationToken).ConfigureAwait(false);
 
                 // This is the only difference from ContinueConversationAsync, we explicitly pass in an audience
                 var connectorClient = await CreateConnectorClientAsync(skillReference.ServiceUrl, claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
+                await EnsureChannelConnectorClientIsCreatedAsync(skillReference.ServiceUrl, claimsIdentity, cancellationToken).ConfigureAwait(false);
 
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
@@ -1266,8 +1266,8 @@ namespace Microsoft.Bot.Builder
             if (botAppIdClaim != null)
             {
                 var botId = botAppIdClaim.Value;
-                string scope = null;
-                if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
+                string scope = audience;
+                if (string.IsNullOrWhiteSpace(audience) && SkillValidation.IsSkillClaim(claimsIdentity.Claims))
                 {
                     // The skill connector has the target skill in the OAuthScope.
                     scope = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);

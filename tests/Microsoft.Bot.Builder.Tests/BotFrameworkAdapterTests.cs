@@ -210,19 +210,12 @@ namespace Microsoft.Bot.Builder.Tests
                 var serviceUri = new Uri(skill2ServiceUrl);
                 var clientCacheField = typeof(BotFrameworkAdapter).GetField("_connectorClients", BindingFlags.NonPublic | BindingFlags.Instance);
                 var clientCache = (ConcurrentDictionary<string, ConnectorClient>)clientCacheField.GetValue(adapter);
+                Assert.AreEqual(1, clientCache.Count);
 
-                // clientCache is count at 1, with an incorrect scope (api.botframework.com)
-                Assert.AreEqual(2, clientCache.Count);
-
-                // Get unused "skill1-to-skill2" ConnectorClient
+                // Get "skill1-to-skill2" ConnectorClient
                 ConnectorClient toSkill2Client;
                 clientCache.TryGetValue($"{skill2ServiceUrl}{skill1AppId}", out toSkill2Client);
                 Assert.AreEqual(serviceUri, toSkill2Client.BaseUri);
-
-                // Get "skill1-to-channel" ConnectorClient
-                ConnectorClient toChannelClient;
-                clientCache.TryGetValue($"{skill2ServiceUrl}{skill1AppId}", out toChannelClient);
-                Assert.AreEqual(serviceUri, toChannelClient.BaseUri);
 
                 // service url and multiple hosted bots in botframeworkadapter?
                 var turnStateClient = turnContext.TurnState.Get<IConnectorClient>();
