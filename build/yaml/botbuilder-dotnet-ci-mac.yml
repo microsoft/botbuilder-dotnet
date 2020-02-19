@@ -9,6 +9,37 @@ variables:
 
 pool:
     vmImage: 'macOS-10.14'
+
+trigger: # ci trigger
+  branches:
+    include:
+     - master
+  paths:
+    include:
+      - '*'
+    exclude:
+      - doc/
+      - specs/
+      - Changes.md
+      - LICENSE
+      - README.md
+      - UsingMyGet.md
+
+pr: # pr trigger
+  branches:
+    include:
+     - master
+  paths:
+    include:
+      - '*'
+    exclude:
+      - doc/
+      - specs/
+      - Changes.md
+      - LICENSE
+      - README.md
+      - UsingMyGet.md
+
 steps:
 # Note: Template ci-build-steps.yml is not supported in macOS because it calls VSBuild@1 in order to build the Windows-only ASP.NET Desktop assemblies.
 - task: UseDotNet@2

@@ -22,6 +22,36 @@ pool:
   - msbuild
   - visualstudio
 
+trigger: # ci trigger
+  branches:
+    include:
+     - master
+  paths:
+    include:
+      - '*'
+    exclude:
+      - doc/
+      - specs/
+      - Changes.md
+      - LICENSE
+      - README.md
+      - UsingMyGet.md
+
+pr: # pr trigger
+  branches:
+    include:
+     - master
+  paths:
+    include:
+      - '*'
+    exclude:
+      - doc/
+      - specs/
+      - Changes.md
+      - LICENSE
+      - README.md
+      - UsingMyGet.md
+
 # The following 2 stages run multi-configuration, multi-agent parallel jobs.
 # Debug-Windows/Release-Windows => Builds everything in Debug/Release + the ASP.NET Desktop.
 # Debug/Release => would build all .NET Standard libs and test them.
