@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -22,6 +23,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public static class LGParser
     {
+        /// <summary>
+        /// option regex.
+        /// </summary>
+        private static readonly Regex OptionRegex = new Regex(@"^> *!#(.*)$");
+
         /// <summary>
         /// Parser to turn lg content into a <see cref="LGFile"/>.
         /// </summary>
@@ -50,9 +56,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var diagnostics = new List<Diagnostic>();
             try
             {
-                var (templates, imports, invalidTemplateErrors) = AntlrParse(content, id);
+                var (templates, imports, invalidTemplateErrors, options) = AntlrParse(content, id);
                 lgFile.Templates = templates;
                 lgFile.Imports = imports;
+                lgFile.Options = options;
                 diagnostics.AddRange(invalidTemplateErrors);
 
                 lgFile.References = GetReferences(lgFile, importResolver);
@@ -87,13 +94,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             var id = "inline content";
-            var newLgFile = new LGFile(content: content, id: id, importResolver: lgFile.ImportResolver);
+            var newLgFile = new LGFile(content: content, id: id, importResolver: lgFile.ImportResolver, options: lgFile.Options);
             var diagnostics = new List<Diagnostic>();
             try
             {
-                var (templates, imports, invalidTemplateErrors) = AntlrParse(content, id);
+                var (templates, imports, invalidTemplateErrors, options) = AntlrParse(content, id);
                 newLgFile.Templates = templates;
                 newLgFile.Imports = imports;
+                newLgFile.Options = options;
                 diagnostics.AddRange(invalidTemplateErrors);
 
                 newLgFile.References = GetReferences(newLgFile, newLgFile.ImportResolver)
@@ -139,15 +147,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return (File.ReadAllText(importPath), importPath);
         }
 
-        private static (IList<LGTemplate> templates, IList<LGImport> imports, IList<Diagnostic> diagnostics) AntlrParse(string content, string id = "")
+        private static (IList<LGTemplate> templates, IList<LGImport> imports, IList<Diagnostic> diagnostics, IList<string> options) AntlrParse(string content, string id = "")
         {
             var fileContext = GetFileContentContext(content, id);
             var templates = ExtractLGTemplates(fileContext, content, id);
             var imports = ExtractLGImports(fileContext, id);
-
+            var options = ExtractLGOptions(fileContext);
             var diagnostics = GetInvalidTemplateErrors(fileContext, id);
 
-            return (templates, imports, diagnostics);
+            return (templates, imports, diagnostics, options);
         }
 
         private static IList<Diagnostic> GetInvalidTemplateErrors(LGFileParser.FileContext fileContext, string id)
@@ -162,6 +170,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private static Diagnostic BuildDiagnostic(string errorMessage, ParserRuleContext context = null, string source = null)
         {
+            errorMessage = LGErrors.StaticFailure + "- " + errorMessage;
             var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line, context.Start.Column);
             var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
             return new Diagnostic(new Range(startPosition, stopPosition), errorMessage, source: source);
@@ -181,6 +190,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var input = new AntlrInputStream(text);
             var lexer = new LGFileLexer(input);
+            lexer.RemoveErrorListeners();
+
             var tokens = new CommonTokenStream(lexer);
             var parser = new LGFileParser(tokens);
             parser.RemoveErrorListeners();
@@ -207,6 +218,39 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    .Where(x => x != null)
                    .Select(t => new LGTemplate(t, lgfileContent, source))
                    .ToList();
+        }
+
+        /// <summary>
+        /// Extract LG options from the parse tree of a file.
+        /// </summary>
+        /// <param name="file">LG file context from ANTLR parser.</param>
+        /// <returns>Option list.</returns>
+        private static IList<string> ExtractLGOptions(LGFileParser.FileContext file)
+        {
+            return file == null ? new List<string>() :
+                   file.paragraph()
+                   .Select(x => x.optionsDefinition())
+                   .Where(x => x != null)
+                   .Select(t => ExtractOption(t.GetText()))
+                   .Where(t => !string.IsNullOrEmpty(t))
+                   .ToList();
+        }
+
+        private static string ExtractOption(string originalText)
+        {
+            var result = string.Empty;
+            if (string.IsNullOrWhiteSpace(originalText))
+            {
+                return result;
+            }
+
+            var matchResult = OptionRegex.Match(originalText);
+            if (matchResult.Success && matchResult.Groups.Count == 2)
+            {
+                result = matchResult.Groups[1].Value?.Trim();
+            }
+
+            return result;
         }
 
         /// <summary>

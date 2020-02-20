@@ -4,14 +4,14 @@
     - hello
 
 > more than 1 if
-# templat2
+# template2
  - IF: ${true}
     - hello
 - IF: ${false}
     - hi
 
 > else should not follewed by any expressions
-# templat3
+# template3
  - IF: ${true}
     - hello
 - ELSE: ${false}

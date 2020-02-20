@@ -1457,7 +1457,11 @@ namespace AdaptiveExpressions
 
             dynamic instance;
             (instance, error) = expression.Children[0].TryEvaluate(state);
-            if (error == null)
+            if (instance == null)
+            {
+                error = $"'{expression.Children[0]}' evaluated to null.";
+            }
+            else if (error == null)
             {
                 IList list = null;
                 if (TryParseList(instance, out IList ilist))
