@@ -26,8 +26,6 @@ variables:
 #  BotGroup: define this in Azure
 #  BotName: define this in Azure
 #  DeleteResourceGroup: define this in Azure. Normally set to true.
-#  LUISAPPIDSECRET: define this in Azure
-#  LUISSUBSCRIPTIONKEYSECRET: define this in Azure
 
 steps:
 - template: ci-build-steps.yml
@@ -80,8 +78,6 @@ steps:
 - powershell: |
    echo '##vso[task.setvariable variable=TESTAPPID]$(AppId)'
    echo '##vso[task.setvariable variable=TESTPASSWORD]$(AppSecret)'
-   echo '##vso[task.setvariable variable=LUISAPPID]$(LUISAPPIDSECRET)'
-   echo '##vso[task.setvariable variable=LUISSUBSCRIPTIONKEY]$(LUISSUBSCRIPTIONKEYSECRET)'
   displayName: 'Set Environment Variables'
 
 - task: DotNetCoreCLI@2
