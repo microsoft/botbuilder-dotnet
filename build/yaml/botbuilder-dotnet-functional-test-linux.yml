@@ -94,4 +94,4 @@ steps:
     azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
     inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
-  condition: and(always(), eq(variables['DeleteResourceGroup'], 'true'))
+  condition: and(always(), ne(variables['DeleteResourceGroup'], 'false'))
