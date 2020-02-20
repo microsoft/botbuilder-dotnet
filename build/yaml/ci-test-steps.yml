@@ -46,8 +46,9 @@ steps:
   inputs:
     targetType: filePath
     filePath: '$(Build.SourcesDirectory)\build\PublishToCoveralls.ps1'
-    arguments: '-pathToCoverageFiles "$(Build.SourcesDirectory)\CodeCoverage" -serviceName "master CI-PR"'
+    arguments: '-coverallsToken "$(CoverallsToken)" -pathToCoverageFiles "$(Build.SourcesDirectory)\CodeCoverage" -serviceName "master CI-PR"'
   continueOnError: true
+  condition: and(succeeded(), ne(variables['CoverallsToken'], ''))
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: Coverage files'
