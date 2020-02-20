@@ -92,6 +92,11 @@ steps:
    echo "##vso[task.setvariable variable=BOTID;]$(BotName)"
   displayName: 'Get bot keys'
 
+- powershell: |
+   echo '##vso[task.setvariable variable=TESTAPPID]$(AppId)'
+   echo '##vso[task.setvariable variable=TESTPASSWORD]$(AppSecret)'
+  displayName: 'Set Environment Variables'
+
 - task: DotNetCoreCLI@2
   displayName: 'Run Functional tests'
   inputs:
@@ -106,4 +111,4 @@ steps:
     azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
     inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
-  condition: and(always(), eq(variables['DeleteResourceGroup'], 'true'))
+  condition: and(always(), ne(variables['DeleteResourceGroup'], 'false'))

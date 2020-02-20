@@ -40,8 +40,6 @@ variables:
 #  AzureSubscription: define this in Azure
 #  BotGroup: define this in Azure
 #  BotName: define this in Azure
-#  LUISAPPIDSECRET: define this in Azure
-#  LUISSUBSCRIPTIONKEYSECRET: define this in Azure
 
 
 steps:
@@ -76,8 +74,6 @@ steps:
 - powershell: |
    echo '##vso[task.setvariable variable=TESTAPPID]$(AppId)'
    echo '##vso[task.setvariable variable=TESTPASSWORD]$(AppSecret)'
-   echo '##vso[task.setvariable variable=LUISAPPID]$(LUISAPPIDSECRET)'
-   echo '##vso[task.setvariable variable=LUISSUBSCRIPTIONKEY]$(LUISSUBSCRIPTIONKEYSECRET)'
   displayName: 'Set Environment Variables'
 
 - task: DotNetCoreCLI@2
@@ -98,4 +94,4 @@ steps:
     azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
     inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
-  condition: always()
+  condition: and(always(), ne(variables['DeleteResourceGroup'], 'false'))
