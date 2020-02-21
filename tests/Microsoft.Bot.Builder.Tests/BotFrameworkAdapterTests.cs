@@ -26,6 +26,9 @@ namespace Microsoft.Bot.Builder.Tests
     [TestClass]
     public class BotFrameworkAdapterTests
     {
+        private const string CredsCacheName = "_appCredentialMap";
+        private const string ClientsCacheName = "_connectorClients";
+
         [TestMethod]
         public async Task TenantIdShouldBeSetInConversationForTeams()
         {
@@ -163,6 +166,46 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
+        public async Task ProcessActivityAsyncCreatesCorrectCredsAndClient()
+        {
+            var botAppId = "00000000-0000-0000-0000-000000000001";
+            var claims = new List<Claim>
+            {
+                new Claim(AuthenticationConstants.AudienceClaim, botAppId),
+                new Claim(AuthenticationConstants.AppIdClaim, botAppId),
+                new Claim(AuthenticationConstants.VersionClaim, "1.0")
+            };
+            var identity = new ClaimsIdentity(claims);
+
+            var credentialProvider = new SimpleCredentialProvider() { AppId = botAppId };
+            var serviceUrl = "https://smba.trafficmanager.net/amer/";
+            var callback = new BotCallbackHandler(async (context, ct) =>
+            {
+                GetCredsAndAssertValues(context, botAppId, AuthenticationConstants.ToChannelFromBotOAuthScope, 1);
+                GetClientAndAssertValues(
+                    context,
+                    botAppId,
+                    AuthenticationConstants.ToChannelFromBotOAuthScope,
+                    new Uri(serviceUrl),
+                    1);
+
+                var scope = context.TurnState.Get<string>(BotAdapter.OAuthScopeKey);
+                Assert.AreEqual(AuthenticationConstants.ToChannelFromBotOAuthScope, scope);
+            });
+
+            var sut = new BotFrameworkAdapter(credentialProvider);
+            await sut.ProcessActivityAsync(
+                identity,
+                new Activity("test")
+                {
+                    ChannelId = Channels.Emulator,
+                    ServiceUrl = serviceUrl
+                },
+                callback,
+                CancellationToken.None);
+        }
+
+        [TestMethod]
         public async Task ContinueConversationAsyncWithoutAudience()
         {
             // Arrange
@@ -172,8 +215,8 @@ namespace Microsoft.Bot.Builder.Tests
             var adapter = new BotFrameworkAdapter(mockCredentialProvider.Object, customHttpClient: httpClient);
 
             // Create ClaimsIdentity that represents Skill2-to-Skill1 communication
-            var skill2AppId = "000skill2-aaaa-aaaa-aaaa-1a7454675036";
-            var skill1AppId = "000skill1-bbbb-bbbb-bbbb-c8f7cfd51093";
+            var skill2AppId = "00skill2-aaaa-aaaa-aaaa-1a7454675036";
+            var skill1AppId = "00skill1-bbbb-bbbb-bbbb-c8f7cfd51093";
 
             var skillClaims = new List<Claim>
             {
@@ -233,8 +276,8 @@ namespace Microsoft.Bot.Builder.Tests
             var adapter = new BotFrameworkAdapter(mockCredentialProvider.Object, customHttpClient: httpClient);
 
             // Create ClaimsIdentity that represents Skill2-to-Skill1 communication
-            var skill2AppId = "000skill2-aaaa-aaaa-aaaa-1a7454675036";
-            var skill1AppId = "000skill1-bbbb-bbbb-bbbb-c8f7cfd51093";
+            var skill2AppId = "00skill2-aaaa-aaaa-aaaa-1a7454675036";
+            var skill1AppId = "00skill1-bbbb-bbbb-bbbb-c8f7cfd51093";
 
             var skillClaims = new List<Claim>
             {
@@ -320,6 +363,50 @@ namespace Microsoft.Bot.Builder.Tests
             };
 
             return await ProcessActivity(channelId, channelData, conversationTenantId);
+        }
+
+        private static void GetCredsAndAssertValues(ITurnContext turnContext, string expectedAppId, string expectedScope, int? credsCount = null)
+        {
+            var credsCache = GetCache<ConcurrentDictionary<string, AppCredentials>>((BotFrameworkAdapter)turnContext.Adapter, CredsCacheName);
+            credsCache.TryGetValue($"{expectedAppId}{expectedScope}", out var creds);
+            AssertCredentialsValues(creds, expectedAppId, expectedScope);
+
+            if (credsCount != null)
+            {
+                Assert.AreEqual(credsCount, credsCache.Count);
+            }
+        }
+
+        private static void GetClientAndAssertValues(ITurnContext turnContext, string expectedAppId, string expectedScope, Uri expectedUrl, int? clientCount = null)
+        {
+            var clientCache = GetCache<ConcurrentDictionary<string, ConnectorClient>>((BotFrameworkAdapter)turnContext.Adapter, ClientsCacheName);
+            clientCache.TryGetValue($"{expectedUrl}{expectedAppId}", out var client);
+            AssertConnectorClientValues(client, expectedAppId, expectedUrl, expectedScope);
+
+            if (clientCount != null)
+            {
+                Assert.AreEqual(clientCount, clientCache.Count);
+            }
+        }
+
+        private static T GetCache<T>(BotFrameworkAdapter adapter, string fieldName)
+        {
+            var cacheField = typeof(BotFrameworkAdapter).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+            return (T)cacheField.GetValue(adapter);
+        }
+
+        private static void AssertCredentialsValues(AppCredentials creds, string expectedAppId, string expectedScope = AuthenticationConstants.ToChannelFromBotOAuthScope)
+        {
+            Assert.AreEqual(expectedAppId, creds.MicrosoftAppId);
+            Assert.AreEqual(expectedScope, creds.OAuthScope);
+        }
+
+        private static void AssertConnectorClientValues(IConnectorClient client, string expectedAppId, Uri expectedServiceUrl, string expectedScope = AuthenticationConstants.ToChannelFromBotOAuthScope)
+        {
+            var creds = (AppCredentials)client.Credentials;
+            Assert.AreEqual(expectedAppId, creds.MicrosoftAppId);
+            Assert.AreEqual(expectedScope, creds.OAuthScope);
+            Assert.AreEqual(expectedServiceUrl, client.BaseUri);
         }
     }
 }

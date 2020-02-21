@@ -283,9 +283,7 @@ namespace Microsoft.Bot.Builder
                 new Claim(AuthenticationConstants.AppIdClaim, botAppId),
             });
 
-            var audience = ChannelProvider != null && ChannelProvider.IsGovernment()
-                ? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope
-                : AuthenticationConstants.ToChannelFromBotOAuthScope;
+            var audience = GetBotFrameworkOAuthScope();
 
             await ContinueConversationAsync(claimsIdentity, reference, audience, callback, cancellationToken).ConfigureAwait(false);
         }
@@ -312,9 +310,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="BotAdapter.RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
         public override async Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            var audience = ChannelProvider != null && ChannelProvider.IsGovernment()
-                ? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope
-                : AuthenticationConstants.ToChannelFromBotOAuthScope;
+            var audience = GetBotFrameworkOAuthScope();
 
             await ContinueConversationAsync(claimsIdentity, reference, audience, callback, cancellationToken).ConfigureAwait(false);
         }
@@ -428,8 +424,21 @@ namespace Microsoft.Bot.Builder
             {
                 context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 context.TurnState.Add<BotCallbackHandler>(callback);
-                
-                var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                // To create the correct cache key, provide the OAuthScope when calling CreateConnectorClientAsync.
+                // The OAuthScope is also stored on the TurnState to get the correct AppCredentials if fetching a token is required.
+                string scope;
+                if (!SkillValidation.IsSkillClaim(claimsIdentity.Claims))
+                {
+                    scope = GetBotFrameworkOAuthScope();
+                }
+                else
+                {
+                    scope = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
+                }
+
+                context.TurnState.Add(OAuthScopeKey, scope);
+                var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity, scope, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
 
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
@@ -1373,6 +1382,16 @@ namespace Microsoft.Bot.Builder
             }
 
             return appId;
+        }
+
+        /// <summary>
+        /// This method returns the correct Bot Framework OAuthScope for AppCredentials.
+        /// </summary>
+        private string GetBotFrameworkOAuthScope()
+        {
+            return ChannelProvider != null && ChannelProvider.IsGovernment()
+                ? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope
+                : AuthenticationConstants.ToChannelFromBotOAuthScope;
         }
 
         /// <summary>
