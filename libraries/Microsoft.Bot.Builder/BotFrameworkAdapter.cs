@@ -1280,10 +1280,12 @@ namespace Microsoft.Bot.Builder
                 var botId = botAppIdClaim.Value;
                 var scope = audience;
 
-                if (string.IsNullOrWhiteSpace(audience) && SkillValidation.IsSkillClaim(claimsIdentity.Claims))
+                if (string.IsNullOrWhiteSpace(audience))
                 {
                     // The skill connector has the target skill in the OAuthScope.
-                    scope = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
+                    scope = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ?
+                        JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) :
+                        GetBotFrameworkOAuthScope();
                 }
 
                 appCredentials = await GetAppCredentialsAsync(botId, scope, cancellationToken).ConfigureAwait(false);
