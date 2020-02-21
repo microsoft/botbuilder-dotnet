@@ -283,7 +283,11 @@ namespace Microsoft.Bot.Builder
                 new Claim(AuthenticationConstants.AppIdClaim, botAppId),
             });
 
-            await ContinueConversationAsync(claimsIdentity, reference, callback, cancellationToken).ConfigureAwait(false);
+            var audience = ChannelProvider != null && ChannelProvider.IsGovernment()
+                ? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope
+                : AuthenticationConstants.ToChannelFromBotOAuthScope;
+
+            await ContinueConversationAsync(claimsIdentity, reference, audience, callback, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -308,19 +312,14 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="BotAdapter.RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
         public override async Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            using (var context = new TurnContext(this, reference.GetContinuationActivity()))
-            {
-                context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
-                context.TurnState.Add<BotCallbackHandler>(callback);
-                await EnsureChannelConnectorClientIsCreatedAsync(reference.ServiceUrl, claimsIdentity, cancellationToken).ConfigureAwait(false);
-                var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity, cancellationToken: cancellationToken).ConfigureAwait(false);
-                context.TurnState.Add(connectorClient);
+            var audience = ChannelProvider != null && ChannelProvider.IsGovernment()
+                ? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope
+                : AuthenticationConstants.ToChannelFromBotOAuthScope;
 
-                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
-            }
+            await ContinueConversationAsync(claimsIdentity, reference, audience, callback, cancellationToken).ConfigureAwait(false);
         }
 
-        public virtual async Task ContinueSkillConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, BotCallbackHandler callback, string audience, CancellationToken cancellationToken)
+        public override async Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             if (claimsIdentity == null)
             {
@@ -347,6 +346,9 @@ namespace Microsoft.Bot.Builder
             {
                 context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 context.TurnState.Add<BotCallbackHandler>(callback);
+
+                // Add AudienceKey for calling GetAppCredentialsAsync
+                context.TurnState.Add<string>(OAuthScopeKey, audience);
 
                 // Add the channel service URL to the trusted services list so we can send messages back.
                 // the service URL for skills is trusted because it is applied by the SkillHandler based on the original request
@@ -525,8 +527,9 @@ namespace Microsoft.Bot.Builder
                         try
                         {
                             var appId = GetBotAppId(turnContext);
-
-                            _ = (await GetAppCredentialsAsync(appId).ConfigureAwait(false)).GetTokenAsync();
+                            
+                            var oAuthScope = turnContext.TurnState.Get<string>(OAuthScopeKey);
+                            _ = (await GetAppCredentialsAsync(appId, oAuthScope).ConfigureAwait(false)).GetTokenAsync();
                         }
                         catch (Exception ex)
                         {
@@ -1145,8 +1148,9 @@ namespace Microsoft.Bot.Builder
             var appId = GetBotAppId(turnContext);
 
             var clientKey = $"{appId}:{oAuthAppCredentials?.MicrosoftAppId}";
+            var oAuthScope = turnContext.TurnState.Get<string>(OAuthScopeKey);
 
-            var appCredentials = oAuthAppCredentials ?? await GetAppCredentialsAsync(appId).ConfigureAwait(false);
+            var appCredentials = oAuthAppCredentials ?? await GetAppCredentialsAsync(appId, oAuthScope).ConfigureAwait(false);
 
             if (!OAuthClientConfig.EmulateOAuthCards &&
                 string.Equals(turnContext.Activity.ChannelId, Channels.Emulator, StringComparison.InvariantCultureIgnoreCase) &&
@@ -1264,7 +1268,8 @@ namespace Microsoft.Bot.Builder
             if (botAppIdClaim != null)
             {
                 var botId = botAppIdClaim.Value;
-                string scope = audience;
+                var scope = audience;
+
                 if (string.IsNullOrWhiteSpace(audience) && SkillValidation.IsSkillClaim(claimsIdentity.Claims))
                 {
                     // The skill connector has the target skill in the OAuthScope.
@@ -1381,18 +1386,18 @@ namespace Microsoft.Bot.Builder
         private async Task EnsureChannelConnectorClientIsCreatedAsync(string serviceUrl, ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
         {
             // Ensure we have a default ConnectorClient and MSAppCredentials instance for the audience.
-            var audience = claimsIdentity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
-            if (string.IsNullOrWhiteSpace(audience) || !AuthenticationConstants.ToBotFromChannelTokenIssuer.Equals(audience, StringComparison.InvariantCultureIgnoreCase))
-            {
-                // We create a default connector for audiences that are not coming from the default https://api.botframework.com audience.
-                // We create a default claim that contains only the desired audience.
-                var defaultConnectorClaims = new List<Claim> { new Claim(AuthenticationConstants.AudienceClaim, audience) };
-                var connectorClaimsIdentity = new ClaimsIdentity(defaultConnectorClaims);
+            // var audience = claimsIdentity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
+            // if (string.IsNullOrWhiteSpace(audience) || !AuthenticationConstants.ToBotFromChannelTokenIssuer.Equals(audience, StringComparison.InvariantCultureIgnoreCase))
+            // {
+            //     // We create a default connector for audiences that are not coming from the default https://api.botframework.com audience.
+            //     // We create a default claim that contains only the desired audience.
+            //     var defaultConnectorClaims = new List<Claim> { new Claim(AuthenticationConstants.AudienceClaim, audience) };
+            //     var connectorClaimsIdentity = new ClaimsIdentity(defaultConnectorClaims);
                 
-                // The CreateConnectorClientAsync will create a ConnectorClient with an associated MicrosoftAppId for that claim and will
-                // initialize the dictionaries that contain the cache instances.
-                await CreateConnectorClientAsync(serviceUrl, connectorClaimsIdentity, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
+            //     // The CreateConnectorClientAsync will create a ConnectorClient with an associated MicrosoftAppId for that claim and will
+            //     // initialize the dictionaries that contain the cache instances.
+            //     await CreateConnectorClientAsync(serviceUrl, connectorClaimsIdentity, cancellationToken: cancellationToken).ConfigureAwait(false);
+            // }
 
             if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
             {
