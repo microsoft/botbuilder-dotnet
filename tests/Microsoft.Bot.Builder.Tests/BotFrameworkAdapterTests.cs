@@ -206,6 +206,47 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
+        public async Task ProcessActivityAsyncForForwardedActivity()
+        {
+            var botAppId = "00000000-0000-0000-0000-000000000001";
+            var skill1AppId = "00skill1-0000-0000-0000-000000skill1";
+            var claims = new List<Claim>
+            {
+                new Claim(AuthenticationConstants.AudienceClaim, skill1AppId),
+                new Claim(AuthenticationConstants.AppIdClaim, botAppId),
+                new Claim(AuthenticationConstants.VersionClaim, "1.0")
+            };
+            var identity = new ClaimsIdentity(claims);
+
+            var credentialProvider = new SimpleCredentialProvider() { AppId = botAppId };
+            var serviceUrl = "https://root-bot.test.azurewebsites.net/";
+            var callback = new BotCallbackHandler(async (context, ct) =>
+            {
+                GetCredsAndAssertValues(context, skill1AppId, botAppId, 1);
+                GetClientAndAssertValues(
+                    context,
+                    skill1AppId,
+                    botAppId,
+                    new Uri(serviceUrl),
+                    1);
+
+                var scope = context.TurnState.Get<string>(BotAdapter.OAuthScopeKey);
+                Assert.AreEqual(botAppId, scope);
+            });
+
+            var sut = new BotFrameworkAdapter(credentialProvider);
+            await sut.ProcessActivityAsync(
+                identity,
+                new Activity("From root-bot")
+                {
+                    ChannelId = Channels.Emulator,
+                    ServiceUrl = serviceUrl
+                },
+                callback,
+                CancellationToken.None);
+        }
+
+        [TestMethod]
         public async Task ContinueConversationAsyncWithoutAudience()
         {
             // Arrange
@@ -368,7 +409,8 @@ namespace Microsoft.Bot.Builder.Tests
         private static void GetCredsAndAssertValues(ITurnContext turnContext, string expectedAppId, string expectedScope, int? credsCount = null)
         {
             var credsCache = GetCache<ConcurrentDictionary<string, AppCredentials>>((BotFrameworkAdapter)turnContext.Adapter, CredsCacheName);
-            credsCache.TryGetValue($"{expectedAppId}{expectedScope}", out var creds);
+            var cacheKey = $"{expectedAppId}{expectedScope}";
+            credsCache.TryGetValue(cacheKey, out var creds);
             AssertCredentialsValues(creds, expectedAppId, expectedScope);
 
             if (credsCount != null)
@@ -380,7 +422,8 @@ namespace Microsoft.Bot.Builder.Tests
         private static void GetClientAndAssertValues(ITurnContext turnContext, string expectedAppId, string expectedScope, Uri expectedUrl, int? clientCount = null)
         {
             var clientCache = GetCache<ConcurrentDictionary<string, ConnectorClient>>((BotFrameworkAdapter)turnContext.Adapter, ClientsCacheName);
-            clientCache.TryGetValue($"{expectedUrl}{expectedAppId}", out var client);
+            var cacheKey = $"{expectedUrl}{expectedAppId}";
+            clientCache.TryGetValue(cacheKey, out var client);
             AssertConnectorClientValues(client, expectedAppId, expectedUrl, expectedScope);
 
             if (clientCount != null)
