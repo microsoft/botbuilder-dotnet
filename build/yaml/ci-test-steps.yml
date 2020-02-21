@@ -58,12 +58,11 @@ steps:
   condition: and(succeeded(), ne(variables['CoverallsToken'], ''))
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: Coverage files'
+  displayName: 'Publish build artifact CodeCoverage'
   inputs:
     PathtoPublish: CodeCoverage
     ArtifactName: CodeCoverage
-  enabled: false
-
+  
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: build folder'
   inputs:
