@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -201,13 +202,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var lastSegment = segments.Last();
                 if (lastSegment is string property)
                 {
-                    try
+                    // ConcurrentDictionary doesn't implement Remove, but it does implement IDictionary
+                    if (current is IDictionary<string, object> dict)
+                    {
+                        dict.Remove(property);
+                    }
+                    else
                     {
                         current.Remove(property);
-                    }
-                    catch (Exception)
-                    {
-                        ObjectPath.SetObjectSegment(current, property, null);
                     }
                 }
                 else

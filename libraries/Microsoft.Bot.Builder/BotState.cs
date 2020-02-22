@@ -334,7 +334,7 @@ namespace Microsoft.Bot.Builder
         {
             public CachedBotState(IDictionary<string, object> state = null)
             {
-                State = state ?? new ConcurrentDictionary<string, object>();
+                State = state ?? new Dictionary<string, object>();
                 Hash = ComputeHash(State);
             }
 

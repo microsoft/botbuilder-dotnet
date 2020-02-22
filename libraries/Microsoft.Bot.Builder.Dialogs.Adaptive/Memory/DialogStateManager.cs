@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 {
                     // Root is handled by SetMemory rather than SetValue
                     var scope = GetMemoryScope(key) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(key));
-                    scope.SetMemory(this.dialogContext, value);
+                    scope.SetMemory(this.dialogContext, JToken.FromObject(value));
                 }
                 else
                 {
@@ -268,6 +268,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             if (value is Task)
             {
                 throw new Exception($"{path} = You can't pass an unresolved Task to SetValue");
+            }
+
+            if (value != null)
+            {
+                value = JToken.FromObject(value);
             }
 
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
