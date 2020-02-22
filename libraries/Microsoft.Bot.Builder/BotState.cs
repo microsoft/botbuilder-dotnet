@@ -387,7 +387,7 @@ namespace Microsoft.Bot.Builder
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
             public async Task DeleteAsync(ITurnContext turnContext, CancellationToken cancellationToken)
             {
-                await _botState.LoadAsync(turnContext, false, cancellationToken).ConfigureAwait(false); 
+                await _botState.LoadAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
                 await _botState.DeletePropertyValueAsync(turnContext, Name, cancellationToken).ConfigureAwait(false);
             }
 
@@ -401,40 +401,23 @@ namespace Microsoft.Bot.Builder
             public async Task<T> GetAsync(ITurnContext turnContext, Func<T> defaultValueFactory, CancellationToken cancellationToken)
             {
                 await _botState.LoadAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
-                try
+                var result = await _botState.GetPropertyValueAsync<T>(turnContext, Name, cancellationToken).ConfigureAwait(false);
+                if (EqualityComparer<T>.Default.Equals(result, default(T)))
                 {
-                    var result = await _botState.GetPropertyValueAsync<T>(turnContext, Name, cancellationToken).ConfigureAwait(false);
-                    if (EqualityComparer<T>.Default.Equals(result, default(T)))
-                    {
-                        // if this returns default value then we call defaultValueFactory
-                        if (defaultValueFactory == null)
-                        {
-                            return default(T);
-                        }
-
-                        result = defaultValueFactory();
-
-                        // save default value for any further calls
-                        await SetAsync(turnContext, result, cancellationToken).ConfigureAwait(false);
-                        return result;
-                    }
-
-                    return result;
-                }
-                catch (KeyNotFoundException)
-                {
-                    // ask for default value from factory
+                    // if this returns default value then we call defaultValueFactory
                     if (defaultValueFactory == null)
                     {
                         return default(T);
                     }
 
-                    var result = defaultValueFactory();
+                    result = defaultValueFactory();
 
                     // save default value for any further calls
                     await SetAsync(turnContext, result, cancellationToken).ConfigureAwait(false);
                     return result;
                 }
+
+                return result;
             }
 
             /// <summary>
