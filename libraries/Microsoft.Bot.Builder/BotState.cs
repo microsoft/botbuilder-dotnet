@@ -269,6 +269,11 @@ namespace Microsoft.Bot.Builder
                 return Task.FromResult(JToken.FromObject(result).ToObject<T>());
             }
 
+            if (typeof(T).IsValueType)
+            {
+                throw new KeyNotFoundException(propertyName);
+            }
+
             return Task.FromResult(default(T));
         }
 
@@ -400,21 +405,31 @@ namespace Microsoft.Bot.Builder
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
             public async Task<T> GetAsync(ITurnContext turnContext, Func<T> defaultValueFactory, CancellationToken cancellationToken)
             {
+                T result = default(T);
+                
                 await _botState.LoadAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
-                var result = await _botState.GetPropertyValueAsync<T>(turnContext, Name, cancellationToken).ConfigureAwait(false);
-                if (EqualityComparer<T>.Default.Equals(result, default(T)))
+
+                try
                 {
-                    // if this returns default value then we call defaultValueFactory
-                    if (defaultValueFactory == null)
+                    // if T is a value type, lookup up will throw key not found if not found, but as perf
+                    // optimization it will return null if not found for types which are not value types (string and object).
+                    result = await _botState.GetPropertyValueAsync<T>(turnContext, Name, cancellationToken).ConfigureAwait(false);
+
+                    if (result == null && defaultValueFactory != null)
                     {
-                        return default(T);
+                        // use default Value Factory and save default value for any further calls
+                        result = defaultValueFactory();
+                        await SetAsync(turnContext, result, cancellationToken).ConfigureAwait(false);
                     }
-
-                    result = defaultValueFactory();
-
-                    // save default value for any further calls
-                    await SetAsync(turnContext, result, cancellationToken).ConfigureAwait(false);
-                    return result;
+                }
+                catch (KeyNotFoundException)
+                {
+                    if (defaultValueFactory != null)
+                    {
+                        // use default Value Factory and save default value for any further calls
+                        result = defaultValueFactory();
+                        await SetAsync(turnContext, result, cancellationToken).ConfigureAwait(false);
+                    }
                 }
 
                 return result;
