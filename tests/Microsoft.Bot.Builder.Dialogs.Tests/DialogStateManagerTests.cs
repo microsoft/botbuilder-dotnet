@@ -208,8 +208,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.AreEqual("testx", dc.GetState().GetValue<string>("@double"));
                 Assert.AreEqual("test1", dc.GetState().GetValue<string>("turn.recognized.entities.single.First()"));
                 Assert.AreEqual("testx", dc.GetState().GetValue<string>("turn.recognized.entities.double.First()"));
-                Assert.AreEqual("1", dc.GetState().GetValue<string>("turn.recognized.entities.single.First()[4]"));
-                Assert.AreEqual("x", dc.GetState().GetValue<string>("turn.recognized.entities.double.First()[4]"));
+
+                arrayarray = new JArray();
+                array = new JArray();
+                array.Add(JObject.Parse("{'name':'test1'}"));
+                array.Add(JObject.Parse("{'name':'test2'}"));
+                array.Add(JObject.Parse("{'name':'test2'}"));
+
+                array2 = new JArray();
+                array2.Add(JObject.Parse("{'name':'testx'}"));
+                array2.Add(JObject.Parse("{'name':'testy'}"));
+                array2.Add(JObject.Parse("{'name':'testz'}"));
+                arrayarray.Add(array2);
+                arrayarray.Add(array);
+                dc.GetState().SetValue("turn.recognized.entities.single", array);
+                dc.GetState().SetValue("turn.recognized.entities.double", arrayarray);
+
+                Assert.AreEqual("test1", dc.GetState().GetValue<string>("@single.name"));
+                Assert.AreEqual("testx", dc.GetState().GetValue<string>("@double.name"));
+                Assert.AreEqual("test1", dc.GetState().GetValue<string>("turn.recognized.entities.single.First().name"));
+                Assert.AreEqual("testx", dc.GetState().GetValue<string>("turn.recognized.entities.double.First().name"));
             }).StartTestAsync();
         }
 
