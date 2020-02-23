@@ -135,6 +135,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             // @ test
             Assert.AreEqual("turn.recognized.entities.foo.first()", new AtPathResolver().TransformPath("@foo"));
+            Assert.AreEqual("turn.recognized.entities.foo.first().bar", new AtPathResolver().TransformPath("@foo.bar"));
 
             // @@ teest
             Assert.AreEqual("turn.recognized.entities.foo", new AtAtPathResolver().TransformPath("@@foo"));
@@ -207,6 +208,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.AreEqual("testx", dc.GetState().GetValue<string>("@double"));
                 Assert.AreEqual("test1", dc.GetState().GetValue<string>("turn.recognized.entities.single.First()"));
                 Assert.AreEqual("testx", dc.GetState().GetValue<string>("turn.recognized.entities.double.First()"));
+                Assert.AreEqual("1", dc.GetState().GetValue<string>("turn.recognized.entities.single.First()[4]"));
+                Assert.AreEqual("x", dc.GetState().GetValue<string>("turn.recognized.entities.double.First()[4]"));
             }).StartTestAsync();
         }
 
