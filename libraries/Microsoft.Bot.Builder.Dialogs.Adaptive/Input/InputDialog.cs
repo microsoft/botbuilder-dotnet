@@ -419,6 +419,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 else
                 {
                     input = dc.Context.Activity.Text;
+
+                    // if there is no visible text AND we have a value object, then fallback to that.
+                    if (string.IsNullOrEmpty(dc.Context.Activity.Text) && dc.Context.Activity.Value != null)
+                    {
+                        input = dc.Context.Activity.Value;
+                    }
                 }
             }
 
