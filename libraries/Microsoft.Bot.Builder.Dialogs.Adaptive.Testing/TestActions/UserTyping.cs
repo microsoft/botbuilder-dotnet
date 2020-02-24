@@ -9,7 +9,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
 {
     [DebuggerDisplay("UserTyping")]
     public class UserTyping : TestAction

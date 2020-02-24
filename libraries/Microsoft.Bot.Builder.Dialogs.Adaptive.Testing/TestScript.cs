@@ -4,19 +4,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Bot.Builder.MockLuis;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -316,7 +310,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             return this;
         }
 
-        public Task SaveScript(string folder, [CallerMemberName] string testName = null)
+#if SAVESCRIPT
+        public Task SaveScriptAsync(string folder, [CallerMemberName] string testName = null)
         {
             folder = Path.Combine(GetProjectPath(), PathUtils.NormalizePath($"tests\\{folder}"));
             if (!Directory.Exists(folder))
@@ -371,6 +366,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 }
             }
         }
+#endif
 
         internal class IgnoreEmptyEnumerablesResolver : DefaultContractResolver
         {
