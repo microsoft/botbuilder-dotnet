@@ -76,6 +76,9 @@ namespace Microsoft.Bot.Builder
                 case ActivityTypes.Event:
                     return OnEventActivityAsync(new DelegatingTurnContext<IEventActivity>(turnContext), cancellationToken);
 
+                case ActivityTypes.Invoke:
+                    return OnInvokeActivityAsync(new DelegatingTurnContext<IInvokeActivity>(turnContext), cancellationToken);
+
                 case ActivityTypes.EndOfConversation:
                     return OnEndOfConversationActivityAsync(new DelegatingTurnContext<IEndOfConversationActivity>(turnContext), cancellationToken);
 
@@ -328,7 +331,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="OnEventAsync(ITurnContext{IEventActivity}, CancellationToken)"/>
         protected virtual Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.Name == "tokens/response")
+            if (turnContext.Activity.Name == SignInConstants.TokenResponseEventName)
             {
                 return OnTokenResponseEventAsync(turnContext, cancellationToken);
             }
@@ -379,6 +382,86 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="OnEventActivityAsync(ITurnContext{IEventActivity}, CancellationToken)"/>
         /// <seealso cref="OnTokenResponseEventAsync(ITurnContext{IEventActivity}, CancellationToken)"/>
         protected virtual Task OnEventAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when an invoke activity is received from the connector when the base behavior of
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
+        /// Invoke activities can be used to communicate many different things.
+        /// By default, this method will call <see cref="OnSignInInvokeAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/> if the
+        /// activity's name is <c>signin/verifyState</c> or <c>signin/tokenExchange</c>.
+        /// A <c>signin/verifyState</c> or <c>signin/tokenExchange</c> invoke can be triggered by an <see cref="OAuthCard"/>.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        /// method receives an invoke activity, it calls this method.
+        /// If the event <see cref="IInvokeActivity.Name"/> is `signin/verifyState` or `signin/tokenExchange`, it calls
+        /// <see cref="OnSignInInvokeAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
+        /// Invoke activities communicate programmatic commands from a client or channel to a bot.
+        /// The meaning of an invoke activity is defined by the <see cref="IInvokeActivity.Name"/> property,
+        /// which is meaningful within the scope of a channel.
+        /// A `signin/verifyState` or `signin/tokenExchange` invoke can be triggered by an <see cref="OAuthCard"/> or an OAuth prompt.
+        /// </remarks>
+        /// <seealso cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        protected virtual Task OnInvokeActivityAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        {
+            if (turnContext.Activity.Name == SignInConstants.VerifyStateOperationName || turnContext.Activity.Name == SignInConstants.TokenExchangeOperationName)
+            {
+                return OnSignInInvokeAsync(turnContext, cancellationToken);
+            }
+
+            return OnInvokeAsync(turnContext, cancellationToken);
+        }
+
+        /// <summary>
+        /// Invoked when a <c>signin/verifyState</c> or <c>signin/tokenExchange</c> event is received when the base behavior of
+        /// <see cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/> is used.
+        /// If using an <c>OAuthPrompt</c>, override this method to forward this <see cref="Activity"/> to the current dialog.
+        /// By default, this method does nothing.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
+        /// method receives an Invoke with a <see cref="IInvokeActivity.Name"/> of `tokens/response`,
+        /// it calls this method.
+        ///
+        /// If your bot uses the <c>OAuthPrompt</c>, forward the incoming <see cref="Activity"/> to
+        /// the current dialog.
+        /// </remarks>
+        /// <seealso cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
+        /// <seealso cref="OnInvokeAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
+        protected virtual Task OnSignInInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when an Invoke other than <c>signin/verifyState</c> or <c>signin/tokenExchange</c> is received when the base behavior of
+        /// <see cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/> is used.
+        /// This method could optionally be overridden if the bot is meant to handle miscellaneous Invokes.
+        /// By default, this method does nothing.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
+        /// method receives an Invoke with a <see cref="IInvokeActivity.Name"/> other than `tokens/response`,
+        /// it calls this method.
+        /// </remarks>
+        /// <seealso cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
+        /// <seealso cref="OnSignInInvokeAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
+        protected virtual Task OnInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

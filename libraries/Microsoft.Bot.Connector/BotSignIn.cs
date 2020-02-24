@@ -216,6 +216,5 @@ namespace Microsoft.Bot.Connector
             }
             return _result;
         }
-
     }
 }
