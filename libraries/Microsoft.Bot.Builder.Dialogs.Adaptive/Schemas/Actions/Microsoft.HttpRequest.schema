@@ -71,6 +71,16 @@
                 "dialog.contosodata"
             ]
         },
+        "contentType": {
+            "$role": "expression",
+            "type": "string",
+            "title": "Content type",
+            "description": "Content media type for the body.",
+            "examples": [
+                "application/json",
+                "text/plain"
+            ]
+        },
         "headers": {
             "type": "object",
             "additionalProperties": {
