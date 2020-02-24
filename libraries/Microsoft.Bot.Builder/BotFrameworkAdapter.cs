@@ -1257,7 +1257,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>ConnectorClient instance.</returns>
         /// <exception cref="NotSupportedException">ClaimsIdentity cannot be null. Pass Anonymous ClaimsIdentity if authentication is turned off.</exception>
-        private async Task<IConnectorClient> CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity, string audience = null, CancellationToken cancellationToken = default)
+        private async Task<IConnectorClient> CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken = default)
         {
             if (claimsIdentity == null)
             {
@@ -1302,8 +1302,8 @@ namespace Microsoft.Bot.Builder
         /// <returns>Connector client instance.</returns>
         private IConnectorClient CreateConnectorClient(string serviceUrl, AppCredentials appCredentials = null)
         {
-            // As multiple bots can listen on a single serviceUrl, the clioentKey also includes the OAuthScope.
-            var clientKey = $"{serviceUrl}{appCredentials?.MicrosoftAppId ?? string.Empty}:{appCredentials?.OAuthScope ?? string.Empty}";
+            // As multiple bots can listen on a single serviceUrl, the clientKey also includes the OAuthScope.
+            var clientKey = $"{serviceUrl}{appCredentials?.MicrosoftAppId}:{appCredentials?.OAuthScope}";
 
             return _connectorClients.GetOrAdd(clientKey, (key) =>
             {
@@ -1337,7 +1337,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="oAuthScope">The scope for the token. Skills use the skill's app ID. </param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>App credentials.</returns>
-        private async Task<AppCredentials> GetAppCredentialsAsync(string appId, string oAuthScope = null, CancellationToken cancellationToken = default)
+        private async Task<AppCredentials> GetAppCredentialsAsync(string appId, string oAuthScope, CancellationToken cancellationToken = default)
         {
             if (appId == null)
             {
