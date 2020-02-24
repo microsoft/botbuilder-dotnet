@@ -82,6 +82,9 @@ namespace Microsoft.Bot.Builder
                 case ActivityTypes.EndOfConversation:
                     return OnEndOfConversationActivityAsync(new DelegatingTurnContext<IEndOfConversationActivity>(turnContext), cancellationToken);
 
+                case ActivityTypes.Typing:
+                    return OnTypingActivityAsync(new DelegatingTurnContext<ITypingActivity>(turnContext), cancellationToken);
+
                 default:
                     return OnUnrecognizedActivityTypeAsync(turnContext, cancellationToken);
             }
@@ -477,6 +480,24 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         /// <seealso cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
         protected virtual Task OnEndOfConversationActivityAsync(ITurnContext<IEndOfConversationActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Override this in a derived class to provide logic specific to
+        /// <see cref="ActivityTypes.Typing"/> activities, such as the conversational logic.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        /// method receives a message activity, it calls this method.
+        /// </remarks>
+        /// <seealso cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        protected virtual Task OnTypingActivityAsync(ITurnContext<ITypingActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

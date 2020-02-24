@@ -19,7 +19,7 @@
 - - [ ] New pre-built functions ask
     - - [X] [4/11] forEach(collection, iterator, expression)
     - - [ ] [Post //BUILD] match(regExp)
-    - - [X] [4/11] lgTemplate(templateName, arg1, arg2,...) - drop support for @{[]} 
+    - - [X] [4/11] lgTemplate(templateName, arg1, arg2,...) - drop support for ${[]} 
     - - [ ] property(scope, expression) evaluates to scope.<expressionResult>
 - - [ ] [4/11] Drop support for object manipulation functions (json, addProperty, setProperty, removeProperty) from expression library - from doc. Vishwac. 
 - - [ ] [4/11] Document exists function - Vishwac.

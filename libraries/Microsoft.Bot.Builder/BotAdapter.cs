@@ -31,6 +31,7 @@ namespace Microsoft.Bot.Builder
     public abstract class BotAdapter
     {
         public const string BotIdentityKey = "BotIdentity";
+        public const string OAuthScopeKey = "OAuthScope";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotAdapter"/> class.
@@ -148,6 +149,25 @@ namespace Microsoft.Bot.Builder
         /// before the bot can send activities to the user.</remarks>
         /// <seealso cref="RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
         public virtual Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Sends a proactive message to a conversation.
+        /// </summary>
+        /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the conversation.</param>
+        /// <param name="reference">A reference to the conversation to continue.</param>
+        /// <param name="audience">A value signifying the recipient of the proactive message.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>Call this method to proactively send a message to a conversation.
+        /// Most _channels require a user to initiate a conversation with a bot
+        /// before the bot can send activities to the user.</remarks>
+        /// <seealso cref="RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
+        public virtual Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

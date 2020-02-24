@@ -12,7 +12,7 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
-    public class AdalAuthenticator
+    public class AdalAuthenticator : IAuthenticator
     {
         private const string MsalTemporarilyUnavailable = "temporarily_unavailable";
 
@@ -74,6 +74,16 @@ namespace Microsoft.Bot.Connector.Authentication
             logger?.LogInformation($"GetTokenAsync: Acquired token using ADAL in {watch.ElapsedMilliseconds}.");
 
             return result;
+        }
+
+        async Task<AuthenticatorResult> IAuthenticator.GetTokenAsync(bool forceRefresh)
+        {
+            var result = await GetTokenAsync(forceRefresh);
+            return new AuthenticatorResult() 
+            {
+                AccessToken = result.AccessToken,
+                ExpiresOn = result.ExpiresOn
+            };
         }
 
         private async Task<AuthenticationResult> AcquireTokenAsync(bool forceRefresh = false)

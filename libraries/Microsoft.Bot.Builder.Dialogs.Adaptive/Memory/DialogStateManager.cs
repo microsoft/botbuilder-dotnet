@@ -7,10 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Memory;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
-using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
-using Microsoft.Bot.Expressions.Memory;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory
@@ -191,16 +190,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             var iFirst = path.ToLower().LastIndexOf(first);
             if (iFirst >= 0)
             {
+                object entity = null;
                 remainingPath = path.Substring(iFirst + first.Length);
                 path = path.Substring(0, iFirst);
-                if (TryGetFirstNestedValue(ref value, ref path, this))
+                if (TryGetFirstNestedValue(ref entity, ref path, this))
                 {
                     if (string.IsNullOrEmpty(remainingPath))
                     {
+                        value = ObjectPath.MapValueTo<T>(entity);
                         return true;
                     }
 
-                    return ObjectPath.TryGetPathValue(value, remainingPath, out value);
+                    return ObjectPath.TryGetPathValue(entity, remainingPath, out value);
                 }
 
                 return false;

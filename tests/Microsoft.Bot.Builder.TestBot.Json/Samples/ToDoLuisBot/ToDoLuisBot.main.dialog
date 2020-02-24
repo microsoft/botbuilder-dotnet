@@ -40,7 +40,7 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "@{LuisToDoHelp()}"
+                    "activity": "${LuisToDoHelp()}"
                 }
             ]
         }

@@ -37,7 +37,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "I have @{user.name} as your name"
+                        "activity": "I have ${user.name} as your name"
                     },
                     {
                         "$kind": "Microsoft.NumberInput",
@@ -47,7 +47,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "I have @{user.age} as your age"
+                        "activity": "I have ${user.age} as your age"
                     }
                 ]
             },
@@ -72,7 +72,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "You said @{turn.activity.text}"
+                        "activity": "You said ${turn.activity.text}"
                     },
                     {
                         "$kind": "Microsoft.SetProperty",

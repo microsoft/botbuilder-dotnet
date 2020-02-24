@@ -1,11 +1,11 @@
 # AskPersonname
-- @{askString('Personname')}
+- ${askString('Personname')}
 
 # PersonnameName
 - personname
 
 # Personname(val)
-- @{PersonnameEntity(val)}
+- ${PersonnameEntity(val)}
 
 [unittests-PersonnameEntity.lg](unittests-PersonnameEntity.lg)
 

@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -17,7 +18,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
-    public class BotFrameworkHttpClient
+    public class BotFrameworkHttpClient : BotFrameworkClient
     {
         public BotFrameworkHttpClient(
             HttpClient httpClient,
@@ -56,7 +57,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="activity">activity to forward.</param>
         /// <param name="cancellationToken">cancellation Token.</param>
         /// <returns>Async task with optional invokeResponse.</returns>
-        public async Task<InvokeResponse> PostActivityAsync(string fromBotId, string toBotId, Uri toUrl, Uri serviceUrl, string conversationId, Activity activity, CancellationToken cancellationToken = default)
+        public override async Task<InvokeResponse> PostActivityAsync(string fromBotId, string toBotId, Uri toUrl, Uri serviceUrl, string conversationId, Activity activity, CancellationToken cancellationToken = default)
         {
             var appCredentials = await GetAppCredentialsAsync(fromBotId, toBotId).ConfigureAwait(false);
             if (appCredentials == null)

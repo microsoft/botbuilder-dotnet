@@ -7,7 +7,7 @@
     "actions": [
         {
             "$kind": "Microsoft.Ask",
-            "activity": "@{AskZipcodepattern()}",
+            "activity": "${AskZipcodepattern()}",
             "expectedProperties": [
                 "Zipcodepattern"
             ]

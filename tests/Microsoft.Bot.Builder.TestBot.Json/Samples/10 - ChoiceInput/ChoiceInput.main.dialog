@@ -25,7 +25,7 @@
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "You select: @{user.style}"
+                    "activity": "You select: ${user.style}"
                 }
             ]
         }

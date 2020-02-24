@@ -85,11 +85,11 @@ Here is an example of a card definition.
     # HeroCardTemplate(buttonsCollection)
     - ```
     [Herocard   
-        title=@{[TitleText]}
-        subtitle=@{[SubText]}
-        text=@{[DescriptionText]}
-        images=@{[CardImages]}
-        buttons=@{join(buttonsCollection, '|')]
+        title=${[TitleText]}
+        subtitle=${[SubText]}
+        text=${[DescriptionText]}
+        images=${[CardImages]}
+        buttons=${join(buttonsCollection, '|')]
     ```
 
     # TitleText

@@ -1,11 +1,11 @@
 # AskUrl
-- @{askString('Url')}
+- ${askString('Url')}
 
 # UrlName
 - url
 
 # Url(val)
-- @{UrlEntity(val)}
+- ${UrlEntity(val)}
 
 [unittests-UrlEntity.lg](unittests-UrlEntity.lg)
 

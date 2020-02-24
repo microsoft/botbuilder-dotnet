@@ -1,5 +1,5 @@
 # AskPrice
-- @{askString('Price')}
+- ${askString('Price')}
 
 # PriceName
 - price

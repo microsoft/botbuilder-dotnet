@@ -26,7 +26,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Your todos: @{join(user.todos, ',')}"
+                        "activity": "Your todos: ${join(user.todos, ',')}"
                     },
                     {
                         "$kind": "Microsoft.TextInput",
@@ -41,7 +41,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Your todos: @{join(user.todos, ',')}"
+                        "activity": "Your todos: ${join(user.todos, ',')}"
                     },
                     {
                         "$kind": "Microsoft.TextInput",
@@ -57,7 +57,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Your todos: @{join(user.todos, ',')}"
+                        "activity": "Your todos: ${join(user.todos, ',')}"
                     },
                     {
                         "$kind": "Microsoft.TextInput",
@@ -83,7 +83,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Your todos: @{join(user.todos, ',')}"
+                        "activity": "Your todos: ${join(user.todos, ',')}"
                     },
                     {
                         "$kind": "Microsoft.EditArray",
@@ -92,7 +92,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Your todos: @{join(user.todos, ',')}"
+                        "activity": "Your todos: ${join(user.todos, ',')}"
                     },
                     {
                         "$kind": "Microsoft.EditArray",
@@ -101,7 +101,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Your todos: @{join(user.todos, ',')}"
+                        "activity": "Your todos: ${join(user.todos, ',')}"
                     },
                     {
                         "$kind": "Microsoft.EditArray",
@@ -110,7 +110,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Your todos: @{join(user.todos, ',')}"
+                        "activity": "Your todos: ${join(user.todos, ',')}"
                     }
                 ]
             }

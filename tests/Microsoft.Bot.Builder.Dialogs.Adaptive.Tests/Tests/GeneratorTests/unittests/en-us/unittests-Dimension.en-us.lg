@@ -1,5 +1,5 @@
 # AskDimension
-- @{askString('Dimension')}
+- ${askString('Dimension')}
 
 # DimensionName
 - dimension

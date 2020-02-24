@@ -1,9 +1,9 @@
 ﻿> Text and Speak should get the same result
 # AskForAge.prompt
 [Activity
-    Text = @{GetAge()}
+    Text = ${GetAge()}
 > this is a comment about this specific property
-    Speak = @{GetAge()}
+    Speak = ${GetAge()}
 ]
 
 
@@ -15,16 +15,16 @@
 > With '|' you are making attachments a list. 
 # AskForAge.prompt2
 [Activity
-    Text = @{GetAge()}
+    Text = ${GetAge()}
     SuggestedActions = 10 | 20 | 30
 ]
 
 
 > You can use '\' as an escape character
-> \@{GetAge()} would not be evaluated as expression, would be parsed as '@{getAge()}' string
+> \${GetAge()} would not be evaluated as expression, would be parsed as '${getAge()}' string
 # AskForAge.prompt3
 [Activity
-        Text = \@{GetAge()}
+        Text = \${GetAge()}
         Suggestions = 10 \| cards | 20 \| cards
 ]
 
@@ -34,8 +34,8 @@
 > and whitespace inb front of the end square bracket is allowed
 # T1
 [Activity
-		Text = @{T2()}
-		Speak = foo bar @{T3().speak}
+		Text = ${T2()}
+		Speak = foo bar ${T3().speak}
     ]
 
 
@@ -54,7 +54,7 @@
 # ST1
 [MyStruct
     Text = foo
-    @{ST2()}
+    ${ST2()}
 ]
 
 
@@ -68,19 +68,19 @@
 > each item can also be a structure
 # AskForColor
 [Activity
-    SuggestedActions = @{ST2()} | @{T3()}
+    SuggestedActions = ${ST2()} | ${T3()}
 ]
 
 
 > if you use multi structures in a normal template body, the result would be a string result
 > but not a list with two items
 # MultiExpression
-- @{T3()} @{T4()}
+- ${T3()} ${T4()}
 
 
 > template can ref to another steuctured template
 # StructuredTemplateRef
-- @{T4()}
+- ${T4()}
 
 
 # T4
@@ -92,26 +92,26 @@
 > if you want to re-use the structured, foreach function is a good way
 # MultiStructuredRef
 [MyStruct
-    list = @{foreach(createArray('hello','world'), x, T5(x))}
+    list = ${foreach(createArray('hello','world'), x, T5(x))}
 ]
 
 
 # T5(text)
 [SubStruct
-    Text = @{text}
+    Text = ${text}
 ]
 
 
 # templateWithSquareBrackets(manufacturer)
 [Struct
-    Text = @{manufacturer['Name']}
+    Text = ${manufacturer['Name']}
 ]  
 
 
 # ExpanderT1
 [MyStruct
-    Text = @{ExpanderT2()}
-    @{ExpanderT3()}
+    Text = ${ExpanderT2()}
+    ${ExpanderT3()}
 ]
 
 
@@ -121,12 +121,12 @@
 
 # ExpanderT3
 [MyStruct
-    Speak = @{GetAge()}
+    Speak = ${GetAge()}
     Text = zoo
 ]
 
 > treat everything after the first = as value.
 # ValueWithEqualsMark
 [Activity
-    Text = Hello! welcome back. I have your name = @{name}
+    Text = Hello! welcome back. I have your name = ${name}
 ]

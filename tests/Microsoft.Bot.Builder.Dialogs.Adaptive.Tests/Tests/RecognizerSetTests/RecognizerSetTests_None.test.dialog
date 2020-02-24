@@ -32,15 +32,15 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "UnknownIntent:@{turn.recognized.intent}"
+                        "activity": "UnknownIntent:${turn.recognized.intent}"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{join(turn.recognized.entities.age,',')}"
+                        "activity": "${join(turn.recognized.entities.age,',')}"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{join(turn.recognized.entities.number,',')}"
+                        "activity": "${join(turn.recognized.entities.number,',')}"
                     }
                 ]
             }

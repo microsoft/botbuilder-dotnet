@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.AI.Luis;
-using Microsoft.Bot.Expressions.Properties;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -86,16 +86,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public IBotTelemetryClient TelemetryClient { get; set; } = new NullBotTelemetryClient();
 
         /// <inheritdoc/>
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken = default)
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default)
         {
             var wrapper = new LuisRecognizer(RecognizerOptions(dialogContext), HttpClient);
-            var context = dialogContext.Context;
-            if (context.Activity == null || context.Activity.Type != ActivityTypes.Message || context.Activity.Text != text || context.Activity.Locale != locale)
+
+            // temp clone of turn context because luisrecognizer always pulls activity from turn context.
+            var tempContext = new TurnContext(dialogContext.Context.Adapter, activity);
+            foreach (var keyValue in dialogContext.Context.TurnState)
             {
-                throw new ArgumentException("TurnContext is different than text");
+                tempContext.TurnState[keyValue.Key] = keyValue.Value;
             }
 
-            return await wrapper.RecognizeAsync(dialogContext.Context, cancellationToken).ConfigureAwait(false);
+            return await wrapper.RecognizeAsync(tempContext, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

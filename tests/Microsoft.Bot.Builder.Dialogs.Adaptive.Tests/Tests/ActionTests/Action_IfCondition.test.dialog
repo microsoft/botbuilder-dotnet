@@ -19,13 +19,13 @@
                             },
                             {
                                 "$kind": "Microsoft.SendActivity",
-                                "activity": "Hello @{user.name}, nice to meet you!"
+                                "activity": "Hello ${user.name}, nice to meet you!"
                             }
                         ],
                         "elseActions": [
                             {
                                 "$kind": "Microsoft.SendActivity",
-                                "activity": "Hello @{user.name}, nice to see you again!"
+                                "activity": "Hello ${user.name}, nice to see you again!"
                             }
                         ]
                     }

@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using AdaptiveExpressions;
+using AdaptiveExpressions.Converters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Converters;
@@ -9,9 +11,6 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
@@ -19,8 +18,6 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
-using Microsoft.Bot.Expressions;
-using Microsoft.Bot.Expressions.Converters;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
@@ -146,24 +143,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             // Dialogs
             yield return new DeclarativeType<AdaptiveDialog>(AdaptiveDialog.DeclarativeType);
-
-            // test actions
-            yield return new DeclarativeType<AssertCondition>(AssertCondition.DeclarativeType);
-            yield return new DeclarativeType<TestScript>(TestScript.DeclarativeType);
-            yield return new DeclarativeType<UserSays>(UserSays.DeclarativeType);
-            yield return new DeclarativeType<UserTyping>(UserTyping.DeclarativeType);
-            yield return new DeclarativeType<UserConversationUpdate>(UserConversationUpdate.DeclarativeType);
-            yield return new DeclarativeType<UserActivity>(UserActivity.DeclarativeType);
-            yield return new DeclarativeType<UserDelay>(UserDelay.DeclarativeType);
-            yield return new DeclarativeType<AssertReply>(AssertReply.DeclarativeType);
-            yield return new DeclarativeType<AssertReplyOneOf>(AssertReplyOneOf.DeclarativeType);
-            yield return new DeclarativeType<AssertReplyActivity>(AssertReplyActivity.DeclarativeType);
         }
 
         public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<string> paths)
         {
             yield return new InterfaceConverter<OnCondition>(resourceExplorer, paths);
-            yield return new InterfaceConverter<TestAction>(resourceExplorer, paths);
             yield return new InterfaceConverter<EntityRecognizer>(resourceExplorer, paths);
             yield return new InterfaceConverter<ITriggerSelector>(resourceExplorer, paths);
 

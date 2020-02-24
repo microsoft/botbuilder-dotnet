@@ -54,7 +54,7 @@
                                     },
                                     {
                                         "$kind": "Microsoft.SendActivity",
-                                        "activity": "@{turn.dialogEvent.value.message}"
+                                        "activity": "${turn.dialogEvent.value.message}"
                                     }
                                 ]
                             }
@@ -71,7 +71,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{turn.dialogEvent.value.message}"
+                        "activity": "${turn.dialogEvent.value.message}"
                     }
                 ]
             }

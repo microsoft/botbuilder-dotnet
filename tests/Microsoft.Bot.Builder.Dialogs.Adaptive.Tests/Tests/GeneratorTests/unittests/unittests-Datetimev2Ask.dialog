@@ -7,7 +7,7 @@
     "actions": [
         {
             "$kind": "Microsoft.Ask",
-            "activity": "@{AskDatetimev2()}",
+            "activity": "${AskDatetimev2()}",
             "expectedProperties": [
                 "Datetimev2"
             ]

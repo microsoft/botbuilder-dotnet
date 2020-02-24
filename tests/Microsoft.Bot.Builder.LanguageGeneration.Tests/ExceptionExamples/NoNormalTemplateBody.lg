@@ -1,9 +1,9 @@
 ﻿> Should throw exception when there is no normal template body in condition block
 # template1
-- IF: @{number == 1}
+- IF: ${number == 1}
 ﻿
 > Should throw exception when there is no normal template body in default block
 # template2
-- IF: @{number == 2}
+- IF: ${number == 2}
     - hello
 - ELSE: 

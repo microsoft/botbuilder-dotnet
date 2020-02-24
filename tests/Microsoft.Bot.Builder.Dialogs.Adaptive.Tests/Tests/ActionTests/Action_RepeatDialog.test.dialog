@@ -15,7 +15,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Hello @{user.name}, nice to meet you!"
+                        "activity": "Hello ${user.name}, nice to meet you!"
                     },
                     {
                         "$kind": "Microsoft.EndTurn",

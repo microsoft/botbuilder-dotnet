@@ -28,7 +28,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "The city is @{@city}!"
+                        "activity": "The city is ${@city}!"
                     }
                 ]
             }

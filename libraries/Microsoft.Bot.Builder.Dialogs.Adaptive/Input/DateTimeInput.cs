@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Microsoft.Bot.Expressions.Properties;
+using AdaptiveExpressions.Properties;
 using Microsoft.Recognizers.Text.DateTime;
 using Newtonsoft.Json;
 using static Microsoft.Recognizers.Text.Culture;

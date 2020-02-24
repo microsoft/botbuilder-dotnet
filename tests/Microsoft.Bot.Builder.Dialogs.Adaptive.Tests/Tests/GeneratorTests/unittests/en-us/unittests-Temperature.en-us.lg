@@ -1,5 +1,5 @@
 # AskTemperature
-- @{askString('Temperature')}
+- ${askString('Temperature')}
 
 # TemperatureName
 - temperature

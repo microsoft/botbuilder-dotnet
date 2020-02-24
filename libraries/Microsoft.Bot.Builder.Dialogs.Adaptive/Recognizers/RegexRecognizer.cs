@@ -46,11 +46,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         [JsonProperty("entities")]
         public List<EntityRecognizer> Entities { get; set; } = new List<EntityRecognizer>();
 
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken)
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken)
         {
             // Identify matched intents
-            text = text ?? string.Empty;
-
+            var text = activity.Text ?? string.Empty;
+            var locale = activity.Locale ?? "en-us";
+            
             var recognizerResult = new RecognizerResult()
             {
                 Text = text,

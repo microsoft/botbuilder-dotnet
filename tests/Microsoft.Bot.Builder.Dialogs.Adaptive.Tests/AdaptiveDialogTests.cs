@@ -12,9 +12,9 @@ using System.Threading;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using System.IO;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -46,6 +46,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         [TestMethod]
         public async Task AdaptiveDialog_AdaptiveCardSubmit()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+        
+        [TestMethod]
+        public async Task AdaptiveDialog_AllowInterruption()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
         }
@@ -231,6 +237,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task AdaptiveDialog_EmitEventActivityReceived()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
         [Ignore]
         public async Task TestForeachWithLargeItems()
         {
@@ -264,7 +276,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 new Foreach
                                 {
                                     ItemsProperty = "$items",
-                                    Actions = new List<Dialog> { new SendActivity { Activity = new ActivityTemplate("@{$foreach.value}") } }
+                                    Actions = new List<Dialog> { new SendActivity { Activity = new ActivityTemplate("${$foreach.value}") } }
                                 }
                             }
                         }

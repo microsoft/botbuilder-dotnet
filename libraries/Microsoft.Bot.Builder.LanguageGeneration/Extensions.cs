@@ -80,13 +80,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// trim expression. @{abc} => abc,  @{a == {}} => a == {}.
+        /// trim expression. ${abc} => abc,  ${a == {}} => a == {}.
         /// </summary>
         /// <param name="expression">input expression string.</param>
         /// <returns>pure expression string.</returns>
         public static string TrimExpression(this string expression)
         {
-            var result = expression.Trim().TrimStart('@').Trim();
+            var result = expression.Trim().TrimStart('$').Trim();
 
             if (result.StartsWith("{") && result.EndsWith("}"))
             {
@@ -118,6 +118,41 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 // Map Windows separator -> Linux/Mac
                 return ambigiousPath.Replace("\\", "/");
             }
+        }
+
+        /// <summary>
+        /// Get prefix error message from normal template sting context.
+        /// </summary>
+        /// <param name="context">normal template sting context.</param>
+        /// <returns>prefix error message.</returns>
+        public static string GetPrefixErrorMessage(this LGFileParser.NormalTemplateStringContext context)
+        {
+            var errorPrefix = string.Empty;
+            if (context.Parent?.Parent?.Parent is LGFileParser.IfConditionRuleContext conditionContext)
+            {
+                errorPrefix = "Condition '" + conditionContext.ifCondition()?.EXPRESSION(0)?.GetText() + "': ";
+            }
+            else
+            {
+                if (context.Parent?.Parent?.Parent is LGFileParser.SwitchCaseRuleContext switchCaseContext)
+                {
+                    var state = switchCaseContext.switchCaseStat();
+                    if (state?.DEFAULT() != null)
+                    {
+                        errorPrefix = "Case 'Default':";
+                    }
+                    else if (state?.SWITCH() != null)
+                    {
+                        errorPrefix = $"Switch '{state.EXPRESSION(0)?.GetText()}':";
+                    }
+                    else if (state?.CASE() != null)
+                    {
+                        errorPrefix = $"Case '{state.EXPRESSION(0)?.GetText()}':";
+                    }
+                }
+            }
+
+            return errorPrefix;
         }
     }
 }
