@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
             ConnectedBot = bot ?? throw new ArgumentNullException(nameof(bot));
 
-            if (HttpContext.Current.IsWebSocketRequest || HttpContext.Current.IsWebSocketRequestUpgrading)
+            if (!HttpContext.Current.IsWebSocketRequest && !HttpContext.Current.IsWebSocketRequestUpgrading)
             {
                 httpResponse.StatusCode = HttpStatusCode.BadRequest;
                 httpResponse.Content = new StringContent("Upgrade to WebSocket is required.");
