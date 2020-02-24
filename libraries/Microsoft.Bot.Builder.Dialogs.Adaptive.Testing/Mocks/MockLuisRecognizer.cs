@@ -5,14 +5,13 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using RichardSzalay.MockHttp;
 
-namespace Microsoft.Bot.Builder.MockLuis
+namespace Microsoft.Bot.Builder.AI.Luis.Testing
 {
     /// <summary>
     /// Test class for creating cached LUIS responses for testing.
