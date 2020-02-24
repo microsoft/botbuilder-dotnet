@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Initializes a new instance of the <see cref="DialogManager"/> class.
         /// </summary>
         /// <param name="rootDialog">rootdialog to use.</param>
-        /// <param name="dialogStateProperty">alternate name for the dialogState property. Default is "_dialogs".</param>
+        /// <param name="dialogStateProperty">alternate name for the dialogState property. (Default is "DialogState").</param>
         public DialogManager(Dialog rootDialog = null, string dialogStateProperty = null)
         {
             if (rootDialog != null)
@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 this.RootDialog = rootDialog;
             }
 
-            this.dialogStateProperty = dialogStateProperty ?? "_dialogs";
+            this.dialogStateProperty = dialogStateProperty ?? "DialogState";
         }
 
         /// <summary>
