@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             CheckErrors();
             var expander = new Expander(AllTemplates.ToList(), ExpressionEngine, StrictMode);
-            return expander.EvaluateTemplate(templateName, scope);
+            return expander.ExpandTemplate(templateName, scope);
         }
 
         /// <summary>
