@@ -1,10 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -37,7 +40,15 @@ namespace Microsoft.Bot.Builder.Tests
         {
             // Arrange
             var mockTelemetryClient = new Mock<IBotTelemetryClient>();
-            TestAdapter adapter = new TestAdapter()
+            var conversationReference = new ConversationReference()
+            {
+                ChannelId = Channels.Test,
+                ServiceUrl = "https://test.com",
+                User = null,
+                Bot = new ChannelAccount("bot", "Bot"),
+                Conversation = new ConversationAccount(false, "convo1", "Conversation1"),
+            };
+            TestAdapter adapter = new TestAdapter(conversationReference)
                 .Use(new TelemetryLoggerMiddleware(mockTelemetryClient.Object, logPersonalInformation: true));
             string conversationId = null;
 
@@ -524,6 +535,50 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[4].Arguments[1]).ContainsKey("foo"));
             Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[4].Arguments[1])["foo"] == "bar");
             Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[4].Arguments[1])["ImportantProperty"] == "ImportantValue");
+        }
+
+        [TestMethod]
+        [TestCategory("Telemetry")]
+        public async Task DoNotThrowOnNullFrom()
+        {
+            // Arrange
+            var mockTelemetryClient = new Mock<IBotTelemetryClient>();
+            TestAdapter adapter = new TestAdapter(new ConversationReference() 
+            { 
+                ChannelId = Channels.Test,
+                Bot = new ChannelAccount("bot", "Bot"),
+                Conversation = new ConversationAccount() { Id = Guid.NewGuid().ToString("n") }
+            })
+                .Use(new TelemetryLoggerMiddleware(mockTelemetryClient.Object, logPersonalInformation: false));
+            
+            // Act
+            // Ensure LogPersonalInformation flag works
+            await new TestFlow(adapter, async (context, cancellationToken) =>
+            {
+                await adapter.CreateConversationAsync(
+                    context.Activity.ChannelId, 
+                    async (context, cancellationToken) =>
+                    {
+                        await context.SendActivityAsync("proactive");
+                    }, 
+                    new CancellationToken());
+            })
+                .Send("foo")
+                    .AssertReply("proactive")
+                .StartTestAsync();
+
+            // Assert
+            Assert.AreEqual(mockTelemetryClient.Invocations.Count, 1);
+            Assert.AreEqual(mockTelemetryClient.Invocations[0].Arguments[0], "BotMessageReceived"); // Check initial message
+            Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).Count == 5);
+            Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("fromId"));
+            Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1])["fromId"] == null);
+            Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("conversationName"));
+            Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("locale"));
+            Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("recipientId"));
+            Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("recipientName"));
+            Assert.IsFalse(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("fromName"));
+            Assert.IsFalse(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("text"));
         }
 
         public class OverrideReceiveLogger : TelemetryLoggerMiddleware
