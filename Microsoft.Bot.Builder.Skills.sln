@@ -174,6 +174,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Webex", "libraries\Adapters\Microsoft.Bot.Builder.Adapters.Webex\Microsoft.Bot.Builder.Adapters.Webex.csproj", "{06814D5B-D38A-4034-B16A-AF6A6EE70033}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Testing", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.csproj", "{2B6FFAE1-DC38-4423-8DAA-E2CCFD8CFD9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -694,6 +696,14 @@ Global
 		{06814D5B-D38A-4034-B16A-AF6A6EE70033}.Release|Any CPU.Build.0 = Release|Any CPU
 		{06814D5B-D38A-4034-B16A-AF6A6EE70033}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{06814D5B-D38A-4034-B16A-AF6A6EE70033}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{2B6FFAE1-DC38-4423-8DAA-E2CCFD8CFD9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B6FFAE1-DC38-4423-8DAA-E2CCFD8CFD9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B6FFAE1-DC38-4423-8DAA-E2CCFD8CFD9D}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B6FFAE1-DC38-4423-8DAA-E2CCFD8CFD9D}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{2B6FFAE1-DC38-4423-8DAA-E2CCFD8CFD9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B6FFAE1-DC38-4423-8DAA-E2CCFD8CFD9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B6FFAE1-DC38-4423-8DAA-E2CCFD8CFD9D}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{2B6FFAE1-DC38-4423-8DAA-E2CCFD8CFD9D}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -771,6 +781,7 @@ Global
 		{A683D69E-09A9-4EB2-BC5E-25289E5BE497} = {BBF61C4E-139D-4071-8EA0-5070D9CE38BD}
 		{EF02BC70-E3C5-49A6-8AD7-0C8DE116C00B} = {BBF61C4E-139D-4071-8EA0-5070D9CE38BD}
 		{06814D5B-D38A-4034-B16A-AF6A6EE70033} = {BBF61C4E-139D-4071-8EA0-5070D9CE38BD}
+		{2B6FFAE1-DC38-4423-8DAA-E2CCFD8CFD9D} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
