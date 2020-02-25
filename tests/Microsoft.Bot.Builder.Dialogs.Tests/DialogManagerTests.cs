@@ -41,6 +41,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public async Task DialogManager_AlternateProperty()
+        {
+            var firstConversationId = Guid.NewGuid().ToString();
+            var storage = new MemoryStorage();
+
+            var adaptiveDialog = CreateTestDialog(property: "conversation.name");
+
+            await CreateFlow(adaptiveDialog, storage, firstConversationId, dialogStateProperty: "dialogState")
+            .Send("hi")
+                .AssertReply("Hello, what is your name?")
+            .Send("Carlos")
+                .AssertReply("Hello Carlos, nice to meet you!")
+            .Send("hi")
+                .AssertReply("Hello Carlos, nice to meet you!")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task DialogManager_ConversationState_ClearedAcrossConversations()
         {
             var firstConversationId = Guid.NewGuid().ToString();
@@ -186,7 +204,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             return new AskForNameDialog(property.Replace(".", string.Empty), property);
         }
 
-        private TestFlow CreateFlow(Dialog dialog, IStorage storage, string conversationId)
+        private TestFlow CreateFlow(Dialog dialog, IStorage storage, string conversationId, string dialogStateProperty = null)
         {
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
@@ -197,7 +215,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .UseState(userState, convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
-            DialogManager dm = new DialogManager(dialog);
+            DialogManager dm = new DialogManager(dialog, dialogStateProperty: dialogStateProperty);
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);

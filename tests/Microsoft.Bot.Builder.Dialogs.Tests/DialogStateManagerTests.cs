@@ -355,9 +355,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     dc.GetState().RemoveValue("user");
                     Assert.Fail("Should have thrown with known root memory scope");
                 }
-                catch (ArgumentNullException err)
+                catch (NotSupportedException err)
                 {
-                    Assert.IsTrue(err.Message.Contains("cannot be null"));
                 }
 
                 try
@@ -365,9 +364,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     dc.GetState().RemoveValue("xxx");
                     Assert.Fail("Should have thrown with unknown memory scope");
                 }
-                catch (ArgumentOutOfRangeException err)
+                catch (NotSupportedException err)
                 {
-                    Assert.IsTrue(err.Message.Contains("does not match memory scope"));
                 }
             }).StartTestAsync();
         }

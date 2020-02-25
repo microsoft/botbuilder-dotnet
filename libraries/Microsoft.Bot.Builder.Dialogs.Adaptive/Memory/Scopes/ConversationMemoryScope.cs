@@ -17,9 +17,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// Initializes a new instance of the <see cref="ConversationMemoryScope"/> class.
         /// Create new ConversationMemoryScope bound to ConversationState.
         /// </summary>
-        /// <param name="propertyName">alterative property for conversation memory scope to be stored under.</param>
-        public ConversationMemoryScope(string propertyName = null)
-            : base(ScopePath.CONVERSATION, propertyName)
+        public ConversationMemoryScope()
+            : base(ScopePath.CONVERSATION)
         {
         }
     }
