@@ -1308,7 +1308,7 @@ namespace Microsoft.Bot.Builder
             var appId = GetBotAppId(turnContext);
 
             var clientKey = $"{appId}:{oAuthAppCredentials?.MicrosoftAppId}";
-            var oAuthScope = turnContext.TurnState.Get<string>(OAuthScopeKey);
+            var oAuthScope = GetBotFrameworkOAuthScope();
 
             var appCredentials = oAuthAppCredentials ?? await GetAppCredentialsAsync(appId, oAuthScope).ConfigureAwait(false);
 
