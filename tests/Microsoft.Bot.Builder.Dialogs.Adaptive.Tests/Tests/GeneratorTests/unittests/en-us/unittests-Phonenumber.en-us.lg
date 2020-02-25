@@ -1,11 +1,11 @@
 # AskPhonenumber
-- @{askString('Phonenumber')}
+- ${askString('Phonenumber')}
 
 # PhonenumberName
 - phonenumber
 
 # Phonenumber(val)
-- @{PhonenumberEntity(val)}
+- ${PhonenumberEntity(val)}
 
 [unittests-PhonenumberEntity.lg](unittests-PhonenumberEntity.lg)
 

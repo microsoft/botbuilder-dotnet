@@ -7,7 +7,7 @@
     "actions": [
         {
             "$kind": "Microsoft.Ask",
-            "activity": "@{AskDimension()}",
+            "activity": "${AskDimension()}",
             "expectedProperties": [
                 "Dimension"
             ]

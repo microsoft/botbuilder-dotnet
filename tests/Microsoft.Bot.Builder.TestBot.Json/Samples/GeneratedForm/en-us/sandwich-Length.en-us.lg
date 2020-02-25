@@ -1,5 +1,5 @@
 # AskLength
-- @{askString('Length')}
+- ${askString('Length')}
 
 # LengthName
 - length

@@ -15,6 +15,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -60,13 +61,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {
                             Actions = new List<Dialog>()
                             {
-                                new SendActivity("You said '@{turn.activity.text}'"),
+                                new SendActivity("You said '${turn.activity.text}'"),
                                 new TextInput()
                                 {
                                     Prompt = new ActivityTemplate("Enter age"),
                                     Property = "$age"
                                 },
-                                new SendActivity("You said @{$age}")
+                                new SendActivity("You said ${$age}")
                             }
                         }
                     }
@@ -100,9 +101,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
     public class CustomRecognizer : Recognizer, IRecognizer
     {
-        public override Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
+        public override Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default)
         {
-            return this.RecognizeAsync(dialogContext.Context, cancellationToken);
+            return this.RecognizeAsync(new TurnContext(dialogContext.Context.Adapter, activity), cancellationToken);
         }
 
         public Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)

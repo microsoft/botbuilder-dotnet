@@ -7,7 +7,7 @@
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "@{setObjectPropertyMessage('Age', concat(string(@age.number), ' ', @age.units))}"
+            "activity": "${setObjectPropertyMessage('Age', concat(string(@age.number), ' ', @age.units))}"
         }, 
         {
             "$kind": "Microsoft.SetProperty",

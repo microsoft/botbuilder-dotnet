@@ -7,7 +7,7 @@
     "actions": [
         {
             "$kind": "Microsoft.Ask",
-            "activity": "@{cancel()}",
+            "activity": "${cancel()}",
             "expectedProperties": [
                 "CancelConfirmation"                    
             ]           

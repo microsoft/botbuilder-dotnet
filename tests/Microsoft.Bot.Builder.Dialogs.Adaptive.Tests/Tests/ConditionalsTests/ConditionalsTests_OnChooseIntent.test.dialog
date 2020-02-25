@@ -12,7 +12,7 @@
                     "id": "x",
                     "intents": [
                         {
-                            "intent": "DeferToRecognizer_y",
+                            "intent": "x",
                             "pattern": "test"
                         },
                         {
@@ -26,7 +26,7 @@
                     "id": "y",
                     "intents": [
                         {
-                            "intent": "DeferToRecognizer_z",
+                            "intent": "y",
                             "pattern": "test"
                         },
                         {
@@ -40,7 +40,7 @@
                     "id": "z",
                     "intents": [
                         {
-                            "intent": "DeferToRecognizer_x",
+                            "intent": "z",
                             "pattern": "test"
                         },
                         {
@@ -65,14 +65,26 @@
             {
                 "$kind": "Microsoft.OnChooseIntent",
                 "intents": [
-                    "DeferToRecognizer_x",
-                    "DeferToRecognizer_y",
-                    "DeferToRecognizer_z"
+                    "x",
+                    "y"
                 ],
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "ChooseIntent"
+                        "activity": "ChooseIntent:x,y"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnChooseIntent",
+                "intents": [
+                    "x",
+                    "z"
+                ],
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ChooseIntent:x,z"
                     }
                 ]
             },
@@ -85,9 +97,17 @@
                 ],
                 "actions": [
                     {
-                        "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "false",
-                        "description": "This should not trigger on x,y,z"
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ChooseIntent:x,y,z"
+                    },
+                    {
+                        "$kind": "Microsoft.EmitEvent",
+                        "eventName": "recognizedIntent",
+                        "eventValue": "=turn.dialogEvent.value.candidates[1].result"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "emit done"
                     }
                 ]
             },
@@ -97,7 +117,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Intent:@{turn.recognized.intent}"
+                        "activity": "Intent:x"
                     }
                 ]
             },
@@ -107,7 +127,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Intent:@{turn.recognized.intent}"
+                        "activity": "Intent:y"
                     }
                 ]
             },
@@ -117,7 +137,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Intent:@{turn.recognized.intent}"
+                        "activity": "Intent:z"
                     }
                 ]
             },
@@ -126,7 +146,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "UnknownIntent:@{turn.recognized.intent}"
+                        "activity": "UnknownIntent:${turn.recognized.intent}"
                     }
                 ]
             }
@@ -173,7 +193,15 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "ChooseIntent"
+            "text": "ChooseIntent:x,y,z"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Intent:y"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "emit done"
         }
     ]
 }

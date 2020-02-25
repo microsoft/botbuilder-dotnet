@@ -10,9 +10,9 @@
     }
   ],
   "tap": {
-    "type": "@{type}",
-    "title": "@{title}",
-    "text": "@{title}",
-    "value": "@{value}"
+    "type": "${type}",
+    "title": "${title}",
+    "text": "${title}",
+    "value": "${value}"
   }
 }

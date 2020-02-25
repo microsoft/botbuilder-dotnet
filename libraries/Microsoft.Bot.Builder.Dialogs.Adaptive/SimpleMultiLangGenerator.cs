@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.LanguageGeneration;
-using Microsoft.Bot.Expressions.Properties;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {

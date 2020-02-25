@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -10,8 +11,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.TraceExtensions;
-using Microsoft.Bot.Expressions.Properties;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -119,6 +120,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("method")]
         public HttpMethod Method { get; set; }
+
+        /// <summary>
+        /// Gets or sets the content type for the body of the http operation.
+        /// </summary>
+        /// <value>Content type such as "application/json" or "test/plain".  Default is "application/json".</value>
+        [DefaultValue("application/json")]
+        [JsonProperty("contentType")]
+        public StringExpression ContentType { get; set; } = "application/json";
 
         /// <summary>
         /// Gets or sets the Url.
@@ -229,6 +238,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             traceInfo.request.url = instanceUrl;
 
             HttpResponseMessage response = null;
+            string contentType = ContentType?.GetValue(dcState) ?? "application/json";
 
             switch (this.Method)
             {
@@ -239,7 +249,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     }
                     else
                     {
-                        var postContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
+                        var postContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
                         traceInfo.request.content = instanceBody.ToString();
                         traceInfo.request.headers = JObject.FromObject(postContent?.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
                         response = await client.PostAsync(instanceUrl, postContent);
@@ -256,7 +266,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     else
                     {
                         var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
-                        request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
+                        request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
                         traceInfo.request.content = instanceBody.ToString();
                         traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
                         response = await client.SendAsync(request);
@@ -271,7 +281,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     }
                     else
                     {
-                        var putContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
+                        var putContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
                         traceInfo.request.content = instanceBody.ToString();
                         traceInfo.request.headers = JObject.FromObject(putContent.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
                         response = await client.PutAsync(instanceUrl, putContent);

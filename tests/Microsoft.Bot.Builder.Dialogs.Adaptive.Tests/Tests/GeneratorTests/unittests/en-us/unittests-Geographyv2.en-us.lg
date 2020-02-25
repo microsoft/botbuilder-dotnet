@@ -1,5 +1,5 @@
 # AskGeographyv2
-- @{askString('Geographyv2')}
+- ${askString('Geographyv2')}
 
 # Geographyv2Name
 - geographyv2

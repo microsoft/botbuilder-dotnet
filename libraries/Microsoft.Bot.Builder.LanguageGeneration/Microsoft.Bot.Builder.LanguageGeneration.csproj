@@ -36,16 +36,16 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" >
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" >
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
-    <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(IsBuildServer)' != '' " Version="$(PreviewPackageVersion)" />
+    <PackageReference Include="AdaptiveExpressions" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
+    <PackageReference Include="AdaptiveExpressions" Condition=" '$(IsBuildServer)' != '' " Version="$(PreviewPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Bot.Expressions\Microsoft.Bot.Expressions.csproj" />
+    <ProjectReference Include="..\AdaptiveExpressions\AdaptiveExpressions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

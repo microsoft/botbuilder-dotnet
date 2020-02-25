@@ -20,11 +20,11 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class DialogContext
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DialogContext"/> class from Turn context.
+        /// Initializes a new instance of the <see cref="DialogContext"/> class from the turn context.
         /// </summary>
-        /// <param name="dialogs">dialogset.</param>
-        /// <param name="turnContext">turn context.</param>
-        /// <param name="state">dialogState.</param>
+        /// <param name="dialogs">The dialog set to create the dialog context for.</param>
+        /// <param name="turnContext">The current turn context.</param>
+        /// <param name="state">The state property from which to retrieve the dialog context.</param>
         public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state)
         {
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
@@ -172,7 +172,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         /// <summary>
         /// Helper function to simplify formatting the options for calling a prompt dialog. This helper will
-        /// take a `PromptOptions` argument and then call[begin(context, dialogId, options)](#begin).
+        /// take an <paramref name="options"/> argument and then call
+        /// <see cref="BeginDialogAsync(string, object, CancellationToken)"/>.
         /// </summary>
         /// <param name="dialogId">ID of the prompt dialog to start.</param>
         /// <param name="options">Information to pass to the prompt dialog being started.</param>
@@ -246,13 +247,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Ends a dialog by popping it off the stack and returns an optional result to the dialogs
-        /// parent.The parent dialog is the dialog the started the on being ended via a call to
-        /// either[begin()](#begin) or [prompt()](#prompt).
-        /// The parent dialog will have its `Dialog.resume()` method invoked with any returned
-        /// result. If the parent dialog hasn't implemented a `resume()` method then it will be
-        /// automatically ended as well and the result passed to its parent. If there are no more
-        /// parent dialogs on the stack then processing of the turn will end.
+        /// Ends a dialog by popping it off the stack and returns an optional result to the dialog's
+        /// parent. The parent dialog is the dialog the started the on being ended via a call to
+        /// either <see cref="BeginDialogAsync(string, object, CancellationToken)"/> or
+        /// <see cref="PromptAsync(string, PromptOptions, CancellationToken)"/>. The parent dialog
+        /// will have its <see cref="Dialog.ResumeDialogAsync(DialogContext, DialogReason, object, CancellationToken)"/>
+        /// method invoked with any returned result. If the parent dialog hasn't implemented a `ResumeDialogAsync`
+        /// method, then it will be automatically ended as well and the result passed to its parent.
+        /// If there are no more parent dialogs on the stack then processing of the turn will end.
         /// </summary>
         /// <param name="result">Optional, result to pass to the parent context.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
@@ -264,7 +266,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// In general, the parent context is the dialog or bot turn handler that started the dialog.
         /// If the parent is a dialog, the stack calls the parent's
         /// <see cref="Dialog.ResumeDialogAsync(DialogContext, DialogReason, object, CancellationToken)"/> method to
-        /// return a result to the parent dialog. If the parent dialog does not implement `ResumeDialogAsyn`,
+        /// return a result to the parent dialog. If the parent dialog does not implement `ResumeDialogAsync`,
         /// then the parent will end, too, and the result passed to the next parent context.
         ///
         /// The returned <see cref="DialogTurnResult"/> contains the return value in its
@@ -304,7 +306,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Deletes any existing dialog stack thus cancelling all dialogs on the stack.
+        /// Deletes any existing dialog stack thus canceling all dialogs on the stack.
         /// </summary>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -325,9 +327,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Deletes any existing dialog stack thus cancelling all dialogs on the stack.
+        /// Deletes any existing dialog stack thus canceling all dialogs on the stack.
         /// </summary>
-        /// <param name="cancelParents">If true the cancelation will bubble up through any parent dialogs as well.</param>
+        /// <param name="cancelParents">If true the cancellation will bubble up through any parent dialogs as well.</param>
         /// <param name="eventName">The event.</param>
         /// <param name="eventValue">The event value.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects

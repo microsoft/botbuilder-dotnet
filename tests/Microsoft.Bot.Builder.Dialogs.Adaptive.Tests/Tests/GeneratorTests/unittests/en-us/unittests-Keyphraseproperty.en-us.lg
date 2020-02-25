@@ -1,11 +1,11 @@
 # AskKeyphraseproperty
-- @{askString('Keyphraseproperty')}
+- ${askString('Keyphraseproperty')}
 
 # KeyphrasepropertyName
 - keyphraseproperty
 
 # Keyphraseproperty(val)
-- @{KeyphrasepropertyEntity(val)}
+- ${KeyphrasepropertyEntity(val)}
 
 [unittests-KeyphrasepropertyEntity.lg](unittests-KeyphrasepropertyEntity.lg)
 

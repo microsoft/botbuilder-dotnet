@@ -6,7 +6,7 @@
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "@{textProperty(@PropertyName)}"           
+            "activity": "${textProperty(@PropertyName)}"           
         },
         {
             "$kind": "Microsoft.SetProperty",
@@ -15,7 +15,7 @@
         },
         {
             "$kind": "Microsoft.Ask",
-            "activity": "@{confirmChangeProperty(@PropertyName)}",
+            "activity": "${confirmChangeProperty(@PropertyName)}",
             "expectedProperties": [
                 "ChangePropertyConfirmation"
             ]

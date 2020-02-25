@@ -16,11 +16,11 @@
                         "validations": [
                             "this.value.Length > 3"
                         ],
-                        "outputFormat": "@{toUpper(this.value)}"
+                        "outputFormat": "${toUpper(this.value)}"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Hello @{user.name}, nice to meet you!"
+                        "activity": "Hello ${user.name}, nice to meet you!"
                     },
                     {
                         "$kind": "Microsoft.TextInput",
@@ -34,7 +34,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Hello @{user.name}, nice to meet you!"
+                        "activity": "Hello ${user.name}, nice to meet you!"
                     }
                 ]
             }

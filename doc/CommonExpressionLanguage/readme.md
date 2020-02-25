@@ -36,7 +36,7 @@ See [here](./api-reference.md) for API reference.
 |{}	        |Used to denote a variable in template expansion. E.g. {myVariable}	                        |N/A                                |
 |()	        |Enforces precedence order and groups sub expressions into larger expressions. E.g. (A+B)*C	|N/A                                |
 |.	        |Property selector. E.g. myObject.Property1	                                                |N/A                                |
-|@{}	    |Used to denote parts of a multi-line value that requires evaluation	                    |N/A                                |
+|${}	    |Used to denote parts of a multi-line value that requires evaluation	                    |N/A                                |
 |\	        |Escape character for templates, expressions.                                               |N/A                                |
 |@entityName|Short hand notation that expands to turn.entities.entityName                               |N/A                                |
 |$propertyName|Short hand notation that expands to dialog.result.property                               |N/A                                |

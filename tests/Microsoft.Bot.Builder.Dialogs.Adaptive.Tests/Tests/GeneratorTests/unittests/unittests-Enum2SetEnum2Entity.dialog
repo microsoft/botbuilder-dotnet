@@ -7,7 +7,7 @@
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "@{setPropertyMessage('Enum2', @Enum2Entity)}"
+            "activity": "${setPropertyMessage('Enum2', @Enum2Entity)}"
         },    
         {
             "$kind": "Microsoft.SetProperty",

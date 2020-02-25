@@ -7,7 +7,7 @@
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "@{setObjectPropertyMessage('Geographyv2', concat(@geographyV2.type, ' ', @geographyV2.location))}"
+            "activity": "${setObjectPropertyMessage('Geographyv2', concat(@geographyV2.type, ' ', @geographyV2.location))}"
         }, 
         {
             "$kind": "Microsoft.SetProperty",

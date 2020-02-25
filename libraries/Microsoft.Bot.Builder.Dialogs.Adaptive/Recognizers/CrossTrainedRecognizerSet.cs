@@ -4,12 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Antlr4.Runtime;
 using Microsoft.Bot.Schema;
-using Microsoft.Recognizers.Text.NumberWithUnit;
+using Microsoft.Bot.Streaming.Payloads;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -67,21 +65,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         [JsonProperty("recognizers")]
         public List<Recognizer> Recognizers { get; set; } = new List<Recognizer>();
 
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
-        {
-            if (dialogContext == null)
-            {
-                throw new ArgumentNullException(nameof(dialogContext));
-            }
-
-            EnsureRecognizerIds();
-
-            // run all of the recognizers in parallel
-            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, cancellationToken)));
-
-            return ProcessResults(results);
-        }
-
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default)
         {
             if (dialogContext == null)
@@ -97,124 +80,133 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             EnsureRecognizerIds();
 
             // run all of the recognizers in parallel
-            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, activity, cancellationToken)));
+            var results = await Task.WhenAll(Recognizers.Select(async recognizer =>
+            {
+                var result = await recognizer.RecognizeAsync(dialogContext, activity, cancellationToken).ConfigureAwait(false);
+                result.Properties["id"] = recognizer.Id;
+                return result;
+            }));
 
             return ProcessResults(results);
         }
 
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale = null, CancellationToken cancellationToken = default)
-        {
-            if (dialogContext == null)
-            {
-                throw new ArgumentNullException(nameof(dialogContext));
-            }
-
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
-
-            EnsureRecognizerIds();
-
-            // run all of the recognizers in parallel
-            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, text, locale, cancellationToken)));
-
-            return ProcessResults(results);
-        }
-
-        private RecognizerResult ProcessResults(RecognizerResult[] results)
+        private RecognizerResult ProcessResults(IEnumerable<RecognizerResult> results)
         {
             // put results into a dictionary for easier lookup while processing.
-            var recognizerResults = new Dictionary<string, RecognizerResult>(System.StringComparer.OrdinalIgnoreCase);
-            var intents = new Dictionary<string, string>(System.StringComparer.OrdinalIgnoreCase);
-            
-            string text = string.Empty;
-            for (int iRecognizer = 0; iRecognizer < Recognizers.Count; iRecognizer++)
-            {
-                var recognizer = Recognizers[iRecognizer];
-                var result = results[iRecognizer];
-                recognizerResults[recognizer.Id] = result;
-                var (topIntent, score) = result.GetTopScoringIntent();
-                intents[recognizer.Id] = topIntent;
-                text = result.Text ?? string.Empty;
-            }
+            var recognizerResults = results.ToDictionary(result => (string)result.Properties["id"], System.StringComparer.OrdinalIgnoreCase);
+            var intents = results.ToDictionary(result => (string)result.Properties["id"], result => result.GetTopScoringIntent().intent, System.StringComparer.OrdinalIgnoreCase);
 
             // this is the consensusRecognizer to use
             string consensusRecognizerId = null;
             foreach (var recognizer in Recognizers)
             {
+                var recognizerId = recognizer.Id;
                 var intent = intents[recognizer.Id];
 
-                if (!IsRedirect(intent))
+                if (IsRedirect(intent))
                 {
-                    // we have a real intent and it's the first one we found.
-                    if (consensusRecognizerId == null)
+                    // follow redirect and see where it takes us
+                    recognizerId = GetRedirectId(intent);
+                    intent = intents[recognizerId];
+                    while (recognizerId != recognizer.Id && IsRedirect(intent))
                     {
-                        consensusRecognizerId = recognizer.Id;
+                        recognizerId = GetRedirectId(intent);
+                        intent = intents[recognizerId];
                     }
-                    else
-                    {
-                        // we have a second recognizer with an intent
 
-                        // if one of them is None intent, then go with the other one.
-                        if (intent == NoneIntent)
+                    // if we ended up back at the recognizer.id and we have no consensensus then it's a none intent
+                    if (recognizerId == recognizer.Id && consensusRecognizerId == null)
+                    {
+                        // circular redirects, just return a none intent
+                        return new RecognizerResult()
                         {
-                            // then we are fine with the one we have, just ignore this one
-                            continue;
-                        }
-                        else if (intents[consensusRecognizerId] == "None")
-                        {
-                            // then we can drop the old one and go with the new one instead
-                            consensusRecognizerId = recognizer.Id;
-                        }
-                        else
-                        {
-                            // ambigious because of 2 real intents, and neither are None so return AmbigiousIntent
-                            return CreateChooseIntentResult(text, recognizerResults);
-                        }
+                            Text = recognizerResults[recognizer.Id].Text,
+                            Intents = new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } }
+                        };
+                    }
+                }
+
+                // we have a real intent and it's the first one we found.
+                if (consensusRecognizerId == null)
+                {
+                    if (intent != NoneIntent)
+                    {
+                        consensusRecognizerId = recognizerId;
                     }
                 }
                 else
                 {
-                    // get the redirectId and redirectIntent 
-                    var redirectId = GetRedirectId(intent);
-                    var redirectIntent = intents[redirectId];
+                    // we have a second recognizer result which is either none or real
 
-                    // if the redirectIntent is itself a redirect, then we have double redirect which means disagreement.
-                    if (IsRedirect(redirectIntent))
+                    // if one of them is None intent, then go with the other one.
+                    if (intent == NoneIntent)
                     {
-                        // we have ambiguity, return AmbigiousIntent
-                        return CreateChooseIntentResult(text, recognizerResults);
+                        // then we are fine with the one we have, just ignore this one
+                        continue;
+                    }
+                    else if (recognizerId == consensusRecognizerId)
+                    {
+                        // this is more consensus for this recgonizer
+                        continue;
+                    }
+                    else
+                    {
+                        // ambigious because we have 2 or more real intents, so return ChooseIntent
+                        return CreateChooseIntentResult(recognizerResults);
                     }
                 }
             }
 
             // we have consensus for consensusRecognizer, return the results of that recognizer as the result.
-            return recognizerResults[consensusRecognizerId];
-        }
-
-        private RecognizerResult CreateChooseIntentResult(string text, Dictionary<string, RecognizerResult> recognizerResults)
-        {
-            // create IntentScore with { "recognizerId" : { ...RecognizerResult.. } }
-            var chooseIntentResult = new IntentScore()
+            if (consensusRecognizerId != null)
             {
-                Score = 0.5F
-            };
-
-            var intents = new JObject();
-            foreach (var recognizerResult in recognizerResults.Values)
-            {
-                var (topIntent, score) = recognizerResult.GetTopScoringIntent();
-                chooseIntentResult.Properties[topIntent] = recognizerResult;
+                return recognizerResults[consensusRecognizerId];
             }
 
+            // return none.
+            return new RecognizerResult()
+            {
+                Text = recognizerResults.Values.First().Text,
+                Intents = new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } }
+            };
+        }
+
+        private RecognizerResult CreateChooseIntentResult(Dictionary<string, RecognizerResult> recognizerResults)
+        {
+            string text = null;
+            List<JObject> candidates = new List<JObject>();
+
+            foreach (var recognizerResult in recognizerResults)
+            {
+                text = recognizerResult.Value.Text;
+                var (intent, score) = recognizerResult.Value.GetTopScoringIntent();
+                if (!IsRedirect(intent) && intent != NoneIntent)
+                {
+                    dynamic candidate = new JObject();
+                    candidate.id = recognizerResult.Key;
+                    candidate.intent = intent;
+                    candidate.score = score;
+                    candidate.result = JObject.FromObject(recognizerResult.Value);
+                    candidates.Add(candidate);
+                }
+            }
+
+            if (candidates.Any())
+            {
+                // return ChooseIntent with Candidtes array
+                return new RecognizerResult()
+                {
+                    Text = text,
+                    Intents = new Dictionary<string, IntentScore>() { { ChooseIntent, new IntentScore() { Score = 1.0 } } },
+                    Properties = new Dictionary<string, object>() { { "candidates", candidates } },
+                };
+            }
+
+            // just return a none intent
             return new RecognizerResult()
             {
                 Text = text,
-                Intents = new Dictionary<string, IntentScore>()
-                {
-                    { ChooseIntent, (IntentScore)chooseIntentResult }
-                }
+                Intents = new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } }
             };
         }
 

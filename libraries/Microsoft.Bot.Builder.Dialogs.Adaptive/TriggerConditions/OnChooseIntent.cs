@@ -4,8 +4,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using AdaptiveExpressions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             // add constraints for the intents property if set
             if (this.Intents?.Any() == true)
             {
-                var constraints = this.Intents.Select(subIntent => Expression.Parse($"{TurnPath.RECOGNIZED}.intents.chooseintent.{subIntent} != null"));
+                var constraints = this.Intents.Select(subIntent => Expression.Parse($"contains(jPath({TurnPath.RECOGNIZED}, '$.candidates[*].intent'), '{subIntent}')"));
                 return Expression.AndExpression(base.GetExpression(), Expression.AndExpression(constraints.ToArray()));
             }
 

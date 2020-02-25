@@ -11,7 +11,6 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -32,6 +31,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adaptiveDialog = CreateTestDialog(property: "conversation.name");
 
             await CreateFlow(adaptiveDialog, storage, firstConversationId)
+            .Send("hi")
+                .AssertReply("Hello, what is your name?")
+            .Send("Carlos")
+                .AssertReply("Hello Carlos, nice to meet you!")
+            .Send("hi")
+                .AssertReply("Hello Carlos, nice to meet you!")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task DialogManager_AlternateProperty()
+        {
+            var firstConversationId = Guid.NewGuid().ToString();
+            var storage = new MemoryStorage();
+
+            var adaptiveDialog = CreateTestDialog(property: "conversation.name");
+
+            await CreateFlow(adaptiveDialog, storage, firstConversationId, dialogStateProperty: "dialogState")
             .Send("hi")
                 .AssertReply("Hello, what is your name?")
             .Send("Carlos")
@@ -187,7 +204,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             return new AskForNameDialog(property.Replace(".", string.Empty), property);
         }
 
-        private TestFlow CreateFlow(Dialog dialog, IStorage storage, string conversationId)
+        private TestFlow CreateFlow(Dialog dialog, IStorage storage, string conversationId, string dialogStateProperty = null)
         {
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
@@ -198,7 +215,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .UseState(userState, convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
-            DialogManager dm = new DialogManager(dialog);
+            DialogManager dm = new DialogManager(dialog, dialogStateProperty: dialogStateProperty);
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);

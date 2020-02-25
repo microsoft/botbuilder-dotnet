@@ -37,7 +37,7 @@
         "GetDisplayMeetings",
         {
           "$kind": "Microsoft.SendActivity",
-          "activity": "@{ShowMeetingSummaryResponse(user)}"
+          "activity": "${ShowMeetingSummaryResponse(user)}"
         },
         {
           "$kind": "Microsoft.IfCondition",
@@ -46,11 +46,11 @@
             // Bug: Choice input cannot accept expression as value
             {
               "$kind": "Microsoft.SendActivity",
-              "activity": "@{ShowMeetingList(user)}"
+              "activity": "${ShowMeetingList(user)}"
             },
             {
               "$kind": "Microsoft.TextInput",
-              "prompt": "@{ChooseReadMeetingList(user)}",
+              "prompt": "${ChooseReadMeetingList(user)}",
               "property": "dialog.choice"
             },
             // Question: how to use SwitchCondition
@@ -94,11 +94,11 @@
             // Read focused meeting
             {
               "$kind": "Microsoft.SendActivity",
-              "activity": "@{ReadFocusedMeeting(user)}"
+              "activity": "${ReadFocusedMeeting(user)}"
             },
             {
               "$kind": "Microsoft.SendActivity",
-              "activity": "@{ShowMeetingCard(user.focusedMeeting)}"
+              "activity": "${ShowMeetingCard(user.focusedMeeting)}"
             },
             {
               "$kind": "Microsoft.ConfirmInput",

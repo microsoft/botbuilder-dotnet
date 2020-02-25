@@ -21,23 +21,18 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Skills;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
     public class TestBot : ActivityHandler
     {
-        private readonly SkillConversationIdFactoryBase _conversationIdFactory;
-        private readonly BotFrameworkClient _skillClient;
         private IStatePropertyAccessor<DialogState> dialogStateAccessor;
         private DialogManager dialogManager;
         private readonly ResourceExplorer resourceExplorer;
 
-        public TestBot(ConversationState conversationState, ResourceExplorer resourceExplorer, BotFrameworkClient skillClient, SkillConversationIdFactoryBase conversationIdFactory)
+        public TestBot(ConversationState conversationState, ResourceExplorer resourceExplorer)
         {
-            HostContext.Current.Set(skillClient);
-            HostContext.Current.Set(conversationIdFactory);
             this.dialogStateAccessor = conversationState.CreateProperty<DialogState>("RootDialogState");
             this.resourceExplorer = resourceExplorer;
 
@@ -61,71 +56,73 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         {
             System.Diagnostics.Trace.TraceInformation("Loading resources...");
 
-            var rootDialog = resourceExplorer.LoadType<Dialog>("BeginSkillDialog.main.dialog");
+            var rootDialog = new AdaptiveDialog()
+            {
+                AutoEndDialog = false,
+            };
+            var choiceInput = new ChoiceInput()
+            {
+                Prompt = new ActivityTemplate("What declarative sample do you want to run?"),
+                Property = "conversation.dialogChoice",
+                AlwaysPrompt = true,
+                Choices = new ChoiceSet(new List<Choice>())
+            };
 
-            //var choiceInput = new ChoiceInput()
-            //{
-            //    Prompt = new ActivityTemplate("What declarative sample do you want to run?"),
-            //    Property = "conversation.dialogChoice",
-            //    AlwaysPrompt = true,
-            //    Choices = new ChoiceSet(new List<Choice>())
-            //};
+            var handleChoice = new SwitchCondition()
+            {
+                Condition = "conversation.dialogChoice",
+                Cases = new List<Case>()
+            };
 
-            //var handleChoice = new SwitchCondition()
-            //{
-            //    Condition = "conversation.dialogChoice",
-            //    Cases = new List<Case>()
-            //};
+            Dialog lastDialog = null;
+            var choices = new ChoiceSet();
 
-            //Dialog lastDialog = null;
-            //var choices = new ChoiceSet();
+            foreach (var resource in this.resourceExplorer.GetResources(".dialog").Where(r => r.Id.EndsWith(".main.dialog")))
+            {
+                try
+                {
+                    var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
+                    choices.Add(new Choice(name));
+                    var dialog = resourceExplorer.LoadType<Dialog>(resource);
+                    lastDialog = dialog;
+                    handleChoice.Cases.Add(new Case($"{name}", new List<Dialog>() { dialog }));
+                }
+                catch (SyntaxErrorException err)
+                {
+                    Trace.TraceError($"{err.Source}: Error: {err.Message}");
+                }
+                catch (Exception err)
+                {
+                    Trace.TraceError(err.Message);
+                }
+            }
 
-            //foreach (var resource in this.resourceExplorer.GetResources(".dialog").Where(r => r.Id.EndsWith(".main.dialog")))
-            //{
-            //    try
-            //    {
-            //        var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
-            //        choices.Add(new Choice(name));
-            //        var dialog = resourceExplorer.LoadType<Dialog>(resource);
-            //        lastDialog = dialog;
-            //        handleChoice.Cases.Add(new Case($"{name}", new List<Dialog>() { dialog }));
-            //    }
-            //    catch (SyntaxErrorException err)
-            //    {
-            //        Trace.TraceError($"{err.Source}: Error: {err.Message}");
-            //    }
-            //    catch (Exception err)
-            //    {
-            //        Trace.TraceError(err.Message);
-            //    }
-            //}
-
-            //if (handleChoice.Cases.Count() == 1)
-            //{
-            //    rootDialog.Triggers.Add(new OnBeginDialog()
-            //    {
-            //        Actions = new List<Dialog>()
-            //    {
-            //        lastDialog,
-            //        new RepeatDialog()
-            //    }
-            //    });
-            //}
-            //else
-            //{
-            //    choiceInput.Choices = choices;
-            //    choiceInput.Style = ListStyle.Auto;
-            //    rootDialog.Triggers.Add(new OnBeginDialog()
-            //    {
-            //        Actions = new List<Dialog>()
-            //    {
-            //        choiceInput,
-            //        new SendActivity("# Running @{conversation.dialogChoice}.main.dialog"),
-            //        handleChoice,
-            //        new RepeatDialog()
-            //    }
-            //    });
-            //}
+            if (handleChoice.Cases.Count() == 1)
+            {
+                rootDialog.Triggers.Add(new OnBeginDialog()
+                {
+                    Actions = new List<Dialog>()
+                {
+                    lastDialog,
+                    new RepeatDialog()
+                }
+                });
+            }
+            else
+            {
+                choiceInput.Choices = choices;
+                choiceInput.Style = ListStyle.Auto;
+                rootDialog.Triggers.Add(new OnBeginDialog()
+                {
+                    Actions = new List<Dialog>()
+                {
+                    choiceInput,
+                    new SendActivity("# Running ${conversation.dialogChoice}.main.dialog"),
+                    handleChoice,
+                    new RepeatDialog()
+                }
+                });
+            }
 
             this.dialogManager = new DialogManager(rootDialog)
                 .UseResourceExplorer(this.resourceExplorer)

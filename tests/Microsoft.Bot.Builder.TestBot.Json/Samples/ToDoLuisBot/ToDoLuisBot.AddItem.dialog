@@ -113,7 +113,7 @@
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "Successfully added @{dialog.item} to @{dialog.listName} list."
+                    "activity": "Successfully added ${dialog.item} to ${dialog.listName} list."
                 }
             ]
         }

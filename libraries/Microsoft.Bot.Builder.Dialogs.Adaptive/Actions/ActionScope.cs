@@ -42,6 +42,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
+        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // We're being continued after an interruption so just run next action
+            return await OnNextActionAsync(dc, null, cancellationToken).ConfigureAwait(false);
+        }
+
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
         {
             if (result is ActionScopeResult actionScopeResult)
@@ -49,17 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await OnActionScopeResultAsync(dc, actionScopeResult, cancellationToken).ConfigureAwait(false);
             }
 
-            var dcState = dc.GetState();
-
-            // When we are resumed, we increment our offset into the actions and being the next action
-            var nextOffset = dcState.GetIntValue(OFFSETKEY, 0) + 1;
-            if (nextOffset < this.Actions.Count)
-            {
-                return await this.BeginActionAsync(dc, nextOffset, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-
-            // else we fire the end of actions 
-            return await this.OnEndOfActionsAsync(dc, result, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await OnNextActionAsync(dc, result, cancellationToken).ConfigureAwait(false);
         }
 
         public virtual IEnumerable<Dialog> GetDependencies()
@@ -123,6 +119,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return await dc.EndDialogAsync(actionScopeResult, cancellationToken).ConfigureAwait(false);
         }
 
+        protected virtual async Task<DialogTurnResult> OnNextActionAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default)
+        {
+            // Check for any plan changes
+            var hasChanges = false;
+            var root = dc;
+            var parent = dc;
+            while (parent != null)
+            {
+                var sc = parent as SequenceContext;
+                if (sc != null && sc.Changes != null && sc.Changes.Count > 0)
+                {
+                    hasChanges = true;
+                }
+
+                root = parent;
+                parent = root.Parent;
+            }
+
+            // Apply any changes
+            if (hasChanges)
+            {
+                // Recursively call ContinueDialogAsync() to apply changes and continue execution.
+                return await root.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+            }
+
+            // Increment our offset into the actions and being the next action
+            var dcState = dc.GetState();
+            var nextOffset = dcState.GetIntValue(OFFSETKEY, 0) + 1;
+            if (nextOffset < this.Actions.Count)
+            {
+                return await this.BeginActionAsync(dc, nextOffset, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
+            // else we fire the end of actions
+            return await this.OnEndOfActionsAsync(dc, result, cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
+
         protected virtual async Task<DialogTurnResult> OnEndOfActionsAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default)
         {
             if (result is CancellationToken)
@@ -138,7 +171,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             // get the action for the offset
             var dcState = dc.GetState();
-            
+
             dcState.SetValue(OFFSETKEY, offset);
             var actionId = this.Actions[offset].Id;
 
