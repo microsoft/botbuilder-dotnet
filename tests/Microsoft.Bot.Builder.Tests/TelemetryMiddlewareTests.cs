@@ -40,15 +40,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             // Arrange
             var mockTelemetryClient = new Mock<IBotTelemetryClient>();
-            var conversationReference = new ConversationReference()
-            {
-                ChannelId = Channels.Test,
-                ServiceUrl = "https://test.com",
-                User = null,
-                Bot = new ChannelAccount("bot", "Bot"),
-                Conversation = new ConversationAccount(false, "convo1", "Conversation1"),
-            };
-            TestAdapter adapter = new TestAdapter(conversationReference)
+            TestAdapter adapter = new TestAdapter()
                 .Use(new TelemetryLoggerMiddleware(mockTelemetryClient.Object, logPersonalInformation: true));
             string conversationId = null;
 
