@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder
         {
             var properties = new Dictionary<string, string>()
                 {
-                    { TelemetryConstants.FromIdProperty, activity.From.Id },
+                    { TelemetryConstants.FromIdProperty, activity.From?.Id },
                     { TelemetryConstants.ConversationNameProperty, activity.Conversation.Name },
                     { TelemetryConstants.LocaleProperty, activity.Locale },
                     { TelemetryConstants.RecipientIdProperty, activity.Recipient.Id },
@@ -203,9 +203,9 @@ namespace Microsoft.Bot.Builder
             // Use the LogPersonalInformation flag to toggle logging PII data, text and user name are common examples
             if (LogPersonalInformation)
             {
-                if (!string.IsNullOrWhiteSpace(activity.From.Name))
+                if (!string.IsNullOrWhiteSpace(activity.From?.Name))
                 {
-                    properties.Add(TelemetryConstants.FromNameProperty, activity.From.Name);
+                    properties.Add(TelemetryConstants.FromNameProperty, activity.From?.Name);
                 }
 
                 if (!string.IsNullOrWhiteSpace(activity.Text))
