@@ -3103,15 +3103,37 @@ namespace AdaptiveExpressions
                     (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String, ReturnType.Boolean, ReturnType.Number, ReturnType.Object)),
                 new ExpressionEvaluator(
                     ExpressionType.LastIndexOf,
-                    Apply(
-                        args =>
+                    (expression, state) =>
+                    {
+                        object result = -1;
+                        var (args, error) = EvaluateChildren(expression, state);
+                        if (error == null)
                         {
-                            string rawStr = ParseStringOrNull(args[0]);
-                            string seekStr = ParseStringOrNull(args[1]);
-                            return rawStr.LastIndexOf(seekStr);
-                        }, VerifyStringOrNull),
+                            if (args[0] is string || args[0] == null)
+                            {
+                                if (args[1] is string || args[1] == null)
+                                {
+                                    result = ParseStringOrNull(args[0]).LastIndexOf(ParseStringOrNull(args[1]));
+                                }
+                                else
+                                {
+                                    error = $"Can only look for indexof string in {expression}";
+                                }
+                            }
+                            else if (TryParseList(args[0], out IList list))
+                            {
+                                result = ResolveListValue(list).OfType<object>().ToList().LastIndexOf(args[1]);
+                            }
+                            else
+                            {
+                                error = $"{expression} works only on string or list.";
+                            }
+                        }
+
+                        return (result, error);
+                    },
                     ReturnType.Number,
-                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
+                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String, ReturnType.Boolean, ReturnType.Number, ReturnType.Object)),
 
                 // Date and time
                 TimeTransform(ExpressionType.AddDays, (ts, add) => ts.AddDays(add)),
