@@ -51,6 +51,48 @@ namespace Microsoft.Bot.Builder.Teams
             }
         }
 
+        public static Task<TeamsPagedMembersResult> GetPagedTeamMembersAsync(ITurnContext turnContext, string teamId = null, string continuationToken = default(string), int? pageSize = default(int?), CancellationToken cancellationToken = default)
+        {
+            var t = teamId ?? turnContext.Activity.TeamsGetTeamInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
+            return GetPagedMembersAsync(GetConnectorClient(turnContext), t, continuationToken, cancellationToken, pageSize);
+        }
+
+        public static Task<TeamsPagedMembersResult> GetPagedMembersAsync(ITurnContext turnContext, int? pageSize = default(int?), string continuationToken = default(string), CancellationToken cancellationToken = default)
+        {
+            var teamInfo = turnContext.Activity.TeamsGetTeamInfo();
+
+            if (teamInfo?.Id != null)
+            {
+                return GetPagedTeamMembersAsync(turnContext, teamInfo.Id, continuationToken, pageSize, cancellationToken);
+            }
+            else
+            {
+                var conversationId = turnContext.Activity?.Conversation?.Id;
+                return GetPagedMembersAsync(GetConnectorClient(turnContext), conversationId, continuationToken, cancellationToken, pageSize);
+            }
+        }
+
+        public static Task<TeamsChannelAccount> GetTeamMemberAsync(ITurnContext turnContext, string userId, string teamId = null, CancellationToken cancellationToken = default)
+        {
+            var t = teamId ?? turnContext.Activity.TeamsGetTeamInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
+            return GetMemberAsync(GetConnectorClient(turnContext), userId, t, cancellationToken);
+        }
+
+        public static Task<TeamsChannelAccount> GetMemberAsync(ITurnContext turnContext, string userId, CancellationToken cancellationToken = default)
+        {
+            var teamInfo = turnContext.Activity.TeamsGetTeamInfo();
+
+            if (teamInfo?.Id != null)
+            {
+                return GetTeamMemberAsync(turnContext, userId, teamInfo.Id, cancellationToken);
+            }
+            else
+            {
+                var conversationId = turnContext.Activity?.Conversation?.Id;
+                return GetMemberAsync(GetConnectorClient(turnContext), userId, conversationId, cancellationToken);
+            }
+        }
+
         public static async Task<Tuple<ConversationReference, string>> SendMessageToTeamsChannelAsync(ITurnContext turnContext, IActivity activity, string teamsChannelId, MicrosoftAppCredentials credentials, CancellationToken cancellationToken = default)
         {
             if (turnContext == null)
@@ -109,6 +151,35 @@ namespace Microsoft.Bot.Builder.Teams
             var teamMembers = await connectorClient.Conversations.GetConversationMembersAsync(conversationId, cancellationToken).ConfigureAwait(false);
             var teamsChannelAccounts = teamMembers.Select(channelAccount => JObject.FromObject(channelAccount).ToObject<TeamsChannelAccount>());
             return teamsChannelAccounts;
+        }
+
+        private static async Task<TeamsChannelAccount> GetMemberAsync(IConnectorClient connectorClient, string userId, string conversationId, CancellationToken cancellationToken)
+        {
+            if (conversationId == null)
+            {
+                throw new InvalidOperationException("The GetMembers operation needs a valid conversation Id.");
+            }
+
+            if (userId == null)
+            {
+                throw new InvalidOperationException("The GetMembers operation needs a valid user Id.");
+            }
+
+            var teamMember = await connectorClient.Conversations.GetConversationMemberAsync(userId, conversationId, cancellationToken).ConfigureAwait(false);
+            var teamsChannelAccount = JObject.FromObject(teamMember).ToObject<TeamsChannelAccount>();
+            return teamsChannelAccount;
+        }
+
+        private static async Task<TeamsPagedMembersResult> GetPagedMembersAsync(IConnectorClient connectorClient, string conversationId, string continuationToken, CancellationToken cancellationToken, int? pageSize = default(int?))
+        {
+            if (conversationId == null)
+            {
+                throw new InvalidOperationException("The GetMembers operation needs a valid conversation Id.");
+            }
+
+            var pagedMemberResults = await connectorClient.Conversations.GetConversationPagedMembersAsync(conversationId, pageSize, continuationToken, cancellationToken).ConfigureAwait(false);
+            var teamsPagedMemberResults = new TeamsPagedMembersResult(pagedMemberResults.ContinuationToken, pagedMemberResults.Members);
+            return teamsPagedMemberResults;
         }
 
         private static IConnectorClient GetConnectorClient(ITurnContext turnContext)
