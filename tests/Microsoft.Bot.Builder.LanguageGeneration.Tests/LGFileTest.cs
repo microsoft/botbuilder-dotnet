@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AdaptiveExpressions;
 using AdaptiveExpressions.Memory;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -982,6 +983,25 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("${ErrrorTemplate()}"));
             Assert.IsTrue(exception.Message.Contains("it's not a built-in function or a customized function"));
+        }
+
+        [TestMethod]
+        public void TestCustomFunction()
+        {
+            var engine = new ExpressionEngine((string func) =>
+            { 
+                if (func == "custom")
+                {
+                    return ExpressionFunctions.Numeric("custom", (args) => args[0] + args[1]);
+                }
+                else
+                {
+                    return ExpressionFunctions.Lookup(func);
+                }
+            });
+            var lgFile = LGParser.ParseFile(GetExampleFilePath("CustomFunction.lg"), null, engine);
+            var evaled = lgFile.EvaluateTemplate("template");
+            Assert.AreEqual(3, evaled);
         }
 
         public class LoopClass
