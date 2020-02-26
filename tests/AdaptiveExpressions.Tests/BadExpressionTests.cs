@@ -88,12 +88,12 @@ namespace AdaptiveExpressions.Tests
             Test("newGuid(one)"), // should have no parameters
             Test("indexOf(hello)"), // should have two parameters
             Test("indexOf(hello, world, one)"), // should have two parameters
-            Test("indexOf(hello, one)"), // both parameters should be string
-            Test("indexOf(one, hello)"), // both parameters should be string
+            Test("indexOf(hello, one)"), // second parameter should be string
+            Test("indexOf(one, hello)"), // first parameter should be list or string
             Test("lastIndexOf(hello)"), // should have two parameters
             Test("lastIndexOf(hello, world, one)"), // should have two parameters
-            Test("lastIndexOf(hello, one)"), // both parameters should be string
-            Test("lastIndexOf(one, hello)"), // both parameters should be string
+            Test("lastIndexOf(hello, one)"), // second parameter should be string
+            Test("lastIndexOf(one, hello)"), // first parameter should be list or string
             #endregion
 
             #region Logical comparison functions test
