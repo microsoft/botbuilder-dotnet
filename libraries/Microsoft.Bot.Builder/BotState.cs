@@ -254,13 +254,19 @@ namespace Microsoft.Bot.Builder
                     return Task.FromResult(t);
                 }
 
+                if (result == null)
+                {
+                    return Task.FromResult(default(T));
+                }
+
                 // If types are not used by storage serialization, and Newtonsoft is the serializer,
                 // use Newtonsoft to convert the object to the type expected.
                 if (result is JObject jObj)
                 {
                     return Task.FromResult(jObj.ToObject<T>());
                 }
-                else if (result is JArray jarray)
+
+                if (result is JArray jarray)
                 {
                     return Task.FromResult(jarray.ToObject<T>());
                 }
