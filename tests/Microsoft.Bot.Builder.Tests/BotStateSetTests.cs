@@ -150,5 +150,12 @@ namespace Microsoft.Bot.Builder.Tests
             convCount = await convProperty.GetAsync(context, () => 0);
             Assert.AreEqual(20, convCount);
         }
+
+        internal class SomeComplexType
+        {
+            public string PropA { get; set; }
+
+            public int PropB { get; set; }
+        }
     }
 }
