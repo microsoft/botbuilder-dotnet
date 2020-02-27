@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Security.Claims;
@@ -354,6 +355,88 @@ namespace Microsoft.Bot.Builder.Tests
             var refs = new ConversationReference(serviceUrl: skill2ServiceUrl);
 
             await adapter.ContinueConversationAsync(skillsIdentity, refs, skill2AppId, callback, default);
+        }
+
+        [TestMethod]
+        public async Task DeliveryModeBufferedReplies()
+        {
+            var mockCredentialProvider = new Mock<ICredentialProvider>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
+
+            var httpClient = new HttpClient(mockHttpMessageHandler.Object);
+            var adapter = new BotFrameworkAdapter(new SimpleCredentialProvider(), customHttpClient: httpClient);
+
+            var callback = new BotCallbackHandler(async (turnContext, ct) =>
+            {
+                await turnContext.SendActivityAsync(MessageFactory.Text("activity 1"), ct);
+                await turnContext.SendActivityAsync(MessageFactory.Text("activity 2"), ct);
+                await turnContext.SendActivityAsync(MessageFactory.Text("activity 3"), ct);
+            });
+
+            var inboundActivity = new Activity
+            {
+                Type = ActivityTypes.Message,
+                ChannelId = Channels.Emulator,
+                ServiceUrl = "http://tempuri.org/whatever",
+                DeliveryMode = DeliveryModes.BufferedReplies,
+                Text = "hello world"
+            };
+
+            var invokeResponse = await adapter.ProcessActivityAsync(string.Empty, inboundActivity, callback, CancellationToken.None);
+
+            Assert.AreEqual((int)HttpStatusCode.OK, invokeResponse.Status);
+            var activities = (List<Activity>)invokeResponse.Body;
+            Assert.AreEqual(3, activities.Count);
+            Assert.AreEqual("activity 1", activities[0].Text);
+            Assert.AreEqual("activity 2", activities[1].Text);
+            Assert.AreEqual("activity 3", activities[2].Text);
+            mockHttpMessageHandler.Protected().Verify<Task<HttpResponseMessage>>("SendAsync", Times.Never(), ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
+        }
+
+        [TestMethod]
+        public async Task DeliveryModeNormal()
+        {
+            var mockCredentialProvider = new Mock<ICredentialProvider>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .Returns((HttpRequestMessage request, CancellationToken cancellationToken) => Task.FromResult(CreateInternalHttpResponse()));
+
+            var httpClient = new HttpClient(mockHttpMessageHandler.Object);
+            var adapter = new BotFrameworkAdapter(new SimpleCredentialProvider(), customHttpClient: httpClient);
+
+            var callback = new BotCallbackHandler(async (turnContext, ct) =>
+            {
+                await turnContext.SendActivityAsync(MessageFactory.Text("activity 1"), ct);
+                await turnContext.SendActivityAsync(MessageFactory.Text("activity 2"), ct);
+                await turnContext.SendActivityAsync(MessageFactory.Text("activity 3"), ct);
+            });
+
+            var inboundActivity = new Activity
+            {
+                Type = ActivityTypes.Message,
+                ChannelId = Channels.Emulator,
+                ServiceUrl = "http://tempuri.org/whatever",
+                DeliveryMode = DeliveryModes.Normal,
+                Text = "hello world",
+                Conversation = new ConversationAccount { Id = "conversationId" }
+            };
+
+            var invokeResponse = await adapter.ProcessActivityAsync(string.Empty, inboundActivity, callback, CancellationToken.None);
+
+            Assert.IsNull(invokeResponse);
+            mockHttpMessageHandler.Protected().Verify<Task<HttpResponseMessage>>("SendAsync", Times.Exactly(3), ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
+        }
+
+        private static HttpResponseMessage CreateInternalHttpResponse()
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.OK);
+            response.Content = new StringContent(new JObject { { "id", "SendActivityId" } }.ToString());
+            return response;
         }
 
         private static async Task<IActivity> ProcessActivity(string channelId, object channelData, string conversationTenantId)
