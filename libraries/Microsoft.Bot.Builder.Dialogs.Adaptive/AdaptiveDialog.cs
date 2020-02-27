@@ -915,6 +915,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 var metaData = entities["$instance"];
                 foreach (var entry in entities)
                 {
+                    // TODO: If entity is in $operations go down one level and apply operation
+                    // If there is no $operation, then use dialog.expectedOperation if present.  (Which should be added to ask schema)
+                    // otherwise, just have an empty operation.  
+                    // Maybe operation and entity is enough if no property can be mapped?
+                    // What if they say "what do you want to change?" ep: PropertyToChange
+                    // Should also use order of operations to define order in assign queue--this provides a simple way of usually getting the right result.
                     var name = entry.Name;
                     if (!name.StartsWith("$"))
                     {
@@ -1012,10 +1018,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             foreach (var propSchema in dialogSchema.Property.Children)
             {
                 var isExpected = expected.Contains(propSchema.Path);
-                var expectedOnly = propSchema.ExpectedOnly;
+                var expectedOnly = propSchema.ExpectedOnly ?? globalExpectedOnly;
                 foreach (var entityName in propSchema.Entities)
                 {
-                    if (entities.TryGetValue(entityName, out var matches) && (isExpected || !(expectedOnly != null ? expectedOnly : globalExpectedOnly).Contains(entityName)))
+                    if (entities.TryGetValue(entityName, out var matches) && (isExpected || !expectedOnly.Contains(entityName)))
                     {
                         foreach (var entity in matches)
                         {
