@@ -456,6 +456,10 @@ namespace Microsoft.Bot.Builder
 
                     return (InvokeResponse)activityInvokeResponse.Value;
                 }
+                else if (context.Activity.DeliveryMode == DeliveryModes.BufferedReplies)
+                {
+                    return new InvokeResponse { Status = (int)HttpStatusCode.OK, Body = context.BufferedReplies };
+                }
 
                 // For all non-invoke scenarios, the HTTP layers above don't have to mess
                 // with the Body and return codes.
@@ -1308,7 +1312,7 @@ namespace Microsoft.Bot.Builder
             var appId = GetBotAppId(turnContext);
 
             var clientKey = $"{appId}:{oAuthAppCredentials?.MicrosoftAppId}";
-            var oAuthScope = turnContext.TurnState.Get<string>(OAuthScopeKey);
+            var oAuthScope = GetBotFrameworkOAuthScope();
 
             var appCredentials = oAuthAppCredentials ?? await GetAppCredentialsAsync(appId, oAuthScope).ConfigureAwait(false);
 

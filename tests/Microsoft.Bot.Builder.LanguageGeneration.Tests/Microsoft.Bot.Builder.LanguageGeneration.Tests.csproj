@@ -42,6 +42,7 @@
     <None Remove="Examples\StringInterpolation.lg" />
     <None Remove="Examples\ReExecute.lg" />
     <None Remove="Examples\NullTolerant.lg" />
+    <None Remove="Examples\CustomFunction.lg" />
     <None Remove="ExceptionExamples\ConditionFormatError.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplates.lg" />
     <None Remove="ExceptionExamples\EmptyLGFile.lg" />
@@ -160,6 +161,10 @@
     <Content Include="Examples\NullTolerant.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Examples\CustomFunction.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  
     <Content Include="ExceptionExamples\ConditionFormatError.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

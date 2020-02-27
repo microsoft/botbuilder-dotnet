@@ -45,10 +45,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
         protected ILogger Logger { get; }
 
+        public override async Task<InvokeResponse> PostActivityAsync(string fromBotId, string toBotId, Uri toUrl, Uri serviceUrl, string conversationId, Activity activity, CancellationToken cancellationToken = default)
+        {
+            return await PostActivityAsync<object>(fromBotId, toBotId, toUrl, serviceUrl, conversationId, activity, cancellationToken).ConfigureAwait(false);
+        }
+
         /// <summary>
         /// Forwards an activity to a skill (bot).
         /// </summary>
         /// <remarks>NOTE: Forwarding an activity to a skill will flush UserState and ConversationState changes so that skill has accurate state.</remarks>
+        /// <typeparam name="T">The type of body in the InvokeResponse.</typeparam>
         /// <param name="fromBotId">The MicrosoftAppId of the bot sending the activity.</param>
         /// <param name="toBotId">The MicrosoftAppId of the bot receiving the activity.</param>
         /// <param name="toUrl">The URL of the bot receiving the activity.</param>
@@ -57,7 +63,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="activity">activity to forward.</param>
         /// <param name="cancellationToken">cancellation Token.</param>
         /// <returns>Async task with optional invokeResponse.</returns>
-        public override async Task<InvokeResponse> PostActivityAsync(string fromBotId, string toBotId, Uri toUrl, Uri serviceUrl, string conversationId, Activity activity, CancellationToken cancellationToken = default)
+        public override async Task<InvokeResponse<T>> PostActivityAsync<T>(string fromBotId, string toBotId, Uri toUrl, Uri serviceUrl, string conversationId, Activity activity, CancellationToken cancellationToken = default)
         {
             var appCredentials = await GetAppCredentialsAsync(fromBotId, toBotId).ConfigureAwait(false);
             if (appCredentials == null)
@@ -111,10 +117,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         var response = await HttpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
 
                         var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        return new InvokeResponse
+                        return new InvokeResponse<T>
                         {
                             Status = (int)response.StatusCode,
-                            Body = content.Length > 0 ? GetBodyContent(content) : null
+                            Body = content.Length > 0 ? GetBodyContent<T>(content) : default
                         };
                     }
                 }
@@ -141,16 +147,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
         }
 
-        private static object GetBodyContent(string content)
+        private static T GetBodyContent<T>(string content)
         {
-            try
-            {
-                return JsonConvert.DeserializeObject(content);
-            }
-            catch (JsonException)
-            {
-                return content;
-            }
+            return JsonConvert.DeserializeObject<T>(content);
         }
 
         /// <summary>

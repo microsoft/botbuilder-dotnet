@@ -4,7 +4,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace Microsoft.BotBuilderSamples.SimpleRootBot31
+namespace Microsoft.BotBuilderSamples.SimpleRootBot
 {
     public class Program
     {

@@ -26,10 +26,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="lgFile">the lgFile wihch would be checked.</param>
         /// <param name="expressionEngine">Init expression engine.</param>
-        public StaticChecker(LGFile lgFile, ExpressionEngine expressionEngine = null)
+        public StaticChecker(LGFile lgFile)
         {
             this.lgFile = lgFile;
-            baseExpressionEngine = expressionEngine ?? new ExpressionEngine();
+            baseExpressionEngine = lgFile.ExpressionEngine;
         }
 
         // Create a property because we want this to be lazy loaded
