@@ -110,70 +110,62 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            // Ensure planning context
-            if (dc is SequenceContext planning)
+            lock (this.Condition)
             {
-                lock (this.Condition)
+                if (this.caseExpressions == null)
                 {
-                    if (this.caseExpressions == null)
-                    {
-                        this.caseExpressions = new Dictionary<string, Expression>();
+                    this.caseExpressions = new Dictionary<string, Expression>();
 
-                        foreach (var cse in this.Cases)
+                    foreach (var cse in this.Cases)
+                    {
+                        Expression caseExpression = null;
+
+                        // Values for cases are always coerced to constant
+                        if (long.TryParse(cse.Value, out long i))
                         {
-                            Expression caseExpression = null;
-
-                            // Values for cases are always coerced to constant
-                            if (long.TryParse(cse.Value, out long i))
-                            {
-                                caseExpression = Expression.ConstantExpression(i);
-                            }
-                            else if (float.TryParse(cse.Value, out float f))
-                            {
-                                caseExpression = Expression.ConstantExpression(f);
-                            }
-                            else if (bool.TryParse(cse.Value, out bool b))
-                            {
-                                caseExpression = Expression.ConstantExpression(b);
-                            }
-                            else
-                            {
-                                caseExpression = Expression.ConstantExpression(cse.Value);
-                            }
-
-                            var caseCondition = Expression.EqualsExpression(this.Condition, caseExpression);
-
-                            // Map of expression to actions
-                            this.caseExpressions[cse.Value] = caseCondition;
+                            caseExpression = Expression.ConstantExpression(i);
                         }
+                        else if (float.TryParse(cse.Value, out float f))
+                        {
+                            caseExpression = Expression.ConstantExpression(f);
+                        }
+                        else if (bool.TryParse(cse.Value, out bool b))
+                        {
+                            caseExpression = Expression.ConstantExpression(b);
+                        }
+                        else
+                        {
+                            caseExpression = Expression.ConstantExpression(cse.Value);
+                        }
+
+                        var caseCondition = Expression.EqualsExpression(this.Condition, caseExpression);
+
+                        // Map of expression to actions
+                        this.caseExpressions[cse.Value] = caseCondition;
                     }
                 }
-
-                ActionScope actionScope = this.DefaultScope;
-
-                foreach (var caseScope in this.Cases)
-                {
-                    var (value, error) = this.caseExpressions[caseScope.Value].TryEvaluate(dcState);
-
-                    if (error != null)
-                    {
-                        throw new Exception($"Expression evaluation resulted in an error. Expression: {caseExpressions[caseScope.Value].ToString()}. Error: {error}");
-                    }
-
-                    // Compare both expression results. The current switch case triggers if the comparison is true.
-                    if (((bool)value) == true)
-                    {
-                        actionScope = caseScope;
-                        break;
-                    }
-                }
-
-                return await dc.ReplaceDialogAsync(actionScope.Id, null, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-            else
+
+            ActionScope actionScope = this.DefaultScope;
+
+            foreach (var caseScope in this.Cases)
             {
-                throw new Exception("`IfCondition` should only be used in the context of an adaptive dialog.");
+                var (value, error) = this.caseExpressions[caseScope.Value].TryEvaluate(dcState);
+
+                if (error != null)
+                {
+                    throw new Exception($"Expression evaluation resulted in an error. Expression: {caseExpressions[caseScope.Value].ToString()}. Error: {error}");
+                }
+
+                // Compare both expression results. The current switch case triggers if the comparison is true.
+                if (((bool)value) == true)
+                {
+                    actionScope = caseScope;
+                    break;
+                }
             }
+
+            return await dc.ReplaceDialogAsync(actionScope.Id, null, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         protected override string OnComputeId()

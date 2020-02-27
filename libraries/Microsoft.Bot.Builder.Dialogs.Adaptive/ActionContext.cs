@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
-    public class SequenceContext : DialogContext
+    public class ActionContext : DialogContext
     {
         private readonly string changeKey;
 
-        public SequenceContext(DialogSet dialogs, DialogContext dc, DialogState state, List<ActionState> actions, string changeKey)
+        public ActionContext(DialogSet dialogs, DialogContext dc, DialogState state, List<ActionState> actions, string changeKey)
             : base(dialogs, dc, state)
         {
             this.Actions = actions;
@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return false;
         }
 
-        public SequenceContext InsertActions(List<ActionState> actions)
+        public ActionContext InsertActions(List<ActionState> actions)
         {
             this.QueueChanges(
                 new ActionChangeList()
@@ -131,7 +131,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return this;
         }
 
-        public SequenceContext AppendActions(List<ActionState> actions)
+        public ActionContext AppendActions(List<ActionState> actions)
         {
             this.QueueChanges(
                 new ActionChangeList()
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return this;
         }
 
-        public SequenceContext EndSequence(List<ActionState> actions)
+        public ActionContext EndSequence(List<ActionState> actions)
         {
             this.QueueChanges(
                 new ActionChangeList()
@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return this;
         }
 
-        public SequenceContext ReplaceSequence(List<ActionState> actions)
+        public ActionContext ReplaceSequence(List<ActionState> actions)
         {
             this.QueueChanges(
                 new ActionChangeList()
