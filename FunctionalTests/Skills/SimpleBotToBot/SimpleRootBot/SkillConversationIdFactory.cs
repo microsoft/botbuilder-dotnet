@@ -8,7 +8,7 @@ using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.BotBuilderSamples.SimpleRootBot31
+namespace Microsoft.BotBuilderSamples.SimpleRootBot
 {
     /// <summary>
     /// A <see cref="SkillConversationIdFactory"/> that uses an in memory <see cref="ConcurrentDictionary{TKey,TValue}"/>

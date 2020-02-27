@@ -16,7 +16,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "DialogSkillBot31": {
+    "DialogSkillBot": {
       "commandName": "Project",
       "launchBrowser": true,
       "applicationUrl": "http://localhost:1205/",
