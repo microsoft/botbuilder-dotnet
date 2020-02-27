@@ -860,50 +860,6 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Get the raw signin link to be sent to the user for signin for a connection name, using customized AppCredentials and emulator url.
-        /// </summary>
-        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
-        /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
-        /// <param name="connectionName">Name of the auth connection to use.</param>
-        /// <param name="emulatorUrl">Url of the emulator service.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If the task completes successfully, the result contains the raw signin link.</remarks>
-        public async Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string emulatorUrl, CancellationToken cancellationToken)
-        {
-            BotAssert.ContextNotNull(turnContext);
-            if (string.IsNullOrWhiteSpace(connectionName))
-            {
-                throw new ArgumentNullException(nameof(connectionName));
-            }
-
-            var activity = turnContext.Activity;
-            var appId = GetBotAppId(turnContext);
-            var tokenExchangeState = new TokenExchangeState()
-            {
-                ConnectionName = connectionName,
-                Conversation = new ConversationReference()
-                {
-                    ActivityId = activity.Id,
-                    Bot = activity.Recipient,       // Activity is from the user to the bot
-                    ChannelId = activity.ChannelId,
-                    Conversation = activity.Conversation,
-                    ServiceUrl = activity.ServiceUrl,
-                    User = activity.From,
-                },
-                MsAppId = appId,
-            };
-
-            var serializedState = JsonConvert.SerializeObject(tokenExchangeState);
-            var encodedState = Encoding.UTF8.GetBytes(serializedState);
-            var state = Convert.ToBase64String(encodedState);
-
-            var client = await CreateOAuthApiClientAsync(turnContext, oAuthAppCredentials).ConfigureAwait(false);
-            return await client.BotSignIn.GetSignInUrlAsync(state, null, emulatorUrl, null, cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
         /// Get the raw signin link to be sent to the user for signin for a connection name, using customized AppCredentials.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>

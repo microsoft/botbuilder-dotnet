@@ -627,11 +627,6 @@ namespace Microsoft.Bot.Builder.Adapters
             return GetOauthSignInLinkAsync(turnContext, null, connectionName, userId, finalRedirect, cancellationToken);
         }
 
-        public Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string emulatorUrl, CancellationToken cancellationToken)
-        {
-            return Task.FromResult($"https://fake.com/oauthsignin/{connectionName}/{turnContext.Activity.ChannelId}");
-        }
-
         /// <summary>
         /// Signs a user out by remove the user's token(s) from mock storage, using customized AppCredentials.
         /// </summary>
@@ -751,7 +746,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns>A SignInResource with the link and token exchange info.</returns>
         public Task<SignInResource> GetSignInResourceAsync(ITurnContext turnContext, string connectionName, CancellationToken cancellationToken = default)
         {
-            return GetSignInResourceAsync(turnContext, connectionName, turnContext?.Activity?.Recipient?.Id, null, cancellationToken);
+            return GetSignInResourceAsync(turnContext, connectionName, turnContext?.Activity?.Recipient?.Id, null, null, cancellationToken);
         }
 
         /// <summary>
@@ -765,7 +760,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns>A SignInResource with the link and token exchange info.</returns>
         public Task<SignInResource> GetSignInResourceAsync(ITurnContext turnContext, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default)
         {
-            return GetSignInResourceAsync(turnContext, null, connectionName, userId, finalRedirect, cancellationToken);
+            return GetSignInResourceAsync(turnContext, null, connectionName, userId, finalRedirect, null, cancellationToken);
         }
 
         /// <summary>
@@ -779,6 +774,22 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="cancellationToken">The cancellationToken.</param>
         /// <returns>A SignInResource with the link and token exchange info.</returns>
         public Task<SignInResource> GetSignInResourceAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default)
+        {
+            return GetSignInResourceAsync(turnContext, null, connectionName, userId, finalRedirect, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets a sign in resource.
+        /// </summary>
+        /// <param name="turnContext">The TurnContext.</param>
+        /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
+        /// <param name="connectionName">The connectionName.</param>
+        /// <param name="userId">The user id.</param>
+        /// <param name="finalRedirect">A final redirect URL.</param>
+        /// <param name="emulatorUrl">The Emulator Url.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>A SignInResource with the link and token exchange info.</returns>
+        public Task<SignInResource> GetSignInResourceAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, string finalRedirect = null, string emulatorUrl = null, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(new SignInResource()
             {
