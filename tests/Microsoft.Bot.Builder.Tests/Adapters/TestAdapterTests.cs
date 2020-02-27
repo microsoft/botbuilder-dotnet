@@ -329,11 +329,6 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             link = await adapter.GetOauthSignInLinkAsync(turnContext, oAuthAppCredentials, connectionName, userId, null, CancellationToken.None);
             Assert.IsNotNull(link);
             Assert.IsTrue(link.Length > 0);
-
-            string emulatorUrl = "http://emulator.com";
-            link = await adapter.GetOauthSignInLinkAsync(turnContext, oAuthAppCredentials, connectionName, emulatorUrl, CancellationToken.None);
-            Assert.IsNotNull(link);
-            Assert.IsTrue(link.Length > 0);
         }
 
         [TestMethod]
