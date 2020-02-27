@@ -85,13 +85,28 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             InitialDialogId = nameof(WaterfallDialog);
         }
 
+        protected override async Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken = default)
+        {
+            // This is an example on how to cancel a SkillDialog that is currently in progress from the parent bot
+            var activeSkill = await _activeSkillProperty.GetAsync(innerDc.Context, () => null, cancellationToken);
+            var activity = innerDc.Context.Activity;
+            if (activeSkill != null && activity.Type == ActivityTypes.Message && activity.Text.Equals("abort", StringComparison.CurrentCultureIgnoreCase))
+            {
+                // Cancel all dialog when the user says abort.
+                await innerDc.CancelAllDialogsAsync(cancellationToken);
+                return await innerDc.ReplaceDialogAsync(InitialDialogId, "Canceled! \n\n What skill would you like to call?", cancellationToken);
+            }
+
+            return await base.OnContinueDialogAsync(innerDc, cancellationToken);
+        }
+
         // Render a prompt to select the skill to call.
         private async Task<DialogTurnResult> SelectSkillStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // Create the PromptOptions from the skill configuration which contain the list of configured skills.
             var options = new PromptOptions
             {
-                Prompt = MessageFactory.Text("What skill would you like to call?"),
+                Prompt = MessageFactory.Text(stepContext.Options?.ToString() ?? "What skill would you like to call?"),
                 RetryPrompt = MessageFactory.Text("That was not a valid choice, please select a valid skill."),
                 Choices = _skillsConfig.Skills.Select(skill => new Choice(skill.Value.Id)).ToList()
             };
@@ -162,13 +177,15 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
         // The SkillDialog has ended, render the results (if any) and restart MainDialog.
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            var activeSkill = await _activeSkillProperty.GetAsync(stepContext.Context, () => null, cancellationToken);
+
             if (stepContext.Result != null)
             {
-                var message = "Skill invocation complete.";
+                var message = $"Skill \"{activeSkill.Id}\" invocation complete.";
                 message += $" Result: {JsonConvert.SerializeObject(stepContext.Result)}";
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text(message, inputHint: InputHints.IgnoringInput), cancellationToken: cancellationToken);
             }
-
+            
             // Clear the skill selected by the user.
             stepContext.Values[_selectedSkillKey] = null;
 
@@ -176,7 +193,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             await _activeSkillProperty.DeleteAsync(stepContext.Context, cancellationToken);
 
             // Restart the main dialog with a different message the second time around
-            return await stepContext.ReplaceDialogAsync(InitialDialogId, "What else can I do for you?", cancellationToken);
+            return await stepContext.ReplaceDialogAsync(InitialDialogId, $"Done with \"{activeSkill.Id}\". \n\n What skill would you like to call?", cancellationToken);
         }
 
         // Helper method to create Choice elements for the actions supported by the skill
