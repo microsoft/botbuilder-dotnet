@@ -14,4 +14,6 @@
 # chooseEnum1Entity
 - ${chooseEnumEntity('Enum1')}
 
-[unittests-common.lg](unittests-common.lg)
+[unittests-library.lg](unittests-library.lg)
+
+[unittests-library-Choose.lg](unittests-library-Choose.lg)

@@ -1,18 +1,17 @@
-$Enum1Entity:multiGrainWheat=
-- multi
-- grain
-- wheat
-- multi grain
-- grain wheat
-- multi grain wheat
 
-$Enum1Entity:rye=
-- rye
-
-$Enum1Entity:white=
-- white
-
-$Enum1Entity:wholeWheat=
-- whole
-- wheat
-- whole wheat
+@ list Enum1Entity =
+	- multiGrainWheat :
+		- multi
+		- grain
+		- wheat
+		- multi grain
+		- grain wheat
+		- multi grain wheat
+	- rye :
+		- rye
+	- white :
+		- white
+	- wholeWheat :
+		- whole
+		- wheat
+		- whole wheat
