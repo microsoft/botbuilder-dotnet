@@ -33,9 +33,5 @@ namespace Microsoft.Bot.Builder
         public void TrackTrace(string message, Severity severityLevel, IDictionary<string, string> properties)
         {
         }
-
-        public void TrackDialogView(string dialogName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
-        {
-        }
     }
 }

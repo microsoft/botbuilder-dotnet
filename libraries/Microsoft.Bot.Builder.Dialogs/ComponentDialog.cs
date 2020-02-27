@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.ApplicationInsights;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -38,6 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <value>The <see cref="IBotTelemetryClient"/> to use when logging.</value>
         /// <seealso cref="DialogSet.TelemetryClient"/>
+        [Obsolete("TelemetryClient is now obselete. Please use LogTelemetryClient instead.", false)]
         public override IBotTelemetryClient TelemetryClient
         {
             get
@@ -49,6 +51,27 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 base.TelemetryClient = value ?? NullBotTelemetryClient.Instance;
                 Dialogs.TelemetryClient = base.TelemetryClient;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="LogTelemetryClient"/> to use for logging.
+        /// When setting this property, all of the contained dialogs' <see cref="Dialog.TelemetryClient"/>
+        /// properties are also set.
+        /// </summary>
+        /// <value>The <see cref="LogTelemetryClient"/> to use when logging.</value>
+        /// <seealso cref="DialogSet.LogTelemetryClient"/>
+        public override LogTelemetryClient LogTelemetryClient
+        {
+            get
+            {
+                return base.LogTelemetryClient;
+            }
+
+            set
+            {
+                base.LogTelemetryClient = value ?? new NullLogTelemetryClient();
+                Dialogs.LogTelemetryClient = base.LogTelemetryClient;
             }
         }
 
@@ -88,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
             }
 
-            TelemetryClient.TrackDialogView(Id);
+            LogTelemetryClient.TrackPageView(Id);
 
             // Just signal waiting
             return Dialog.EndOfTurn;

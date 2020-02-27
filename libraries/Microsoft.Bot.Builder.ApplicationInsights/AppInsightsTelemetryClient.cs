@@ -11,15 +11,15 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
     /// <summary>
     /// A logging client for bot telemetry.
     /// </summary>
-    public class BotTelemetryClient : IBotTelemetryClient
+    public class AppInsightsTelemetryClient : LogTelemetryClient
     {
         private readonly TelemetryClient _telemetryClient;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BotTelemetryClient"/> class.
+        /// Initializes a new instance of the <see cref="AppInsightsTelemetryClient"/> class.
         /// </summary>
         /// <param name="telemetryClient">The telemetry client to forward bot events to.</param>
-        public BotTelemetryClient(TelemetryClient telemetryClient)
+        public AppInsightsTelemetryClient(TelemetryClient telemetryClient)
         {
             _telemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(telemetryClient));
         }
@@ -166,6 +166,35 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
             }
 
             _telemetryClient.TrackTrace(telemetry);
+        }
+
+        /// <summary>
+        /// Logs a an Application Insights page view.
+        /// </summary>
+        /// <param name="name">The name of the page view to log.</param>
+        /// <param name="properties">Named string values you can use to search and classify events.</param>
+        /// <param name="metrics">Measurements associated with this event.</param>
+        public virtual void TrackPageView(string name, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+        {
+            var telemetry = new PageViewTelemetry(name);
+
+            if (properties != null)
+            {
+                foreach (var pair in properties)
+                {
+                    telemetry.Properties.Add(pair.Key, pair.Value);
+                }
+            }
+
+            if (metrics != null)
+            {
+                foreach (var pair in metrics)
+                {
+                    telemetry.Metrics.Add(pair.Key, pair.Value);
+                }
+            }
+
+            _telemetryClient.TrackPageView(telemetry);
         }
 
         /// <summary>

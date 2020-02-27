@@ -76,8 +76,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                     { "DialogId", Id },
                     { "InstanceId", instanceId },
                 };
-            TelemetryClient.TrackEvent("WaterfallStart", properties);
-            TelemetryClient.TrackDialogView(Id);
+            TrackTelemetryEvent("WaterfallStart", properties);
+            
+            LogTelemetryClient.TrackPageView(Id);
 
             // Run first step
             return await RunStepAsync(dc, 0, DialogReason.BeginCalled, null, cancellationToken).ConfigureAwait(false);
@@ -145,7 +146,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     { "StepName", stepName },
                     { "InstanceId", instanceId },
                 };
-                TelemetryClient.TrackEvent("WaterfallCancel", properties);
+                TrackTelemetryEvent("WaterfallCancel", properties);
             }
             else if (reason == DialogReason.EndCalled)
             {
@@ -156,7 +157,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     { "DialogId", Id },
                     { "InstanceId", instanceId },
                 };
-                TelemetryClient.TrackEvent("WaterfallComplete", properties);
+                TrackTelemetryEvent("WaterfallComplete", properties);
             }
 
             return Task.CompletedTask;
@@ -172,7 +173,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 { "StepName", stepName },
                 { "InstanceId", instanceId },
             };
-            TelemetryClient.TrackEvent("WaterfallStep", properties);
+            TrackTelemetryEvent("WaterfallStep", properties);
             return await _steps[stepContext.Index](stepContext, cancellationToken).ConfigureAwait(false);
         }
 

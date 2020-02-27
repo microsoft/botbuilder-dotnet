@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Tests
             //
             // Note: The TelemetryClient will most likely be DI'd in, and handling a null
             // TelemetryClient should be handled by placing the NullBotTelemetryClient().
-            var logger = new TelemetryLoggerMiddleware(null, logPersonalInformation: true);
+            var logger = new TelemetryLoggerMiddleware(telemetryClient: null, logPersonalInformation: true);
 
             // Assert
             Assert.IsNotNull(logger);

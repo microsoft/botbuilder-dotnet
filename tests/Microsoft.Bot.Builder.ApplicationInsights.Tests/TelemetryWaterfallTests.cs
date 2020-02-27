@@ -48,7 +48,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             .Send("hello")
             .AssertReply("step3")
             .StartTestAsync();
-            telemetryClient.Verify(m => m.TrackDialogView("test", It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(1));
             telemetryClient.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(4));
             Console.WriteLine("Complete");
         }

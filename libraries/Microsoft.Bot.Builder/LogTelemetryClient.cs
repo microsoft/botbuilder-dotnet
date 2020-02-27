@@ -7,9 +7,9 @@ using System.Collections.Generic;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Describes a logging client for bot telemetry.
+    /// A logging client for bot telemetry.
     /// </summary>
-    public interface IBotTelemetryClient
+    public abstract class LogTelemetryClient
     {
         /// <summary>
         /// Send information about availability of an application.
@@ -22,7 +22,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="message">Error message on availability test run failure.</param>
         /// <param name="properties">Named string values you can use to classify and search for this availability telemetry.</param>
         /// <param name="metrics">Additional values associated with this availability telemetry.</param>
-        void TrackAvailability(string name, DateTimeOffset timeStamp, TimeSpan duration, string runLocation, bool success, string message = null, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null);
+        public virtual void TrackAvailability(string name, DateTimeOffset timeStamp, TimeSpan duration, string runLocation, bool success, string message = null, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+        {
+        }
 
         /// <summary>
         /// Send information about an external dependency (outgoing call) in the application.
@@ -38,7 +40,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="duration">The time taken by the external dependency to handle the call.</param>
         /// <param name="resultCode">Result code of dependency call execution.</param>
         /// <param name="success">True if the dependency call was handled successfully.</param>
-        void TrackDependency(string dependencyTypeName, string target, string dependencyName, string data, DateTimeOffset startTime, TimeSpan duration, string resultCode, bool success);
+        public virtual void TrackDependency(string dependencyTypeName, string target, string dependencyName, string data, DateTimeOffset startTime, TimeSpan duration, string resultCode, bool success)
+        {
+        }
 
         /// <summary>
         /// Logs custom events with extensible named fields.
@@ -46,7 +50,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="eventName">A name for the event.</param>
         /// <param name="properties">Named string values you can use to search and classify events.</param>
         /// <param name="metrics">Measurements associated with this event.</param>
-        void TrackEvent(string eventName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null);
+        public virtual void TrackEvent(string eventName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+        {
+        }
 
         /// <summary>
         /// Logs a system exception.
@@ -54,7 +60,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="exception">The exception to log.</param>
         /// <param name="properties">Named string values you can use to classify and search for this exception.</param>
         /// <param name="metrics">Additional values associated with this exception.</param>
-        void TrackException(Exception exception, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null);
+        public virtual void TrackException(Exception exception, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+        {
+        }
 
         /// <summary>
         /// Send a trace message.
@@ -62,11 +70,25 @@ namespace Microsoft.Bot.Builder
         /// <param name="message">Message to display.</param>
         /// <param name="severityLevel">Trace severity level <see cref="Severity"/>.</param>
         /// <param name="properties">Named string values you can use to search and classify events.</param>
-        void TrackTrace(string message, Severity severityLevel, IDictionary<string, string> properties);
+        public virtual void TrackTrace(string message, Severity severityLevel, IDictionary<string, string> properties)
+        {
+        }
+
+        /// <summary>
+        /// Logs a page view.
+        /// </summary>
+        /// <param name="name">The name of the page view to log.</param>
+        /// <param name="properties">Named string values you can use to search and classify events.</param>
+        /// <param name="metrics">Measurements associated with this event.</param>
+        public virtual void TrackPageView(string name, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+        {
+        }
 
         /// <summary>
         /// Flushes the in-memory buffer and any metrics being pre-aggregated.
         /// </summary>
-        void Flush();
+        public virtual void Flush()
+        {
+        }
     }
 }
