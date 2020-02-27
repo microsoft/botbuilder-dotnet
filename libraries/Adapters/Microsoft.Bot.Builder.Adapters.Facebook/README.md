@@ -24,7 +24,7 @@ You could create in the project an `appsettings.json` file to set the Facebook c
 }
 ```
 
-### Use FacebookAdapter in your App
+### Use FacebookAdapter in your App 
 
 FacebookAdapter provides a translation layer for BotBuilder so that bot developers can connect to Facebook and have access to the Facebook API.
 

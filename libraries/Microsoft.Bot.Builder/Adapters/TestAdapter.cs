@@ -17,15 +17,17 @@ namespace Microsoft.Bot.Builder.Adapters
     /// A mock adapter that can be used for unit testing of bot logic.
     /// </summary>
     /// <seealso cref="TestFlow"/>
-    public class TestAdapter : BotAdapter, ICredentialTokenProvider
+    public class TestAdapter : BotAdapter, IExtendedUserTokenProvider
     {
         private bool _sendTraceActivity;
         private readonly object _conversationLock = new object();
         private readonly object _activeQueueLock = new object();
         private readonly IDictionary<UserTokenKey, string> _userTokens = new Dictionary<UserTokenKey, string>();
+        private readonly IDictionary<ExchangableTokenKey, string> _exchangableToken = new Dictionary<ExchangableTokenKey, string>();
         private readonly IList<TokenMagicCode> _magicCodes = new List<TokenMagicCode>();
 
         private int _nextId = 0;
+        private Queue<TaskCompletionSource<IActivity>> _queuedRequests = new Queue<TaskCompletionSource<IActivity>>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestAdapter"/> class.
@@ -157,7 +159,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
 
                 activity.ChannelId = Conversation.ChannelId;
-                
+
                 if (activity.From == null || activity.From.Id == "unknown" || activity.From.Role == RoleTypes.Bot)
                 {
                     activity.From = Conversation.User;
@@ -172,7 +174,12 @@ namespace Microsoft.Bot.Builder.Adapters
 
             if (activity.Timestamp == null || activity.Timestamp == default(DateTimeOffset))
             {
-                activity.Timestamp = DateTime.UtcNow;
+                activity.Timestamp = DateTimeOffset.UtcNow;
+            }
+
+            if (activity.LocalTimestamp == null || activity.LocalTimestamp == default(DateTimeOffset))
+            {
+                activity.LocalTimestamp = DateTimeOffset.Now;
             }
 
             using (var context = new TurnContext(this, activity))
@@ -258,18 +265,12 @@ namespace Microsoft.Bot.Builder.Adapters
                 {
                     if (_sendTraceActivity)
                     {
-                        lock (_activeQueueLock)
-                        {
-                            ActiveQueue.Enqueue(activity);
-                        }
+                        Enqueue(activity);
                     }
                 }
                 else
                 {
-                    lock (_activeQueueLock)
-                    {
-                        ActiveQueue.Enqueue(activity);
-                    }
+                    Enqueue(activity);
                 }
 
                 responses[index] = new ResourceResponse(activity.Id);
@@ -388,6 +389,31 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
+        /// Get the next reply async.
+        /// </summary>
+        /// <param name="cancellationToken">cancellation Token.</param>
+        /// <returns>activity when it's available or canceled task if it is canceled.</returns>
+        public Task<IActivity> GetNextReplyAsync(CancellationToken cancellationToken = default)
+        {
+            lock (_activeQueueLock)
+            {
+                if (!_queuedRequests.Any())
+                {
+                    var result = GetNextReply();
+                    if (result != null)
+                    {
+                        return Task.FromResult(result);
+                    }
+                }
+
+                var tcs = new TaskCompletionSource<IActivity>();
+                cancellationToken.Register(() => tcs.SetCanceled());
+                this._queuedRequests.Enqueue(tcs);
+                return tcs.Task;
+            }
+        }
+
+        /// <summary>
         /// Creates a message activity from text and the current conversational context.
         /// </summary>
         /// <param name="text">The message text.</param>
@@ -460,6 +486,34 @@ namespace Microsoft.Bot.Builder.Adapters
                     MagicCode = magicCode,
                     UserToken = token,
                 });
+            }
+        }
+
+        /// <summary>
+        /// Adds a fake exchangable token so it can later be exchanged later.
+        /// </summary>
+        /// <param name="connectionName">The connection name.</param>
+        /// <param name="channelId">The channel id.</param>
+        /// <param name="userId">The user id.</param>
+        /// <param name="exchangableItem">The exchangable token or resource uri.</param>
+        /// <param name="token">The token to store.</param>
+        public void AddExchangeableToken(string connectionName, string channelId, string userId, string exchangableItem, string token)
+        {
+            var key = new ExchangableTokenKey()
+            {
+                ConnectionName = connectionName,
+                ChannelId = channelId,
+                UserId = userId,
+                ExchangableItem = exchangableItem
+            };
+
+            if (_exchangableToken.ContainsKey(key))
+            {
+                _exchangableToken[key] = token;
+            }
+            else
+            {
+                _exchangableToken.Add(key, token);
             }
         }
 
@@ -688,6 +742,110 @@ namespace Microsoft.Bot.Builder.Adapters
             return GetAadTokensAsync(context, null, connectionName, resourceUrls, userId, cancellationToken);
         }
 
+        /// <summary>
+        /// Gets a sign in resource.
+        /// </summary>
+        /// <param name="turnContext">The TurnContext.</param>
+        /// <param name="connectionName">The connectionName.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>A SignInResource with the link and token exchange info.</returns>
+        public Task<SignInResource> GetSignInResourceAsync(ITurnContext turnContext, string connectionName, CancellationToken cancellationToken = default)
+        {
+            return GetSignInResourceAsync(turnContext, connectionName, turnContext?.Activity?.Recipient?.Id, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets a sign in resource.
+        /// </summary>
+        /// <param name="turnContext">The TurnContext.</param>
+        /// <param name="connectionName">The connectionName.</param>
+        /// <param name="userId">The user id.</param>
+        /// <param name="finalRedirect">A final redirect URL.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>A SignInResource with the link and token exchange info.</returns>
+        public Task<SignInResource> GetSignInResourceAsync(ITurnContext turnContext, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default)
+        {
+            return GetSignInResourceAsync(turnContext, null, connectionName, userId, finalRedirect, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets a sign in resource.
+        /// </summary>
+        /// <param name="turnContext">The TurnContext.</param>
+        /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
+        /// <param name="connectionName">The connectionName.</param>
+        /// <param name="userId">The user id.</param>
+        /// <param name="finalRedirect">A final redirect URL.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>A SignInResource with the link and token exchange info.</returns>
+        public Task<SignInResource> GetSignInResourceAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(new SignInResource()
+            {
+                SignInLink = $"https://fake.com/oauthsignin/{connectionName}/{turnContext.Activity.ChannelId}/{userId}",
+                TokenExchangeResource = new TokenExchangeResource()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    ProviderId = null,
+                    Uri = $"api://{connectionName}/resource"
+                }
+            });
+        }
+
+        public Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, string connectionName, string userId, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken = default)
+        {
+            return ExchangeTokenAsync(turnContext, null, connectionName, userId, exchangeRequest, cancellationToken);
+        }
+
+        public Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken = default)
+        {
+            var exchangableValue = !string.IsNullOrEmpty(exchangeRequest?.Token) ?
+                exchangeRequest?.Token :
+                exchangeRequest?.Uri;
+
+            var key = new ExchangableTokenKey()
+            {
+                ChannelId = turnContext?.Activity?.ChannelId,
+                ConnectionName = connectionName,
+                ExchangableItem = exchangableValue,
+                UserId = userId,
+            };
+
+            if (_exchangableToken.TryGetValue(key, out string token))
+            {
+                return Task.FromResult(new TokenResponse()
+                {
+                    ChannelId = key.ChannelId,
+                    ConnectionName = key.ConnectionName,
+                    Token = token
+                });
+            }
+            else
+            {
+                return Task.FromResult<TokenResponse>(null);
+            }
+        }
+
+        private void Enqueue(Activity activity)
+        {
+            lock (_activeQueueLock)
+            {
+                // if there are pending requests, fulfill them with the activity.
+                while (_queuedRequests.Any())
+                {
+                    var tcs = _queuedRequests.Dequeue();
+                    if (tcs.Task.IsCanceled == false)
+                    {
+                        tcs.SetResult(activity);
+                        return;
+                    }
+                }
+
+                // else we enqueue for next requester
+                ActiveQueue.Enqueue(activity);
+            }
+        }
+
         private class UserTokenKey
         {
             public string ConnectionName { get; set; }
@@ -714,6 +872,29 @@ namespace Microsoft.Bot.Builder.Adapters
                 return (ConnectionName ?? string.Empty).GetHashCode() +
                     (UserId ?? string.Empty).GetHashCode() +
                     (ChannelId ?? string.Empty).GetHashCode();
+            }
+        }
+
+        private class ExchangableTokenKey : UserTokenKey
+        {
+            public string ExchangableItem { get; set; }
+
+            public override bool Equals(object obj)
+            {
+                var rhs = obj as ExchangableTokenKey;
+                if (rhs != null)
+                {
+                    return string.Equals(this.ExchangableItem, rhs.ExchangableItem) &&
+                        base.Equals(obj);
+                }
+
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                return (ExchangableItem ?? string.Empty).GetHashCode() +
+                    base.GetHashCode();
             }
         }
 

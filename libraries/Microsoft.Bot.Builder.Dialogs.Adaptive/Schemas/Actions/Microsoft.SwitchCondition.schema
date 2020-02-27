@@ -15,6 +15,7 @@
         },
         "condition": {
             "$role": "expression",
+            "type": "string",
             "title": "Condition",
             "description": "Property to evaluate.",
             "examples": [
@@ -23,6 +24,7 @@
         },
         "disabled": {
             "$role": "expression",
+            "type": "boolean",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -37,12 +39,18 @@
                 "type": "object",
                 "properties": {
                     "value": {
-                        "$role": "expression",
+                        "type": [
+                            "number",
+                            "integer",
+                            "boolean",
+                            "string"
+                        ],
                         "title": "Value",
                         "description": "Value.",
                         "examples": [
-                            "'red'",
-                            "dialog.colors.red"
+                            "red",
+                            "true",
+                            "13"
                         ]
                     },
                     "actions": {

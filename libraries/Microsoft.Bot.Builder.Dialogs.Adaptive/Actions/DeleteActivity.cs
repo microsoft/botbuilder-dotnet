@@ -5,9 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Expressions;
-using Microsoft.Bot.Schema;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -19,9 +17,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.DeleteActivity";
-
-        private Expression activityId;
-        private Expression disabled;
 
         [JsonConstructor]
         public DeleteActivity([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -39,22 +34,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets the expression which resolves to the activityId to update.
         /// </summary>
         /// <value>Expression to activityId.</value>
         [JsonProperty("activityId")]
-        public string ActivityId
-        {
-            get { return activityId.ToString(); }
-            set { activityId = new ExpressionEngine().Parse(value); }
-        }
+        public StringExpression ActivityId { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -63,12 +50,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var (result, error) = new ExpressionEngine().Parse(this.ActivityId).TryEvaluate(dc.GetState());
+            var (result, error) = this.ActivityId.TryGetValue(dcState);
             if (error != null)
             {
                 throw new ArgumentException(error);

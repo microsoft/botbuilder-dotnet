@@ -9,39 +9,39 @@
         "$kind": "Microsoft.OnBeginDialog",
         "actions": [
           {
-            "$kind": "Microsoft.InitProperty",
+            "$kind": "Microsoft.SetProperty",
             "property": "dialog.todo",
-            "type": "array"
+            "value": "=[]"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "changeType": "Push",
-            "value": "1"
+            "changeType": "push",
+            "value": "=1"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "changeType": "Push",
-            "value": "2"
+            "changeType": "push",
+            "value": "=2"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "changeType": "Push",
-            "value": "3"
+            "changeType": "push",
+            "value": "=3"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "changeType": "Push",
-            "value": "4"
+            "changeType": "push",
+            "value": "=4"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "changeType": "Push",
-            "value": "5"
+            "changeType": "push",
+            "value": "=5"
           },
           {
             "$kind": "Microsoft.ForeachPage",
@@ -50,7 +50,7 @@
             "actions": [
               {
                 "$kind": "Microsoft.SendActivity",
-                "activity": "This page have @{count(dialog.foreach.page)} items"
+                "activity": "This page have ${count(dialog.foreach.page)} items"
               },
               {
                 "$kind": "Microsoft.Foreach",
@@ -58,7 +58,7 @@
                 "actions": [
                   {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "index is: @{dialog.foreach.index} and value is: @{dialog.foreach.value}"
+                    "activity": "index is: ${dialog.foreach.index} and value is: ${dialog.foreach.value}"
                   }
                 ]
               }

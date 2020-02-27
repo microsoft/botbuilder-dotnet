@@ -1,0 +1,12 @@
+# AskPhonenumber
+- ${askString('Phonenumber')}
+
+# PhonenumberName
+- phonenumber
+
+# Phonenumber(val)
+- ${PhonenumberEntity(val)}
+
+[unittests-PhonenumberEntity.lg](unittests-PhonenumberEntity.lg)
+
+[unittests-common.lg](unittests-common.lg)

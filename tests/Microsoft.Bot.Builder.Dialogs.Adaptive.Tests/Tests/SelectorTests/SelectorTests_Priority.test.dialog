@@ -25,14 +25,14 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "user.a",
-                        "value": "1"
+                        "value": "=1"
                     }
                 ]
             },
             {
                 "$kind": "Microsoft.OnIntent",
                 "intent": "a",
-                "priority": "user.a + 1",
+                "priority": "=user.a + 1",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -43,7 +43,7 @@
             {
                 "$kind": "Microsoft.OnIntent",
                 "intent": "a",
-                "priority": "user.a",
+                "priority": "=user.a",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",

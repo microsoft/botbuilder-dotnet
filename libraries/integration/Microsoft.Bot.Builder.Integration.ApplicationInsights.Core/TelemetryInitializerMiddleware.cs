@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
                     items.Remove(TelemetryBotIdInitializer.BotActivityKey);
                 }
 
-                items.Add(TelemetryBotIdInitializer.BotActivityKey, activityJson);
+                items?.Add(TelemetryBotIdInitializer.BotActivityKey, activityJson);
             }
 
             if (_logActivityTelemetry)

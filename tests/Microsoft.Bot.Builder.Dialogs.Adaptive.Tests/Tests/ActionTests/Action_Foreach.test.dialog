@@ -9,24 +9,24 @@
         "$kind": "Microsoft.OnBeginDialog",
         "actions": [
           {
-            "$kind": "Microsoft.InitProperty",
+            "$kind": "Microsoft.SetProperty",
             "property": "dialog.todo",
-            "type": "Array"
+            "value": "=[]"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "value": "1"
+            "value": "=1"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "value": "2"
+            "value": "=2"
           },
           {
             "$kind": "Microsoft.EditArray",
             "itemsProperty": "dialog.todo",
-            "value": "3"
+            "value": "=3"
           },
           {
             "$kind": "Microsoft.Foreach",
@@ -34,7 +34,7 @@
             "actions": [
               {
                 "$kind": "Microsoft.SendActivity",
-                "activity": "index is: @{dialog.foreach.index} and value is: @{dialog.foreach.value}"
+                "activity": "index is: ${dialog.foreach.index} and value is: ${dialog.foreach.value}"
               }
             ]
           }

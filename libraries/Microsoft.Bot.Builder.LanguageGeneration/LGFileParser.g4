@@ -12,6 +12,7 @@ file
 paragraph
     : templateDefinition
     | importDefinition
+    | optionsDefinition
     | EOF
     | errorTemplate
     ;
@@ -128,4 +129,8 @@ switchCaseStat
 
 importDefinition
     : IMPORT
+    ;
+
+optionsDefinition
+    : OPTIONS
     ;

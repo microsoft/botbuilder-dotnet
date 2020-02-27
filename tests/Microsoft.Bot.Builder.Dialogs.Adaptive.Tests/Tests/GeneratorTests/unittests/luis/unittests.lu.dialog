@@ -1,0 +1,7 @@
+{
+    "$type": "Microsoft.MultiLanguageRecognizer",
+    "recognizers": {
+        "en-us": "unittests.en-us.lu",
+        "": "unittests.en-us.lu"
+    }
+}

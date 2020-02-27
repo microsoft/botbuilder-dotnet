@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Handover
     public class FacebookThreadControl
     {
         /// <summary>
-        /// Gets or Sets the message sent from the requester.
+        /// Gets or sets the message sent from the requester.
         /// </summary>
         /// <remarks>
         /// Example: "All yours!".

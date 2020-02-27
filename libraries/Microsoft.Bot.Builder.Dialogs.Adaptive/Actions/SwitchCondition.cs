@@ -3,11 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Expressions;
+using AdaptiveExpressions;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -22,8 +22,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         private Dictionary<string, Expression> caseExpressions = null;
 
-        private Expression condition;
-        private Expression disabled;
         private ActionScope defaultScope;
 
         [JsonConstructor]
@@ -34,17 +32,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets condition expression against memory Example: "user.age > 18".
+        /// Gets or sets value expression against memory Example: "user.age".
         /// </summary>
         /// <value>
-        /// Condition expression against memory Example: "user.age > 18".
+        /// Value Expression against memory. This value expression will be combined with value expression in case statements to make a bool expression.
         /// </value>
         [JsonProperty("condition")]
-        public string Condition
-        {
-            get { return condition?.ToString(); }
-            set { condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public Expression Condition { get; set; }
 
         /// <summary>
         /// Gets or sets an optional expression which if is true will disable this action.
@@ -56,11 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets default case.
@@ -113,7 +103,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -127,13 +119,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     {
                         this.caseExpressions = new Dictionary<string, Expression>();
 
-                        foreach (var c in this.Cases)
+                        foreach (var cse in this.Cases)
                         {
-                            // Values for cases are always coerced to string
-                            var caseCondition = Expression.EqualsExpression(this.condition, c.CreateValueExpression());
+                            Expression caseExpression = null;
+
+                            // Values for cases are always coerced to constant
+                            if (long.TryParse(cse.Value, out long i))
+                            {
+                                caseExpression = Expression.ConstantExpression(i);
+                            }
+                            else if (float.TryParse(cse.Value, out float f))
+                            {
+                                caseExpression = Expression.ConstantExpression(f);
+                            }
+                            else if (bool.TryParse(cse.Value, out bool b))
+                            {
+                                caseExpression = Expression.ConstantExpression(b);
+                            }
+                            else
+                            {
+                                caseExpression = Expression.ConstantExpression(cse.Value);
+                            }
+
+                            var caseCondition = Expression.EqualsExpression(this.Condition, caseExpression);
 
                             // Map of expression to actions
-                            this.caseExpressions[c.Value] = caseCondition;
+                            this.caseExpressions[cse.Value] = caseCondition;
                         }
                     }
                 }
@@ -142,7 +153,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 foreach (var caseScope in this.Cases)
                 {
-                    var (value, error) = this.caseExpressions[caseScope.Value].TryEvaluate(dc.GetState());
+                    var (value, error) = this.caseExpressions[caseScope.Value].TryEvaluate(dcState);
 
                     if (error != null)
                     {
@@ -167,7 +178,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}({this.Condition})";
+            return $"{this.GetType().Name}({this.Condition?.ToString()})";
         }
     }
 }

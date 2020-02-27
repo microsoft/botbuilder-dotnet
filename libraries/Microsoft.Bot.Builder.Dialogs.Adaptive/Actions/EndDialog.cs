@@ -5,7 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Expressions;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -18,18 +18,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.EndDialog";
 
-        private Expression value;
-        private Expression disabled;
-
         [JsonConstructor]
-        public EndDialog(string value = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public EndDialog(object value = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
 
-            if (!string.IsNullOrEmpty(value))
+            if (value != null)
             {
-                this.Value = value;
+                this.Value = new ValueExpression(value);
             }
         }
 
@@ -43,11 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets a value expression for the result to be returned to the caller.
@@ -56,11 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A value expression for the result to be returned to the caller.
         /// </value>
         [JsonProperty("value")]
-        public string Value
-        {
-            get { return value?.ToString(); }
-            set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public ValueExpression Value { get; set; } 
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -69,14 +58,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             if (this.Value != null)
             {
-                var (result, error) = this.value.TryEvaluate(dc.GetState());
+                var (result, error) = this.Value.TryGetValue(dcState);
                 return await EndParentDialogAsync(dc, result, cancellationToken).ConfigureAwait(false);
             }
 
@@ -104,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}({this.Value ?? string.Empty})";
+            return $"{this.GetType().Name}({this.Value?.ToString() ?? string.Empty})";
         }
     }
 }

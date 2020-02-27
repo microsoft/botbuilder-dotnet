@@ -22,7 +22,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "dialog.name",
-                        "value": "'foo'"
+                        "value": "='foo'"
                     },
                     {
                         "$kind": "Microsoft.TextInput",
@@ -31,7 +31,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{turn.recognized.intent}"
+                        "activity": "${turn.recognized.intent}"
                     }
                 ]
             }

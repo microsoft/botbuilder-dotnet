@@ -2,9 +2,16 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection.Emit;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -12,32 +19,27 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration((hostingContext, config) =>
-            {
-                var env = hostingContext.HostingEnvironment;
-                var luisAuthoringRegion = Environment.GetEnvironmentVariable("LUIS_AUTHORING_REGION") ?? "westus";
+        public static void Help()
+        {
+            Trace.TraceInformation("--root <PATH>: Absolute path to the root directory for declarative resources all *.main.dialog be options.  Default current directory");
+            Trace.TraceInformation("--region <REGION>: LUIS endpoint region.  Default westus");
+            Trace.TraceInformation("--environment <ENVIRONMENT>: LUIS environment settings to use.  Default is user alias.");
+            Trace.TraceInformation("--help: This help.");
+            System.Environment.Exit(-1);
+        }
 
-                config
-                    .AddUserSecrets<Startup>()
-                    .AddJsonFile($"luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
-                    .AddJsonFile($"luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
-                    .AddJsonFile($@"samples\GeneratedForm\luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
-                    .AddJsonFile($@"samples\GeneratedForm\luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
-                    .AddJsonFile($@"samples\activity\luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
-                    .AddJsonFile($@"samples\activity\luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
-                    .AddJsonFile($@"samples\contact\luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
-                    .AddJsonFile($@"samples\contact\luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
-                    .AddJsonFile($@"samples\opportunity\luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
-                    .AddJsonFile($@"samples\opportunity\luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
-                    .AddJsonFile($@"samples\test\luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false)
-                    .AddJsonFile($@"samples\test\luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: false);
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((hostingContext, builder) =>
+            {
+                builder.UseLuisSettings();
             })
-            .UseStartup<Startup>()
-            .Build();
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
     }
 }

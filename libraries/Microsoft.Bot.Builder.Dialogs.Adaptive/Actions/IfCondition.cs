@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Expressions;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -19,9 +19,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.IfCondition";
-
-        private Expression condition;
-        private Expression disabled;
 
         private ActionScope trueScope;
         private ActionScope falseScope;
@@ -43,11 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The memory expression. 
         /// </value>
         [JsonProperty("condition")]
-        public string Condition
-        {
-            get { return condition?.ToString(); }
-            set { condition = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Condition { get; set; } = false;
 
         /// <summary>
         /// Gets or sets an optional expression which if is true will disable this action.
@@ -59,11 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; } 
 
         [JsonProperty("actions")]
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
@@ -109,8 +98,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
+            
+            var dcState = dc.GetState();
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -118,9 +109,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Ensure planning context
             if (dc is SequenceContext planning)
             {
-                var (value, error) = condition.TryEvaluate(dc.GetState());
-                var conditionResult = error == null && value != null && (bool)value;
-                if (conditionResult == true && TrueScope.Actions.Any())
+                var (conditionResult, error) = this.Condition.TryGetValue(dcState);
+                if (error == null && conditionResult == true && TrueScope.Actions.Any())
                 {
                     // replace dialog with If True Action Scope
                     return await dc.ReplaceDialogAsync(this.TrueScope.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -142,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected override string OnComputeId()
         {
             var idList = Actions.Select(s => s.Id);
-            return $"{this.GetType().Name}({this.Condition}|{string.Join(",", idList)})";
+            return $"{this.GetType().Name}({this.Condition?.ToString()}|{string.Join(",", idList)})";
         }
     }
 }

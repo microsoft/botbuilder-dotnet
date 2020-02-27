@@ -16,6 +16,7 @@
         },
         "condition": {
             "$role": "expression",
+            "type": "boolean",
             "title": "Condition",
             "description": "Expression to evaluate.",
             "examples": [
@@ -24,6 +25,7 @@
         },
         "disabled": {
             "$role": "expression",
+            "type": "boolean",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [

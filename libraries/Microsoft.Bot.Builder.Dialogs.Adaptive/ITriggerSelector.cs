@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
@@ -14,12 +13,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// </summary>
     public interface ITriggerSelector
     {
-        /// <summary>
-        /// Gets or sets the expression parser for expressions.
-        /// </summary>
-        /// <value>Expression parser.</value>
-        IExpressionParser Parser { get; set; }
-
         /// <summary>
         /// Initialize the selector with the set of rules.
         /// </summary>

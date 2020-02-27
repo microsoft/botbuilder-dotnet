@@ -12,19 +12,22 @@
         },
         "userId": {
             "$role": "expression",
+            "type": "string",
             "title": "ActivityId",
             "description": "expression to an activityId to get the members. If none is defined then the current activity id will be used.",
             "examples": [
-                "$lastActivity"
+                "=$lastActivity"
             ]
         },
         "connectionName": {
+            "$role": "expression",
             "type": "string",
             "title": "Connection Name",
             "description": "Connection name that was used with OAuthInput to log a user in."
         },
         "disabled": {
             "$role": "expression",
+            "type": "boolean",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [

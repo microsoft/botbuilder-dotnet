@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Microsoft.Bot.Expressions;
+using AdaptiveExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             return $"{this.GetType().Name}({this.Intent})[{string.Join(",", this.Entities)}]";
         }
 
-        public override Expression GetExpression(IExpressionParser factory)
+        public override Expression GetExpression()
         {
             // add constraints for the intents property
             if (string.IsNullOrEmpty(this.Intent))
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 throw new ArgumentNullException(nameof(this.Intent));
             }
 
-            var intentExpression = factory.Parse($"{TurnPath.RECOGNIZED}.intent == '{this.Intent.TrimStart('#')}'");
+            var intentExpression = Expression.Parse($"{TurnPath.RECOGNIZED}.intent == '{this.Intent.TrimStart('#')}'");
 
             // build expression to be INTENT AND (@ENTITY1 != null AND @ENTITY2 != null)
             if (this.Entities.Any())
@@ -74,19 +74,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                     {
                         if (entity.StartsWith("@") || entity.StartsWith(TurnPath.RECOGNIZED, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            return factory.Parse($"exists({entity})");
+                            return Expression.Parse($"exists({entity})");
                         }
 
-                        return factory.Parse($"exists(@{entity})");
+                        return Expression.Parse($"exists(@{entity})");
                     }).ToArray()));
             }
 
-            return Expression.AndExpression(intentExpression, base.GetExpression(factory));
+            return Expression.AndExpression(intentExpression, base.GetExpression());
         }
 
         protected override ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
         {
-            var recognizerResult = planning.GetState().GetValue<RecognizerResult>($"{TurnPath.DIALOGEVENT}.value");
+            var dcState = planning.GetState();
+            var recognizerResult = dcState.GetValue<RecognizerResult>($"{TurnPath.DIALOGEVENT}.value");
             if (recognizerResult != null)
             {
                 var (name, score) = recognizerResult.GetTopScoringIntent();
@@ -97,7 +98,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                     // proposed turn state changes
                     Turn = new Dictionary<string, object>()
                     {
-                        { "recognized", recognizerResult }
                     },
                     Actions = new List<ActionState>()
                     {

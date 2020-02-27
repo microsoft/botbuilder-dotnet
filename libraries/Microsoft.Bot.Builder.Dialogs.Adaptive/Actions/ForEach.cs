@@ -2,11 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Expressions;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -22,8 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         private const string INDEX = "dialog.foreach.index";
         private const string VALUE = "dialog.foreach.value";
-
-        private Expression disabled;
 
         [JsonConstructor]
         public Foreach([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
@@ -42,11 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets property path expression to the collection of items.
@@ -55,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Property path expression to the collection of items.
         /// </value>
         [JsonProperty("itemsProperty")]
-        public string ItemsProperty { get; set; }
+        public StringExpression ItemsProperty { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -64,12 +57,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            dc.GetState().SetValue(INDEX, -1);
+            dcState.SetValue(INDEX, -1);
             return await this.NextItemAsync(dc, cancellationToken).ConfigureAwait(false);
         }
 
@@ -91,17 +86,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected virtual async Task<DialogTurnResult> NextItemAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             // Get list information
-            var itemsProperty = new ExpressionEngine().Parse(this.ItemsProperty);
-            var (itemList, error) = itemsProperty.TryEvaluate(dc.GetState());
-            var list = JArray.FromObject(itemList);
-            var index = dc.GetState().GetIntValue(INDEX);
+            var dcState = dc.GetState();
+            var list = dcState.GetValue<JArray>(this.ItemsProperty.GetValue(dcState));
+            var index = dcState.GetIntValue(INDEX);
 
             // Next item
             if (++index < list.Count)
             {
                 // Persist index and value
-                dc.GetState().SetValue(VALUE, list[index]);
-                dc.GetState().SetValue(INDEX, index);
+                dcState.SetValue(VALUE, list[index]);
+                dcState.SetValue(INDEX, index);
 
                 // Start loop
                 return await this.BeginActionAsync(dc, 0, cancellationToken).ConfigureAwait(false);
@@ -115,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}({this.ItemsProperty})";
+            return $"{this.GetType().Name}({this.ItemsProperty?.ToString()})";
         }
     }
 }

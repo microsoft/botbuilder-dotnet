@@ -5,8 +5,6 @@
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-
-                
                 "intent": "cancel",
                 "pattern": "cancel"
             }
@@ -24,11 +22,11 @@
                     "$kind": "Microsoft.TextInput",
                     "prompt": "Hello, what is your name?",
                     "property": "user.name",
-                    "value": "user.name"
+                    "value": "=user.name"
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "Hello @{user.name}, nice to meet you! (type cancel to end this)"
+                    "activity": "Hello ${user.name}, nice to meet you! (type cancel to end this)"
                 },
                 {
                     "$kind": "Microsoft.EndTurn"

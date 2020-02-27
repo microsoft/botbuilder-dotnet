@@ -3,7 +3,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
@@ -11,28 +10,26 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             this.Configuration = configuration;
             this.HostingEnvironment = env;
-
-            // TODO get rid of this dependency
-            TypeFactory.Configuration = Configuration;
         }
 
         private IConfiguration Configuration { get; set; }
 
-        private IHostingEnvironment HostingEnvironment { get; set; }
+        private IWebHostEnvironment HostingEnvironment { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddControllers().AddNewtonsoftJson();
 
             // Create the credential provider to be used with the Bot Framework Adapter.
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
@@ -49,7 +46,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             // Create the Conversation state. (Used by the Dialog system itself.)
             services.AddSingleton<ConversationState>();
 
-            var resourceExplorer = ResourceExplorer.LoadProject(this.HostingEnvironment.ContentRootPath);
+            var resourceExplorer = new ResourceExplorer().AddFolder(this.Configuration.GetValue<string>("BotRoot"));
             services.AddSingleton(resourceExplorer);
 
             // Create the bot  In this case the ASP Controller is expecting an IBot.
@@ -57,21 +54,23 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
+            app.UseDefaultFiles()
+                .UseStaticFiles()
+                .UseRouting()
+                .UseAuthorization()
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
 
-            app.UseMvc();
+            // app.UseHttpsRedirection();
         }
     }
 }

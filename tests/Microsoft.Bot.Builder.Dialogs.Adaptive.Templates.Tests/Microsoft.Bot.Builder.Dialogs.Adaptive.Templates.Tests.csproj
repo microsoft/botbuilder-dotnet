@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
 
@@ -22,6 +22,8 @@
     <None Remove="lg\NormalStructuredLG.lg" />
     <None Remove="adaptiveCard.json" />
     <None Remove="lg\herocard.json" />
+    <None Remove="lg\c.en.lg" />
+    <None Remove="lg\c.lg" />
   </ItemGroup>
     
   <ItemGroup>
@@ -34,6 +36,12 @@
     <Content Include="lg\herocard.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="lg\c.en.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lg\c.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
     
   <ItemGroup>
@@ -43,6 +51,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
   </ItemGroup>
 

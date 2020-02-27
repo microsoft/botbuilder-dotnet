@@ -1,0 +1,68 @@
+#
+# Runs functional tests against the Twilio channel.
+#
+
+# "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
+name: $(Build.BuildId)
+pool:
+  vmImage: 'windows-2019'
+
+variables:
+  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
+  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
+  BuildPlatform: 'any cpu'
+  BuildConfiguration: 'debug'
+  Parameters.solution: Microsoft.Bot.Builder.sln
+#  AppId: define this in Azure
+#  AppSecret: define this in Azure
+#  AzureSubscription: define this in Azure
+#  BotGroup: define this in Azure
+#  BotName: define this in Azure
+#  SenderNumber: define this in Azure
+#  TwilioAccountSid: define this in Azure
+#  TwilioAuthToken: define this in Azure
+#  TwilioNumber: define this in Azure
+
+steps:
+- template: ci-build-steps.yml
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish Twilio.TestBot'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Twilio.TestBot\Microsoft.Bot.Builder.Adapters.Twilio.TestBot.csproj'
+    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Twilio.TestBot\PublishedBot'
+    modifyOutputPath: false
+
+- task: AzureCLI@1
+  displayName: 'Deploy bot to Azure'
+  inputs:
+    azureSubscription: $(AzureSubscription)
+    scriptLocation: inlineScript
+    inlineScript: |
+     call az deployment create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Twilio.TestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId="$(AppId)" appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" twilioNumber="$(TwilioNumber)" twilioAccountSid="$(TwilioAccountSid)"  twilioAuthToken="$(TwilioAuthToken)"
+     call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Twilio.TestBot\PublishedBot\PublishedBot.zip"
+
+- powershell: |
+   echo '##vso[task.setvariable variable=SENDER_NUMBER]$(SenderNumber)'
+   echo '##vso[task.setvariable variable=TWILIO_ACCOUNT_SID]$(TwilioAccountSid)'
+   echo '##vso[task.setvariable variable=TWILIO_NUMBER]$(TwilioNumber)'
+   echo '##vso[task.setvariable variable=TWILIO_AUTH_TOKEN]$(TwilioAuthToken)'
+   echo '##vso[task.setvariable variable=TwilioValidationUrl]https://$(BotName).azurewebsites.net/api/messages'
+  displayName: 'Set environment variables'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
+  inputs:
+    command: test
+    projects: '$(System.DefaultWorkingDirectory)\FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj'
+    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter TwilioNumberTests'
+
+- task: AzureCLI@1
+  displayName: 'Delete resources'
+  inputs:
+    azureSubscription: $(AzureSubscription)
+    scriptLocation: inlineScript
+    inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
+  condition: always()

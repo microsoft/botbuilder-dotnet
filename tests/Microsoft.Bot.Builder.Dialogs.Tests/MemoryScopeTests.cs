@@ -3,6 +3,7 @@
 
 #pragma warning disable SA1402 // File may only contain a single type
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+#pragma warning disable SA1201 // Elements should appear in the correct order
 
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Extensions.Configuration;
@@ -41,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             await CreateDialogContext(async (dc, ct) =>
             {
-                var dsm = new DialogStateManager(dc);
+                var dsm = dc.GetState() as DialogStateManager;
                 foreach (var memoryScope in dsm.Configuration.MemoryScopes.Where(ms => !(ms is ThisMemoryScope || ms is DialogMemoryScope || ms is ClassMemoryScope || ms is DialogClassMemoryScope)))
                 {
                     var memory = memoryScope.GetMemory(dc);
@@ -64,6 +68,57 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }).StartTestAsync();
         }
 
+        internal class BotStateTestDialog : Dialog
+        {
+            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                {
+                    var botState = dc.Context.TurnState.Get<ConversationState>();
+                    var property = botState.CreateProperty<string>("test");
+                    await property.SetAsync(dc.Context, "cool").ConfigureAwait(false);
+
+                    var result = dc.GetState().GetValue<string>("conversation.test");
+                    Assert.AreEqual("cool", result);
+                    dc.GetState().SetValue("conversation.test", "cool2");
+                    Assert.AreEqual("cool2", await property.GetAsync(dc.Context));
+                }
+
+                {
+                    var botState = dc.Context.TurnState.Get<UserState>();
+                    var property = botState.CreateProperty<string>("test");
+                    await property.SetAsync(dc.Context, "cool").ConfigureAwait(false);
+
+                    var result = dc.GetState().GetValue<string>("user.test");
+                    Assert.AreEqual("cool", result);
+                    dc.GetState().SetValue("user.test", "cool2");
+                    Assert.AreEqual("cool2", await property.GetAsync(dc.Context));
+                }
+
+                await dc.Context.SendActivityAsync("next");
+                return await dc.EndDialogAsync();
+            }
+        }
+
+        [TestMethod]
+        public async Task BotStateScopes()
+        {
+            var storage = new MemoryStorage();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .UseStorage(storage)
+                .UseState(new UserState(storage), new ConversationState(storage))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
+            DialogManager dm = new DialogManager(new BotStateTestDialog());
+
+            await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
+               {
+                   await dm.OnTurnAsync(turnContext);
+               })
+                .Send("hello")
+                    .AssertReply("next")
+                .StartTestAsync();
+        }
+
         [TestMethod]
         public async Task DialogMemoryScopeTest()
         {
@@ -71,7 +126,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .UseStorage(storage)
                 .UseState(new UserState(storage), new ConversationState(storage))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             DialogManager dm = new DialogManager(new MemoryScopeTestDialog());
 
@@ -91,12 +146,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .AddInMemoryCollection(new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("test", "yoyo") })
                 .AddJsonFile(@"test.settings.json")
                 .Build();
+
+            HostContext.Current.Set<IConfiguration>(configuration);
+
             var storage = new MemoryStorage();
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .UseStorage(storage)
-                .Use(new RegisterClassMiddleware<Extensions.Configuration.IConfiguration>(configuration))
                 .UseState(new UserState(storage), new ConversationState(storage))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             DialogManager dm = new DialogManager(new SettingsScopeTestDialog());
 
@@ -138,9 +195,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .UseStorage(storage)
                 .UseState(new UserState(storage), new ConversationState(storage))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
-            DialogManager dm = new DialogManager(new PathResolverTestDialog());
+            DialogManager dm = new DialogManager(new PathResolverTestDialog())
+                .UseResourceExplorer(new ResourceExplorer())
+                .UseLanguageGeneration();
 
             await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
             {

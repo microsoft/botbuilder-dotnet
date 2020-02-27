@@ -5,7 +5,6 @@
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-                
                 "intent": "Cancel",
                 "pattern": "(?i)cancel"
             }
@@ -23,14 +22,14 @@
                             "$kind": "Microsoft.TextInput",
                             "property": "user.name",
                             "prompt": "Hello, I'm Zoidberg. What is your name?",
-                            "outputFormat": "trim(this.value)",
+                            "outputFormat": "=trim(this.value)",
                             "allowInterruptions": "true"
                         }
                     ]
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "Hello @{user.name}, nice to talk to you!"
+                    "activity": "Hello ${user.name}, nice to talk to you!"
                 },
                 {
                     "$kind": "Microsoft.IfCondition",
@@ -40,14 +39,14 @@
                             "$kind": "Microsoft.TextInput",
                             "property": "user.name2",
                             "prompt": "Hello, I'm Zoidberg. What is your name?",
-                            "outputFormat": "trim(this.value)",
+                            "outputFormat": "=trim(this.value)",
                             "allowInterruptions": "!#Cancel"
                         }
                     ]
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "Hello @{user.name2}, nice to talk to you!"
+                    "activity": "Hello ${user.name2}, nice to talk to you!"
                 }
             ]
         },

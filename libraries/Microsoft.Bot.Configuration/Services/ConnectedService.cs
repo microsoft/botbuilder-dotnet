@@ -3,9 +3,11 @@
 
 namespace Microsoft.Bot.Configuration
 {
+    using System;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
+    [Obsolete("This class is deprecated.  See https://aka.ms/bot-file-basics for more information.", false)]
     public class ConnectedService
     {
         public ConnectedService(string type)

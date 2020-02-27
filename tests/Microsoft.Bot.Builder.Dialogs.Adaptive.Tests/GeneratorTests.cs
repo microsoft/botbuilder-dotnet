@@ -1,9 +1,11 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
+using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Bot.Builder.MockLuis;
+using Microsoft.Bot.Builder.AI.Luis.Testing;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,24 +17,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         private readonly string sandwichDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\GeneratorTests\sandwich\");
         private readonly string unitTestsDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\GeneratorTests\unittests\");
 
-        [TestMethod]
-        public async Task SandwichOrder()
+        public static ResourceExplorer ResourceExplorer { get; set; }
+
+        public TestContext TestContext { get; set; }
+
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
         {
-            var config = new ConfigurationBuilder()
-                .AddInMemoryCollection()
-                .UseLuisSettings(sandwichDirectory, "generatorTests")
-                .Build();
-            await TestUtils.RunTestScript("generator_sandwich.test.dialog", configuration: config);
+            ResourceExplorer = new ResourceExplorer()
+                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(GeneratorTests)), monitorChanges: false)
+                .RegisterType(LuisAdaptiveRecognizer.DeclarativeType, typeof(MockLuisRecognizer), new MockLuisLoader());
         }
 
         [TestMethod]
-        public async Task UnitTests()
+        public async Task Generator_sandwich()
         {
             var config = new ConfigurationBuilder()
-                .AddInMemoryCollection()
-                .UseLuisSettings(unitTestsDirectory, "generatorTests")
+                .UseMockLuisSettings(sandwichDirectory, "TestBot")
                 .Build();
-            await TestUtils.RunTestScript("generator_unittests.test.dialog", configuration: config);
+            HostContext.Current.Set<IConfiguration>(config);
+
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Generator_unittests()
+        {
+            var config = new ConfigurationBuilder()
+                .UseMockLuisSettings(unitTestsDirectory, "TestBot")
+                .Build();
+            HostContext.Current.Set<IConfiguration>(config);
+
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
     }
 }

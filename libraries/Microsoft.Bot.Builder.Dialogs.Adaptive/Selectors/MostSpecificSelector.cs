@@ -1,13 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.TriggerTrees;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Expressions;
-using Microsoft.Bot.Expressions.TriggerTrees;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
@@ -31,14 +29,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         [JsonProperty("selector")]
         public ITriggerSelector Selector { get; set; }
 
-        [Newtonsoft.Json.JsonIgnore]
-        public IExpressionParser Parser { get; set; } = new ExpressionEngine(TriggerTree.LookupFunction);
-
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
             foreach (var conditional in conditionals)
             {
-                _tree.AddTrigger(conditional.GetExpression(Parser), conditional);
+                _tree.AddTrigger(conditional.GetExpression(), conditional);
             }
         }
 

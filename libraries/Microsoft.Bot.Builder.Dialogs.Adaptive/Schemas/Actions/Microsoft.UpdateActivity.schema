@@ -10,6 +10,24 @@
             "title": "Id",
             "description": "Optional id for the dialog"
         },
+        "disabled": {
+            "$role": "expression",
+            "type": "boolean",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
+        "activityId": {
+            "$role": "expression",
+            "type": "string",
+            "title": "Activity Id",
+            "dDescription": "An string expression with the activity id to update.",
+            "examples": [
+                "=dialog.lastActivityId"
+            ]
+        },
         "activity": {
             "$kind": "Microsoft.IActivityTemplate",
             "title": "Activity",

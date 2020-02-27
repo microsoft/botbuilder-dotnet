@@ -8,8 +8,8 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SetProperty",
-                    "value": "@title",
-                    "property": "dialog.todo"
+                    "property": "dialog.todo",
+                    "value": "=@title"
                 },
                 {
                     "$kind": "Microsoft.TextInput",
@@ -21,21 +21,21 @@
                     "condition": "user.todos == null",
                     "actions": [
                         {
-                            "$kind": "Microsoft.InitProperty",
+                            "$kind": "Microsoft.SetProperty",
                             "property": "user.todos",
-                            "type": "array"
+                            "value": "=[]"
                         }
                     ]
                 },
                 {
                     "$kind": "Microsoft.EditArray",
-                    "changeType": "Push",
+                    "changeType": "push",
                     "itemsProperty": "user.todos",
-                    "value": "dialog.todo"
+                    "value": "=dialog.todo"
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "Successfully added a todo named \"@{dialog.todo}\""
+                    "activity": "Successfully added a todo named \"${dialog.todo}\""
                 }
             ]
         }

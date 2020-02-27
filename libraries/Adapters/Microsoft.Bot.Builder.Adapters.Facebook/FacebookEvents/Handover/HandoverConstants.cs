@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Handover
         public const string TakeThreadControl = "take_thread_control";
 
         /// <summary>
-        /// Constant value for the Inbox Id of any page in Facebook.
+        /// Constant value for the inbox ID of any page in Facebook.
         /// </summary>
         public const string PageInboxId = "263902037430900";
 

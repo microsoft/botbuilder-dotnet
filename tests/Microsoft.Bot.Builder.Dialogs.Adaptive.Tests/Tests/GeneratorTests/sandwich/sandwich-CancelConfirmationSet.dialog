@@ -1,13 +1,14 @@
 
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/form/schemas/sdk.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnAssignEntity",
     "property": "CancelConfirmation",
+    "entity": "Confirmation",
     "actions": [
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$CancelConfirmation",
-            "value": "@Confirmation"
+            "value": "=@Confirmation"
         },
         {
             "$kind": "Microsoft.IfCondition",

@@ -43,16 +43,24 @@ fragment NUMBER: '0'..'9';
 
 fragment WHITESPACE : ' '|'\t'|'\ufeff'|'\u00a0';
 
+fragment EMPTY_OBJECT: '{' WHITESPACE* '}';
+
 fragment STRING_LITERAL : ('\'' (~['\r\n])* '\'') | ('"' (~["\r\n])* '"');
 
-fragment EXPRESSION_FRAGMENT : '@' '{' (STRING_LITERAL| ~[\r\n{}'"] )*? '}';
+fragment STRING_INTERPOLATION : '`' ('\\`' | ~'`')* '`';
+
+fragment EXPRESSION_FRAGMENT : '$' '{' (STRING_LITERAL | STRING_INTERPOLATION | EMPTY_OBJECT | ~[\r\n{}'"`] )+ '}'?;
 
 fragment ESCAPE_CHARACTER_FRAGMENT : '\\' ~[\r\n]?;
 
 
 // top level elements
+OPTIONS
+  : '>' WHITESPACE* '!#' ~('\r'|'\n')+
+  ;
+
 COMMENTS
-  : ('>'|'$') ~('\r'|'\n')+ -> skip
+  : '>' ~('\r'|'\n')+ -> skip
   ;
 
 WS
@@ -206,7 +214,7 @@ TEXT_IN_STRUCTURE_NAME
 mode STRUCTURE_BODY_MODE;
 
 STRUCTURED_COMMENTS
-  : ('>'|'$') ~[\r\n]* '\r'?'\n' { !inStructuredValue && beginOfStructureProperty}? -> skip
+  : '>' ~[\r\n]* '\r'?'\n' { !inStructuredValue && beginOfStructureProperty}? -> skip
   ;
 
 WS_IN_STRUCTURE_BODY
@@ -226,7 +234,7 @@ STRUCTURE_IDENTIFIER
   ;
 
 STRUCTURE_EQUALS
-  : '=' {inStructuredValue = true;} 
+  : '=' {!inStructuredValue}? {inStructuredValue = true;} 
   ;
 
 STRUCTURE_OR_MARK

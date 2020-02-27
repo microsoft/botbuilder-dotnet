@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Expressions;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -20,8 +20,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.DeleteProperties";
         
-        private Expression disabled;
-
         [JsonConstructor]
         public DeleteProperties([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
@@ -39,11 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets properties to remove.
@@ -55,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Collection of property paths to remove.
         /// </value>
         [JsonProperty("properties")]
-        public List<string> Properties { get; set; } = new List<string>();
+        public List<StringExpression> Properties { get; set; } = new List<StringExpression>();
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -64,7 +58,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -76,7 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 {
                     foreach (var property in this.Properties)
                     {
-                        dc.GetState().RemoveValue(property);
+                        dcState.RemoveValue(property.GetValue(dcState));
                     }
                 }
 

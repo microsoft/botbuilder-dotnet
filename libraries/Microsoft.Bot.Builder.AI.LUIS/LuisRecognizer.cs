@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
     /// <summary>
     /// A LUIS based implementation of <see cref="ITelemetryRecognizer"/>.
     /// </summary>
-    public class LuisRecognizer : Recognizer, ITelemetryRecognizer
+    public class LuisRecognizer : ITelemetryRecognizer
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.LuisRecognizer";
@@ -48,7 +48,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
         /// </summary>
-        /// <param name="application">The LUIS application to use to recognize text.</param>
         /// <param name="recognizerOptions"> The LUIS recognizer version options.</param>
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
         public LuisRecognizer(LuisRecognizerOptions recognizerOptions, HttpClientHandler clientHandler = null)
@@ -199,11 +198,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return result;
         }
 
-        public override Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
-        {
-            return this.RecognizeAsync(dialogContext.Context, cancellationToken);
-        }
-
         /// <summary>
         /// Runs an utterance through a recognizer and returns a strongly-typed recognizer result.
         /// </summary>
@@ -351,18 +345,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
             var result = new T();
             result.Convert(await RecognizeInternalAsync(turnContext, recognizerOptions, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false));
             return result;
-        }
-
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken = default)
-        {
-            // TODO: Review how to better integrate this--it assumes the turn context contains the text/locale
-            var context = dialogContext.Context;
-            if (context.Activity == null || context.Activity.Type != ActivityTypes.Message || context.Activity.Text != text || context.Activity.Locale != locale)
-            {
-                throw new ArgumentException("TurnContext is different than text");
-            }
-
-            return await RecognizeAsync(dialogContext.Context, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

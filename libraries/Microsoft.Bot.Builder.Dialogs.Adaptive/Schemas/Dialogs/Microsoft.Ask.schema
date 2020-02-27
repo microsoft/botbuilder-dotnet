@@ -11,12 +11,13 @@
         {
             "properties": {
                 "expectedProperties": {
+                    "$role": "expression",
+                    "title": "Expected Properties",
+                    "description": "Properties expected to be filled by entities from the user",
                     "type": "array",
                     "items": {
                         "type": "string"
-                    },
-                    "title": "Expected Properties",
-                    "description": "Properties expected to be filled by entities from the user"
+                    }
                 }
             }
         }

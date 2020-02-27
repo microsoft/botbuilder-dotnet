@@ -5,7 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Expressions;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -18,8 +18,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.TraceActivity";
-
-        private Expression disabled;
 
         [JsonConstructor]
         public TraceActivity([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -37,11 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets name of the trace activity.
@@ -50,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Name of the trace activity.
         /// </value>
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public StringExpression Name { get; set; } 
 
         /// <summary>
         /// Gets or sets value type of the trace activity.
@@ -59,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Value type of the trace activity.
         /// </value>
         [JsonProperty("valueType")]
-        public string ValueType { get; set; }
+        public StringExpression ValueType { get; set; } 
 
         /// <summary>
         /// Gets or sets value expression to send as the value. 
@@ -68,14 +62,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Property binding to memory to send as the value. 
         /// </value>
         [JsonProperty("value")]
-        public string Value { get; set; }
+        public ValueExpression Value { get; set; } 
 
         /// <summary>
         /// Gets or sets a label to use when describing a trace activity.
         /// </summary>
         /// <value>The label to use. (default will use Name or parent dialog.id).</value>
         [JsonProperty]
-        public string Label { get; set; }
+        public StringExpression Label { get; set; } 
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -84,29 +78,41 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             object value = null;
-            if (!string.IsNullOrEmpty(this.Value))
+            if (this.Value != null)
             {
-                value = dc.GetState().GetValue<object>(this.Value);
+                var (val, valError) = this.Value.TryGetValue(dcState);
+                if (valError != null)
+                {
+                    throw new Exception(valError);
+                }
+
+                value = val;
             }
             else
             {
-                value = dc.GetState().GetMemorySnapshot();
+                value = dcState.GetMemorySnapshot();
             }
 
-            var traceActivity = Activity.CreateTraceActivity(this.Name ?? "Trace", valueType: this.ValueType ?? "State", value: value, label: this.Label ?? this.Name ?? dc.Parent?.ActiveDialog?.Id);
+            var name = this.Name?.GetValue(dcState);
+            var valueType = this.ValueType?.GetValue(dcState);
+            var label = this.Label?.GetValue(dcState);
+
+            var traceActivity = Activity.CreateTraceActivity(name ?? "Trace", valueType: valueType ?? "State", value: value, label: label ?? name ?? dc.Parent?.ActiveDialog?.Id);
             await dc.Context.SendActivityAsync(traceActivity, cancellationToken).ConfigureAwait(false);
             return await dc.EndDialogAsync(traceActivity, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}({Name})";
+            return $"{this.GetType().Name}({Name?.ToString()})";
         }
     }
 }

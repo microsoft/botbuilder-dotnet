@@ -1,0 +1,7 @@
+# AskOrdinalv2
+- ${askString('Ordinalv2')}
+
+# Ordinalv2Name
+- ordinalv2
+
+[unittests-common.lg](unittests-common.lg)

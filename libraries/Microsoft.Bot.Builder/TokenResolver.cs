@@ -140,7 +140,7 @@ namespace Microsoft.Bot.Builder
             tokenResponse.Entities = new List<Entity>().ToArray();
 
             // IEventActivity properties
-            tokenResponse.Name = "tokens/response";
+            tokenResponse.Name = SignInConstants.TokenResponseEventName;
             tokenResponse.RelatesTo = relatesTo;
             tokenResponse.Value = new TokenResponse()
             {

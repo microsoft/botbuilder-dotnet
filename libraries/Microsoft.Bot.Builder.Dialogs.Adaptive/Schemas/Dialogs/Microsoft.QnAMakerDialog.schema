@@ -8,21 +8,24 @@
     "properties": {
         "knowledgeBaseId": {
             "$role": "expression",
+            "type": "string",
             "title": "KnowledgeBase Id",
             "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
-            "default": "settings.qna.knowledgebaseid"
+            "default": "=settings.qna.knowledgebaseid"
         },
         "endpointKey": {
             "$role": "expression",
+            "type": "string",
             "title": "Endpoint Key",
             "description": "Endpoint key for the QnA Maker KB.",
-            "default": "settings.qna.endpointkey"
+            "default": "=settings.qna.endpointkey"
         },
         "hostname": {
             "$role": "expression",
+            "type": "string",
             "title": "Hostname",
             "description": "Hostname for your QnA Maker service.",
-            "default": "settings.qna.hostname",
+            "default": "=settings.qna.hostname",
             "examples": [
                 "https://yourserver.azurewebsites.net/qnamaker"
             ]
@@ -34,18 +37,21 @@
             "default": "Sorry, I did not find an answer."
         },
         "threshold": {
+            "$role": "expression",
             "type": "number",
             "title": "Threshold",
             "description": "Threshold score to filter results.",
             "default": 0.3
         },
         "activeLearningCardTitle": {
+            "$role": "expression",
             "type": "string",
             "title": "Active learning card title",
             "description": "Title for active learning suggestions card.",
             "default": "Did you mean:"
         },
         "cardNoMatchText": {
+            "$role": "expression",
             "type": "string",
             "title": "Card no match text",
             "description": "Text for no match option.",
@@ -58,6 +64,7 @@
             "default": "Thanks for the feedback."
         },
         "strictFilters": {
+            "$role": "expression",
             "type": "array",
             "title": "Strict Filters",
             "description": "Metadata filters to use when calling the QnA Maker KB.",
@@ -78,6 +85,7 @@
             }
         },
         "top": {
+            "$role": "expression",
             "type": "number",
             "title": "Top",
             "description": "The number of answers you want to retrieve.",
@@ -93,6 +101,11 @@
             "type": "string",
             "title": "RankerType",
             "description": "Type of Ranker.",
+            "enum": [
+                "Default",
+                "QuestionOnly",
+                "AutoSuggestQuestion"
+            ],
             "default": "Default"
         }
     },

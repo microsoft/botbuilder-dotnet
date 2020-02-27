@@ -8,13 +8,13 @@ cardContent
 
 # nameTemplate
 - ```
-@{name}
+${name}
 ```
-- @{name}
+- ${name}
 
 # refTemplate
 - ```
-@{hello()}
+${hello()}
 ```
 
 # hello

@@ -5,7 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Expressions;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -17,8 +17,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.CancelAllDialogs";
-
-        private Expression disabled;
 
         [JsonConstructor]
         public CancelAllDialogs([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -37,11 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets event name. 
@@ -50,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Event name. 
         /// </value>
         [JsonProperty("eventName")]
-        public string EventName { get; set; }
+        public StringExpression EventName { get; set; }
 
         /// <summary>
         /// Gets or sets value expression for EventValue.
@@ -59,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Value expression for EventValue.
         /// </value>
         [JsonProperty("eventValue")]
-        public string EventValue { get; set; }
+        public StringExpression EventValue { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -68,24 +62,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            object eventValue = null;
-            if (this.EventValue != null)
-            {
-                eventValue = new ExpressionEngine().Parse(this.EventValue).TryEvaluate(dc.GetState());
-            }
-
             if (dc.Parent == null)
             {
-                return await dc.CancelAllDialogsAsync(true, EventName, eventValue, cancellationToken).ConfigureAwait(false);
+                return await dc.CancelAllDialogsAsync(true, EventName.GetValue(dcState), this.EventValue.GetValue(dcState), cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                var turnResult = await dc.Parent.CancelAllDialogsAsync(true, EventName, eventValue, cancellationToken).ConfigureAwait(false);
+                var turnResult = await dc.Parent.CancelAllDialogsAsync(true, EventName.GetValue(dcState), this.EventValue.GetValue(dcState), cancellationToken).ConfigureAwait(false);
                 turnResult.ParentEnded = true;
                 return turnResult;
             }

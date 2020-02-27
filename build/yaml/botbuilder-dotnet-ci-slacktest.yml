@@ -1,0 +1,74 @@
+#
+# Runs functional tests against the Slack channel.
+#
+
+# "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
+name: $(Build.BuildId)
+pool:
+  vmImage: 'windows-2019'
+
+variables:
+  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
+  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
+  BuildConfiguration: 'debug'
+  BuildPlatform: 'any cpu'
+  Parameters.solution: Microsoft.Bot.Builder.sln
+#  AppId: define this in Azure
+#  AppSecret: define this in Azure
+#  AzureSubscription: define this in Azure
+#  BotGroup: define this in Azure
+#  BotName: define this in Azure
+#  FacebookAccessToken: define this in Azure
+#  FacebookAppSecret: define this in Azure
+#  SlackVerificationToken: define this in Azure
+#  SlackBotToken: define this in Azure
+#  SlackClientSigningSecret: define this in Azure
+#  SlackChannel: define this in Azure
+
+steps:
+- template: ci-build-steps.yml
+
+- task: DotNetCoreCLI@2
+  displayName: 'Dotnet Publish TestBot'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\Microsoft.Bot.Builder.Adapters.Slack.TestBot.csproj'
+    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\PublishedBot'
+    modifyOutputPath: false
+
+- task: AzureCLI@1
+  displayName: 'Create Resources'
+  inputs:
+    azureSubscription: $(AzureSubscription)
+    scriptLocation: inlineScript
+    inlineScript: |
+     call az deployment create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" slackVerificationToken="$(SlackVerificationToken)" slackBotToken="$(SlackBotToken)"  slackClientSigningSecret="$(SlackClientSigningSecret)"
+     call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\PublishedBot\PublishedBot.zip"
+
+- powershell: |
+   echo '##vso[task.setvariable variable=SLACK_CHANNEL]$(SlackChannel)'
+   echo '##vso[task.setvariable variable=SLACK_BOT_TOKEN]$(SlackBotToken)'
+   echo '##vso[task.setvariable variable=SLACK_CLIENT_SIGNING_SECRET]$(SlackClientSigningSecret)'
+   echo '##vso[task.setvariable variable=SLACK_VERIFICATION_TOKEN]$(SlackVerificationToken)'
+   echo '##vso[task.setvariable variable=BOT_NAME]$(BotName)'
+   echo '##vso[task.setvariable variable=TESTAPPID]$(AppId)'
+   echo '##vso[task.setvariable variable=TESTPASSWORD]$(AppSecret)'
+  displayName: 'Set Environment Variables'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
+  inputs:
+    command: test
+    projects: |
+     FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj
+    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter SlackClientTest'
+    workingDirectory: tests
+
+- task: AzureCLI@1
+  displayName: 'Delete Resources'
+  inputs:
+    azureSubscription: $(AzureSubscription)
+    scriptLocation: inlineScript
+    inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
+  condition: always()

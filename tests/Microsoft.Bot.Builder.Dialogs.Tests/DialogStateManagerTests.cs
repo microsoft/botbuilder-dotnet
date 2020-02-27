@@ -7,6 +7,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
 using Microsoft.Extensions.Configuration;
@@ -39,11 +42,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             adapter
                 .UseStorage(new MemoryStorage())
                 .UseState(new UserState(new MemoryStorage()), new ConversationState(new MemoryStorage()));
+
             DialogManager dm = new DialogManager(new LamdaDialog(handler));
-            return new TestFlow(adapter, (context, ct) =>
-            {
-                return dm.OnTurnAsync(context, ct);
-            }).SendConversationUpdate();
+            dm.TurnState.Set<ResourceExplorer>(new ResourceExplorer());
+            return new TestFlow(adapter, dm.OnTurnAsync).SendConversationUpdate();
         }
 
         [TestMethod]
@@ -51,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             await CreateDialogContext(async (context, ct) =>
             {
-                var dsm = new DialogStateManager(context);
+                var dsm = context.GetState() as DialogStateManager;
                 foreach (var memoryScope in dsm.Configuration.MemoryScopes)
                 {
                     try
@@ -79,8 +81,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public void TestPathResolverNullChecks()
         {
-            var config = DialogStateManager.CreateStandardConfiguration();
-            foreach (var resolver in config.PathResolvers)
+            var ac = new AdaptiveComponentRegistration();
+            
+            foreach (var resolver in ac.GetPathResolvers())
             {
                 try
                 {
@@ -132,6 +135,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             // @ test
             Assert.AreEqual("turn.recognized.entities.foo.first()", new AtPathResolver().TransformPath("@foo"));
+            Assert.AreEqual("turn.recognized.entities.foo.first().bar", new AtPathResolver().TransformPath("@foo.bar"));
 
             // @@ teest
             Assert.AreEqual("turn.recognized.entities.foo", new AtAtPathResolver().TransformPath("@@foo"));
@@ -204,6 +208,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.AreEqual("testx", dc.GetState().GetValue<string>("@double"));
                 Assert.AreEqual("test1", dc.GetState().GetValue<string>("turn.recognized.entities.single.First()"));
                 Assert.AreEqual("testx", dc.GetState().GetValue<string>("turn.recognized.entities.double.First()"));
+
+                arrayarray = new JArray();
+                array = new JArray();
+                array.Add(JObject.Parse("{'name':'test1'}"));
+                array.Add(JObject.Parse("{'name':'test2'}"));
+                array.Add(JObject.Parse("{'name':'test2'}"));
+
+                array2 = new JArray();
+                array2.Add(JObject.Parse("{'name':'testx'}"));
+                array2.Add(JObject.Parse("{'name':'testy'}"));
+                array2.Add(JObject.Parse("{'name':'testz'}"));
+                arrayarray.Add(array2);
+                arrayarray.Add(array);
+                dc.GetState().SetValue("turn.recognized.entities.single", array);
+                dc.GetState().SetValue("turn.recognized.entities.double", arrayarray);
+
+                Assert.AreEqual("test1", dc.GetState().GetValue<string>("@single.name"));
+                Assert.AreEqual("testx", dc.GetState().GetValue<string>("@double.name"));
+                Assert.AreEqual("test1", dc.GetState().GetValue<string>("turn.recognized.entities.single.First().name"));
+                Assert.AreEqual("testx", dc.GetState().GetValue<string>("turn.recognized.entities.double.First().name"));
             }).StartTestAsync();
         }
 
@@ -331,9 +355,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     dc.GetState().RemoveValue("user");
                     Assert.Fail("Should have thrown with known root memory scope");
                 }
-                catch (ArgumentNullException err)
+                catch (NotSupportedException err)
                 {
-                    Assert.IsTrue(err.Message.Contains("cannot be null"));
                 }
 
                 try
@@ -341,9 +364,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     dc.GetState().RemoveValue("xxx");
                     Assert.Fail("Should have thrown with unknown memory scope");
                 }
-                catch (ArgumentOutOfRangeException err)
+                catch (NotSupportedException err)
                 {
-                    Assert.IsTrue(err.Message.Contains("does not match memory scope"));
                 }
             }).StartTestAsync();
         }
@@ -578,7 +600,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
             {
-                dc.Context.SendActivityAsync(dc.GetState().GetValue<string>("conversation.test", () => "unknown"));
+                var data = dc.GetState().GetValue<string>("conversation.test", () => "unknown");
+                dc.Context.SendActivityAsync(data);
                 dc.GetState().SetValue("conversation.test", "havedata");
                 return Task.FromResult(new DialogTurnResult(DialogTurnStatus.Waiting));
             }
@@ -593,7 +616,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         return dc.EndDialogAsync();
                 }
 
-                dc.Context.SendActivityAsync(dc.GetState().GetValue<string>("conversation.test", () => "unknown"));
+                var data = dc.GetState().GetValue<string>("conversation.test", () => "unknown");
+                dc.Context.SendActivityAsync(data);
                 return Task.FromResult(new DialogTurnResult(DialogTurnStatus.Waiting));
             }
         }
@@ -607,7 +631,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var adapter = new TestAdapter()
                 .UseStorage(storage)
-                .UseState(userState, conversationState);
+                .UseState(userState, conversationState)
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
             adapter.OnTurnError = async (context, exception) =>
             {
                 await conversationState.DeleteAsync(context);
@@ -620,15 +646,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 return dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken);
             })
-            .Send("yo")
+            .Send("yo1")
                 .AssertReply("unknown")
-            .Send("yo")
+            .Send("yo2")
                 .AssertReply("havedata")
             .Send("throw")
                 .AssertReply("throwing")
-            .Send("yo")
+            .Send("yo3")
                 .AssertReply("unknown")
-            .Send("yo")
+            .Send("yo4")
                 .AssertReply("havedata")
             .StartTestAsync();
         }
@@ -643,6 +669,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .UseStorage(storage)
                 .UseState(userState, conversationState);
+
             adapter.OnTurnError = async (context, exception) =>
             {
                 await conversationState.DeleteAsync(context);
@@ -703,9 +730,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private TestFlow CreateFlow(Dialog dialog, ConversationState convoState = null, UserState userState = null, bool sendTrace = false)
         {
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
-                .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
+                .UseStorage(new MemoryStorage())
                 .UseState(new UserState(new MemoryStorage()), convoState ?? new ConversationState(new MemoryStorage()))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var dm = new DialogManager(dialog);
 

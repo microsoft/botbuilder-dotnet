@@ -6,13 +6,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.AI.QnA;
-using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -27,12 +25,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         public const string DeclarativeType = "Microsoft.QnAMakerRecognizer";
 
         public const string QnAMatchIntent = "QnAMatch";
-        
-        private const string IntentPrefix = "intent=";
 
-        private Expression knowledgebaseIdExpression;
-        private Expression endpointkeyExpression;
-        private Expression hostnameExpression;
+        private const string IntentPrefix = "intent=";
 
         public QnAMakerRecognizer()
         {
@@ -45,11 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// The knowledgebase Id.
         /// </value>
         [JsonProperty("knowledgeBaseId")]
-        public string KnowledgeBaseId
-        {
-            get { return knowledgebaseIdExpression?.ToString(); }
-            set { knowledgebaseIdExpression = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public StringExpression KnowledgeBaseId { get; set; }
 
         /// <summary>
         /// Gets or sets the Hostname for your QnA Maker service.
@@ -58,11 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// The host name of the QnA Maker knowledgebase.
         /// </value>
         [JsonProperty("hostname")]
-        public string HostName
-        {
-            get { return hostnameExpression?.ToString(); }
-            set { hostnameExpression = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public StringExpression HostName { get; set; }
 
         /// <summary>
         /// Gets or sets the Endpoint key for the QnA Maker KB.
@@ -71,11 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// The endpoint key for the QnA service.
         /// </value>
         [JsonProperty("endpointKey")]
-        public string EndpointKey
-        {
-            get { return endpointkeyExpression?.ToString(); }
-            set { endpointkeyExpression = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public StringExpression EndpointKey { get; set; }
 
         /// <summary>
         /// Gets or sets the number of results you want.
@@ -85,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// </value>
         [DefaultValue(3)]
         [JsonProperty("top")]
-        public int Top { get; set; } = 3;
+        public IntExpression Top { get; set; } = 3;
 
         /// <summary>
         /// Gets or sets the threshold score to filter results.
@@ -95,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// </value>
         [DefaultValue(0.3F)]
         [JsonProperty("threshold")]
-        public float Threshold { get; set; } = 0.3F;
+        public NumberExpression Threshold { get; set; } = 0.3F;
 
         /// <summary>
         /// Gets or sets a value indicating whether gets or sets environment of knowledgebase to be called. 
@@ -113,29 +95,67 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// The desired RankerType.
         /// </value>
         [JsonProperty("rankerType")]
-        public string RankerType { get; set; } = RankerTypes.DefaultRankerType;
+        public StringExpression RankerType { get; set; } = RankerTypes.DefaultRankerType;
+
+        /// <summary>
+        /// Gets or sets the whether to include the dialog name metadata for QnA context.
+        /// </summary>
+        /// <value>
+        /// A bool or boolean expression.
+        /// </value>
+        [DefaultValue(true)]
+        [JsonProperty("includeDialogNameInMetadata")]
+        public BoolExpression IncludeDialogNameInMetadata { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets an expression to evaluate to set additional metadata name value pairs.
+        /// </summary>
+        /// <value>An expression to evaluate for pairs of metadata.</value>
+        [JsonProperty("metadata")]
+        public ArrayExpression<Metadata> Metadata { get; set; }
+
+        /// <summary>
+        /// Gets or sets an expression to evaluate to set the context.
+        /// </summary>
+        /// <value>An expression to evaluate to QnARequestContext to pass as context.</value>
+        [JsonProperty("context")]
+        public ObjectExpression<QnARequestContext> Context { get; set; }
+
+        /// <summary>
+        /// Gets or sets an expression or numberto use for the QnAId paratmer.
+        /// </summary>
+        /// <value>The expression or number.</value>
+        [JsonProperty("qnaId")]
+        public IntExpression QnAId { get; set; } = 0;
 
         [JsonIgnore]
         public HttpClient HttpClient { get; set; }
 
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken)
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken)
         {
-            // Identify matched intents
-            var utterance = text ?? string.Empty;
+            var dcState = dialogContext.GetState();
 
+            // Identify matched intents
             var recognizerResult = new RecognizerResult()
             {
-                Text = utterance,
+                Text = activity.Text,
                 Intents = new Dictionary<string, IntentScore>(),
             };
 
-            List<Metadata> filters = new List<Metadata>()
+            if (string.IsNullOrEmpty(activity.Text))
             {
-                new Metadata() { Name = "dialogName", Value = dialogContext.ActiveDialog.Id }
-            };
+                recognizerResult.Intents.Add("None", new IntentScore());
+                return recognizerResult;
+            }
+
+            List<Metadata> filters = new List<Metadata>();
+            if (IncludeDialogNameInMetadata.GetValue(dcState))
+            {
+                filters.Add(new Metadata() { Name = "dialogName", Value = dialogContext.ActiveDialog.Id });
+            }
 
             // if there is $qna.metadata set add to filters
-            var externalMetadata = dialogContext.GetState().GetValue<Metadata[]>("$qna.metadata");
+            var externalMetadata = this.Metadata?.GetValue(dcState);
             if (externalMetadata != null)
             {
                 filters.AddRange(externalMetadata);
@@ -147,12 +167,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                 dialogContext.Context,
                 new QnAMakerOptions
                 {
-                    Context = dialogContext.GetState().GetValue<QnARequestContext>("$qna.context"),
-                    ScoreThreshold = this.Threshold,
+                    Context = this.Context?.GetValue(dcState),
+                    ScoreThreshold = this.Threshold.GetValue(dcState),
                     StrictFilters = filters.ToArray(),
-                    Top = this.Top,
-                    QnAId = 0,
-                    RankerType = this.RankerType,
+                    Top = this.Top.GetValue(dcState),
+                    QnAId = this.QnAId.GetValue(dcState),
+                    RankerType = this.RankerType.GetValue(dcState),
                     IsTest = this.IsTest
                 },
                 null).ConfigureAwait(false);
@@ -204,9 +224,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                 return Task.FromResult(qnaClient);
             }
 
-            var (epKey, error) = this.endpointkeyExpression.TryEvaluate(dc.GetState());
-            var (hn, error2) = this.hostnameExpression.TryEvaluate(dc.GetState());
-            var (kbId, error3) = this.knowledgebaseIdExpression.TryEvaluate(dc.GetState());
+            var dcState = dc.GetState();
+
+            var (epKey, error) = this.EndpointKey.TryGetValue(dcState);
+            var (hn, error2) = this.HostName.TryGetValue(dcState);
+            var (kbId, error3) = this.KnowledgeBaseId.TryGetValue(dcState);
 
             var endpoint = new QnAMakerEndpoint
             {

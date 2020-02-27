@@ -39,23 +39,23 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// </summary>
         /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
         /// <remarks>
-        /// The configuration keys are:
-        /// VerifyToken: The token to respond to the initial verification request.
-        /// AppSecret: The secret used to validate incoming webhooks.
-        /// AccessToken: An access token for the bot.
+        /// The adapter uses these configuration keys:
+        /// - `VerifyToken`, the token to respond to the initial verification request.
+        /// - `AppSecret`, the secret used to validate incoming webhooks.
+        /// - `AccessToken`, an access token for the bot.
         /// </remarks>
-        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        /// <param name="logger">The logger this adapter should use.</param>
         public FacebookAdapter(IConfiguration configuration, ILogger logger = null)
             : this(new FacebookClientWrapper(new FacebookAdapterOptions(configuration["FacebookVerifyToken"], configuration["FacebookAppSecret"], configuration["FacebookAccessToken"])), logger)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FacebookAdapter"/> class.
-        /// Creates a Facebook adapter.
+        /// Initializes a new instance of the <see cref="FacebookAdapter"/> class using an existing Facebook client.
         /// </summary>
         /// <param name="facebookClient">A Facebook API interface.</param>
-        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        /// <param name="logger">The logger this adapter should use.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="facebookClient"/> is null.</exception>
         public FacebookAdapter(FacebookClientWrapper facebookClient, ILogger logger = null)
         {
             _facebookClient = facebookClient ?? throw new ArgumentNullException(nameof(facebookClient));
@@ -63,12 +63,16 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         }
 
         /// <summary>
-        /// Standard BotBuilder adapter method to send a message from the bot to the messaging API.
+        /// Sends activities to the conversation.
         /// </summary>
-        /// <param name="turnContext">A TurnContext representing the current incoming message and environment.</param>
-        /// <param name="activities">An array of outgoing activities to be sent back to the messaging API.</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="activities">The activities to send.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the activities are successfully sent, the task result contains
+        /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
+        /// the receiving channel assigned to the activities.</remarks>
         public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
             var responses = new List<ResourceResponse>();
@@ -83,7 +87,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 {
                     var message = FacebookHelper.ActivityToFacebook(activity);
 
-                    if (message.Message.Attachment != null)
+                    if (message.Message?.Attachment != null)
                     {
                         message.Message.Text = null;
                     }
@@ -96,15 +100,15 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                         if (activity.Name.Equals(HandoverConstants.PassThreadControl, StringComparison.Ordinal))
                         {
                             var recipient = (string)activity.Value == "inbox" ? HandoverConstants.PageInboxId : (string)activity.Value;
-                            await _facebookClient.PassThreadControlAsync(recipient, activity.Conversation.Id, HandoverConstants.MetadataPassThreadControl).ConfigureAwait(false);
+                            await _facebookClient.PassThreadControlAsync(recipient, activity.Conversation.Id, HandoverConstants.MetadataPassThreadControl, cancellationToken).ConfigureAwait(false);
                         }
                         else if (activity.Name.Equals(HandoverConstants.TakeThreadControl, StringComparison.Ordinal))
                         {
-                            await _facebookClient.TakeThreadControlAsync(activity.Conversation.Id, HandoverConstants.MetadataTakeThreadControl).ConfigureAwait(false);
+                            await _facebookClient.TakeThreadControlAsync(activity.Conversation.Id, HandoverConstants.MetadataTakeThreadControl, cancellationToken).ConfigureAwait(false);
                         }
                         else if (activity.Name.Equals(HandoverConstants.RequestThreadControl, StringComparison.Ordinal))
                         {
-                            await _facebookClient.RequestThreadControlAsync(activity.Conversation.Id, HandoverConstants.MetadataRequestThreadControl).ConfigureAwait(false);
+                            await _facebookClient.RequestThreadControlAsync(activity.Conversation.Id, HandoverConstants.MetadataRequestThreadControl, cancellationToken).ConfigureAwait(false);
                         }
                     }
 
@@ -121,36 +125,43 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         }
 
         /// <summary>
-        /// Standard BotBuilder adapter method to update a previous message with new content.
+        /// Throws a <see cref="NotImplementedException"/> exception in all cases.
         /// </summary>
-        /// <param name="turnContext">A TurnContext representing the current incoming message and environment.</param>
-        /// <param name="activity">The updated activity in the form '{id: `id of activity to update`, ...}'.</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A resource response with the Id of the updated activity.</returns>
+        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="activity">New replacement activity.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
             return Task.FromException<ResourceResponse>(new NotImplementedException("Facebook adapter does not support updateActivity."));
         }
 
         /// <summary>
-        /// Standard BotBuilder adapter method to delete a previous message.
+        /// Throws a <see cref="NotImplementedException"/> exception in all cases.
         /// </summary>
-        /// <param name="turnContext">A TurnContext representing the current incoming message and environment.</param>
-        /// <param name="reference">An object in the form "{activityId: `id of message to delete`, conversation: { id: `id of channel`}}".</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="reference">Conversation reference for the activity to delete.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
             return Task.FromException(new NotImplementedException("Facebook adapter does not support deleteActivity."));
         }
 
         /// <summary>
-        /// Standard BotBuilder adapter method for continuing an existing conversation based on a conversation reference.
+        /// Sends a proactive message to a conversation using a conversation reference.
         /// </summary>
-        /// <param name="reference">A conversation reference to be applied to future messages.</param>
-        /// <param name="logic">A bot logic function that will perform continuing action in the form `async(context) => { ... }`.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic)
+        /// <param name="reference">A reference to the conversation to continue.</param>
+        /// <param name="logic">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>Call this method to proactively send a message to a conversation.</remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="logic"/> or
+        /// <paramref name="reference"/> is null.</exception>
+        public async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic, CancellationToken cancellationToken)
         {
             if (reference == null)
             {
@@ -166,7 +177,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             using (var context = new TurnContext(this, request))
             {
-                await RunPipelineAsync(context, logic, default).ConfigureAwait(false);
+                await RunPipelineAsync(context, logic, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -179,8 +190,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>Call this method to proactively send a message to a conversation.
-        /// Most _channels require a user to initialize a conversation with a bot
-        /// before the bot can send activities to the user.
         /// <para>This method registers the following services for the turn.<list type="bullet">
         /// <item><description><see cref="IIdentity"/> (key = "BotIdentity"), a claims claimsIdentity for the bot.
         /// </description></item>
@@ -198,13 +207,16 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         }
 
         /// <summary>
-        /// Accept an incoming webhook request and convert it into a TurnContext which can be processed by the bot's logic.
+        /// Accepts an incoming webhook request, creates a turn context,
+        /// and runs the middleware pipeline for an incoming TRUSTED activity.
         /// </summary>
-        /// <param name="httpRequest">A request object.</param>
-        /// <param name="httpResponse">A response object.</param>
-        /// <param name="bot">A bot logic function.</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="httpRequest">Represents the incoming side of an HTTP request.</param>
+        /// <param name="httpResponse">Represents the outgoing side of an HTTP request.</param>
+        /// <param name="bot">The code to run at the end of the adapter's middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="AuthenticationException">The webhook receives message with invalid signature.</exception>
         public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
         {
             if (httpRequest.Query["hub.mode"] == HubModeSubscribe)
@@ -217,7 +229,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             using (var sr = new StreamReader(httpRequest.Body))
             {
-                stringifiedBody = sr.ReadToEnd();
+                stringifiedBody = await sr.ReadToEndAsync().ConfigureAwait(false);
             }
 
             if (!_facebookClient.VerifySignature(httpRequest, stringifiedBody))

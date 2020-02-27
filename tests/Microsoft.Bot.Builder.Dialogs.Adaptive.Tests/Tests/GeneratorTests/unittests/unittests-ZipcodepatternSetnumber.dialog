@@ -6,9 +6,13 @@
     "entity": "number",
     "actions": [
         {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${setPropertyMessage('Zipcodepattern', @number)}"
+        }, 
+        {
             "$kind": "Microsoft.SetProperty",
             "property": "$Zipcodepattern",
-            "value": "@number"          
+            "value": "=@number"          
         }
     ]               
 }

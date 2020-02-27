@@ -12,18 +12,21 @@
         },
         "knowledgeBaseId": {
             "$role": "expression",
+            "type": "string",
             "title": "KnowledgeBase Id",
             "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
             "default": "settings.qna.knowledgebaseid"
         },
         "endpointKey": {
             "$role": "expression",
+            "type": "string",
             "title": "Endpoint Key",
             "description": "Endpoint key for the QnA Maker KB.",
             "default": "settings.qna.endpointkey"
         },
         "hostname": {
             "$role": "expression",
+            "type": "string",
             "title": "Hostname",
             "description": "Hostname for your QnA Maker service.",
             "default": "settings.qna.hostname",
@@ -32,12 +35,14 @@
             ]
         },
         "threshold": {
+            "$role": "expression",
             "type": "number",
             "title": "Threshold",
             "description": "Threshold score to filter results.",
             "default": 0.3
         },
         "strictFilters": {
+            "$role": "expression",
             "type": "array",
             "title": "Strict Filters",
             "description": "Metadata filters to use when calling the QnA Maker KB.",
@@ -58,22 +63,62 @@
             }
         },
         "top": {
+            "$role": "expression",
             "type": "number",
             "title": "Top",
             "description": "The number of answers you want to retrieve.",
             "default": 3
         },
         "isTest": {
+            "$role": "expression",
             "type": "boolean",
             "title": "IsTest",
             "description": "True, if pointing to Test environment, else false.",
             "default": false
         },
         "rankerType": {
+            "$role": "expression",
             "type": "string",
             "title": "RankerType",
             "description": "Type of Ranker.",
             "default": "Default"
+        },
+        "includeDialogNameInMetadata": {
+            "$role": "expression",
+            "type": "boolean",
+            "title": "Include Dialog Name",
+            "description": "When set to false, the dialog name will not be passed to QnAMaker. (default) is true",
+            "default": true
+        },
+        "metadata": {
+            "$role": "expression",
+            "type": "array",
+            "title": "value to ",
+            "description": "Metadata filters to use when calling the QnA Maker KB.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "value": {
+                        "type": "string",
+                        "title": "Value"
+                    }
+                }
+            }
+        },
+        "context": {
+            "$role": "expression",
+            "type": "object",
+            "title": "QnARequestContext"
+        },
+        "qnaId": {
+            "$role": "expression",
+            "type": "integer",
+            "title": "QnAId",
+            "description": "A number or expression which is the QnAId to paass to QnAMaker API."
         }
     },
     "required": [

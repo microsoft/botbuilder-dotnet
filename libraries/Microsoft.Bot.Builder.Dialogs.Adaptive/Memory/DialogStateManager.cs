@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
+using AdaptiveExpressions.Memory;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
-using Microsoft.Bot.Expressions.Memory;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory
@@ -34,7 +34,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public DialogStateManager(DialogContext dc)
         {
             dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
-            this.Configuration = dc.Context.TurnState.Get<DialogStateManagerConfiguration>() ?? CreateStandardConfiguration();
+            this.Configuration = dc.Context.TurnState.Get<DialogStateManagerConfiguration>();
+            if (this.Configuration == null)
+            {
+                this.Configuration = new DialogStateManagerConfiguration();
+
+                // get all of the component memory scopes
+                foreach (var component in ComponentRegistration.Registrations.Value.OfType<IComponentMemoryScopes>())
+                {
+                    foreach (var memoryScope in component.GetMemoryScopes())
+                    {
+                        this.Configuration.MemoryScopes.Add(memoryScope);
+                    }
+                }
+
+                // get all of the component path resolvers
+                foreach (var component in ComponentRegistration.Registrations.Value.OfType<IComponentPathResolvers>())
+                {
+                    foreach (var pathResolver in component.GetPathResolvers())
+                    {
+                        this.Configuration.PathResolvers.Add(pathResolver);
+                    }
+                }
+
+                // cache for any other new dialogStatemanager instances in this turn.  
+                dc.Context.TurnState.Set<DialogStateManagerConfiguration>(this.Configuration);
+            }
         }
 
         public DialogStateManagerConfiguration Configuration { get; set; }
@@ -56,49 +81,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 {
                     // Root is handled by SetMemory rather than SetValue
                     var scope = GetMemoryScope(key) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(key));
-                    scope.SetMemory(this.dialogContext, value);
+                    scope.SetMemory(this.dialogContext, JToken.FromObject(value));
                 }
                 else
                 {
                     SetValue(key, value);
                 }
             }
-        }
-
-        public static DialogStateManagerConfiguration CreateStandardConfiguration(ConversationState conversationState = null, UserState userState = null)
-        {
-            var result = new DialogStateManagerConfiguration()
-            {
-                PathResolvers = new List<IPathResolver>
-                {
-                    new DollarPathResolver(),
-                    new HashPathResolver(),
-                    new AtAtPathResolver(),
-                    new AtPathResolver(),
-                    new PercentPathResolver()
-                },
-                MemoryScopes = new List<MemoryScope>
-                {
-                    new TurnMemoryScope(),
-                    new SettingsMemoryScope(),
-                    new DialogMemoryScope(),
-                    new DialogClassMemoryScope(),
-                    new ClassMemoryScope(),
-                    new ThisMemoryScope()
-                }
-            };
-
-            if (conversationState != null)
-            {
-                result.MemoryScopes.Add(new ConversationMemoryScope(conversationState));
-            }
-
-            if (userState != null)
-            {
-                result.MemoryScopes.Add(new UserMemoryScope(userState));
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -196,14 +185,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 return true;
             }
 
-            // HACK to support .First() retrieval on turn.recognized.entities.foo, replace with Expressions once expression ship
-            var iFirst = path.ToLower().LastIndexOf(".first()");
+            // TODO: HACK to support .First() retrieval on turn.recognized.entities.foo, replace with Expressions once expression ship
+            const string first = ".first()";
+            var iFirst = path.ToLower().LastIndexOf(first);
             if (iFirst >= 0)
             {
+                object entity = null;
+                remainingPath = path.Substring(iFirst + first.Length);
                 path = path.Substring(0, iFirst);
-                memoryScope = ResolveMemoryScope(path, out remainingPath);
-                var memory = memoryScope.GetMemory(dialogContext);
-                return TryGetFirstNestedValue(ref value, ref remainingPath, memory);
+                if (TryGetFirstNestedValue(ref entity, ref path, this))
+                {
+                    if (string.IsNullOrEmpty(remainingPath))
+                    {
+                        value = ObjectPath.MapValueTo<T>(entity);
+                        return true;
+                    }
+
+                    return ObjectPath.TryGetPathValue(entity, remainingPath, out value);
+                }
+
+                return false;
             }
 
             return ObjectPath.TryGetPathValue(this, path, out value);
@@ -269,6 +270,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             if (value is Task)
             {
                 throw new Exception($"{path} = You can't pass an unresolved Task to SetValue");
+            }
+
+            if (value != null)
+            {
+                value = JToken.FromObject(value);
             }
 
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
@@ -373,13 +379,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public bool TryGetValue(string key, out object value)
         {
-            value = default;
-            if (this.TryGetValue<object>(key, out var result))
-            {
-                value = result;
-            }
-
-            return true;
+            return this.TryGetValue<object>(key, out value);
         }
 
         public void Add(KeyValuePair<string, object> item)
@@ -451,12 +451,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public bool AnyPathChanged(uint counter, IEnumerable<string> paths)
         {
             var found = false;
-            foreach (var path in paths)
+            if (paths != null)
             {
-                if (GetValue<uint>(PathTracker + "." + path) > counter)
+                foreach (var path in paths)
                 {
-                    found = true;
-                    break;
+                    if (GetValue<uint>(PathTracker + "." + path) > counter)
+                    {
+                        found = true;
+                        break;
+                    }
                 }
             }
 
@@ -507,12 +510,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                     if (value is object obj)
                     {
                         // For an object we need to see if any children path are being tracked
-                        void CheckChildren(string property, object value)
+                        void CheckChildren(string property, object instance)
                         {
                             // Add new child segment
                             trackedPath += "_" + property.ToLower();
                             Update();
-                            if (value is object child)
+                            if (instance is object child)
                             {
                                 ObjectPath.ForEachProperty(child, CheckChildren);
                             }
@@ -533,7 +536,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         private bool TryGetFirstNestedValue<T>(ref T value, ref string remainingPath, object memory)
         {
-            if (ObjectPath.TryGetPathValue<JArray>(memory, $"{remainingPath}", out var array))
+            if (ObjectPath.TryGetPathValue<JArray>(memory, remainingPath, out var array))
             {
                 if (array != null && array.Count > 0)
                 {

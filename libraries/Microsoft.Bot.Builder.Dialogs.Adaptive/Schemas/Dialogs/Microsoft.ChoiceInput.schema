@@ -11,6 +11,7 @@
         {
             "properties": {
                 "outputFormat": {
+                    "$role": "expression",
                     "type": "string",
                     "enum": [
                         "value",
@@ -21,10 +22,8 @@
                     "default": "value"
                 },
                 "choices": {
-                    "anyOf": [
-                        {
-                            "$role": "expression"
-                        },
+                    "$role": "expression",
+                    "oneOf": [
                         {
                             "type": "array",
                             "items": [

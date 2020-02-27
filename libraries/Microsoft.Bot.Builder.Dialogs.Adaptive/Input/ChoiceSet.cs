@@ -1,69 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
     /// <summary>
-    /// Defines Choices Property as either collection of Choices, array of strings or string which is an expression to one of thoses.
+    /// Defines ChoiceSet collection.
     /// </summary>
-    public class ChoiceSet : ExpressionProperty<List<Choice>>
+    [JsonConverter(typeof(ChoiceSetConverter))]
+    public class ChoiceSet : List<Choice>
     {
         public ChoiceSet()
         {
         }
 
-        public ChoiceSet(string expression)
-            : base(expression)
-        {
-        }
-
-        public ChoiceSet(List<Choice> choices)
+        public ChoiceSet(IEnumerable<Choice> choices)
             : base(choices)
         {
         }
 
-        public ChoiceSet(object choices)
-            : base(choices)
-        {
-        }
-
-        protected override List<Choice> ConvertObject(object result)
+        public ChoiceSet(object obj)
         {
             // support string[] => choice[]
-            if (result is IEnumerable<string> strings)
+            if (obj is IEnumerable<string> strings)
             {
-                return strings.Select(s => new Choice(s)).ToList();
+                foreach (var str in strings)
+                {
+                    this.Add(new Choice(str));
+                }
             }
 
             // support JArray to => choice
-            if (result is JArray array)
+            if (obj is JArray array)
             {
-                var choices = new List<Choice>();
                 if (array.HasValues)
                 {
                     foreach (var element in array)
                     {
                         if (element is JValue jval)
                         {
-                            choices.Add(new Choice(element.ToString()));
+                            this.Add(new Choice(element.ToString()));
                         }
                         else if (element is JObject jobj)
                         {
-                            choices.Add(jobj.ToObject<Choice>());
+                            this.Add(jobj.ToObject<Choice>());
                         }
                     }
                 }
-
-                return choices;
             }
-
-            return JArray.FromObject(result).ToObject<List<Choice>>();
         }
+
+        public static implicit operator ChoiceSet(bool value) => new ChoiceSet(value);
+
+        public static implicit operator ChoiceSet(string value) => new ChoiceSet(value);
+
+        public static implicit operator ChoiceSet(JToken value) => new ChoiceSet(value);
     }
 }

@@ -16,6 +16,7 @@
         },
         "disabled": {
             "$role": "expression",
+            "type": "boolean",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -39,6 +40,7 @@
             ]
         },
         "url": {
+            "$role": "expression",
             "type": "string",
             "title": "Url",
             "description": "URL to call (supports data binding).",
@@ -47,26 +49,49 @@
             ]
         },
         "body": {
-            "type": "object",
+            "$role": "expression",
+            "type": [
+                "object",
+                "array",
+                "number",
+                "integer",
+                "boolean",
+                "string"
+            ],
             "title": "Body",
             "description": "Body to include in the HTTP call (supports data binding).",
             "additionalProperties": true
         },
         "resultProperty": {
             "$role": "expression",
+            "type": "string",
             "title": "Result property",
             "description": "Property to store the result of this action. The result includes 4 properties from the http response: statusCode, reasonPhrase, content and headers. If the content is json it will be a deserialized object.",
             "examples": [
                 "dialog.contosodata"
             ]
         },
+        "contentType": {
+            "$role": "expression",
+            "type": "string",
+            "title": "Content type",
+            "description": "Content media type for the body.",
+            "examples": [
+                "application/json",
+                "text/plain"
+            ]
+        },
         "headers": {
             "type": "object",
-            "additionProperties": true,
+            "additionalProperties": {
+                "$role": "expression",
+                "type": "string"
+            },
             "title": "Headers",
             "description": "One or more headers to include in the request (supports data binding)."
         },
         "responseType": {
+            "$role": "expression",
             "type": "string",
             "title": "Response type",
             "description": "Defines the type of HTTP response. Automatically calls the 'Send a response' action if set to 'Activity' or 'Activities'.",

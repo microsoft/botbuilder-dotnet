@@ -39,12 +39,12 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{user.counter}"
+                        "activity": "${user.counter}"
                     },
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "user.counter",
-                        "value": "user.counter + 1"
+                        "value": "=user.counter + 1"
                     },
                     {
                         "$kind": "Microsoft.GotoAction",

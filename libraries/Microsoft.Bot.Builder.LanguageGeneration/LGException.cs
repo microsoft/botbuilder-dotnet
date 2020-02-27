@@ -7,6 +7,9 @@ using System.Runtime.Serialization;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
+    /// <summary>
+    /// LG Exception that contains diagnostics.
+    /// </summary>
     [Serializable]
     public class LGException : Exception, ISerializable
     {
@@ -16,6 +19,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Diagnostics = diagnostics;
         }
 
+        /// <summary>
+        /// Gets or sets diagnostics.
+        /// </summary>
+        /// <value>
+        /// Diagnostics.
+        /// </value>
         public IList<Diagnostic> Diagnostics { get; set; }
     }
 }

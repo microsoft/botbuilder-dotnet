@@ -57,6 +57,11 @@ namespace Microsoft.Bot.Configuration
         /// <returns>The URL for this service.</returns>
         public string GetEndpoint()
         {
+            if (string.IsNullOrWhiteSpace(this.Region))
+            {
+                throw new System.NullReferenceException("LuisService.Region cannot be Null");
+            }
+
             var region = this.Region.ToLower();
 
             // usgovvirginia is that actual azure region name, but the cognitive service team called their endpoint 'virginia' instead of 'usgovvirginia'

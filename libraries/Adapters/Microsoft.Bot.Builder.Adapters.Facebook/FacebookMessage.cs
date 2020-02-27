@@ -8,21 +8,23 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
     /// <summary>
-    /// Represents the messaging structure. See https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/#messaging.
+    /// Represents information associated with a Facebook webhook event. For more information, see the Facebook
+    /// [Webhook Events Reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events).
     /// </summary>
     public class FacebookMessage
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FacebookMessage"/> class.
         /// </summary>
-        /// <param name="recipientId">Id of the message recipient.</param>
-        /// <param name="message"><see cref="Message"/> representing the contents of the message.</param>
-        /// <param name="messagingType">Property identifying the messaging type of the message being sent. See https://developers.facebook.com/docs/messenger-platform/send-messages#messaging_types. </param>
+        /// <param name="recipientId">Contents of the recipient ID field.</param>
+        /// <param name="message">Contents of the message field.</param>
+        /// <param name="messagingType">The type of webhook event. For more information, see the Facebook
+        /// [List of Webhook Events](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events#event_list).</param>
         /// <param name="tag">The optional message tag string. See https://developers.facebook.com/docs/messenger-platform/send-messages/message-tags.</param>
         /// <param name="notificationType">The optional notification type: REGULAR (default value), SILENT_PUSH, NO_PUSH.</param>
-        /// <param name="personaId">The persona Id.</param>
+        /// <param name="personaId">The persona ID.</param>
         /// <param name="senderAction">Message state to display to the user: typing_on, typing_off, mark_seen. Cannot be sent with 'message'. When used, 'recipient' should be the only other property set in the request.</param>
-        /// <param name="senderId">The sender Id.</param>
+        /// <param name="senderId">The sender ID.</param>
         public FacebookMessage(string recipientId, Message message, string messagingType, string tag = null, string notificationType = null, string personaId = null, string senderAction = null, string senderId = null)
         {
             Recipient.Id = recipientId;
@@ -87,14 +89,14 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <summary>
         /// Gets or sets the sender action.
         /// </summary>
-        /// <value>The sender action.</value>
+        /// <value>The sender action (typing_on, typing_off, mark_seen).</value>
         [JsonProperty(PropertyName = "sender_action")]
         public string SenderAction { get; set; }
 
         /// <summary>
-        /// Gets or sets the timestamp.
+        /// Gets or sets the time-stamp.
         /// </summary>
-        /// <value>Timestamp.</value>
+        /// <value>Time-stamp.</value>
         [JsonProperty(PropertyName = "timestamp")]
         public long TimeStamp { get; set; }
 
@@ -102,13 +104,13 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// Gets or sets a value indicating whether the message was received while in Standby mode.
         /// </summary>
         /// <value>Value indicating whether the message was received while in Standby mode.</value>
-        [JsonProperty(PropertyName = "standby")]
+        [JsonIgnore]
         public bool IsStandby { get; set; }
 
         /// <summary>
         /// Gets or sets the value of the postback property.
         /// </summary>
-        /// <value>The postback payload. Postbacks occur when a postback button, Get Started button, or persistent menu item is tapped.</value>
+        /// <value>The postback payload. A postback occurs when a postback button, **Get Started** button, or persistent menu item is tapped.</value>
         [JsonProperty(PropertyName = "postback")]
         public FacebookPostBack PostBack { get; set; }
 

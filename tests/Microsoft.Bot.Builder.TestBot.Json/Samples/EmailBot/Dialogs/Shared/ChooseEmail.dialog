@@ -5,11 +5,11 @@
     "GetDisplayEmails",
     {
       "$kind": "Microsoft.SendActivity",
-      "activity": "@{ShowEmailList(user)}"
+      "activity": "${ShowEmailList(user)}"
     },
     {
       "$kind": "Microsoft.TextInput",
-      "prompt": "@{SelectEmail()}",
+      "prompt": "${SelectEmail()}",
       "property": "dialog.choice"
     },
     {
@@ -19,7 +19,7 @@
         {
           "$kind": "Microsoft.SetProperty",
           "property": "user.focusedEmail",
-          "value": "user.emails[0]"
+          "value": "=user.emails[0]"
         }
       ]
     },
@@ -30,7 +30,7 @@
         {
           "$kind": "Microsoft.SetProperty",
           "property": "user.focusedEmail",
-          "value": "user.emails[1]"
+          "value": "=user.emails[1]"
         }
       ]
     },
@@ -41,7 +41,7 @@
         {
           "$kind": "Microsoft.SetProperty",
           "property": "user.focusedEmail",
-          "value": "user.emails[2]"
+          "value": "=user.emails[2]"
         }
       ]
     }

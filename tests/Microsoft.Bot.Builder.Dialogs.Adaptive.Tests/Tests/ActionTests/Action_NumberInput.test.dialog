@@ -10,7 +10,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.NumberInput",
-                        "outputFormat": "int(this.value)",
+                        "outputFormat": "=int(this.value)",
                         "property": "user.userProfile.Age",
                         "prompt": "Please enter your age.",
                         "unrecognizedPrompt": "The value entered must be greater than 0 and less than 150.",
@@ -20,7 +20,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "I have your age as @{user.userProfile.Age}."
+                        "activity": "I have your age as ${user.userProfile.Age}."
                     }
                 ]
             }

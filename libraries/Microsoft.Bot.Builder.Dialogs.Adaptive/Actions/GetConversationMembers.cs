@@ -5,7 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Expressions;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -17,8 +17,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.GetConversationMembers";
-
-        private Expression disabled;
 
         [JsonConstructor]
         public GetConversationMembers([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -37,11 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public string Disabled
-        {
-            get { return disabled?.ToString(); }
-            set { disabled = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets property path to put the value in.
@@ -50,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Property path to put the value in.
         /// </value>
         [JsonProperty("property")]
-        public string Property { get; set; }
+        public StringExpression Property { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -59,7 +53,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.disabled != null && (bool?)this.disabled.TryEvaluate(dc.GetState()).value == true)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -74,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (this.Property != null)
             {
-                dc.GetState().SetValue(this.Property, result);
+                dcState.SetValue(this.Property.GetValue(dcState), result);
             }
 
             return await dc.EndDialogAsync(result, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -82,7 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.Property ?? string.Empty}]";
+            return $"{this.GetType().Name}[{this.Property?.ToString() ?? string.Empty}]";
         }
     }
 }

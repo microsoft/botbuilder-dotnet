@@ -9,20 +9,55 @@ variables:
   BotBuilderDll: Microsoft.Bot.Builder.AI.Luis,Microsoft.Bot.Builder.AI.QnA,Microsoft.Bot.Builder.ApplicationInsights,Microsoft.Bot.Builder.Azure,Microsoft.Bot.Builder.Dialogs,Microsoft.Bot.Builder.Integration.ApplicationInsights.Core,Microsoft.Bot.Builder.Integration.AspNet.Core,Microsoft.Bot.Builder.TemplateManager,Microsoft.Bot.Builder.Testing,Microsoft.Bot.Builder,Microsoft.Bot.Configuration,Microsoft.Bot.Connector,Microsoft.Bot.Schema,Microsoft.Bot.Streaming
   BuildConfiguration: Debug-Windows
   BuildPlatform: any cpu
-  CoverallsToken: define this in Azure
-  GitHubCommentApiKey: define this in Azure
-  IsBuildServer: true # This is consumed by projects in Microsoft.Bot.Builder.sln.
+#  CoverallsTokenEncrypted: define this in Azure
+#  GitHubCommentApiKey: define this in Azure
+  IsBuildServer: true # This activates package versioning in the projects in Microsoft.Bot.Builder.sln.
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
   Parameters.solution: Microsoft.Bot.Builder.sln
   PreviewPackageVersion: 4.8.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
   ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
+
 pool:
   name: Hosted Windows 2019 with VS2019
   demands:
   - msbuild
   - visualstudio
 
-# The following 2 stages run multi-configuration, multi-agent parallel jobs
+trigger: # ci trigger
+  branches:
+    include:
+     - master
+  paths:
+    include:
+      - '*'
+    exclude:
+      - doc/
+      - specs/
+      - Changes.md
+      - LICENSE
+      - README.md
+      - UsingMyGet.md
+
+pr: # pr trigger
+  branches:
+    include:
+     - master
+  paths:
+    include:
+      - '*'
+    exclude:
+      - doc/
+      - specs/
+      - Changes.md
+      - LICENSE
+      - README.md
+      - UsingMyGet.md
+
+# The following 2 stages run multi-configuration, multi-agent parallel jobs.
+# Debug-Windows/Release-Windows => Builds everything in Debug/Release + the ASP.NET Desktop.
+# Debug/Release => would build all .NET Standard libs and test them.
+# The .NET 4.X asp.net integrations libraries do not build and test on non-windows boxes.
+# If we drop support for .NET 4.x then we can drop to just Debug/Release.
 stages:
 - stage: Build
   jobs:
@@ -35,6 +70,7 @@ stages:
   - job: Release_Windows_Configuration
     variables:
       BuildConfiguration: Release-Windows
+      NoCoverageUpload: true
     steps:
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml

@@ -7,9 +7,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
@@ -44,18 +46,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         [JsonProperty("entities")]
         public List<EntityRecognizer> Entities { get; set; } = new List<EntityRecognizer>();
 
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken)
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken)
         {
             // Identify matched intents
-            text = text ?? string.Empty;
-
-            var result = new RecognizerResult()
+            var text = activity.Text ?? string.Empty;
+            var locale = activity.Locale ?? "en-us";
+            
+            var recognizerResult = new RecognizerResult()
             {
                 Text = text,
                 Intents = new Dictionary<string, IntentScore>(),
             };
 
-            var entities = new JObject();
+            // add entities from regexrecgonizer to the entities pool
+            var entityPool = new List<Entity>();
+
+            var textEntity = new TextEntity(text);
+            textEntity.Properties["start"] = 0;
+            textEntity.Properties["end"] = text.Length;
+            textEntity.Properties["score"] = 1.0;
+
+            entityPool.Add(textEntity);
+
             foreach (var intentPattern in this.Intents)
             {
                 var matches = intentPattern.Regex.Matches(text);
@@ -64,9 +76,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 {
                     // TODO length weighted match and multiple intents
                     var intentKey = intentPattern.Intent.Replace(" ", "_");
-                    if (!result.Intents.ContainsKey(intentKey))
+                    if (!recognizerResult.Intents.ContainsKey(intentKey))
                     {
-                        result.Intents.Add(intentKey, new IntentScore() { Score = 1.0 });
+                        recognizerResult.Intents.Add(intentKey, new IntentScore()
+                        {
+                            Score = 1.0,
+                            Properties = new Dictionary<string, object>() { { "pattern", intentPattern.Pattern } }
+                        });
                     }
 
                     // Check for named capture groups
@@ -78,38 +94,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                             var group = (Group)match.Groups[groupName];
                             if (group.Success)
                             {
-                                JToken values;
-                                if (!entities.TryGetValue(groupName, out values))
-                                {
-                                    values = new JArray();
-                                    entities.Add(groupName, values);
-                                }
-
-                                ((JArray)values).Add(group.Value);
-
-                                // get/create $instance
-                                JToken instanceRoot;
-                                if (!entities.TryGetValue("$instance", StringComparison.OrdinalIgnoreCase, out instanceRoot))
-                                {
-                                    instanceRoot = new JObject();
-                                    entities["$instance"] = instanceRoot;
-                                }
-
-                                // add instanceData
-                                JToken instanceData;
-                                if (!((JObject)instanceRoot).TryGetValue(groupName, StringComparison.OrdinalIgnoreCase, out instanceData))
-                                {
-                                    instanceData = new JArray();
-                                    instanceRoot[groupName] = instanceData;
-                                }
-
-                                dynamic instance = new JObject();
-                                instance.startIndex = group.Index;
-                                instance.endIndex = group.Index + group.Length;
-                                instance.score = (double)1.0;
-                                instance.text = (string)group.Value;
-                                instance.type = groupName;
-                                ((JArray)instanceData).Add(instance);
+                                // add as entity to entity pool
+                                Entity entity = new Entity(groupName);
+                                entity.Properties["text"] = group.Value;
+                                entity.Properties["start"] = group.Index;
+                                entity.Properties["end"] = group.Index + group.Length;
+                                entityPool.Add(entity);
                             }
                         }
                     }
@@ -121,57 +111,67 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             if (this.Entities != null)
             {
-                EntityRecognizerSet entitySet = new EntityRecognizerSet(this.Entities);
-                IList<Entity> entities2 = new List<Entity>();
-                entities2 = await entitySet.RecognizeEntities(dialogContext, text, locale, entities2).ConfigureAwait(false);
-                foreach (var entity in entities2)
+                // process entities using EntityRecognizerSet
+                var entitySet = new EntityRecognizerSet(this.Entities);
+                var newEntities = await entitySet.RecognizeEntities(dialogContext, text, locale, entityPool).ConfigureAwait(false);
+                if (newEntities.Any())
                 {
-                    // add value
-                    JToken values;
-                    if (!entities.TryGetValue(entity.Type, StringComparison.OrdinalIgnoreCase, out values))
-                    {
-                        values = new JArray();
-                        entities[entity.Type] = values;
-                    }
-
-                    ((JArray)values).Add((string)entity.Properties["Text"]);
-
-                    // get/create $instance
-                    JToken instanceRoot;
-                    if (!entities.TryGetValue("$instance", StringComparison.OrdinalIgnoreCase, out instanceRoot))
-                    {
-                        instanceRoot = new JObject();
-                        entities["$instance"] = instanceRoot;
-                    }
-
-                    // add instanceData
-                    JToken instanceData;
-                    if (!((JObject)instanceRoot).TryGetValue(entity.Type, StringComparison.OrdinalIgnoreCase, out instanceData))
-                    {
-                        instanceData = new JArray();
-                        instanceRoot[entity.Type] = instanceData;
-                    }
-
-                    dynamic instance = new JObject();
-                    instance.startIndex = entity.Properties["Start"];
-                    instance.endIndex = entity.Properties["End"];
-                    instance.score = (double)1.0;
-                    instance.text = (string)entity.Properties["Text"];
-                    instance.type = entity.Type;
-                    instance.resolution = entity.Properties["Resolution"];
-                    ((JArray)instanceData).Add(instance);
+                    entityPool.AddRange(newEntities);
                 }
             }
-            
-            result.Entities = JObject.FromObject(entities);
 
-            // if no match return None intent
-            if (!result.Intents.Keys.Any())
+            // map entityPool of Entity objects => RecognizerResult entity format
+            recognizerResult.Entities = new JObject();
+
+            foreach (var entityResult in entityPool)
             {
-                result.Intents.Add("None", new IntentScore() { Score = 1.0 });
+                // add value
+                JToken values;
+                if (!recognizerResult.Entities.TryGetValue(entityResult.Type, StringComparison.OrdinalIgnoreCase, out values))
+                {
+                    values = new JArray();
+                    recognizerResult.Entities[entityResult.Type] = values;
+                }
+
+                // The Entity type names are not consistent, map everything to camelcase so we can process them cleaner.
+                dynamic entity = JObject.FromObject(entityResult);
+                ((JArray)values).Add(entity.text);
+
+                // get/create $instance
+                JToken instanceRoot;
+                if (!recognizerResult.Entities.TryGetValue("$instance", StringComparison.OrdinalIgnoreCase, out instanceRoot))
+                {
+                    instanceRoot = new JObject();
+                    recognizerResult.Entities["$instance"] = instanceRoot;
+                }
+
+                // add instanceData
+                JToken instanceData;
+                if (!((JObject)instanceRoot).TryGetValue(entityResult.Type, StringComparison.OrdinalIgnoreCase, out instanceData))
+                {
+                    instanceData = new JArray();
+                    instanceRoot[entityResult.Type] = instanceData;
+                }
+
+                dynamic instance = new JObject();
+                instance.startIndex = entity.start;
+                instance.endIndex = entity.end;
+                instance.score = (double)1.0;
+                instance.text = entity.text;
+                instance.type = entity.type;
+                instance.resolution = entity.resolution;
+                ((JArray)instanceData).Add(instance);
             }
 
-            return result;
+            // if no match return None intent
+            if (!recognizerResult.Intents.Keys.Any())
+            {
+                recognizerResult.Intents.Add("None", new IntentScore() { Score = 1.0 });
+            }
+
+            await dialogContext.Context.TraceActivityAsync(nameof(RegexRecognizer), JObject.FromObject(recognizerResult), "RecognizerResult", "Regex RecognizerResult", cancellationToken).ConfigureAwait(false);
+
+            return recognizerResult;
         }
     }
 }

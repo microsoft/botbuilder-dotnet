@@ -16,14 +16,16 @@
         },
         "activityId": {
             "$role": "expression",
+            "type": "string",
             "title": "ActivityId",
             "description": "expression to an activityId to delete",
             "examples": [
-                "$lastActivity"
+                "=$lastActivity"
             ]
         },
         "disabled": {
             "$role": "expression",
+            "type": "boolean",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [

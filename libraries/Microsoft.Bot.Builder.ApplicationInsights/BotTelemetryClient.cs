@@ -9,7 +9,7 @@ using Microsoft.ApplicationInsights.DataContracts;
 namespace Microsoft.Bot.Builder.ApplicationInsights
 {
     /// <summary>
-    /// Instanciates a BotTelemetryCLient object.
+    /// A logging client for bot telemetry.
     /// </summary>
     public class BotTelemetryClient : IBotTelemetryClient
     {
@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
         /// <summary>
         /// Initializes a new instance of the <see cref="BotTelemetryClient"/> class.
         /// </summary>
-        /// <param name="telemetryClient">the telemetry client.</param>
+        /// <param name="telemetryClient">The telemetry client to forward bot events to.</param>
         public BotTelemetryClient(TelemetryClient telemetryClient)
         {
             _telemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(telemetryClient));

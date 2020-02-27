@@ -8,7 +8,7 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SetProperty",
-                    "value": "@ListType",
+                    "value": "=@ListType",
                     "property": "dialog.listName"
                 },
                 {
@@ -16,9 +16,9 @@
                     "condition": "user.lists == null",
                     "actions": [
                         {
-                            "$kind": "Microsoft.InitProperty",
-                            "property": "user.lists",
-                            "type": "object"
+                          "$kind": "Microsoft.SetProperty",
+                          "property": "user.lists",
+                          "value": "={}"
                         }
                     ]
                 },
@@ -71,13 +71,13 @@
                     "actions": [
                         {
                             "$kind": "Microsoft.SendActivity",
-                            "activity": "Your have no items in your @{dialog.listName} list."
+                            "activity": "Your have no items in your ${dialog.listName} list."
                         }
                     ],
                     "elseActions": [
                         {
                             "$kind": "Microsoft.SendActivity",
-                            "activity": "@{ShowItems(user, dialog.listName)}"
+                            "activity": "${ShowItems(user, dialog.listName)}"
                         }
                     ]
                 }

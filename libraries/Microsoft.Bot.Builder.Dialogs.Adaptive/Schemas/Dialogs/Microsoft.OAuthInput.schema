@@ -6,6 +6,7 @@
     "type": "object",
     "properties": {
         "connectionName": {
+            "$role": "expression",
             "type": "string",
             "title": "Connection name",
             "description": "The connection name configured in Azure Web App Bot OAuth settings.",
@@ -15,6 +16,7 @@
         },
         "disabled": {
             "$role": "expression",
+            "type": "boolean",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -22,6 +24,7 @@
             ]
         },
         "text": {
+            "$role": "expression",
             "type": "string",
             "title": "Text",
             "description": "Text shown in the OAuth signin card.",
@@ -30,6 +33,7 @@
             ]
         },
         "title": {
+            "$role": "expression",
             "type": "string",
             "title": "Title",
             "description": "Title shown in the OAuth signin card.",
@@ -38,6 +42,7 @@
             ]
         },
         "timeout": {
+            "$role": "expression",
             "type": "integer",
             "title": "Timeout",
             "description": "Time out setting for the OAuth signin card.",
@@ -45,6 +50,7 @@
         },
         "property": {
             "$role": "expression",
+            "type": "string",
             "title": "Token property",
             "description": "Property to store the OAuth token result.",
             "examples": [
@@ -68,6 +74,7 @@
             ]
         },
         "maxTurnCount": {
+            "$role": "expression",
             "type": "integer",
             "title": "Max turn count",
             "description": "Maximum number of re-prompt attempts to collect information.",
@@ -78,6 +85,14 @@
         },
         "defaultValue": {
             "$role": "expression",
+            "type": [
+                "object",
+                "array",
+                "number",
+                "integer",
+                "boolean",
+                "string"
+            ],
             "title": "Default value",
             "description": "Expression to examine on each turn of the conversation as possible value to the property.",
             "examples": [
@@ -86,6 +101,7 @@
         },
         "allowInterruptions": {
             "$role": "expression",
+            "type": "boolean",
             "title": "Allow Interruptions",
             "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
             "default": "true",

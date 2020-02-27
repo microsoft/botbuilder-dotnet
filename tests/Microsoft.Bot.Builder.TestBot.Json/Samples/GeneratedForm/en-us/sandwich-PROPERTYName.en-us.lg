@@ -1,18 +1,18 @@
 # PROPERTYName(value) 
-- SWITCH: @{value}
-- CASE: @{'Quantity'} 
+- SWITCH: ${value}
+- CASE: ${'Quantity'} 
  - quantity
-- CASE: @{'Length'} 
+- CASE: ${'Length'} 
  - length
-- CASE: @{'Name'} 
+- CASE: ${'Name'} 
  - name
-- CASE: @{'Bread'} 
+- CASE: ${'Bread'} 
  - bread
-- CASE: @{'Cheese'} 
- - cheese
-- CASE: @{'Meat'} 
+- CASE: ${'Meat'} 
  - meat
-- CASE: @{'Price'} 
+- CASE: ${'Cheese'} 
+ - cheese
+- CASE: ${'Price'} 
  - price
 - DEFAULT: 
- - I don't understand @{value}
+ - I don't understand ${value}

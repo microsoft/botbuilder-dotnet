@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
@@ -43,9 +42,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
-        [Newtonsoft.Json.JsonIgnore]
-        public IExpressionParser Parser { get; set; } = new ExpressionEngine();
-
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
             _conditionals = conditionals.ToList();
@@ -64,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 candidates = new List<OnCondition>();
                 foreach (var conditional in _conditionals)
                 {
-                    var expression = conditional.GetExpression(Parser);
+                    var expression = conditional.GetExpression();
                     var (value, error) = expression.TryEvaluate(context.GetState());
                     var eval = error == null && (bool)value;
                     if (eval == true)

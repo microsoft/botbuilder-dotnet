@@ -11,13 +11,11 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "user.choices",
-                        "value": "json('[{\"value\": \"red\"}, {\"value\": \"green\"}, {\"value\": \"blue\"}]')"
+                        "value": "=json('[{\"value\": \"red\"}, {\"value\": \"green\"}, {\"value\": \"blue\"}]')"
                     },
                     {
                         "$kind": "Microsoft.ChoiceInput",
-                        "choices": {
-                            "expression": "user.choices"
-                        },
+                        "choices": "user.choices",
                         "styles": 2,
                         "property": "user.color",
                         "prompt": "Please select a color:",
@@ -25,13 +23,11 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{user.color}"
+                        "activity": "${user.color}"
                     },
                     {
                         "$kind": "Microsoft.ChoiceInput",
-                        "choices": {
-                            "expression": "user.choices"
-                        },
+                        "choices": "user.choices",
                         "styles": 2,
                         "alwaysPrompt": true,
                         "property": "user.color",
@@ -40,13 +36,11 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{user.color}"
+                        "activity": "${user.color}"
                     },
                     {
                         "$kind": "Microsoft.ChoiceInput",
-                        "choices": {
-                            "expression": "user.choices"
-                        },
+                        "choices": "user.choices",
                         "styles": 2,
                         "alwaysPrompt": true,
                         "property": "user.color",
@@ -55,7 +49,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{user.color}"
+                        "activity": "${user.color}"
                     }
                 ]
             }
