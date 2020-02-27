@@ -50,5 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// An instance of a <see cref="SkillConversationIdFactoryBase"/> used to generate conversation IDs for interacting with the skill.
         /// </value>
         public SkillConversationIdFactoryBase ConversationIdFactory { get; set; }
+
+        public ConversationState ConversationState { get; set; }
     }
 }
