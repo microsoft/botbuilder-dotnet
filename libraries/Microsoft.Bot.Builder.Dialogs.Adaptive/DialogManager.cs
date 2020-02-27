@@ -2,16 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Memory;
-using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -21,16 +15,23 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class DialogManager
     {
-        private const string DIALOGS = "_dialogs";
         private const string LASTACCESS = "_lastAccess";
         private string rootDialogId;
+        private string dialogStateProperty;
 
-        public DialogManager(Dialog rootDialog = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogManager"/> class.
+        /// </summary>
+        /// <param name="rootDialog">rootdialog to use.</param>
+        /// <param name="dialogStateProperty">alternate name for the dialogState property. (Default is "DialogState").</param>
+        public DialogManager(Dialog rootDialog = null, string dialogStateProperty = null)
         {
             if (rootDialog != null)
             {
                 this.RootDialog = rootDialog;
             }
+
+            this.dialogStateProperty = dialogStateProperty ?? "DialogState";
         }
 
         /// <summary>
@@ -166,7 +167,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             await lastAccessProperty.SetAsync(context, lastAccess, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             // get dialog stack 
-            var dialogsProperty = ConversationState.CreateProperty<DialogState>(DIALOGS);
+            var dialogsProperty = ConversationState.CreateProperty<DialogState>(this.dialogStateProperty);
             DialogState dialogState = await dialogsProperty.GetAsync(context, () => new DialogState(), cancellationToken: cancellationToken).ConfigureAwait(false);
 
             // Create DialogContext

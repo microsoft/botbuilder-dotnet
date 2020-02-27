@@ -347,6 +347,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected virtual async Task<IActivity> OnRenderPrompt(DialogContext dc, InputState state)
         {
+            IMessageActivity msg = null;
             var dcState = dc.GetState();
 
             switch (state)
@@ -354,11 +355,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 case InputState.Unrecognized:
                     if (this.UnrecognizedPrompt != null)
                     {
-                        return await this.UnrecognizedPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
+                        msg = await this.UnrecognizedPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
                     }
                     else if (this.InvalidPrompt != null)
                     {
-                        return await this.InvalidPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
+                        msg = await this.InvalidPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
                     }
 
                     break;
@@ -366,17 +367,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 case InputState.Invalid:
                     if (this.InvalidPrompt != null)
                     {
-                        return await this.InvalidPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
+                        msg = await this.InvalidPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
                     }
                     else if (this.UnrecognizedPrompt != null)
                     {
-                        return await this.UnrecognizedPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
+                        msg = await this.UnrecognizedPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
                     }
 
                     break;
             }
 
-            return await this.Prompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
+            if (msg == null)
+            {
+                msg = await this.Prompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
+            }
+
+            msg.InputHint = InputHints.ExpectingInput;
+
+            return msg;
         }
 
         private async Task<InputState> RecognizeInput(DialogContext dc, int turnCount)
@@ -419,6 +427,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 else
                 {
                     input = dc.Context.Activity.Text;
+
+                    // if there is no visible text AND we have a value object, then fallback to that.
+                    if (string.IsNullOrEmpty(dc.Context.Activity.Text) && dc.Context.Activity.Value != null)
+                    {
+                        input = dc.Context.Activity.Value;
+                    }
                 }
             }
 

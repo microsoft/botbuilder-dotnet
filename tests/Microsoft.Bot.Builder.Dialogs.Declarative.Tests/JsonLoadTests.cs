@@ -156,7 +156,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                     var trace = (Activity)activity;
                     Assert.AreEqual(ActivityTypes.Trace, trace.Type, "should be trace activity");
                     Assert.AreEqual("memory", trace.ValueType, "value type should be memory");
-                    Assert.AreEqual("Carlos", ((JObject)trace.Value)["name"].ToString(), "value should be user object with name='Carlos'");
+                    Assert.AreEqual("Carlos", (string)((dynamic)trace.Value)["name"], "value should be user object with name='Carlos'");
                 })
             .StartTestAsync();
         }

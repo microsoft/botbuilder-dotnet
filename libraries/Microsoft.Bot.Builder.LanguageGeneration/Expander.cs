@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="templateName">Given template name.</param>
         /// <param name="scope">Given scope.</param>
         /// <returns>All possiable results.</returns>
-        public List<string> EvaluateTemplate(string templateName, object scope)
+        public List<string> ExpandTemplate(string templateName, object scope)
         {
             if (!(scope is CustomizedMemory))
             {
@@ -323,7 +323,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (item.IsPureExpression(out var text))
                 {
-                    result.Add(EvalExpression(text, item));
+                    result.Add(EvalExpression(text, context));
                 }
                 else
                 {
@@ -499,7 +499,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             (IReadOnlyList<object> args) =>
             {
                 var newScope = this.ConstructScope(templateName, args.ToList());
-                return this.EvaluateTemplate(templateName, newScope);
+                return this.ExpandTemplate(templateName, newScope);
             };
 
         private Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName) =>
@@ -507,7 +507,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 var newScope = this.ConstructScope(templateName, args.ToList());
 
-                var value = this.EvaluateTemplate(templateName, newScope);
+                var value = this.ExpandTemplate(templateName, newScope);
                 var rd = new Random();
                 return value[rd.Next(value.Count)];
             };

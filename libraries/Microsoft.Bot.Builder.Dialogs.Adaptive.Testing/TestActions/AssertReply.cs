@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
 {
     [DebuggerDisplay("AssertReply{Exact ? \"[Exact]\" : string.Empty}:{GetConditionDescription()}")]
     public class AssertReply : AssertReplyActivity

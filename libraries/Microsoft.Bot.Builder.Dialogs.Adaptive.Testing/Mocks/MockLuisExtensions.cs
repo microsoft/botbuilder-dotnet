@@ -9,7 +9,7 @@ using System.Text;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Bot.Builder.MockLuis
+namespace Microsoft.Bot.Builder.AI.Luis.Testing
 {
     public static class MockLuisExtensions
     {

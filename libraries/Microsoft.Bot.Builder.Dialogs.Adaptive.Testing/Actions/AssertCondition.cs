@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
         /// Description of assertion.
         /// </value>
         [JsonProperty("description")]
-        public string Description { get; set; }
+        public StringExpression Description { get; set; }
 
         public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
@@ -44,9 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
             var (result, error) = Condition.TryEvaluate(dcState);
             if ((bool)result == false)
             {
-                var desc = await new TemplateEngineLanguageGenerator()
-                    .Generate(dc.Context, this.Description, dcState)
-                    .ConfigureAwait(false);
+                var desc = Description?.GetValue(dcState) ?? Condition.ToString();
                 throw new Exception(desc);
             }
 

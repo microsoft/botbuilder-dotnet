@@ -10,7 +10,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
 {
     /// <summary>
     /// Basic assertion TestAction, which validates assertions against a reply activity.

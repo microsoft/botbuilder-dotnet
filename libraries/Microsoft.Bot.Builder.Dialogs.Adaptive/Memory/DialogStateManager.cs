@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 {
                     // Root is handled by SetMemory rather than SetValue
                     var scope = GetMemoryScope(key) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(key));
-                    scope.SetMemory(this.dialogContext, value);
+                    scope.SetMemory(this.dialogContext, JToken.FromObject(value));
                 }
                 else
                 {
@@ -190,16 +190,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             var iFirst = path.ToLower().LastIndexOf(first);
             if (iFirst >= 0)
             {
+                object entity = null;
                 remainingPath = path.Substring(iFirst + first.Length);
                 path = path.Substring(0, iFirst);
-                if (TryGetFirstNestedValue(ref value, ref path, this))
+                if (TryGetFirstNestedValue(ref entity, ref path, this))
                 {
                     if (string.IsNullOrEmpty(remainingPath))
                     {
+                        value = ObjectPath.MapValueTo<T>(entity);
                         return true;
                     }
 
-                    return ObjectPath.TryGetPathValue(value, remainingPath, out value);
+                    return ObjectPath.TryGetPathValue(entity, remainingPath, out value);
                 }
 
                 return false;
@@ -268,6 +270,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             if (value is Task)
             {
                 throw new Exception($"{path} = You can't pass an unresolved Task to SetValue");
+            }
+
+            if (value != null)
+            {
+                value = JToken.FromObject(value);
             }
 
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
@@ -503,12 +510,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                     if (value is object obj)
                     {
                         // For an object we need to see if any children path are being tracked
-                        void CheckChildren(string property, object value)
+                        void CheckChildren(string property, object instance)
                         {
                             // Add new child segment
                             trackedPath += "_" + property.ToLower();
                             Update();
-                            if (value is object child)
+                            if (instance is object child)
                             {
                                 ObjectPath.ForEachProperty(child, CheckChildren);
                             }
