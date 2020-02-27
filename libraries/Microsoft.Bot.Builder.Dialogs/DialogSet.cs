@@ -33,12 +33,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             _dialogState = dialogState ?? throw new ArgumentNullException(nameof(dialogState));
             _telemetryClient = NullBotTelemetryClient.Instance;
+            _logTelemetryClient = new NullLogTelemetryClient();        
         }
 
         public DialogSet()
         {
             _dialogState = null;
             _telemetryClient = NullBotTelemetryClient.Instance;
+            _logTelemetryClient = new NullLogTelemetryClient();
         }
 
         /// <summary>

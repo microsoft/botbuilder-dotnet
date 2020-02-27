@@ -267,7 +267,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected void TrackTelemetryEvent(string eventName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
         {
-            if (!(_logTelemetryClient is NullLogTelemetryClient))
+            if (_logTelemetryClient != null && !(_logTelemetryClient is NullLogTelemetryClient))
             {
                 _logTelemetryClient.TrackEvent(eventName, properties, metrics);
             }
