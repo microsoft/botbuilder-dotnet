@@ -70,6 +70,12 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Gets a list of activities to send when `context.Activity.DeliveryMode == 'bufferedReplies'`.
+        /// </summary>
+        /// <value>A list of activities.</value></placeholder>
+        public List<Activity> BufferedReplies { get; } = new List<Activity>();
+
+        /// <summary>
         /// Adds a response handler for send activity operations.
         /// </summary>
         /// <param name="handler">The handler to add to the context object.</param>
@@ -261,27 +267,51 @@ namespace Microsoft.Bot.Builder
 
             async Task<ResourceResponse[]> SendActivitiesThroughAdapter()
             {
-                // Send from the list which may have been manipulated via the event handlers.
-                // Note that 'responses' was captured from the root of the call, and will be
-                // returned to the original caller.
-                var responses = await Adapter.SendActivitiesAsync(this, bufferedActivities.ToArray(), cancellationToken).ConfigureAwait(false);
-                var sentNonTraceActivity = false;
-
-                for (var index = 0; index < responses.Length; index++)
+                if (Activity.DeliveryMode == DeliveryModes.BufferedReplies)
                 {
-                    var activity = bufferedActivities[index];
+                    var responses = new ResourceResponse[bufferedActivities.Count];
+                    var sentNonTraceActivity = false;
 
-                    activity.Id = responses[index].Id;
+                    for (var index = 0; index < responses.Length; index++)
+                    {
+                        var activity = bufferedActivities[index];
+                        BufferedReplies.Add(activity);
+                        responses[index] = new ResourceResponse();
 
-                    sentNonTraceActivity |= activity.Type != ActivityTypes.Trace;
+                        sentNonTraceActivity |= activity.Type != ActivityTypes.Trace;
+                    }
+
+                    if (sentNonTraceActivity)
+                    {
+                        Responded = true;
+                    }
+
+                    return responses;
                 }
-
-                if (sentNonTraceActivity)
+                else
                 {
-                    Responded = true;
-                }
+                    // Send from the list which may have been manipulated via the event handlers.
+                    // Note that 'responses' was captured from the root of the call, and will be
+                    // returned to the original caller.
+                    var responses = await Adapter.SendActivitiesAsync(this, bufferedActivities.ToArray(), cancellationToken).ConfigureAwait(false);
+                    var sentNonTraceActivity = false;
 
-                return responses;
+                    for (var index = 0; index < responses.Length; index++)
+                    {
+                        var activity = bufferedActivities[index];
+
+                        activity.Id = responses[index].Id;
+
+                        sentNonTraceActivity |= activity.Type != ActivityTypes.Trace;
+                    }
+
+                    if (sentNonTraceActivity)
+                    {
+                        Responded = true;
+                    }
+
+                    return responses;
+                }
             }
         }
 
