@@ -10,7 +10,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.BotBuilderSamples.EchoSkillBot31
+namespace Microsoft.BotBuilderSamples.EchoSkillBot
 {
     public class SkillAdapterWithErrorHandler : BotFrameworkHttpAdapter
     {

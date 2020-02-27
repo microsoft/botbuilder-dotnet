@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <AssemblyName>Microsoft.BotBuilderSamples.EchoSkillBot31</AssemblyName>
-    <RootNamespace>Microsoft.BotBuilderSamples.EchoSkillBot31</RootNamespace>
+    <AssemblyName>Microsoft.BotBuilderSamples.EchoSkillBot</AssemblyName>
+    <RootNamespace>Microsoft.BotBuilderSamples.EchoSkillBot</RootNamespace>
     <UserSecretsId>d3e58f1c-0841-4154-8a6e-c4dfc5ae3edf</UserSecretsId>
   </PropertyGroup>
 

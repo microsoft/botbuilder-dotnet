@@ -9,14 +9,13 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.BotBuilderSamples.SimpleRootBot31.Authentication;
-using Microsoft.BotBuilderSamples.SimpleRootBot31.Bots;
+using Microsoft.BotBuilderSamples.SimpleRootBot.Authentication;
+using Microsoft.BotBuilderSamples.SimpleRootBot.Bots;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json.Serialization;
 
-namespace Microsoft.BotBuilderSamples.SimpleRootBot31
+namespace Microsoft.BotBuilderSamples.SimpleRootBot
 {
     public class Startup
     {
