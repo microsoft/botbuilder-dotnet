@@ -123,14 +123,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public virtual MemoryScope ResolveMemoryScope(string path, out string remainingPath)
         {
             var scope = path;
+            var sepIndex = -1;
             var dot = path.IndexOf(".");
-            if (dot > 0)
+            var openSquareBracket = path.IndexOf("[");
+
+            if (dot > 0 && openSquareBracket > 0)
             {
-                scope = path.Substring(0, dot);
+                sepIndex = Math.Min(dot, openSquareBracket);
+            }
+            else if (dot > 0)
+            {
+                sepIndex = dot;
+            }
+            else if (openSquareBracket > 0)
+            {
+                sepIndex = openSquareBracket;
+            }
+
+            if (sepIndex > 0)
+            {
+                scope = path.Substring(0, sepIndex);
                 var memoryScope = GetMemoryScope(scope);
                 if (memoryScope != null)
                 {
-                    remainingPath = path.Substring(dot + 1);
+                    remainingPath = path.Substring(sepIndex + 1);
                     return memoryScope;
                 }
             }

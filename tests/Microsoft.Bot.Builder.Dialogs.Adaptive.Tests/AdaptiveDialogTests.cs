@@ -243,6 +243,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task AdaptiveDialog_NestedMemoryAccess()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
         [Ignore]
         public async Task TestForeachWithLargeItems()
         {
