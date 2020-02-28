@@ -45,6 +45,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             throw new NotSupportedException(NOTSUPPORTED);
         }
 
+        public override bool Equals(object other)
+        {
+            if (other is ExpressionPropertyBinder esp)
+            {
+                return this.obj.Equals(esp.obj);
+            }
+
+            return false;
+        }
+
         public bool Contains(KeyValuePair<string, object> item)
         {
             throw new NotSupportedException(NOTSUPPORTED);
