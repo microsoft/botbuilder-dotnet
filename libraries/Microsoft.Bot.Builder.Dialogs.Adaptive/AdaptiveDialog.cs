@@ -138,9 +138,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             set
             {
-                var client = value ?? new NullBotTelemetryClient();
-                this.Dialogs.TelemetryClient = client;
-                base.TelemetryClient = client;
+                base.TelemetryClient = value ?? NullBotTelemetryClient.Instance;
+                Dialogs.TelemetryClient = base.TelemetryClient;
             }
         }
 
@@ -203,6 +202,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 Bubble = false
             };
 
+            var properties = new Dictionary<string, string>()
+                {
+                    { "DialogId", Id }
+                };
+            TelemetryClient.TrackEvent("AdaptiveDialogStart", properties);
+
             await OnDialogEventAsync(dc, dialogEvent, cancellationToken).ConfigureAwait(false);
 
             // Continue step execution
@@ -240,6 +245,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
         {
+            var properties = new Dictionary<string, string>()
+                {
+                    { "DialogId", Id }
+                };
+
+            if (reason == DialogReason.CancelCalled)
+            {
+                TelemetryClient.TrackEvent("AdaptiveDialogCancel", properties);
+            }
+            else if (reason == DialogReason.EndCalled)
+            {
+                TelemetryClient.TrackEvent("AdaptiveDialogComplete", properties);
+            }
+
             RestoreParentGenerator(turnContext);
             return base.EndDialogAsync(turnContext, instance, reason, cancellationToken);
         }

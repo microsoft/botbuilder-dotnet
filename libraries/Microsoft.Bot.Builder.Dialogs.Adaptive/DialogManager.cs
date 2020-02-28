@@ -82,6 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (value != null)
                 {
                     this.rootDialogId = value.Id;
+                    this.Dialogs.TelemetryClient = value.TelemetryClient;
                     this.Dialogs.Add(value);
                 }
                 else
