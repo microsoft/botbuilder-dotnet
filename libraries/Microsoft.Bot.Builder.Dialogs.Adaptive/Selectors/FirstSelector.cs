@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             _evaluate = evaluate;
         }
 
-        public Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel)
+        public Task<IReadOnlyList<OnCondition>> Select(ActionContext context, CancellationToken cancel)
         {
             OnCondition selection = null;
             var lowestPriority = int.MaxValue;
