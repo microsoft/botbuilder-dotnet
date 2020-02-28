@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Samples\80 - BeginSkillDialog\BeginSkillDialog.main.dialog" />
     <None Remove="Samples\QnAMakerBot\QnAMakerBot.main.dialog" />
   </ItemGroup>
 

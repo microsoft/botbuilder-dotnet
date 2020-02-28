@@ -62,14 +62,15 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             try
             {
-                var myAss = new BeginSkillDialog();
+                var dummy = new BeginSkillDialog();
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(ex);
+                // ignored, this is just to force loading the assembly where BeginSkillDialog is on startup
+                // remove this once we move BeginSkillDialog into the adaptive library. 
             }
 
-            var resourceExplorer = new ResourceExplorer().AddFolder("C:\\Projects\\Repos\\botbuilder-dotnet-BeginSkillDialog\\tests\\Microsoft.Bot.Builder.TestBot.Json\\Samples\\80 - BeginSkillDialog\\");
+            var resourceExplorer = new ResourceExplorer().AddFolder(this.Configuration.GetValue<string>("BotRoot"));
             services.AddSingleton(resourceExplorer);
 
             // Create the bot  In this case the ASP Controller is expecting an IBot.
