@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// The ExpressionPropertyBinder provides read-only dictionary semantics for getting access to properties of an object.
     /// If the value of a property is an IExpressionProperty, then the expression property will be evaluated using the DC.
     /// Any complex objects that are returned from this are further wrapped in an ExpressionPropertyBinder, so that you can
-    /// get ExpressionProperty binding for properties inwhere in a complex hierarchy of objects.
+    /// get ExpressionProperty binding for properties in a complex hierarchy of objects.
     /// </remarks>
     internal class ExpressionPropertyBinder : IDictionary<string, object>
     {
