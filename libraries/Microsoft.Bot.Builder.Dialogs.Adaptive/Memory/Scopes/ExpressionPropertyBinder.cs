@@ -20,8 +20,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     internal class ExpressionPropertyBinder : IDictionary<string, object>
     {
         private const string NOTSUPPORTED = "Changing dialog definitions at run time is not supported";
-        private DialogContext dc;
-        private object obj;
+        private readonly DialogContext dc;
+        private readonly object obj;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExpressionPropertyBinder"/> class.
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
         public bool ContainsKey(string key)
         {
-            return ObjectPath.GetProperties(this.obj).Any(p => string.Compare(p, key, ignoreCase: true) == 0);
+            return ObjectPath.GetProperties(this.obj).Any(propertyName => propertyName.Equals(key, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)

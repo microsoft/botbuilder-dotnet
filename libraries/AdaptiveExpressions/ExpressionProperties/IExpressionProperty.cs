@@ -3,6 +3,12 @@
 
 namespace AdaptiveExpressions.Properties
 {
+    /// <summary>
+    /// Interface which defines plain object access to the values of an ExpressionProperty.
+    /// </summary>
+    /// <remarks>    
+    /// This interface definition allows reflection to work with ExpressionProperty{T} without having to know the generic parameter type.
+    /// </remarks>
     public interface IExpressionProperty
     {
         /// <summary>

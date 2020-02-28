@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -283,7 +284,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else
             {
-                foreach (var property in obj.GetType().GetProperties().Select(p => p.Name))
+                foreach (var property in obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(p => p.Name))
                 {
                     yield return property;
                 }
@@ -312,7 +313,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else
             {
-                return obj.GetType().GetProperties().Any(prop => string.Compare(prop.Name, name, ignoreCase: true) == 0);
+                return obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Any(property => property.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
             }
         }
 
