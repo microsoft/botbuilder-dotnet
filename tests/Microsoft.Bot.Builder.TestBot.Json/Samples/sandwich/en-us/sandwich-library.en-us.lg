@@ -14,7 +14,7 @@
 
 # requiredProperties
 - IF: ${count(dialogClass.schema.required) > 0}
-- Required properties include: ${join(foreach(dialogClass.schema.required, property, name(property)), ',')}\n
+- Required properties include: ${join(foreach(dialogClass.schema.required, property, name(property)), ',')}
 - ELSE:
 - 
 
@@ -45,7 +45,5 @@
 - Which property do you want to change?
 
 # notUnderstood
-- Sorry, I do not understand ${join(foreach(turn.unrecognizedtext, chunk, concat("'", chunk, "'")), ' or ')}\n
-
-> TODO: Would be good to split out all the component pieces, i.e. help, cancel, confirmation into their own files
+- Sorry, I do not understand ${join(foreach(turn.unrecognizedtext, chunk, concat("'", chunk, "'")), ' or ')}
 [sandwich-library-PROPERTYName.lg](sandwich-library-PROPERTYName.lg)

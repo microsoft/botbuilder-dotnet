@@ -1,27 +1,28 @@
-# MeatEntity(value) 
-- SWITCH: ${value}
-- CASE: ${'bacon'} 
- - bacon
-- CASE: ${'chicken'} 
- - chicken
-- CASE: ${'ham'} 
- - ham
-- CASE: ${'pulled pork'} 
- - pulled pork
-- CASE: ${'roast beef'} 
- - roast beef
-- CASE: ${'salami'} 
- - salami
-- CASE: ${'turkey'} 
- - turkey
-- CASE: ${'none'} 
- - none
-- DEFAULT: 
- - I don't understand ${value}
 
-# chooseMeatEntity
-- ${chooseEnumEntity('Meat')}
+ 
+ # MeatEntity(value) 
+ - SWITCH: ${value}
+ - CASE: ${'bacon'} 
+  - bacon
+ - CASE: ${'chicken'} 
+  - chicken
+ - CASE: ${'ham'} 
+  - ham
+ - CASE: ${'pulled pork'} 
+  - pulled pork
+ - CASE: ${'roast beef'} 
+  - roast beef
+ - CASE: ${'salami'} 
+  - salami
+ - CASE: ${'turkey'} 
+  - turkey
+ - CASE: ${'none'} 
+  - none
+ - DEFAULT: 
+  - I don't understand ${value}
 
+ 
+ # chooseMeatEntity
+ - ${chooseEnumEntity('Meat')}
 [sandwich-library.lg](sandwich-library.lg)
-
 [sandwich-library-Choose.lg](sandwich-library-Choose.lg)

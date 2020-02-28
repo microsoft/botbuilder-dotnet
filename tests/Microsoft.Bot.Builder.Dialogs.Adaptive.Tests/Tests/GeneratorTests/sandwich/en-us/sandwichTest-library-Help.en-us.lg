@@ -10,7 +10,11 @@
 - ELSEIF: ${$expectedProperties}
 - ${join(foreach($expectedProperties, expected, help1(expected)), '\n')}
 - ELSE:
-- ${requiredProperties()}\n${optionalProperties()}\nYou can find out about a specific property by doing 'help <property>'.
+-```
+${requiredProperties()}
+${optionalProperties()}
+You can find out about a specific property by doing 'help <property>'.
+```
 
 # help1(property)
 - IF: ${dialogClass.schema.properties[property].enum}
