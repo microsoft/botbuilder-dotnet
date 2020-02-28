@@ -8,15 +8,29 @@ using AdaptiveExpressions.Properties;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 {
+    /// <summary>
+    /// ExpressionPropertyBinder is a wrapper around any object to support expression binding.
+    /// </summary>
+    /// <remarks>
+    /// The ExpressionPropertyBinder provides read-only dictionary semantics for getting access to properties of an object.
+    /// If the value of a property is an IExpressionProperty, then the expression property will be evaluated using the DC.
+    /// Any complex objects that are returned from this are further wrapped in an ExpressionPropertyBinder, so that you can
+    /// get ExpressionProperty binding for properties inwhere in a complex hierarchy of objects.
+    /// </remarks>
     internal class ExpressionPropertyBinder : IDictionary<string, object>
     {
         private const string NOTSUPPORTED = "Changing dialog definitions at run time is not supported";
         private DialogContext dc;
         private object obj;
 
-        public ExpressionPropertyBinder(DialogContext dc, object obj)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExpressionPropertyBinder"/> class.
+        /// </summary>
+        /// <param name="dialogContext">dialog context for evalutation of expression properties.</param>
+        /// <param name="obj">object to wrap.  Any expression properties on it will be evaluated using the dc.</param>
+        public ExpressionPropertyBinder(DialogContext dialogContext, object obj)
         {
-            this.dc = dc;
+            this.dc = dialogContext;
             this.obj = obj;
         }
 
@@ -53,6 +67,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             }
 
             return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.obj.GetHashCode();
         }
 
         public bool Contains(KeyValuePair<string, object> item)
