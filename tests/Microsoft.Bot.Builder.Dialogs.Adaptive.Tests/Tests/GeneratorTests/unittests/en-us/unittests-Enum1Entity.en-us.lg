@@ -1,17 +1,20 @@
-# Enum1Entity(value) 
-- SWITCH: ${value}
-- CASE: ${'multiGrainWheat'} 
- - multi grain wheat
-- CASE: ${'rye'} 
- - rye
-- CASE: ${'white'} 
- - white
-- CASE: ${'wholeWheat'} 
- - whole wheat
-- DEFAULT: 
- - I don't understand ${value}
 
-# chooseEnum1Entity
-- ${chooseEnumEntity('Enum1')}
+ 
+ # Enum1Entity(value) 
+ - SWITCH: ${value}
+ - CASE: ${'multiGrainWheat'} 
+  - multi grain wheat
+ - CASE: ${'rye'} 
+  - rye
+ - CASE: ${'white'} 
+  - white
+ - CASE: ${'wholeWheat'} 
+  - whole wheat
+ - DEFAULT: 
+  - I don't understand ${value}
 
-[unittests-common.lg](unittests-common.lg)
+ 
+ # chooseEnum1Entity
+ - ${chooseEnumEntity('Enum1')}
+[unittests-library.lg](unittests-library.lg)
+[unittests-library-Choose.lg](unittests-library-Choose.lg)

@@ -1,2 +1,2 @@
 call bf luis:build --authoringKey %1 --botName TestBot --dialog --suffix %USERNAME% --in samples\ToDoLuisBot\ToDoLuis.lu
-call bf luis:build --authoringKey %1 --botName TestBot --dialog --suffix %USERNAME% --in Samples\GeneratedForm\luis\sandwich.en-us.lu
+call bf luis:build --authoringKey %1 --botName TestBot --dialog --suffix %USERNAME% --in Samples\sandwich\luis\sandwich.en-us.lu
