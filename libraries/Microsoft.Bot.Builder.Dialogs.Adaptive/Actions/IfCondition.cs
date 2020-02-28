@@ -106,27 +106,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            // Ensure planning context
-            if (dc is SequenceContext planning)
+            var (conditionResult, error) = this.Condition.TryGetValue(dcState);
+            if (error == null && conditionResult == true && TrueScope.Actions.Any())
             {
-                var (conditionResult, error) = this.Condition.TryGetValue(dcState);
-                if (error == null && conditionResult == true && TrueScope.Actions.Any())
-                {
-                    // replace dialog with If True Action Scope
-                    return await dc.ReplaceDialogAsync(this.TrueScope.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
-                }
-                else if (conditionResult == false && FalseScope.Actions.Any())
-                {
-                    return await dc.ReplaceDialogAsync(this.FalseScope.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
-                }
+                // replace dialog with If True Action Scope
+                return await dc.ReplaceDialogAsync(this.TrueScope.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            else if (conditionResult == false && FalseScope.Actions.Any())
+            {
+                return await dc.ReplaceDialogAsync(this.FalseScope.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
 
-                // end dialog since no triggered actions
-                return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                throw new Exception("`IfCondition` should only be used in the context of an adaptive dialog.");
-            }
+            // end dialog since no triggered actions
+            return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         protected override string OnComputeId()
