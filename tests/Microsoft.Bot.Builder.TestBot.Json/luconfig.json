@@ -3,6 +3,6 @@
   "defaultLanguage": "en-us",
   "models": [
     "Samples/ToDoLuisBot/ToDoLuis.lu",
-    "Samples/GeneratedForm/luis/sandwich.en-us.lu"
+    "Samples/sandwich/luis/sandwich.en-us.lu"
   ]
 }

@@ -223,34 +223,72 @@
             }
         },
         "CancelConfirmation": {
-            "type": "string",
+            "type": "boolean",
             "$entities": [
-                "Confirmation"
+                "boolean"
             ]
         },
         "ChangePropertyConfirmation": {
-            "type": "string",
+            "type": "boolean",
             "$entities": [
-                "Confirmation"
+                "boolean"
             ]
         },
         "CompleteConfirmation": {
             "type": "string",
             "$entities": [
-                "Confirmation",
+                "boolean",
                 "PROPERTYName"
             ]
         },
         "PropertyToChange": {
             "type": "string",
-            "enum": "properties",
+            "enum": [
+                "Personname",
+                "Age",
+                "Ordinalv2",
+                "Geographyv2",
+                "Keyphraseproperty",
+                "Money",
+                "Percentage",
+                "Temperature",
+                "Url",
+                "Quantity",
+                "Utteranceproperty",
+                "Dimension",
+                "Enum1",
+                "Enum2",
+                "Zipcodepattern",
+                "Email",
+                "Phonenumber",
+                "Datetimev2"
+            ],
             "$entities": [
                 "PROPERTYName"
             ]
         },
         "PropertyToRemember": {
             "type": "string",
-            "enum": "properties",
+            "enum": [
+                "Personname",
+                "Age",
+                "Ordinalv2",
+                "Geographyv2",
+                "Keyphraseproperty",
+                "Money",
+                "Percentage",
+                "Temperature",
+                "Url",
+                "Quantity",
+                "Utteranceproperty",
+                "Dimension",
+                "Enum1",
+                "Enum2",
+                "Zipcodepattern",
+                "Email",
+                "Phonenumber",
+                "Datetimev2"
+            ],
             "$entities": [
                 "PROPERTYName"
             ]
@@ -277,7 +315,7 @@
         "Datetimev2"
     ],
     "$expectedOnly": [
-        "Confirmation",
+        "boolean",
         "PROPERTYName",
         "utterance",
         "keyPhrase",
@@ -306,7 +344,26 @@
     "definitions": {
         "PROPERTYName": {
             "type": "string",
-            "enum": "properties",
+            "enum": [
+                "Personname",
+                "Age",
+                "Ordinalv2",
+                "Geographyv2",
+                "Keyphraseproperty",
+                "Money",
+                "Percentage",
+                "Temperature",
+                "Url",
+                "Quantity",
+                "Utteranceproperty",
+                "Dimension",
+                "Enum1",
+                "Enum2",
+                "Zipcodepattern",
+                "Email",
+                "Phonenumber",
+                "Datetimev2"
+            ],
             "$entities": [
                 "PROPERTYName"
             ]
