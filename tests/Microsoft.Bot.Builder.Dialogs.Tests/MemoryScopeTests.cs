@@ -10,8 +10,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
@@ -66,6 +69,76 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     Assert.AreEqual(false, ObjectPath.TryGetPathValue<int>(memory, "{source}", out var _), "No computed path");
                 }
             }).StartTestAsync();
+        }
+
+        public class Foo
+        {
+            public Foo()
+            {
+            }
+
+            public StringExpression Title { get; set; }
+        }
+
+        public class ComplexDialog : Dialog
+        {
+            public ComplexDialog()
+            {
+            }
+
+            public StringExpression String { get; set; }
+
+            public ObjectExpression<Foo> Foo { get; set; }
+
+            public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            {
+                var dcState = dc.GetState();
+                dc.Context.SendActivityAsync(dcState.GetValue<string>("class.id"));
+                dc.Context.SendActivityAsync(dcState.GetValue<string>("dialogclass.id"));
+                dc.Context.SendActivityAsync(dcState.GetValue<string>("class.String"));
+                dc.Context.SendActivityAsync(dcState.GetValue<string>("class.foo.title"));
+                return dc.EndDialogAsync();
+            }
+        }
+
+        [TestMethod]
+        public async Task ClassMemoryScopeTest()
+        {
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            adapter
+                .UseStorage(new MemoryStorage())
+                .UseState(new UserState(new MemoryStorage()), new ConversationState(new MemoryStorage()));
+            DialogManager dm = new DialogManager(new AdaptiveDialog("adaptiveDialog")
+            {
+                Triggers = new List<Adaptive.Conditions.OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new ComplexDialog()
+                            {
+                                Id = "test",
+                                String = "='12345'",
+                                Foo = new Foo() { Title = "='abcde'" }
+                            }
+                        }
+                    }
+                }
+            })
+            .UseResourceExplorer(new ResourceExplorer())
+            .UseLanguageGeneration();
+
+            await new TestFlow(adapter, (context, ct) =>
+            {
+                return dm.OnTurnAsync(context, ct);
+            })
+            .SendConversationUpdate()
+                .AssertReply("test")
+                .AssertReply("adaptiveDialog")
+                .AssertReply("12345")
+                .AssertReply("abcde")
+            .StartTestAsync();
         }
 
         internal class BotStateTestDialog : Dialog
