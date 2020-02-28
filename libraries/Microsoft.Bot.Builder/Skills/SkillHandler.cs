@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Skills
 
         private readonly BotAdapter _adapter;
         private readonly IBot _bot;
-        private readonly SkillConversationIdFactoryBase _conversationIdIdFactory;
+        private readonly SkillConversationIdFactoryBase _conversationIdFactory;
         private readonly ILogger _logger;
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Skills
         {
             _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
-            _conversationIdIdFactory = conversationIdFactory ?? throw new ArgumentNullException(nameof(conversationIdFactory));
+            _conversationIdFactory = conversationIdFactory ?? throw new ArgumentNullException(nameof(conversationIdFactory));
             _logger = logger ?? NullLogger.Instance;
         }
 
@@ -150,7 +150,22 @@ namespace Microsoft.Bot.Builder.Skills
 
         private async Task<ResourceResponse> ProcessActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string replyToActivityId, Activity activity, CancellationToken cancellationToken)
         {
-            var conversationReference = await _conversationIdIdFactory.GetConversationReferenceAsync(conversationId, CancellationToken.None).ConfigureAwait(false);
+            // SkillConversationIdFactoryBase is supported by this code for backwards compatibility
+            ConversationReference conversationReference = null;
+            string audience;
+            if (_conversationIdFactory is SkillConversationIdFactoryExBase idFactory)
+            {
+                (conversationReference, audience) = await idFactory.GetConversationReferenceWithAudienceAsync(conversationId, CancellationToken.None).ConfigureAwait(false);
+            }
+            else
+            {
+                // Legacy SkillConversationIdFactoryBase, so retrieve default audience
+                audience = this.ChannelProvider != null && ChannelProvider.IsGovernment() ?
+                        GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope :
+                        AuthenticationConstants.ToChannelFromBotOAuthScope;
+
+                conversationReference = await _conversationIdFactory.GetConversationReferenceAsync(conversationId, CancellationToken.None).ConfigureAwait(false);
+            }
 
             if (conversationReference == null)
             {
@@ -169,7 +184,7 @@ namespace Microsoft.Bot.Builder.Skills
                 switch (activity.Type)
                 {
                     case ActivityTypes.EndOfConversation:
-                        await _conversationIdIdFactory.DeleteConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
+                        await _conversationIdFactory.DeleteConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
                         ApplyEoCToTurnContextActivity(turnContext, activity);
                         await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
                         break;
@@ -183,7 +198,7 @@ namespace Microsoft.Bot.Builder.Skills
                 }
             });
 
-            await _adapter.ContinueConversationAsync(claimsIdentity, conversationReference, callback, cancellationToken).ConfigureAwait(false);
+            await _adapter.ContinueConversationAsync(claimsIdentity, conversationReference, audience, callback, cancellationToken).ConfigureAwait(false);
             return new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
         }
     }

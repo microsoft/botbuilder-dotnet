@@ -4,30 +4,31 @@
 using System;
 using System.Collections.Concurrent;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.TestProtocol
 {
-    public class MyConversationIdFactory : SkillConversationIdFactoryBase
+    public class MyConversationIdFactory : SkillConversationIdFactoryExBase
     {
-        private readonly ConcurrentDictionary<string, string> _conversationRefs = new ConcurrentDictionary<string, string>();
+        private readonly ConcurrentDictionary<string, (ConversationReference, string)> _conversationRefs = new ConcurrentDictionary<string, (ConversationReference, string)>();
 
-        public override Task<string> CreateSkillConversationIdAsync(ConversationReference conversationReference, CancellationToken cancellationToken)
+        public override Task<string> CreateSkillConversationIdAsync(string originatingAudience, string fromBotId, Activity activity, BotFrameworkSkill botFrameworkSkill, CancellationToken cancellationToken)
         {
-            var crJson = JsonConvert.SerializeObject(conversationReference);
-            var key = (conversationReference.Conversation.Id + conversationReference.ServiceUrl).GetHashCode().ToString(CultureInfo.InvariantCulture);
-            _conversationRefs.GetOrAdd(key, crJson);
+            var key = (activity.Conversation.Id + activity.ServiceUrl).GetHashCode().ToString(CultureInfo.InvariantCulture);
+            _conversationRefs.GetOrAdd(key, (activity.GetConversationReference(), originatingAudience));
             return Task.FromResult(key);
         }
 
-        public override Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+        public override Task<(ConversationReference, string)> GetConversationReferenceWithAudienceAsync(string skillConversationId, CancellationToken cancellationToken)
         {
-            var conversationReference = JsonConvert.DeserializeObject<ConversationReference>(_conversationRefs[skillConversationId]);
-            return Task.FromResult(conversationReference);
+            var conversationReference = _conversationRefs[skillConversationId].Item1;
+            return Task.FromResult((conversationReference, _conversationRefs[skillConversationId].Item2));
         }
 
         public override Task DeleteConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)

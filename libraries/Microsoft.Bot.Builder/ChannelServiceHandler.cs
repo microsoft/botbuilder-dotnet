@@ -37,6 +37,14 @@ namespace Microsoft.Bot.Builder
             _authConfiguration = authConfiguration ?? throw new ArgumentNullException(nameof(authConfiguration));
             _channelProvider = channelProvider;
         }
+        
+        protected IChannelProvider ChannelProvider 
+        { 
+            get 
+            { 
+                return _channelProvider; 
+            } 
+        }
 
         public async Task<ResourceResponse> HandleSendToConversationAsync(string authHeader, string conversationId, Activity activity, CancellationToken cancellationToken = default)
         {
