@@ -2,7 +2,7 @@
   "$schema": "../../app.schema",
   "$kind": "Microsoft.BeginSkillDialog",
   "targetSkillAppId": "f3fe8762-e50c-4688-b202-a040f522d916",
-  "targetSkillSkillEndpoint": "http://localhost:39783/api/messages",
+  "targetSkillEndpoint": "http://localhost:39783/api/messages",
   "activity": {
     "type": "event",
     "name": "BookFlight" 

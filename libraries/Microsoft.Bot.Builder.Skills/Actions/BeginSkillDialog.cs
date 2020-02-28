@@ -41,8 +41,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("targetSkillAppId")]
         public string TargetSkillAppId { get; set; }
 
-        [JsonProperty("targetSkillSkillEndpoint")]
-        public string TargetSkillSkillEndpoint { get; set; }
+        [JsonProperty("targetSkillEndpoint")]
+        public string TargetSkillEndpoint { get; set; }
 
         /// <summary>
         /// Gets or sets template for the activity.
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             DialogOptions.Skill.Id = TargetSkillAppId;
             DialogOptions.Skill.AppId = TargetSkillAppId;
-            DialogOptions.Skill.SkillEndpoint = new Uri(TargetSkillSkillEndpoint);
+            DialogOptions.Skill.SkillEndpoint = new Uri(TargetSkillEndpoint);
 
             var activity = await Activity.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
 
