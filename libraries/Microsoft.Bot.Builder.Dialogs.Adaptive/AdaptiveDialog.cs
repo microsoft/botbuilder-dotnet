@@ -49,12 +49,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             RegisterSourceLocation(callerPath, callerLine);
         }
 
-        [JsonIgnore]
-        public IStatePropertyAccessor<BotState> BotState { get; set; }
-
-        [JsonIgnore]
-        public IStatePropertyAccessor<Dictionary<string, object>> UserState { get; set; }
-
         /// <summary>
         /// Gets or sets recognizer for processing incoming user input.
         /// </summary>

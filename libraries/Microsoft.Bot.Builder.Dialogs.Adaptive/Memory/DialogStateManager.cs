@@ -31,10 +31,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         private readonly DialogContext dialogContext;
         private int version = 0;
 
-        public DialogStateManager(DialogContext dc)
+        public DialogStateManager(DialogContext dc, DialogStateManagerConfiguration configuration = null)
         {
             dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
-            this.Configuration = dc.Context.TurnState.Get<DialogStateManagerConfiguration>();
+            this.Configuration = configuration ?? dc.Context.TurnState.Get<DialogStateManagerConfiguration>();
             if (this.Configuration == null)
             {
                 this.Configuration = new DialogStateManagerConfiguration();
@@ -56,10 +56,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                         this.Configuration.PathResolvers.Add(pathResolver);
                     }
                 }
-
-                // cache for any other new dialogStatemanager instances in this turn.  
-                dc.Context.TurnState.Set<DialogStateManagerConfiguration>(this.Configuration);
             }
+
+            // cache for any other new dialogStatemanager instances in this turn.  
+            dc.Context.TurnState.Set<DialogStateManagerConfiguration>(this.Configuration);
         }
 
         public DialogStateManagerConfiguration Configuration { get; set; }
