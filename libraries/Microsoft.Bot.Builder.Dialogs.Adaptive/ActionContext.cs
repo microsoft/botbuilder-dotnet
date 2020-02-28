@@ -9,18 +9,28 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
+    /// <summary>
+    /// Extends the <see cref="DialogContext"/> with additional methods for manipulating the 
+    /// executing sequence of actions for an <see cref="AdaptiveDialog"/>.
+    /// </summary>
     public class ActionContext : DialogContext
     {
         private readonly string changeKey;
 
-        public ActionContext(DialogSet dialogs, DialogContext dc, DialogState state, List<ActionState> actions, string changeKey)
-            : base(dialogs, dc, state)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ActionContext"/> class.
+        /// </summary>
+        /// <param name="dialogs">The dialog set to create the action context for.</param>
+        /// <param name="parentDialogContext">Parent dialog context.</param>
+        /// <param name="state">Current dialog state.</param>
+        /// <param name="actions">Current list of remaining actions to execute.</param>
+        /// <param name="changeKey">TurnState key for were to persist any changes.</param>
+        public ActionContext(DialogSet dialogs, DialogContext parentDialogContext, DialogState state, List<ActionState> actions, string changeKey)
+            : base(dialogs, parentDialogContext, state)
         {
             this.Actions = actions;
             this.changeKey = changeKey;
         }
-
-        public AdaptiveDialogState Plans { get; private set; }
 
         /// <summary>
         /// Gets or sets list of actions being executed.
@@ -118,50 +128,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             return false;
-        }
-
-        public ActionContext InsertActions(List<ActionState> actions)
-        {
-            this.QueueChanges(
-                new ActionChangeList()
-                {
-                    ChangeType = ActionChangeType.InsertActions,
-                    Actions = actions
-                });
-            return this;
-        }
-
-        public ActionContext AppendActions(List<ActionState> actions)
-        {
-            this.QueueChanges(
-                new ActionChangeList()
-                {
-                    ChangeType = ActionChangeType.AppendActions,
-                    Actions = actions
-                });
-            return this;
-        }
-
-        public ActionContext EndSequence(List<ActionState> actions)
-        {
-            this.QueueChanges(
-                new ActionChangeList()
-                {
-                    ChangeType = ActionChangeType.EndSequence,
-                    Actions = actions
-                });
-            return this;
-        }
-
-        public ActionContext ReplaceSequence(List<ActionState> actions)
-        {
-            this.QueueChanges(
-                new ActionChangeList()
-                {
-                    ChangeType = ActionChangeType.ReplaceSequence,
-                    Actions = actions
-                });
-            return this;
         }
     }
 }
