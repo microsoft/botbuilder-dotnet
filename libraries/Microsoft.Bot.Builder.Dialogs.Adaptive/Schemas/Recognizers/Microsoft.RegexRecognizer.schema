@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "union(Microsoft.Recognizer)",
+    "$role": "implements(Microsoft.Recognizer)",
     "title": "Regex recognizer",
     "description": "Use regular expressions to recognize intents and entities from user input.",
     "type": "object",

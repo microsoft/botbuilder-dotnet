@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "union(Microsoft.ITriggerSelector)",
+    "$role": "implements(Microsoft.ITriggerSelector)",
     "title": "Condtional Trigger Selector",
     "description": "Use a rule selector based on a condition",
     "type": "object",
