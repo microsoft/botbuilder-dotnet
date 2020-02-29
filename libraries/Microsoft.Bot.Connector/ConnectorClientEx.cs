@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Connector
     /// <summary>
     /// Implements a client for the Bot Connector service.
     /// </summary>
-    public partial class ConnectorClient
+    public partial class ConnectorClient : ConnectorClientBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectorClient"/> class.
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Connector
         public ConnectorClient(Uri baseUri, ServiceClientCredentials credentials, HttpClient customHttpClient, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
             : this(baseUri, handlers)
         {
-            this.Credentials = credentials;
+            this._credentials = credentials;
             if (customHttpClient != null)
             {
                 this.HttpClient = customHttpClient;
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Connector
         public ConnectorClient(Uri baseUri, MicrosoftAppCredentials credentials, HttpClientHandler httpClientHandler, bool addJwtTokenRefresher = true, HttpClient customHttpClient = null, params DelegatingHandler[] handlers)
             : this(baseUri, httpClientHandler, handlers)
         {
-            this.Credentials = credentials;
+            this._credentials = credentials;
             if (customHttpClient != null)
             {
                 this.HttpClient = customHttpClient;

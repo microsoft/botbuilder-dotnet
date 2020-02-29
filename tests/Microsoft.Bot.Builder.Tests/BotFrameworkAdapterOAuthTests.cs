@@ -196,8 +196,8 @@ namespace Microsoft.Bot.Builder.Tests
                     switch (context.Activity.Type)
                     {
                         case ActivityTypes.Message:
-                            context.TurnState.Remove(typeof(IConnectorClient).FullName);
-                            context.TurnState.Add<IConnectorClient>(mockConnector);
+                            context.TurnState.Remove(typeof(ConnectorClientBase).FullName);
+                            context.TurnState.Add<ConnectorClientBase>(mockConnector);
 
                             try
                             {
@@ -233,8 +233,8 @@ namespace Microsoft.Bot.Builder.Tests
                     switch (context.Activity.Type)
                     {
                         case ActivityTypes.Message:
-                            context.TurnState.Remove(typeof(IConnectorClient).FullName);
-                            context.TurnState.Add<IConnectorClient>(mockConnector);
+                            context.TurnState.Remove(typeof(ConnectorClientBase).FullName);
+                            context.TurnState.Add<ConnectorClientBase>(mockConnector);
                             await context.SendActivityAsync(outhCardActivity);
                             break;
                         case ActivityTypes.Event:

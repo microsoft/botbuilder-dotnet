@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             };
             
             var turnContext = new TurnContext(new BotFrameworkAdapter(new SimpleCredentialProvider("big-guid-here", "appPasswordHere"), customHttpClient: customHttpClient), activity);
-            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+            turnContext.TurnState.Add<ConnectorClientBase>(connectorClient);
             turnContext.Activity.ServiceUrl = "https://test.coffee";
             var handler = new TestTeamsActivityHandler();
             await handler.OnTurnAsync(turnContext);
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             };
 
             var turnContext = new TurnContext(new SimpleAdapter(), activity);
-            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+            turnContext.TurnState.Add<ConnectorClientBase>(connectorClient);
 
             var handler = new TestTeamsActivityHandler();
             await handler.OnTurnAsync(turnContext);
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             };
 
             var turnContext = new TurnContext(new SimpleAdapter(), activity);
-            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+            turnContext.TurnState.Add<ConnectorClientBase>(connectorClient);
 
             var handler = new TestTeamsActivityHandler();
             await handler.OnTurnAsync(turnContext);
@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             };
 
             var turnContext = new TurnContext(new SimpleAdapter(), activity);
-            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+            turnContext.TurnState.Add<ConnectorClientBase>(connectorClient);
 
             var handler = new TestTeamsActivityHandler();
             await handler.OnTurnAsync(turnContext);
@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             };
 
             var turnContext = new TurnContext(new SimpleAdapter(), activity);
-            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+            turnContext.TurnState.Add<ConnectorClientBase>(connectorClient);
             var handler = new TestTeamsActivityHandler();
             await handler.OnTurnAsync(turnContext);
         }

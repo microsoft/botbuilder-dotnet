@@ -145,7 +145,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Act
             using (var turnContext = new TurnContext(adapter, incomingActivity))
             {
-                turnContext.TurnState.Add<IConnectorClient>(mockConnector);
+                turnContext.TurnState.Add<ConnectorClientBase>(mockConnector);
 
                 var responseIds = await turnContext.SendActivityAsync(reply, default);
             }

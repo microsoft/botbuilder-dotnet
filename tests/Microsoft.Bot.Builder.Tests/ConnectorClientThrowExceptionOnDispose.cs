@@ -12,20 +12,20 @@ namespace Microsoft.Bot.Builder.Tests
     /// ConnectorClient which throws exception when disposed.
     /// </summary>
     /// <remarks>Moq failed to create this properly. Boo moq!.</remarks>
-    public class ConnectorClientThrowExceptionOnDispose : IConnectorClient
+    public class ConnectorClientThrowExceptionOnDispose : ConnectorClientBase
     {
-        public Uri BaseUri { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override Uri BaseUri { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public JsonSerializerSettings SerializationSettings => throw new NotImplementedException();
+        public override JsonSerializerSettings SerializationSettings => throw new NotImplementedException();
 
-        public JsonSerializerSettings DeserializationSettings => throw new NotImplementedException();
+        public override JsonSerializerSettings DeserializationSettings => throw new NotImplementedException();
 
-        public ServiceClientCredentials Credentials => throw new NotImplementedException();
+        public override ServiceClientCredentials Credentials => throw new NotImplementedException();
 
-        public IAttachments Attachments => throw new NotImplementedException();
+        public override IAttachments Attachments => throw new NotImplementedException();
 
-        public IConversations Conversations => throw new NotImplementedException();
+        public override ConversationsBase Conversations => throw new NotImplementedException();
 
-        public void Dispose() => throw new Exception("Should not be disposed!");
+        public new void Dispose() => throw new Exception("Should not be disposed!");
     }
 }

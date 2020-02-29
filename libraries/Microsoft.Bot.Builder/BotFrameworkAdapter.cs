@@ -244,7 +244,7 @@ namespace Microsoft.Bot.Builder
         /// <para>This method registers the following services for the turn.<list type="bullet">
         /// <item><description><see cref="IIdentity"/> (key = "BotIdentity"), a claims claimsIdentity for the bot.
         /// </description></item>
-        /// <item><description><see cref="IConnectorClient"/>, the channel connector client to use this turn.
+        /// <item><description><see cref="ConnectorClientBase"/>, the channel connector client to use this turn.
         /// </description></item>
         /// </list></para>
         /// <para>
@@ -299,7 +299,7 @@ namespace Microsoft.Bot.Builder
         /// <para>This method registers the following services for the turn.<list type="bullet">
         /// <item><description><see cref="IIdentity"/> (key = "BotIdentity"), a claims claimsIdentity for the bot.
         /// </description></item>
-        /// <item><description><see cref="IConnectorClient"/>, the channel connector client to use this turn.
+        /// <item><description><see cref="ConnectorClientBase"/>, the channel connector client to use this turn.
         /// </description></item>
         /// </list></para>
         /// </remarks>
@@ -353,7 +353,7 @@ namespace Microsoft.Bot.Builder
         /// then an <see cref="InvokeResponse"/> is returned, otherwise null is returned.
         /// <para>This method registers the following services for the turn.<list type="bullet">
         /// <item><see cref="IIdentity"/> (key = "BotIdentity"), a claims claimsIdentity for the bot.</item>
-        /// <item><see cref="IConnectorClient"/>, the channel connector client to use this turn.</item>
+        /// <item><see cref="ConnectorClientBase"/>, the channel connector client to use this turn.</item>
         /// </list></para>
         /// </remarks>
         /// <seealso cref="ContinueConversationAsync(string, ConversationReference, BotCallbackHandler, CancellationToken)"/>
@@ -498,12 +498,12 @@ namespace Microsoft.Bot.Builder
                     {
                         if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
                         {
-                            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+                            var connectorClient = turnContext.TurnState.Get<ConnectorClientBase>();
                             response = await connectorClient.Conversations.ReplyToActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                         }
                         else
                         {
-                            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+                            var connectorClient = turnContext.TurnState.Get<ConnectorClientBase>();
                             response = await connectorClient.Conversations.SendToConversationAsync(activity, cancellationToken).ConfigureAwait(false);
                         }
                     }
@@ -544,7 +544,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
         public override async Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
-            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+            var connectorClient = turnContext.TurnState.Get<ConnectorClientBase>();
             return await connectorClient.Conversations.UpdateActivityAsync(activity, cancellationToken).ConfigureAwait(false);
         }
 
@@ -560,7 +560,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
         public override async Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
-            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+            var connectorClient = turnContext.TurnState.Get<ConnectorClientBase>();
             await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId, cancellationToken).ConfigureAwait(false);
         }
 
@@ -584,7 +584,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(DeleteConversationMemberAsync)}(): missing conversation.id");
             }
 
-            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+            var connectorClient = turnContext.TurnState.Get<ConnectorClientBase>();
 
             var conversationId = turnContext.Activity.Conversation.Id;
 
@@ -616,7 +616,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetActivityMembersAsync)}(): missing conversation.id");
             }
 
-            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+            var connectorClient = turnContext.TurnState.Get<ConnectorClientBase>();
             var conversationId = turnContext.Activity.Conversation.Id;
 
             var accounts = await connectorClient.Conversations.GetActivityMembersAsync(conversationId, activityId, cancellationToken).ConfigureAwait(false);
@@ -642,7 +642,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetConversationMembersAsync)}(): missing conversation.id");
             }
 
-            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+            var connectorClient = turnContext.TurnState.Get<ConnectorClientBase>();
             var conversationId = turnContext.Activity.Conversation.Id;
 
             var accounts = await connectorClient.Conversations.GetConversationMembersAsync(conversationId, cancellationToken).ConfigureAwait(false);
@@ -699,7 +699,7 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public virtual async Task<ConversationsResult> GetConversationsAsync(ITurnContext turnContext, string continuationToken, CancellationToken cancellationToken)
         {
-            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+            var connectorClient = turnContext.TurnState.Get<ConnectorClientBase>();
             var results = await connectorClient.Conversations.GetConversationsAsync(continuationToken, cancellationToken).ConfigureAwait(false);
             return results;
         }
@@ -1202,7 +1202,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>ConnectorClient instance.</returns>
         /// <exception cref="NotSupportedException">ClaimsIdentity cannot be null. Pass Anonymous ClaimsIdentity if authentication is turned off.</exception>
-        private async Task<IConnectorClient> CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
+        private async Task<ConnectorClientBase> CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
         {
             if (claimsIdentity == null)
             {
@@ -1242,7 +1242,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="serviceUrl">The service URL.</param>
         /// <param name="appCredentials">The application credentials for the bot.</param>
         /// <returns>Connector client instance.</returns>
-        private IConnectorClient CreateConnectorClient(string serviceUrl, AppCredentials appCredentials = null)
+        private ConnectorClientBase CreateConnectorClient(string serviceUrl, AppCredentials appCredentials = null)
         {
             var clientKey = $"{serviceUrl}{appCredentials?.MicrosoftAppId ?? string.Empty}";
 

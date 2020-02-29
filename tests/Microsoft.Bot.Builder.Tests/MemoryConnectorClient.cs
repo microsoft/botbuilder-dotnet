@@ -8,27 +8,23 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    public class MemoryConnectorClient : IConnectorClient
+    public class MemoryConnectorClient : ConnectorClientBase
     {
         public MemoryConversations MemoryConversations { get; private set; } = new MemoryConversations();
 
-        public Uri BaseUri { get; set; }
-
-        public JsonSerializerSettings SerializationSettings { get; set; }
-
-        public JsonSerializerSettings DeserializationSettings { get; set; }
-
-        public ServiceClientCredentials Credentials { get; set; }
-
-        public IAttachments Attachments { get; set; }
-
-        public IConversations Conversations
+        public override ConversationsBase Conversations
         {
             get => MemoryConversations;
         }
 
-        public void Dispose()
-        {
-        }
+        public override Uri BaseUri { get; set; }
+
+        public override JsonSerializerSettings SerializationSettings { get; }
+
+        public override JsonSerializerSettings DeserializationSettings { get; }
+
+        public override ServiceClientCredentials Credentials { get; }
+
+        public override IAttachments Attachments { get; }
     }
 }

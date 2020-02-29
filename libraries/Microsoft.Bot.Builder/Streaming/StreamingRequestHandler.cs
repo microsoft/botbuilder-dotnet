@@ -330,7 +330,7 @@ namespace Microsoft.Bot.Builder.Streaming
         private static string GetUserAgent() =>
             string.Format(
                 "Microsoft-BotFramework/3.1 Streaming-Extensions/1.0 BotBuilder/{0} ({1}; {2}; {3})",
-                ConnectorClient.GetClientVersion(new ConnectorClient(new Uri("http://localhost"))),
+                ConnectorClient.GetClientVersion(new ConnectorClient(new Uri("http://localhost")) as ConnectorClientBase),
                 ConnectorClient.GetASPNetVersion(),
                 ConnectorClient.GetOsVersion(),
                 ConnectorClient.GetArchitecture());

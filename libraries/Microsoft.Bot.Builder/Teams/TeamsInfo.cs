@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.Teams
             return new Tuple<ConversationReference, string>(conversationReference, newActivityId);
         }
 
-        private static async Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(IConnectorClient connectorClient, string conversationId, CancellationToken cancellationToken)
+        private static async Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(ConnectorClientBase connectorClient, string conversationId, CancellationToken cancellationToken)
         {
             if (conversationId == null)
             {
@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Teams
             return teamsChannelAccounts;
         }
 
-        private static async Task<TeamsChannelAccount> GetMemberAsync(IConnectorClient connectorClient, string userId, string conversationId, CancellationToken cancellationToken)
+        private static async Task<TeamsChannelAccount> GetMemberAsync(ConnectorClientBase connectorClient, string userId, string conversationId, CancellationToken cancellationToken)
         {
             if (conversationId == null)
             {
@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Teams
             return teamsChannelAccount;
         }
 
-        private static async Task<TeamsPagedMembersResult> GetPagedMembersAsync(IConnectorClient connectorClient, string conversationId, string continuationToken, CancellationToken cancellationToken, int? pageSize = default(int?))
+        private static async Task<TeamsPagedMembersResult> GetPagedMembersAsync(ConnectorClientBase connectorClient, string conversationId, string continuationToken, CancellationToken cancellationToken, int? pageSize = default(int?))
         {
             if (conversationId == null)
             {
@@ -182,9 +182,9 @@ namespace Microsoft.Bot.Builder.Teams
             return teamsPagedMemberResults;
         }
 
-        private static IConnectorClient GetConnectorClient(ITurnContext turnContext)
+        private static ConnectorClientBase GetConnectorClient(ITurnContext turnContext)
         {
-            return turnContext.TurnState.Get<IConnectorClient>() ?? throw new InvalidOperationException("This method requires a connector client.");
+            return turnContext.TurnState.Get<ConnectorClientBase>() ?? throw new InvalidOperationException("This method requires a connector client.");
         }
 
         private static ITeamsConnectorClient GetTeamsConnectorClient(ITurnContext turnContext)
