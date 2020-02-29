@@ -133,18 +133,14 @@ namespace Microsoft.Bot.Builder.Testing
                 // Ensure dialog state is created and pass it to DialogSet.
                 await dialogState.GetAsync(turnContext, () => new DialogState(), cancellationToken).ConfigureAwait(false);
                 var dialogs = new DialogSet(dialogState);
-
                 dialogs.Add(targetDialog);
 
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
-
-                DialogContext = dc;
-
-                DialogTurnResult = await dc.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+                DialogContext = await dialogs.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
+                DialogTurnResult = await DialogContext.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
                 switch (DialogTurnResult.Status)
                 {
                     case DialogTurnStatus.Empty:
-                        DialogTurnResult = await dc.BeginDialogAsync(targetDialog.Id, initialDialogOptions, cancellationToken).ConfigureAwait(false);
+                        DialogTurnResult = await DialogContext.BeginDialogAsync(targetDialog.Id, initialDialogOptions, cancellationToken).ConfigureAwait(false);
                         break;
                     case DialogTurnStatus.Complete:
                     {
