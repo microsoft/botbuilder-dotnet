@@ -7,8 +7,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Connector;
-using Microsoft.Bot.Expressions.Properties;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -449,13 +449,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         private bool IsTokenResponseEvent(ITurnContext turnContext)
         {
             var activity = turnContext.Activity;
-            return activity.Type == ActivityTypes.Event && activity.Name == "tokens/response";
+            return activity.Type == ActivityTypes.Event && activity.Name == SignInConstants.TokenResponseEventName;
         }
 
         private bool IsTeamsVerificationInvoke(ITurnContext turnContext)
         {
             var activity = turnContext.Activity;
-            return activity.Type == ActivityTypes.Invoke && activity.Name == "signin/verifyState";
+            return activity.Type == ActivityTypes.Invoke && activity.Name == SignInConstants.VerifyStateOperationName;
         }
 
         private bool ChannelSupportsOAuthCard(string channelId)

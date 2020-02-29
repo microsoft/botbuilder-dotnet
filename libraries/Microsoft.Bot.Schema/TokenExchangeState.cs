@@ -29,6 +29,15 @@ namespace Microsoft.Bot.Schema
         public ConversationReference Conversation { get; set; }
 
         /// <summary>
+        /// Gets or sets a reference to a related parent conversation for this token exchange.
+        /// </summary>
+        /// <value>
+        /// A reference to a related parent conversation conversation.
+        /// </value>
+        [JsonProperty("relatesTo")]
+        public ConversationReference RelatesTo { get; set; }
+
+        /// <summary>
         /// Gets or sets the URL of the bot messaging endpoint.
         /// </summary>
         /// <value>

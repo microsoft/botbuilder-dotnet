@@ -10,6 +10,7 @@ namespace Microsoft.Bot.Builder.Azure
     /// <summary>
     /// Cosmos DB Storage Options.
     /// </summary>
+    [Obsolete("This class is deprecated. Please use CosmosDbPartitionedStorageOptions with CosmosDbPartitionedStorage instead.", false)]
     public class CosmosDbStorageOptions
     {
         /// <summary>

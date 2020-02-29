@@ -1,80 +1,80 @@
 ﻿#template0
--SWITCH  :@{case}
-- CASE: @{'case1'}
+-SWITCH  :${case}
+- CASE: ${'case1'}
     - output1
-- CASE: @{'case2'}
+- CASE: ${'case2'}
     - output2
 - DEFAULT:
     -output3 
 
 #tempalte1
--SWITCH:@{case1}
--SWITCH:@{case2}
+-SWITCH:${case1}
+-SWITCH:${case2}
 
 #template2
--CASE:@{'case1'}
+-CASE:${'case1'}
 -  Oh No!
 -DEFAULT:
     -exit
 
 #template3
--SWITCH:@{case}
-- CASE: @{'case1'}
+-SWITCH:${case}
+- CASE: ${'case1'}
     - output1
 - DEFAULT:
    - final output    
-- CASE: @{'case2'}
+- CASE: ${'case2'}
     - output2
 
 #template4
--SWITCH:@{case}
-- CASE: @{'case1'}
+-SWITCH:${case}
+- CASE: ${'case1'}
     - output1
-- CASE: @{'case2'}
+- CASE: ${'case2'}
     - output2
-- DEFAULT:@{'default'}
+- DEFAULT:${'default'}
    - final output
 
 #template5
--SWITCH:@{case}
-- CASE: @{'case1'}
+-SWITCH:${case}
+- CASE: ${'case1'}
 - DEFAULT:
    - final output
 
 #template6
--SWITCH:@{case}
-- CASE: @{'case1'}
+-SWITCH:${case}
+- CASE: ${'case1'}
     - output1
-- CASE: @{'case2'}
+- CASE: ${'case2'}
     - output2
-- DEFAULT:@{'default'}
+- DEFAULT:${'default'}
 
 #template7
 -SWITCH: cases
-- CASE: @{'case1'}
+- CASE: ${'case1'}
     - output1
-- CASE: @{'case2'}
+- CASE: ${'case2'}
     - output2
 - DEFAULT:
     - text
 
 #template8
--SWITCH:@{case}
-- CASE: @{'case1'}
+-SWITCH:${case}
+- CASE: ${'case1'}
     - output1
-- CASE: @{'case2'}
+- CASE: ${'case2'}
     - output2
 - DEFAULT: default2
     -output 3
 
 #template9
--SWITCH:@{'case'}
+-SWITCH:${'case'}
 - DEFAULT:
    - final output
 
 #template10
--SWITCH:@{'case'}
-- CASE: @{'case1'}
+-SWITCH:${'case'}
+- CASE: ${'case1'}
     - output1
-- CASE: @{'case2'}
+- CASE: ${'case2'}
     - output2

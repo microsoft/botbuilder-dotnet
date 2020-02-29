@@ -20,7 +20,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "I have your age as @{user.userProfile.Age}."
+                        "activity": "I have your age as ${user.userProfile.Age}."
                     }
                 ]
             }

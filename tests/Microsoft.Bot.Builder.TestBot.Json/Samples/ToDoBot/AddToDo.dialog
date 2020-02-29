@@ -35,7 +35,7 @@
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "Successfully added a todo named \"@{dialog.todo}\""
+                    "activity": "Successfully added a todo named \"${dialog.todo}\""
                 }
             ]
         }

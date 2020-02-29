@@ -9,16 +9,48 @@ variables:
 
 pool:
     vmImage: 'macOS-10.14'
+
+trigger: # ci trigger
+  branches:
+    include:
+     - master
+  paths:
+    include:
+      - '*'
+    exclude:
+      - doc/
+      - specs/
+      - Changes.md
+      - LICENSE
+      - README.md
+      - UsingMyGet.md
+
+pr: # pr trigger
+  branches:
+    include:
+     - master
+  paths:
+    include:
+      - '*'
+    exclude:
+      - doc/
+      - specs/
+      - Changes.md
+      - LICENSE
+      - README.md
+      - UsingMyGet.md
+
 steps:
+# Note: Template ci-build-steps.yml is not supported in macOS because it calls VSBuild@1 in order to build the Windows-only ASP.NET Desktop assemblies.
 - task: UseDotNet@2
   displayName: 'Use .Net Core sdk 2.1.x'
   inputs:
     version: 2.1.x
 
 - task: UseDotNet@2
-  displayName: 'Use .Net Core sdk 3.1.x'
+  displayName: 'Use .Net Core sdk 3.1.101'
   inputs:
-    version: 3.1.x
+    version: 3.1.101
 
 - task: NuGetToolInstaller@0
   displayName: 'Use NuGet 4.9.1'

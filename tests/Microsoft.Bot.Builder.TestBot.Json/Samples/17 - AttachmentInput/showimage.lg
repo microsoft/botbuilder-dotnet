@@ -1,5 +1,5 @@
 # ShowImage(contentUrl, contentType)
 - ```
 You sent:
-[attachment=@{contentUrl} @{contentType}]
+[attachment=${contentUrl} ${contentType}]
 ```

@@ -2,8 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Expressions;
+using AdaptiveExpressions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
@@ -46,17 +45,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public override string GetIdentity()
             => $"{this.GetType().Name}([{string.Join(",", this.Properties)}], {this.Entities})";
 
-        public override Expression GetExpression(IExpressionParser factory)
+        public override Expression GetExpression()
         {
-            var expressions = new List<Expression> { base.GetExpression(factory) };
+            var expressions = new List<Expression> { base.GetExpression() };
             foreach (var property in this.Properties)
             {
-                expressions.Add(factory.Parse($"contains(foreach({TurnPath.DIALOGEVENT}.value, mapping, mapping.property), '{property}')"));
+                expressions.Add(Expression.Parse($"contains(foreach({TurnPath.DIALOGEVENT}.value, mapping, mapping.property), '{property}')"));
             }
 
             foreach (var entity in this.Entities)
             {
-                expressions.Add(factory.Parse($"contains(foreach({TurnPath.DIALOGEVENT}.value, mapping, mapping.entity.name), '{entity}')"));
+                expressions.Add(Expression.Parse($"contains(foreach({TurnPath.DIALOGEVENT}.value, mapping, mapping.entity.name), '{entity}')"));
             }
 
             return Expression.AndExpression(expressions.ToArray());

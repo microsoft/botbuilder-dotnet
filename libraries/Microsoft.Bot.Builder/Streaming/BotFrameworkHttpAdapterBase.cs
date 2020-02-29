@@ -176,7 +176,7 @@ namespace Microsoft.Bot.Builder.Streaming
         }
 
         /// <summary>
-        /// Creates a new StreamingRequestHandler to listen to the specififed Named Pipe
+        /// Creates a new StreamingRequestHandler to listen to the specified Named Pipe
         /// and pass requests to this adapter.
         /// </summary>
         /// <param name="pipeName">The name of the Named Pipe to connect to.</param>

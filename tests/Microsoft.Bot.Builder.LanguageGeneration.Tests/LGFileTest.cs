@@ -6,9 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AdaptiveExpressions;
+using AdaptiveExpressions.Memory;
 using Microsoft.Bot.Builder.LanguageGeneration;
-using Microsoft.Bot.Expressions.Memory;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
@@ -238,7 +238,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(evaled, "Hi \r\n\t[]{}\\");
 
             evaled = lgFile.EvaluateTemplate("AtEscapeChar", null);
-            Assert.AreEqual(evaled, "Hi{1+1}[wPhrase]{wPhrase()}@{wPhrase()}2@{1+1} ");
+            Assert.AreEqual(evaled, "Hi{1+1}[wPhrase]{wPhrase()}${wPhrase()}2${1+1} ");
 
             evaled = lgFile.EvaluateTemplate("otherEscape", null);
             Assert.AreEqual(evaled, "Hi y ");
@@ -674,7 +674,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             evaled = lgFile.EvaluateTemplate("AskForAge.prompt3");
 
             Assert.IsTrue(
-                JToken.DeepEquals(JObject.Parse("{\"lgType\":\"Activity\",\"text\":\"@{GetAge()}\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject));
+                JToken.DeepEquals(JObject.Parse("{\"lgType\":\"Activity\",\"text\":\"${GetAge()}\",\"suggestions\":[\"10 | cards\",\"20 | cards\"]}"), evaled as JObject));
 
             evaled = lgFile.EvaluateTemplate("T1");
 
@@ -854,6 +854,29 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestStringInterpolation()
+        {
+            var lgFile = LGParser.ParseFile(GetExampleFilePath("StringInterpolation.lg"));
+
+            var evaled = lgFile.EvaluateTemplate("simpleStringTemplate");
+            Assert.AreEqual("say hi", evaled);
+
+            evaled = lgFile.EvaluateTemplate("StringTemplateWithVariable", new { w = "world" });
+            Assert.AreEqual("hello world", evaled);
+
+            evaled = lgFile.EvaluateTemplate("StringTemplateWithMixing", new { name = "jack" });
+            Assert.AreEqual("I know your name is jack", evaled);
+
+            evaled = lgFile.EvaluateTemplate("StringTemplateWithJson", new { h = "hello", w = "world" });
+            Assert.AreEqual("get 'h' value : hello", evaled);
+
+            evaled = lgFile.EvaluateTemplate("StringTemplateWithEscape");
+            Assert.AreEqual("just want to output ${bala`bala}", evaled);
+
+            evaled = lgFile.EvaluateTemplate("StringTemplateWithTemplateRef");
+            Assert.AreEqual("hello jack , welcome. nice weather!", evaled);
+        }
+
         public void TestMemoryAccessPath()
         {
             var lgFile = LGParser.ParseFile(GetExampleFilePath("MemoryAccess.lg"));
@@ -926,6 +949,59 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = lgFile.EvaluateTemplate("template", new { list = new JArray() { new JObject() }, obj = new JObject { ["a"] = "b" } });
             Assert.AreEqual("list and obj are both not empty.", evaled);
+        }
+
+        [TestMethod]
+        public void TestNullTolerant()
+        {
+            var lgFile = LGParser.ParseFile(GetExampleFilePath("NullTolerant.lg"));
+
+            var evaled = lgFile.EvaluateTemplate("template1");
+
+            Assert.AreEqual("null", evaled);
+
+            evaled = lgFile.EvaluateTemplate("template2");
+
+            Assert.AreEqual("result is 'null'", evaled);
+
+            var jObjEvaled = lgFile.EvaluateTemplate("template3") as JObject;
+
+            Assert.AreEqual("null", jObjEvaled["key1"]);
+        }
+
+        [TestMethod]
+        public void TestInlineEvaluate()
+        {
+            var lgFile = LGParser.ParseFile(GetExampleFilePath("2.lg"));
+            var evaled = lgFile.Evaluate("hello");
+            Assert.AreEqual("hello", evaled);
+
+            // test template reference
+            evaled = lgFile.Evaluate("${wPhrase()}");
+            var options = new List<string> { "Hi", "Hello", "Hiya" };
+            Assert.IsTrue(options.Contains(evaled), $"The result `{evaled}` is not in those options [{string.Join(",", options)}]");
+
+            var exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("${ErrrorTemplate()}"));
+            Assert.IsTrue(exception.Message.Contains("it's not a built-in function or a customized function"));
+        }
+
+        [TestMethod]
+        public void TestCustomFunction()
+        {
+            var engine = new ExpressionEngine((string func) =>
+            { 
+                if (func == "custom")
+                {
+                    return ExpressionFunctions.Numeric("custom", (args) => args[0] + args[1]);
+                }
+                else
+                {
+                    return ExpressionFunctions.Lookup(func);
+                }
+            });
+            var lgFile = LGParser.ParseFile(GetExampleFilePath("CustomFunction.lg"), null, engine);
+            var evaled = lgFile.EvaluateTemplate("template");
+            Assert.AreEqual(3, evaled);
         }
 
         public class LoopClass

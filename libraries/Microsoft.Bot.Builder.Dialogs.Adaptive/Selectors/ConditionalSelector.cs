@@ -5,9 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Expressions;
-using Microsoft.Bot.Expressions.Properties;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
@@ -50,20 +49,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         [JsonProperty("ifFalse")]
         public ITriggerSelector IfFalse { get; set; }
 
-        /// <summary>
-        /// Gets or sets the expression parser to use.
-        /// </summary>
-        /// <value>Expression parser.</value>
-        [Newtonsoft.Json.JsonIgnore]
-        public IExpressionParser Parser { get; set; } = new ExpressionEngine();
-
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate = true)
         {
             _conditionals = conditionals.ToList();
             _evaluate = evaluate;
         }
 
-        public async Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel = default)
+        public async Task<IReadOnlyList<OnCondition>> Select(ActionContext context, CancellationToken cancel = default)
         {
             var dcState = context.GetState();
             var (eval, _) = Condition.TryGetValue(dcState);

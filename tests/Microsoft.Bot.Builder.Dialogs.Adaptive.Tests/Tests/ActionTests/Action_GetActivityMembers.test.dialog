@@ -14,7 +14,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{join($members, ',')}"
+                        "activity": "${join($members, ',')}"
                     }
                 ]
             },

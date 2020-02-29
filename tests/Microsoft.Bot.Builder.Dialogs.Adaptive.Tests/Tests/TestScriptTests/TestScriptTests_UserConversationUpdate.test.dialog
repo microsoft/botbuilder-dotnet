@@ -14,7 +14,7 @@
                         "actions": [
                             {
                                 "$kind": "Microsoft.SendActivity",
-                                "activity": "Hello @{dialog.foreach.value.name}"
+                                "activity": "Hello ${dialog.foreach.value.name}"
                             }
                         ]
                     },
@@ -24,7 +24,7 @@
                         "actions": [
                             {
                                 "$kind": "Microsoft.SendActivity",
-                                "activity": "Goodbye @{dialog.foreach.value.name}"
+                                "activity": "Goodbye ${dialog.foreach.value.name}"
                             }
                         ]
                     }

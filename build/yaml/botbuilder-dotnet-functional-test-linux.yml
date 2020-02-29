@@ -5,12 +5,25 @@
 # "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
 name: $(Build.BuildId)
 
-trigger: none
-
-pr: none
-
 pool:
   vmImage: 'windows-2019'
+
+trigger: # ci trigger
+  branches:
+    include:
+     - master
+  paths:
+    include:
+      - '*'
+    exclude:
+      - doc/
+      - specs/
+      - Changes.md
+      - LICENSE
+      - README.md
+      - UsingMyGet.md
+
+pr: none # no pr trigger
 
 variables:
   ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
@@ -18,15 +31,20 @@ variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'Release'
   Parameters.solution: Microsoft.Bot.Builder.sln
+#  AppId: define this in Azure
+#  AppSecret: define this in Azure
 #  AzureSubscription: define this in Azure
 #  AzureDeploymentUser: define this in Azure
 #  AzureDeploymentPassword: define this in Azure
+#  BotGroup: define this in Azure
+#  BotName: define this in Azure
+#  DeleteResourceGroup: define this in Azure. Normally set to true.
 
 steps:
 - template: ci-build-steps.yml
 
 - task: DotNetCoreCLI@2
-  displayName: 'Dotnet Publish TestBot'
+  displayName: 'Dotnet publish test bot'
   inputs:
     command: publish
     publishWebProjects: false
@@ -36,7 +54,7 @@ steps:
     modifyOutputPath: false
 
 - task: AzureResourceGroupDeployment@2
-  displayName: 'Azure Deployment:Create Or Update Resource Group action on $(BotGroup)'
+  displayName: 'Azure deployment: Create or update resource group $(BotGroup)'
   inputs:
     azureSubscription: $(AzureSubscription)
     resourceGroupName: '$(BotGroup)'
@@ -61,14 +79,19 @@ steps:
    git remote add azure https://$(AzureDeploymentUser):$(AzureDeploymentPassword)@$(BotName).scm.azurewebsites.net:443/$(BotName).git
    git push azure master
   workingDirectory: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot'
-  displayName: 'Git Bot Deployment'
+  displayName: 'Git bot deployment'
 
 - powershell: |
    $json = Get-Content '$(System.DefaultWorkingDirectory)\DirectLineCreate.json' | Out-String | ConvertFrom-Json
    $key = $json.properties.properties.sites.key
    echo "##vso[task.setvariable variable=DIRECTLINE;]$key"
    echo "##vso[task.setvariable variable=BOTID;]$(BotName)"
-  displayName: 'Get Bot Keys'
+  displayName: 'Get bot keys'
+
+- powershell: |
+   echo '##vso[task.setvariable variable=TESTAPPID]$(AppId)'
+   echo '##vso[task.setvariable variable=TESTPASSWORD]$(AppSecret)'
+  displayName: 'Set Environment Variables'
 
 - task: DotNetCoreCLI@2
   displayName: 'Run Functional tests'
@@ -78,10 +101,10 @@ steps:
     arguments: '-v n  --configuration $(BuildConfiguration) --no-build --no-restore --filter "TestCategory=FunctionalTests&TestCategory!=Adapters" --collect:"Code Coverage" --settings $(System.DefaultWorkingDirectory)\CodeCoverage.runsettings '
     workingDirectory: '$(System.DefaultWorkingDirectory)\'
 
-#- task: AzureCLI@1
-#  displayName: 'Delete Resources'
-#  inputs:
-#    azureSubscription: $(AzureSubscription)
-#    scriptLocation: inlineScript
-#    inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
-#  condition: always()
+- task: AzureCLI@1
+  displayName: 'Delete test resource group'
+  inputs:
+    azureSubscription: $(AzureSubscription)
+    scriptLocation: inlineScript
+    inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
+  condition: and(always(), ne(variables['DeleteResourceGroup'], 'false'))

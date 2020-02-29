@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Microsoft.Bot.Expressions.Properties;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -79,10 +79,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             var dcState = dc.GetState();
-            
+
             // NOTE: we call TryEvaluate instead of TryGetValue because we want the result of the expression as a string so we can
             // look up the string using external FindDialog().
-            var (dialogId, _) = this.Dialog.Expression.TryEvaluate<string>(dcState);
+            var se = new StringExpression($"={this.Dialog.ExpressionText}");
+            var dialogId = se.GetValue(dcState);
             return dc.FindDialog(dialogId ?? throw new Exception($"{this.Dialog.ToString()} not found."));
         }
 

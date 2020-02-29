@@ -25,20 +25,22 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <summary>
         /// Initializes a new instance of the <see cref="FacebookClientWrapper"/> class.
         /// </summary>
-        /// <param name="options">An object containing API credentials, a webhook verification token and other options.</param>
+        /// <param name="options">An object containing API credentials, a webhook verification token, and other options.</param>
         public FacebookClientWrapper(FacebookAdapterOptions options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         /// <summary>
-        /// Send a REST message to Facebook.
+        /// Sends a REST message to Facebook.
         /// </summary>
         /// <param name="path">Path to the API endpoint, for example `/me/messages`.</param>
-        /// <param name="payload">An object to be sent as parameters to the API call..</param>
-        /// <param name="method">HTTP method, for example POST, GET, DELETE or PUT.</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A task representing the async operation.</returns>
+        /// <param name="payload">An object to be sent as parameters to the API call.</param>
+        /// <param name="method">The HTTP method, for example POST, GET, DELETE or PUT.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="payload"/> is null.</exception>
         public virtual async Task<string> SendMessageAsync(string path, FacebookMessage payload, HttpMethod method = null, CancellationToken cancellationToken = default)
         {
             if (path == null)
@@ -92,9 +94,10 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <summary>
         /// Verifies the SHA1 signature of the raw request payload before bodyParser parses it will abort parsing if signature is invalid, and pass a generic error to response.
         /// </summary>
-        /// <param name="request">An Http request object.</param>
+        /// <param name="request">Represents the incoming side of an HTTP request.</param>
         /// <param name="payload">The request body.</param>
         /// <returns>The result of the comparison between the signature in the request and hashed body.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="request"/> is null.</exception>
         public virtual bool VerifySignature(HttpRequest request, string payload)
         {
             if (request == null)
@@ -117,7 +120,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         }
 
         /// <summary>
-        /// Generate the app secret proof used to increase security on calls to the graph API.
+        /// Generates the app secret proof used to increase security on calls to the Graph API.
         /// </summary>
         /// <returns>The app secret proof.</returns>
         public virtual string GetAppSecretProof()
@@ -130,12 +133,14 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         }
 
         /// <summary>
-        /// Verifies the VerifyToken from the message and if it matches the one configured, it sends back the challenge.
+        /// Verifies the verify token from the message. If the token matches the one configured, sends back the challenge.
         /// </summary>
-        /// <param name="request">An Http request object.</param>
-        /// <param name="response">An Http response object.</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A task representing the async operation.</returns>
+        /// <param name="request">Represents the incoming side of an HTTP request.</param>
+        /// <param name="response">Represents the outgoing side of an HTTP request.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="request"/> or <paramref name="response"/> is null.</exception>
         public virtual async Task VerifyWebhookAsync(HttpRequest request, HttpResponse response, CancellationToken cancellationToken)
         {
             if (request == null)
@@ -169,8 +174,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// </summary>
         /// <param name="postType">The REST post type (GET, PUT, POST, etc).</param>
         /// <param name="content">The string content to be posted to Facebook.</param>
-        /// <returns>A bool indicating the success of the operation.</returns>
-        public virtual async Task<bool> PostToFacebookApiAsync(string postType, string content)
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>`true` if the operation succeeded; otherwise, `false`.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="postType"/> or <paramref name="content"/> is null.</exception>
+        public virtual async Task<bool> PostToFacebookApiAsync(string postType, string content, CancellationToken cancellationToken)
         {
             if (postType == null)
             {
@@ -195,7 +203,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
                 using (var client = new HttpClient())
                 {
-                    var res = await client.SendAsync(requestMessage, CancellationToken.None).ConfigureAwait(false);
+                    var res = await client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
                     return res.IsSuccessStatusCode;
                 }
             }
@@ -204,10 +212,13 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <summary>
         /// Sends the request_thread_control webhook event to Facebook.
         /// </summary>
-        /// <param name="userId">The sender user Id.</param>
-        /// <param name="message">An optional message for the metadata paremter.</param>
-        /// <returns>A bool value indicating the success of the operation.</returns>
-        public virtual async Task<bool> RequestThreadControlAsync(string userId, string message)
+        /// <param name="userId">The sender user ID.</param>
+        /// <param name="message">An optional message for the metadata parameter.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>`true` if the operation succeeded; otherwise, `false`.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="userId"/> is null.</exception>
+        public virtual async Task<bool> RequestThreadControlAsync(string userId, string message, CancellationToken cancellationToken)
         {
             if (userId == null)
             {
@@ -215,16 +226,19 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
 
             var content = new { recipient = new { id = userId }, metadata = message };
-            return await PostToFacebookApiAsync($"/me/{HandoverConstants.RequestThreadControl}", JsonConvert.SerializeObject(content)).ConfigureAwait(false);
+            return await PostToFacebookApiAsync($"/me/{HandoverConstants.RequestThreadControl}", JsonConvert.SerializeObject(content), cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Sends the take_thread_control webhook event to Facebook.
         /// </summary>
-        /// <param name="userId">The sender user Id.</param>
-        /// <param name="message">An optional message for the metadata paremter.</param>
-        /// <returns>A bool value indicating the success of the operation.</returns>
-        public virtual async Task<bool> TakeThreadControlAsync(string userId, string message)
+        /// <param name="userId">The sender user ID.</param>
+        /// <param name="message">An optional message for the metadata parameter.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>`true` if the operation succeeded; otherwise, `false`.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="userId"/> is null.</exception>
+        public virtual async Task<bool> TakeThreadControlAsync(string userId, string message, CancellationToken cancellationToken)
         {
             if (userId == null)
             {
@@ -232,17 +246,20 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
 
             var content = new { recipient = new { id = userId }, metadata = message };
-            return await PostToFacebookApiAsync($"/me/{HandoverConstants.TakeThreadControl}", JsonConvert.SerializeObject(content)).ConfigureAwait(false);
+            return await PostToFacebookApiAsync($"/me/{HandoverConstants.TakeThreadControl}", JsonConvert.SerializeObject(content), cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Sends the pass_thread_control webhook event to Facebook.
         /// </summary>
-        /// <param name="targetAppId">The Id of the target app to pass control to.</param>
-        /// <param name="userId">The sender user Id.</param>
-        /// <param name="message">An optional message for the metadata paremter.</param>
-        /// <returns>A bool value indicating the success of the operation.</returns>
-        public virtual async Task<bool> PassThreadControlAsync(string targetAppId, string userId, string message)
+        /// <param name="targetAppId">The ID of the target app to pass control to.</param>
+        /// <param name="userId">The sender user ID.</param>
+        /// <param name="message">An optional message for the metadata parameter.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>`true` if the operation succeeded; otherwise, `false`.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="targetAppId"/> or <paramref name="userId"/> is null.</exception>
+        public virtual async Task<bool> PassThreadControlAsync(string targetAppId, string userId, string message, CancellationToken cancellationToken)
         {
             if (targetAppId == null)
             {
@@ -255,7 +272,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
 
             var content = new { recipient = new { id = userId }, target_app_id = targetAppId, metadata = message };
-            return await PostToFacebookApiAsync($"/me/{HandoverConstants.PassThreadControl}", JsonConvert.SerializeObject(content)).ConfigureAwait(false);
+            return await PostToFacebookApiAsync($"/me/{HandoverConstants.PassThreadControl}", JsonConvert.SerializeObject(content), cancellationToken).ConfigureAwait(false);
         }
     }
 }

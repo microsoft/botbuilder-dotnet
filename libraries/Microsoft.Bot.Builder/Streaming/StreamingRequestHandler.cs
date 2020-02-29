@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// establishes a connection over a WebSocket to a streaming channel.
         /// </summary>
         /// <param name="bot">The bot for which we handle requests.</param>
-        /// <param name="activityProcessor">The procesor for incoming requests.</param>
+        /// <param name="activityProcessor">The processor for incoming requests.</param>
         /// <param name="socket">The base socket to use when connecting to the channel.</param>
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
         public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, WebSocket socket, ILogger logger = null)
@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Builder.Streaming
                  * Any content sent as part of a StreamingRequest, including the request body
                  * and inline attachments, appear as streams added to the same collection. The first
                  * stream of any request will be the body, which is parsed and passed into this method
-                 * as the first argument, 'body'. Any additional streams are inline attachents that need
+                 * as the first argument, 'body'. Any additional streams are inline attachments that need
                  * to be iterated over and added to the Activity as attachments to be sent to the Bot.
                  */
                 if (request.Streams.Count > 1)

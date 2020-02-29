@@ -1,7 +1,5 @@
 ﻿using System;
-using Microsoft.Bot.Builder.AI.QnA;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
@@ -24,18 +22,12 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         {
             this.UseStorage(storage);
             this.UseState(userState, conversationState);
+            this.UseDebugger(configuration.GetValue("debugport", 4712), logger: logger);
 
-            var registrations = new TypeRegistration[]
-            {
-                new TypeRegistration<MultiplyDialog>("Testbot.Multiply"),
-                new TypeRegistration<JavascriptAction>("Testbot.JavascriptAction")
-            };
+            HostContext.Current.Set<IConfiguration>(configuration);
 
-            this.UseResourceExplorer(resourceExplorer, registrations);
-            this.UseAdaptiveDialogs();
-            this.UseQnAMaker();
-            this.UseLanguageGeneration(resourceExplorer);
-            this.Use(new RegisterClassMiddleware<IConfiguration>(configuration));
+            resourceExplorer.RegisterType<MultiplyDialog>("Testbot.Multiply");
+            resourceExplorer.RegisterType<JavascriptAction>("Testbot.JavascriptAction");
 
             // this.UseDebugger(configuration.GetValue<int>("debugport", 4712), events: new Events<AdaptiveEvents>());
 

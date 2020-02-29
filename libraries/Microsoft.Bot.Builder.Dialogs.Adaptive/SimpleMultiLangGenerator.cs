@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.LanguageGeneration;
-using Microsoft.Bot.Expressions.Properties;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
@@ -41,6 +40,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
+            await Task.CompletedTask;
+
             if (template == null)
             {
                 throw new ArgumentNullException(nameof(template));

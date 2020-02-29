@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Twilio;
@@ -51,8 +52,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// Sends a Twilio SMS message.
         /// </summary>
         /// <param name="messageOptions">An object containing the parameters for the message to send.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The SID of the Twilio message sent.</returns>
-        public virtual async Task<string> SendMessage(CreateMessageOptions messageOptions)
+        public virtual async Task<string> SendMessage(CreateMessageOptions messageOptions, CancellationToken cancellationToken)
         {
             var messageResource = await MessageResource.CreateAsync(messageOptions).ConfigureAwait(false);
             return messageResource.Sid;

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
@@ -19,17 +20,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests
     public class ActivityCheckerTest
     {
         private static ResourceExplorer resourceExplorer;
-
+        
         public TestContext TestContext { get; set; }
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-            DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
-            DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
-
-            resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder());
+            resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
         }
 
         [TestMethod]
@@ -52,13 +49,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests
             var context = await GetTurnContext("DignosticStructuredLG.lg");
             var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
 
-            var lgStringResult = await languageGenerator.Generate(context, "@{ErrorStructuredType()}", null);
+            var lgStringResult = await languageGenerator.Generate(context, "${ErrorStructuredType()}", null);
             var diagnostics = ActivityChecker.Check(lgStringResult);
             Assert.AreEqual(diagnostics.Count, 1);
             Assert.IsTrue(diagnostics[0].Severity == DiagnosticSeverity.Error);
             Assert.AreEqual("Type 'mystruct' is not supported currently.", diagnostics[0].Message);
 
-            lgStringResult = await languageGenerator.Generate(context, "@{ErrorActivityType()}", null);
+            lgStringResult = await languageGenerator.Generate(context, "${ErrorActivityType()}", null);
             diagnostics = ActivityChecker.Check(lgStringResult);
             Assert.AreEqual(diagnostics.Count, 2);
             Assert.IsTrue(diagnostics[0].Severity == DiagnosticSeverity.Error);
@@ -66,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests
             Assert.IsTrue(diagnostics[1].Severity == DiagnosticSeverity.Warning);
             Assert.AreEqual(diagnostics[1].Message, "'invalidproperty' not support in Activity.");
 
-            lgStringResult = await languageGenerator.Generate(context, "@{ErrorMessage()}", null);
+            lgStringResult = await languageGenerator.Generate(context, "${ErrorMessage()}", null);
             diagnostics = ActivityChecker.Check(lgStringResult);
             Assert.AreEqual(diagnostics.Count, 5);
             Assert.IsTrue(diagnostics[0].Severity == DiagnosticSeverity.Warning);

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Expressions.Properties;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -106,33 +106,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            // Ensure planning context
-            if (dc is SequenceContext planning)
+            var (conditionResult, error) = this.Condition.TryGetValue(dcState);
+            if (error == null && conditionResult == true && TrueScope.Actions.Any())
             {
-                var (conditionResult, error) = this.Condition.TryGetValue(dcState);
-                if (error == null && conditionResult == true && TrueScope.Actions.Any())
-                {
-                    // replace dialog with If True Action Scope
-                    return await dc.ReplaceDialogAsync(this.TrueScope.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
-                }
-                else if (conditionResult == false && FalseScope.Actions.Any())
-                {
-                    return await dc.ReplaceDialogAsync(this.FalseScope.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
-                }
+                // replace dialog with If True Action Scope
+                return await dc.ReplaceDialogAsync(this.TrueScope.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            else if (conditionResult == false && FalseScope.Actions.Any())
+            {
+                return await dc.ReplaceDialogAsync(this.FalseScope.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
 
-                // end dialog since no triggered actions
-                return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                throw new Exception("`IfCondition` should only be used in the context of an adaptive dialog.");
-            }
+            // end dialog since no triggered actions
+            return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         protected override string OnComputeId()
         {
             var idList = Actions.Select(s => s.Id);
-            return $"{this.GetType().Name}({this.Condition}|{string.Join(",", idList)})";
+            return $"{this.GetType().Name}({this.Condition?.ToString()}|{string.Join(",", idList)})";
         }
     }
 }

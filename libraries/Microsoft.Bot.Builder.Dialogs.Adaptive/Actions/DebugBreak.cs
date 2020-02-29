@@ -8,7 +8,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Expressions.Properties;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -77,8 +77,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
 
                 // Get list of actions
-                var stepState = dc is SequenceContext sc ? sc.Actions : new List<ActionState>();
-                var actionsIds = stepState.Select(s => s.DialogId);
+                var actions = dc.Parent is ActionContext ac ? ac.Actions : new List<ActionState>();
+                var actionsIds = actions.Select(s => s.DialogId);
 
                 Debug.WriteLine($"{path}: {actionsIds.Count()} actions remaining.");
             }

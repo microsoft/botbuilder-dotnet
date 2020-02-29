@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Expressions.Properties;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -65,23 +65,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            // Ensure planning context
-            if (dc is SequenceContext planning)
+            if (this.Properties?.Any() == true)
             {
-                if (this.Properties?.Any() == true)
+                foreach (var property in this.Properties)
                 {
-                    foreach (var property in this.Properties)
-                    {
-                        dcState.RemoveValue(property.GetValue(dcState));
-                    }
+                    dcState.RemoveValue(property.GetValue(dcState));
                 }
+            }
 
-                return await dc.EndDialogAsync();
-            }
-            else
-            {
-                throw new Exception("`DeleteProperty` should only be used in the context of an adaptive dialog.");
-            }
+            return await dc.EndDialogAsync();
         }
     }
 }

@@ -56,33 +56,43 @@
                 "$kind": "Microsoft.OnChooseIntent",
                 "actions": [
                     {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": "ChooseIntent"
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "count(turn.recognized.candidates) == 2",
+                        "description": "Should have 2 candidates"
                     },
                     {
                         "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "turn.recognized.intent.chooseintent.DeferToRecognizer_x == null",
-                        "description": "Should not have DeferToRecognizer_x intent"
+                        "condition": "turn.recognized.candidates[0].id == 'y'",
+                        "description": "Should have y candidates"
                     },
                     {
                         "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "turn.recognized.intent.chooseintent.DeferToRecognizer_y != null",
-                        "description": "Should have DeferToRecognizer_y intent"
-                    },
-                    {
-                        "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "turn.recognized.intent.chooseintent.DeferToRecognizer_z == null",
-                        "description": "Should not have DeferToRecognizer_z intent"
-                    },
-                    {
-                        "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "turn.recognized.intent.chooseintent.y != null",
+                        "condition": "turn.recognized.candidates[0].intent == 'y'",
                         "description": "Should have y intent"
                     },
                     {
                         "$kind": "Microsoft.Test.AssertCondition",
-                        "condition": "turn.recognized.intent.chooseintent.z != null",
+                        "condition": "turn.recognized.candidates[0].result != null",
                         "description": "Should have z intent"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.candidates[1].id == 'z'",
+                        "description": "Should have z intent"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.candidates[1].intent == 'z'",
+                        "description": "Should have z intent"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.candidates[1].result != null",
+                        "description": "Should have z intent"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ChooseIntent"
                     }
                 ]
             },
@@ -92,7 +102,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Intent:@{turn.recognized.intent}"
+                        "activity": "Intent:${turn.recognized.intent}"
                     }
                 ]
             },
@@ -102,7 +112,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Intent:@{turn.recognized.intent}"
+                        "activity": "Intent:${turn.recognized.intent}"
                     }
                 ]
             },
@@ -112,7 +122,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Intent:@{turn.recognized.intent}"
+                        "activity": "Intent:${turn.recognized.intent}"
                     }
                 ]
             },
@@ -121,7 +131,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "UnknownIntent:@{turn.recognized.intent}"
+                        "activity": "UnknownIntent:${turn.recognized.intent}"
                     }
                 ]
             }

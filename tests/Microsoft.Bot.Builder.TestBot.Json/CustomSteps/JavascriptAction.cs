@@ -2,13 +2,11 @@
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Jint;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Expressions.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

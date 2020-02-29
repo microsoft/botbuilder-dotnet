@@ -1,12 +1,15 @@
+
+
 # AskPersonname
-- @{askString('Personname')}
+- ${askString('Personname')}
+
 
 # PersonnameName
 - personname
 
+
 # Personname(val)
-- @{PersonnameEntity(val)}
-
+- ${PersonnameEntity(val)}
 [unittests-PersonnameEntity.lg](unittests-PersonnameEntity.lg)
-
-[unittests-common.lg](unittests-common.lg)
+[unittests-library.lg](unittests-library.lg)
+[unittests-library-Missing.lg](unittests-library-Missing.lg)

@@ -1,0 +1,16 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$kind": "Microsoft.OnEndOfActions",
+    "condition":"!$Personname",
+    "priority": "indexOf(dialog.requiredProperties, 'Personname')",
+    "actions": [
+        {
+            "$kind": "Microsoft.Ask",
+            "activity": "${AskPersonname()}",
+            "expectedProperties": [
+                "Personname"
+            ]
+        }
+    ]
+}

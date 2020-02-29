@@ -41,20 +41,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         [JsonProperty("recognizers")]
         public List<Recognizer> Recognizers { get; set; } = new List<Recognizer>();
 
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
-        {
-            if (dialogContext == null)
-            {
-                throw new ArgumentNullException(nameof(dialogContext));
-            }
-
-            // run all of the recognizers in parallel
-            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, cancellationToken)));
-
-            // merge intents
-            return MergeResults(results);
-        }
-
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default)
         {
             if (dialogContext == null)
@@ -69,30 +55,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             // run all of the recognizers in parallel
             var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, activity, cancellationToken)));
-
-            // merge intents
-            return MergeResults(results);
-        }
-
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale = null, CancellationToken cancellationToken = default)
-        {
-            if (dialogContext == null)
-            {
-                throw new ArgumentNullException(nameof(dialogContext));
-            }
-
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
-
-            if (locale == null)
-            {
-                locale = string.Empty;
-            }
-
-            // run all of the recognizers in parallel
-            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, text, locale, cancellationToken)));
 
             // merge intents
             return MergeResults(results);
@@ -143,24 +105,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 //      }
                 //   }
                 foreach (var entityProperty in result.Entities.Properties())
+                {
+                    if (entityProperty.Name == "$instance")
                     {
-                        if (entityProperty.Name == "$instance")
+                        // property is "$instance" so get the instance data
+                        JObject resultInstanceData = (JObject)entityProperty.Value;
+                        foreach (var name in resultInstanceData.Properties())
                         {
-                            // property is "$instance" so get the instance data
-                            JObject resultInstanceData = (JObject)entityProperty.Value;
-                            foreach (var name in resultInstanceData.Properties())
-                            {
-                                // merge sourceInstanceData[name] => instanceData[name]
-                                MergeArrayProperty(resultInstanceData, name, instanceData);
-                            }
-                        }
-                        else
-                        {
-                            // property is a "name" with values, 
-                            // merge result.Entities["name"] => recognizerResult.Entities["name"]
-                            MergeArrayProperty(result.Entities, entityProperty, recognizerResult.Entities);
+                            // merge sourceInstanceData[name] => instanceData[name]
+                            MergeArrayProperty(name, instanceData);
                         }
                     }
+                    else
+                    {
+                        // property is a "name" with values, 
+                        // merge result.Entities["name"] => recognizerResult.Entities["name"]
+                        MergeArrayProperty(entityProperty, recognizerResult.Entities);
+                    }
+                }
+
+                foreach (var property in result.Properties)
+                {
+                    // naive merge clobbers same key. 
+                    recognizerResult.Properties[property.Key] = property.Value;
+                }
             }
 
             if (!recognizerResult.Intents.Any())
@@ -171,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             return recognizerResult;
         }
 
-        private void MergeArrayProperty(JObject sourceObject, JProperty property, JObject targetObject)
+        private void MergeArrayProperty(JProperty property, JObject targetObject)
         {
             // get elements from source object
             var elements = (JArray)property.Value;

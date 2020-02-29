@@ -1,0 +1,15 @@
+
+
+# AskCheese
+- ${askEnum('Cheese')}
+
+
+# CheeseName
+- cheese
+
+
+# Cheese(val)
+- ${CheeseEntity(val)}
+[sandwichTest-CheeseEntity.lg](sandwichTest-CheeseEntity.lg)
+[sandwichTest-library.lg](sandwichTest-library.lg)
+[sandwichTest-library-Missing.lg](sandwichTest-library-Missing.lg)

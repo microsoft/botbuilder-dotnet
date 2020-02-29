@@ -39,8 +39,10 @@
     <None Remove="Examples\EvaluateOnce.lg" />
     <None Remove="Examples\LoopScope.lg" />
     <None Remove="Examples\ExpressionExtract.lg" />
+    <None Remove="Examples\StringInterpolation.lg" />
     <None Remove="Examples\ReExecute.lg" />
-    <None Remove="ExceptionExamples\NoVariableMatch.lg" />
+    <None Remove="Examples\NullTolerant.lg" />
+    <None Remove="Examples\CustomFunction.lg" />
     <None Remove="ExceptionExamples\ConditionFormatError.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplates.lg" />
     <None Remove="ExceptionExamples\EmptyLGFile.lg" />
@@ -58,6 +60,8 @@
     <None Remove="ExceptionExamples\TemplateAsFunction.lg" />
     <None Remove="ExceptionExamples\ErrorStructuredTemplate.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplatesInImportFiles.lg" />
+    <None Remove="ExceptionExamples\RunTimeErrors.lg" />
+    <None Remove="ExceptionExamples\ExpressionFormatError.lg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -98,6 +102,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\BasicList.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\StringInterpolation.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\CaseInsensitive.lg">
@@ -151,9 +158,13 @@
     <Content Include="Examples\IsTemplate.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ExceptionExamples\NoVariableMatch.lg">
+    <Content Include="Examples\NullTolerant.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Examples\CustomFunction.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  
     <Content Include="ExceptionExamples\ConditionFormatError.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -203,6 +214,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\DuplicatedTemplatesInImportFiles.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ExceptionExamples\RunTimeErrors.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ExceptionExamples\ExpressionFormatError.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

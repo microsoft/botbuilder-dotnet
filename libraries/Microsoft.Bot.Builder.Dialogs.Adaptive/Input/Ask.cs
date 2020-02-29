@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Expressions.Properties;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -63,11 +62,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             var expected = this.ExpectedProperties?.GetValue(dcState);
             if (expected != null
-                         && dcState.TryGetValue(DialogPath.ExpectedProperties, out List<string> lastExpectedProperties)
-                         && !expected.Any(prop => !lastExpectedProperties.Contains(prop))
-                         && !lastExpectedProperties.Any(prop => !expected.Contains(prop))
-                         && dcState.TryGetValue(DialogPath.LastTriggerEvent, out DialogEvent lastTrigger)
-                         && lastTrigger.Name.Equals(trigger.Name))
+                && dcState.TryGetValue(DialogPath.ExpectedProperties, out List<string> lastExpectedProperties)
+                && !expected.Any(prop => !lastExpectedProperties.Contains(prop))
+                && !lastExpectedProperties.Any(prop => !expected.Contains(prop))
+                && dcState.TryGetValue(DialogPath.LastTriggerEvent, out DialogEvent lastTrigger)
+                && lastTrigger.Name.Equals(trigger.Name))
             {
                 retries++;
             }

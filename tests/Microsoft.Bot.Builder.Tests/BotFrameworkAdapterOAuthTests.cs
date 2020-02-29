@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual(originalActivity.From.Id, eventActivity.From.Id);
             Assert.AreEqual(originalActivity.From.Name, eventActivity.From.Name);
             Assert.AreEqual(ActivityTypes.Event, eventActivity.Type);
-            Assert.AreEqual("tokens/response", eventActivity.Name);
+            Assert.AreEqual(SignInConstants.TokenResponseEventName, eventActivity.Name);
 
             var tokenResponse = eventActivity.Value as TokenResponse;
             Assert.AreEqual("12345", tokenResponse.Token);
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual(originalActivity.From.Id, eventActivity.From.Id);
             Assert.AreEqual(originalActivity.From.Name, eventActivity.From.Name);
             Assert.AreEqual(ActivityTypes.Event, eventActivity.Type);
-            Assert.AreEqual("tokens/response", eventActivity.Name);
+            Assert.AreEqual(SignInConstants.TokenResponseEventName, eventActivity.Name);
 
             var tokenResponse = eventActivity.Value as TokenResponse;
             Assert.AreEqual("1234", tokenResponse.Token);

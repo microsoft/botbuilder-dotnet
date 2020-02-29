@@ -3,13 +3,10 @@
 
 using System;
 using System.IO;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder.AI.QnA;
+using Microsoft.Bot.Builder.AI.Luis.Testing;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Bot.Builder.MockLuis;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling
@@ -90,21 +87,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling
                     var name = Path.GetFileName(arg);
                     var config = new ConfigurationBuilder()
                         .AddInMemoryCollection()
-                        .UseLuisSettings(luis ?? dir, secret)
+                        .UseMockLuisSettings(luis ?? dir, secret)
                         .Build();
-                    var explorer = new ResourceExplorer().AddFolder(dir);
-                    DeclarativeTypeLoader.Reset();
-                    TypeFactory.Configuration = config;
-                    DeclarativeTypeLoader.AddComponent(new DialogComponentRegistration());
-                    DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
-                    DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
-                    DeclarativeTypeLoader.AddComponent(new QnAMakerComponentRegistration());
-                    DeclarativeTypeLoader.AddComponent(new MockLuisComponentRegistration());
+
+                    var explorer = new ResourceExplorer()
+                        .AddFolder(dir, monitorChanges: false)
+                        .RegisterType(LuisAdaptiveRecognizer.DeclarativeType, typeof(MockLuisRecognizer), new MockLuisLoader()); 
+                    HostContext.Current.Set(config);
                     var script = explorer.LoadType<TestScript>(name);
                     var timer = new System.Diagnostics.Stopwatch();
                     Console.WriteLine($"Executing {arg} for {iterations} iterations");
                     timer.Start();
-                    var adapter = script.DefaultTestAdapter(testName: name, resourceExplorer: explorer, configuration: config);
+                    var adapter = script.DefaultTestAdapter(testName: name, resourceExplorer: explorer);
                     timer.Stop();
                     var loading = timer.ElapsedMilliseconds;
                     Console.WriteLine($" loading took {loading} ms");
@@ -114,7 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling
                     for (var iter = 0; iter < iterations; ++iter)
                     {
                         timer.Restart();
-                        script.ExecuteAsync(adapter: adapter).Wait();
+                        script.ExecuteAsync(explorer, adapter: adapter).Wait();
                         timer.Stop();
                         if (firstTime > 0)
                         {

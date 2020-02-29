@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.LanguageGeneration;
-using Microsoft.Bot.Expressions.Properties;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
@@ -25,11 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-            DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
-            DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
-
-            resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder());
+            resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
         }
 
         [TestMethod]
@@ -41,11 +32,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
             Assert.AreEqual("text", activity.Text);
             Assert.AreEqual("text", activity.Speak);
+            Assert.IsNull(activity.InputHint);
 
             var data = new JObject();
             data["title"] = "titleContent";
             data["text"] = "textContent";
-            var cardActionLgResult = GetLGFile().Evaluate("@{HerocardWithCardAction()}", data);
+            var cardActionLgResult = GetLGFile().Evaluate("${HerocardWithCardAction()}", data);
             activity = ActivityFactory.CreateActivity(cardActionLgResult);
             AssertCardActionActivity(activity);
         }

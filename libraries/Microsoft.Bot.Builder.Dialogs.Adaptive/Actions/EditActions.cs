@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Expressions.Properties;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            if (dc is SequenceContext sc)
+            if (dc.Parent is ActionContext ac)
             {
                 var planActions = Actions.Select(s => new ActionState()
                 {
@@ -91,20 +91,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     Actions = planActions.ToList()
                 };
 
-                sc.QueueChanges(changes);
+                ac.QueueChanges(changes);
 
-                return await sc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                throw new Exception("`EditAction` should only be used in the context of an adaptive dialog.");
+                throw new Exception("`EditActions` should only be used in the context of an adaptive dialog.");
             }
         }
 
         protected override string OnComputeId()
         {
             var idList = Actions.Select(s => s.Id);
-            return $"{this.GetType().Name}[{this.ChangeType}|{string.Join(",", idList)}]";
+            return $"{this.GetType().Name}[{this.ChangeType?.ToString()}|{string.Join(",", idList)}]";
         }
     }
 }

@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using AdaptiveExpressions;
 using Antlr4.Runtime;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -18,41 +20,57 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public delegate (string content, string id) ImportResolverDelegate(string sourceId, string resourceId);
 
     /// <summary>
-    /// Parser to turn lg content into an <see cref="LGFile"/>.
+    /// Parser to turn lg content into a <see cref="LGFile"/>.
     /// </summary>
     public static class LGParser
     {
         /// <summary>
-        /// Parser to turn lg content into an <see cref="LGFile"/>.
+        /// option regex.
         /// </summary>
-        /// <param name="filePath">LG absolute file path.</param>
+        private static readonly Regex OptionRegex = new Regex(@"^> *!#(.*)$");
+
+        /// <summary>
+        /// Parser to turn lg content into a <see cref="LGFile"/>.
+        /// </summary>
+        /// <param name="filePath"> absolut path of a LG file.</param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <param name="expressionEngine">expressionEngine Expression engine for evaluating expressions.</param>
         /// <returns>new <see cref="LGFile"/> entity.</returns>
-        public static LGFile ParseFile(string filePath, ImportResolverDelegate importResolver = null)
+        public static LGFile ParseFile(
+            string filePath,
+            ImportResolverDelegate importResolver = null,
+            ExpressionEngine expressionEngine = null)
         {
             var fullPath = Path.GetFullPath(filePath.NormalizePath());
             var content = File.ReadAllText(fullPath);
 
-            return ParseText(content, fullPath, importResolver);
+            return ParseText(content, fullPath, importResolver, expressionEngine);
         }
 
         /// <summary>
-        /// Parser to turn lg content into an <see cref="LGFile"/>.
+        /// Parser to turn lg content into a <see cref="LGFile"/>.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
-        /// <param name="id">id is the content identifier. If importResolver is null, id must be a full path string. </param>
+        /// <param name="id">id is the identifier of content. If importResolver is null, id must be a full path string. </param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <param name="expressionEngine">expressionEngine Expression engine for evaluating expressions.</param>
         /// <returns>new <see cref="LGFile"/> entity.</returns>
-        public static LGFile ParseText(string content, string id = "", ImportResolverDelegate importResolver = null)
+        public static LGFile ParseText(
+            string content,
+            string id = "",
+            ImportResolverDelegate importResolver = null,
+            ExpressionEngine expressionEngine = null)
         {
             importResolver = importResolver ?? DefaultFileResolver;
-            var lgFile = new LGFile(content: content, id: id, importResolver: importResolver);
+            var lgFile = new LGFile(content: content, id: id, importResolver: importResolver, expressionEngine: expressionEngine);
+
             var diagnostics = new List<Diagnostic>();
             try
             {
-                var (templates, imports, invalidTemplateErrors) = AntlrParse(content, id);
+                var (templates, imports, invalidTemplateErrors, options) = AntlrParse(content, id);
                 lgFile.Templates = templates;
                 lgFile.Imports = imports;
+                lgFile.Options = options;
                 diagnostics.AddRange(invalidTemplateErrors);
 
                 lgFile.References = GetReferences(lgFile, importResolver);
@@ -71,6 +89,52 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             lgFile.Diagnostics = diagnostics;
 
             return lgFile;
+        }
+
+        /// <summary>
+        /// Parser to turn lg content into a <see cref="LGFile"/> based on the original LGFile.
+        /// </summary>
+        /// <param name="content">Text content contains lg templates.</param>
+        /// <param name="lgFile">original LGFile.</param>
+        /// <returns>new <see cref="LGFile"/> entity.</returns>
+        public static LGFile ParseTextWithRef(string content, LGFile lgFile)
+        {
+            if (lgFile == null)
+            {
+                throw new ArgumentNullException(nameof(lgFile));
+            }
+
+            var id = "inline content";
+            var newLgFile = new LGFile(content: content, id: id, importResolver: lgFile.ImportResolver, options: lgFile.Options);
+            var diagnostics = new List<Diagnostic>();
+            try
+            {
+                var (templates, imports, invalidTemplateErrors, options) = AntlrParse(content, id);
+                newLgFile.Templates = templates;
+                newLgFile.Imports = imports;
+                newLgFile.Options = options;
+                diagnostics.AddRange(invalidTemplateErrors);
+
+                newLgFile.References = GetReferences(newLgFile, newLgFile.ImportResolver)
+                        .Union(lgFile.References)
+                        .Union(new List<LGFile> { lgFile })
+                        .ToList();
+
+                var semanticErrors = new StaticChecker(newLgFile).Check();
+                diagnostics.AddRange(semanticErrors);
+            }
+            catch (LGException ex)
+            {
+                diagnostics.AddRange(ex.Diagnostics);
+            }
+            catch (Exception err)
+            {
+                diagnostics.Add(BuildDiagnostic(err.Message, source: id));
+            }
+
+            newLgFile.Diagnostics = diagnostics;
+
+            return newLgFile;
         }
 
         /// <summary>
@@ -94,15 +158,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return (File.ReadAllText(importPath), importPath);
         }
 
-        private static (IList<LGTemplate> templates, IList<LGImport> imports, IList<Diagnostic> diagnostics) AntlrParse(string content, string id = "")
+        private static (IList<LGTemplate> templates, IList<LGImport> imports, IList<Diagnostic> diagnostics, IList<string> options) AntlrParse(string content, string id = "")
         {
             var fileContext = GetFileContentContext(content, id);
             var templates = ExtractLGTemplates(fileContext, content, id);
             var imports = ExtractLGImports(fileContext, id);
-
+            var options = ExtractLGOptions(fileContext);
             var diagnostics = GetInvalidTemplateErrors(fileContext, id);
 
-            return (templates, imports, diagnostics);
+            return (templates, imports, diagnostics, options);
         }
 
         private static IList<Diagnostic> GetInvalidTemplateErrors(LGFileParser.FileContext fileContext, string id)
@@ -117,16 +181,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private static Diagnostic BuildDiagnostic(string errorMessage, ParserRuleContext context = null, string source = null)
         {
+            errorMessage = LGErrors.StaticFailure + "- " + errorMessage;
             var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line, context.Start.Column);
             var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
             return new Diagnostic(new Range(startPosition, stopPosition), errorMessage, source: source);
         }
 
         /// <summary>
-        /// Get parsed tree node from text by antlr4 engine.
+        /// Get parsed tree nodes from text by antlr4 engine.
         /// </summary>
         /// <param name="text">Original text which will be parsed.</param>
-        /// <returns>Parsed tree node.</returns>
+        /// <returns>Parsed tree nodes.</returns>
         private static LGFileParser.FileContext GetFileContentContext(string text, string id)
         {
             if (string.IsNullOrEmpty(text))
@@ -136,6 +201,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var input = new AntlrInputStream(text);
             var lexer = new LGFileLexer(input);
+            lexer.RemoveErrorListeners();
+
             var tokens = new CommonTokenStream(lexer);
             var parser = new LGFileParser(tokens);
             parser.RemoveErrorListeners();
@@ -148,7 +215,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Extract LG templates from a file parse tree.
+        /// Extract LG templates from the parse tree of a file.
         /// </summary>
         /// <param name="file">LG file context from ANTLR parser.</param>
         /// <param name="lgfileContent">LG file content.</param>
@@ -162,6 +229,39 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    .Where(x => x != null)
                    .Select(t => new LGTemplate(t, lgfileContent, source))
                    .ToList();
+        }
+
+        /// <summary>
+        /// Extract LG options from the parse tree of a file.
+        /// </summary>
+        /// <param name="file">LG file context from ANTLR parser.</param>
+        /// <returns>Option list.</returns>
+        private static IList<string> ExtractLGOptions(LGFileParser.FileContext file)
+        {
+            return file == null ? new List<string>() :
+                   file.paragraph()
+                   .Select(x => x.optionsDefinition())
+                   .Where(x => x != null)
+                   .Select(t => ExtractOption(t.GetText()))
+                   .Where(t => !string.IsNullOrEmpty(t))
+                   .ToList();
+        }
+
+        private static string ExtractOption(string originalText)
+        {
+            var result = string.Empty;
+            if (string.IsNullOrWhiteSpace(originalText))
+            {
+                return result;
+            }
+
+            var matchResult = OptionRegex.Match(originalText);
+            if (matchResult.Success && matchResult.Groups.Count == 2)
+            {
+                result = matchResult.Groups[1].Value?.Trim();
+            }
+
+            return result;
         }
 
         /// <summary>

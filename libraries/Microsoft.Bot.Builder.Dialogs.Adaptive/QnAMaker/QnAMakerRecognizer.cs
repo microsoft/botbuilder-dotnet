@@ -8,8 +8,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.AI.QnA;
-using Microsoft.Bot.Expressions.Properties;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -24,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         public const string DeclarativeType = "Microsoft.QnAMakerRecognizer";
 
         public const string QnAMatchIntent = "QnAMatch";
-        
+
         private const string IntentPrefix = "intent=";
 
         public QnAMakerRecognizer()
@@ -47,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// The host name of the QnA Maker knowledgebase.
         /// </value>
         [JsonProperty("hostname")]
-        public StringExpression HostName { get; set; } 
+        public StringExpression HostName { get; set; }
 
         /// <summary>
         /// Gets or sets the Endpoint key for the QnA Maker KB.
@@ -56,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         /// The endpoint key for the QnA service.
         /// </value>
         [JsonProperty("endpointKey")]
-        public StringExpression EndpointKey { get; set; } 
+        public StringExpression EndpointKey { get; set; }
 
         /// <summary>
         /// Gets or sets the number of results you want.
@@ -96,29 +97,65 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         [JsonProperty("rankerType")]
         public StringExpression RankerType { get; set; } = RankerTypes.DefaultRankerType;
 
+        /// <summary>
+        /// Gets or sets the whether to include the dialog name metadata for QnA context.
+        /// </summary>
+        /// <value>
+        /// A bool or boolean expression.
+        /// </value>
+        [DefaultValue(true)]
+        [JsonProperty("includeDialogNameInMetadata")]
+        public BoolExpression IncludeDialogNameInMetadata { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets an expression to evaluate to set additional metadata name value pairs.
+        /// </summary>
+        /// <value>An expression to evaluate for pairs of metadata.</value>
+        [JsonProperty("metadata")]
+        public ArrayExpression<Metadata> Metadata { get; set; }
+
+        /// <summary>
+        /// Gets or sets an expression to evaluate to set the context.
+        /// </summary>
+        /// <value>An expression to evaluate to QnARequestContext to pass as context.</value>
+        [JsonProperty("context")]
+        public ObjectExpression<QnARequestContext> Context { get; set; }
+
+        /// <summary>
+        /// Gets or sets an expression or numberto use for the QnAId paratmer.
+        /// </summary>
+        /// <value>The expression or number.</value>
+        [JsonProperty("qnaId")]
+        public IntExpression QnAId { get; set; } = 0;
+
         [JsonIgnore]
         public HttpClient HttpClient { get; set; }
 
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, string text, string locale, CancellationToken cancellationToken)
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken)
         {
             var dcState = dialogContext.GetState();
 
             // Identify matched intents
-            var utterance = text ?? string.Empty;
-
             var recognizerResult = new RecognizerResult()
             {
-                Text = utterance,
+                Text = activity.Text,
                 Intents = new Dictionary<string, IntentScore>(),
             };
 
-            List<Metadata> filters = new List<Metadata>()
+            if (string.IsNullOrEmpty(activity.Text))
             {
-                new Metadata() { Name = "dialogName", Value = dialogContext.ActiveDialog.Id }
-            };
+                recognizerResult.Intents.Add("None", new IntentScore());
+                return recognizerResult;
+            }
+
+            List<Metadata> filters = new List<Metadata>();
+            if (IncludeDialogNameInMetadata.GetValue(dcState))
+            {
+                filters.Add(new Metadata() { Name = "dialogName", Value = dialogContext.ActiveDialog.Id });
+            }
 
             // if there is $qna.metadata set add to filters
-            var externalMetadata = dcState.GetValue<Metadata[]>("$qna.metadata");
+            var externalMetadata = this.Metadata?.GetValue(dcState);
             if (externalMetadata != null)
             {
                 filters.AddRange(externalMetadata);
@@ -130,12 +167,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                 dialogContext.Context,
                 new QnAMakerOptions
                 {
-                    Context = dcState.GetValue<QnARequestContext>("$qna.context"),
-                    ScoreThreshold = this.Threshold.TryGetValue(dcState).Value,
+                    Context = this.Context?.GetValue(dcState),
+                    ScoreThreshold = this.Threshold.GetValue(dcState),
                     StrictFilters = filters.ToArray(),
-                    Top = this.Top.TryGetValue(dcState).Value,
-                    QnAId = 0,
-                    RankerType = this.RankerType.TryGetValue(dcState).Value,
+                    Top = this.Top.GetValue(dcState),
+                    QnAId = this.QnAId.GetValue(dcState),
+                    RankerType = this.RankerType.GetValue(dcState),
                     IsTest = this.IsTest
                 },
                 null).ConfigureAwait(false);

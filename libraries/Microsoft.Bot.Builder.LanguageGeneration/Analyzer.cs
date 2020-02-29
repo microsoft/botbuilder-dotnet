@@ -4,13 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
+using AdaptiveExpressions;
 using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
-using Microsoft.Bot.Expressions;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
+    /// <summary>
+    /// LG template analyzer.
+    /// </summary>
     public class Analyzer : LGFileParserBaseVisitor<AnalyzerResult>
     {
         private readonly Dictionary<string, LGTemplate> templateMap;
@@ -19,6 +20,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Analyzer"/> class.
+        /// </summary>
+        /// <param name="templates">template list.</param>
+        /// <param name="expressionEngine">expression engine.</param>
         public Analyzer(List<LGTemplate> templates, ExpressionEngine expressionEngine)
         {
             Templates = templates;
@@ -29,8 +35,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this._expressionParser = evaluator.ExpressionEngine;
         }
 
+        /// <summary>
+        /// Gets templates.
+        /// </summary>
+        /// <value>
+        /// Templates.
+        /// </value>
         public List<LGTemplate> Templates { get; }
 
+        /// <summary>
+        /// Analyzer a template to get the static analyzer results.
+        /// </summary>
+        /// <param name="templateName">Template name.</param>
+        /// <returns>analyze result including variables and template references.</returns>
         public AnalyzerResult AnalyzeTemplate(string templateName)
         {
             if (!templateMap.ContainsKey(templateName))

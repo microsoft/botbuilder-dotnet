@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 {
                     var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
                     choices.Add(new Choice(name));
-                    var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, this.resourceExplorer, DebugSupport.SourceMap);
+                    var dialog = resourceExplorer.LoadType<Dialog>(resource);
                     lastDialog = dialog;
                     handleChoice.Cases.Add(new Case($"{name}", new List<Dialog>() { dialog }));
                 }
@@ -117,14 +117,16 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     Actions = new List<Dialog>()
                 {
                     choiceInput,
-                    new SendActivity("# Running @{conversation.dialogChoice}.main.dialog"),
+                    new SendActivity("# Running ${conversation.dialogChoice}.main.dialog"),
                     handleChoice,
                     new RepeatDialog()
                 }
                 });
             }
 
-            this.dialogManager = new DialogManager(rootDialog);
+            this.dialogManager = new DialogManager(rootDialog)
+                .UseResourceExplorer(this.resourceExplorer)
+                .UseLanguageGeneration();
 
             Trace.TraceInformation("Done loading resources.");
         }

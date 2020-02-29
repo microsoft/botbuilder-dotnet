@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Builder.Azure
     /// <summary>
     /// Implements an CosmosDB based storage provider for a bot.
     /// </summary>
+    [Obsolete("This class is deprecated. Please use CosmosDbPartitionedStorage instead.", false)]
     public class CosmosDbStorage : IStorage
     {
         // When setting up the database, calls are made to CosmosDB. If multiple calls are made, we'll end up setting the

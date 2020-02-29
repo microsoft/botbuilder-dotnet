@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Bot.Expressions;
-using Microsoft.Bot.Expressions.Memory;
+using AdaptiveExpressions;
+using AdaptiveExpressions.Memory;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -23,7 +23,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             string content = null,
             string id = null,
             ExpressionEngine expressionEngine = null,
-            ImportResolverDelegate importResolver = null)
+            ImportResolverDelegate importResolver = null,
+            IList<string> options = null)
         {
             Templates = templates ?? new List<LGTemplate>();
             Imports = imports ?? new List<LGImport>();
@@ -33,6 +34,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ImportResolver = importResolver;
             Id = id ?? string.Empty;
             ExpressionEngine = expressionEngine ?? new ExpressionEngine();
+            Options = options ?? new List<string>();
         }
 
         /// <summary>
@@ -119,6 +121,26 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public string Id { get; set; }
 
         /// <summary>
+        /// Gets or sets lG file options.
+        /// </summary>
+        /// <value>
+        /// LG file options.
+        /// </value>
+        public IList<string> Options { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether lG parser/checker/evaluate strict mode.
+        /// If strict mode is on, expression would throw exception instead of return
+        /// null or make the condition failed.
+        /// </summary>
+        /// <value>
+        /// A value indicating whether lG parser/checker/evaluate strict mode.
+        /// If strict mode is on, expression would throw exception instead of return
+        /// null or make the condition failed.
+        /// </value>
+        public bool StrictMode => GetStrictModeFromOptions(Options);
+
+        /// <summary>
         /// Evaluate a template with given name and scope.
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
@@ -128,8 +150,37 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             CheckErrors();
 
-            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionEngine);
+            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionEngine, StrictMode);
             return evaluator.EvaluateTemplate(templateName, scope);
+        }
+
+        /// <summary>
+        /// Use to evaluate an inline template str.
+        /// </summary>
+        /// <param name="inlineStr">inline string which will be evaluated.</param>
+        /// <param name="scope">scope object or JToken.</param>
+        /// <returns>Evaluate result.</returns>
+        public object Evaluate(string inlineStr, object scope = null)
+        {
+            if (inlineStr == null)
+            {
+                throw new ArgumentException("inline string is null.");
+            }
+
+            CheckErrors();
+
+            // wrap inline string with "# name and -" to align the evaluation process
+            var fakeTemplateId = Guid.NewGuid().ToString();
+            var multiLineMark = "```";
+
+            inlineStr = !inlineStr.Trim().StartsWith(multiLineMark) && inlineStr.Contains('\n')
+                   ? $"{multiLineMark}{inlineStr}{multiLineMark}" : inlineStr;
+
+            var newContent = $"# {fakeTemplateId} \r\n - {inlineStr}";
+
+            var newLgFile = LGParser.ParseTextWithRef(newContent, this);
+
+            return newLgFile.EvaluateTemplate(fakeTemplateId, scope);
         }
 
         /// <summary>
@@ -142,8 +193,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public IList<string> ExpandTemplate(string templateName, object scope = null)
         {
             CheckErrors();
-            var expander = new Expander(AllTemplates.ToList(), ExpressionEngine);
-            return expander.EvaluateTemplate(templateName, scope);
+            var expander = new Expander(AllTemplates.ToList(), ExpressionEngine, StrictMode);
+            return expander.ExpandTemplate(templateName, scope);
         }
 
         /// <summary>
@@ -385,6 +436,39 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     throw new Exception(string.Join("\n", errors));
                 }
             }
+        }
+
+        private bool GetStrictModeFromOptions(IList<string> options)
+        {
+            var result = false;
+            if (options == null)
+            {
+                return result;
+            }
+
+            var strictModeKey = "@strict";
+            foreach (var option in options)
+            {
+                if (!string.IsNullOrWhiteSpace(option) && option.Contains("="))
+                {
+                    var index = option.IndexOf('=');
+                    var key = option.Substring(0, index).Trim();
+                    var value = option.Substring(index + 1).Trim().ToLower();
+                    if (key == strictModeKey)
+                    {
+                        if (value == "true")
+                        {
+                            result = true;
+                        }
+                        else if (value == "false")
+                        {
+                            result = false;
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }

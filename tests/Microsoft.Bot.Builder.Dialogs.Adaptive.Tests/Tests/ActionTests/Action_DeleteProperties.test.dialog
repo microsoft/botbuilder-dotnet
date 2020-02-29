@@ -31,19 +31,19 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{$p1}"
+                        "activity": "${$p1}"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{$p2}"
+                        "activity": "${$p2}"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{$p3}"
+                        "activity": "${$p3}"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "@{$p4}"
+                        "activity": "${$p4}"
                     },
                     {
                         "$kind": "Microsoft.DeleteProperties",

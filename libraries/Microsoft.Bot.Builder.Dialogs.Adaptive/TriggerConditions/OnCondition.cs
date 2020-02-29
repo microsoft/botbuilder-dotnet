@@ -7,12 +7,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using AdaptiveExpressions;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Memory;
-using Microsoft.Bot.Expressions;
-using Microsoft.Bot.Expressions.Properties;
-using Microsoft.Bot.Expressions.TriggerTrees;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
@@ -104,9 +103,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <summary>
         /// Get the expression for this rule by calling GatherConstraints().
         /// </summary>
-        /// <param name="parser">Expression parser.</param>
         /// <returns>Expression which will be cached and used to evaluate this rule.</returns>
-        public virtual Expression GetExpression(IExpressionParser parser)
+        public virtual Expression GetExpression()
         {
             lock (this.extraConstraints)
             {
@@ -138,7 +136,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                         this.fullConstraint = Expression.AndExpression(
                             this.fullConstraint,
                             new Expression(
-                                TriggerTree.LookupFunction("ignore"),
+                                ExpressionFunctions.Lookup(ExpressionType.Ignore),
                                 new Expression(new ExpressionEvaluator(
                                     $"runOnce{Id}",
                                     (expression, os) =>
@@ -151,7 +149,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                                         return (changed, null);
                                     },
                                     ReturnType.Boolean,
-                                    BuiltInFunctions.ValidateUnary))));
+                                    ExpressionFunctions.ValidateUnary))));
                     }
                 }
             }
@@ -162,11 +160,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <summary>
         /// Compute the current value of the priority expression and return it.
         /// </summary>
-        /// <param name="context">Context to use for evaluation.</param>
+        /// <param name="actionContext">Context to use for evaluation.</param>
         /// <returns>Computed priority.</returns>
-        public int CurrentPriority(SequenceContext context)
+        public int CurrentPriority(ActionContext actionContext)
         {
-            var (priority, error) = this.Priority.TryGetValue(context.GetState());
+            var (priority, error) = this.Priority.TryGetValue(actionContext.GetState());
             if (error != null)
             {
                 priority = -1;
@@ -187,7 +185,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 {
                     lock (this.extraConstraints)
                     {
-                        this.extraConstraints.Add(new ExpressionEngine().Parse(condition.TrimStart('=')));
+                        this.extraConstraints.Add(Expression.Parse(condition.TrimStart('=')));
                         this.fullConstraint = null; // reset to force it to be recalcaulated
                     }
                 }
@@ -201,20 +199,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <summary>
         /// Method called to execute the rule's actions.
         /// </summary>
-        /// <param name="planningContext">Context.</param>
+        /// <param name="actionContext">Context.</param>
         /// <returns>A <see cref="Task"/> with plan change list.</returns>
-        public virtual async Task<List<ActionChangeList>> ExecuteAsync(SequenceContext planningContext)
+        public virtual async Task<List<ActionChangeList>> ExecuteAsync(ActionContext actionContext)
         {
             if (RunOnce)
             {
-                var dcState = planningContext.GetState();
+                var dcState = actionContext.GetState();
                 var count = dcState.GetValue<uint>(DialogPath.EventCounter);
                 dcState.SetValue($"{AdaptiveDialog.ConditionTracker}.{Id}.lastRun", count);
             }
 
             return await Task.FromResult(new List<ActionChangeList>()
             {
-                this.OnCreateChangeList(planningContext)
+                this.OnCreateChangeList(actionContext)
             });
         }
 
@@ -232,7 +230,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             yield return this.ActionScope;
         }
 
-        protected virtual ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
+        protected virtual ActionChangeList OnCreateChangeList(ActionContext actionContext, object dialogOptions = null)
         {
             var changeList = new ActionChangeList()
             {
