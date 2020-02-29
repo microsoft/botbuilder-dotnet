@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public static readonly DialogTurnResult EndOfTurn = new DialogTurnResult(DialogTurnStatus.Waiting);
 
         private IBotTelemetryClient _telemetryClient;
-        private LogTelemetryClient _logTelemetryClient;
+        private LogTelemetryClientBase _logTelemetryClient;
 
         [JsonProperty("id")]
         private string id;
@@ -68,7 +68,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>The <see cref="IBotTelemetryClient"/> to use for logging.</value>
         /// <seealso cref="DialogSet.TelemetryClient"/>
         [JsonIgnore]
-        [Obsolete("TelemetryClient is now obselete. Please use LogTelemetryClient instead.", false)]
         public virtual IBotTelemetryClient TelemetryClient
         {
             get
@@ -88,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>The <see cref="LogTelemetryClient"/> to use for logging.</value>
         /// <seealso cref="DialogSet.LogTelemetryClient"/>
         [JsonIgnore]
-        public virtual LogTelemetryClient LogTelemetryClient
+        public virtual LogTelemetryClientBase LogTelemetryClient
         {
             get
             {

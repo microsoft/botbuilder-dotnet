@@ -38,7 +38,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <value>The <see cref="IBotTelemetryClient"/> to use when logging.</value>
         /// <seealso cref="DialogSet.TelemetryClient"/>
-        [Obsolete("TelemetryClient is now obselete. Please use LogTelemetryClient instead.", false)]
         public override IBotTelemetryClient TelemetryClient
         {
             get
@@ -60,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <value>The <see cref="LogTelemetryClient"/> to use when logging.</value>
         /// <seealso cref="DialogSet.LogTelemetryClient"/>
-        public override LogTelemetryClient LogTelemetryClient
+        public override LogTelemetryClientBase LogTelemetryClient
         {
             get
             {
@@ -110,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
             }
 
-            LogTelemetryClient.TrackPageView(Id);
+            LogTelemetryClient.TrackDialogView(Id);
 
             // Just signal waiting
             return Dialog.EndOfTurn;

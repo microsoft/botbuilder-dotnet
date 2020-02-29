@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private readonly IDictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
 
         private IBotTelemetryClient _telemetryClient;
-        private LogTelemetryClient _logTelemetryClient;
+        private LogTelemetryClientBase _logTelemetryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogSet"/> class.
@@ -50,7 +50,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <remarks>When this property is set, it sets the <see cref="Dialog.TelemetryClient"/> of each
         /// dialog in the set to the new value.</remarks>
         [JsonIgnore]
-        [Obsolete("TelemetryClient is now obselete. Please use LogTelemetryClient instead.", false)]
         public IBotTelemetryClient TelemetryClient
         {
             get
@@ -75,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <remarks>When this property is set, it sets the <see cref="Dialog.LogTelemetryClient"/> of each
         /// dialog in the set to the new value.</remarks>
         [JsonIgnore]
-        public LogTelemetryClient LogTelemetryClient
+        public LogTelemetryClientBase LogTelemetryClient
         {
             get
             {

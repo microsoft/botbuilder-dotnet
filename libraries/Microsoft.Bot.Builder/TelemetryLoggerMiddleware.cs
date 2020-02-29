@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="logTelemetryClient">The telemetry client to send telemetry events to.</param>
         /// <param name="logPersonalInformation">`true` to include personally identifiable information; otherwise, `false`.</param>
-        public TelemetryLoggerMiddleware(LogTelemetryClient logTelemetryClient, bool logPersonalInformation = false)
+        public TelemetryLoggerMiddleware(LogTelemetryClientBase logTelemetryClient, bool logPersonalInformation = false)
         {
             LogTelemetryClient = logTelemetryClient ?? new NullLogTelemetryClient();
             LogPersonalInformation = logPersonalInformation;
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder
         /// The <see cref="IBotTelemetryClient"/> this middleware uses to log events.
         /// </value>
         [JsonIgnore]
-        public LogTelemetryClient LogTelemetryClient { get; }
+        public LogTelemetryClientBase LogTelemetryClient { get; }
 
         /// <summary>
         /// Logs events for incoming, outgoing, updated, or deleted message activities, using the <see cref="TelemetryClient"/>.
