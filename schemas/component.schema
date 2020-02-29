@@ -47,7 +47,7 @@
             "title": "$role",
             "description": "Defines the role played in the dialog schema [expression|union|union(Kind)].",
             "type": "string",
-            "pattern": "^((expression)|(union)|(union\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
+            "pattern": "^((expression)|(interface)|(implements\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
         },
         "id": {
             "title": "$id",
@@ -101,6 +101,10 @@
         },
         "default": true,
         "readOnly": {
+            "type": "boolean",
+            "default": false
+        },
+        "writeOnly": {
             "type": "boolean",
             "default": false
         },
