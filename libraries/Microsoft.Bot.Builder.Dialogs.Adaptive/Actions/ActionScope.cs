@@ -173,10 +173,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var dcState = dc.GetState();
 
             dcState.SetValue(OFFSETKEY, offset);
-            var actionId = this.Actions[offset].Id;
+            var action = this.Actions[offset];
+
+            var properties = new Dictionary<string, string>()
+            {
+                { "DialogId", action.Id },
+                { "Kind", action.GetType().ToString() }
+            };
+            TelemetryClient.TrackEvent("AdaptiveDialogAction", properties);
 
             // begin Action dialog
-            return await dc.BeginDialogAsync(actionId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await dc.BeginDialogAsync(action.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         protected override string OnComputeId()
