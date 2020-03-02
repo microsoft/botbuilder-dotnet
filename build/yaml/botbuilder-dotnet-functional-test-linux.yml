@@ -38,6 +38,8 @@ variables:
 #  LinuxTestBotAzureDeploymentUser: define this in Azure
 #  LinuxTestBotBotGroup: define this in Azure
 #  LinuxTestBotBotName: define this in Azure
+#  LinuxTestBotTestAppId: define this in Azure
+#  LinuxTestBotTestPassword: define this in Azure
 #  DeleteResourceGroup: define this in Azure. Normally set to true.
 
 steps:
