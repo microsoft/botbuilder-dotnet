@@ -988,7 +988,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestCustomFunction()
         {
-            var engine = new ExpressionParser((string func) =>
+            var parser = new ExpressionParser((string func) =>
             { 
                 if (func == "custom")
                 {
@@ -999,7 +999,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     return ExpressionFunctions.Lookup(func);
                 }
             });
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("CustomFunction.lg"), null, engine);
+            var lgFile = LGParser.ParseFile(GetExampleFilePath("CustomFunction.lg"), null, parser);
             var evaled = lgFile.EvaluateTemplate("template");
             Assert.AreEqual(3, evaled);
         }

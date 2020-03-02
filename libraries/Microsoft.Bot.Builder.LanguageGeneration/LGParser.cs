@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="filePath"> absolut path of a LG file.</param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
-        /// <param name="expressionParser">expressionEngine Expression parser for evaluating expressions.</param>
+        /// <param name="expressionParser">Expression parser for parsing expressions.</param>
         /// <returns>new <see cref="LGFile"/> entity.</returns>
         public static LGFile ParseFile(
             string filePath,
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="content">Text content contains lg templates.</param>
         /// <param name="id">id is the identifier of content. If importResolver is null, id must be a full path string. </param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
-        /// <param name="expressionParser">expressionEngine Expression parser for evaluating expressions.</param>
+        /// <param name="expressionParser">Expression parser for parsing expressions.</param>
         /// <returns>new <see cref="LGFile"/> entity.</returns>
         public static LGFile ParseText(
             string content,
