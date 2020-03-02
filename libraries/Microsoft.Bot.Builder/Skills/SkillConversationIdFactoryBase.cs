@@ -22,7 +22,6 @@ namespace Microsoft.Bot.Builder.Skills
         /// <remarks>
         /// It should be possible to use the returned string on a request URL and it should not contain special characters. 
         /// </remarks>
-        [Obsolete("Method is deprecated, please use SkillConversationIdFactoryExBase.CreateSkillConversationIdAsync", false)]
         public abstract Task<string> CreateSkillConversationIdAsync(ConversationReference conversationReference, CancellationToken cancellationToken);
 
         /// <summary>
@@ -31,7 +30,6 @@ namespace Microsoft.Bot.Builder.Skills
         /// <param name="skillConversationId">A skill conversationId created using <see cref="CreateSkillConversationIdAsync"/>.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>The caller's <see cref="ConversationReference"/> for a skillConversationId. null if not found.</returns>
-        [Obsolete("Method is deprecated, please use SkillConversationIdFactoryExBase.CreateSkillConversationIdAsync", false)]
         public abstract Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken);
 
         /// <summary>

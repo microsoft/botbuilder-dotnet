@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         public async Task<InvokeResponse> PostActivityAsync(string originatingAudience, string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
         {
             string skillConversationId;
-            if (_conversationIdFactory is SkillConversationIdFactoryExBase idFactory)
+            if (_conversationIdFactory is SkillHostConversationIdFactoryBase idFactory && !string.IsNullOrEmpty(originatingAudience))
             {
                 skillConversationId = await idFactory.CreateSkillConversationIdAsync(originatingAudience, fromBotId, activity, toSkill, CancellationToken.None).ConfigureAwait(false);
             }
@@ -50,16 +50,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             return await PostActivityAsync(fromBotId, toSkill.AppId, toSkill.SkillEndpoint, callbackUrl, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
         }
 
-        [Obsolete("Method is deprecated, please use SkillHttpClient.PostActivityAsync with audience", false)]
         public async Task<InvokeResponse> PostActivityAsync(string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
         {
-            if (_conversationIdFactory is SkillConversationIdFactoryExBase)
-            {
-                throw new InvalidOperationException("SkillHttpClient.PostActivityAsync now requires an audience parameter.");
-            }
-
-            var skillConversationId = await _conversationIdFactory.CreateSkillConversationIdAsync(activity.GetConversationReference(), cancellationToken).ConfigureAwait(false);
-            return await PostActivityAsync(fromBotId, toSkill.AppId, toSkill.SkillEndpoint, callbackUrl, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
+            return await PostActivityAsync(string.Empty, fromBotId, toSkill, callbackUrl, activity, cancellationToken).ConfigureAwait(false);
         }
     }
 }

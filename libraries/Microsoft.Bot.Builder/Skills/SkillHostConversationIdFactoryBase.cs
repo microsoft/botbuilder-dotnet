@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Skills
     /// <summary>
     /// Defines the interface of a factory that is used to create unique conversation IDs for skill conversations.
     /// </summary>
-    public abstract class SkillConversationIdFactoryExBase : SkillConversationIdFactoryBase
+    public abstract class SkillHostConversationIdFactoryBase : SkillConversationIdFactoryBase
     {
         /// <summary>
         /// Creates a conversation id for a skill conversation.
@@ -41,10 +41,9 @@ namespace Microsoft.Bot.Builder.Skills
             throw new NotImplementedException("CreateSkillConversationIdAsync without audience is deprecated.");
         }
 
-        [Obsolete("Method is deprecated, please use SkillConversationIdFactoryExBase.GetConversationReferenceWithAudienceAsync", true)]
-        public override Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+        public override async Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException("GetConversationReferenceAsync is deprecated.");
+            return (await GetConversationReferenceWithAudienceAsync(skillConversationId, cancellationToken).ConfigureAwait(false)).Item1;
         }
     }
 }
