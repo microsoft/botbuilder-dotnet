@@ -71,6 +71,8 @@ namespace AdaptiveExpressions
         public const string SortBy = "sortBy";
         public const string SortByDescending = "sortByDescending";
         public const string IndicesAndValues = "indicesAndValues";
+        public const string Flatten = "flatten";
+        public const string Unique = "unique";
 
         // DateTime
         public const string AddDays = "addDays";
