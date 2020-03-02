@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Tests
 
         public override IAttachments Attachments => throw new NotImplementedException();
 
-        public override Conversations Conversations => throw new NotImplementedException();
+        public override ConversationsBase Conversations => throw new NotImplementedException();
 
         public new void Dispose() => throw new Exception("Should not be disposed!");
     }

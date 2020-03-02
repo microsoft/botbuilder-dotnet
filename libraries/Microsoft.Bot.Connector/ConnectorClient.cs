@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Connector
         private JsonSerializerSettings _deserializationSettings;
         private ServiceClientCredentials _credentials;
         private IAttachments _attachments;
-        private Conversations _conversations;
+        private ConversationsBase _conversations;
 
         /// <summary>
         /// The base URI of the service.
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Gets the Conversations.
         /// </summary>
-        public override Conversations Conversations
+        public override ConversationsBase Conversations
         {
             get
             {

@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Connector
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<ConversationsResult> GetConversationsAsync(this Conversations operations, string continuationToken = default(string), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<ConversationsResult> GetConversationsAsync(this ConversationsBase operations, string continuationToken = default(string), CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.GetConversationsWithHttpMessagesAsync(continuationToken, null, cancellationToken).ConfigureAwait(false))
                 {
@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Connector
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<ConversationResourceResponse> CreateConversationAsync(this Conversations operations, ConversationParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<ConversationResourceResponse> CreateConversationAsync(this ConversationsBase operations, ConversationParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.CreateConversationWithHttpMessagesAsync(parameters, null, cancellationToken).ConfigureAwait(false))
                 {
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Connector
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<ResourceResponse> SendToConversationAsync(this Conversations operations, string conversationId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<ResourceResponse> SendToConversationAsync(this ConversationsBase operations, string conversationId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.SendToConversationWithHttpMessagesAsync(conversationId, activity, null, cancellationToken).ConfigureAwait(false))
                 {
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Connector
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<ResourceResponse> SendConversationHistoryAsync(this Conversations operations, string conversationId, Transcript transcript, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<ResourceResponse> SendConversationHistoryAsync(this ConversationsBase operations, string conversationId, Transcript transcript, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.SendConversationHistoryWithHttpMessagesAsync(conversationId, transcript, null, cancellationToken).ConfigureAwait(false))
                 {
@@ -195,7 +195,7 @@ namespace Microsoft.Bot.Connector
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<ResourceResponse> UpdateActivityAsync(this Conversations operations, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<ResourceResponse> UpdateActivityAsync(this ConversationsBase operations, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.UpdateActivityWithHttpMessagesAsync(conversationId, activityId, activity, null, cancellationToken).ConfigureAwait(false))
                 {
@@ -236,7 +236,7 @@ namespace Microsoft.Bot.Connector
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<ResourceResponse> ReplyToActivityAsync(this Conversations operations, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<ResourceResponse> ReplyToActivityAsync(this ConversationsBase operations, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.ReplyToActivityWithHttpMessagesAsync(conversationId, activityId, activity, null, cancellationToken).ConfigureAwait(false))
                 {
@@ -265,7 +265,7 @@ namespace Microsoft.Bot.Connector
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task DeleteActivityAsync(this Conversations operations, string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task DeleteActivityAsync(this ConversationsBase operations, string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
             {
                 (await operations.DeleteActivityWithHttpMessagesAsync(conversationId, activityId, null, cancellationToken).ConfigureAwait(false)).Dispose();
             }
@@ -288,7 +288,7 @@ namespace Microsoft.Bot.Connector
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<IList<ChannelAccount>> GetConversationMembersAsync(this Conversations operations, string conversationId, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<IList<ChannelAccount>> GetConversationMembersAsync(this ConversationsBase operations, string conversationId, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.GetConversationMembersWithHttpMessagesAsync(conversationId, null, cancellationToken).ConfigureAwait(false))
                 {
@@ -318,7 +318,7 @@ namespace Microsoft.Bot.Connector
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        public static async Task<ChannelAccount> GetConversationMemberAsync(this Conversations operations, string userId, string conversationId, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<ChannelAccount> GetConversationMemberAsync(this ConversationsBase operations, string userId, string conversationId, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.GetConversationMemberWithHttpMessagesAsync(userId, conversationId, null, cancellationToken).ConfigureAwait(false))
                 {
@@ -363,7 +363,7 @@ namespace Microsoft.Bot.Connector
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        public static async Task<PagedMembersResult> GetConversationPagedMembersAsync(this Conversations operations, string conversationId, int? pageSize = default(int?), string continuationToken = default(string), CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<PagedMembersResult> GetConversationPagedMembersAsync(this ConversationsBase operations, string conversationId, int? pageSize = default(int?), string continuationToken = default(string), CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.GetConversationPagedMembersWithHttpMessagesAsync(conversationId, pageSize, continuationToken, null, cancellationToken).ConfigureAwait(false))
                 {
@@ -394,7 +394,7 @@ namespace Microsoft.Bot.Connector
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task DeleteConversationMemberAsync(this Conversations operations, string conversationId, string memberId, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task DeleteConversationMemberAsync(this ConversationsBase operations, string conversationId, string memberId, CancellationToken cancellationToken = default(CancellationToken))
             {
                 (await operations.DeleteConversationMemberWithHttpMessagesAsync(conversationId, memberId, null, cancellationToken).ConfigureAwait(false)).Dispose();
             }
@@ -421,7 +421,7 @@ namespace Microsoft.Bot.Connector
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<IList<ChannelAccount>> GetActivityMembersAsync(this Conversations operations, string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<IList<ChannelAccount>> GetActivityMembersAsync(this ConversationsBase operations, string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.GetActivityMembersWithHttpMessagesAsync(conversationId, activityId, null, cancellationToken).ConfigureAwait(false))
                 {
@@ -453,7 +453,7 @@ namespace Microsoft.Bot.Connector
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<ResourceResponse> UploadAttachmentAsync(this Conversations operations, string conversationId, AttachmentData attachmentUpload, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<ResourceResponse> UploadAttachmentAsync(this ConversationsBase operations, string conversationId, AttachmentData attachmentUpload, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.UploadAttachmentWithHttpMessagesAsync(conversationId, attachmentUpload, null, cancellationToken).ConfigureAwait(false))
                 {

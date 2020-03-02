@@ -282,10 +282,10 @@ namespace Microsoft.Bot.Builder.Tests
 
                 // Get "skill1-to-channel" ConnectorClient off of TurnState
                 var adapter = turnContext.Adapter as BotFrameworkAdapter;
-                var clientCache = GetCache<ConcurrentDictionary<string, ConnectorClient>>(adapter, ClientsCacheName);
+                var clientCache = GetCache<ConcurrentDictionary<string, ConnectorClientBase>>(adapter, ClientsCacheName);
                 clientCache.TryGetValue($"{channelServiceUrl}{skill1AppId}:{AuthenticationConstants.ToChannelFromBotOAuthScope}", out var client);
 
-                var turnStateClient = turnContext.TurnState.Get<ConnectorClient>();
+                var turnStateClient = turnContext.TurnState.Get<ConnectorClientBase>();
                 var clientCreds = turnStateClient.Credentials as AppCredentials;
 
                 Assert.AreEqual(skill1AppId, clientCreds.MicrosoftAppId);
@@ -337,10 +337,10 @@ namespace Microsoft.Bot.Builder.Tests
 
                 // Get "skill1-to-skill2" ConnectorClient off of TurnState
                 var adapter = turnContext.Adapter as BotFrameworkAdapter;
-                var clientCache = GetCache<ConcurrentDictionary<string, ConnectorClient>>(adapter, ClientsCacheName);
+                var clientCache = GetCache<ConcurrentDictionary<string, ConnectorClientBase>>(adapter, ClientsCacheName);
                 clientCache.TryGetValue($"{skill2ServiceUrl}{skill1AppId}:{skill2AppId}", out var client);
 
-                var turnStateClient = turnContext.TurnState.Get<ConnectorClient>();
+                var turnStateClient = turnContext.TurnState.Get<ConnectorClientBase>();
                 var clientCreds = turnStateClient.Credentials as AppCredentials;
 
                 Assert.AreEqual(skill1AppId, clientCreds.MicrosoftAppId);
@@ -491,10 +491,10 @@ namespace Microsoft.Bot.Builder.Tests
 
         private static void GetClientAndAssertValues(ITurnContext turnContext, string expectedAppId, string expectedScope, Uri expectedUrl, int? clientCount = null)
         {
-            var clientCache = GetCache<ConcurrentDictionary<string, ConnectorClient>>((BotFrameworkAdapter)turnContext.Adapter, ClientsCacheName);
+            var clientCache = GetCache<ConcurrentDictionary<string, ConnectorClientBase>>((BotFrameworkAdapter)turnContext.Adapter, ClientsCacheName);
             var cacheKey = $"{expectedUrl}{expectedAppId}:{expectedScope}";
             clientCache.TryGetValue(cacheKey, out var client);
-            AssertConnectorClientValues(client, expectedAppId, expectedUrl, expectedScope);
+            AssertConnectorClientValues((ConnectorClient)client, expectedAppId, expectedUrl, expectedScope);
 
             if (clientCount != null)
             {

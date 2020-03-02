@@ -100,5 +100,5 @@ public abstract class ConnectorClientBase : ServiceClient<ConnectorClientBase>, 
     /// <value>
     /// The Conversations.
     /// </value>
-    public abstract Conversations Conversations { get; }
+    public abstract ConversationsBase Conversations { get; }
 }

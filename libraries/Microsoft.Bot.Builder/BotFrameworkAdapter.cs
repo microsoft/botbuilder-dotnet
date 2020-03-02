@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder
 
         // There is a significant boost in throughput if we reuse a connectorClient
         // _connectorClients is a cache using [serviceUrl + appId].
-        private readonly ConcurrentDictionary<string, ConnectorClient> _connectorClients = new ConcurrentDictionary<string, ConnectorClient>();
+        private readonly ConcurrentDictionary<string, ConnectorClientBase> _connectorClients = new ConcurrentDictionary<string, ConnectorClientBase>();
 
         // Cache for OAuthClient to speed up OAuth operations
         // _oAuthClients is a cache using [appId + oAuthCredentialAppId]
@@ -556,12 +556,12 @@ namespace Microsoft.Bot.Builder
                     {
                         if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
                         {
-                            var connectorClient = turnContext.TurnState.Get<ConnectorClient>();
+                            var connectorClient = turnContext.TurnState.Get<ConnectorClientBase>();
                             response = await connectorClient.Conversations.ReplyToActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                         }
                         else
                         {
-                            var connectorClient = turnContext.TurnState.Get<ConnectorClient>();
+                            var connectorClient = turnContext.TurnState.Get<ConnectorClientBase>();
                             response = await connectorClient.Conversations.SendToConversationAsync(activity, cancellationToken).ConfigureAwait(false);
                         }
                     }
@@ -602,7 +602,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
         public override async Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
-            var connectorClient = turnContext.TurnState.Get<ConnectorClient>();
+            var connectorClient = turnContext.TurnState.Get<ConnectorClientBase>();
             return await connectorClient.Conversations.UpdateActivityAsync(activity, cancellationToken).ConfigureAwait(false);
         }
 
@@ -618,7 +618,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
         public override async Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
-            var connectorClient = turnContext.TurnState.Get<ConnectorClient>();
+            var connectorClient = turnContext.TurnState.Get<ConnectorClientBase>();
             await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId, cancellationToken).ConfigureAwait(false);
         }
 
@@ -642,7 +642,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(DeleteConversationMemberAsync)}(): missing conversation.id");
             }
 
-            var connectorClient = turnContext.TurnState.Get<ConnectorClient>();
+            var connectorClient = turnContext.TurnState.Get<ConnectorClientBase>();
 
             var conversationId = turnContext.Activity.Conversation.Id;
 
@@ -674,7 +674,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetActivityMembersAsync)}(): missing conversation.id");
             }
 
-            var connectorClient = turnContext.TurnState.Get<ConnectorClient>();
+            var connectorClient = turnContext.TurnState.Get<ConnectorClientBase>();
             var conversationId = turnContext.Activity.Conversation.Id;
 
             var accounts = await connectorClient.Conversations.GetActivityMembersAsync(conversationId, activityId, cancellationToken).ConfigureAwait(false);
@@ -700,7 +700,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetConversationMembersAsync)}(): missing conversation.id");
             }
 
-            var connectorClient = turnContext.TurnState.Get<ConnectorClient>();
+            var connectorClient = turnContext.TurnState.Get<ConnectorClientBase>();
             var conversationId = turnContext.Activity.Conversation.Id;
 
             var accounts = await connectorClient.Conversations.GetConversationMembersAsync(conversationId, cancellationToken).ConfigureAwait(false);
@@ -757,7 +757,7 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public virtual async Task<ConversationsResult> GetConversationsAsync(ITurnContext turnContext, string continuationToken, CancellationToken cancellationToken)
         {
-            var connectorClient = turnContext.TurnState.Get<ConnectorClient>();
+            var connectorClient = turnContext.TurnState.Get<ConnectorClientBase>();
             var results = await connectorClient.Conversations.GetConversationsAsync(continuationToken, cancellationToken).ConfigureAwait(false);
             return results;
         }
@@ -1411,7 +1411,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>ConnectorClient instance.</returns>
         /// <exception cref="NotSupportedException">ClaimsIdentity cannot be null. Pass Anonymous ClaimsIdentity if authentication is turned off.</exception>
-        private async Task<ConnectorClient> CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
+        private async Task<ConnectorClientBase> CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
         {
             if (claimsIdentity == null)
             {
@@ -1454,7 +1454,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="serviceUrl">The service URL.</param>
         /// <param name="appCredentials">The application credentials for the bot.</param>
         /// <returns>Connector client instance.</returns>
-        private ConnectorClient CreateConnectorClient(string serviceUrl, AppCredentials appCredentials = null)
+        private ConnectorClientBase CreateConnectorClient(string serviceUrl, AppCredentials appCredentials = null)
         {
             // As multiple bots can listen on a single serviceUrl, the clientKey also includes the OAuthScope.
             var clientKey = $"{serviceUrl}{appCredentials?.MicrosoftAppId}:{appCredentials?.OAuthScope}";
