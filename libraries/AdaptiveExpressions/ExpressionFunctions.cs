@@ -2437,15 +2437,27 @@ namespace AdaptiveExpressions
                return (result, error);
            };
 
+        // TODO we should uniform the list format
+        private static List<object> Object2List(JObject jobj)
+        {
+            var tempList = new List<object>();
+            foreach (var item in jobj)
+            {
+                tempList.Add(new { index = item.Key, value = item.Value });
+            }
+
+            return tempList;
+        }
+
         private static (object, string) IndicesAndValues(Expression expression, object state)
         {
             object result = null;
             string error;
-            object arr;
-            (arr, error) = expression.Children[0].TryEvaluate(state);
+            object instance;
+            (instance, error) = expression.Children[0].TryEvaluate(state);
             if (error == null)
             {
-                if (TryParseList(arr, out var list))
+                if (TryParseList(instance, out var list))
                 {
                     var tempList = new List<object>();
                     for (var i = 0; i < list.Count; i++)
@@ -2455,9 +2467,17 @@ namespace AdaptiveExpressions
 
                     result = tempList;
                 }
+                else if (instance is JObject jobj)
+                {
+                    result = Object2List(jobj);
+                }
+                else if (JToken.FromObject(instance) is JObject jobject)
+                {
+                    result = Object2List(jobject);
+                }
                 else
                 {
-                    error = $"{expression.Children[0]} is not array.";
+                    error = $"{expression.Children[0]} is not array or object..";
                 }
             }
 
@@ -2515,6 +2535,46 @@ namespace AdaptiveExpressions
             }
 
             return -1;
+        }
+
+        private static IEnumerable<object> Flatten(IEnumerable<object> list, int dept)
+        {
+            var result = list.ToList();
+            if (dept < 1)
+            {
+                dept = 1;
+            }
+
+            for (var i = 0; i < dept; i++)
+            {
+                var hasArray = result.Any(u => TryParseList(u, out var _));
+                if (hasArray)
+                {
+                    var tempList = new List<object>();
+                    foreach (var item in result)
+                    {
+                        if (TryParseList(item, out var itemList))
+                        {
+                            foreach (var childItem in itemList)
+                            {
+                                tempList.Add(childItem);
+                            }
+                        }
+                        else
+                        {
+                            tempList.Add(item);
+                        }
+                    }
+
+                    result = tempList.ToList();
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return result;
         }
 
         private static Dictionary<string, ExpressionEvaluator> GetExpressionFunctions()
@@ -2784,6 +2844,27 @@ namespace AdaptiveExpressions
                     ReturnType.Object,
                     (expression) => ExpressionFunctions.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
                 new ExpressionEvaluator(ExpressionType.IndicesAndValues, IndicesAndValues, ReturnType.Object, ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.Flatten,
+                    Apply(
+                        args =>
+                        {
+                            IEnumerable<object> result = args[0];
+                            var depth = args.Count > 1 ? args[1] : 100;
+                            return ExpressionFunctions.Flatten(result, depth);
+                        }),
+                    ReturnType.Object,
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Object)),
+                new ExpressionEvaluator(
+                    ExpressionType.Unique,
+                    Apply(
+                        args =>
+                        {
+                            IEnumerable<object> result = args[0];
+                            return result.Distinct().ToList();
+                        }, VerifyList),
+                    ReturnType.Object,
+                    (expression) => ValidateOrder(expression, null, ReturnType.Object)),
 
                 // Booleans
                 Comparison(ExpressionType.LessThan, args => args[0] < args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
