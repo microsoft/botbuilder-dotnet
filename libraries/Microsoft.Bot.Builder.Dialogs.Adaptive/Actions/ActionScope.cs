@@ -127,8 +127,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var parent = dc;
             while (parent != null)
             {
-                var sc = parent as SequenceContext;
-                if (sc != null && sc.Changes != null && sc.Changes.Count > 0)
+                var ac = parent as ActionContext;
+                if (ac != null && ac.Changes != null && ac.Changes.Count > 0)
                 {
                     hasChanges = true;
                 }

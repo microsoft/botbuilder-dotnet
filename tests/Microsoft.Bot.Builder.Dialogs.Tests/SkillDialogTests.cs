@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Skills;
@@ -47,18 +48,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task BeginDialogCallsSkill()
         {
-            Activity sentActivity = null;
+            Activity activitySent = null;
+            string fromBotIdSent = null;
+            string toBotIdSent = null;
+            Uri toUriSent = null;
+
+            // Callback to capture the parameters sent to the skill
+            void CaptureAction(string fromBotId, string toBotId, Uri toUri, Uri serviceUrl, string conversationId, Activity activity, CancellationToken cancellationToken)
+            {
+                // Capture values sent to the skill so we can assert the right parameters were used.
+                fromBotIdSent = fromBotId;
+                toBotIdSent = toBotId;
+                toUriSent = toUri;
+                activitySent = activity;
+            }
 
             // Create a mock skill client to intercept calls and capture what is sent.
-            var mockSkillClient = new Mock<BotFrameworkClient>();
-            mockSkillClient
-                .Setup(x => x.PostActivityAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(new InvokeResponse { Status = 200 }))
-                .Callback<string, string, Uri, Uri, string, Activity, CancellationToken>((fromBotId, toBotId, toUri, serviceUrl, conversationId, activity, cancellationToken) =>
-                {
-                    // Capture values sent to the skill so we can assert the right parameters were used.
-                    sentActivity = activity;
-                });
+            var mockSkillClient = CreateMockSkillClient(CaptureAction);
 
             // Use Memory for conversation state
             var conversationState = new ConversationState(new MemoryStorage());
@@ -73,15 +79,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             // Send something to the dialog to start it
             await client.SendActivityAsync<IMessageActivity>("irrelevant");
 
-            // Assert results
-            Assert.AreEqual(activityToSend.Text, sentActivity.Text);
+            // Assert results and data sent to the skill for fist turn
+            Assert.AreEqual(dialogOptions.BotId, fromBotIdSent);
+            Assert.AreEqual(dialogOptions.Skill.AppId, toBotIdSent);
+            Assert.AreEqual(dialogOptions.Skill.SkillEndpoint.ToString(), toUriSent.ToString());
+            Assert.AreEqual(activityToSend.Text, activitySent.Text);
             Assert.AreEqual(DialogTurnStatus.Waiting, client.DialogTurnResult.Status);
 
             // Send a second message to continue the dialog
             await client.SendActivityAsync<IMessageActivity>("Second message");
 
-            // Assert results
-            Assert.AreEqual("Second message", sentActivity.Text);
+            // Assert results for second turn
+            Assert.AreEqual("Second message", activitySent.Text);
             Assert.AreEqual(DialogTurnStatus.Waiting, client.DialogTurnResult.Status);
 
             // Send EndOfConversation to the dialog
@@ -94,18 +103,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task CancelDialogSendsEoC()
         {
-            Activity sentActivity = null;
+            Activity activitySent = null;
+
+            // Callback to capture the parameters sent to the skill
+            void CaptureAction(string fromBotId, string toBotId, Uri toUri, Uri serviceUrl, string conversationId, Activity activity, CancellationToken cancellationToken)
+            {
+                // Capture values sent to the skill so we can assert the right parameters were used.
+                activitySent = activity;
+            }
 
             // Create a mock skill client to intercept calls and capture what is sent.
-            var mockSkillClient = new Mock<BotFrameworkClient>();
-            mockSkillClient
-                .Setup(x => x.PostActivityAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(new InvokeResponse { Status = 200 }))
-                .Callback<string, string, Uri, Uri, string, Activity, CancellationToken>((fromBotId, toBotId, toUri, serviceUrl, conversationId, activity, cancellationToken) =>
-                {
-                    // Capture values sent to the skill so we can assert the right parameters were used.
-                    sentActivity = activity;
-                });
+            var mockSkillClient = CreateMockSkillClient(CaptureAction);
 
             // Use Memory for conversation state
             var conversationState = new ConversationState(new MemoryStorage());
@@ -123,7 +131,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             // Cancel the dialog so it sends an EoC to the skill
             await client.DialogContext.CancelAllDialogsAsync(CancellationToken.None);
 
-            Assert.AreEqual(ActivityTypes.EndOfConversation, sentActivity.Type);
+            Assert.AreEqual(ActivityTypes.EndOfConversation, activitySent.Type);
+        }
+
+        [TestMethod]
+        public async Task ShouldThrowHttpExceptionOnPostFailure()
+        {
+            // Create a mock skill client to intercept calls and capture what is sent.
+            var mockSkillClient = CreateMockSkillClient(null, 500);
+
+            // Use Memory for conversation state
+            var conversationState = new ConversationState(new MemoryStorage());
+            var dialogOptions = CreateSkillDialogOptions(conversationState, mockSkillClient);
+
+            // Create the SkillDialogInstance and the activity to send.
+            var sut = new SkillDialog(dialogOptions);
+            var activityToSend = (Activity)Activity.CreateMessageActivity();
+            activityToSend.Text = Guid.NewGuid().ToString();
+            var client = new DialogTestClient(Channels.Test, sut, new SkillDialogArgs { Activity = activityToSend }, conversationState: conversationState);
+
+            // Send something to the dialog 
+            await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"));
+        }
+
+        private static Mock<BotFrameworkClient> CreateMockSkillClient(Action<string, string, Uri, Uri, string, Activity, CancellationToken> captureAction, int returnStatus = 200)
+        {
+            var mockSkillClient = new Mock<BotFrameworkClient>();
+
+            if (captureAction != null)
+            {
+                mockSkillClient
+                    .Setup(x => x.PostActivityAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
+                    .Returns(Task.FromResult(new InvokeResponse { Status = returnStatus }))
+                    .Callback(captureAction);
+            }
+            else
+            {
+                mockSkillClient
+                    .Setup(x => x.PostActivityAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
+                    .Returns(Task.FromResult(new InvokeResponse { Status = returnStatus }));
+            }
+
+            return mockSkillClient;
         }
 
         /// <summary>

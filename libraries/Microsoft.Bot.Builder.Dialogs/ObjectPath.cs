@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -254,6 +255,66 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
             }
             */
+        }
+
+        /// <summary>
+        /// Get all properties in an object.
+        /// </summary>
+        /// <param name="obj">Object to enumerate property names.</param>
+        /// <returns>enumeration of property names on the object if it is not a value type.</returns>
+        public static IEnumerable<string> GetProperties(object obj)
+        {
+            if (obj == null)
+            {
+                yield break;
+            }
+            else if (obj is IDictionary<string, object> dict)
+            {
+                foreach (var entry in dict)
+                {
+                    yield return entry.Key;
+                }
+            }
+            else if (obj is JObject jobj)
+            {
+                foreach (var property in jobj.Properties())
+                {
+                    yield return property.Name;
+                }
+            }
+            else
+            {
+                foreach (var property in obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(p => p.Name))
+                {
+                    yield return property;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Detects if property exists on object.
+        /// </summary>
+        /// <param name="obj">object.</param>
+        /// <param name="name">name of the property.</param>
+        /// <returns>true if found.</returns>
+        public static bool ContainsProperty(object obj, string name)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+            else if (obj is IDictionary<string, object> dict)
+            {
+                return dict.ContainsKey(name);
+            }
+            else if (obj is JObject jobj)
+            {
+                return jobj.ContainsKey(name);
+            }
+            else
+            {
+                return obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Any(property => property.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+            }
         }
 
         /// <summary>

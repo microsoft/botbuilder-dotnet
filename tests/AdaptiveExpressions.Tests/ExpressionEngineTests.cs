@@ -691,6 +691,7 @@ namespace AdaptiveExpressions.Tests
             Test("join(where(items, item, item == 'two'), ',')", "two"),
             Test("string(where(dialog, item, item.value=='Dialog Title'))", "{\"title\":\"Dialog Title\"}"),
             Test("first(where(indicesAndValues(items), elt, elt.index > 1)).value", "two"),
+            Test("first(where(indicesAndValues(bag), elt, elt.index == \"three\")).value", 3),
             Test("join(foreach(where(nestedItems, item, item.x > 1), result, result.x), ',')", "2,3", new HashSet<string> { "nestedItems" }),
             Test("join(foreach(doubleNestedItems, items, join(foreach(items, item, concat(y, string(item.x))), ',')), ',')", "y1,y2,y3"),
             Test("join(foreach(doubleNestedItems, items, join(foreach(items, item, items[0].x), ',')), ',')", "1,1,3"),
@@ -729,6 +730,9 @@ namespace AdaptiveExpressions.Tests
             Test("sortBy(nestedItems, 'x')[0].x", 1),
             Test("sortByDescending(items)", new List<object> { "zero", "two", "one" }),
             Test("sortByDescending(nestedItems, 'x')[0].x", 3),
+            Test("flatten(createArray(1,createArray(2),createArray(createArray(3, 4), createArray(5,6))))", new List<object> { 1, 2, 3, 4, 5, 6 }),
+            Test("flatten(createArray(1,createArray(2),createArray(createArray(3, 4), createArray(5,6))), 1)", new List<object> { 1, 2, new List<object>() { 3, 4 }, new List<object>() { 5, 6 } }),
+            Test("unique(createArray(1, 5, 1))", new List<object>() { 1, 5 }),
             #endregion
 
             #region  Object manipulation and construction functions
@@ -921,7 +925,7 @@ namespace AdaptiveExpressions.Tests
                 Assert.AreEqual(expectedList.Count, actualList.Count);
                 for (var i = 0; i < expectedList.Count; i++)
                 {
-                    Assert.AreEqual(ResolveValue(expectedList[i]), ResolveValue(actualList[i]));
+                    AssertObjectEquals(ResolveValue(expectedList[i]), ResolveValue(actualList[i]));
                 }
             }
             else

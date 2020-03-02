@@ -29,12 +29,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 var dialog = dc.FindDialog(dc.ActiveDialog.Id);
                 if (dialog is DialogContainer)
                 {
-                    return dialog;
+                    return new ExpressionPropertyBinder(dc, dialog);
                 }
             }
 
             // Otherwise we always bind to parent, or if there is no parent the active dialog
-            return dc.FindDialog(dc.Parent?.ActiveDialog?.Id ?? dc.ActiveDialog?.Id);
+            return new ExpressionPropertyBinder(dc, dc.FindDialog(dc.Parent?.ActiveDialog?.Id ?? dc.ActiveDialog?.Id));
         }
 
         public override void SetMemory(DialogContext dc, object memory)

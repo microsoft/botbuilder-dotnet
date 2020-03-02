@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var dc = new DialogContext(this.Dialogs, context, dialogState);
 
             // get the dialogstatemanager configuration
-            var dialogStateManager = new DialogStateManager(dc);
+            var dialogStateManager = new DialogStateManager(dc, this.StateConfiguration);
             await dialogStateManager.LoadAllScopesAsync(cancellationToken).ConfigureAwait(false);
             dc.Context.TurnState.Add(dialogStateManager);
 
@@ -224,7 +224,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // save all state scopes to their respective botState locations.
-            await dc.GetState().SaveAllChangesAsync(cancellationToken).ConfigureAwait(false);
+            await dialogStateManager.SaveAllChangesAsync(cancellationToken).ConfigureAwait(false);
 
             // save botstate changes
             await botStateSet.SaveAllChangesAsync(dc.Context, false, cancellationToken).ConfigureAwait(false);

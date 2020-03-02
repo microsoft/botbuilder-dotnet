@@ -1,0 +1,22 @@
+
+@ list MeatEntity =
+	- bacon :
+		- bacon
+	- chicken :
+		- chicken
+	- ham :
+		- ham
+	- pulled pork :
+		- pulled
+		- pork
+		- pulled pork
+	- roast beef :
+		- roast
+		- beef
+		- roast beef
+	- salami :
+		- salami
+	- turkey :
+		- turkey
+	- none :
+		- none

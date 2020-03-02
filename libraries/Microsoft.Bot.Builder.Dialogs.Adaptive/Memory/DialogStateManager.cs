@@ -31,10 +31,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         private readonly DialogContext dialogContext;
         private int version = 0;
 
-        public DialogStateManager(DialogContext dc)
+        public DialogStateManager(DialogContext dc, DialogStateManagerConfiguration configuration = null)
         {
             dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
-            this.Configuration = dc.Context.TurnState.Get<DialogStateManagerConfiguration>();
+            this.Configuration = configuration ?? dc.Context.TurnState.Get<DialogStateManagerConfiguration>();
             if (this.Configuration == null)
             {
                 this.Configuration = new DialogStateManagerConfiguration();
@@ -56,10 +56,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                         this.Configuration.PathResolvers.Add(pathResolver);
                     }
                 }
-
-                // cache for any other new dialogStatemanager instances in this turn.  
-                dc.Context.TurnState.Set<DialogStateManagerConfiguration>(this.Configuration);
             }
+
+            // cache for any other new dialogStatemanager instances in this turn.  
+            dc.Context.TurnState.Set<DialogStateManagerConfiguration>(this.Configuration);
         }
 
         public DialogStateManagerConfiguration Configuration { get; set; }
@@ -123,14 +123,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public virtual MemoryScope ResolveMemoryScope(string path, out string remainingPath)
         {
             var scope = path;
+            var sepIndex = -1;
             var dot = path.IndexOf(".");
-            if (dot > 0)
+            var openSquareBracket = path.IndexOf("[");
+
+            if (dot > 0 && openSquareBracket > 0)
             {
-                scope = path.Substring(0, dot);
+                sepIndex = Math.Min(dot, openSquareBracket);
+            }
+            else if (dot > 0)
+            {
+                sepIndex = dot;
+            }
+            else if (openSquareBracket > 0)
+            {
+                sepIndex = openSquareBracket;
+            }
+
+            if (sepIndex > 0)
+            {
+                scope = path.Substring(0, sepIndex);
                 var memoryScope = GetMemoryScope(scope);
                 if (memoryScope != null)
                 {
-                    remainingPath = path.Substring(dot + 1);
+                    remainingPath = path.Substring(sepIndex + 1);
                     return memoryScope;
                 }
             }
