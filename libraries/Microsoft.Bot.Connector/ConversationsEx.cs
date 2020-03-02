@@ -22,9 +22,9 @@ namespace Microsoft.Bot.Connector
         /// <param name='user'>User to create conversation with.</param>
         /// <param name="activity">(OPTIONAL) initial message to send to the new conversation.</param>
         /// <returns>ConversationResourceResponse.</returns>
-        public static ConversationResourceResponse CreateDirectConversation(this ConversationsBase operations, ChannelAccount bot, ChannelAccount user, Activity activity = null)
+        public static ConversationResourceResponse CreateDirectConversation(this Conversations operations, ChannelAccount bot, ChannelAccount user, Activity activity = null)
         {
-            return Task.Factory.StartNew(s => ((ConversationsBase)s).CreateConversationAsync(GetDirectParameters(bot, user, activity)), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+            return Task.Factory.StartNew(s => ((Conversations)s).CreateConversationAsync(GetDirectParameters(bot, user, activity)), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Connector
         /// <param name="activity">(OPTIONAL) initial message to send to the new conversation.</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public static async Task<ConversationResourceResponse> CreateDirectConversationAsync(this ConversationsBase operations, ChannelAccount bot, ChannelAccount user, Activity activity = null, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<ConversationResourceResponse> CreateDirectConversationAsync(this Conversations operations, ChannelAccount bot, ChannelAccount user, Activity activity = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var result = await operations.CreateConversationWithHttpMessagesAsync(GetDirectParameters(bot, user, activity), null, cancellationToken).ConfigureAwait(false);
             var res = result.Body;
@@ -56,9 +56,9 @@ namespace Microsoft.Bot.Connector
         /// <param name='userAddress'>User to create conversation with.</param>
         /// <param name="activity">(OPTIONAL) initial message to send to the new conversation.</param>
         /// <returns>ConversationResourceResponse.</returns>
-        public static ConversationResourceResponse CreateDirectConversation(this ConversationsBase operations, string botAddress, string userAddress, Activity activity = null)
+        public static ConversationResourceResponse CreateDirectConversation(this Conversations operations, string botAddress, string userAddress, Activity activity = null)
         {
-            return Task.Factory.StartNew(s => ((ConversationsBase)s).CreateConversationAsync(GetDirectParameters(botAddress, userAddress, activity)), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+            return Task.Factory.StartNew(s => ((Conversations)s).CreateConversationAsync(GetDirectParameters(botAddress, userAddress, activity)), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Connector
         /// <param name="activity">(OPTIONAL) initial message to send to the new conversation.</param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public static async Task<ConversationResourceResponse> CreateDirectConversationAsync(this ConversationsBase operations, string botAddress, string userAddress, Activity activity = null, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<ConversationResourceResponse> CreateDirectConversationAsync(this Conversations operations, string botAddress, string userAddress, Activity activity = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var result = await operations.CreateConversationWithHttpMessagesAsync(GetDirectParameters(botAddress, userAddress, activity), null, cancellationToken).ConfigureAwait(false);
             var res = result.Body;
@@ -92,9 +92,9 @@ namespace Microsoft.Bot.Connector
         /// Activity to send.
         /// </param>
         /// <returns>ResourceResponse.</returns>
-        public static ResourceResponse SendToConversation(this ConversationsBase operations, Activity activity)
+        public static ResourceResponse SendToConversation(this Conversations operations, Activity activity)
         {
-            return Task.Factory.StartNew(s => ((ConversationsBase)s).SendToConversationAsync(activity.Conversation.Id, activity), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+            return Task.Factory.StartNew(s => ((Conversations)s).SendToConversationAsync(activity.Conversation.Id, activity), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Connector
         /// The cancellation token.
         /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public static Task<ResourceResponse> SendToConversationAsync(this ConversationsBase operations, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<ResourceResponse> SendToConversationAsync(this Conversations operations, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
             return operations.SendToConversationAsync(activity.Conversation.Id, activity, cancellationToken);
         }
@@ -125,9 +125,9 @@ namespace Microsoft.Bot.Connector
         /// Activity to send.
         /// </param>
         /// <returns>ResourceResponse.</returns>
-        public static ResourceResponse ReplyToActivity(this ConversationsBase operations, Activity activity)
+        public static ResourceResponse ReplyToActivity(this Conversations operations, Activity activity)
         {
-            return Task.Factory.StartNew(s => ((ConversationsBase)s).ReplyToActivityAsync(activity.Conversation.Id, activity.ReplyToId, activity), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+            return Task.Factory.StartNew(s => ((Conversations)s).ReplyToActivityAsync(activity.Conversation.Id, activity.ReplyToId, activity), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Connector
         /// The cancellation token.
         /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public static Task<ResourceResponse> ReplyToActivityAsync(this ConversationsBase operations, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<ResourceResponse> ReplyToActivityAsync(this Conversations operations, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (activity.ReplyToId == null)
             {
@@ -163,9 +163,9 @@ namespace Microsoft.Bot.Connector
         /// Activity to update.
         /// </param>
         /// <returns>ResourceResponse.</returns>
-        public static ResourceResponse UpdateActivity(this ConversationsBase operations, Activity activity)
+        public static ResourceResponse UpdateActivity(this Conversations operations, Activity activity)
         {
-            return Task.Factory.StartNew(s => ((ConversationsBase)s).UpdateActivityAsync(activity.Conversation.Id, activity.Id, activity), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+            return Task.Factory.StartNew(s => ((Conversations)s).UpdateActivityAsync(activity.Conversation.Id, activity.Id, activity), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Connector
         /// The cancellation token.
         /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public static Task<ResourceResponse> UpdateActivityAsync(this ConversationsBase operations, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<ResourceResponse> UpdateActivityAsync(this Conversations operations, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
             return operations.UpdateActivityAsync(activity.Conversation.Id, activity.Id, activity, cancellationToken);
         }

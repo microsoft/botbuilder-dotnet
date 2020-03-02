@@ -514,7 +514,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual(expectedScope, creds.OAuthScope);
         }
 
-        private static void AssertConnectorClientValues(IConnectorClient client, string expectedAppId, Uri expectedServiceUrl, string expectedScope = AuthenticationConstants.ToChannelFromBotOAuthScope)
+        private static void AssertConnectorClientValues(ConnectorClient client, string expectedAppId, Uri expectedServiceUrl, string expectedScope = AuthenticationConstants.ToChannelFromBotOAuthScope)
         {
             var creds = (AppCredentials)client.Credentials;
             Assert.AreEqual(expectedAppId, creds.MicrosoftAppId);

@@ -9,8 +9,13 @@ using Microsoft.Rest;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    public class MemoryConversations : ConversationsBase
+    public class MemoryConversations : Conversations
     {
+        public MemoryConversations()
+            : base(new ConnectorClient())
+        {
+        }
+
         public List<Activity> SentActivities { get; private set; } = new List<Activity>();
 
         public override Task<HttpOperationResponse<ConversationResourceResponse>> CreateConversationWithHttpMessagesAsync(ConversationParameters parameters, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default)

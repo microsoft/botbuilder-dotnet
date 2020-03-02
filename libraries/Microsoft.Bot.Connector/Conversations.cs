@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null
         /// </exception>
-        public Conversations(ConnectorClientBase client)
+        public Conversations(ConnectorClient client)
         {
             if (client == null)
             {

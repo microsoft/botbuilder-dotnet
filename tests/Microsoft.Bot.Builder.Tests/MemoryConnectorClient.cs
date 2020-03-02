@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Tests
     {
         public MemoryConversations MemoryConversations { get; private set; } = new MemoryConversations();
 
-        public override ConversationsBase Conversations
+        public override Conversations Conversations
         {
             get => MemoryConversations;
         }

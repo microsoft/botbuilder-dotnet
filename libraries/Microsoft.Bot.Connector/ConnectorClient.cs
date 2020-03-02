@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Connector
         private JsonSerializerSettings _deserializationSettings;
         private ServiceClientCredentials _credentials;
         private IAttachments _attachments;
-        private ConversationsBase _conversations;
+        private Conversations _conversations;
 
         /// <summary>
         /// The base URI of the service.
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Gets the IAttachments.
         /// </summary>
-        public virtual IAttachments Attachments
+        public override IAttachments Attachments
         {
             get
             {
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Gets the ConversationsBase.
         /// </summary>
-        public virtual ConversationsBase Conversations
+        public override Conversations Conversations
         {
             get
             {
@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Connector
         /// <param name='handlers'>
         /// Optional. The delegating handlers to add to the http client pipeline.
         /// </param>
-        protected ConnectorClient(params DelegatingHandler[] handlers) : base(handlers)
+        public ConnectorClient(params DelegatingHandler[] handlers) : base(handlers)
         {
             Initialize();
         }

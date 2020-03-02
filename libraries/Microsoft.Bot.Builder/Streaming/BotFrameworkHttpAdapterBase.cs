@@ -234,7 +234,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <summary>
         /// Creates a streaming specific connector client.
         /// </summary>
-        private ConnectorClientBase CreateStreamingConnectorClient(Activity activity, StreamingRequestHandler requestHandler)
+        private ConnectorClient CreateStreamingConnectorClient(Activity activity, StreamingRequestHandler requestHandler)
         {
             var emptyCredentials = (ChannelProvider != null && ChannelProvider.IsGovernment()) ?
                     MicrosoftGovernmentAppCredentials.Empty :

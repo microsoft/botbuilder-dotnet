@@ -92,7 +92,7 @@ public abstract class ConnectorClientBase : ServiceClient<ConnectorClientBase>, 
     /// <value>
     /// The IAttachments.
     /// </value>
-    public virtual IAttachments Attachments { get; }
+    public abstract IAttachments Attachments { get; }
 
     /// <summary>
     /// Gets the ConversationsBase.
@@ -100,5 +100,5 @@ public abstract class ConnectorClientBase : ServiceClient<ConnectorClientBase>, 
     /// <value>
     /// The ConversationsBase.
     /// </value>
-    public virtual ConversationsBase Conversations { get; }
+    public abstract Conversations Conversations { get; }
 }
