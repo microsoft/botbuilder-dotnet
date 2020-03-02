@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 {
     public class TestBotLG : IBot
     {
-        private readonly LGFile lgFile;
+        private readonly LG lgFile;
 
         public TestBotLG(TestBotAccessors accessors)
         {

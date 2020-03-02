@@ -299,7 +299,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "ExceptionExamples" + Path.DirectorySeparatorChar + fileName;
         }
 
-        private LGFile GetLGFile(string fileName)
+        private LG GetLGFile(string fileName)
         {
             var filePath = GetExceptionExampleFilePath(fileName);
             return LGParser.ParseFile(filePath);

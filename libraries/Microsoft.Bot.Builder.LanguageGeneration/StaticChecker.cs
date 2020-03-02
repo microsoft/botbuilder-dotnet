@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     internal class StaticChecker : LGFileParserBaseVisitor<List<Diagnostic>>
     {
         private readonly ExpressionEngine baseExpressionEngine;
-        private readonly LGFile lgFile;
+        private readonly LG lg;
         private IList<string> visitedTemplateNames;
 
         private IExpressionParser _expressionParser;
@@ -24,12 +24,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="StaticChecker"/> class.
         /// </summary>
-        /// <param name="lgFile">the lgFile wihch would be checked.</param>
+        /// <param name="lg">the lg wihch would be checked.</param>
         /// <param name="expressionEngine">Init expression engine.</param>
-        public StaticChecker(LGFile lgFile)
+        public StaticChecker(LG lg)
         {
-            this.lgFile = lgFile;
-            baseExpressionEngine = lgFile.ExpressionEngine;
+            this.lg = lg;
+            baseExpressionEngine = lg.ExpressionEngine;
         }
 
         // Create a property because we want this to be lazy loaded
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (_expressionParser == null)
                 {
                     // create an evaluator to leverage it's customized function look up for checking
-                    var evaluator = new Evaluator(lgFile.AllTemplates.ToList(), baseExpressionEngine);
+                    var evaluator = new Evaluator(lg.AllTemplates.ToList(), baseExpressionEngine);
                     _expressionParser = evaluator.ExpressionEngine;
                 }
 
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             visitedTemplateNames = new List<string>();
             var result = new List<Diagnostic>();
 
-            if (lgFile.AllTemplates.Count == 0)
+            if (lg.AllTemplates.Count == 0)
             {
                 result.Add(BuildLGDiagnostic(
                     LGErrors.NoTemplate,
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return result;
             }
 
-            lgFile.Templates.ToList().ForEach(t =>
+            lg.Templates.ToList().ForEach(t =>
             {
                 result.AddRange(Visit(t.ParseTree));
             });
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 else
                 {
                     visitedTemplateNames.Add(templateName);
-                    foreach (var reference in lgFile.References)
+                    foreach (var reference in lg.References)
                     {
                         var sameTemplates = reference.Templates.Where(u => u.Name == templateName);
                         foreach (var sameTemplate in sameTemplates)
@@ -423,7 +423,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line, context.Start.Column);
             var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
             var range = new Range(startPosition, stopPosition);
-            return new Diagnostic(range, message, severity, lgFile.Id);
+            return new Diagnostic(range, message, severity, lg.Id);
         }
     }
 }

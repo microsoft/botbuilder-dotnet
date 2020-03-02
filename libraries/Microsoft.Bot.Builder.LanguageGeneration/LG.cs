@@ -13,13 +13,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// LG entrance, including properties that LG file has, and evaluate functions.
     /// </summary>
-    public class LGFile
+    public class LG
     {
-        public LGFile(
+        public LG(
             IList<LGTemplate> templates = null,
             IList<LGImport> imports = null,
             IList<Diagnostic> diagnostics = null,
-            IList<LGFile> references = null,
+            IList<LG> references = null,
             string content = null,
             string id = null,
             ExpressionEngine expressionEngine = null,
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Templates = templates ?? new List<LGTemplate>();
             Imports = imports ?? new List<LGImport>();
             Diagnostics = diagnostics ?? new List<Diagnostic>();
-            References = references ?? new List<LGFile>();
+            References = references ?? new List<LG>();
             Content = content ?? string.Empty;
             ImportResolver = importResolver;
             Id = id ?? string.Empty;
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// All templates from current lg file and reference lg files.
         /// </value>
-        public IList<LGTemplate> AllTemplates => new List<LGFile> { this }.Union(References).SelectMany(x => x.Templates).ToList();
+        public IList<LGTemplate> AllTemplates => new List<LG> { this }.Union(References).SelectMany(x => x.Templates).ToList();
 
         /// <summary>
         /// Gets get all diagnostics from current lg file and reference lg files.
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// All diagnostics from current lg file and reference lg files.
         /// </value>
-        public IList<Diagnostic> AllDiagnostics => new List<LGFile> { this }.Union(References).SelectMany(x => x.Diagnostics).ToList();
+        public IList<Diagnostic> AllDiagnostics => new List<LG> { this }.Union(References).SelectMany(x => x.Diagnostics).ToList();
 
         /// <summary>
         /// Gets or sets delegate for resolving resource id of imported lg file.
@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// all references that this LG file has from <see cref="Imports"/>.
         /// </value>
-        public IList<LGFile> References { get; set; }
+        public IList<LG> References { get; set; }
 
         /// <summary>
         /// Gets or sets diagnostics.
@@ -178,9 +178,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var newContent = $"# {fakeTemplateId} \r\n - {inlineStr}";
 
-            var newLgFile = LGParser.ParseTextWithRef(newContent, this);
+            var newLG = LGParser.ParseTextWithRef(newContent, this);
 
-            return newLgFile.EvaluateTemplate(fakeTemplateId, scope);
+            return newLG.EvaluateTemplate(fakeTemplateId, scope);
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="parameters">new params.</param>
         /// <param name="templateBody">new template body.</param>
         /// <returns>updated LG file.</returns>
-        public LGFile UpdateTemplate(string templateName, string newTemplateName, List<string> parameters, string templateBody)
+        public LG UpdateTemplate(string templateName, string newTemplateName, List<string> parameters, string templateBody)
         {
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
@@ -243,7 +243,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="parameters">new params.</param>
         /// <param name="templateBody">new  template body.</param>
         /// <returns>updated LG file.</returns>
-        public LGFile AddTemplate(string templateName, List<string> parameters, string templateBody)
+        public LG AddTemplate(string templateName, List<string> parameters, string templateBody)
         {
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
@@ -264,7 +264,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templateName">which template should delete.</param>
         /// <returns>updated LG file.</returns>
-        public LGFile DeleteTemplate(string templateName)
+        public LG DeleteTemplate(string templateName)
         {
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
@@ -283,7 +283,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override bool Equals(object obj)
         {
-            if (!(obj is LGFile lgFileObj))
+            if (!(obj is LG lgFileObj))
             {
                 return false;
             }
@@ -413,17 +413,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// use an existing LG file to override current object.
         /// </summary>
-        /// <param name="lgFile">Existing LG file.</param>
-        private void Initialize(LGFile lgFile)
+        /// <param name="lg">Existing LG file.</param>
+        private void Initialize(LG lg)
         {
-            Templates = lgFile.Templates;
-            Imports = lgFile.Imports;
-            Diagnostics = lgFile.Diagnostics;
-            References = lgFile.References;
-            Content = lgFile.Content;
-            ImportResolver = lgFile.ImportResolver;
-            Id = lgFile.Id;
-            ExpressionEngine = lgFile.ExpressionEngine;
+            Templates = lg.Templates;
+            Imports = lg.Imports;
+            Diagnostics = lg.Diagnostics;
+            References = lg.References;
+            Content = lg.Content;
+            ImportResolver = lg.ImportResolver;
+            Id = lg.Id;
+            ExpressionEngine = lg.ExpressionEngine;
         }
 
         private void CheckErrors()

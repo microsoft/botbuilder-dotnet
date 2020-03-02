@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public delegate (string content, string id) ImportResolverDelegate(string sourceId, string resourceId);
 
     /// <summary>
-    /// Parser to turn lg content into a <see cref="LGFile"/>.
+    /// Parser to turn lg content into a <see cref="LG"/>.
     /// </summary>
     public static class LGParser
     {
@@ -30,13 +30,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private static readonly Regex OptionRegex = new Regex(@"^> *!#(.*)$");
 
         /// <summary>
-        /// Parser to turn lg content into a <see cref="LGFile"/>.
+        /// Parser to turn lg content into a <see cref="LG"/>.
         /// </summary>
         /// <param name="filePath"> absolut path of a LG file.</param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <param name="expressionEngine">expressionEngine Expression engine for evaluating expressions.</param>
-        /// <returns>new <see cref="LGFile"/> entity.</returns>
-        public static LGFile ParseFile(
+        /// <returns>new <see cref="LG"/> entity.</returns>
+        public static LG ParseFile(
             string filePath,
             ImportResolverDelegate importResolver = null,
             ExpressionEngine expressionEngine = null)
@@ -48,33 +48,33 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Parser to turn lg content into a <see cref="LGFile"/>.
+        /// Parser to turn lg content into a <see cref="LG"/>.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
         /// <param name="id">id is the identifier of content. If importResolver is null, id must be a full path string. </param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <param name="expressionEngine">expressionEngine Expression engine for evaluating expressions.</param>
-        /// <returns>new <see cref="LGFile"/> entity.</returns>
-        public static LGFile ParseText(
+        /// <returns>new <see cref="LG"/> entity.</returns>
+        public static LG ParseText(
             string content,
             string id = "",
             ImportResolverDelegate importResolver = null,
             ExpressionEngine expressionEngine = null)
         {
             importResolver = importResolver ?? DefaultFileResolver;
-            var lgFile = new LGFile(content: content, id: id, importResolver: importResolver, expressionEngine: expressionEngine);
+            var lg = new LG(content: content, id: id, importResolver: importResolver, expressionEngine: expressionEngine);
 
             var diagnostics = new List<Diagnostic>();
             try
             {
                 var (templates, imports, invalidTemplateErrors, options) = AntlrParse(content, id);
-                lgFile.Templates = templates;
-                lgFile.Imports = imports;
-                lgFile.Options = options;
+                lg.Templates = templates;
+                lg.Imports = imports;
+                lg.Options = options;
                 diagnostics.AddRange(invalidTemplateErrors);
 
-                lgFile.References = GetReferences(lgFile, importResolver);
-                var semanticErrors = new StaticChecker(lgFile).Check();
+                lg.References = GetReferences(lg, importResolver);
+                var semanticErrors = new StaticChecker(lg).Check();
                 diagnostics.AddRange(semanticErrors);
             }
             catch (LGException ex)
@@ -86,41 +86,41 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 diagnostics.Add(BuildDiagnostic(err.Message, source: id));
             }
 
-            lgFile.Diagnostics = diagnostics;
+            lg.Diagnostics = diagnostics;
 
-            return lgFile;
+            return lg;
         }
 
         /// <summary>
-        /// Parser to turn lg content into a <see cref="LGFile"/> based on the original LGFile.
+        /// Parser to turn lg content into a <see cref="LG"/> based on the original LGFile.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
-        /// <param name="lgFile">original LGFile.</param>
-        /// <returns>new <see cref="LGFile"/> entity.</returns>
-        public static LGFile ParseTextWithRef(string content, LGFile lgFile)
+        /// <param name="lg">original LGFile.</param>
+        /// <returns>new <see cref="LG"/> entity.</returns>
+        public static LG ParseTextWithRef(string content, LG lg)
         {
-            if (lgFile == null)
+            if (lg == null)
             {
-                throw new ArgumentNullException(nameof(lgFile));
+                throw new ArgumentNullException(nameof(lg));
             }
 
             var id = "inline content";
-            var newLgFile = new LGFile(content: content, id: id, importResolver: lgFile.ImportResolver, options: lgFile.Options);
+            var newLG = new LG(content: content, id: id, importResolver: lg.ImportResolver, options: lg.Options);
             var diagnostics = new List<Diagnostic>();
             try
             {
                 var (templates, imports, invalidTemplateErrors, options) = AntlrParse(content, id);
-                newLgFile.Templates = templates;
-                newLgFile.Imports = imports;
-                newLgFile.Options = options;
+                newLG.Templates = templates;
+                newLG.Imports = imports;
+                newLG.Options = options;
                 diagnostics.AddRange(invalidTemplateErrors);
 
-                newLgFile.References = GetReferences(newLgFile, newLgFile.ImportResolver)
-                        .Union(lgFile.References)
-                        .Union(new List<LGFile> { lgFile })
+                newLG.References = GetReferences(newLG, newLG.ImportResolver)
+                        .Union(lg.References)
+                        .Union(new List<LG> { lg })
                         .ToList();
 
-                var semanticErrors = new StaticChecker(newLgFile).Check();
+                var semanticErrors = new StaticChecker(newLG).Check();
                 diagnostics.AddRange(semanticErrors);
             }
             catch (LGException ex)
@@ -132,9 +132,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 diagnostics.Add(BuildDiagnostic(err.Message, source: id));
             }
 
-            newLgFile.Diagnostics = diagnostics;
+            newLG.Diagnostics = diagnostics;
 
-            return newLgFile;
+            return newLG;
         }
 
         /// <summary>
@@ -280,16 +280,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    .ToList();
         }
 
-        private static IList<LGFile> GetReferences(LGFile file, ImportResolverDelegate importResolver)
+        private static IList<LG> GetReferences(LG file, ImportResolverDelegate importResolver)
         {
-            var resourcesFound = new HashSet<LGFile>();
+            var resourcesFound = new HashSet<LG>();
             ResolveImportResources(file, resourcesFound, importResolver);
 
             resourcesFound.Remove(file);
             return resourcesFound.ToList();
         }
 
-        private static void ResolveImportResources(LGFile start, HashSet<LGFile> resourcesFound, ImportResolverDelegate importResolver)
+        private static void ResolveImportResources(LG start, HashSet<LG> resourcesFound, ImportResolverDelegate importResolver)
         {
             var resourceIds = start.Imports.Select(lg => lg.Id);
             resourcesFound.Add(start);

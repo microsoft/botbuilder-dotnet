@@ -21,23 +21,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private const string DEFAULTLABEL = "Unknown";
 
-        private readonly LGFile lgFile;
+        private readonly LG lgFile;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
         public TemplateEngineLanguageGenerator()
         {
-            this.lgFile = new LGFile();
+            this.lgFile = new LG();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
         /// <param name="engine">template engine.</param>
-        public TemplateEngineLanguageGenerator(LGFile engine = null)
+        public TemplateEngineLanguageGenerator(LG engine = null)
         {
-            this.lgFile = engine ?? new LGFile();
+            this.lgFile = engine ?? new LG();
         }
 
         /// <summary>
