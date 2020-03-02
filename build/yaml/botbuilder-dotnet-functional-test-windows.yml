@@ -37,7 +37,6 @@ variables:
 #  WinTestBotBotGroup: define this in Azure
 #  WinTestBotBotName: define this in Azure
 
-
 steps:
 - template: ci-build-steps.yml
 
