@@ -266,11 +266,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual(true, test2.Bool.TryGetValue(data).Value);
 
             // Test constant expressions.
-            test.Str = Expression.ConstantExpression("test2");
-            test.Int = Expression.ConstantExpression(113);
-            test.Number = Expression.ConstantExpression(13.14);
-            test.Enm = Expression.ConstantExpression(TestEnum.Three);
-            test.Bool = Expression.ConstantExpression(true);
+            test.Str = ExpressionFactory.ConstantExpression("test2");
+            test.Int = ExpressionFactory.ConstantExpression(113);
+            test.Number = ExpressionFactory.ConstantExpression(13.14);
+            test.Enm = ExpressionFactory.ConstantExpression(TestEnum.Three);
+            test.Bool = ExpressionFactory.ConstantExpression(true);
 
             Assert.AreEqual("test2", test.Str.TryGetValue(data).Value);
             Assert.AreEqual(113, test.Int.TryGetValue(data).Value);
@@ -279,11 +279,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual(true, test.Bool.TryGetValue(data).Value);
 
             // Test Lamda expressions.
-            test.Str = Expression.Lambda((data) => "test2");
-            test.Int = Expression.Lambda((data) => 113);
-            test.Number = Expression.Lambda((data) => 13.14);
-            test.Enm = Expression.Lambda((data) => TestEnum.Three);
-            test.Bool = Expression.Lambda((data) => true);
+            test.Str = ExpressionFactory.Lambda((data) => "test2");
+            test.Int = ExpressionFactory.Lambda((data) => 113);
+            test.Number = ExpressionFactory.Lambda((data) => 13.14);
+            test.Enm = ExpressionFactory.Lambda((data) => TestEnum.Three);
+            test.Bool = ExpressionFactory.Lambda((data) => true);
 
             Assert.AreEqual("test2", test.Str.TryGetValue(data).Value);
             Assert.AreEqual(113, test.Int.TryGetValue(data).Value);

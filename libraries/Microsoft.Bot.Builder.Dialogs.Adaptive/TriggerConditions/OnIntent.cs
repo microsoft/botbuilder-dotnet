@@ -68,9 +68,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             // build expression to be INTENT AND (@ENTITY1 != null AND @ENTITY2 != null)
             if (this.Entities.Any())
             {
-                intentExpression = Expression.AndExpression(
+                intentExpression = ExpressionFactory.AndExpression(
                     intentExpression,
-                    Expression.AndExpression(this.Entities.Select(entity =>
+                    ExpressionFactory.AndExpression(this.Entities.Select(entity =>
                     {
                         if (entity.StartsWith("@") || entity.StartsWith(TurnPath.RECOGNIZED, StringComparison.InvariantCultureIgnoreCase))
                         {
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                     }).ToArray()));
             }
 
-            return Expression.AndExpression(intentExpression, base.GetExpression());
+            return ExpressionFactory.AndExpression(intentExpression, base.GetExpression());
         }
 
         protected override ActionChangeList OnCreateChangeList(ActionContext actionContext, object dialogOptions = null)

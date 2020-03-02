@@ -16,14 +16,14 @@ namespace AdaptiveExpressions
     /// <summary>
     /// Parser to turn strings into an <see cref="Expression"/>.
     /// </summary>
-    public class ExpressionEngine : IExpressionParser
+    public class ExpressionParser : IExpressionParser
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExpressionEngine"/> class.
+        /// Initializes a new instance of the <see cref="ExpressionParser"/> class.
         /// Constructor.
         /// </summary>
         /// <param name="lookup">Delegate to lookup evaluation information from type string.</param>
-        public ExpressionEngine(EvaluatorLookup lookup = null)
+        public ExpressionParser(EvaluatorLookup lookup = null)
         {
             EvaluatorLookup = lookup ?? ExpressionFunctions.Lookup;
         }
@@ -45,7 +45,7 @@ namespace AdaptiveExpressions
         {
             if (string.IsNullOrEmpty(expression))
             {
-                return Expression.ConstantExpression(string.Empty);
+                return ExpressionFactory.ConstantExpression(string.Empty);
             }
             else
             {
@@ -56,17 +56,17 @@ namespace AdaptiveExpressions
         protected static IParseTree AntlrParse(string expression)
         {
             var inputStream = new AntlrInputStream(expression);
-            var lexer = new ExpressionLexer(inputStream);
+            var lexer = new ExpressionAntlrLexer(inputStream);
             lexer.RemoveErrorListeners();
             var tokenStream = new CommonTokenStream(lexer);
-            var parser = new ExpressionParser(tokenStream);
+            var parser = new ExpressionAntlrParser(tokenStream);
             parser.RemoveErrorListeners();
             parser.AddErrorListener(ParserErrorListener.Instance);
             parser.BuildParseTree = true;
             return parser.file()?.expression();
         }
 
-        private class ExpressionTransformer : ExpressionParserBaseVisitor<Expression>
+        private class ExpressionTransformer : ExpressionAntlrParserBaseVisitor<Expression>
         {
             private readonly EvaluatorLookup _lookup;
 
@@ -77,7 +77,7 @@ namespace AdaptiveExpressions
 
             public Expression Transform(IParseTree context) => Visit(context);
 
-            public override Expression VisitUnaryOpExp([NotNull] ExpressionParser.UnaryOpExpContext context)
+            public override Expression VisitUnaryOpExp([NotNull] ExpressionAntlrParser.UnaryOpExpContext context)
             {
                 var unaryOperationName = context.GetChild(0).GetText();
                 var operand = Visit(context.expression());
@@ -90,7 +90,7 @@ namespace AdaptiveExpressions
                 return MakeExpression(unaryOperationName, operand);
             }
 
-            public override Expression VisitBinaryOpExp([NotNull] ExpressionParser.BinaryOpExpContext context)
+            public override Expression VisitBinaryOpExp([NotNull] ExpressionAntlrParser.BinaryOpExpContext context)
             {
                 var binaryOperationName = context.GetChild(1).GetText();
                 var left = Visit(context.expression(0));
@@ -98,7 +98,7 @@ namespace AdaptiveExpressions
                 return MakeExpression(binaryOperationName, left, right);
             }
 
-            public override Expression VisitFuncInvokeExp([NotNull] ExpressionParser.FuncInvokeExpContext context)
+            public override Expression VisitFuncInvokeExp([NotNull] ExpressionAntlrParser.FuncInvokeExpContext context)
             {
                 var parameters = ProcessArgsList(context.argsList()).ToList();
 
@@ -107,32 +107,32 @@ namespace AdaptiveExpressions
                 return MakeExpression(functionName, parameters.ToArray());
             }
 
-            public override Expression VisitIdAtom([NotNull] ExpressionParser.IdAtomContext context)
+            public override Expression VisitIdAtom([NotNull] ExpressionAntlrParser.IdAtomContext context)
             {
                 Expression result;
                 var symbol = context.GetText();
                 var normalized = symbol.ToLower();
                 if (normalized == "false")
                 {
-                    result = Expression.ConstantExpression(false);
+                    result = ExpressionFactory.ConstantExpression(false);
                 }
                 else if (normalized == "true")
                 {
-                    result = Expression.ConstantExpression(true);
+                    result = ExpressionFactory.ConstantExpression(true);
                 }
                 else if (normalized == "null")
                 {
-                    result = Expression.ConstantExpression(null);
+                    result = ExpressionFactory.ConstantExpression(null);
                 }
                 else
                 {
-                    result = MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(symbol));
+                    result = MakeExpression(ExpressionType.Accessor, ExpressionFactory.ConstantExpression(symbol));
                 }
 
                 return result;
             }
 
-            public override Expression VisitIndexAccessExp([NotNull] ExpressionParser.IndexAccessExpContext context)
+            public override Expression VisitIndexAccessExp([NotNull] ExpressionAntlrParser.IndexAccessExpContext context)
             {
                 Expression instance;
                 var property = Visit(context.expression());
@@ -141,46 +141,46 @@ namespace AdaptiveExpressions
                 return MakeExpression(ExpressionType.Element, instance, property);
             }
 
-            public override Expression VisitMemberAccessExp([NotNull] ExpressionParser.MemberAccessExpContext context)
+            public override Expression VisitMemberAccessExp([NotNull] ExpressionAntlrParser.MemberAccessExpContext context)
             {
                 var property = context.IDENTIFIER().GetText();
                 var instance = Visit(context.primaryExpression());
 
-                return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(property), instance);
+                return MakeExpression(ExpressionType.Accessor, ExpressionFactory.ConstantExpression(property), instance);
             }
 
-            public override Expression VisitNumericAtom([NotNull] ExpressionParser.NumericAtomContext context)
+            public override Expression VisitNumericAtom([NotNull] ExpressionAntlrParser.NumericAtomContext context)
             {
                 if (int.TryParse(context.GetText(), out var intValue))
                 {
-                    return Expression.ConstantExpression(intValue);
+                    return ExpressionFactory.ConstantExpression(intValue);
                 }
 
                 if (double.TryParse(context.GetText(), out var doubleValue))
                 {
-                    return Expression.ConstantExpression(doubleValue);
+                    return ExpressionFactory.ConstantExpression(doubleValue);
                 }
 
                 throw new Exception($"{context.GetText()} is not a number in expression '{context.GetText()}'");
             }
 
-            public override Expression VisitParenthesisExp([NotNull] ExpressionParser.ParenthesisExpContext context) => Visit(context.expression());
+            public override Expression VisitParenthesisExp([NotNull] ExpressionAntlrParser.ParenthesisExpContext context) => Visit(context.expression());
 
-            public override Expression VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context)
+            public override Expression VisitStringAtom([NotNull] ExpressionAntlrParser.StringAtomContext context)
             {
                 var text = context.GetText();
                 if (text.StartsWith("'"))
                 {
-                    return Expression.ConstantExpression(Regex.Unescape(text.Trim('\'')));
+                    return ExpressionFactory.ConstantExpression(Regex.Unescape(text.Trim('\'')));
                 }
                 else
                 {
                     // start with "
-                    return Expression.ConstantExpression(Regex.Unescape(text.Trim('"')));
+                    return ExpressionFactory.ConstantExpression(Regex.Unescape(text.Trim('"')));
                 }
             }
 
-            public override Expression VisitStringInterpolationAtom([NotNull] ExpressionParser.StringInterpolationAtomContext context)
+            public override Expression VisitStringInterpolationAtom([NotNull] ExpressionAntlrParser.StringInterpolationAtomContext context)
             {
                 var children = new List<Expression>();
                 foreach (var child in context.stringInterpolation().children)
@@ -189,12 +189,12 @@ namespace AdaptiveExpressions
                     {
                         switch (node.Symbol.Type)
                         {
-                            case ExpressionParser.TEMPLATE:
+                            case ExpressionAntlrParser.TEMPLATE:
                                 var expressionString = TrimExpression(node.GetText());
-                                children.Add(new ExpressionEngine(_lookup).Parse(expressionString));
+                                children.Add(new ExpressionParser(_lookup).Parse(expressionString));
                                 break;
-                            case ExpressionParser.ESCAPE_CHARACTER:
-                                children.Add(Expression.ConstantExpression(EvalEscape(node.GetText())));
+                            case ExpressionAntlrParser.ESCAPE_CHARACTER:
+                                children.Add(ExpressionFactory.ConstantExpression(EvalEscape(node.GetText())));
                                 break;
                             default:
                                 break;
@@ -202,33 +202,33 @@ namespace AdaptiveExpressions
                     }
                     else
                     {
-                        children.Add(Expression.ConstantExpression(child.GetText()));
+                        children.Add(ExpressionFactory.ConstantExpression(child.GetText()));
                     }
                 }
 
                 return MakeExpression(ExpressionType.Concat, children.ToArray());
             }
 
-            public override Expression VisitConstantAtom([NotNull] ExpressionParser.ConstantAtomContext context)
+            public override Expression VisitConstantAtom([NotNull] ExpressionAntlrParser.ConstantAtomContext context)
             {
                 var text = context.GetText();
                 if (text.StartsWith("[") && text.EndsWith("]") && string.IsNullOrWhiteSpace(text.Substring(1, text.Length - 2))) 
                 {
-                    return Expression.ConstantExpression(new JArray());
+                    return ExpressionFactory.ConstantExpression(new JArray());
                 }
 
                 if (text.StartsWith("{") && text.EndsWith("}") && string.IsNullOrWhiteSpace(text.Substring(1, text.Length - 2)))
                 {
-                    return Expression.ConstantExpression(new JObject());
+                    return ExpressionFactory.ConstantExpression(new JObject());
                 }
 
                 throw new Exception($"Unrecognized constant: {text}");
             }
 
             private Expression MakeExpression(string type, params Expression[] children)
-                => Expression.MakeExpression(_lookup(type), children);
+                => ExpressionFactory.MakeExpression(_lookup(type), children);
 
-            private IEnumerable<Expression> ProcessArgsList(ExpressionParser.ArgsListContext context)
+            private IEnumerable<Expression> ProcessArgsList(ExpressionAntlrParser.ArgsListContext context)
             {
                 if (context != null)
                 {

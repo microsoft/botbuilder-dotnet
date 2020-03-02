@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 expressions.Add(Expression.Parse($"{TurnPath.DIALOGEVENT}.value.entity.name == '{this.Entity}'"));
             }
 
-            return Expression.AndExpression(expressions.ToArray());
+            return ExpressionFactory.AndExpression(expressions.ToArray());
         }
     }
 }

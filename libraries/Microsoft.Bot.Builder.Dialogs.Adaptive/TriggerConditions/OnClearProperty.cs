@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 expressions.Add(Expression.Parse($"{TurnPath.DIALOGEVENT}.value.property == '{this.Property}'"));
             }
 
-            return Expression.AndExpression(expressions.ToArray());
+            return ExpressionFactory.AndExpression(expressions.ToArray());
         }
     }
 }

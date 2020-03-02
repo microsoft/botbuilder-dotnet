@@ -988,7 +988,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestCustomFunction()
         {
-            var engine = new ExpressionEngine((string func) =>
+            var engine = new ExpressionParser((string func) =>
             { 
                 if (func == "custom")
                 {

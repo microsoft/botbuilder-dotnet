@@ -34,17 +34,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="filePath"> absolut path of a LG file.</param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
-        /// <param name="expressionEngine">expressionEngine Expression engine for evaluating expressions.</param>
+        /// <param name="expressionParser">expressionEngine Expression parser for evaluating expressions.</param>
         /// <returns>new <see cref="LGFile"/> entity.</returns>
         public static LGFile ParseFile(
             string filePath,
             ImportResolverDelegate importResolver = null,
-            ExpressionEngine expressionEngine = null)
+            ExpressionParser expressionParser = null)
         {
             var fullPath = Path.GetFullPath(filePath.NormalizePath());
             var content = File.ReadAllText(fullPath);
 
-            return ParseText(content, fullPath, importResolver, expressionEngine);
+            return ParseText(content, fullPath, importResolver, expressionParser);
         }
 
         /// <summary>
@@ -53,16 +53,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="content">Text content contains lg templates.</param>
         /// <param name="id">id is the identifier of content. If importResolver is null, id must be a full path string. </param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
-        /// <param name="expressionEngine">expressionEngine Expression engine for evaluating expressions.</param>
+        /// <param name="expressionParser">expressionEngine Expression parser for evaluating expressions.</param>
         /// <returns>new <see cref="LGFile"/> entity.</returns>
         public static LGFile ParseText(
             string content,
             string id = "",
             ImportResolverDelegate importResolver = null,
-            ExpressionEngine expressionEngine = null)
+            ExpressionParser expressionParser = null)
         {
             importResolver = importResolver ?? DefaultFileResolver;
-            var lgFile = new LGFile(content: content, id: id, importResolver: importResolver, expressionEngine: expressionEngine);
+            var lgFile = new LGFile(content: content, id: id, importResolver: importResolver, expressionParser: expressionParser);
 
             var diagnostics = new List<Diagnostic>();
             try

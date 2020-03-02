@@ -20,8 +20,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class Expander : LGFileParserBaseVisitor<List<string>>
     {
-        private readonly ExpressionEngine expanderExpressionEngine;
-        private readonly ExpressionEngine evaluatorExpressionEngine;
+        private readonly ExpressionParser expanderExpressionParser;
+        private readonly ExpressionParser evaluatorExpressionParser;
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
         private readonly bool strictMode;
 
@@ -29,17 +29,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Initializes a new instance of the <see cref="Expander"/> class.
         /// </summary>
         /// <param name="templates">template list.</param>
-        /// <param name="expressionEngine">Given expression engine.</param>
+        /// <param name="expressionParser">Given expression parser.</param>
         /// <param name="strictMode">strict mode. If strictMode == true, exception in expression would throw outside.</param>
-        public Expander(List<LGTemplate> templates, ExpressionEngine expressionEngine, bool strictMode = false)
+        public Expander(List<LGTemplate> templates, ExpressionParser expressionParser, bool strictMode = false)
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
             this.strictMode = strictMode;
 
-            // generate a new customized expression engine by injecting the template as functions
-            this.expanderExpressionEngine = new ExpressionEngine(CustomizedEvaluatorLookup(expressionEngine.EvaluatorLookup, true));
-            this.evaluatorExpressionEngine = new ExpressionEngine(CustomizedEvaluatorLookup(expressionEngine.EvaluatorLookup, false));
+            // generate a new customized expression parser by injecting the template as functions
+            this.expanderExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup, true));
+            this.evaluatorExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup, false));
         }
 
         /// <summary>
@@ -355,7 +355,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private bool EvalExpressionInCondition(string exp, ParserRuleContext context = null, string errorPrefix = "")
         {
             exp = exp.TrimExpression();
-            var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
+            var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
             if (strictMode && (error != null || result == null))
             {
@@ -397,7 +397,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private List<string> EvalExpression(string exp, ParserRuleContext context, string errorPrefix = "")
         {
             exp = exp.TrimExpression();
-            var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
+            var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
             if (error != null || (result == null && strictMode))
             {
@@ -443,10 +443,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         // just don't want to write evaluationTargetStack.Peek() everywhere
         private EvaluationTarget CurrentTarget() => evaluationTargetStack.Peek();
 
-        private (object value, string error) EvalByExpressionEngine(string exp, object scope)
+        private (object value, string error) EvalByAdaptiveExpression(string exp, object scope)
         {
-            var expanderExpression = this.expanderExpressionEngine.Parse(exp);
-            var evaluatorExpression = this.evaluatorExpressionEngine.Parse(exp);
+            var expanderExpression = this.expanderExpressionParser.Parse(exp);
+            var evaluatorExpression = this.evaluatorExpressionParser.Parse(exp);
             var parse = ReconstructExpression(expanderExpression, evaluatorExpression);
             string error;
             object value;

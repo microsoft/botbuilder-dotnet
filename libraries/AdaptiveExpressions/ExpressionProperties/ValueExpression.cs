@@ -48,7 +48,7 @@ namespace AdaptiveExpressions.Properties
         /// </summary>
         /// <param name="lambda">function (data) which evaluates to value.</param>
         public ValueExpression(Func<object, object> lambda)
-            : this(Expression.Lambda(lambda))
+            : this(ExpressionFactory.Lambda(lambda))
         {
         }
 

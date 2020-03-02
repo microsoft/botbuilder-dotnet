@@ -53,7 +53,7 @@ namespace AdaptiveExpressions.Properties
         /// </summary>
         /// <param name="lambda">function (data) which evaluates to array.</param>
         public ArrayExpression(Func<object, object> lambda)
-            : this(Expression.Lambda(lambda))
+            : this(ExpressionFactory.Lambda(lambda))
         {
         }
 

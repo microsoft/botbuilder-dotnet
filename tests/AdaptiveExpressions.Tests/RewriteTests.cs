@@ -42,7 +42,7 @@ namespace AdaptiveExpressions.Tests
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, string expected)
         {
-            var parser = new ExpressionEngine(Lookup);
+            var parser = new ExpressionParser(Lookup);
             var original = parser.Parse(input);
             var dnf = original.DisjunctiveNormalForm();
             var expectedDnf = parser.Parse(expected);

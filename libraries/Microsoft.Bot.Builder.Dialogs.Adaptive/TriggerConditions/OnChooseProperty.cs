@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 expressions.Add(Expression.Parse($"contains(foreach({TurnPath.DIALOGEVENT}.value, mapping, mapping.entity.name), '{entity}')"));
             }
 
-            return Expression.AndExpression(expressions.ToArray());
+            return ExpressionFactory.AndExpression(expressions.ToArray());
         }
     }
 }
