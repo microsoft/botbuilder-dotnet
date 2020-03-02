@@ -31,9 +31,9 @@ variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'Release'
   Parameters.solution: Microsoft.Bot.Builder.sln
+#  AzureSubscription: define this in Azure
 #  WinTestBotAppId: define this in Azure
 #  WinTestBotAppSecret: define this in Azure
-#  WinTestBotAzureSubscription: define this in Azure
 #  WinTestBotBotGroup: define this in Azure
 #  WinTestBotBotName: define this in Azure
 
@@ -53,7 +53,6 @@ steps:
 - powershell: |
    echo '##vso[task.setvariable variable=TESTAPPID]$(WinTestBotAppId)'
    echo '##vso[task.setvariable variable=TESTPASSWORD]$(WinTestBotAppSecret)'
-   echo '##vso[task.setvariable variable=AzureSubscription]$(WinTestBotAzureSubscription)'
    echo '##vso[task.setvariable variable=BotGroup]$(WinTestBotBotGroup)'
    echo '##vso[task.setvariable variable=BotName]$(WinTestBotBotName)'
   displayName: 'Set Environment Variables'
