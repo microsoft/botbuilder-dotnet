@@ -642,7 +642,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(DeleteConversationMemberAsync)}(): missing conversation.id");
             }
 
-            var connectorClient = turnContext.TurnState.Get<ConnectorClientBase>();
+            var connectorClient = turnContext.TurnState.Get<ConnectorClient>();
 
             var conversationId = turnContext.Activity.Conversation.Id;
 

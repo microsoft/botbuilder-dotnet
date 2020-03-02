@@ -285,7 +285,7 @@ namespace Microsoft.Bot.Builder.Tests
                 var clientCache = GetCache<ConcurrentDictionary<string, ConnectorClient>>(adapter, ClientsCacheName);
                 clientCache.TryGetValue($"{channelServiceUrl}{skill1AppId}:{AuthenticationConstants.ToChannelFromBotOAuthScope}", out var client);
 
-                var turnStateClient = turnContext.TurnState.Get<IConnectorClient>();
+                var turnStateClient = turnContext.TurnState.Get<ConnectorClient>();
                 var clientCreds = turnStateClient.Credentials as AppCredentials;
 
                 Assert.AreEqual(skill1AppId, clientCreds.MicrosoftAppId);
@@ -340,7 +340,7 @@ namespace Microsoft.Bot.Builder.Tests
                 var clientCache = GetCache<ConcurrentDictionary<string, ConnectorClient>>(adapter, ClientsCacheName);
                 clientCache.TryGetValue($"{skill2ServiceUrl}{skill1AppId}:{skill2AppId}", out var client);
 
-                var turnStateClient = turnContext.TurnState.Get<IConnectorClient>();
+                var turnStateClient = turnContext.TurnState.Get<ConnectorClient>();
                 var clientCreds = turnStateClient.Credentials as AppCredentials;
 
                 Assert.AreEqual(skill1AppId, clientCreds.MicrosoftAppId);

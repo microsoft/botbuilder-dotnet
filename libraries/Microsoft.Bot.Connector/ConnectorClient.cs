@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
-        /// Gets the ConversationsBase.
+        /// Gets the Conversations.
         /// </summary>
         public override Conversations Conversations
         {

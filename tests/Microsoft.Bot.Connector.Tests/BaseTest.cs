@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Connector.Tests
             }
         }
 
-        public async Task UseClientFor(Func<ConnectorClientBase, Task> doTest, string className = null, [CallerMemberName] string methodName = null)
+        public async Task UseClientFor(Func<ConnectorClient, Task> doTest, string className = null, [CallerMemberName] string methodName = null)
         {
             using (var context = MockContext.Start(className ?? ClassName, methodName))
             {

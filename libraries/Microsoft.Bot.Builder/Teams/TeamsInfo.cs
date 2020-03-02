@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.Teams
 
         private static ConnectorClientBase GetConnectorClient(ITurnContext turnContext)
         {
-            return turnContext.TurnState.Get<ConnectorClientBase>() ?? throw new InvalidOperationException("This method requires a connector client.");
+            return turnContext.TurnState.Get<ConnectorClient>() ?? throw new InvalidOperationException("This method requires a connector client.");
         }
 
         private static ITeamsConnectorClient GetTeamsConnectorClient(ITurnContext turnContext)

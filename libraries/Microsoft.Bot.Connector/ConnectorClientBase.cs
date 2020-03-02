@@ -95,10 +95,10 @@ public abstract class ConnectorClientBase : ServiceClient<ConnectorClientBase>, 
     public abstract IAttachments Attachments { get; }
 
     /// <summary>
-    /// Gets the ConversationsBase.
+    /// Gets the Conversations.
     /// </summary>
     /// <value>
-    /// The ConversationsBase.
+    /// The Conversations.
     /// </value>
     public abstract Conversations Conversations { get; }
 }

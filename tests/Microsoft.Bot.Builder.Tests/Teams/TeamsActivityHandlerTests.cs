@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             };
 
             var turnContext = new TurnContext(new SimpleAdapter(), activity);
-            turnContext.TurnState.Add<ConnectorClientBase>(connectorClient);
+            turnContext.TurnState.Add<ConnectorClient>(connectorClient);
 
             // Act
             var bot = new TestActivityHandler();
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             };
 
             var turnContext = new TurnContext(new SimpleAdapter(), activity);
-            turnContext.TurnState.Add<ConnectorClientBase>(connectorClient);
+            turnContext.TurnState.Add<ConnectorClient>(connectorClient);
 
             // Act
             var bot = new TestActivityHandler();
@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             }
 
             var turnContext = new TurnContext(new SimpleAdapter(), activity);
-            turnContext.TurnState.Add<ConnectorClientBase>(connectorClient);
+            turnContext.TurnState.Add<ConnectorClient>(connectorClient);
 
             // Act
             var bot = new TestActivityHandler();
