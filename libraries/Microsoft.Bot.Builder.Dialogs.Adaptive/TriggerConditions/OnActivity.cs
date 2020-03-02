@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public override Expression GetExpression()
         {
             // add constraints for activity type
-            return ExpressionFactory.AndExpression(Expression.Parse($"{TurnPath.ACTIVITY}.type == '{this.Type}'"), base.GetExpression());
+            return ExpressionBuilder.AndExpression(new ExpressionParser().Parse($"{TurnPath.ACTIVITY}.type == '{this.Type}'"), base.GetExpression());
         }
     }
 }

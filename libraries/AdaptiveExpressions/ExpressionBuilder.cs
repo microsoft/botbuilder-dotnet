@@ -9,7 +9,7 @@ namespace AdaptiveExpressions
     /// <summary>
     /// Factory that generate different kinds of <see cref="Expression"/>.
     /// </summary>
-    public class ExpressionFactory
+    public class ExpressionBuilder
     {
         /// <summary>
         /// Make an expression and validate it.

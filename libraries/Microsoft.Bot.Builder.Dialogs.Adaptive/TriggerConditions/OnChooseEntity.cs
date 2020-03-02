@@ -50,15 +50,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             var expressions = new List<Expression> { base.GetExpression() };
             if (this.Property != null)
             {
-                expressions.Add(Expression.Parse($"{TurnPath.DIALOGEVENT}.value.property == '{this.Property}'"));
+                expressions.Add(new ExpressionParser().Parse($"{TurnPath.DIALOGEVENT}.value.property == '{this.Property}'"));
             }
 
             if (this.Entity != null)
             {
-                expressions.Add(Expression.Parse($"{TurnPath.DIALOGEVENT}.value.entity.name == '{this.Entity}'"));
+                expressions.Add(new ExpressionParser().Parse($"{TurnPath.DIALOGEVENT}.value.entity.name == '{this.Entity}'"));
             }
 
-            return ExpressionFactory.AndExpression(expressions.ToArray());
+            return ExpressionBuilder.AndExpression(expressions.ToArray());
         }
     }
 }

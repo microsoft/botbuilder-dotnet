@@ -39,8 +39,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             // add constraints for the intents property if set
             if (this.Intents?.Any() == true)
             {
-                var constraints = this.Intents.Select(subIntent => Expression.Parse($"contains(jPath({TurnPath.RECOGNIZED}, '$.candidates[*].intent'), '{subIntent}')"));
-                return ExpressionFactory.AndExpression(base.GetExpression(), ExpressionFactory.AndExpression(constraints.ToArray()));
+                var constraints = this.Intents.Select(subIntent => new ExpressionParser().Parse($"contains(jPath({TurnPath.RECOGNIZED}, '$.candidates[*].intent'), '{subIntent}')"));
+                return ExpressionBuilder.AndExpression(base.GetExpression(), ExpressionBuilder.AndExpression(constraints.ToArray()));
             }
 
             return base.GetExpression();

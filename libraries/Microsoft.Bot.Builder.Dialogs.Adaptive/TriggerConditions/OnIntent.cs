@@ -63,25 +63,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 throw new ArgumentNullException(nameof(this.Intent));
             }
 
-            var intentExpression = Expression.Parse($"{TurnPath.RECOGNIZED}.intent == '{this.Intent.TrimStart('#')}'");
+            var intentExpression = new ExpressionParser().Parse($"{TurnPath.RECOGNIZED}.intent == '{this.Intent.TrimStart('#')}'");
 
             // build expression to be INTENT AND (@ENTITY1 != null AND @ENTITY2 != null)
             if (this.Entities.Any())
             {
-                intentExpression = ExpressionFactory.AndExpression(
+                intentExpression = ExpressionBuilder.AndExpression(
                     intentExpression,
-                    ExpressionFactory.AndExpression(this.Entities.Select(entity =>
+                    ExpressionBuilder.AndExpression(this.Entities.Select(entity =>
                     {
                         if (entity.StartsWith("@") || entity.StartsWith(TurnPath.RECOGNIZED, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            return Expression.Parse($"exists({entity})");
+                            return new ExpressionParser().Parse($"exists({entity})");
                         }
 
-                        return Expression.Parse($"exists(@{entity})");
+                        return new ExpressionParser().Parse($"exists(@{entity})");
                     }).ToArray()));
             }
 
-            return ExpressionFactory.AndExpression(intentExpression, base.GetExpression());
+            return ExpressionBuilder.AndExpression(intentExpression, base.GetExpression());
         }
 
         protected override ActionChangeList OnCreateChangeList(ActionContext actionContext, object dialogOptions = null)

@@ -814,7 +814,7 @@ namespace AdaptiveExpressions.Tests
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
         {
-            var parsed = Expression.Parse(input);
+            var parsed = new ExpressionParser().Parse(input);
             Assert.IsNotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(scope);
             Assert.AreEqual(null, msg);
@@ -831,7 +831,7 @@ namespace AdaptiveExpressions.Tests
         public void EvaluateJson(string input, object expected, HashSet<string> expectedRefs)
         {
             var jsonScope = JToken.FromObject(scope);
-            var parsed = Expression.Parse(input);
+            var parsed = new ExpressionParser().Parse(input);
             Assert.IsNotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(jsonScope);
             Assert.AreEqual(null, msg);
@@ -858,22 +858,22 @@ namespace AdaptiveExpressions.Tests
             });
 
             // normal case, note, we doesn't append a " yet
-            var exp = Expression.Parse("a[f].b[n].z");
+            var exp = new ExpressionParser().Parse("a[f].b[n].z");
             var (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory);
             Assert.AreEqual(path, "a['foo'].b[2].z");
 
             // normal case
-            exp = Expression.Parse("a[z.z][z.z].y");
+            exp = new ExpressionParser().Parse("a[z.z][z.z].y");
             (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory);
             Assert.AreEqual(path, "a['zar']['zar'].y");
 
             // normal case
-            exp = Expression.Parse("a.b[z.z]");
+            exp = new ExpressionParser().Parse("a.b[z.z]");
             (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory);
             Assert.AreEqual(path, "a.b['zar']");
 
             // stop evaluate at middle
-            exp = Expression.Parse("json(x).b");
+            exp = new ExpressionParser().Parse("json(x).b");
             (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory);
             Assert.AreEqual(path, "b");
         }
@@ -898,7 +898,7 @@ namespace AdaptiveExpressions.Tests
         private void AssertResult<T>(string text, T expected)
         {
             var memory = new object();
-            var (result, error) = Expression.Parse(text).TryEvaluate<T>(memory);
+            var (result, error) = new ExpressionParser().Parse(text).TryEvaluate<T>(memory);
             Assert.AreEqual(expected, result);
             Assert.IsNull(error);
         }

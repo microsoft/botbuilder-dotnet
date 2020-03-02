@@ -45,7 +45,7 @@ namespace AdaptiveExpressions
         {
             if (string.IsNullOrEmpty(expression))
             {
-                return ExpressionFactory.ConstantExpression(string.Empty);
+                return ExpressionBuilder.ConstantExpression(string.Empty);
             }
             else
             {
@@ -114,19 +114,19 @@ namespace AdaptiveExpressions
                 var normalized = symbol.ToLower();
                 if (normalized == "false")
                 {
-                    result = ExpressionFactory.ConstantExpression(false);
+                    result = ExpressionBuilder.ConstantExpression(false);
                 }
                 else if (normalized == "true")
                 {
-                    result = ExpressionFactory.ConstantExpression(true);
+                    result = ExpressionBuilder.ConstantExpression(true);
                 }
                 else if (normalized == "null")
                 {
-                    result = ExpressionFactory.ConstantExpression(null);
+                    result = ExpressionBuilder.ConstantExpression(null);
                 }
                 else
                 {
-                    result = MakeExpression(ExpressionType.Accessor, ExpressionFactory.ConstantExpression(symbol));
+                    result = MakeExpression(ExpressionType.Accessor, ExpressionBuilder.ConstantExpression(symbol));
                 }
 
                 return result;
@@ -146,19 +146,19 @@ namespace AdaptiveExpressions
                 var property = context.IDENTIFIER().GetText();
                 var instance = Visit(context.primaryExpression());
 
-                return MakeExpression(ExpressionType.Accessor, ExpressionFactory.ConstantExpression(property), instance);
+                return MakeExpression(ExpressionType.Accessor, ExpressionBuilder.ConstantExpression(property), instance);
             }
 
             public override Expression VisitNumericAtom([NotNull] ExpressionAntlrParser.NumericAtomContext context)
             {
                 if (int.TryParse(context.GetText(), out var intValue))
                 {
-                    return ExpressionFactory.ConstantExpression(intValue);
+                    return ExpressionBuilder.ConstantExpression(intValue);
                 }
 
                 if (double.TryParse(context.GetText(), out var doubleValue))
                 {
-                    return ExpressionFactory.ConstantExpression(doubleValue);
+                    return ExpressionBuilder.ConstantExpression(doubleValue);
                 }
 
                 throw new Exception($"{context.GetText()} is not a number in expression '{context.GetText()}'");
@@ -171,12 +171,12 @@ namespace AdaptiveExpressions
                 var text = context.GetText();
                 if (text.StartsWith("'"))
                 {
-                    return ExpressionFactory.ConstantExpression(Regex.Unescape(text.Trim('\'')));
+                    return ExpressionBuilder.ConstantExpression(Regex.Unescape(text.Trim('\'')));
                 }
                 else
                 {
                     // start with "
-                    return ExpressionFactory.ConstantExpression(Regex.Unescape(text.Trim('"')));
+                    return ExpressionBuilder.ConstantExpression(Regex.Unescape(text.Trim('"')));
                 }
             }
 
@@ -194,7 +194,7 @@ namespace AdaptiveExpressions
                                 children.Add(new ExpressionParser(_lookup).Parse(expressionString));
                                 break;
                             case ExpressionAntlrParser.ESCAPE_CHARACTER:
-                                children.Add(ExpressionFactory.ConstantExpression(EvalEscape(node.GetText())));
+                                children.Add(ExpressionBuilder.ConstantExpression(EvalEscape(node.GetText())));
                                 break;
                             default:
                                 break;
@@ -202,7 +202,7 @@ namespace AdaptiveExpressions
                     }
                     else
                     {
-                        children.Add(ExpressionFactory.ConstantExpression(child.GetText()));
+                        children.Add(ExpressionBuilder.ConstantExpression(child.GetText()));
                     }
                 }
 
@@ -214,19 +214,19 @@ namespace AdaptiveExpressions
                 var text = context.GetText();
                 if (text.StartsWith("[") && text.EndsWith("]") && string.IsNullOrWhiteSpace(text.Substring(1, text.Length - 2))) 
                 {
-                    return ExpressionFactory.ConstantExpression(new JArray());
+                    return ExpressionBuilder.ConstantExpression(new JArray());
                 }
 
                 if (text.StartsWith("{") && text.EndsWith("}") && string.IsNullOrWhiteSpace(text.Substring(1, text.Length - 2)))
                 {
-                    return ExpressionFactory.ConstantExpression(new JObject());
+                    return ExpressionBuilder.ConstantExpression(new JObject());
                 }
 
                 throw new Exception($"Unrecognized constant: {text}");
             }
 
             private Expression MakeExpression(string type, params Expression[] children)
-                => ExpressionFactory.MakeExpression(_lookup(type), children);
+                => ExpressionBuilder.MakeExpression(_lookup(type), children);
 
             private IEnumerable<Expression> ProcessArgsList(ExpressionAntlrParser.ArgsListContext context)
             {

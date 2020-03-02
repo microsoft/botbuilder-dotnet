@@ -124,16 +124,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
                     if (allExpressions.Any())
                     {
-                        this.fullConstraint = ExpressionFactory.AndExpression(allExpressions.ToArray());
+                        this.fullConstraint = ExpressionBuilder.AndExpression(allExpressions.ToArray());
                     }
                     else
                     {
-                        this.fullConstraint = ExpressionFactory.ConstantExpression(true);
+                        this.fullConstraint = ExpressionBuilder.ConstantExpression(true);
                     }
 
                     if (RunOnce)
                     {
-                        this.fullConstraint = ExpressionFactory.AndExpression(
+                        this.fullConstraint = ExpressionBuilder.AndExpression(
                             this.fullConstraint,
                             new Expression(
                                 ExpressionFunctions.Lookup(ExpressionType.Ignore),
@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 {
                     lock (this.extraConstraints)
                     {
-                        this.extraConstraints.Add(Expression.Parse(condition.TrimStart('=')));
+                        this.extraConstraints.Add(new ExpressionParser().Parse(condition.TrimStart('=')));
                         this.fullConstraint = null; // reset to force it to be recalcaulated
                     }
                 }

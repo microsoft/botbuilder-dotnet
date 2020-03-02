@@ -391,7 +391,7 @@ namespace AdaptiveExpressions.Tests
         {
             try
             {
-                Expression.Parse(exp);
+                new ExpressionParser().Parse(exp);
             }
             catch (Exception e)
             {
@@ -467,7 +467,7 @@ namespace AdaptiveExpressions.Tests
 
             try
             {
-                var (value, error) = Expression.Parse(exp).TryEvaluate(scope);
+                var (value, error) = new ExpressionParser().Parse(exp).TryEvaluate(scope);
                 if (error != null)
                 {
                     isFail = true;

@@ -50,15 +50,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             var expressions = new List<Expression> { base.GetExpression() };
             foreach (var property in this.Properties)
             {
-                expressions.Add(Expression.Parse($"contains(foreach({TurnPath.DIALOGEVENT}.value, mapping, mapping.property), '{property}')"));
+                expressions.Add(new ExpressionParser().Parse($"contains(foreach({TurnPath.DIALOGEVENT}.value, mapping, mapping.property), '{property}')"));
             }
 
             foreach (var entity in this.Entities)
             {
-                expressions.Add(Expression.Parse($"contains(foreach({TurnPath.DIALOGEVENT}.value, mapping, mapping.entity.name), '{entity}')"));
+                expressions.Add(new ExpressionParser().Parse($"contains(foreach({TurnPath.DIALOGEVENT}.value, mapping, mapping.entity.name), '{entity}')"));
             }
 
-            return ExpressionFactory.AndExpression(expressions.ToArray());
+            return ExpressionBuilder.AndExpression(expressions.ToArray());
         }
     }
 }

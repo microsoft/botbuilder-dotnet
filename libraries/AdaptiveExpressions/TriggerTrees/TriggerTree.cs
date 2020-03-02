@@ -84,7 +84,7 @@ namespace AdaptiveExpressions.TriggerTrees
         /// <param name="quantifiers">Quantifiers to use when expanding expressions.</param>
         /// <returns>New trigger.</returns>
         public Trigger AddTrigger(string expression, object action, params Quantifier[] quantifiers)
-            => AddTrigger(Expression.Parse(expression), action, quantifiers);
+            => AddTrigger(new ExpressionParser().Parse(expression), action, quantifiers);
 
         /// <summary>
         /// Add a trigger expression to the tree.

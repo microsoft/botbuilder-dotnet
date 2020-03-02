@@ -412,7 +412,7 @@ namespace AdaptiveExpressions.TriggerTrees
                 && cnst.Value is string str
                 && str == variable)
             {
-                newExpr = ExpressionFactory.Accessor(binding);
+                newExpr = ExpressionBuilder.Accessor(binding);
                 changed = true;
             }
             else

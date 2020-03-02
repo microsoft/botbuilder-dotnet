@@ -53,7 +53,7 @@ namespace AdaptiveExpressions.Properties
         /// </summary>
         /// <param name="lambda">function (data) which evaluates to enum.</param>
         public EnumExpression(Func<object, object> lambda)
-            : this(ExpressionFactory.Lambda(lambda))
+            : this(ExpressionBuilder.Lambda(lambda))
         {
         }
 
