@@ -63,9 +63,10 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
                     ConversationIdFactory = conversationIdFactory,
                     SkillClient = skillClient,
                     SkillHostEndpoint = skillsConfig.SkillHostEndpoint,
+                    ConversationState = conversationState,
                     Skill = skillInfo
                 };
-                AddDialog(new SkillDialog(skillDialogOptions, conversationState, skillInfo.Id));
+                AddDialog(new SkillDialog(skillDialogOptions, skillInfo.Id));
             }
 
             // Main waterfall dialog for this bot
@@ -143,7 +144,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
         {
             var selectedSkill = (BotFrameworkSkill)stepContext.Values[_selectedSkillKey];
 
-            Activity skillActivity = null;
+            Activity skillActivity;
             switch (selectedSkill.Id)
             {
                 case "EchoSkillBot":
@@ -199,7 +200,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
         // Helper method to create Choice elements for the actions supported by the skill
         private IList<Choice> GetSkillActions(BotFrameworkSkill skill)
         {
-            // Note: the bot would probably render this by readying the skill manifest
+            // Note: the bot would probably render this by reading the skill manifest
             // we are just using hardcoded skill actions here for simplicity.
 
             var choices = new List<Choice>();
