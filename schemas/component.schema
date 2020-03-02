@@ -45,7 +45,7 @@
         },
         "role": {
             "title": "$role",
-            "description": "Defines the role played in the dialog schema [expression|union|union(Kind)].",
+            "description": "Defines the role played in the dialog schema one of [expression|interface|implements($kind)].",
             "type": "string",
             "pattern": "^((expression)|(interface)|(implements\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
         },
