@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Skills
             // SkillConversationIdFactoryBase is supported by this code for backwards compatibility
             ConversationReference conversationReference = null;
             string audience;
-            if (_conversationIdFactory is SkillConversationIdFactoryExBase idFactory)
+            if (_conversationIdFactory is SkillHostConversationIdFactoryBase idFactory)
             {
                 (conversationReference, audience) = await idFactory.GetConversationReferenceWithAudienceAsync(conversationId, CancellationToken.None).ConfigureAwait(false);
             }

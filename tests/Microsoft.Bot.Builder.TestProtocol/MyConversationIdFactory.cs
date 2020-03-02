@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.TestProtocol
 {
-    public class MyConversationIdFactory : SkillConversationIdFactoryExBase
+    public class MyConversationIdFactory : SkillHostConversationIdFactoryBase
     {
         private readonly ConcurrentDictionary<string, (ConversationReference, string)> _conversationRefs = new ConcurrentDictionary<string, (ConversationReference, string)>();
 
