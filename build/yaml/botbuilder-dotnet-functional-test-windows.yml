@@ -32,6 +32,7 @@ variables:
   BuildConfiguration: 'Release'
   Parameters.solution: Microsoft.Bot.Builder.sln
 #  AzureSubscription: define this in Azure
+#  DeleteResourceGroup: (optional) define this in Azure. Default = true.
 #  WinTestBotAppId: define this in Azure
 #  WinTestBotAppSecret: define this in Azure
 #  WinTestBotBotGroup: define this in Azure

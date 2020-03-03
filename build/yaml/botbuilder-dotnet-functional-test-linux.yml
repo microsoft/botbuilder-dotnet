@@ -32,6 +32,7 @@ variables:
   BuildConfiguration: 'Release'
   Parameters.solution: Microsoft.Bot.Builder.sln
 #  AzureSubscription: define this in Azure
+#  DeleteResourceGroup: (optional) define this in Azure. Default = true.
 #  LinuxTestBotAppId: define this in Azure
 #  LinuxTestBotAppSecret: define this in Azure
 #  LinuxTestBotAzureDeploymentPassword: define this in Azure
@@ -40,7 +41,6 @@ variables:
 #  LinuxTestBotBotName: define this in Azure
 #  LinuxTestBotTestAppId: define this in Azure
 #  LinuxTestBotTestPassword: define this in Azure
-#  DeleteResourceGroup: define this in Azure. Normally set to true.
 
 steps:
 - template: ci-build-steps.yml
