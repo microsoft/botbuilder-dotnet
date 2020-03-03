@@ -48,8 +48,8 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         public async Task OnSendToConversationAsyncTest()
         {
             BotCallbackHandler botCallback = null;
-            _mockAdapter.Setup(x => x.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
-                .Callback<ClaimsIdentity, ConversationReference, BotCallbackHandler, CancellationToken>((identity, reference, callback, cancellationToken) =>
+            _mockAdapter.Setup(x => x.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
+                .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>((identity, reference, audience, callback, cancellationToken) =>
                 {
                     botCallback = callback;
                     Console.WriteLine("blah");
@@ -69,8 +69,8 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         public async Task OnOnReplyToActivityAsyncTest()
         {
             BotCallbackHandler botCallback = null;
-            _mockAdapter.Setup(x => x.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
-                .Callback<ClaimsIdentity, ConversationReference, BotCallbackHandler, CancellationToken>((identity, reference, callback, cancellationToken) =>
+            _mockAdapter.Setup(x => x.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
+                .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>((identity, reference, audience, callback, cancellationToken) =>
                 {
                     botCallback = callback;
                     Console.WriteLine("blah");
