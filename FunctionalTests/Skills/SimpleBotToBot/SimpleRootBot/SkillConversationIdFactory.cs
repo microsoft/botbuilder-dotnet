@@ -22,7 +22,7 @@ namespace Microsoft.BotBuilderSamples.SimpleRootBot
         {
             var skillConversationReference = new SkillConversationReference
             {
-                ConversationReference = options.Activity.GetConversationReference(),
+                ConversationReference = JsonConvert.DeserializeObject<ConversationReference>(JsonConvert.SerializeObject(options.Activity.GetConversationReference())),
                 OAuthScope = options.FromBotOAuthScope
             };
             var crJson = JsonConvert.SerializeObject(skillConversationReference);
