@@ -56,8 +56,8 @@ steps:
    #echo '##vso[task.setvariable variable=AppSecret]$(WinTestBotAppSecret)'
    #echo '##vso[task.setvariable variable=BotGroup]$(WinTestBotBotGroup)'
    #echo '##vso[task.setvariable variable=BotName]$(WinTestBotBotName)'
-   echo '##vso[task.setvariable variable=TestAppId]$(WinTestBotTestAppId)'
-   echo '##vso[task.setvariable variable=TestPassword]$(WinTestBotTestPassword)'
+   #echo '##vso[task.setvariable variable=TestAppId]$(WinTestBotTestAppId)'
+   #echo '##vso[task.setvariable variable=TestPassword]$(WinTestBotTestPassword)'
   displayName: 'Set Environment Variables'
 
 - task: AzureCLI@1
