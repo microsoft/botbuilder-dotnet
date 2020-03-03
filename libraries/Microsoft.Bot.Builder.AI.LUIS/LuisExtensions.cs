@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
@@ -27,18 +28,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
             var botRoot = configuration.GetValue<string>("root") ?? ".";
             var luisRegion = configuration.GetValue<string>("LUIS_AUTHORING_REGION") ?? configuration.GetValue<string>("region") ?? "westus";
             var environment = configuration.GetValue<string>("environment") ?? Environment.UserName;
-
-            if (environment == "Development")
-            {
-                environment = Environment.UserName;
-            }
-
             var settings = new Dictionary<string, string>();
             settings["luis:endpoint"] = $"https://{luisRegion}.api.cognitive.microsoft.com";
             settings["BotRoot"] = botRoot;
             builder.AddInMemoryCollection(settings);
 
-            var di = new DirectoryInfo(".");
+            var di = new DirectoryInfo(botRoot);
             foreach (var file in di.GetFiles($"luis.settings.{environment.ToLower()}.{luisRegion}.json", SearchOption.AllDirectories))
             {
                 var relative = file.FullName.Substring(di.FullName.Length);
