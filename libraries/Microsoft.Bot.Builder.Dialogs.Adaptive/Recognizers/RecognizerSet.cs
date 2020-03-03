@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         [JsonProperty("recognizers")]
         public List<Recognizer> Recognizers { get; set; } = new List<Recognizer>();
 
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default)
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             if (dialogContext == null)
             {
@@ -54,10 +54,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             }
 
             // run all of the recognizers in parallel
-            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, activity, cancellationToken)));
+            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, activity, cancellationToken, telemetryProperties, telemetryMetrics)));
 
             // merge intents
-            return MergeResults(results);
+            var result = MergeResults(results);
+
+            this.TelemetryClient.TrackEvent("RecognizerSetResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties), telemetryMetrics);
+
+            return result;
         }
 
         private RecognizerResult MergeResults(RecognizerResult[] results)

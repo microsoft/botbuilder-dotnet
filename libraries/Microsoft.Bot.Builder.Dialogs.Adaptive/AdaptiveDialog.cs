@@ -204,7 +204,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             var properties = new Dictionary<string, string>()
                 {
-                    { "DialogId", Id }
+                    { "DialogId", Id },
+                    { "Kind", DeclarativeType }
                 };
             TelemetryClient.TrackEvent("AdaptiveDialogStart", properties);
 
@@ -247,7 +248,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             var properties = new Dictionary<string, string>()
                 {
-                    { "DialogId", Id }
+                    { "DialogId", Id },
+                    { "Kind", DeclarativeType }
                 };
 
             if (reason == DialogReason.CancelCalled)
@@ -741,6 +743,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 var evt = selection.First();
                 await sequenceContext.DebuggerStepAsync(evt, dialogEvent, cancellationToken).ConfigureAwait(false);
                 Trace.TraceInformation($"Executing Dialog: {Id} Rule[{evt.Id}]: {evt.GetType().Name}: {evt.GetExpression()}");
+
+                var properties = new Dictionary<string, string>()
+                {
+                    { "DialogId", Id },
+                    { "Expression", evt.GetExpression().ToString() },
+                    { "Kind", $"Microsoft.{evt.GetIdentity()}" }
+                };
+                TelemetryClient.TrackEvent("AdaptiveDialogTrigger", properties);
+
                 var changes = await evt.ExecuteAsync(sequenceContext).ConfigureAwait(false);
 
                 if (changes != null && changes.Any())

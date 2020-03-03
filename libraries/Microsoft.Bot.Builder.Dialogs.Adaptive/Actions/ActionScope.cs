@@ -174,11 +174,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             dcState.SetValue(OFFSETKEY, offset);
             var action = this.Actions[offset];
+            var actionName = action.GetType().Name.ToString();
 
             var properties = new Dictionary<string, string>()
             {
                 { "DialogId", action.Id },
-                { "Kind", action.GetType().ToString() }
+                { "Kind", $"Microsoft.{actionName}" }
             };
             TelemetryClient.TrackEvent("AdaptiveDialogAction", properties);
 
