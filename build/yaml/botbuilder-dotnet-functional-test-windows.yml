@@ -31,12 +31,13 @@ variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'Release'
   Parameters.solution: Microsoft.Bot.Builder.sln
-#  AppId: define this in Azure
-#  AppSecret: define this in Azure
 #  AzureSubscription: define this in Azure
-#  BotGroup: define this in Azure
-#  BotName: define this in Azure
-
+#  WinTestBotAppId: define this in Azure
+#  WinTestBotAppSecret: define this in Azure
+#  WinTestBotBotGroup: define this in Azure
+#  WinTestBotBotName: define this in Azure
+#  WinTestBotTestAppId: define this in Azure
+#  WinTestBotTestPassword: define this in Azure
 
 steps:
 - template: ci-build-steps.yml
@@ -49,6 +50,15 @@ steps:
     projects: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj'
     arguments: '--output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot'
     modifyOutputPath: false
+
+- powershell: |
+   echo '##vso[task.setvariable variable=AppId]$(WinTestBotAppId)'
+   echo '##vso[task.setvariable variable=AppSecret]$(WinTestBotAppSecret)'
+   echo '##vso[task.setvariable variable=BotGroup]$(WinTestBotBotGroup)'
+   echo '##vso[task.setvariable variable=BotName]$(WinTestBotBotName)'
+   echo '##vso[task.setvariable variable=TestAppId]$(WinTestBotTestAppId)'
+   echo '##vso[task.setvariable variable=TestPassword]$(WinTestBotTestPassword)'
+  displayName: 'Set Environment Variables'
 
 - task: AzureCLI@1
   displayName: 'Create Resource Group, deploy bot, create DirectLine channel'
@@ -66,11 +76,6 @@ steps:
    echo "##vso[task.setvariable variable=DIRECTLINE;]$key"
    echo "##vso[task.setvariable variable=BOTID;]$(BotName)"
   displayName: 'Get Bot Keys'
-
-- powershell: |
-   echo '##vso[task.setvariable variable=TESTAPPID]$(AppId)'
-   echo '##vso[task.setvariable variable=TESTPASSWORD]$(AppSecret)'
-  displayName: 'Set Environment Variables'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
