@@ -1,10 +1,2 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Bot.Builder.LanguageGeneration.Tests.MultiLanguage
-{
-    class a
-    {
-    }
-}
+﻿﻿﻿# templatec
+- from a.en.lg
