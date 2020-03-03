@@ -16,43 +16,7 @@ namespace Microsoft.Bot.Builder.Teams
 {
     public class TeamsActivityHandler : ActivityHandler
     {
-        public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
-
-            if (turnContext.Activity == null)
-            {
-                throw new ArgumentException($"{nameof(turnContext)} must have non-null Activity.");
-            }
-
-            if (turnContext.Activity.Type == null)
-            {
-                throw new ArgumentException($"{nameof(turnContext)}.Activity must have non-null Type.");
-            }
-
-            switch (turnContext.Activity.Type)
-            {
-                case ActivityTypes.Invoke:
-                    var invokeResponse = await OnInvokeActivityAsync(new DelegatingTurnContext<IInvokeActivity>(turnContext), cancellationToken).ConfigureAwait(false);
-                    
-                    // If OnInvokeActivityAsync has already sent an InvokeResponse, do not send another one.
-                    if (invokeResponse != null && turnContext.TurnState.Get<Activity>(BotFrameworkAdapter.InvokeResponseKey) == null)
-                    {
-                        await turnContext.SendActivityAsync(new Activity { Value = invokeResponse, Type = ActivityTypesEx.InvokeResponse }, cancellationToken).ConfigureAwait(false);
-                    }
-
-                    break;
-
-                default:
-                    await base.OnTurnAsync(turnContext, cancellationToken).ConfigureAwait(false);
-                    break;
-            }
-        }
-
-        protected virtual async Task<InvokeResponse> OnInvokeActivityAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected override async Task<InvokeResponse> OnInvokeActivityAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
             try
             {
@@ -64,10 +28,6 @@ namespace Microsoft.Bot.Builder.Teams
                 {
                     switch (turnContext.Activity.Name)
                     {
-                        case "signin/verifyState":
-                            await OnTeamsSigninVerifyStateAsync(turnContext, cancellationToken).ConfigureAwait(false);
-                            return CreateInvokeResponse();
-
                         case "fileConsent/invoke":
                             return await OnTeamsFileConsentAsync(turnContext, SafeCast<FileConsentCardResponse>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
 
@@ -108,7 +68,7 @@ namespace Microsoft.Bot.Builder.Teams
                             return CreateInvokeResponse(await OnTeamsTaskModuleSubmitAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
                         default:
-                            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
+                            return await base.OnInvokeActivityAsync(turnContext, cancellationToken).ConfigureAwait(false);
                     }
                 }
             }
@@ -121,6 +81,11 @@ namespace Microsoft.Bot.Builder.Teams
         protected virtual Task<InvokeResponse> OnTeamsCardActionInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
             throw new InvokeResponseException(HttpStatusCode.NotImplemented);
+        }
+
+        protected override Task OnSignInInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return OnTeamsSigninVerifyStateAsync(turnContext, cancellationToken);
         }
 
         protected virtual Task OnTeamsSigninVerifyStateAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
@@ -370,11 +335,6 @@ namespace Microsoft.Bot.Builder.Teams
             return Task.CompletedTask;
         }
 
-        private static InvokeResponse CreateInvokeResponse(object body = null)
-        {
-            return new InvokeResponse { Status = (int)HttpStatusCode.OK, Body = body };
-        }
-
         private static T SafeCast<T>(object value)
         {
             var obj = value as JObject;
@@ -384,23 +344,6 @@ namespace Microsoft.Bot.Builder.Teams
             }
 
             return obj.ToObject<T>();
-        }
-
-        private class InvokeResponseException : Exception
-        {
-            private HttpStatusCode _statusCode;
-            private object _body;
-
-            public InvokeResponseException(HttpStatusCode statusCode, object body = null)
-            {
-                _statusCode = statusCode;
-                _body = body;
-            }
-            
-            public InvokeResponse CreateInvokeResponse()
-            {
-                return new InvokeResponse { Status = (int)_statusCode, Body = _body };
-            }
         }
     }
 }
