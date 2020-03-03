@@ -26,22 +26,69 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         private readonly ConversationReference _conversationReference;
         private readonly Mock<BotAdapter> _mockAdapter = new Mock<BotAdapter>();
         private readonly Mock<IBot> _mockBot = new Mock<IBot>();
+        private string _botId = Guid.NewGuid().ToString("N");
+        private string _skillId = Guid.NewGuid().ToString("N");
         private readonly TestConversationIdFactory _testConversationIdFactory = new TestConversationIdFactory();
 
         public SkillHandlerTests()
         {
-            var botId = Guid.NewGuid().ToString("N");
-            var skillId = Guid.NewGuid().ToString("N");
             _claimsIdentity = new ClaimsIdentity();
-            _claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, botId));
-            _claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, skillId));
+            _claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, _botId));
+            _claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, _skillId));
             _claimsIdentity.AddClaim(new Claim(AuthenticationConstants.ServiceUrlClaim, "http://testbot.com/api/messages"));
             _conversationReference = new ConversationReference
             {
                 Conversation = new ConversationAccount(id: Guid.NewGuid().ToString("N")),
                 ServiceUrl = "http://testbot.com/api/messages"
             };
-            _conversationId = _testConversationIdFactory.CreateSkillConversationIdAsync(_conversationReference, CancellationToken.None).Result;
+
+            var activity = Activity.CreateMessageActivity() as Activity;
+            activity.ApplyConversationReference(_conversationReference);
+            var skill = new BotFrameworkSkill() 
+            { 
+                AppId = _skillId, 
+                Id = "skill", 
+                SkillEndpoint = new Uri("http://testbot.com/api/messages") 
+            };
+
+            var options = new SkillConversationIdFactoryOptions
+            {
+                FromBotOAuthScope = _botId,
+                FromBotId = _botId,
+                Activity = activity,
+                BotFrameworkSkill = skill
+            };
+            
+            _conversationId = _testConversationIdFactory.CreateSkillConversationIdAsync(options, CancellationToken.None).Result;
+        }
+
+        [TestMethod]
+        public async Task LegacyConversationIdFactoryTest()
+        {
+            var legacycFatory = new TestLegacyConversationIdFactory();
+            var conversationReference = new ConversationReference
+            {
+                Conversation = new ConversationAccount(id: Guid.NewGuid().ToString("N")),
+                ServiceUrl = "http://testbot.com/api/messages"
+            };
+
+            var conversationId = await legacycFatory.CreateSkillConversationIdAsync(conversationReference, CancellationToken.None);
+            BotCallbackHandler botCallback = null;
+            _mockAdapter.Setup(x => x.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
+                .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>((identity, reference, audience, callback, cancellationToken) =>
+                {
+                    botCallback = callback;
+                    Console.WriteLine("blah");
+                });
+
+            var sut = CreateSkillHandlerForTesting(legacycFatory);
+
+            var activity = Activity.CreateMessageActivity();
+            activity.ApplyConversationReference(conversationReference);
+
+            await sut.TestOnSendToConversationAsync(_claimsIdentity, conversationId, (Activity)activity, CancellationToken.None);
+            Assert.IsNotNull(botCallback);
+            await botCallback.Invoke(new TurnContext(_mockAdapter.Object, (Activity)activity), CancellationToken.None);
         }
 
         [TestMethod]
@@ -85,6 +132,20 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             await sut.TestOnReplyToActivityAsync(_claimsIdentity, _conversationId, activityId, (Activity)activity, CancellationToken.None);
             Assert.IsNotNull(botCallback);
             await botCallback.Invoke(new TurnContext(_mockAdapter.Object, (Activity)activity), CancellationToken.None);
+        }
+
+        [TestMethod]
+        public async Task EventActivityAsyncTest()
+        {
+            var activity = Activity.CreateEventActivity();
+            await TestActivityCallback(activity as Activity);
+        }
+
+        [TestMethod]
+        public async Task EndOfConversationActivityAsyncTest()
+        {
+            var activity = Activity.CreateEndOfConversationActivity();
+            await TestActivityCallback(activity as Activity);
         }
 
         [TestMethod]
@@ -203,15 +264,68 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             });
         }
 
-        private SkillHandlerInstanceForTests CreateSkillHandlerForTesting()
+        private async Task TestActivityCallback(Activity activity)
         {
-            return new SkillHandlerInstanceForTests(_mockAdapter.Object, _mockBot.Object, _testConversationIdFactory, new Mock<ICredentialProvider>().Object, new AuthenticationConfiguration());
+            BotCallbackHandler botCallback = null;
+            _mockAdapter.Setup(x => x.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
+                .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>((identity, reference, audience, callback, cancellationToken) =>
+                {
+                    botCallback = callback;
+                    Console.WriteLine("blah");
+                });
+
+            var sut = CreateSkillHandlerForTesting();
+
+            var activityId = Guid.NewGuid().ToString("N");
+            activity.ApplyConversationReference(_conversationReference);
+
+            await sut.TestOnReplyToActivityAsync(_claimsIdentity, _conversationId, activityId, (Activity)activity, CancellationToken.None);
+            Assert.IsNotNull(botCallback);
+            await botCallback.Invoke(new TurnContext(_mockAdapter.Object, (Activity)activity), CancellationToken.None);
+        }
+
+        private SkillHandlerInstanceForTests CreateSkillHandlerForTesting(SkillConversationIdFactoryBase overrideFactory = null)
+        {
+            return new SkillHandlerInstanceForTests(_mockAdapter.Object, _mockBot.Object, overrideFactory ?? _testConversationIdFactory, new Mock<ICredentialProvider>().Object, new AuthenticationConfiguration());
         }
 
         /// <summary>
         /// An in memory dictionary based ConversationIdFactory for testing.
         /// </summary>
         private class TestConversationIdFactory
+            : SkillConversationIdFactoryBase
+        {
+            private readonly ConcurrentDictionary<string, string> _conversationRefs = new ConcurrentDictionary<string, string>();
+
+            public override Task<string> CreateSkillConversationIdAsync(SkillConversationIdFactoryOptions options, CancellationToken cancellationToken)
+            {
+                var skillConversationReference = new SkillConversationReference
+                {
+                    ConversationReference = options.Activity.GetConversationReference(),
+                    OAuthScope = options.FromBotOAuthScope
+                };
+                var key = $"{options.FromBotId}-{options.BotFrameworkSkill.AppId}-{skillConversationReference.ConversationReference.Conversation.Id}-{skillConversationReference.ConversationReference.ChannelId}-skillconvo";
+                _conversationRefs.GetOrAdd(key, JsonConvert.SerializeObject(skillConversationReference));
+                return Task.FromResult(key);
+            }
+
+            public override Task<SkillConversationReference> GetSkillConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+            {
+                var conversationReference = JsonConvert.DeserializeObject<SkillConversationReference>(_conversationRefs[skillConversationId]);
+                return Task.FromResult(conversationReference);
+            }
+
+            public override Task DeleteConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+            {
+                return Task.CompletedTask;
+            }
+        }
+
+        /// <summary>
+        /// An in memory dictionary based ConversationIdFactory for testing.
+        /// (Implements legacy/deprecated CreateSkillConversationIdAsync and GetConversationReferenceAsync).
+        /// </summary>
+        private class TestLegacyConversationIdFactory
             : SkillConversationIdFactoryBase
         {
             private readonly ConcurrentDictionary<string, string> _conversationRefs = new ConcurrentDictionary<string, string>();
@@ -232,7 +346,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 
             public override Task DeleteConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
             {
-                throw new NotImplementedException();
+                return Task.CompletedTask;
             }
         }
 
