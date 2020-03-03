@@ -38,11 +38,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("disabled")]
         public BoolExpression Disabled { get; set; }
 
-        [JsonProperty("targetSkillAppId")]
-        public string TargetSkillAppId { get; set; }
+        [JsonProperty("skillAppId")]
+        public string SkillAppId { get; set; }
 
-        [JsonProperty("targetSkillEndpoint")]
-        public string TargetSkillEndpoint { get; set; }
+        [JsonProperty("skillEndpoint")]
+        public string SkillEndpoint { get; set; }
 
         /// <summary>
         /// Gets or sets template for the activity.
@@ -63,9 +63,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             DialogOptions.SkillClient = HostContext.Current.Get<BotFrameworkClient>() ?? throw new NullReferenceException("Unable to locate BotFrameworkClient in HostContext");
             DialogOptions.ConversationState = dc.Context.TurnState.Get<ConversationState>();
 
-            DialogOptions.Skill.Id = TargetSkillAppId;
-            DialogOptions.Skill.AppId = TargetSkillAppId;
-            DialogOptions.Skill.SkillEndpoint = new Uri(TargetSkillEndpoint);
+            DialogOptions.Skill.Id = SkillAppId;
+            DialogOptions.Skill.AppId = SkillAppId;
+            DialogOptions.Skill.SkillEndpoint = new Uri(SkillEndpoint);
 
             var activity = await Activity.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
 
