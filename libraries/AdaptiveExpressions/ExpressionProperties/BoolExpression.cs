@@ -54,7 +54,7 @@ namespace AdaptiveExpressions.Properties
         /// </summary>
         /// <param name="lambda">function (data) which evaluates to bool.</param>
         public BoolExpression(Func<object, object> lambda)
-            : this(ExpressionBuilder.Lambda(lambda))
+            : this(Expression.Lambda(lambda))
         {
         }
 

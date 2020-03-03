@@ -52,7 +52,7 @@ namespace AdaptiveExpressions.Properties
         /// </summary>
         /// <param name="lambda">function (data) which evaluates to object.</param>
         public ObjectExpression(Func<object, object> lambda)
-            : this(ExpressionBuilder.Lambda(lambda))
+            : this(Expression.Lambda(lambda))
         {
         }
 

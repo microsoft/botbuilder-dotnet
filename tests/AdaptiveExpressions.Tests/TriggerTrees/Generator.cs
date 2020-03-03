@@ -35,7 +35,7 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
 
         /* Predicates */
 
-        public Expression GenerateString(int length) => ExpressionBuilder.ConstantExpression(RandomString(length));
+        public Expression GenerateString(int length) => Expression.ConstantExpression(RandomString(length));
 
         public string RandomString(int length)
         {
@@ -58,20 +58,20 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
                 case 0:
                     {
                         value = Rand.Next();
-                        expression = ExpressionBuilder.MakeExpression(
+                        expression = Expression.MakeExpression(
                             type,
-                            ExpressionBuilder.Accessor(name),
-                            ExpressionBuilder.ConstantExpression(AdjustValue((int)value, type)));
+                            Expression.Accessor(name),
+                            Expression.ConstantExpression(AdjustValue((int)value, type)));
                     }
 
                     break;
                 case 1:
                     {
                         value = Rand.NextDouble();
-                        expression = ExpressionBuilder.MakeExpression(
+                        expression = Expression.MakeExpression(
                             type,
-                            ExpressionBuilder.Accessor(name),
-                            ExpressionBuilder.ConstantExpression(AdjustValue((double)value, type)));
+                            Expression.Accessor(name),
+                            Expression.ConstantExpression(AdjustValue((double)value, type)));
                     }
 
                     break;
@@ -87,15 +87,15 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
             switch (Rand.Next(3))
             {
                 case 0:
-                    expression = ExpressionBuilder.MakeExpression(ExpressionType.Exists, ExpressionBuilder.Accessor(name));
+                    expression = Expression.MakeExpression(ExpressionType.Exists, Expression.Accessor(name));
                     value = Rand.Next();
                     break;
                 case 1:
-                    expression = ExpressionBuilder.MakeExpression(ExpressionType.Exists, ExpressionBuilder.Accessor(name));
+                    expression = Expression.MakeExpression(ExpressionType.Exists, Expression.Accessor(name));
                     value = Rand.NextDouble();
                     break;
                 case 2:
-                    expression = ExpressionBuilder.MakeExpression(ExpressionType.NotEqual, ExpressionBuilder.Accessor(name), ExpressionBuilder.ConstantExpression(null));
+                    expression = Expression.MakeExpression(ExpressionType.NotEqual, Expression.Accessor(name), Expression.ConstantExpression(null));
                     value = RandomString(5);
                     break;
             }
@@ -195,10 +195,10 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
                     var predicate = predicates[choice];
                     if (j == 0)
                     {
-                        var optional = ExpressionBuilder.MakeExpression(ExpressionFunctions.Lookup(ExpressionType.Optional), predicate.Expression);
+                        var optional = Expression.MakeExpression(ExpressionFunctions.Lookup(ExpressionType.Optional), predicate.Expression);
                         if (Rand.NextDouble() < 0.25)
                         {
-                            optional = ExpressionBuilder.NotExpression(optional);
+                            optional = Expression.NotExpression(optional);
                         }
 
                         expressions.Add(new ExpressionInfo(optional, predicate.Bindings));
@@ -233,7 +233,7 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
                 }
                 else
                 {
-                    binaryExpression = ExpressionBuilder.MakeExpression(type, binaryExpression, info.Expression);
+                    binaryExpression = Expression.MakeExpression(type, binaryExpression, info.Expression);
                 }
             }
 
@@ -336,7 +336,7 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
                     }
                 }
 
-                yield return new ExpressionInfo(ExpressionBuilder.NotExpression(expr.Expression), bindings, expr.Quantifiers);
+                yield return new ExpressionInfo(Expression.NotExpression(expr.Expression), bindings, expr.Quantifiers);
             }
         }
 

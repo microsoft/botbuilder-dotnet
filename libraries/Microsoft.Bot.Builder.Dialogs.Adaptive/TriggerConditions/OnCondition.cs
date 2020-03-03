@@ -124,16 +124,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
                     if (allExpressions.Any())
                     {
-                        this.fullConstraint = ExpressionBuilder.AndExpression(allExpressions.ToArray());
+                        this.fullConstraint = Expression.AndExpression(allExpressions.ToArray());
                     }
                     else
                     {
-                        this.fullConstraint = ExpressionBuilder.ConstantExpression(true);
+                        this.fullConstraint = Expression.ConstantExpression(true);
                     }
 
                     if (RunOnce)
                     {
-                        this.fullConstraint = ExpressionBuilder.AndExpression(
+                        this.fullConstraint = Expression.AndExpression(
                             this.fullConstraint,
                             new Expression(
                                 ExpressionFunctions.Lookup(ExpressionType.Ignore),

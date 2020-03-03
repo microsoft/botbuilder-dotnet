@@ -50,7 +50,7 @@ namespace AdaptiveExpressions
 
             if (children.Count == 0)
             {
-                result = ExpressionBuilder.ConstantExpression(false);
+                result = Expression.ConstantExpression(false);
             }
             else if (children.Count == 1)
             {
@@ -58,7 +58,7 @@ namespace AdaptiveExpressions
             }
             else
             {
-                result = ExpressionBuilder.MakeExpression(ExpressionType.Or, children.ToArray());
+                result = Expression.MakeExpression(ExpressionType.Or, children.ToArray());
             }
 
             return result;
@@ -105,7 +105,7 @@ namespace AdaptiveExpressions
                                             var children = new List<Expression>();
                                             children.AddRange(old.Children);
                                             children.AddRange(clause.Children);
-                                            newClauses.Add(ExpressionBuilder.MakeExpression(ExpressionType.And, children.ToArray()));
+                                            newClauses.Add(Expression.MakeExpression(ExpressionType.And, children.ToArray()));
                                         }
                                         else
                                         {
@@ -148,7 +148,7 @@ namespace AdaptiveExpressions
                     }
                     else
                     {
-                        yield return ExpressionBuilder.MakeExpression(ExpressionType.And, expression);
+                        yield return Expression.MakeExpression(ExpressionType.And, expression);
                     }
 
                     break;
@@ -171,7 +171,7 @@ namespace AdaptiveExpressions
                         }
                         else
                         {
-                            newExpr = ExpressionBuilder.MakeExpression(
+                            newExpr = Expression.MakeExpression(
                                 expression.Type == ExpressionType.And
                                 ? (inNot ? ExpressionType.Or : ExpressionType.And)
                                 : (inNot ? ExpressionType.And : ExpressionType.Or),
@@ -191,18 +191,18 @@ namespace AdaptiveExpressions
                             if (expression.Type == negation.Type)
                             {
                                 // Pass through like optional/ignore
-                                newExpr = ExpressionBuilder.MakeExpression(negation, (from child in expression.Children select PushDownNot(child, true)).ToArray());
+                                newExpr = Expression.MakeExpression(negation, (from child in expression.Children select PushDownNot(child, true)).ToArray());
                             }
                             else
                             {
                                 // Replace with negation and stop
-                                newExpr = ExpressionBuilder.MakeExpression(negation, expression.Children);
+                                newExpr = Expression.MakeExpression(negation, expression.Children);
                             }
                         }
                         else
                         {
                             // Keep not
-                            newExpr = ExpressionBuilder.MakeExpression(ExpressionType.Not, expression);
+                            newExpr = Expression.MakeExpression(ExpressionType.Not, expression);
                         }
                     }
 

@@ -221,7 +221,7 @@ namespace AdaptiveExpressions.TriggerTrees
 
             if (ignores.Any())
             {
-                ignored = ExpressionBuilder.AndExpression(ignores.ToArray());
+                ignored = Expression.AndExpression(ignores.ToArray());
             }
         }
 

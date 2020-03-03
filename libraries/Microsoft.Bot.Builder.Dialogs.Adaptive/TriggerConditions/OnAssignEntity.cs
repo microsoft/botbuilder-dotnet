@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 expressions.Add(new ExpressionParser().Parse($"{TurnPath.DIALOGEVENT}.value.entity.operation == '{this.Operation}'"));
             }
 
-            return ExpressionBuilder.AndExpression(expressions.ToArray());
+            return Expression.AndExpression(expressions.ToArray());
         }
     }
 }

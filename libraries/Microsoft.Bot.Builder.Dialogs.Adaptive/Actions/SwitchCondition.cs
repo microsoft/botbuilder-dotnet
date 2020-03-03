@@ -123,22 +123,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         // Values for cases are always coerced to constant
                         if (long.TryParse(cse.Value, out long i))
                         {
-                            caseExpression = ExpressionBuilder.ConstantExpression(i);
+                            caseExpression = Expression.ConstantExpression(i);
                         }
                         else if (float.TryParse(cse.Value, out float f))
                         {
-                            caseExpression = ExpressionBuilder.ConstantExpression(f);
+                            caseExpression = Expression.ConstantExpression(f);
                         }
                         else if (bool.TryParse(cse.Value, out bool b))
                         {
-                            caseExpression = ExpressionBuilder.ConstantExpression(b);
+                            caseExpression = Expression.ConstantExpression(b);
                         }
                         else
                         {
-                            caseExpression = ExpressionBuilder.ConstantExpression(cse.Value);
+                            caseExpression = Expression.ConstantExpression(cse.Value);
                         }
 
-                        var caseCondition = ExpressionBuilder.EqualsExpression(this.Condition, caseExpression);
+                        var caseCondition = Expression.EqualsExpression(this.Condition, caseExpression);
 
                         // Map of expression to actions
                         this.caseExpressions[cse.Value] = caseCondition;

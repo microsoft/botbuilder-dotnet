@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             if (this.Intents?.Any() == true)
             {
                 var constraints = this.Intents.Select(subIntent => new ExpressionParser().Parse($"contains(jPath({TurnPath.RECOGNIZED}, '$.candidates[*].intent'), '{subIntent}')"));
-                return ExpressionBuilder.AndExpression(base.GetExpression(), ExpressionBuilder.AndExpression(constraints.ToArray()));
+                return Expression.AndExpression(base.GetExpression(), Expression.AndExpression(constraints.ToArray()));
             }
 
             return base.GetExpression();

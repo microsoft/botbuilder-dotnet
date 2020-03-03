@@ -54,7 +54,7 @@ namespace AdaptiveExpressions.Properties
         /// </summary>
         /// <param name="lambda">expression.</param>
         public NumberExpression(Func<object, object> lambda)
-            : this(ExpressionBuilder.Lambda(lambda))
+            : this(Expression.Lambda(lambda))
         {
         }
 
