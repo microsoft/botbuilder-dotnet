@@ -14,19 +14,19 @@ variables:
   BuildConfiguration: 'debug'
   Parameters.solution: Microsoft.Bot.Builder.sln
   WebexPublicAddress: 'https://$(BotName).azurewebsites.net/api/messages'
+#  AppId: define this in Azure
+#  AppSecret: define this in Azure
 #  AzureSubscription: define this in Azure
-#  WebexTestBotAppId: define this in Azure
-#  WebexTestBotAppSecret: define this in Azure
-#  WebexTestBotBotGroup: define this in Azure
-#  WebexTestBotBotName: define this in Azure
-#  WebexTestBotRefreshToken: define this in Azure
-#  WebexTestBotWebexBotAccessToken: define this in Azure
-#  WebexTestBotWebexBotUserName: define this in Azure
-#  WebexTestBotWebexIntegrationClientId: define this in Azure
-#  WebexTestBotWebexIntegrationClientSecret: define this in Azure
-#  WebexTestBotWebexRoomId: define this in Azure
-#  WebexTestBotWebexWebhookName: define this in Azure
-#  WebexTestBotWebexWebhookSecret: define this in Azure
+#  BotGroup: define this in Azure
+#  BotName: define this in Azure
+#  WebexBotAccessToken: define this in Azure
+#  RefreshToken: define this in Azure
+#  WebexBotUserName: define this in Azure
+#  WebexIntegrationClientId: define this in Azure
+#  WebexIntegrationClientSecret: define this in Azure
+#  WebexRoomId: define this in Azure
+#  WebexWebhookName: define this in Azure
+#  WebexWebhookSecret: define this in Azure
 
 steps:
 - template: ci-build-steps.yml
