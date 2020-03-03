@@ -52,10 +52,10 @@ steps:
     modifyOutputPath: false
 
 - powershell: |
-   echo '##vso[task.setvariable variable=AppId]$(WinTestBotAppId)'
-   echo '##vso[task.setvariable variable=AppSecret]$(WinTestBotAppSecret)'
-   echo '##vso[task.setvariable variable=BotGroup]$(WinTestBotBotGroup)'
-   echo '##vso[task.setvariable variable=BotName]$(WinTestBotBotName)'
+ #  echo '##vso[task.setvariable variable=AppId]$(WinTestBotAppId)'
+ #  echo '##vso[task.setvariable variable=AppSecret]$(WinTestBotAppSecret)'
+ #  echo '##vso[task.setvariable variable=BotGroup]$(WinTestBotBotGroup)'
+ #  echo '##vso[task.setvariable variable=BotName]$(WinTestBotBotName)'
    echo '##vso[task.setvariable variable=TestAppId]$(WinTestBotTestAppId)'
    echo '##vso[task.setvariable variable=TestPassword]$(WinTestBotTestPassword)'
   displayName: 'Set Environment Variables'
@@ -66,15 +66,15 @@ steps:
     azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
     inlineScript: |
-     call az deployment create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\FunctionalTests\ExportedTemplate\template.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" newAppServicePlanLocation="westus"
-     call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot\PublishedBot.zip"
-     call az bot directline create -n "$(BotName)" -g "$(BotGroup)" > "$(System.DefaultWorkingDirectory)\DirectLineCreate.json"
+     call az deployment create --name "$(WinTestBotBotGroup)" --template-file "$(System.DefaultWorkingDirectory)\FunctionalTests\ExportedTemplate\template.json" --location "westus" --parameters appId=$(WinTestBotAppId) appSecret="$(WinTestBotAppSecret)" botId="$(WinTestBotBotName)" botSku=F0 newAppServicePlanName="$(WinTestBotBotName)" newWebAppName="$(WinTestBotBotName)" groupName="$(WinTestBotBotGroup)" groupLocation="westus" newAppServicePlanLocation="westus"
+     call az webapp deployment source config-zip --resource-group "$(WinTestBotBotGroup)" --name "$(WinTestBotBotName)" --src "$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot\PublishedBot.zip"
+     call az bot directline create -n "$(WinTestBotBotName)" -g "$(WinTestBotBotGroup)" > "$(System.DefaultWorkingDirectory)\DirectLineCreate.json"
 
 - powershell: |
    $json = Get-Content '$(System.DefaultWorkingDirectory)\DirectLineCreate.json' | Out-String | ConvertFrom-Json
    $key = $json.properties.properties.sites.key
    echo "##vso[task.setvariable variable=DIRECTLINE;]$key"
-   echo "##vso[task.setvariable variable=BOTID;]$(BotName)"
+   echo "##vso[task.setvariable variable=BOTID;]$(WinTestBotBotName)"
   displayName: 'Get Bot Keys'
 
 - task: DotNetCoreCLI@2
@@ -94,5 +94,5 @@ steps:
   inputs:
     azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
-    inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
+    inlineScript: 'call az group delete -n "$(WinTestBotBotGroup)" --yes'
   condition: and(always(), ne(variables['DeleteResourceGroup'], 'false'))
