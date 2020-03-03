@@ -170,7 +170,7 @@ namespace AdaptiveExpressions
         /// <param name="value">value expression.</param>
         /// <returns>New expression.</returns>
         public static Expression SetPathToValue(Expression property, Expression value)
-            => MakeExpression(ExpressionType.SetPathToValue, property, value);
+            => Expression.MakeExpression(ExpressionType.SetPathToValue, property, value);
 
         /// <summary>
         /// Construct and validate an Set a property expression to a value expression.
@@ -182,11 +182,11 @@ namespace AdaptiveExpressions
         {
             if (value is Expression)
             {
-                return MakeExpression(ExpressionType.SetPathToValue, property, (Expression)value);
+                return Expression.MakeExpression(ExpressionType.SetPathToValue, property, (Expression)value);
             }
             else
             {
-                return MakeExpression(ExpressionType.SetPathToValue, property, ConstantExpression(value));
+                return Expression.MakeExpression(ExpressionType.SetPathToValue, property, ConstantExpression(value));
             }
         }
 
@@ -196,7 +196,7 @@ namespace AdaptiveExpressions
         /// <param name="children">Child clauses.</param>
         /// <returns>New expression.</returns>
         public static Expression EqualsExpression(params Expression[] children)
-        => MakeExpression(ExpressionType.Equal, children);
+        => Expression.MakeExpression(ExpressionType.Equal, children);
 
         /// <summary>
         /// Construct and validate an And expression.
@@ -207,7 +207,7 @@ namespace AdaptiveExpressions
         {
             if (children.Count() > 1)
             {
-                return MakeExpression(ExpressionType.And, children);
+                return Expression.MakeExpression(ExpressionType.And, children);
             }
 
             return children.Single();
@@ -222,7 +222,7 @@ namespace AdaptiveExpressions
         {
             if (children.Count() > 1)
             {
-                return MakeExpression(ExpressionType.Or, children);
+                return Expression.MakeExpression(ExpressionType.Or, children);
             }
 
             return children.Single();
@@ -234,7 +234,7 @@ namespace AdaptiveExpressions
         /// <param name="child">Child clauses.</param>
         /// <returns>New expression.</returns>
         public static Expression NotExpression(Expression child)
-            => MakeExpression(ExpressionType.Not, child);
+            => Expression.MakeExpression(ExpressionType.Not, child);
 
         /// <summary>
         /// Construct a constant expression.
