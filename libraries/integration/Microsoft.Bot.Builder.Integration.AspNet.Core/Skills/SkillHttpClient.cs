@@ -38,13 +38,23 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         public async Task<InvokeResponse> PostActivityAsync(string originatingAudience, string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
         {
             string skillConversationId;
-            if (_conversationIdFactory is SkillHostConversationIdFactoryBase idFactory && !string.IsNullOrEmpty(originatingAudience))
+            try
             {
-                skillConversationId = await idFactory.CreateSkillConversationIdAsync(originatingAudience, fromBotId, activity, toSkill, CancellationToken.None).ConfigureAwait(false);
+                var options = new SkillConversationIdFactoryOptions
+                {
+                    FromBotOAuthScope = originatingAudience,
+                    FromBotId = fromBotId,
+                    Activity = activity,
+                    BotFrameworkSkill = toSkill
+                };
+                skillConversationId = await _conversationIdFactory.CreateSkillConversationIdAsync(options, cancellationToken).ConfigureAwait(false);
             }
-            else
+            catch (NotImplementedException)
             {
+                // Attempt to create the ID using deprecated method.
+#pragma warning disable 618 // Keeping this for backward compat, this catch should be removed when the deprecated method is removed.
                 skillConversationId = await _conversationIdFactory.CreateSkillConversationIdAsync(activity.GetConversationReference(), cancellationToken).ConfigureAwait(false);
+#pragma warning restore 618
             }
 
             return await PostActivityAsync(fromBotId, toSkill.AppId, toSkill.SkillEndpoint, callbackUrl, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
@@ -52,7 +62,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 
         public async Task<InvokeResponse> PostActivityAsync(string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
         {
-            return await PostActivityAsync(string.Empty, fromBotId, toSkill, callbackUrl, activity, cancellationToken).ConfigureAwait(false);
+            var originatingAudience = ChannelProvider != null && ChannelProvider.IsGovernment() ? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope : AuthenticationConstants.ToChannelFromBotOAuthScope;
+            return await PostActivityAsync(originatingAudience, fromBotId, toSkill, callbackUrl, activity, cancellationToken).ConfigureAwait(false);
         }
     }
 }

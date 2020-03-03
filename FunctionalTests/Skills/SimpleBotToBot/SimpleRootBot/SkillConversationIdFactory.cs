@@ -16,19 +16,24 @@ namespace Microsoft.BotBuilderSamples.SimpleRootBot
     /// </summary>
     public class SkillConversationIdFactory : SkillConversationIdFactoryBase
     {
-        private readonly ConcurrentDictionary<string, string> _conversationRefs = new ConcurrentDictionary<string, string>();
+        private readonly ConcurrentDictionary<string, SkillConversationReference> _conversationRefs = new ConcurrentDictionary<string, SkillConversationReference>();
 
-        public override Task<string> CreateSkillConversationIdAsync(ConversationReference conversationReference, CancellationToken cancellationToken)
+        public override Task<string> CreateSkillConversationIdAsync(SkillConversationIdFactoryOptions options, CancellationToken cancellationToken)
         {
-            var crJson = JsonConvert.SerializeObject(conversationReference);
-            var key = $"{conversationReference.Conversation.Id}-{conversationReference.ChannelId}-skillconvo";
-            _conversationRefs.GetOrAdd(key, crJson);
+            var skillConversationReference = new SkillConversationReference
+            {
+                ConversationReference = options.Activity.GetConversationReference(),
+                OAuthScope = options.FromBotOAuthScope
+            };
+            var crJson = JsonConvert.SerializeObject(skillConversationReference);
+            var key = $"{skillConversationReference.ConversationReference.Conversation.Id}-{skillConversationReference.ConversationReference.ChannelId}-skillconvo";
+            _conversationRefs.GetOrAdd(key, skillConversationReference);
             return Task.FromResult(key);
         }
 
-        public override Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+        public override Task<SkillConversationReference> GetSkillConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
         {
-            var conversationReference = JsonConvert.DeserializeObject<ConversationReference>(_conversationRefs[skillConversationId]);
+            var conversationReference = _conversationRefs[skillConversationId];
             return Task.FromResult(conversationReference);
         }
 
