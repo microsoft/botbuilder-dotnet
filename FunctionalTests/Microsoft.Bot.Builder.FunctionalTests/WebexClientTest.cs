@@ -119,10 +119,10 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 Assert.Inconclusive("Environment variable 'WebexTestBotRefreshToken' not found.");
             }
 
-            _integrationClientId = Environment.GetEnvironmentVariable("WebexIntegrationClientId");
+            _integrationClientId = Environment.GetEnvironmentVariable("WebexTestBotWebexIntegrationClientId");
             if (string.IsNullOrWhiteSpace(_integrationClientId))
             {
-                Assert.Inconclusive("Environment variable 'WebexIntegrationClientId' not found.");
+                Assert.Inconclusive("Environment variable 'WebexTestBotWebexIntegrationClientId' not found.");
             }
 
             _integrationClientSecret = Environment.GetEnvironmentVariable("WebexTestBotWebexIntegrationClientSecret");
@@ -131,10 +131,10 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 Assert.Inconclusive("Environment variable 'WebexTestBotWebexIntegrationClientSecret' not found.");
             }
 
-            _targetBotEmail = Environment.GetEnvironmentVariable("WebexBotUserName");
+            _targetBotEmail = Environment.GetEnvironmentVariable("WebexTestBotWebexBotUserName");
             if (string.IsNullOrWhiteSpace(_targetBotEmail))
             {
-                Assert.Inconclusive("Environment variable 'WebexBotUserName' not found.");
+                Assert.Inconclusive("Environment variable 'WebexTestBotWebexBotUserName' not found.");
             }
         }
     }
