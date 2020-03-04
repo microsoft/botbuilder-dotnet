@@ -212,6 +212,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                 recognizerResult.Intents.Add("None", new IntentScore() { Score = 1.0f });
             }
 
+            this.TelemetryClient.TrackEvent("QnAMakerRecognizerResult", this.FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
+
             return recognizerResult;
         }
 
