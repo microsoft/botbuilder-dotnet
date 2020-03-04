@@ -352,9 +352,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(evaled.Trim(), "hello world");
 
             evaled = lgFile.EvaluateTemplate("dupNameWithTemplate").ToString();
-            Assert.AreEqual(evaled, "calculate length of ms by user's template");
-
-            evaled = lgFile.EvaluateTemplate("dupNameWithBuiltinFunc").ToString();
             Assert.AreEqual(evaled, "2");
         }
 

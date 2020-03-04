@@ -69,7 +69,7 @@ They are ${ShowAlarm(alarms[1])}
 - Hello
 
 # T2
-- ${prebuilt.length(T1())}
+- ${length(T1())}
 
 # T3
 - ${count(T1())}
