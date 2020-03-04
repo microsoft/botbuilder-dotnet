@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "union(Microsoft.Test.ITestAction)",
+    "$role": "implements(Microsoft.Test.ITestAction)",
     "title": "Assert Reply OneOf",
     "description": "Asserts that a reply text is one of multiple optional responses.",
     "type": "object",

@@ -10,6 +10,6 @@
 > But
 > if it's used as a lambda, it might have problems like
 >       {foreach(alrams, Hello.World, ",")}
-> because everything inside this {} would be analyzed with expression engine
-> and expression engine would treat Hello.World as an indentifier
+> because everything inside this {} would be analyzed with expression parser
+> and expression parser would treat Hello.World as an indentifier
 

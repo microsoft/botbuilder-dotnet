@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             IList<LG> references = null,
             string content = null,
             string id = null,
-            ExpressionEngine expressionEngine = null,
+            ExpressionParser expressionParser = null,
             ImportResolverDelegate importResolver = null,
             IList<string> options = null)
         {
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Content = content ?? string.Empty;
             ImportResolver = importResolver;
             Id = id ?? string.Empty;
-            ExpressionEngine = expressionEngine ?? new ExpressionEngine();
+            ExpressionParser = expressionParser ?? new ExpressionParser();
             Options = options ?? new List<string>();
         }
 
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// expression parser.
         /// </value>
-        public ExpressionEngine ExpressionEngine { get; set; }
+        public ExpressionParser ExpressionParser { get; set; }
 
         /// <summary>
         /// Gets or sets import elements that this LG file contains directly.
@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             CheckErrors();
 
-            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionEngine, StrictMode);
+            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, StrictMode);
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public IList<string> ExpandTemplate(string templateName, object scope = null)
         {
             CheckErrors();
-            var expander = new Expander(AllTemplates.ToList(), ExpressionEngine, StrictMode);
+            var expander = new Expander(AllTemplates.ToList(), ExpressionParser, StrictMode);
             return expander.ExpandTemplate(templateName, scope);
         }
 
@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public AnalyzerResult AnalyzeTemplate(string templateName)
         {
             CheckErrors();
-            var analyzer = new Analyzer(AllTemplates.ToList(), ExpressionEngine);
+            var analyzer = new Analyzer(AllTemplates.ToList(), ExpressionParser);
             return analyzer.AnalyzeTemplate(templateName);
         }
 
@@ -423,7 +423,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Content = lg.Content;
             ImportResolver = lg.ImportResolver;
             Id = lg.Id;
-            ExpressionEngine = lg.ExpressionEngine;
+            ExpressionParser = lg.ExpressionParser;
         }
 
         private void CheckErrors()

@@ -390,7 +390,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     {
                         var text = token.ToString();
 
-                        // if it is a "{bindingpath}" then run through expression engine and treat as a value
+                        // if it is a "{bindingpath}" then run through expression parser and treat as a value
                         var (result, error) = new ValueExpression(text).TryGetValue(dcState);
                         if (error == null)
                         {

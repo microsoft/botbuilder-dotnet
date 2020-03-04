@@ -107,34 +107,34 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
         private void GetEnvironmentVars()
         {
-            _roomId = Environment.GetEnvironmentVariable("WEBEX_ROOM_ID");
+            _roomId = Environment.GetEnvironmentVariable("WebexTestBotWebexRoomId");
             if (string.IsNullOrWhiteSpace(_roomId))
             {
-                Assert.Inconclusive("Environment variable 'WEBEX_ROOM_ID' not found.");
+                Assert.Inconclusive("Environment variable 'WebexTestBotWebexRoomId' not found.");
             }
 
-            _refreshToken = Environment.GetEnvironmentVariable("REFRESH_TOKEN");
+            _refreshToken = Environment.GetEnvironmentVariable("WebexTestBotRefreshToken");
             if (string.IsNullOrWhiteSpace(_refreshToken))
             {
-                Assert.Inconclusive("Environment variable 'REFRESH_TOKEN' not found.");
+                Assert.Inconclusive("Environment variable 'WebexTestBotRefreshToken' not found.");
             }
 
-            _integrationClientId = Environment.GetEnvironmentVariable("WebexIntegrationClientId");
+            _integrationClientId = Environment.GetEnvironmentVariable("WebexTestBotWebexIntegrationClientId");
             if (string.IsNullOrWhiteSpace(_integrationClientId))
             {
-                Assert.Inconclusive("Environment variable 'WebexIntegrationClientId' not found.");
+                Assert.Inconclusive("Environment variable 'WebexTestBotWebexIntegrationClientId' not found.");
             }
 
-            _integrationClientSecret = Environment.GetEnvironmentVariable("INTEGRATION_CLIENT_SECRET");
+            _integrationClientSecret = Environment.GetEnvironmentVariable("WebexTestBotWebexIntegrationClientSecret");
             if (string.IsNullOrWhiteSpace(_integrationClientSecret))
             {
-                Assert.Inconclusive("Environment variable 'INTEGRATION_CLIENT_SECRET' not found.");
+                Assert.Inconclusive("Environment variable 'WebexTestBotWebexIntegrationClientSecret' not found.");
             }
 
-            _targetBotEmail = Environment.GetEnvironmentVariable("WebexBotUserName");
+            _targetBotEmail = Environment.GetEnvironmentVariable("WebexTestBotWebexBotUserName");
             if (string.IsNullOrWhiteSpace(_targetBotEmail))
             {
-                Assert.Inconclusive("Environment variable 'WebexBotUserName' not found.");
+                Assert.Inconclusive("Environment variable 'WebexTestBotWebexBotUserName' not found.");
             }
         }
     }

@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     internal class StaticChecker : LGFileParserBaseVisitor<List<Diagnostic>>
     {
-        private readonly ExpressionEngine baseExpressionEngine;
+        private readonly ExpressionParser baseExpressionParser;
         private readonly LG lg;
         private IList<string> visitedTemplateNames;
 
@@ -25,11 +25,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Initializes a new instance of the <see cref="StaticChecker"/> class.
         /// </summary>
         /// <param name="lg">the lg wihch would be checked.</param>
-        /// <param name="expressionEngine">Init expression engine.</param>
         public StaticChecker(LG lg)
         {
             this.lg = lg;
-            baseExpressionEngine = lg.ExpressionEngine;
+            baseExpressionParser = lg.ExpressionParser;
         }
 
         // Create a property because we want this to be lazy loaded
@@ -40,8 +39,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (_expressionParser == null)
                 {
                     // create an evaluator to leverage it's customized function look up for checking
-                    var evaluator = new Evaluator(lg.AllTemplates.ToList(), baseExpressionEngine);
-                    _expressionParser = evaluator.ExpressionEngine;
+                    var evaluator = new Evaluator(lg.AllTemplates.ToList(), baseExpressionParser);
+                    _expressionParser = evaluator.ExpressionParser;
                 }
 
                 return _expressionParser;

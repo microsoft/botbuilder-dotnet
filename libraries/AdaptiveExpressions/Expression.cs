@@ -2,6 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using AdaptiveExpressions.Memory;
@@ -45,6 +49,15 @@ namespace AdaptiveExpressions
     public class Expression
     {
         /// <summary>
+        /// Dictionary of function => ExpressionEvaluator.
+        /// </summary>
+        /// <remarks>
+        /// This is all available functions, you can add custom functions to it, but you cannot
+        /// replace builtin functions.  If you clear the dictionary, it will be reset to the built in functions.
+        /// </remarks>
+        public static readonly IDictionary<string, ExpressionEvaluator> Functions = new FunctionTable();
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Expression"/> class.
         /// Built-in expression constructor.
         /// </summary>
@@ -52,7 +65,7 @@ namespace AdaptiveExpressions
         /// <param name="children">Child expressions.</param>
         public Expression(string type, params Expression[] children)
         {
-            Evaluator = ExpressionFunctions.Lookup(type);
+            Evaluator = Functions[type] ?? throw new SyntaxErrorException($"{type} does not have an evaluator, it's not a built-in function or a custom function.");
             Children = children;
         }
 
@@ -64,7 +77,7 @@ namespace AdaptiveExpressions
         /// <param name="children">Child expressions.</param>
         public Expression(ExpressionEvaluator evaluator, params Expression[] children)
         {
-            Evaluator = evaluator;
+            Evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             Children = children;
         }
 
@@ -107,14 +120,19 @@ namespace AdaptiveExpressions
         public static implicit operator Expression(string expression) => Expression.Parse(expression);
 
         /// <summary>
-        /// Parse an string into an expression object.
+        /// Parse an expression string into an expression object.
         /// </summary>
         /// <param name="expression">expression string.</param>
-        /// <returns>resulting expression.</returns>
-        public static Expression Parse(string expression)
-        {
-            return new ExpressionEngine().Parse(expression);
-        }
+        /// <param name="lookup">Optional function lookup when parsing the expression. Default is Expression.Lookup which uses Expression.Functions table.</param>
+        /// <returns>expression object.</returns>
+        public static Expression Parse(string expression, EvaluatorLookup lookup = null) => new ExpressionParser(lookup ?? Expression.Lookup).Parse(expression);
+
+        /// <summary>
+        /// Lookup a ExpressionEvaluator (function) by name.
+        /// </summary>
+        /// <param name="functionName">function name.</param>
+        /// <returns>ExpressionEvaluator.</returns>
+        public static ExpressionEvaluator Lookup(string functionName) => Functions.TryGetValue(functionName, out var function) ? function : null;
 
         /// <summary>
         /// Make an expression and validate it.
@@ -196,7 +214,7 @@ namespace AdaptiveExpressions
             }
             else
             {
-                return Expression.MakeExpression(ExpressionType.SetPathToValue, property, Expression.ConstantExpression(value));
+                return Expression.MakeExpression(ExpressionType.SetPathToValue, property, ConstantExpression(value));
             }
         }
 
@@ -359,52 +377,52 @@ namespace AdaptiveExpressions
 
                     return ((T)(object)result.ToString(), error);
                 }
-                
+
                 if (typeof(T) == typeof(bool))
                 {
                     return ((T)(object)Convert.ToBoolean(result), error);
                 }
-                
+
                 if (typeof(T) == typeof(byte))
                 {
                     return ((T)(object)Convert.ToByte(result), (Convert.ToByte(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
                 }
-                
+
                 if (typeof(T) == typeof(short))
                 {
                     return ((T)(object)Convert.ToInt16(result), (Convert.ToInt16(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
                 }
-                
+
                 if (typeof(T) == typeof(int))
                 {
                     return ((T)(object)Convert.ToInt32(result), (Convert.ToInt32(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
                 }
-                
+
                 if (typeof(T) == typeof(long))
                 {
                     return ((T)(object)Convert.ToInt64(result), (Convert.ToInt64(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
                 }
-                
+
                 if (typeof(T) == typeof(ushort))
                 {
                     return ((T)(object)Convert.ToUInt16(result), (Convert.ToUInt16(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
                 }
-                
+
                 if (typeof(T) == typeof(uint))
                 {
                     return ((T)(object)Convert.ToUInt32(result), (Convert.ToUInt32(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
                 }
-                
+
                 if (typeof(T) == typeof(ulong))
                 {
                     return ((T)(object)Convert.ToUInt64(result), (Convert.ToUInt64(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
                 }
-                
+
                 if (typeof(T) == typeof(float))
                 {
                     return ((T)(object)Convert.ToSingle(Convert.ToDecimal(result)), null);
                 }
-                
+
                 if (typeof(T) == typeof(double))
                 {
                     return ((T)(object)Convert.ToDouble(Convert.ToDecimal(result)), null);
@@ -502,6 +520,85 @@ namespace AdaptiveExpressions
         private string Error<T>(object result)
         {
             return $"'{result}' is not of type {typeof(T).Name}";
+        }
+
+        /// <summary>
+        /// FunctionTable is a dictionary which merges BuiltinFunctions.Functions with a CustomDictionary.
+        /// </summary>
+        private class FunctionTable : IDictionary<string, ExpressionEvaluator>
+        {
+            private readonly ConcurrentDictionary<string, ExpressionEvaluator> customFunctions = new ConcurrentDictionary<string, ExpressionEvaluator>(StringComparer.InvariantCultureIgnoreCase);
+
+            public ICollection<string> Keys => ExpressionFunctions.StandardFunctions.Keys.Concat(this.customFunctions.Keys).ToList();
+
+            public ICollection<ExpressionEvaluator> Values => ExpressionFunctions.StandardFunctions.Values.Concat(this.customFunctions.Values).ToList();
+
+            public int Count => ExpressionFunctions.StandardFunctions.Count + this.customFunctions.Count;
+
+            public bool IsReadOnly => false;
+
+            public ExpressionEvaluator this[string key]
+            {
+                get
+                {
+                    if (ExpressionFunctions.StandardFunctions.TryGetValue(key, out var function))
+                    {
+                        return function;
+                    }
+
+                    if (customFunctions.TryGetValue(key, out function))
+                    {
+                        return function;
+                    }
+
+                    return null;
+                }
+
+                set
+                {
+                    if (ExpressionFunctions.StandardFunctions.ContainsKey(key))
+                    {
+                        throw new NotSupportedException("You can't overwrite a built in function.");
+                    }
+
+                    customFunctions[key] = value;
+                }
+            }
+
+            public void Add(string key, ExpressionEvaluator value) => this[key] = value;
+
+            public void Add(KeyValuePair<string, ExpressionEvaluator> item) => this[item.Key] = item.Value;
+
+            public void Clear() => this.customFunctions.Clear();
+
+            public bool Contains(KeyValuePair<string, ExpressionEvaluator> item) => ExpressionFunctions.StandardFunctions.Contains(item) || this.customFunctions.Contains(item);
+
+            public bool ContainsKey(string key) => ExpressionFunctions.StandardFunctions.ContainsKey(key) || this.customFunctions.ContainsKey(key);
+
+            public void CopyTo(KeyValuePair<string, ExpressionEvaluator>[] array, int arrayIndex) => throw new NotImplementedException();
+
+            public IEnumerator<KeyValuePair<string, ExpressionEvaluator>> GetEnumerator() => ExpressionFunctions.StandardFunctions.Concat(this.customFunctions).GetEnumerator();
+
+            public bool Remove(string key) => this.customFunctions.TryRemove(key, out var oldVal);
+
+            public bool Remove(KeyValuePair<string, ExpressionEvaluator> item) => Remove(item.Key);
+
+            public bool TryGetValue(string key, out ExpressionEvaluator value)
+            {
+                if (ExpressionFunctions.StandardFunctions.TryGetValue(key, out value))
+                {
+                    return true;
+                }
+
+                if (this.customFunctions.TryGetValue(key, out value))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => ExpressionFunctions.StandardFunctions.Concat(this.customFunctions).GetEnumerator();
         }
     }
 }

@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "union(Microsoft.IDialog)",
+    "$role": "implements(Microsoft.IDialog)",
     "title": "QnAMaker Dialog",
     "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
     "type": "object",

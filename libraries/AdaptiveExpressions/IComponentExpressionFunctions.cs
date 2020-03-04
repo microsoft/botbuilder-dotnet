@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace AdaptiveExpressions
 {
     /// <summary>
-    /// Interface for adding custom functions to the expression engine.
+    /// Interface for adding custom functions to the expression parser.
     /// </summary>
     public interface IComponentExpressionFunctions
     {

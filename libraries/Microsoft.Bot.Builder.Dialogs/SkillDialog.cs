@@ -19,15 +19,13 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </remarks>
     public class SkillDialog : Dialog
     {
-        private readonly ConversationState _conversationState;
-        private readonly SkillDialogOptions _dialogOptions;
-
-        public SkillDialog(SkillDialogOptions dialogOptions, ConversationState conversationState, string dialogId = null)
+        public SkillDialog(SkillDialogOptions dialogOptions, string dialogId = null)
             : base(dialogId)
         {
-            _dialogOptions = dialogOptions ?? throw new ArgumentNullException(nameof(dialogOptions));
-            _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
+            DialogOptions = dialogOptions ?? throw new ArgumentNullException(nameof(dialogOptions));
         }
+
+        protected SkillDialogOptions DialogOptions { get; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
@@ -119,13 +117,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         private async Task SendToSkillAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken)
         {
             // Create a conversationId to interact with the skill and send the activity
-            var skillConversationId = await _dialogOptions.ConversationIdFactory.CreateSkillConversationIdAsync(activity.GetConversationReference(), cancellationToken).ConfigureAwait(false);
+            var skillConversationId = await DialogOptions.ConversationIdFactory.CreateSkillConversationIdAsync(activity.GetConversationReference(), cancellationToken).ConfigureAwait(false);
 
             // Always save state before forwarding
             // (the dialog stack won't get updated with the skillDialog and things won't work if you don't)
-            var skillInfo = _dialogOptions.Skill;
-            await _conversationState.SaveChangesAsync(context, true, cancellationToken).ConfigureAwait(false);
-            var response = await _dialogOptions.SkillClient.PostActivityAsync(_dialogOptions.BotId, skillInfo.AppId, skillInfo.SkillEndpoint, _dialogOptions.SkillHostEndpoint, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
+            var skillInfo = DialogOptions.Skill;
+            await DialogOptions.ConversationState.SaveChangesAsync(context, true, cancellationToken).ConfigureAwait(false);
+            var response = await DialogOptions.SkillClient.PostActivityAsync(DialogOptions.BotId, skillInfo.AppId, skillInfo.SkillEndpoint, DialogOptions.SkillHostEndpoint, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
 
             // Inspect the skill response status
             if (!(response.Status >= 200 && response.Status <= 299))
