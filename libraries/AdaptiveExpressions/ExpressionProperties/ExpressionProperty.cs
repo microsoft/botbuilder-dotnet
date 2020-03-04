@@ -70,19 +70,19 @@ namespace AdaptiveExpressions.Properties
 
             if (this.ExpressionText != null)
             {
-                this.expression = new ExpressionParser().Parse(this.ExpressionText.TrimStart('='));
+                this.expression = Expression.Parse(this.ExpressionText.TrimStart('='));
                 return expression;
             }
 
             if (this.Value == null || this.Value is string || this.Value.IsNumber() || this.Value.IsInteger() || this.Value is bool || this.Value.GetType().IsEnum)
             {
                 // return expression as constant
-                this.expression = new ExpressionParser().Parse(this.Value.ToString());
+                this.expression = Expression.Parse(this.Value.ToString());
                 return expression;
             }
 
             // return expression for json object
-            this.expression = new ExpressionParser().Parse($"json({JsonConvert.SerializeObject(this.Value)})");
+            this.expression = Expression.Parse($"json({JsonConvert.SerializeObject(this.Value)})");
             return expression;
         }
 
@@ -105,7 +105,7 @@ namespace AdaptiveExpressions.Properties
         {
             if (expression == null && ExpressionText != null)
             {
-                this.expression = new ExpressionParser().Parse(this.ExpressionText.TrimStart('='));
+                this.expression = Expression.Parse(this.ExpressionText.TrimStart('='));
             }
 
             if (expression != null)

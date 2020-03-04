@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
             {
                 foreach (var assertion in this.Assertions)
                 {
-                    var (result, error) = new ExpressionParser().Parse(assertion).TryEvaluate<bool>(activity);
+                    var (result, error) = Expression.Parse(assertion).TryEvaluate<bool>(activity);
                     if (result != true)
                     {
                         throw new Exception($"{this.Description} {assertion} {activity}");

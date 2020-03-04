@@ -982,7 +982,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(options.Contains(evaled), $"The result `{evaled}` is not in those options [{string.Join(",", options)}]");
 
             var exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("${ErrrorTemplate()}"));
-            Assert.IsTrue(exception.Message.Contains("it's not a built-in function or a customized function"));
+            Assert.IsTrue(exception.Message.Contains("it's not a built-in function or a custom function"));
         }
 
         [TestMethod]
@@ -996,7 +996,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 }
                 else
                 {
-                    return ExpressionFunctions.Lookup(func);
+                    return Expression.Lookup(func);
                 }
             });
             var lgFile = LGParser.ParseFile(GetExampleFilePath("CustomFunction.lg"), null, parser);

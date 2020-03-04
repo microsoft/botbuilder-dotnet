@@ -136,7 +136,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                         this.fullConstraint = Expression.AndExpression(
                             this.fullConstraint,
                             new Expression(
-                                ExpressionFunctions.Lookup(ExpressionType.Ignore),
+                                Expression.Lookup(ExpressionType.Ignore),
                                 new Expression(new ExpressionEvaluator(
                                     $"runOnce{Id}",
                                     (expression, os) =>
@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 {
                     lock (this.extraConstraints)
                     {
-                        this.extraConstraints.Add(new ExpressionParser().Parse(condition.TrimStart('=')));
+                        this.extraConstraints.Add(Expression.Parse(condition.TrimStart('=')));
                         this.fullConstraint = null; // reset to force it to be recalcaulated
                     }
                 }

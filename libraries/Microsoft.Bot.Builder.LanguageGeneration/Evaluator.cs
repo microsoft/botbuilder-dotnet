@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 scope = new CustomizedMemory(SimpleObjectMemory.Wrap(scope));
             }
-            
+
             (var reExecute, var templateName) = ParseTemplateName(inputTemplateName);
 
             if (!TemplateMap.ContainsKey(templateName))
@@ -447,11 +447,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private EvaluatorLookup CustomizedEvaluatorLookup(EvaluatorLookup baseLookup)
         => (string name) =>
         {
-            var prebuiltPrefix = "prebuilt.";
+            var standardFunction = baseLookup(name);
 
-            if (name.StartsWith(prebuiltPrefix))
+            if (standardFunction != null)
             {
-                return baseLookup(name.Substring(prebuiltPrefix.Length));
+                return standardFunction;
+            }
+
+            if (name.StartsWith("lg."))
+            {
+                name = name.Substring(3);
             }
 
             var templateName = ParseTemplateName(name).pureTemplateName;
@@ -493,7 +498,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(isTemplate, ExpressionFunctions.Apply(this.IsTemplate()), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryString);
             }
 
-            return baseLookup(name);
+            return null;
         };
 
         private Func<IReadOnlyList<object>, object> IsTemplate()

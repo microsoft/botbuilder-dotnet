@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
 using AdaptiveExpressions.parser;
@@ -25,7 +26,7 @@ namespace AdaptiveExpressions
         /// <param name="lookup">Delegate to lookup evaluation information from type string.</param>
         public ExpressionParser(EvaluatorLookup lookup = null)
         {
-            EvaluatorLookup = lookup ?? ExpressionFunctions.Lookup;
+            EvaluatorLookup = lookup ?? Expression.Lookup;
         }
 
         /// <summary>
@@ -68,11 +69,11 @@ namespace AdaptiveExpressions
 
         private class ExpressionTransformer : ExpressionAntlrParserBaseVisitor<Expression>
         {
-            private readonly EvaluatorLookup _lookup;
+            private readonly EvaluatorLookup _lookupFunction;
 
             public ExpressionTransformer(EvaluatorLookup lookup)
             {
-                _lookup = lookup;
+                _lookupFunction = lookup;
             }
 
             public Expression Transform(IParseTree context) => Visit(context);
@@ -191,7 +192,7 @@ namespace AdaptiveExpressions
                         {
                             case ExpressionAntlrParser.TEMPLATE:
                                 var expressionString = TrimExpression(node.GetText());
-                                children.Add(new ExpressionParser(_lookup).Parse(expressionString));
+                                children.Add(Expression.Parse(expressionString, _lookupFunction));
                                 break;
                             case ExpressionAntlrParser.ESCAPE_CHARACTER:
                                 children.Add(Expression.ConstantExpression(EvalEscape(node.GetText())));
@@ -225,8 +226,8 @@ namespace AdaptiveExpressions
                 throw new Exception($"Unrecognized constant: {text}");
             }
 
-            private Expression MakeExpression(string type, params Expression[] children)
-                => Expression.MakeExpression(_lookup(type), children);
+            private Expression MakeExpression(string functionType, params Expression[] children)
+                => Expression.MakeExpression(_lookupFunction(functionType) ?? throw new SyntaxErrorException($"{functionType} does not have an evaluator, it's not a built-in function or a custom function."), children);
 
             private IEnumerable<Expression> ProcessArgsList(ExpressionAntlrParser.ArgsListContext context)
             {
