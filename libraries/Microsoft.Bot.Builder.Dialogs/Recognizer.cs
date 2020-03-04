@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             where T : IRecognizerConvert, new()
         {
             var result = new T();
-            result.Convert(await this.RecognizeAsync(dialogContext, activity, cancellationToken: cancellationToken).ConfigureAwait(false));
+            result.Convert(await this.RecognizeAsync(dialogContext, activity, cancellationToken).ConfigureAwait(false));
             return result;
         }
 
