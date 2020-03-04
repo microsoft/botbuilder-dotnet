@@ -1,0 +1,63 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.IfCondition",
+                        "condition": "(user.name == null)",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.TextInput",
+                                "property": "user.name",
+                                "prompt": "Hello, what is your name?",
+                                "unrecognizedPrompt": "How should I call you?",
+                                "invalidPrompt": "That does not soud like a name",
+                                "validations": [
+                                    "this.value.Length > 3"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Hello ${user.name}, nice to meet you!"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, what is your name?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "c"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "That does not soud like a name"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Carlos"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello Carlos, nice to meet you!"
+        }
+    ]
+}

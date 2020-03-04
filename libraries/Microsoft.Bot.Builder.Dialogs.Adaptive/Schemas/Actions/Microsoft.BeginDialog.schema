@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "union(Microsoft.IDialog)",
+    "$role": "implements(Microsoft.IDialog)",
     "title": "Begin a dialog",
     "description": "Begin another dialog.",
     "type": "object",

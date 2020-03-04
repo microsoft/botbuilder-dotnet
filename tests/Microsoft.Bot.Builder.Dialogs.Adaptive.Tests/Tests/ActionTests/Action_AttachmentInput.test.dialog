@@ -1,0 +1,61 @@
+﻿{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.AttachmentInput",
+                        "property": "user.photo",
+                        "prompt": "Hello, upload a photo",
+                        "unrecognizedPrompt": "Send a photo please"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Content url ${user.photo.contentUrl}"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, upload a photo"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "c"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Send a photo please"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "message",
+                "attachments": [
+                    {
+                        "contentType": "image/jpg",
+                        "contentUrl": "http://example.org/photo"
+                    }
+                ]
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Content url http://example.org/photo"
+        }
+    ]
+}

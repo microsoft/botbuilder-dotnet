@@ -422,7 +422,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 if (this.GetType().Name == nameof(AttachmentInput))
                 {
-                    input = dc.Context.Activity.Attachments;
+                    input = dc.Context.Activity.Attachments ?? new List<Attachment>();
                 }
                 else
                 {
