@@ -18,7 +18,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         private readonly IDictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
 
         private IBotTelemetryClient _telemetryClient;
-        private LogTelemetryClientBase _logTelemetryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogSet"/> class.
@@ -33,14 +32,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             _dialogState = dialogState ?? throw new ArgumentNullException(nameof(dialogState));
             _telemetryClient = NullBotTelemetryClient.Instance;
-            _logTelemetryClient = new NullLogTelemetryClient();        
         }
 
         public DialogSet()
         {
             _dialogState = null;
             _telemetryClient = NullBotTelemetryClient.Instance;
-            _logTelemetryClient = new NullLogTelemetryClient();
         }
 
         /// <summary>
@@ -63,30 +60,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 foreach (var dialog in _dialogs.Values)
                 {
                     dialog.TelemetryClient = _telemetryClient;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="LogTelemetryClient"/> to use for logging.
-        /// </summary>
-        /// <value>The <see cref="LogTelemetryClient"/> to use for logging.</value>
-        /// <remarks>When this property is set, it sets the <see cref="Dialog.LogTelemetryClient"/> of each
-        /// dialog in the set to the new value.</remarks>
-        [JsonIgnore]
-        public LogTelemetryClientBase LogTelemetryClient
-        {
-            get
-            {
-                return _logTelemetryClient;
-            }
-
-            set
-            {
-                _logTelemetryClient = value ?? new NullLogTelemetryClient();
-                foreach (var dialog in _dialogs.Values)
-                {
-                    dialog.LogTelemetryClient = _logTelemetryClient;
                 }
             }
         }
@@ -130,8 +103,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             dialog.TelemetryClient = _telemetryClient;
-            dialog.LogTelemetryClient = _logTelemetryClient;
-
             _dialogs[dialog.Id] = dialog;
 
             // Automatically add any dependencies the dialog might have

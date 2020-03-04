@@ -169,6 +169,35 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
         }
 
         /// <summary>
+        /// Logs a dialog entry / as an Application Insights page view.
+        /// </summary>
+        /// <param name="dialogName">The name of the dialog to log the entry / start for.</param>
+        /// <param name="properties">Named string values you can use to search and classify events.</param>
+        /// <param name="metrics">Measurements associated with this event.</param>
+        public virtual void TrackDialogView(string dialogName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+        {
+            var telemetry = new PageViewTelemetry(dialogName);
+
+            if (properties != null)
+            {
+                foreach (var pair in properties)
+                {
+                    telemetry.Properties.Add(pair.Key, pair.Value);
+                }
+            }
+
+            if (metrics != null)
+            {
+                foreach (var pair in metrics)
+                {
+                    telemetry.Metrics.Add(pair.Key, pair.Value);
+                }
+            }
+
+            _telemetryClient.TrackPageView(telemetry);
+        }
+
+        /// <summary>
         /// Flushes the in-memory buffer and any metrics being pre-aggregated.
         /// </summary>
         public virtual void Flush() => _telemetryClient.Flush();

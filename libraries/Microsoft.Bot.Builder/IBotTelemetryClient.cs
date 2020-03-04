@@ -65,6 +65,14 @@ namespace Microsoft.Bot.Builder
         void TrackTrace(string message, Severity severityLevel, IDictionary<string, string> properties);
 
         /// <summary>
+        /// Logs a dialog entry / as an Application Insights page view.
+        /// </summary>
+        /// <param name="dialogName">The name of the dialog to log the entry / start for.</param>
+        /// <param name="properties">Named string values you can use to search and classify events.</param>
+        /// <param name="metrics">Measurements associated with this event.</param>
+        void TrackDialogView(string dialogName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null);
+
+        /// <summary>
         /// Flushes the in-memory buffer and any metrics being pre-aggregated.
         /// </summary>
         void Flush();

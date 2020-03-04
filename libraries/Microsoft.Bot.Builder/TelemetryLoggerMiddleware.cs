@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -21,21 +20,9 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="telemetryClient">The telemetry client to send telemetry events to.</param>
         /// <param name="logPersonalInformation">`true` to include personally identifiable information; otherwise, `false`.</param>
-        [Obsolete("IBotTelemetryClient is now obselete. Please create with an instance of LogTelemetryClient instead.", false)]
         public TelemetryLoggerMiddleware(IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
         {
             TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
-            LogPersonalInformation = logPersonalInformation;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TelemetryLoggerMiddleware"/> class.
-        /// </summary>
-        /// <param name="logTelemetryClient">The telemetry client to send telemetry events to.</param>
-        /// <param name="logPersonalInformation">`true` to include personally identifiable information; otherwise, `false`.</param>
-        public TelemetryLoggerMiddleware(LogTelemetryClientBase logTelemetryClient, bool logPersonalInformation = false)
-        {
-            LogTelemetryClient = logTelemetryClient ?? new NullLogTelemetryClient();
             LogPersonalInformation = logPersonalInformation;
         }
 
@@ -58,15 +45,6 @@ namespace Microsoft.Bot.Builder
         /// </value>
         [JsonIgnore]
         public IBotTelemetryClient TelemetryClient { get; }
-
-        /// <summary>
-        /// Gets The telemetry client to send telemetry events to.
-        /// </summary>
-        /// <value>
-        /// The <see cref="IBotTelemetryClient"/> this middleware uses to log events.
-        /// </value>
-        [JsonIgnore]
-        public LogTelemetryClientBase LogTelemetryClient { get; }
 
         /// <summary>
         /// Logs events for incoming, outgoing, updated, or deleted message activities, using the <see cref="TelemetryClient"/>.
@@ -151,7 +129,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual async Task OnReceiveActivityAsync(Activity activity, CancellationToken cancellation)
         {
-            TrackTelemetryEvent(TelemetryLoggerConstants.BotMsgReceiveEvent, await FillReceiveEventPropertiesAsync(activity).ConfigureAwait(false));
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgReceiveEvent, await FillReceiveEventPropertiesAsync(activity).ConfigureAwait(false));
             return;
         }
 
@@ -167,7 +145,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual async Task OnSendActivityAsync(Activity activity, CancellationToken cancellation)
         {
-            TrackTelemetryEvent(TelemetryLoggerConstants.BotMsgSendEvent, await FillSendEventPropertiesAsync(activity).ConfigureAwait(false));
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgSendEvent, await FillSendEventPropertiesAsync(activity).ConfigureAwait(false));
             return;
         }
 
@@ -183,7 +161,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual async Task OnUpdateActivityAsync(Activity activity, CancellationToken cancellation)
         {
-            TrackTelemetryEvent(TelemetryLoggerConstants.BotMsgUpdateEvent, await FillUpdateEventPropertiesAsync(activity).ConfigureAwait(false));
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgUpdateEvent, await FillUpdateEventPropertiesAsync(activity).ConfigureAwait(false));
             return;
         }
 
@@ -199,7 +177,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual async Task OnDeleteActivityAsync(Activity activity, CancellationToken cancellation)
         {
-            TrackTelemetryEvent(TelemetryLoggerConstants.BotMsgDeleteEvent, await FillDeleteEventPropertiesAsync(activity).ConfigureAwait(false));
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgDeleteEvent, await FillDeleteEventPropertiesAsync(activity).ConfigureAwait(false));
             return;
         }
 
@@ -358,18 +336,6 @@ namespace Microsoft.Bot.Builder
             }
 
             return Task.FromResult(properties);
-        }
-
-        protected void TrackTelemetryEvent(string eventName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
-        {
-            if (LogTelemetryClient != null && !(LogTelemetryClient is NullLogTelemetryClient))
-            {
-                LogTelemetryClient.TrackEvent(eventName, properties, metrics);
-            }
-            else
-            {
-                TelemetryClient.TrackEvent(eventName, properties, metrics);
-            }
         }
     }
 }

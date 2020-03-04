@@ -24,7 +24,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         public static readonly DialogTurnResult EndOfTurn = new DialogTurnResult(DialogTurnStatus.Waiting);
 
         private IBotTelemetryClient _telemetryClient;
-        private LogTelemetryClientBase _logTelemetryClient;
 
         [JsonProperty("id")]
         private string id;
@@ -38,7 +37,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             Id = dialogId;
             _telemetryClient = NullBotTelemetryClient.Instance;
-            _logTelemetryClient = new NullLogTelemetryClient();
         }
 
         /// <summary>
@@ -78,25 +76,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             set
             {
                 _telemetryClient = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="LogTelemetryClient"/> to use for logging.
-        /// </summary>
-        /// <value>The <see cref="LogTelemetryClient"/> to use for logging.</value>
-        /// <seealso cref="DialogSet.LogTelemetryClient"/>
-        [JsonIgnore]
-        public virtual LogTelemetryClientBase LogTelemetryClient
-        {
-            get
-            {
-                return _logTelemetryClient;
-            }
-
-            set
-            {
-                _logTelemetryClient = value;
             }
         }
 
@@ -262,18 +241,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected virtual string OnComputeId()
         {
             return this.GetType().Name;
-        }
-
-        protected void TrackTelemetryEvent(string eventName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
-        {
-            if (_logTelemetryClient != null && !(_logTelemetryClient is NullLogTelemetryClient))
-            {
-                _logTelemetryClient.TrackEvent(eventName, properties, metrics);
-            }
-            else
-            {
-                _telemetryClient.TrackEvent(eventName, properties, metrics);
-            }
         }
 
         protected void RegisterSourceLocation(string path, int lineNumber)

@@ -53,27 +53,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="LogTelemetryClient"/> to use for logging.
-        /// When setting this property, all of the contained dialogs' <see cref="Dialog.TelemetryClient"/>
-        /// properties are also set.
-        /// </summary>
-        /// <value>The <see cref="LogTelemetryClient"/> to use when logging.</value>
-        /// <seealso cref="DialogSet.LogTelemetryClient"/>
-        public override LogTelemetryClientBase LogTelemetryClient
-        {
-            get
-            {
-                return base.LogTelemetryClient;
-            }
-
-            set
-            {
-                base.LogTelemetryClient = value ?? new NullLogTelemetryClient();
-                Dialogs.LogTelemetryClient = base.LogTelemetryClient;
-            }
-        }
-
-        /// <summary>
         /// Called when the dialog is started and pushed onto the parent's dialog stack.
         /// </summary>
         /// <param name="outerDc">The parent <see cref="DialogContext"/> for the current turn of conversation.</param>
@@ -109,7 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
             }
 
-            LogTelemetryClient.TrackDialogView(Id);
+            TelemetryClient.TrackDialogView(Id);
 
             // Just signal waiting
             return Dialog.EndOfTurn;
