@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder
 {
-    public class NullBotTelemetryClient : IBotTelemetryClient
+    public class NullBotTelemetryClient : IBotTelemetryClient, IBotPageViewTelemetryClient
     {
         public static IBotTelemetryClient Instance { get; } = new NullBotTelemetryClient();
 
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder
         {
         }
 
-        public void TrackDialogView(string dialogName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+        public void TrackPageView(string dialogName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
         {
         }
     }
