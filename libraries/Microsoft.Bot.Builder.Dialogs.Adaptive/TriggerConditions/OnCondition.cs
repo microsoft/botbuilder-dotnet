@@ -136,7 +136,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                         this.fullConstraint = Expression.AndExpression(
                             this.fullConstraint,
                             new Expression(
-                                ExpressionFunctions.Lookup(ExpressionType.Ignore),
+                                Expression.Lookup(ExpressionType.Ignore),
                                 new Expression(new ExpressionEvaluator(
                                     $"runOnce{Id}",
                                     (expression, os) =>

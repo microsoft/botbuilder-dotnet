@@ -1,4 +1,4 @@
-lexer grammar ExpressionLexer;
+lexer grammar ExpressionAntlrLexer;
 
 @lexer::members {
   bool ignoreWS = true;      // usually we ignore whitespace, but inside stringInterpolation, whitespace is significant

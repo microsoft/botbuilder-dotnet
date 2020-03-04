@@ -73,8 +73,8 @@
                 <Source>.*\\AttachmentPayload.cs</Source>
                 <Source>.*\\CommonRegexLexer.cs</Source>
                 <Source>.*\\CommonRegexParser.cs</Source>
-                <Source>.*\\ExpressionLexer.cs</Source>
-                <Source>.*\\ExpressionParser.cs</Source>
+                <Source>.*\\ExpressionAntlrLexer.cs</Source>
+                <Source>.*\\ExpressionAntlrParser.cs</Source>
                 <Source>.*\\LGFileLexer.cs</Source>
                 <Source>.*\\LGFileParser.cs</Source>
               </Exclude>
