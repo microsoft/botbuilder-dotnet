@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// A class with dialog arguments for a <see cref="SkillDialog"/>.
     /// </summary>
-    public class SkillDialogArgs
+    public class BeginSkillDialogOptions
     {
         /// <summary>
         /// Gets or sets the <see cref="Activity"/> to send to the skill.

@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder
     public abstract class BotAdapter
     {
         public const string BotIdentityKey = "BotIdentity";
-        public const string OAuthScopeKey = "OAuthScope";
+        public const string OAuthScopeKey = "Microsoft.Bot.Builder.BotAdapter.OAuthScope";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotAdapter"/> class.

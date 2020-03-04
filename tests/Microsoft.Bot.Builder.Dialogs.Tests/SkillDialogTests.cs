@@ -38,10 +38,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             client = new DialogTestClient(Channels.Test, sut, new Dictionary<string, string>());
             await Assert.ThrowsExceptionAsync<ArgumentException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"), "options should be of type DialogArgs");
 
-            client = new DialogTestClient(Channels.Test, sut, new SkillDialogArgs());
+            client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions());
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"), "Activity in DialogArgs should be set");
 
-            client = new DialogTestClient(Channels.Test, sut, new SkillDialogArgs { Activity = (Activity)Activity.CreateConversationUpdateActivity() });
+            client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions { Activity = (Activity)Activity.CreateConversationUpdateActivity() });
             await Assert.ThrowsExceptionAsync<ArgumentException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"), "Only Message and Event activities are supported");
         }
 
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var sut = new SkillDialog(dialogOptions);
             var activityToSend = (Activity)Activity.CreateMessageActivity();
             activityToSend.Text = Guid.NewGuid().ToString();
-            var client = new DialogTestClient(Channels.Test, sut, new SkillDialogArgs { Activity = activityToSend }, conversationState: conversationState);
+            var client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
 
             // Send something to the dialog to start it
             await client.SendActivityAsync<IMessageActivity>("irrelevant");
@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var sut = new SkillDialog(dialogOptions);
             var activityToSend = (Activity)Activity.CreateMessageActivity();
             activityToSend.Text = Guid.NewGuid().ToString();
-            var client = new DialogTestClient(Channels.Test, sut, new SkillDialogArgs { Activity = activityToSend }, conversationState: conversationState);
+            var client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
 
             // Send something to the dialog to start it
             await client.SendActivityAsync<IMessageActivity>("irrelevant");
@@ -148,7 +148,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var sut = new SkillDialog(dialogOptions);
             var activityToSend = (Activity)Activity.CreateMessageActivity();
             activityToSend.Text = Guid.NewGuid().ToString();
-            var client = new DialogTestClient(Channels.Test, sut, new SkillDialogArgs { Activity = activityToSend }, conversationState: conversationState);
+            var client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
 
             // Send something to the dialog 
             await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"));

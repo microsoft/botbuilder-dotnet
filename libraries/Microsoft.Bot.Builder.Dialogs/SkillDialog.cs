@@ -5,6 +5,7 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
 
@@ -14,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// A specialized <see cref="Dialog"/> that can wrap remote calls to a skill.
     /// </summary>
     /// <remarks>
-    /// The options parameter in <see cref="BeginDialogAsync"/> must be a <see cref="SkillDialogArgs"/> instance
+    /// The options parameter in <see cref="BeginDialogAsync"/> must be a <see cref="BeginSkillDialogOptions"/> instance
     /// with the initial parameters for the dialog.
     /// </remarks>
     public class SkillDialog : Dialog
@@ -85,18 +86,18 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Validates the the required properties are set in the options argument passed to the BeginDialog call.
+        /// Validates the required properties are set in the options argument passed to the BeginDialog call.
         /// </summary>
-        private static SkillDialogArgs ValidateBeginDialogArgs(object options)
+        private static BeginSkillDialogOptions ValidateBeginDialogArgs(object options)
         {
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (!(options is SkillDialogArgs dialogArgs))
+            if (!(options is BeginSkillDialogOptions dialogArgs))
             {
-                throw new ArgumentException($"Unable to cast {nameof(options)} to {nameof(SkillDialogArgs)}", nameof(options));
+                throw new ArgumentException($"Unable to cast {nameof(options)} to {nameof(BeginSkillDialogOptions)}", nameof(options));
             }
 
             if (dialogArgs.Activity == null)
@@ -117,7 +118,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         private async Task SendToSkillAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken)
         {
             // Create a conversationId to interact with the skill and send the activity
-            var skillConversationId = await DialogOptions.ConversationIdFactory.CreateSkillConversationIdAsync(activity.GetConversationReference(), cancellationToken).ConfigureAwait(false);
+            var conversationIdFactoryOptions = new SkillConversationIdFactoryOptions
+            {
+                FromBotOAuthScope = context.TurnState.Get<string>(BotAdapter.OAuthScopeKey),
+                FromBotId = DialogOptions.BotId,
+                Activity = activity,
+                BotFrameworkSkill = DialogOptions.Skill
+            };
+            var skillConversationId = await DialogOptions.ConversationIdFactory.CreateSkillConversationIdAsync(conversationIdFactoryOptions, cancellationToken).ConfigureAwait(false);
 
             // Always save state before forwarding
             // (the dialog stack won't get updated with the skillDialog and things won't work if you don't)

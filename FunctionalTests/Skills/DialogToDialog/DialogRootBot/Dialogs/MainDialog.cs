@@ -159,8 +159,8 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
                     throw new Exception($"Unknown target skill id: {selectedSkill.Id}.");
             }
 
-            // Create the SkillDialogArgs
-            var skillDialogArgs = new SkillDialogArgs { Activity = skillActivity };
+            // Create the BeginSkillDialogOptions
+            var skillDialogArgs = new BeginSkillDialogOptions { Activity = skillActivity };
 
             // We are manually creating the activity to send to the skill, ensure we add the ChannelData and Properties 
             // from the original activity so the skill gets them.
