@@ -19,16 +19,16 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     {
         public static void Main(string[] args)
         {
+            Help();
             CreateHostBuilder(args).Build().Run();
         }
 
         public static void Help()
         {
-            Trace.TraceInformation("--root <PATH>: Absolute path to the root directory for declarative resources all *.main.dialog be options.  Default current directory");
-            Trace.TraceInformation("--region <REGION>: LUIS endpoint region.  Default westus");
-            Trace.TraceInformation("--environment <ENVIRONMENT>: LUIS environment settings to use.  Default is user alias.");
-            Trace.TraceInformation("--help: This help.");
-            System.Environment.Exit(-1);
+            Console.WriteLine("--root <PATH>: Absolute path to the root directory for declarative resources all *.main.dialog be options.  Default current directory");
+            Console.WriteLine("--region <REGION>: LUIS endpoint region.  Default westus");
+            Console.WriteLine("--environment <ENVIRONMENT>: LUIS environment settings to use.  Default is user alias.");
+            Console.WriteLine("To use LUIS you should do 'dotnet user-secrets --id TestBot set luis:endpointKey=<yourKey>'");
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -36,6 +36,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             .ConfigureAppConfiguration((hostingContext, builder) =>
             {
                 builder.UseLuisSettings();
+                builder.AddUserSecrets("TestBot");
             })
             .ConfigureWebHostDefaults(webBuilder =>
             {
