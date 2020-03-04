@@ -475,7 +475,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }
         }
 
-        private class MyBotTelemetryClient : IBotTelemetryClient
+        private class MyBotTelemetryClient : IBotTelemetryClient, IBotPageViewTelemetryClient
         {
             public MyBotTelemetryClient()
             {
@@ -496,7 +496,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 throw new NotImplementedException();
             }
 
-            public void TrackDialogView(string dialogName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+            public void TrackPageView(string dialogName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
             {
                 throw new NotImplementedException();
             }

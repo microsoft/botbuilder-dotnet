@@ -442,7 +442,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }
 
-        private class MyBotTelemetryClient : IBotTelemetryClient
+        private class MyBotTelemetryClient : IBotTelemetryClient, IBotPageViewTelemetryClient
         {
             public MyBotTelemetryClient(Action<string> trackEventAction)
             {
@@ -466,7 +466,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 throw new NotImplementedException();
             }
 
-            public void TrackDialogView(string dialogName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+            public void TrackPageView(string dialogName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
             {
                 throw new NotImplementedException();
             }
