@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
@@ -179,7 +181,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var properties = new Dictionary<string, string>()
             {
                 { "DialogId", action.Id },
-                { "Kind", $"Microsoft.{actionName}" }
+                { "Kind", $"Microsoft.{actionName}" },
+                { "Instance", JsonConvert.SerializeObject(action, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }).ToString() }
             };
             TelemetryClient.TrackEvent("AdaptiveDialogAction", properties);
 
