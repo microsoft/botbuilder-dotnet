@@ -77,8 +77,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
 
                 // Get list of actions
-                var stepState = dc is SequenceContext sc ? sc.Actions : new List<ActionState>();
-                var actionsIds = stepState.Select(s => s.DialogId);
+                var actions = dc.Parent is ActionContext ac ? ac.Actions : new List<ActionState>();
+                var actionsIds = actions.Select(s => s.DialogId);
 
                 Debug.WriteLine($"{path}: {actionsIds.Count()} actions remaining.");
             }

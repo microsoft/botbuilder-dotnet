@@ -1,0 +1,10 @@
+
+
+# AskLength
+- ${askString('Length')}
+
+
+# LengthName
+- length
+[sandwichTest-library.lg](sandwichTest-library.lg)
+[sandwichTest-library-Missing.lg](sandwichTest-library-Missing.lg)

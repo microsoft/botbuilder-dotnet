@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
 
                 var activityJson = JObject.FromObject(activity);
 
-                if (items.ContainsKey(TelemetryBotIdInitializer.BotActivityKey))
+                if (items != null && items.ContainsKey(TelemetryBotIdInitializer.BotActivityKey))
                 {
                     items.Remove(TelemetryBotIdInitializer.BotActivityKey);
                 }

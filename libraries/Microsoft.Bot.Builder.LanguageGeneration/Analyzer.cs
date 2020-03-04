@@ -24,15 +24,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Initializes a new instance of the <see cref="Analyzer"/> class.
         /// </summary>
         /// <param name="templates">template list.</param>
-        /// <param name="expressionEngine">expression engine.</param>
-        public Analyzer(List<LGTemplate> templates, ExpressionEngine expressionEngine)
+        /// <param name="expressionParser">expression parser.</param>
+        public Analyzer(List<LGTemplate> templates, ExpressionParser expressionParser)
         {
             Templates = templates;
             templateMap = templates.ToDictionary(t => t.Name);
 
             // create an evaluator to leverage it's customized function look up for checking
-            var evaluator = new Evaluator(Templates, expressionEngine);
-            this._expressionParser = evaluator.ExpressionEngine;
+            var evaluator = new Evaluator(Templates, expressionParser);
+            this._expressionParser = evaluator.ExpressionParser;
         }
 
         /// <summary>

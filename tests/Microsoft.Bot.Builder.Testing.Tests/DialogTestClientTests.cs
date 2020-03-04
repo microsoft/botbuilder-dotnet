@@ -114,6 +114,24 @@ namespace Microsoft.Bot.Builder.Testing.Tests
         }
 
         [Fact]
+        public async Task ShouldExposeDialogContext()
+        {
+            _mockDialog
+                .Setup(x => x.BeginDialogAsync(It.IsAny<DialogContext>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult(new DialogTurnResult(DialogTurnStatus.Waiting, "waiting result")));
+            var sut = new DialogTestClient(Channels.Test, _mockDialog.Object);
+
+            // Should be null before the dialog is started
+            Assert.Null(sut.DialogContext);
+            await sut.SendActivityAsync<IMessageActivity>("test");
+
+            // Should not be null once the client has been started and should have the test dialog in the stack.
+            Assert.NotNull(sut.DialogContext);
+            Assert.Single(sut.DialogContext.Stack);
+            Assert.Equal(_mockDialog.Object.Id, sut.DialogContext.Stack[0].Id);
+        }
+
+        [Fact]
         public async Task ShouldUseCustomAdapter()
         {
             var customAdapter = new Mock<TestAdapter>(Channels.Directline, false)

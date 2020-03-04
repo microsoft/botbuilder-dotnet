@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "union(Microsoft.ITriggerCondition)",
+    "$role": "implements(Microsoft.ITriggerCondition)",
     "title": "On choose entity",
     "description": "Actions to be performed when an entity value needs to be resolved.",
     "allOf": [

@@ -429,6 +429,48 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             Assert.AreEqual(mockTelemetryClient.Invocations.Count, 0);
         }
 
+        [TestMethod]
+        [TestCategory("Telemetry")]
+        public async Task Telemetry_InitializerMiddleware_Null_HttpContext_NoError()
+        {
+            // Arrange
+            var mockTelemetryClient = new Mock<IBotTelemetryClient>();
+            var mockHttpContextAccessor = new Mock<HttpContextAccessor>();
+
+            var adapter = new TestAdapter()
+                .Use(new TelemetryInitializerMiddleware(
+                    mockHttpContextAccessor.Object,
+                    new TelemetryLoggerMiddleware(mockTelemetryClient.Object, false),
+                    logActivityTelemetry: false));
+            string conversationId = null;
+
+            // Act
+            // Default case logging Send/Receive Activities
+            await new TestFlow(adapter, async (context, cancellationToken) =>
+            {
+                conversationId = context.Activity.Conversation.Id;
+                var typingActivity = new Activity
+                {
+                    Type = ActivityTypes.Typing,
+                    RelatesTo = context.Activity.RelatesTo,
+                };
+                await context.SendActivityAsync(typingActivity);
+                await Task.Delay(500);
+                await context.SendActivityAsync("echo:" + context.Activity.Text);
+            })
+                .Send("foo")
+                    .AssertReply((activity) => Assert.AreEqual(activity.Type, ActivityTypes.Typing))
+                    .AssertReply("echo:foo")
+                .Send("bar")
+                    .AssertReply((activity) => Assert.AreEqual(activity.Type, ActivityTypes.Typing))
+                    .AssertReply("echo:bar")
+                .StartTestAsync();
+
+            // Assert
+            Assert.IsNull(mockHttpContextAccessor.Object.HttpContext);
+            Assert.AreEqual(mockTelemetryClient.Invocations.Count, 0);
+        }
+
         private string GetHashedConversationId(string conversationID)
         {
             using (var sha256Hash = SHA256.Create())

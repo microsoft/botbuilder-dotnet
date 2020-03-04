@@ -82,6 +82,40 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
+        public async Task BotStateSet_ReturnsDefaultForNullValueType()
+        {
+            var storage = new MemoryStorage();
+
+            var turnContext = TestUtilities.CreateEmptyContext();
+
+            // setup userstate
+            var userState = new UserState(storage);
+            var userProperty = userState.CreateProperty<SomeComplexType>("userStateObject");
+
+            // setup convState
+            var convState = new ConversationState(storage);
+            var convProperty = convState.CreateProperty<SomeComplexType>("convStateObject");
+
+            var stateSet = new BotStateSet(userState, convState);
+
+            Assert.AreEqual(stateSet.BotStates.Count, 2);
+
+            var userObject = await userProperty.GetAsync(turnContext, () => null);
+            Assert.AreEqual(null, userObject);
+
+            // Ensure we also get null on second attempt
+            userObject = await userProperty.GetAsync(turnContext, () => null);
+            Assert.AreEqual(null, userObject);
+
+            var convObject = await convProperty.GetAsync(turnContext, () => null);
+            Assert.AreEqual(null, convObject);
+
+            // Ensure we also get null on second attempt
+            convObject = await convProperty.GetAsync(turnContext, () => null);
+            Assert.AreEqual(null, convObject);
+        }
+
+        [TestMethod]
         public async Task BotStateSet_SaveAsync()
         {
             var storage = new MemoryStorage();
@@ -115,6 +149,13 @@ namespace Microsoft.Bot.Builder.Tests
 
             convCount = await convProperty.GetAsync(context, () => 0);
             Assert.AreEqual(20, convCount);
+        }
+
+        internal class SomeComplexType
+        {
+            public string PropA { get; set; }
+
+            public int PropB { get; set; }
         }
     }
 }
