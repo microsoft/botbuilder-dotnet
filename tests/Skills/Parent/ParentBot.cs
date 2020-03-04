@@ -69,7 +69,7 @@ namespace Microsoft.BotBuilderSamples
                 {
                     var adapter = turnContext.Adapter as IExtendedUserTokenProvider;
                     await adapter.SignOutUserAsync(turnContext, _connectionName, turnContext.Activity.From.Id, cancellationToken);
-                await turnContext.SendActivityAsync(MessageFactory.Text("logout from parent bot successful"), cancellationToken);
+                    await turnContext.SendActivityAsync(MessageFactory.Text("logout from parent bot successful"), cancellationToken);
                 }
                 else if (turnContext.Activity.Text == "skill login" || turnContext.Activity.Text == "skill logout")
                 {
@@ -189,7 +189,6 @@ namespace Microsoft.BotBuilderSamples
             }
 
             return success;
-
         }
     }
 }

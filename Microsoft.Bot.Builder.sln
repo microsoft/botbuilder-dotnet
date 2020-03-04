@@ -181,6 +181,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Testing", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.csproj", "{D921D320-0450-455F-8DF2-70EDAC5CCE68}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Skills", "Skills", "{54DA838C-8BB8-4038-8BDB-D887C02B2D9A}"
+	ProjectSection(SolutionItems) = preProject
+		tests\Skills\ReadMeForSSOTesting.md = tests\Skills\ReadMeForSSOTesting.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parent", "tests\Skills\Parent\Parent.csproj", "{7F8ED2E7-A4BE-4855-BAF2-95657220E419}"
 EndProject
