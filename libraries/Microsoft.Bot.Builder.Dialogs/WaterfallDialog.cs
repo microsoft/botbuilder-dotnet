@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     { "InstanceId", instanceId },
                 };
             TelemetryClient.TrackEvent("WaterfallStart", properties);
-            TelemetryClient.TrackDialogView(Id);
+            TelemetryClient.TrackPageView(Id);
 
             // Run first step
             return await RunStepAsync(dc, 0, DialogReason.BeginCalled, null, cancellationToken).ConfigureAwait(false);

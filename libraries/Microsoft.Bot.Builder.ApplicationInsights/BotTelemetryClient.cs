@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
     /// <summary>
     /// A logging client for bot telemetry.
     /// </summary>
-    public class BotTelemetryClient : IBotTelemetryClient
+    public class BotTelemetryClient : IBotTelemetryClient, IBotPageViewTelemetryClient
     {
         private readonly TelemetryClient _telemetryClient;
 
@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
         /// <param name="dialogName">The name of the dialog to log the entry / start for.</param>
         /// <param name="properties">Named string values you can use to search and classify events.</param>
         /// <param name="metrics">Measurements associated with this event.</param>
-        public virtual void TrackDialogView(string dialogName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+        public virtual void TrackPageView(string dialogName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
         {
             var telemetry = new PageViewTelemetry(dialogName);
 
