@@ -466,6 +466,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 throw new NotImplementedException();
             }
 
+            public void TrackDialogView(string dialogName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+            {
+                throw new NotImplementedException();
+            }
+
             public void TrackEvent(string eventName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
             {
                 TrackEventAction(properties["StepName"]);
