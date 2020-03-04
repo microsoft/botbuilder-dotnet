@@ -82,7 +82,9 @@ steps:
   displayName: 'Git bot deployment'
 
 - powershell: |
-   $json = Get-Content '$(System.DefaultWorkingDirectory)\DirectLineCreate.json' | Out-String | ConvertFrom-Json
+   $content = Get-Content '$(System.DefaultWorkingDirectory)\DirectLineCreate.json' | Out-String
+   Write-Host $content
+   $json = $content | ConvertFrom-Json
    $key = $json.properties.properties.sites.key
    echo "##vso[task.setvariable variable=DIRECTLINE;]$key"
    echo "##vso[task.setvariable variable=BOTID;]$(LinuxTestBotBotName)"
