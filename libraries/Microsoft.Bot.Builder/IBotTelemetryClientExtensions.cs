@@ -5,13 +5,14 @@ namespace Microsoft.Bot.Builder
     public static class IBotTelemetryClientExtensions
     {
         /// <summary>
-        /// Adds the ability to call TrackPageView on the TelemetryClient if it implements IBotPageViewTelemetryClient as well as IBotTelemetryClient.
+        /// Log a DialogView using the TrackPageView method on the IBotTelemetryClient if IBotPageViewTelemetryClient has been implemented.
+        /// Alternatively log the information out via TrackTrace.
         /// </summary>
         /// <param name="telemetryClient">The TelemetryClient that implements IBotTelemetryClient.</param>
         /// <param name="dialogName">The name of the dialog to log the entry / start for.</param>
         /// <param name="properties">Named string values you can use to search and classify events.</param>
         /// <param name="metrics">Measurements associated with this event.</param>
-        public static void TrackPageView(this IBotTelemetryClient telemetryClient, string dialogName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+        public static void TrackDialogView(this IBotTelemetryClient telemetryClient, string dialogName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
         {
             if (telemetryClient is IBotPageViewTelemetryClient pageViewClient)
             {
@@ -19,7 +20,7 @@ namespace Microsoft.Bot.Builder
             }
             else
             {
-                telemetryClient.TrackTrace("TelemetryClient cannot track PageView telemtry as it does not implement IBotPageViewTelemetryClient", Severity.Information, properties);
+                telemetryClient.TrackTrace($"Dialog View: {dialogName}", Severity.Information, properties);
             }
         }
     }
