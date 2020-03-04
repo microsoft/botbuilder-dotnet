@@ -60,16 +60,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             services.AddHttpClient<BotFrameworkClient, SkillHttpClient>();
             services.AddSingleton<ChannelServiceHandler, SkillHandler>();
 
-            try
-            {
-                var dummy = new BeginSkillDialog();
-            }
-            catch
-            {
-                // ignored, this is just to force loading the assembly where BeginSkillDialog is on startup
-                // remove this once we move BeginSkillDialog into the adaptive library. 
-            }
-
             var resourceExplorer = new ResourceExplorer().AddFolder(this.Configuration.GetValue<string>("BotRoot"));
             services.AddSingleton(resourceExplorer);
 

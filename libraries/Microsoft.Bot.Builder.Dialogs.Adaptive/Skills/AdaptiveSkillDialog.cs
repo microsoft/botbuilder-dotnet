@@ -8,18 +8,17 @@ using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
 {
-    public class BeginSkillDialog : SkillDialog
+    public class AdaptiveSkillDialog : SkillDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.BeginSkillDialog";
+        public const string DeclarativeType = "Microsoft.AdaptiveSkillDialog";
 
         [JsonConstructor]
-        public BeginSkillDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public AdaptiveSkillDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(new SkillDialogOptions())
         {
             DialogOptions.Skill = new BotFrameworkSkill();
@@ -38,11 +37,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("disabled")]
         public BoolExpression Disabled { get; set; }
 
+        [JsonProperty("botId")]
+        public StringExpression BotId { get; set; } = "=settings.MicrosoftAppId";
+
+        [JsonProperty("skillHostEndpoint")]
+        public StringExpression SkillHostEndpoint { get; set; } = "=settings.SkillHostEndpoint";
+
         [JsonProperty("skillAppId")]
-        public string SkillAppId { get; set; }
+        public StringExpression SkillAppId { get; set; }
 
         [JsonProperty("skillEndpoint")]
-        public string SkillEndpoint { get; set; }
+        public StringExpression SkillEndpoint { get; set; }
 
         /// <summary>
         /// Gets or sets template for the activity.
@@ -55,18 +60,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-            // TODO: decouple this from config.
-            var config = HostContext.Current.Get<IConfiguration>();
-            DialogOptions.BotId = config["MicrosoftAppId"];
-            DialogOptions.SkillHostEndpoint = new Uri(config["SkillHostEndpoint"]);
+            // Update the dialog options with the runtime settings.
+            DialogOptions.BotId = BotId.GetValue(dc.GetState());
+            DialogOptions.SkillHostEndpoint = new Uri(SkillHostEndpoint.GetValue(dc.GetState()));
             DialogOptions.ConversationIdFactory = HostContext.Current.Get<SkillConversationIdFactoryBase>() ?? throw new NullReferenceException("Unable to locate SkillConversationIdFactoryBase in HostContext");
             DialogOptions.SkillClient = HostContext.Current.Get<BotFrameworkClient>() ?? throw new NullReferenceException("Unable to locate BotFrameworkClient in HostContext");
             DialogOptions.ConversationState = dc.Context.TurnState.Get<ConversationState>();
 
-            DialogOptions.Skill.Id = SkillAppId;
-            DialogOptions.Skill.AppId = SkillAppId;
-            DialogOptions.Skill.SkillEndpoint = new Uri(SkillEndpoint);
+            // Set the skill to call
+            DialogOptions.Skill.Id = SkillAppId.GetValue(dc.GetState());
+            DialogOptions.Skill.AppId = SkillAppId.GetValue(dc.GetState());
+            DialogOptions.Skill.SkillEndpoint = new Uri(SkillEndpoint.GetValue(dc.GetState()));
 
+            // Get the activity to send to the skill.
             var activity = await Activity.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
 
             return await base.BeginDialogAsync(dc, new SkillDialogArgs { Activity = activity }, cancellationToken).ConfigureAwait(false);
