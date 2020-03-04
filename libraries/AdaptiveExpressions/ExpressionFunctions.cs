@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
 using System.Linq;
@@ -37,6 +38,11 @@ namespace AdaptiveExpressions
     public static class ExpressionFunctions
     {
         /// <summary>
+        /// Read only Dictionary of built in functions.
+        /// </summary>
+        public static readonly IDictionary<string, ExpressionEvaluator> StandardFunctions = GetStandardFunctions();
+
+        /// <summary>
         /// Random number generator used for expressions.
         /// </summary>
         /// <remarks>This is exposed so that you can explicitly seed the random number generator for tests.</remarks>
@@ -46,11 +52,6 @@ namespace AdaptiveExpressions
         /// The default date time format string.
         /// </summary>
         public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
-
-        /// <summary>
-        /// Dictionary of function => ExpressionEvaluator.
-        /// </summary>
-        public static readonly Dictionary<string, ExpressionEvaluator> Functions = GetExpressionFunctions();
 
         /// <summary>
         /// Object used to lock Randomizer.
@@ -799,21 +800,6 @@ namespace AdaptiveExpressions
                 },
                 ReturnType.String,
                 expr => ValidateArityAndAnyType(expr, 2, 3, ReturnType.String, ReturnType.Number));
-
-        /// <summary>
-        /// Lookup a built-in function information by type.
-        /// </summary>
-        /// <param name="type">Type to look up.</param>
-        /// <returns>Information about expression type.</returns>
-        public static ExpressionEvaluator Lookup(string type)
-        {
-            if (!Functions.TryGetValue(type, out var eval))
-            {
-                throw new SyntaxErrorException($"{type} does not have an evaluator, it's not a built-in function or a customized function");
-            }
-
-            return eval;
-        }
 
         /// <summary>
         /// Lookup an index property of instance.
@@ -2577,7 +2563,7 @@ namespace AdaptiveExpressions
             return result;
         }
 
-        private static Dictionary<string, ExpressionEvaluator> GetExpressionFunctions()
+        private static IDictionary<string, ExpressionEvaluator> GetStandardFunctions()
         {
             var functions = new List<ExpressionEvaluator>
             {
@@ -3962,7 +3948,7 @@ namespace AdaptiveExpressions
             lookup.Add("or", lookup[ExpressionType.Or]);
 
             lookup.Add("&", lookup[ExpressionType.Concat]);
-            return lookup;
+            return new ReadOnlyDictionary<string, ExpressionEvaluator>(lookup);
         }
     }
 }

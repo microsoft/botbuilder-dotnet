@@ -352,9 +352,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(evaled.Trim(), "hello world");
 
             evaled = lgFile.EvaluateTemplate("dupNameWithTemplate").ToString();
-            Assert.AreEqual(evaled, "calculate length of ms by user's template");
-
-            evaled = lgFile.EvaluateTemplate("dupNameWithBuiltinFunc").ToString();
             Assert.AreEqual(evaled, "2");
         }
 
@@ -982,13 +979,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(options.Contains(evaled), $"The result `{evaled}` is not in those options [{string.Join(",", options)}]");
 
             var exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("${ErrrorTemplate()}"));
-            Assert.IsTrue(exception.Message.Contains("it's not a built-in function or a customized function"));
+            Assert.IsTrue(exception.Message.Contains("it's not a built-in function or a custom function"));
         }
 
         [TestMethod]
         public void TestCustomFunction()
         {
-            var engine = new ExpressionEngine((string func) =>
+            var parser = new ExpressionParser((string func) =>
             { 
                 if (func == "custom")
                 {
@@ -996,10 +993,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 }
                 else
                 {
-                    return ExpressionFunctions.Lookup(func);
+                    return Expression.Lookup(func);
                 }
             });
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("CustomFunction.lg"), null, engine);
+            var lgFile = LGParser.ParseFile(GetExampleFilePath("CustomFunction.lg"), null, parser);
             var evaled = lgFile.EvaluateTemplate("template");
             Assert.AreEqual(3, evaled);
         }

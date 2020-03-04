@@ -42,10 +42,9 @@ namespace AdaptiveExpressions.Tests
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, string expected)
         {
-            var parser = new ExpressionEngine(Lookup);
-            var original = parser.Parse(input);
+            var original = Expression.Parse(input, Lookup);
             var dnf = original.DisjunctiveNormalForm();
-            var expectedDnf = parser.Parse(expected);
+            var expectedDnf = Expression.Parse(expected, Lookup);
             Assert.IsTrue(dnf.DeepEquals(expectedDnf), $"{original} is {dnf}, not {expectedDnf}");
         }
 
@@ -59,7 +58,7 @@ namespace AdaptiveExpressions.Tests
             }
             else
             {
-                eval = ExpressionFunctions.Lookup(type);
+                eval = Expression.Lookup(type);
             }
 
             return eval;
