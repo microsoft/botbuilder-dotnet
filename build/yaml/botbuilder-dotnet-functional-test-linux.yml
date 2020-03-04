@@ -39,8 +39,6 @@ variables:
 #  LinuxTestBotAzureDeploymentUser: define this in Azure
 #  LinuxTestBotBotGroup: define this in Azure
 #  LinuxTestBotBotName: define this in Azure
-#  LinuxTestBotTestAppId: define this in Azure
-#  LinuxTestBotTestPassword: define this in Azure
 
 steps:
 - template: ci-build-steps.yml
@@ -55,32 +53,21 @@ steps:
     zipAfterPublish: false
     modifyOutputPath: false
 
-- powershell: |
-   echo '##vso[task.setvariable variable=AppId]$(LinuxTestBotAppId)'
-   echo '##vso[task.setvariable variable=AppSecret]$(LinuxTestBotAppSecret)'
-   echo '##vso[task.setvariable variable=AzureDeploymentPassword]$(LinuxTestBotAzureDeploymentPassword)'
-   echo '##vso[task.setvariable variable=AzureDeploymentUser]$(LinuxTestBotAzureDeploymentUser)'
-   echo '##vso[task.setvariable variable=BotGroup]$(LinuxTestBotBotGroup)'
-   echo '##vso[task.setvariable variable=BotName]$(LinuxTestBotBotName)'
-   echo '##vso[task.setvariable variable=TestAppId]$(LinuxTestBotTestAppId)'
-   echo '##vso[task.setvariable variable=TestPassword]$(LinuxTestBotTestPassword)'
-  displayName: 'Set Environment Variables'
-
 - task: AzureResourceGroupDeployment@2
-  displayName: 'Azure deployment: Create or update resource group $(BotGroup)'
+  displayName: 'Azure deployment: Create or update resource group $(LinuxTestBotBotGroup)'
   inputs:
     azureSubscription: $(AzureSubscription)
-    resourceGroupName: '$(BotGroup)'
+    resourceGroupName: '$(LinuxTestBotBotGroup)'
     location: 'West US'
     csmFile: FunctionalTests/ExportedTemplate/LinuxDotNet/template.json
-    overrideParameters: '-botName "$(BotName)" -appId "$(AppId)" -appSecret "$(AppSecret)"'
+    overrideParameters: '-botName "$(LinuxTestBotBotName)" -appId "$(LinuxTestBotAppId)" -appSecret "$(LinuxTestBotAppSecret)"'
 
 - task: AzureCLI@1
   displayName: 'Create Azure DirectLine channel for test bot'
   inputs:
     azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
-    inlineScript: 'call az bot directline create -n "$(BotName)" -g "$(BotGroup)" > "$(System.DefaultWorkingDirectory)\DirectLineCreate.json"'
+    inlineScript: 'call az bot directline create -n "$(LinuxTestBotBotName)" -g "$(LinuxTestBotBotGroup)" > "$(System.DefaultWorkingDirectory)\DirectLineCreate.json"'
 
 - script: |
    Move $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\DeploymentScripts\Linux\* $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot
@@ -89,7 +76,7 @@ steps:
    git init
    git add .
    git commit -m "cibuildtest"
-   git remote add azure https://$(AzureDeploymentUser):$(AzureDeploymentPassword)@$(BotName).scm.azurewebsites.net:443/$(BotName).git
+   git remote add azure https://$(LinuxTestBotAzureDeploymentUser):$(LinuxTestBotAzureDeploymentPassword)@$(LinuxTestBotBotName).scm.azurewebsites.net:443/$(LinuxTestBotBotName).git
    git push azure master
   workingDirectory: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot'
   displayName: 'Git bot deployment'
@@ -98,7 +85,7 @@ steps:
    $json = Get-Content '$(System.DefaultWorkingDirectory)\DirectLineCreate.json' | Out-String | ConvertFrom-Json
    $key = $json.properties.properties.sites.key
    echo "##vso[task.setvariable variable=DIRECTLINE;]$key"
-   echo "##vso[task.setvariable variable=BOTID;]$(BotName)"
+   echo "##vso[task.setvariable variable=BOTID;]$(LinuxTestBotBotName)"
   displayName: 'Get bot keys'
 
 - task: DotNetCoreCLI@2
@@ -114,5 +101,5 @@ steps:
   inputs:
     azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
-    inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
+    inlineScript: 'call az group delete -n "$(LinuxTestBotBotGroup)" --yes'
   condition: and(always(), ne(variables['DeleteResourceGroup'], 'false'))
