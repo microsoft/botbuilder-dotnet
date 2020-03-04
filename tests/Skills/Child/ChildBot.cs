@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.BotBuilderSamples
 {
@@ -14,12 +15,14 @@ namespace Microsoft.BotBuilderSamples
         private readonly Dialog _dialog;
         private readonly ConversationState _conversationState;
         private readonly UserState _userState;
+        private readonly string _connectionName;
 
-        public ChildBot(MainDialog dialog, ConversationState conversationState, UserState userState)
+        public ChildBot(IConfiguration configuration, MainDialog dialog, ConversationState conversationState, UserState userState)
         {
             _dialog = dialog;
             _conversationState = conversationState;
             _userState = userState;
+            _connectionName = configuration.GetSection("ConnectionName")?.Value;
         }
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
@@ -39,7 +42,7 @@ namespace Microsoft.BotBuilderSamples
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.ChannelId == "emulator")
+            if (turnContext.Activity.ChannelId != "emulator")
             {
                 if (turnContext.Activity.Text == "skill login")
                 {
@@ -51,7 +54,8 @@ namespace Microsoft.BotBuilderSamples
                 else if (turnContext.Activity.Text == "skill logout")
                 {
                     var adapter = turnContext.Adapter as IExtendedUserTokenProvider;
-                    await adapter.SignOutUserAsync(turnContext, "SkillApp", turnContext.Activity.From.Id, cancellationToken);
+                    await adapter.SignOutUserAsync(turnContext, _connectionName, turnContext.Activity.From.Id, cancellationToken);
+                    await turnContext.SendActivityAsync(MessageFactory.Text("logout from child bot successful"), cancellationToken);
                 }
             }
             else

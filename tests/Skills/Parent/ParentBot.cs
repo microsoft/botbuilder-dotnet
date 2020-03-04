@@ -69,6 +69,7 @@ namespace Microsoft.BotBuilderSamples
                 {
                     var adapter = turnContext.Adapter as IExtendedUserTokenProvider;
                     await adapter.SignOutUserAsync(turnContext, _connectionName, turnContext.Activity.From.Id, cancellationToken);
+                await turnContext.SendActivityAsync(MessageFactory.Text("logout from parent bot successful"), cancellationToken);
                 }
                 else if (turnContext.Activity.Text == "skill login" || turnContext.Activity.Text == "skill logout")
                 {
@@ -146,7 +147,7 @@ namespace Microsoft.BotBuilderSamples
                         if (!string.IsNullOrWhiteSpace(result.Token))
                         {
                             // Send an invoke back to the skill
-                            return await SendTokenExchangeInvokeToSkill(activity, oauthCard.TokenExchangeResource.Id, result.Token, "SkillApp", cancellationToken);
+                            return await SendTokenExchangeInvokeToSkill(turnContext, activity, oauthCard.TokenExchangeResource.Id, result.Token, cancellationToken);
                         }
                     }
                 }
@@ -155,7 +156,7 @@ namespace Microsoft.BotBuilderSamples
             return false;
         }
 
-        private async Task<bool> SendTokenExchangeInvokeToSkill(Activity incomingActivity, string id, string token, string connectionName, CancellationToken cancellationToken)
+        private async Task<bool> SendTokenExchangeInvokeToSkill(ITurnContext turnContext, Activity incomingActivity, string id, string token, CancellationToken cancellationToken)
         {
             var activity = incomingActivity.CreateReply() as Activity;
             activity.Type = ActivityTypes.Invoke;
@@ -163,8 +164,7 @@ namespace Microsoft.BotBuilderSamples
             activity.Value = new TokenExchangeInvokeRequest()
             {
                 Id = id,
-                Token = token,
-                ConnectionName = connectionName,
+                Token = token
             };
 
             // route the activity to the skill
@@ -178,7 +178,18 @@ namespace Microsoft.BotBuilderSamples
                 cancellationToken);
 
             // Check response status: true if success, false if failure
-            return response.Status >= 200 && response.Status <= 299;
+            var success = response.Status >= 200 && response.Status <= 299;
+            if (success)
+            {
+                await turnContext.SendActivityAsync(MessageFactory.Text("Skill token exchange successful"), cancellationToken);
+            }
+            else
+            {
+                await turnContext.SendActivityAsync(MessageFactory.Text("Skill token exchange failed"), cancellationToken);
+            }
+
+            return success;
+
         }
     }
 }
