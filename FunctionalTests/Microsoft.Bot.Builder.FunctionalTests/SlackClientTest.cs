@@ -133,34 +133,34 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         {
             if (string.IsNullOrWhiteSpace(_slackChannel) || string.IsNullOrWhiteSpace(_slackBotToken) || string.IsNullOrWhiteSpace(_slackClientSigningSecret) || string.IsNullOrWhiteSpace(_slackVerificationToken) || string.IsNullOrWhiteSpace(_botName))
             {
-                _slackChannel = Environment.GetEnvironmentVariable("SLACK_CHANNEL");
+                _slackChannel = Environment.GetEnvironmentVariable("SlackChannel");
                 if (string.IsNullOrWhiteSpace(_slackChannel))
                 {
-                    Assert.Inconclusive("Environment variable 'SLACK_CHANNEL' not found.");
+                    Assert.Inconclusive("Environment variable 'SlackChannel' not found.");
                 }
 
-                _slackBotToken = Environment.GetEnvironmentVariable("SLACK_BOT_TOKEN");
+                _slackBotToken = Environment.GetEnvironmentVariable("SlackBotToken");
                 if (string.IsNullOrWhiteSpace(_slackBotToken))
                 {
-                    Assert.Inconclusive("Environment variable 'SLACK_BOT_TOKEN' not found.");
+                    Assert.Inconclusive("Environment variable 'SlackBotToken' not found.");
                 }
 
-                _slackClientSigningSecret = Environment.GetEnvironmentVariable("SLACK_CLIENT_SIGNING_SECRET");
+                _slackClientSigningSecret = Environment.GetEnvironmentVariable("SlackClientSigningSecret");
                 if (string.IsNullOrWhiteSpace(_slackClientSigningSecret))
                 {
-                    Assert.Inconclusive("Environment variable 'SLACK_CLIENT_SIGNING_SECRET' not found.");
+                    Assert.Inconclusive("Environment variable 'SlackClientSigningSecret' not found.");
                 }
 
-                _slackVerificationToken = Environment.GetEnvironmentVariable("SLACK_VERIFICATION_TOKEN");
+                _slackVerificationToken = Environment.GetEnvironmentVariable("SlackVerificationToken");
                 if (string.IsNullOrWhiteSpace(_slackVerificationToken))
                 {
-                    Assert.Inconclusive("Environment variable 'SLACK_VERIFICATION_TOKEN' not found.");
+                    Assert.Inconclusive("Environment variable 'SlackVerificationToken' not found.");
                 }
 
-                _botName = Environment.GetEnvironmentVariable("BOT_NAME");
+                _botName = Environment.GetEnvironmentVariable("BotName");
                 if (string.IsNullOrWhiteSpace(_botName))
                 {
-                    Assert.Inconclusive("Environment variable 'BOT_NAME' not found.");
+                    Assert.Inconclusive("Environment variable 'BotName' not found.");
                 }
             }
         }

@@ -24,6 +24,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Action_AttachmentInput()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
         public async Task Action_BeginDialog()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
