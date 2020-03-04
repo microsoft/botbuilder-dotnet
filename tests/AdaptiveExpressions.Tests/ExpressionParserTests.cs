@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 namespace AdaptiveExpressions.Tests
 {
     [TestClass]
-    public class ExpressionEngineTests
+    public class ExpressionParserTests
     {
         private static readonly string NullStr = null;
 

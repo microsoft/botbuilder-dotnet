@@ -1,6 +1,6 @@
-parser grammar ExpressionParser;
+parser grammar ExpressionAntlrParser;
 
-options { tokenVocab=ExpressionLexer; }
+options { tokenVocab=ExpressionAntlrLexer; }
 
 file: expression EOF;
 
