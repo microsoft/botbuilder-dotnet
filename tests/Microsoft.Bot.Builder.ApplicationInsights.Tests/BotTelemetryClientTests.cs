@@ -128,6 +128,16 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
                 _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<TraceTelemetry>(t => t.SeverityLevel == SeverityLevel.Critical)));
                 _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<TraceTelemetry>(t => t.Properties["foo"] == "bar")));
             }
+
+            [TestMethod]
+            public void TrackPageViewTest()
+            {
+                _botTelemetryClient.TrackDialogView("test", new Dictionary<string, string>() { { "hello", "value" } }, new Dictionary<string, double>() { { "metric", 0.6 } });
+
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<PageViewTelemetry>(t => t.Name == "test")));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<PageViewTelemetry>(t => t.Properties["hello"] == "value")));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<PageViewTelemetry>(t => t.Metrics["metric"] == 0.6)));
+            }
         }
     }
 }
