@@ -141,6 +141,32 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public bool StrictMode => GetStrictModeFromOptions(Options);
 
         /// <summary>
+        /// Parser to turn lg content into a <see cref="LG"/>.
+        /// </summary>
+        /// <param name="filePath"> absolut path of a LG file.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <param name="expressionParser">expressionEngine Expression engine for evaluating expressions.</param>
+        /// <returns>new <see cref="LG"/> entity.</returns>
+        public static LG ParseFile(
+            string filePath,
+            ImportResolverDelegate importResolver = null,
+            ExpressionParser expressionParser = null) => LGParser.ParseFile(filePath, importResolver, expressionParser);
+
+        /// <summary>
+        /// Parser to turn lg content into a <see cref="LG"/>.
+        /// </summary>
+        /// <param name="content">Text content contains lg templates.</param>
+        /// <param name="id">id is the identifier of content. If importResolver is null, id must be a full path string. </param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <param name="expressionParser">expressionEngine parser engine for parsing expressions.</param>
+        /// <returns>new <see cref="LG"/> entity.</returns>
+        public static LG ParseText(
+            string content,
+            string id = "",
+            ImportResolverDelegate importResolver = null,
+            ExpressionParser expressionParser = null) => LGParser.ParseText(content, id, importResolver, expressionParser);
+
+        /// <summary>
         /// Evaluate a template with given name and scope.
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
@@ -230,7 +256,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var stopLine = template.ParseTree.Stop.Line - 1;
 
                 var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
-                Initialize(LGParser.ParseText(newContent, Id, ImportResolver));
+                Initialize(ParseText(newContent, Id, ImportResolver));
             }
 
             return this;
@@ -254,7 +280,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
             var newContent = $"{Content.TrimEnd()}\r\n\r\n{templateNameLine}\r\n{newTemplateBody}\r\n";
-            Initialize(LGParser.ParseText(newContent, Id, ImportResolver));
+            Initialize(ParseText(newContent, Id, ImportResolver));
 
             return this;
         }
@@ -273,7 +299,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var stopLine = template.ParseTree.Stop.Line - 1;
 
                 var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
-                Initialize(LGParser.ParseText(newContent, Id, ImportResolver));
+                Initialize(ParseText(newContent, Id, ImportResolver));
             }
 
             return this;

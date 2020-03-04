@@ -21,14 +21,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private const string DEFAULTLABEL = "Unknown";
 
-        private readonly LG lgFile;
+        private readonly LG lg;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
         public TemplateEngineLanguageGenerator()
         {
-            this.lgFile = new LG();
+            this.lg = new LG();
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="engine">template engine.</param>
         public TemplateEngineLanguageGenerator(LG engine = null)
         {
-            this.lgFile = engine ?? new LG();
+            this.lg = engine ?? new LG();
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             this.Id = id ?? DEFAULTLABEL;
             var (_, locale) = LGResourceLoader.ParseLGFileName(id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
-            this.lgFile = LGParser.ParseText(lgText ?? string.Empty, Id, importResolver);
+            this.lg = LG.ParseText(lgText ?? string.Empty, Id, importResolver);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             var (_, locale) = LGResourceLoader.ParseLGFileName(Id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
-            this.lgFile = LGParser.ParseFile(filePath, importResolver);
+            this.lg = LG.ParseFile(filePath, importResolver);
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             try
             {
-                return await Task.FromResult(lgFile.Evaluate(template, data).ToString());
+                return await Task.FromResult(lg.Evaluate(template, data).ToString());
             }
             catch (Exception err)
             {

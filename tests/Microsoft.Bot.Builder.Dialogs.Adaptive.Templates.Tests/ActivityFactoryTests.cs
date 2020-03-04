@@ -686,13 +686,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private LG GetNormalStructureLGFile()
         {
             var path = Path.Combine(AppContext.BaseDirectory, "lg", "NormalStructuredLG.lg");
-            return LGParser.ParseFile(path);
+            return LG.ParseFile(path);
         }
 
         private LG GetDiagnosticStructureLGFile()
         {
             var path = Path.Combine(AppContext.BaseDirectory, "lg", "DignosticStructuredLG.lg");
-            return LGParser.ParseFile(path);
+            return LG.ParseFile(path);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             foreach (var filesPerLocale in localeLGFiles)
             {
-                lgPerLocale[filesPerLocale.Key] = LGParser.ParseFile(filesPerLocale.Value);
+                lgPerLocale[filesPerLocale.Key] = LG.ParseFile(filesPerLocale.Value);
             }
         }
 

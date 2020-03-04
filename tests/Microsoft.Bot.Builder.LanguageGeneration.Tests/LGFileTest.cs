@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasic()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("2.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("2.lg"));
 
             var evaled = lgFile.EvaluateTemplate("wPhrase");
             var options = new List<string> { "Hi", "Hello", "Hiya" };
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicTemplateReference()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("3.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("3.lg"));
 
             var evaled = lgFile.EvaluateTemplate("welcome-user", null);
             var options = new List<string> { "Hi", "Hello", "Hiya", "Hi :)", "Hello :)", "Hiya :)" };
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicTemplateRefAndEntityRef()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("4.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("4.lg"));
 
             var userName = "DL";
             var evaled = lgFile.EvaluateTemplate("welcome-user", new { userName = userName }).ToString();
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestIfElseTemplate()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("5.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("5.lg"));
 
             string evaled = lgFile.EvaluateTemplate("time-of-day-readout", new { timeOfDay = "morning" }).ToString();
             Assert.IsTrue(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicConditionalTemplateWithoutDefault()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("5.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("5.lg"));
 
             string evaled = lgFile.EvaluateTemplate("time-of-day-readout-without-default", new { timeOfDay = "morning" }).ToString();
             Assert.IsTrue(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicSwitchCaseTemplate()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("switchcase.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("switchcase.lg"));
 
             string evaled = lgFile.EvaluateTemplate("greetInAWeek", new { day = "Saturday" }).ToString();
             Assert.IsTrue(evaled == "Happy Saturday!");
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicTemplateRefWithParameters()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("6.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("6.lg"));
             string evaled = lgFile.EvaluateTemplate("welcome", null).ToString();
             Assert.IsTrue(evaled == "Hi DongLei :)" ||
                 evaled == "Hey DongLei :)" ||
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicListSupport()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("BasicList.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("BasicList.lg"));
             Assert.AreEqual(lgFile.EvaluateTemplate("BasicJoin", new { items = new[] { "1" } }), "1");
             Assert.AreEqual(lgFile.EvaluateTemplate("BasicJoin", new { items = new[] { "1", "2" } }), "1, 2");
             Assert.AreEqual(lgFile.EvaluateTemplate("BasicJoin", new { items = new[] { "1", "2", "3" } }), "1, 2 and 3");
@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicExtendedFunctions()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("6.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("6.lg"));
             var alarms = new[]
             {
                 new
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestCaseInsensitive()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("CaseInsensitive.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("CaseInsensitive.lg"));
             var alarms = new[]
             {
                 new
@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestListWithOnlyOneElement()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("8.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("8.lg"));
             var evaled = lgFile.EvaluateTemplate("ShowTasks", new { recentTasks = new[] { "Task1" } });
             Assert.AreEqual("Your most recent task is Task1. You can let me know if you want to add or complete a task.", evaled);
         }
@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestTemplateNameWithDotIn()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("TemplateNameWithDot.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("TemplateNameWithDot.lg"));
             Assert.AreEqual(lgFile.EvaluateTemplate("Hello.World", null), "Hello World");
             Assert.AreEqual(lgFile.EvaluateTemplate("Hello", null), "Hello World");
         }
@@ -201,7 +201,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestMultiLine()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("MultilineTextForAdaptiveCard.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("MultilineTextForAdaptiveCard.lg"));
             var evaled1 = lgFile.EvaluateTemplate("wPhrase", string.Empty);
             var options1 = new List<string> { "\r\ncardContent\r\n", "hello", "\ncardContent\n" };
             Assert.IsTrue(options1.Contains(evaled1), $"Evaled is {evaled1}");
@@ -220,7 +220,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestTemplateRef()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("TemplateRef.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("TemplateRef.lg"));
 
             var scope = new
             {
@@ -233,7 +233,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestEscapeCharacter()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("EscapeCharacter.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("EscapeCharacter.lg"));
             var evaled = lgFile.EvaluateTemplate("wPhrase", null);
             Assert.AreEqual(evaled, "Hi \r\n\t[]{}\\");
 
@@ -310,7 +310,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             foreach (var testItem in testData)
             {
-                var lgFile = LGParser.ParseFile(GetExampleFilePath("analyzer.lg"));
+                var lgFile = LG.ParseFile(GetExampleFilePath("analyzer.lg"));
                 var evaled1 = lgFile.AnalyzeTemplate(testItem.GetType().GetProperty("name").GetValue(testItem).ToString());
                 var variableEvaled = evaled1.Variables;
                 var variableEvaledOptions = testItem.GetType().GetProperty("variableOptions").GetValue(testItem) as string[];
@@ -326,7 +326,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestlgTemplateFunction()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("lgTemplate.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("lgTemplate.lg"));
             var evaled = lgFile.EvaluateTemplate("TemplateC", string.Empty);
             var options = new List<string> { "Hi", "Hello" };
             Assert.AreEqual(options.Contains(evaled), true);
@@ -339,7 +339,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestTemplateAsFunction()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("TemplateAsFunction.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("TemplateAsFunction.lg"));
             string evaled = lgFile.EvaluateTemplate("Test2", string.Empty).ToString();
 
             Assert.AreEqual(evaled, "hello world");
@@ -358,7 +358,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestAnalyzelgTemplateFunction()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("lgTemplate.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("lgTemplate.lg"));
             var evaled = lgFile.AnalyzeTemplate("TemplateD");
             var variableEvaled = evaled.Variables;
             var options = new List<string>() { "b" };
@@ -369,7 +369,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestImportLgFiles()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("import.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("import.lg"));
 
             // Assert 6.lg is imported only once when there are several relative paths which point to the same file.
             // Assert import cycle loop is handled well as expected when a file imports itself.
@@ -395,7 +395,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(evaled == "Hi 2" || evaled == "Hello 2");
 
             // Assert 6.lg of relative path is imported from text.
-            lgFile = LGParser.ParseText("# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./6.lg)", GetExampleFilePath("xx.lg"));
+            lgFile = LG.ParseText("# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./6.lg)", GetExampleFilePath("xx.lg"));
 
             Assert.AreEqual(8, lgFile.AllTemplates.Count());
             evaled = lgFile.EvaluateTemplate("basicTemplate", null).ToString();
@@ -415,7 +415,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestRegex()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("Regex.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("Regex.lg"));
             var evaled = lgFile.EvaluateTemplate("wPhrase", string.Empty);
             Assert.AreEqual(evaled, "Hi");
 
@@ -429,7 +429,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestExpandTemplate()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("Expand.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("Expand.lg"));
 
             // without scope
             var evaled = lgFile.ExpandTemplate("FinalGreeting");
@@ -453,7 +453,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestExpandTemplateWithRef()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("Expand.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("Expand.lg"));
 
             var alarms = new[]
             {
@@ -478,7 +478,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestExpandTemplateWithRefInMultiLine()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("Expand.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("Expand.lg"));
 
             var alarms = new[]
             {
@@ -505,7 +505,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestExpandTemplateWithFunction()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("Expand.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("Expand.lg"));
 
             var alarms = new[]
             {
@@ -549,7 +549,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestEvalExpression()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("EvalExpression.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("EvalExpression.lg"));
 
             var userName = "MS";
             var evaled = lgFile.EvaluateTemplate("template1", new { userName });
@@ -576,7 +576,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestLGResource()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("2.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("2.lg"));
 
             Assert.AreEqual(lgFile.Templates.Count, 1);
             Assert.AreEqual(lgFile.Imports.Count, 0);
@@ -622,7 +622,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestMemoryScope()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("MemoryScope.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("MemoryScope.lg"));
             var evaled = lgFile.EvaluateTemplate("T1", new { turn = new { name = "Dong", count = 3 } });
             Assert.AreEqual(evaled, "Hi Dong, welcome to Seattle, Seattle is a beautiful place, how many burgers do you want, 3?");
 
@@ -654,7 +654,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestStructuredTemplate()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("StructuredTemplate.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("StructuredTemplate.lg"));
 
             var evaled = lgFile.EvaluateTemplate("AskForAge.prompt");
 
@@ -720,7 +720,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestEvaluateOnce()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("EvaluateOnce.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("EvaluateOnce.lg"));
 
             var evaled = lgFile.EvaluateTemplate("templateWithSameParams", new { param = "ms" });
             Assert.IsNotNull(evaled);
@@ -736,7 +736,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestReExecute()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("ReExecute.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("ReExecute.lg"));
 
             // may be has different values
             var evaled = lgFile.EvaluateTemplate("templateWithSameParams", new { param1 = "ms", param2 = "newms" });
@@ -745,7 +745,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestConditionExpression()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("ConditionExpression.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("ConditionExpression.lg"));
 
             var evaled = lgFile.EvaluateTemplate("conditionTemplate", new { num = 1 });
 
@@ -767,7 +767,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestLoopScope()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("LoopScope.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("LoopScope.lg"));
 
             var loopClass1 = new LoopClass();
             loopClass1.Name = "jack";
@@ -784,7 +784,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestExpandTemplateWithStructuredLG()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("StructuredTemplate.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("StructuredTemplate.lg"));
 
             // without scope
             var evaled = lgFile.ExpandTemplate("AskForAge.prompt");
@@ -815,7 +815,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestExpressionextract()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("ExpressionExtract.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("ExpressionExtract.lg"));
 
             var evaled1 = lgFile.EvaluateTemplate("templateWithBrackets");
             var evaled2 = lgFile.EvaluateTemplate("templateWithBrackets2");
@@ -853,7 +853,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestStringInterpolation()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("StringInterpolation.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("StringInterpolation.lg"));
 
             var evaled = lgFile.EvaluateTemplate("simpleStringTemplate");
             Assert.AreEqual("say hi", evaled);
@@ -876,7 +876,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         public void TestMemoryAccessPath()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("MemoryAccess.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("MemoryAccess.lg"));
 
             var memory = new
             {
@@ -912,7 +912,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestIsTemplateFunction()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("IsTemplate.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("IsTemplate.lg"));
 
             var evaled = lgFile.EvaluateTemplate("template2", new { templateName = "template1" });
             Assert.AreEqual("template template1 exists", evaled);
@@ -927,7 +927,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestEmptyArratAndObject()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("EmptyArrayAndObject.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("EmptyArrayAndObject.lg"));
 
             var evaled = lgFile.EvaluateTemplate("template", new { list = new List<string> { }, obj = new { } });
             Assert.AreEqual("list and obj are both empty", evaled);
@@ -951,7 +951,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestNullTolerant()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("NullTolerant.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("NullTolerant.lg"));
 
             var evaled = lgFile.EvaluateTemplate("template1");
 
@@ -969,7 +969,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestInlineEvaluate()
         {
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("2.lg"));
+            var lgFile = LG.ParseFile(GetExampleFilePath("2.lg"));
             var evaled = lgFile.Evaluate("hello");
             Assert.AreEqual("hello", evaled);
 
@@ -996,7 +996,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     return Expression.Lookup(func);
                 }
             });
-            var lgFile = LGParser.ParseFile(GetExampleFilePath("CustomFunction.lg"), null, parser);
+            var lgFile = LG.ParseFile(GetExampleFilePath("CustomFunction.lg"), null, parser);
             var evaled = lgFile.EvaluateTemplate("template");
             Assert.AreEqual(3, evaled);
         }
