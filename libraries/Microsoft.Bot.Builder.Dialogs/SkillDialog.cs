@@ -84,6 +84,23 @@ namespace Microsoft.Bot.Builder.Dialogs
             return EndOfTurn;
         }
 
+        public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default)
+        {
+            var repromptEvent = Activity.CreateEventActivity();
+            repromptEvent.Name = DialogEvents.RepromptDialog;
+
+            // Apply conversation reference and common properties from incoming activity before sending.
+            repromptEvent.ApplyConversationReference(turnContext.Activity.GetConversationReference(), true);
+
+            await SendToSkillAsync(turnContext, (Activity)repromptEvent, cancellationToken).ConfigureAwait(false);
+        }
+
+        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+        {
+            await RepromptDialogAsync(dc.Context, dc.ActiveDialog, cancellationToken).ConfigureAwait(false);
+            return EndOfTurn;
+        }
+
         public override async Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
         {
             // Send of of conversation to the skill if the dialog has been cancelled. 
