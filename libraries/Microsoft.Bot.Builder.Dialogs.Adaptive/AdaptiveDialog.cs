@@ -132,9 +132,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             set
             {
-                var client = value ?? new NullBotTelemetryClient();
-                this.Dialogs.TelemetryClient = client;
-                base.TelemetryClient = client;
+                base.TelemetryClient = value ?? NullBotTelemetryClient.Instance;
+                Dialogs.TelemetryClient = base.TelemetryClient;
             }
         }
 
@@ -197,6 +196,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 Bubble = false
             };
 
+            var properties = new Dictionary<string, string>()
+                {
+                    { "DialogId", Id },
+                    { "Kind", DeclarativeType }
+                };
+            TelemetryClient.TrackEvent("AdaptiveDialogStart", properties);
+            TelemetryClient.TrackDialogView(Id);
+
             await OnDialogEventAsync(dc, dialogEvent, cancellationToken).ConfigureAwait(false);
 
             // Continue step execution
@@ -234,6 +241,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
         {
+            var properties = new Dictionary<string, string>()
+                {
+                    { "DialogId", Id },
+                    { "Kind", DeclarativeType }
+                };
+
+            if (reason == DialogReason.CancelCalled)
+            {
+                TelemetryClient.TrackEvent("AdaptiveDialogCancel", properties);
+            }
+            else if (reason == DialogReason.EndCalled)
+            {
+                TelemetryClient.TrackEvent("AdaptiveDialogComplete", properties);
+            }
+
             RestoreParentGenerator(turnContext);
             return base.EndDialogAsync(turnContext, instance, reason, cancellationToken);
         }
@@ -714,6 +736,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 var evt = selection.First();
                 await actionContext.DebuggerStepAsync(evt, dialogEvent, cancellationToken).ConfigureAwait(false);
                 Trace.TraceInformation($"Executing Dialog: {Id} Rule[{evt.Id}]: {evt.GetType().Name}: {evt.GetExpression()}");
+
+                var properties = new Dictionary<string, string>()
+                {
+                    { "DialogId", Id },
+                    { "Expression", evt.GetExpression().ToString() },
+                    { "Kind", $"Microsoft.{evt.GetType().Name}" },
+                    { "Instance", JsonConvert.SerializeObject(evt, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }).ToString() }
+                };
+                TelemetryClient.TrackEvent("AdaptiveDialogTrigger", properties);
+
                 var changes = await evt.ExecuteAsync(actionContext).ConfigureAwait(false);
 
                 if (changes != null && changes.Any())

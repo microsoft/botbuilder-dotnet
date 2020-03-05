@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             dcState.SetValue(TurnPath.REPEATEDIDS, repeatedIds);
 
             // set the activity processed state (default is true)
-            dcState.SetValue(TurnPath.ACTIVITYPROCESSED, this.ActivityProcessed);
+            dcState.SetValue(TurnPath.ACTIVITYPROCESSED, this.ActivityProcessed.GetValue(dcState));
 
             var turnResult = await dc.Parent.ReplaceDialogAsync(dc.Parent.ActiveDialog.Id, boundOptions, cancellationToken).ConfigureAwait(false);
             turnResult.ParentEnded = true;
