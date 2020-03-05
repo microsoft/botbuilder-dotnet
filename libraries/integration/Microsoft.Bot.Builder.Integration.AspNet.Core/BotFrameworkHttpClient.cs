@@ -78,6 +78,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var originalConversationId = activity.Conversation.Id;
             var originalServiceUrl = activity.ServiceUrl;
             var originalCallerId = activity.CallerId;
+            var originalRelatesTo = activity.RelatesTo;
             try
             {
                 activity.RelatesTo = new ConversationReference()
@@ -131,6 +132,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 activity.Conversation.Id = originalConversationId;
                 activity.ServiceUrl = originalServiceUrl;
                 activity.CallerId = originalCallerId;
+                activity.RelatesTo = originalRelatesTo;
             }
         }
 

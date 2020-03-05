@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class SkillDialogOptions
     {
         /// <summary>
-        /// Gets or sets the the Microsoft app ID of the bot calling the skill.
+        /// Gets or sets the Microsoft app ID of the bot calling the skill.
         /// </summary>
         /// <value>
         /// The the Microsoft app ID of the bot calling the skill.
