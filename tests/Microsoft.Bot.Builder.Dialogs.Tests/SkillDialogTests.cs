@@ -14,7 +14,6 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
@@ -38,10 +37,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             client = new DialogTestClient(Channels.Test, sut, new Dictionary<string, string>());
             await Assert.ThrowsExceptionAsync<ArgumentException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"), "options should be of type DialogArgs");
 
-            client = new DialogTestClient(Channels.Test, sut, new SkillDialogArgs());
+            client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions());
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"), "Activity in DialogArgs should be set");
 
-            client = new DialogTestClient(Channels.Test, sut, new SkillDialogArgs { Activity = (Activity)Activity.CreateConversationUpdateActivity() });
+            client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions { Activity = (Activity)Activity.CreateConversationUpdateActivity() });
             await Assert.ThrowsExceptionAsync<ArgumentException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"), "Only Message and Event activities are supported");
         }
 
@@ -74,7 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var sut = new SkillDialog(dialogOptions);
             var activityToSend = (Activity)Activity.CreateMessageActivity();
             activityToSend.Text = Guid.NewGuid().ToString();
-            var client = new DialogTestClient(Channels.Test, sut, new SkillDialogArgs { Activity = activityToSend }, conversationState: conversationState);
+            var client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
 
             // Send something to the dialog to start it
             await client.SendActivityAsync<IMessageActivity>("irrelevant");
@@ -123,7 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var sut = new SkillDialog(dialogOptions);
             var activityToSend = (Activity)Activity.CreateMessageActivity();
             activityToSend.Text = Guid.NewGuid().ToString();
-            var client = new DialogTestClient(Channels.Test, sut, new SkillDialogArgs { Activity = activityToSend }, conversationState: conversationState);
+            var client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
 
             // Send something to the dialog to start it
             await client.SendActivityAsync<IMessageActivity>("irrelevant");
@@ -148,7 +147,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var sut = new SkillDialog(dialogOptions);
             var activityToSend = (Activity)Activity.CreateMessageActivity();
             activityToSend.Text = Guid.NewGuid().ToString();
-            var client = new DialogTestClient(Channels.Test, sut, new SkillDialogArgs { Activity = activityToSend }, conversationState: conversationState);
+            var client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
 
             // Send something to the dialog 
             await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"));
@@ -161,15 +160,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             if (captureAction != null)
             {
                 mockSkillClient
-                    .Setup(x => x.PostActivityAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
-                    .Returns(Task.FromResult(new InvokeResponse { Status = returnStatus }))
+                    .Setup(x => x.PostActivityAsync<Activity[]>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
+                    .Returns(Task.FromResult(new InvokeResponse<Activity[]> { Status = returnStatus }))
                     .Callback(captureAction);
             }
             else
             {
                 mockSkillClient
-                    .Setup(x => x.PostActivityAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
-                    .Returns(Task.FromResult(new InvokeResponse { Status = returnStatus }));
+                    .Setup(x => x.PostActivityAsync<Activity[]>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
+                    .Returns(Task.FromResult(new InvokeResponse<Activity[]> { Status = returnStatus }));
             }
 
             return mockSkillClient;
@@ -199,20 +198,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         // Simple conversation ID factory for testing.
         private class SimpleConversationIdFactory : SkillConversationIdFactoryBase
         {
-            private readonly ConcurrentDictionary<string, string> _conversationRefs = new ConcurrentDictionary<string, string>();
+            private readonly ConcurrentDictionary<string, SkillConversationReference> _conversationRefs = new ConcurrentDictionary<string, SkillConversationReference>();
 
-            public override Task<string> CreateSkillConversationIdAsync(ConversationReference conversationReference, CancellationToken cancellationToken)
+            public override Task<string> CreateSkillConversationIdAsync(SkillConversationIdFactoryOptions options, CancellationToken cancellationToken = default)
             {
-                var crJson = JsonConvert.SerializeObject(conversationReference);
-                var key = (conversationReference.Conversation.Id + conversationReference.ServiceUrl).GetHashCode().ToString(CultureInfo.InvariantCulture);
-                _conversationRefs.GetOrAdd(key, crJson);
+                var key = (options.Activity.Conversation.Id + options.Activity.ServiceUrl).GetHashCode().ToString(CultureInfo.InvariantCulture);
+                _conversationRefs.GetOrAdd(key, new SkillConversationReference
+                {
+                    ConversationReference = options.Activity.GetConversationReference(),
+                    OAuthScope = options.FromBotOAuthScope
+                });
                 return Task.FromResult(key);
             }
 
-            public override Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+            public override Task<SkillConversationReference> GetSkillConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
             {
-                var conversationReference = JsonConvert.DeserializeObject<ConversationReference>(_conversationRefs[skillConversationId]);
-                return Task.FromResult(conversationReference);
+                return Task.FromResult(_conversationRefs[skillConversationId]);
             }
 
             public override Task DeleteConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
