@@ -13,15 +13,15 @@ variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'debug'
   Parameters.solution: Microsoft.Bot.Builder.sln
-#  AppId: define this in Azure
-#  AppSecret: define this in Azure
+#  FacebookTestBotAppId: define this in Azure
+#  FacebookTestBotAppSecret: define this in Azure
 #  AzureSubscription: define this in Azure
-#  BotGroup: define this in Azure
-#  BotName: define this in Azure
-#  FacebookAccessToken: define this in Azure
-#  FacebookAppSecret: define this in Azure
-#  FacebookVerifyToken: define this in Azure
-#  SenderId: define this in Azure
+#  FacebookTestBotBotGroup: define this in Azure
+#  FacebookTestBotBotName: define this in Azure
+#  FacebookTestBotFacebookAccessToken: define this in Azure
+#  FacebookTestBotFacebookAppSecret: define this in Azure
+#  FacebookTestBotFacebookVerifyToken: define this in Azure
+#  FacebookTestBotSenderId: define this in Azure
 
 steps:
 - powershell: |
@@ -29,9 +29,9 @@ steps:
    $file = "$(Build.SourcesDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\appsettings.json";
    
    $content = Get-Content -Raw $file | ConvertFrom-Json;
-   $content.FacebookVerifyToken = "$(FacebookVerifyToken)";
-   $content.FacebookAppSecret = "$(FacebookAppSecret)";
-   $content.FacebookAccessToken = "$(FacebookAccessToken)";
+   $content.FacebookVerifyToken = "$(FacebookTestBotFacebookVerifyToken)";
+   $content.FacebookAppSecret = "$(FacebookTestBotFaceBookAppSecret)";
+   $content.FacebookAccessToken = "$(FacebookTestBotFacebookAccessToken)";
    $content | ConvertTo-Json | Set-Content $file;
   displayName: 'Set values in appsettings.json file.'
 
@@ -52,14 +52,14 @@ steps:
     azureSubscription: '$(AzureSubscription)'
     scriptLocation: inlineScript
     inlineScript: |
-     call az deployment create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId="$(AppId)" appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" facebookVerifyToken="verifyToken" facebookAppSecret="$(FacebookAppSecret)"  facebookAccessToken="$(FacebookAccessToken)"
-     call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot\PublishedBot.zip"
+     call az deployment create --name "$(FacebookTestBotBotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId="$(AppId)" appSecret="$(FacebookTestBotAppSecret)" botId="$(FacebookTestBotBotName)" botSku=F0 newAppServicePlanName="$(FacebookTestBotBotName)" newWebAppName="$(FacebookTestBotBotName)" groupName="$(FacebookTestBotBotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" facebookVerifyToken="verifyToken" facebookAppSecret="$(FacebookTestBotFaceBookAppSecret)"  facebookAccessToken="$(FacebookTestBotFacebookAccessToken)"
+     call az webapp deployment source config-zip --resource-group "$(FacebookTestBotBotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot\PublishedBot.zip"
 
 - powershell: |
-   echo '##vso[task.setvariable variable=FACEBOOK_ACCESS_TOKEN]$(FacebookAccessToken)'
-   echo '##vso[task.setvariable variable=FACEBOOK_APP_SECRET]$(FacebookAppSecret)'
+   echo '##vso[task.setvariable variable=FACEBOOK_ACCESS_TOKEN]$(FacebookTestBotFacebookAccessToken)'
+   echo '##vso[task.setvariable variable=FACEBOOK_APP_SECRET]$(FacebookTestBotFaceBookAppSecret)'
    echo '##vso[task.setvariable variable=BOT_ENDPOINT]https://$(BotName).azurewebsites.net/api/messages'
-   echo '##vso[task.setvariable variable=SENDER_ID]$(SenderId)'
+   echo '##vso[task.setvariable variable=SENDER_ID]$(FacebookTestBotSenderId)'
   displayName: 'Set environment variables'
 
 - task: DotNetCoreCLI@2
@@ -74,6 +74,6 @@ steps:
   inputs:
     azureSubscription: '$(AzureSubscription)'
     scriptLocation: inlineScript
-    inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
+    inlineScript: 'call az group delete -n "$(FacebookTestBotBotGroup)" --yes'
   condition: always()
   enabled: true
