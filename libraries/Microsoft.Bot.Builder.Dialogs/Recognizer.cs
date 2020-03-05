@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the currently configured <see cref="IBotTelemetryClient"/> that logs the LuisResult event.
+        /// Gets or sets the currently configured <see cref="IBotTelemetryClient"/> that logs the RecognizerResult event.
         /// </summary>
         /// <value>The <see cref="IBotTelemetryClient"/> being used to log events.</value>
         [JsonIgnore]

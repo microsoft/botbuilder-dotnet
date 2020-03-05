@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 namespace AdaptiveExpressions.Converters
 {
     /// <summary>
-    /// Converter for Expression objects - string
+    /// Converter for Expression objects - string.
     /// </summary>
     public class ExpressionConverter : JsonConverter<Expression>
     {
