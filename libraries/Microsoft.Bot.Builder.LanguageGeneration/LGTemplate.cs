@@ -73,14 +73,41 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string ExtractBody(LGFileParser.TemplateDefinitionContext parseTree, string lgfileContent)
         {
-            var templateBody = parseTree.templateBody();
-            if (templateBody == null)
+            var startLine = parseTree.Start.Line - 1;
+            var stopLine = parseTree.Stop.Line - 1;
+            if (parseTree?.Parent?.Parent is LGFileParser.FileContext fileContext)
             {
-                return string.Empty;
+                var temTemplateDefinitions = fileContext
+                        .paragraph()
+                        .Where(u => u.templateDefinition() != null)
+                        .Select(u => u.templateDefinition())
+                        .ToList();
+                var currentIndex = -1;
+                for (var i = 0; i < temTemplateDefinitions.Count; i++)
+                {
+                    if (temTemplateDefinitions[i] == parseTree)
+                    {
+                        currentIndex = i;
+                        break;
+                    }
+                }
+
+                if (currentIndex >= 0 && currentIndex < temTemplateDefinitions.Count - 1)
+                {
+                    // in the middle of templates
+                    stopLine = temTemplateDefinitions[currentIndex + 1].Start.Line - 2;
+                }
+                else
+                {
+                    // last item
+                    stopLine = fileContext.Stop.Line - 1;
+                }
             }
 
-            var startLine = templateBody.Start.Line - 1;
-            var stopLine = templateBody.Stop.Line - 1;
+            if (stopLine <= startLine)
+            {
+                stopLine = startLine;
+            }
 
             return GetRangeContent(lgfileContent, startLine, stopLine);
         }
