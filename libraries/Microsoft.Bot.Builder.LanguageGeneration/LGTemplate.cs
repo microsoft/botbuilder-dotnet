@@ -24,9 +24,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ParseTree = parseTree;
             Source = source;
 
-            Name = ExtractName(parseTree);
-            Parameters = ExtractParameters(parseTree);
-            Body = ExtractBody(parseTree, lgfileContent);
+            Name = ExtractName();
+            Parameters = ExtractParameters();
+            Body = ExtractBody(lgfileContent);
         }
 
         /// <summary>
@@ -71,29 +71,66 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override string ToString() => $"[{Name}({string.Join(", ", Parameters)})]\"{Body}\"";
 
-        private string ExtractBody(LGFileParser.TemplateDefinitionContext parseTree, string lgfileContent)
+        /// <summary>
+        /// Get the startLine and stopLine of template.
+        /// </summary>
+        /// <returns>template content range.</returns>
+        public (int startLine, int stopLine) GetTemplateRange()
         {
-            var templateBody = parseTree.templateBody();
-            if (templateBody == null)
+            var startLine = ParseTree.Start.Line - 1;
+            var stopLine = ParseTree.Stop.Line - 1;
+            if (ParseTree?.Parent?.Parent is LGFileParser.FileContext fileContext)
             {
-                return string.Empty;
+                var templateDefinitions = fileContext
+                        .paragraph()
+                        .Select(u => u.templateDefinition())
+                        .Where(u => u != null)
+                        .ToList();
+                var currentIndex = -1;
+                for (var i = 0; i < templateDefinitions.Count; i++)
+                {
+                    if (templateDefinitions[i] == ParseTree)
+                    {
+                        currentIndex = i;
+                        break;
+                    }
+                }
+
+                if (currentIndex >= 0 && currentIndex < templateDefinitions.Count - 1)
+                {
+                    // in the middle of templates
+                    stopLine = templateDefinitions[currentIndex + 1].Start.Line - 2;
+                }
+                else
+                {
+                    // last item
+                    stopLine = fileContext.Stop.Line - 1;
+                }
             }
 
-            var startLine = templateBody.Start.Line - 1;
-            var stopLine = templateBody.Stop.Line - 1;
+            if (stopLine <= startLine)
+            {
+                stopLine = startLine;
+            }
 
-            return GetRangeContent(lgfileContent, startLine, stopLine);
+            return (startLine, stopLine);
         }
 
-        private string ExtractName(LGFileParser.TemplateDefinitionContext parseTree)
+        private string ExtractBody(string lgfileContent)
         {
-            var name = parseTree.templateNameLine().templateName()?.GetText();
+            var (startLine, stopLine) = GetTemplateRange();
+            return startLine >= stopLine ? string.Empty : GetRangeContent(lgfileContent, startLine + 1, stopLine);
+        }
+
+        private string ExtractName()
+        {
+            var name = ParseTree.templateNameLine().templateName()?.GetText();
             return name ?? string.Empty;
         }
 
-        private List<string> ExtractParameters(LGFileParser.TemplateDefinitionContext parseTree)
+        private List<string> ExtractParameters()
         {
-            var parameters = parseTree.templateNameLine().parameters();
+            var parameters = ParseTree.templateNameLine().parameters();
             if (parameters != null)
             {
                 return parameters.IDENTIFIER().Select(param => param.GetText()).ToList();

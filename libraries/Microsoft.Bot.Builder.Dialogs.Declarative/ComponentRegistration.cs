@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                 foreach (var function in component.GetExpressionEvaluators())
                 {
                     // add the custom function to the global ExpressionFunctions table.
-                    ExpressionFunctions.Functions[function.Type] = function;
+                    Expression.Functions[function.Type] = function;
                 }
             }
 

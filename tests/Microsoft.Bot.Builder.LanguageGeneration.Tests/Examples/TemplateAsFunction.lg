@@ -17,7 +17,3 @@
 
 # dupNameWithTemplate
 - ${length('ms')}
-
-# dupNameWithBuiltinFunc
-- ${prebuilt.length('ms')}
-

@@ -31,16 +31,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Initializes a new instance of the <see cref="Evaluator"/> class.
         /// </summary>
         /// <param name="templates">Template list.</param>
-        /// <param name="expressionEngine">expression engine.</param>
+        /// <param name="expressionParser">expression parser.</param>
         /// <param name="strictMode">strict mode. If strictMode == true, exception in expression would throw outside.</param>
-        public Evaluator(List<LGTemplate> templates, ExpressionEngine expressionEngine, bool strictMode = false)
+        public Evaluator(List<LGTemplate> templates, ExpressionParser expressionParser, bool strictMode = false)
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
             this.strictMode = strictMode;
 
-            // generate a new customized expression engine by injecting the template as functions
-            ExpressionEngine = new ExpressionEngine(CustomizedEvaluatorLookup(expressionEngine.EvaluatorLookup));
+            // generate a new customized expression parser by injecting the template as functions
+            ExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup));
         }
 
         /// <summary>
@@ -52,12 +52,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public List<LGTemplate> Templates { get; }
 
         /// <summary>
-        /// Gets expression engine.
+        /// Gets expression parser.
         /// </summary>
         /// <value>
-        /// Expression engine.
+        /// Expression parser.
         /// </value>
-        public ExpressionEngine ExpressionEngine { get; }
+        public ExpressionParser ExpressionParser { get; }
 
         /// <summary>
         /// Gets templateMap.
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 scope = new CustomizedMemory(SimpleObjectMemory.Wrap(scope));
             }
-            
+
             (var reExecute, var templateName) = ParseTemplateName(inputTemplateName);
 
             if (!TemplateMap.ContainsKey(templateName))
@@ -354,7 +354,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private bool EvalExpressionInCondition(string exp, ParserRuleContext context = null, string errorPrefix = "")
         {
             exp = exp.TrimExpression();
-            var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
+            var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
             if (strictMode && (error != null || result == null))
             {
@@ -396,7 +396,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private object EvalExpression(string exp, ParserRuleContext context = null, string errorPrefix = "")
         {
             exp = exp.TrimExpression();
-            var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
+            var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
             if (error != null || (result == null && strictMode))
             {
@@ -437,9 +437,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // just don't want to write evaluationTargetStack.Peek() everywhere
             evaluationTargetStack.Peek();
 
-        private (object value, string error) EvalByExpressionEngine(string exp, object scope)
+        private (object value, string error) EvalByAdaptiveExpression(string exp, object scope)
         {
-            var parse = this.ExpressionEngine.Parse(exp);
+            var parse = this.ExpressionParser.Parse(exp);
             return parse.TryEvaluate(scope);
         }
 
@@ -447,11 +447,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private EvaluatorLookup CustomizedEvaluatorLookup(EvaluatorLookup baseLookup)
         => (string name) =>
         {
-            var prebuiltPrefix = "prebuilt.";
+            var standardFunction = baseLookup(name);
 
-            if (name.StartsWith(prebuiltPrefix))
+            if (standardFunction != null)
             {
-                return baseLookup(name.Substring(prebuiltPrefix.Length));
+                return standardFunction;
+            }
+
+            if (name.StartsWith("lg."))
+            {
+                name = name.Substring(3);
             }
 
             var templateName = ParseTemplateName(name).pureTemplateName;
@@ -493,7 +498,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(isTemplate, ExpressionFunctions.Apply(this.IsTemplate()), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryString);
             }
 
-            return baseLookup(name);
+            return null;
         };
 
         private Func<IReadOnlyList<object>, object> IsTemplate()

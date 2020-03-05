@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
 using AdaptiveExpressions.parser;
@@ -16,16 +17,16 @@ namespace AdaptiveExpressions
     /// <summary>
     /// Parser to turn strings into an <see cref="Expression"/>.
     /// </summary>
-    public class ExpressionEngine : IExpressionParser
+    public class ExpressionParser : IExpressionParser
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExpressionEngine"/> class.
+        /// Initializes a new instance of the <see cref="ExpressionParser"/> class.
         /// Constructor.
         /// </summary>
         /// <param name="lookup">Delegate to lookup evaluation information from type string.</param>
-        public ExpressionEngine(EvaluatorLookup lookup = null)
+        public ExpressionParser(EvaluatorLookup lookup = null)
         {
-            EvaluatorLookup = lookup ?? ExpressionFunctions.Lookup;
+            EvaluatorLookup = lookup ?? Expression.Lookup;
         }
 
         /// <summary>
@@ -56,28 +57,28 @@ namespace AdaptiveExpressions
         protected static IParseTree AntlrParse(string expression)
         {
             var inputStream = new AntlrInputStream(expression);
-            var lexer = new ExpressionLexer(inputStream);
+            var lexer = new ExpressionAntlrLexer(inputStream);
             lexer.RemoveErrorListeners();
             var tokenStream = new CommonTokenStream(lexer);
-            var parser = new ExpressionParser(tokenStream);
+            var parser = new ExpressionAntlrParser(tokenStream);
             parser.RemoveErrorListeners();
             parser.AddErrorListener(ParserErrorListener.Instance);
             parser.BuildParseTree = true;
             return parser.file()?.expression();
         }
 
-        private class ExpressionTransformer : ExpressionParserBaseVisitor<Expression>
+        private class ExpressionTransformer : ExpressionAntlrParserBaseVisitor<Expression>
         {
-            private readonly EvaluatorLookup _lookup;
+            private readonly EvaluatorLookup _lookupFunction;
 
             public ExpressionTransformer(EvaluatorLookup lookup)
             {
-                _lookup = lookup;
+                _lookupFunction = lookup;
             }
 
             public Expression Transform(IParseTree context) => Visit(context);
 
-            public override Expression VisitUnaryOpExp([NotNull] ExpressionParser.UnaryOpExpContext context)
+            public override Expression VisitUnaryOpExp([NotNull] ExpressionAntlrParser.UnaryOpExpContext context)
             {
                 var unaryOperationName = context.GetChild(0).GetText();
                 var operand = Visit(context.expression());
@@ -90,7 +91,7 @@ namespace AdaptiveExpressions
                 return MakeExpression(unaryOperationName, operand);
             }
 
-            public override Expression VisitBinaryOpExp([NotNull] ExpressionParser.BinaryOpExpContext context)
+            public override Expression VisitBinaryOpExp([NotNull] ExpressionAntlrParser.BinaryOpExpContext context)
             {
                 var binaryOperationName = context.GetChild(1).GetText();
                 var left = Visit(context.expression(0));
@@ -98,7 +99,7 @@ namespace AdaptiveExpressions
                 return MakeExpression(binaryOperationName, left, right);
             }
 
-            public override Expression VisitFuncInvokeExp([NotNull] ExpressionParser.FuncInvokeExpContext context)
+            public override Expression VisitFuncInvokeExp([NotNull] ExpressionAntlrParser.FuncInvokeExpContext context)
             {
                 var parameters = ProcessArgsList(context.argsList()).ToList();
 
@@ -107,7 +108,7 @@ namespace AdaptiveExpressions
                 return MakeExpression(functionName, parameters.ToArray());
             }
 
-            public override Expression VisitIdAtom([NotNull] ExpressionParser.IdAtomContext context)
+            public override Expression VisitIdAtom([NotNull] ExpressionAntlrParser.IdAtomContext context)
             {
                 Expression result;
                 var symbol = context.GetText();
@@ -132,7 +133,7 @@ namespace AdaptiveExpressions
                 return result;
             }
 
-            public override Expression VisitIndexAccessExp([NotNull] ExpressionParser.IndexAccessExpContext context)
+            public override Expression VisitIndexAccessExp([NotNull] ExpressionAntlrParser.IndexAccessExpContext context)
             {
                 Expression instance;
                 var property = Visit(context.expression());
@@ -141,7 +142,7 @@ namespace AdaptiveExpressions
                 return MakeExpression(ExpressionType.Element, instance, property);
             }
 
-            public override Expression VisitMemberAccessExp([NotNull] ExpressionParser.MemberAccessExpContext context)
+            public override Expression VisitMemberAccessExp([NotNull] ExpressionAntlrParser.MemberAccessExpContext context)
             {
                 var property = context.IDENTIFIER().GetText();
                 var instance = Visit(context.primaryExpression());
@@ -149,7 +150,7 @@ namespace AdaptiveExpressions
                 return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(property), instance);
             }
 
-            public override Expression VisitNumericAtom([NotNull] ExpressionParser.NumericAtomContext context)
+            public override Expression VisitNumericAtom([NotNull] ExpressionAntlrParser.NumericAtomContext context)
             {
                 if (int.TryParse(context.GetText(), out var intValue))
                 {
@@ -164,9 +165,9 @@ namespace AdaptiveExpressions
                 throw new Exception($"{context.GetText()} is not a number in expression '{context.GetText()}'");
             }
 
-            public override Expression VisitParenthesisExp([NotNull] ExpressionParser.ParenthesisExpContext context) => Visit(context.expression());
+            public override Expression VisitParenthesisExp([NotNull] ExpressionAntlrParser.ParenthesisExpContext context) => Visit(context.expression());
 
-            public override Expression VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context)
+            public override Expression VisitStringAtom([NotNull] ExpressionAntlrParser.StringAtomContext context)
             {
                 var text = context.GetText();
                 if (text.StartsWith("'"))
@@ -180,7 +181,7 @@ namespace AdaptiveExpressions
                 }
             }
 
-            public override Expression VisitStringInterpolationAtom([NotNull] ExpressionParser.StringInterpolationAtomContext context)
+            public override Expression VisitStringInterpolationAtom([NotNull] ExpressionAntlrParser.StringInterpolationAtomContext context)
             {
                 var children = new List<Expression>();
                 foreach (var child in context.stringInterpolation().children)
@@ -189,11 +190,11 @@ namespace AdaptiveExpressions
                     {
                         switch (node.Symbol.Type)
                         {
-                            case ExpressionParser.TEMPLATE:
+                            case ExpressionAntlrParser.TEMPLATE:
                                 var expressionString = TrimExpression(node.GetText());
-                                children.Add(new ExpressionEngine(_lookup).Parse(expressionString));
+                                children.Add(Expression.Parse(expressionString, _lookupFunction));
                                 break;
-                            case ExpressionParser.ESCAPE_CHARACTER:
+                            case ExpressionAntlrParser.ESCAPE_CHARACTER:
                                 children.Add(Expression.ConstantExpression(EvalEscape(node.GetText())));
                                 break;
                             default:
@@ -209,7 +210,7 @@ namespace AdaptiveExpressions
                 return MakeExpression(ExpressionType.Concat, children.ToArray());
             }
 
-            public override Expression VisitConstantAtom([NotNull] ExpressionParser.ConstantAtomContext context)
+            public override Expression VisitConstantAtom([NotNull] ExpressionAntlrParser.ConstantAtomContext context)
             {
                 var text = context.GetText();
                 if (text.StartsWith("[") && text.EndsWith("]") && string.IsNullOrWhiteSpace(text.Substring(1, text.Length - 2))) 
@@ -225,10 +226,10 @@ namespace AdaptiveExpressions
                 throw new Exception($"Unrecognized constant: {text}");
             }
 
-            private Expression MakeExpression(string type, params Expression[] children)
-                => Expression.MakeExpression(_lookup(type), children);
+            private Expression MakeExpression(string functionType, params Expression[] children)
+                => Expression.MakeExpression(_lookupFunction(functionType) ?? throw new SyntaxErrorException($"{functionType} does not have an evaluator, it's not a built-in function or a custom function."), children);
 
-            private IEnumerable<Expression> ProcessArgsList(ExpressionParser.ArgsListContext context)
+            private IEnumerable<Expression> ProcessArgsList(ExpressionAntlrParser.ArgsListContext context)
             {
                 if (context != null)
                 {
