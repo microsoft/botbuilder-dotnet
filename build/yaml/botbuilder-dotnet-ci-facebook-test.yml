@@ -16,6 +16,7 @@ variables:
 #  FacebookTestBotAppId: define this in Azure
 #  FacebookTestBotAppSecret: define this in Azure
 #  AzureSubscription: define this in Azure
+#  DeleteResourceGroup: (optional) define this in Azure. Default = true.
 #  FacebookTestBotBotGroup: define this in Azure
 #  FacebookTestBotBotName: define this in Azure
 #  FacebookTestBotFacebookAccessToken: define this in Azure
@@ -72,5 +73,4 @@ steps:
     azureSubscription: '$(AzureSubscription)'
     scriptLocation: inlineScript
     inlineScript: 'call az group delete -n "$(FacebookTestBotBotGroup)" --yes'
-  condition: always()
-  enabled: true
+  condition: and(always(), ne(variables['DeleteResourceGroup'], 'false'))
