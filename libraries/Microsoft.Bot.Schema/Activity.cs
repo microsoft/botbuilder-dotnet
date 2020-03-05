@@ -430,7 +430,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets a delivery hint to signal to the recipient alternate
         /// delivery paths for the activity.
         /// The default delivery mode is "default". Possible values include:
-        /// 'normal', 'notification'.
+        /// 'normal', 'notification', 'ephemeral'.
         /// </summary>
         [JsonProperty(PropertyName = "deliveryMode")]
         public string DeliveryMode { get; set; }
