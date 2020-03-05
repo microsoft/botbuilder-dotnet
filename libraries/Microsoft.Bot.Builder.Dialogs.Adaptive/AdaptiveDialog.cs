@@ -202,6 +202,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     { "Kind", DeclarativeType }
                 };
             TelemetryClient.TrackEvent("AdaptiveDialogStart", properties);
+            TelemetryClient.TrackDialogView(Id);
 
             await OnDialogEventAsync(dc, dialogEvent, cancellationToken).ConfigureAwait(false);
 
