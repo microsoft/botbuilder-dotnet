@@ -54,7 +54,7 @@ steps:
     scriptLocation: inlineScript
     inlineScript: |
      call az deployment create --name "$(FacebookTestBotBotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId="$(AppId)" appSecret="$(FacebookTestBotAppSecret)" botId="$(FacebookTestBotBotName)" botSku=F0 newAppServicePlanName="$(FacebookTestBotBotName)" newWebAppName="$(FacebookTestBotBotName)" groupName="$(FacebookTestBotBotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" facebookVerifyToken="verifyToken" facebookAppSecret="$(FacebookTestBotFaceBookAppSecret)"  facebookAccessToken="$(FacebookTestBotFacebookAccessToken)"
-     call az webapp deployment source config-zip --resource-group "$(FacebookTestBotBotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot\PublishedBot.zip"
+     call az webapp deployment source config-zip --resource-group "$(FacebookTestBotBotGroup)" --name "$(FacebookTestBotBotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot\PublishedBot.zip"
 
 - powershell: |
    echo '##vso[task.setvariable variable=BOT_ENDPOINT]https://$(FacebookTestBotBotName).azurewebsites.net/api/messages'
