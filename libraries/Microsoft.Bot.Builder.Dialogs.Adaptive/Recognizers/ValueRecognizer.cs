@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         {
         }
 
-        public override Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default)
+        public override Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             if (dialogContext == null)
             {
@@ -75,6 +75,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     }
                 }
             }
+
+            this.TelemetryClient.TrackEvent("ValueRecognizerResult", this.FillRecognizerResultTelemetryProperties(recognized, telemetryProperties), telemetryMetrics);
 
             return Task.FromResult(recognized);
         }
