@@ -824,6 +824,11 @@ namespace AdaptiveExpressions.Tests
                 var actualRefs = parsed.References();
                 Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
             }
+
+            // ToString re-parse
+            var newExpression = Expression.Parse(parsed.ToString());
+            var newActual = newExpression.TryEvaluate(scope).value;
+            AssertObjectEquals(actual, newActual);
         }
 
         [DataTestMethod]
