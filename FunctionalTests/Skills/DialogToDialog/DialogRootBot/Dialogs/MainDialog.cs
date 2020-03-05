@@ -159,14 +159,17 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
                     throw new Exception($"Unknown target skill id: {selectedSkill.Id}.");
             }
 
-            // Create the SkillDialogArgs
-            var skillDialogArgs = new SkillDialogArgs { Activity = skillActivity };
+            // Create the BeginSkillDialogOptions
+            var skillDialogArgs = new BeginSkillDialogOptions { Activity = skillActivity };
 
             // We are manually creating the activity to send to the skill, ensure we add the ChannelData and Properties 
             // from the original activity so the skill gets them.
             // Note: this is not necessary if we are just forwarding the current activity from context. 
             skillDialogArgs.Activity.ChannelData = stepContext.Context.Activity.ChannelData;
             skillDialogArgs.Activity.Properties = stepContext.Context.Activity.Properties;
+
+            // Comment or uncomment this line if you need to enable or disabled buffered replies.
+            skillDialogArgs.Activity.DeliveryMode = DeliveryModes.BufferedReplies;
 
             // Save active skill in state
             await _activeSkillProperty.SetAsync(stepContext.Context, selectedSkill, cancellationToken);
