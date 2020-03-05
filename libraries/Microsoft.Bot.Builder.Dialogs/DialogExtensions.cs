@@ -55,6 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     if (turnContext.Activity.Type == ActivityTypes.Event && turnContext.Activity.Name == DialogEvents.RepromptDialog && dialogContext.Stack.Any())
                     {
                         await dialogContext.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
+                        return;
                     }
 
                     // Run the Dialog with the new message Activity and capture the results so we can send end of conversation if needed.
