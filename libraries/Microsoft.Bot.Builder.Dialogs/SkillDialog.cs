@@ -86,6 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default)
         {
+            // Create and send an envent to the skill so it can resume the dialog.
             var repromptEvent = Activity.CreateEventActivity();
             repromptEvent.Name = DialogEvents.RepromptDialog;
 
