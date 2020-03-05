@@ -1,18 +1,10 @@
 #
-# This YAML build definition replaces the classic BotBuilder-DotNet-master-Signed-daily
+# Replaces the classic BotBuilder-DotNet-master-Signed-daily.
 #
 
 # "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
 name: $(Date:yyMMdd)-$(Build.BuildId)
-variables:
-  BuildConfiguration: Release-Windows
-  TestConfiguration: Release
-  BuildPlatform: any cpu
-  IsBuildServer: true # Consumed by projects in Microsoft.Bot.Builder.sln.
-  MSBuildArguments: -p:PublishRepositoryUrl=true -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
-  Parameters.solution: Microsoft.Bot.Builder.sln
-#  PreviewPackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.
-#  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.
+
 pool:
   name: Hosted Windows 2019 with VS2019
   demands:
@@ -35,6 +27,16 @@ trigger: # ci trigger
       - UsingMyGet.md
 
 pr: none # no pr trigger
+
+variables:
+  BuildConfiguration: Release-Windows
+  TestConfiguration: Release
+  BuildPlatform: any cpu
+  IsBuildServer: true # Consumed by projects in Microsoft.Bot.Builder.sln.
+  MSBuildArguments: -p:PublishRepositoryUrl=true -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
+  Parameters.solution: Microsoft.Bot.Builder.sln
+#  PreviewPackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.
+#  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.
 
 jobs:
 - job: Build_and_Sign
