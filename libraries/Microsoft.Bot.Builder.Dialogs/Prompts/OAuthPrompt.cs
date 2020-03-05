@@ -349,7 +349,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 if (turnContext.TurnState.Get<ClaimsIdentity>("BotIdentity") is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
                 {
-                    cardActionType = ActionTypes.OpenUrl;
+                    if (turnContext.Activity.ChannelId == "emulator")
+                    {
+                        cardActionType = ActionTypes.OpenUrl;
+                    }
                 }
                 else
                 {
