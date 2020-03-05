@@ -9,9 +9,8 @@ using Newtonsoft.Json.Linq;
 namespace AdaptiveExpressions.Converters
 {
     /// <summary>
-    /// Converter which allows json to be expression to object or static object.
+    /// Converter for Expression objects - string
     /// </summary>
-    /// <typeparam name="T">The property type to construct.</typeparam>
     public class ExpressionConverter : JsonConverter<Expression>
     {
         public override bool CanRead => true;
