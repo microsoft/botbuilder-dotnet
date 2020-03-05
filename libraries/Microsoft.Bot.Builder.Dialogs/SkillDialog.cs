@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,8 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </remarks>
     public class SkillDialog : Dialog
     {
+        private const string DeliverModeStateKey = "deliverymode";
+
         public SkillDialog(SkillDialogOptions dialogOptions, string dialogId = null)
             : base(dialogId)
         {
@@ -40,8 +43,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Apply conversation reference and common properties from incoming activity before sending.
             skillActivity.ApplyConversationReference(dc.Context.Activity.GetConversationReference(), true);
 
+            dc.ActiveDialog.State[DeliverModeStateKey] = dialogArgs.Activity.DeliveryMode;
+
             // Send the activity to the skill.
-            await SendToSkillAsync(dc.Context, skillActivity, cancellationToken).ConfigureAwait(false);
+            var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, cancellationToken).ConfigureAwait(false);
+            if (eocActivity != null)
+            {
+                return await dc.EndDialogAsync(eocActivity.Value, cancellationToken).ConfigureAwait(false);
+            }
+
             return EndOfTurn;
         }
 
@@ -59,8 +69,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Forward only Message and Event activities to the skill
             if (dc.Context.Activity.Type == ActivityTypes.Message || dc.Context.Activity.Type == ActivityTypes.Event)
             {
+                // Create deep clone of the original activity to avoid altering it before forwarding it.
+                var skillActivity = ObjectPath.Clone(dc.Context.Activity);
+                skillActivity.DeliveryMode = dc.ActiveDialog.State[DeliverModeStateKey] as string;
+
                 // Just forward to the remote skill
-                await SendToSkillAsync(dc.Context, dc.Context.Activity, cancellationToken).ConfigureAwait(false);
+                var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, cancellationToken).ConfigureAwait(false);
+                if (eocActivity != null)
+                {
+                    return await dc.EndDialogAsync(eocActivity.Value, cancellationToken).ConfigureAwait(false);
+                }
             }
 
             return EndOfTurn;
@@ -115,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return dialogArgs;
         }
 
-        private async Task SendToSkillAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken)
+        private async Task<Activity> SendToSkillAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken)
         {
             // Create a conversationId to interact with the skill and send the activity
             var conversationIdFactoryOptions = new SkillConversationIdFactoryOptions
@@ -131,13 +149,35 @@ namespace Microsoft.Bot.Builder.Dialogs
             // (the dialog stack won't get updated with the skillDialog and things won't work if you don't)
             var skillInfo = DialogOptions.Skill;
             await DialogOptions.ConversationState.SaveChangesAsync(context, true, cancellationToken).ConfigureAwait(false);
-            var response = await DialogOptions.SkillClient.PostActivityAsync(DialogOptions.BotId, skillInfo.AppId, skillInfo.SkillEndpoint, DialogOptions.SkillHostEndpoint, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
+
+            var response = await DialogOptions.SkillClient.PostActivityAsync<Activity[]>(DialogOptions.BotId, skillInfo.AppId, skillInfo.SkillEndpoint, DialogOptions.SkillHostEndpoint, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
 
             // Inspect the skill response status
             if (!(response.Status >= 200 && response.Status <= 299))
             {
                 throw new HttpRequestException($"Error invoking the skill id: \"{skillInfo.Id}\" at \"{skillInfo.SkillEndpoint}\" (status is {response.Status}). \r\n {response.Body}");
             }
+
+            Activity eocActivity = null;
+            if (activity.DeliveryMode == DeliveryModes.BufferedReplies && response.Body.Any())
+            {
+                // Process replies in the response.Body.
+                foreach (var fromSkillActivity in response.Body)
+                {
+                    if (fromSkillActivity.Type == ActivityTypes.EndOfConversation)
+                    {
+                        // Capture the EndOfConversation activity if it was sent from skill
+                        eocActivity = fromSkillActivity;
+                    }
+                    else
+                    {
+                        // Send the response back to the channel. 
+                        await context.SendActivityAsync(fromSkillActivity, cancellationToken).ConfigureAwait(false);
+                    }
+                }
+            }
+
+            return eocActivity;
         }
     }
 }
