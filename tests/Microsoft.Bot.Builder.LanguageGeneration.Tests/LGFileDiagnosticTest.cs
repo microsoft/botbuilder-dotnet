@@ -227,7 +227,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestLoopDetected()
         {
             var lgFile = GetLGFile("LoopDetected.lg");
-            var exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("wPhrase"));
+            var exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("wPhrase"));
             Assert.IsTrue(exception.Message.Contains(LGErrors.LoopDetected));
 
             exception = Assert.ThrowsException<Exception>(() => lgFile.AnalyzeTemplate("wPhrase"));
@@ -246,7 +246,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestErrorExpression()
         {
             var lgFile = GetLGFile("ErrorExpression.lg");
-            var exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("template1"));
+            var exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("template1"));
             Assert.IsTrue(exception.Message.Contains("Error occurred when evaluating"));
         }
 
@@ -255,34 +255,34 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var lgFile = GetLGFile("RunTimeErrors.lg");
 
-            var exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("template1"));
+            var exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("template1"));
             Assert.AreEqual("'dialog.abc' evaluated to null. [template1]  Error occurred when evaluating '-I want ${dialog.abc}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("prebuilt1"));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("prebuilt1"));
             Assert.AreEqual("'dialog.abc' evaluated to null.[prebuilt1]  Error occurred when evaluating '-I want ${foreach(dialog.abc, item, template1())}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("template2"));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("template2"));
             Assert.AreEqual("'dialog.abc' evaluated to null. [template1]  Error occurred when evaluating '-I want ${dialog.abc}'. [template2]  Error occurred when evaluating '-With composition ${template1()}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("conditionalTemplate1", new { dialog = true }));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("conditionalTemplate1", new { dialog = true }));
             Assert.AreEqual("'dialog.abc' evaluated to null. [template1]  Error occurred when evaluating '-I want ${dialog.abc}'. [conditionalTemplate1] Condition '${dialog}':  Error occurred when evaluating '-I want ${template1()}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("conditionalTemplate2"));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("conditionalTemplate2"));
             Assert.AreEqual("'dialog.abc' evaluated to null. [conditionalTemplate2] Condition '${dialog.abc}': Error occurred when evaluating '-IF :${dialog.abc}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("structured1"));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("structured1"));
             Assert.AreEqual("'dialog.abc' evaluated to null. [structured1] Property 'Text': Error occurred when evaluating 'Text=I want ${dialog.abc}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("structured2"));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("structured2"));
             Assert.AreEqual("'dialog.abc' evaluated to null. [template1]  Error occurred when evaluating '-I want ${dialog.abc}'. [structured2] Property 'Text': Error occurred when evaluating 'Text=I want ${template1()}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("structured3"));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("structured3"));
             Assert.AreEqual("'dialog.abc' evaluated to null. [template1]  Error occurred when evaluating '-I want ${dialog.abc}'. [structured2] Property 'Text': Error occurred when evaluating 'Text=I want ${template1()}'. [structured3]  Error occurred when evaluating '${structured2()}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("switchcase1", new { turn = new { testValue = 1 } }));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("switchcase1", new { turn = new { testValue = 1 } }));
             Assert.AreEqual("'dialog.abc' evaluated to null. [switchcase1] Case '${1}': Error occurred when evaluating '-I want ${dialog.abc}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("switchcase2", new { turn = new { testValue = 0 } }));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("switchcase2", new { turn = new { testValue = 0 } }));
             Assert.AreEqual("'dialog.abc' evaluated to null. [switchcase2] Case 'Default': Error occurred when evaluating '-I want ${dialog.abc}'. ", exception.Message);
         }
 

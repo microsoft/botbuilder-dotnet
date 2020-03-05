@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             try
             {
-                return await Task.FromResult(lg.Evaluate(template, data).ToString());
+                return await Task.FromResult(lg.EvaluateText(template, data).ToString());
             }
             catch (Exception err)
             {

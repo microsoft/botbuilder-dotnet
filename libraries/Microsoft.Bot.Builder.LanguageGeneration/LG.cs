@@ -172,7 +172,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="templateName">Template name to be evaluated.</param>
         /// <param name="scope">The state visible in the evaluation.</param>
         /// <returns>Evaluate result.</returns>
-        public object EvaluateTemplate(string templateName, object scope = null)
+        public object Evaluate(string templateName, object scope = null)
         {
             CheckErrors();
 
@@ -183,12 +183,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Use to evaluate an inline template str.
         /// </summary>
-        /// <param name="inlineStr">inline string which will be evaluated.</param>
+        /// <param name="text">inline string which will be evaluated.</param>
         /// <param name="scope">scope object or JToken.</param>
         /// <returns>Evaluate result.</returns>
-        public object Evaluate(string inlineStr, object scope = null)
+        public object EvaluateText(string text, object scope = null)
         {
-            if (inlineStr == null)
+            if (text == null)
             {
                 throw new ArgumentException("inline string is null.");
             }
@@ -199,14 +199,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var fakeTemplateId = Guid.NewGuid().ToString();
             var multiLineMark = "```";
 
-            inlineStr = !inlineStr.Trim().StartsWith(multiLineMark) && inlineStr.Contains('\n')
-                   ? $"{multiLineMark}{inlineStr}{multiLineMark}" : inlineStr;
+            text = !text.Trim().StartsWith(multiLineMark) && text.Contains('\n')
+                   ? $"{multiLineMark}{text}{multiLineMark}" : text;
 
-            var newContent = $"# {fakeTemplateId} \r\n - {inlineStr}";
+            var newContent = $"# {fakeTemplateId} \r\n - {text}";
 
             var newLG = LGParser.ParseTextWithRef(newContent, this);
 
-            return newLG.EvaluateTemplate(fakeTemplateId, scope);
+            return newLG.Evaluate(fakeTemplateId, scope);
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public void TestInlineActivityFactory()
         {
-            var lgResult = GetNormalStructureLGFile().Evaluate("text").ToString();
+            var lgResult = GetNormalStructureLGFile().EvaluateText("text").ToString();
             var activity = ActivityFactory.FromObject(lgResult);
 
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var data = new JObject();
             data["title"] = "titleContent";
             data["text"] = "textContent";
-            var cardActionLgResult = GetNormalStructureLGFile().Evaluate("${HerocardWithCardAction()}", data);
+            var cardActionLgResult = GetNormalStructureLGFile().EvaluateText("${HerocardWithCardAction()}", data);
             activity = ActivityFactory.FromObject(cardActionLgResult);
             AssertCardActionActivity(activity);
         }
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [ExpectedException(typeof(Exception))]
         public void TestNotSupportStructuredType()
         {
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("notSupport");
+            var lgResult = GetNormalStructureLGFile().Evaluate("notSupport");
             var activity = ActivityFactory.FromObject(lgResult);
         }
 
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             dynamic data = new JObject();
             data.title = "titleContent";
             data.text = "textContent";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("HerocardWithCardAction", data).ToString();
+            var lgResult = GetNormalStructureLGFile().Evaluate("HerocardWithCardAction", data).ToString();
             var activity = ActivityFactory.FromObject(lgResult);
             AssertCardActionActivity(activity);
         }
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             dynamic data = new JObject();
             data.adaptiveCardTitle = "test";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("adaptivecardActivity", data).ToString();
+            var lgResult = GetNormalStructureLGFile().Evaluate("adaptivecardActivity", data).ToString();
             var activity = ActivityFactory.FromObject(lgResult);
             AssertAdaptiveCardActivity(activity);
         }
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             dynamic data = new JObject();
             data.adaptiveCardTitle = "test";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("externalAdaptiveCardActivity", data).ToString();
+            var lgResult = GetNormalStructureLGFile().Evaluate("externalAdaptiveCardActivity", data).ToString();
             var activity = ActivityFactory.FromObject(lgResult);
             AssertAdaptiveCardActivity(activity);
         }
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             dynamic data = new JObject();
             data.titles = new JArray() { "test0", "test1", "test2" };
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("multiExternalAdaptiveCardActivity", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("multiExternalAdaptiveCardActivity", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertMultiAdaptiveCardActivity(activity);
         }
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             dynamic data = new JObject();
             data.adaptiveCardTitle = "test";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("adaptivecardActivityWithAttachmentStructure", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("adaptivecardActivityWithAttachmentStructure", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertAdaptiveCardActivity(activity);
         }
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             data.type = "imBack";
             data.title = "taptitle";
             data.value = "tapvalue";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("externalHeroCardActivity", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("externalHeroCardActivity", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertActivityWithHeroCardAttachment(activity);
         }
@@ -108,7 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             dynamic data = new JObject();
             data.text = "textContent";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("eventActivity", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("eventActivity", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertEventActivity(activity);
         }
@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             dynamic data = new JObject();
             data.text = "textContent";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("handoffActivity", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("handoffActivity", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertHandoffActivity(activity);
         }
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             dynamic data = new JObject();
             data.title = "titleContent";
             data.text = "textContent";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("activityWithHeroCardAttachment", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("activityWithHeroCardAttachment", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertActivityWithHeroCardAttachment(activity);
         }
@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             data.type = "imBack";
             data.title = "taptitle";
             data.value = "tapvalue";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("herocardAttachment", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("herocardAttachment", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertActivityWithHeroCardAttachment(activity);
         }
@@ -152,7 +152,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             dynamic data = new JObject();
             data.title = "titleContent";
             data.text = "textContent";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("activityWithMultiAttachments", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("activityWithMultiAttachments", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertActivityWithMultiAttachments(activity);
         }
@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             dynamic data = new JObject();
             data.title = "titleContent";
             data.text = "textContent";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("activityWithSuggestionActions", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("activityWithSuggestionActions", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertActivityWithSuggestionActions(activity);
         }
@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             dynamic data = new JObject();
             data.title = "titleContent";
             data.text = "textContent";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("messageActivityAll", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("messageActivityAll", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertMessageActivityAll(activity);
         }
@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             dynamic data = new JObject();
             data.text = "textContent";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("activityWithMultiStructuredSuggestionActions", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("activityWithMultiStructuredSuggestionActions", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertActivityWithMultiStructuredSuggestionActions(activity);
         }
@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             dynamic data = new JObject();
             data.text = "textContent";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("activityWithMultiStringSuggestionActions", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("activityWithMultiStringSuggestionActions", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertActivityWithMultiStringSuggestionActions(activity);
         }
@@ -204,7 +204,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             dynamic data = new JObject();
             data.type = "herocard";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("HeroCardTemplate", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("HeroCardTemplate", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertHeroCardActivity(activity);
         }
@@ -214,7 +214,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             dynamic data = new JObject();
             data.type = "thumbnailcard";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("ThumbnailCardTemplate", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("ThumbnailCardTemplate", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertThumbnailCardActivity(activity);
         }
@@ -224,7 +224,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             dynamic data = new JObject();
             data.type = "audiocard";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("AudioCardTemplate", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("AudioCardTemplate", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertAudioCardActivity(activity);
         }
@@ -234,7 +234,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             dynamic data = new JObject();
             data.type = "videocard";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("VideoCardTemplate", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("VideoCardTemplate", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertVideoCardActivity(activity);
         }
@@ -245,7 +245,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             dynamic data = new JObject();
             data.signinlabel = "Sign in";
             data.url = "https://login.microsoftonline.com/";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("SigninCardTemplate", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("SigninCardTemplate", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertSigninCardActivity(activity);
         }
@@ -257,7 +257,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             data.signinlabel = "Sign in";
             data.url = "https://login.microsoftonline.com/";
             data.connectionName = "MyConnection";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("OAuthCardTemplate", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("OAuthCardTemplate", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertOAuthCardActivity(activity);
         }
@@ -282,7 +282,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 }),
                 ["type"] = "ReceiptCard"
             };
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("ReceiptCardTemplate", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("ReceiptCardTemplate", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertReceiptCardActivity(activity);
         }
@@ -292,7 +292,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             dynamic data = new JObject();
             data.text = "textContent";
-            var lgResult = GetNormalStructureLGFile().EvaluateTemplate("SuggestedActionsReference", data);
+            var lgResult = GetNormalStructureLGFile().Evaluate("SuggestedActionsReference", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertSuggestedActionsReferenceActivity(activity);
         }
@@ -312,19 +312,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public void CheckStructuredLGDiagnostics()
         {
-            var lgResult = GetDiagnosticStructureLGFile().EvaluateTemplate("ErrorStructuredType", null);
+            var lgResult = GetDiagnosticStructureLGFile().Evaluate("ErrorStructuredType", null);
             var diagnostics = ActivityFactory.CheckLGResult(lgResult);
             Assert.AreEqual(diagnostics.Count, 1);
             Assert.AreEqual("[ERROR]Type 'mystruct' is not supported currently.", diagnostics[0]);
 
-            lgResult = GetDiagnosticStructureLGFile().EvaluateTemplate("ErrorActivityType", null);
+            lgResult = GetDiagnosticStructureLGFile().Evaluate("ErrorActivityType", null);
             
             diagnostics = ActivityFactory.CheckLGResult(lgResult);
             Assert.AreEqual(2, diagnostics.Count);
             Assert.AreEqual("[ERROR]'xxx' is not a valid activity type.", diagnostics[0]);
             Assert.AreEqual("[WARNING]'invalidproperty' not support in Activity.", diagnostics[1]);
 
-            lgResult = GetDiagnosticStructureLGFile().EvaluateTemplate("ErrorMessage", null);
+            lgResult = GetDiagnosticStructureLGFile().Evaluate("ErrorMessage", null);
             diagnostics = ActivityFactory.CheckLGResult(lgResult);
             Assert.AreEqual(diagnostics.Count, 5);
             Assert.AreEqual("[WARNING]'attachment,suggestedaction' not support in Activity.", diagnostics[0]);

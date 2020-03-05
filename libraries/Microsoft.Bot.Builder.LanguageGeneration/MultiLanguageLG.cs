@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (lgPerLocale.ContainsKey(locale))
             {
-                return lgPerLocale[locale].Evaluate(template, data);
+                return lgPerLocale[locale].EvaluateText(template, data);
             }
             else
             {
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (lgPerLocale.ContainsKey(fallBackLocale))
                     {
-                        return lgPerLocale[fallBackLocale].Evaluate(template, data);
+                        return lgPerLocale[fallBackLocale].EvaluateText(template, data);
                     }
                 }
             }
