@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -82,6 +83,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             var text = await Text.BindToData(dc.Context, dcState).ConfigureAwait(false);
+
+            var properties = new Dictionary<string, string>()
+            {
+                { "template", JsonConvert.SerializeObject(Text) },
+                { "result", text ?? string.Empty },
+            };
+            TelemetryClient.TrackEvent("generatorResult", properties);
 
             System.Diagnostics.Trace.TraceInformation(text);
 

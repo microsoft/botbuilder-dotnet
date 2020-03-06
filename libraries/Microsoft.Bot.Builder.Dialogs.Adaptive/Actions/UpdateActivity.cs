@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -76,6 +77,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             var activity = await Activity.BindToData(dc.Context, dcState).ConfigureAwait(false);
+            var properties = new Dictionary<string, string>()
+            {
+                { "template", JsonConvert.SerializeObject(Activity) },
+                { "result", activity == null ? string.Empty : JsonConvert.SerializeObject(activity, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+            };
+            TelemetryClient.TrackEvent("generatorResult", properties);
+
             var (result, error) = this.ActivityId.TryGetValue(dcState);
             if (error != null)
             {
