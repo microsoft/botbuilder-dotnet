@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "union(Microsoft.IDialog)",
+    "$role": "implements(Microsoft.IDialog)",
     "title": "Begin a skill dialog",
     "description": "Begin a remote skill dialog.",
     "type": "object",
@@ -56,21 +56,23 @@
             "$role": "expression",
             "type": "string",
             "title": "Skill App ID",
-            "description": "The Microsoft App ID for the skill."
+            "description": "The Microsoft App ID for the skill.",
+            "default": "=settings.SkillName.skillAppId"
         },
         "skillEndpoint": {
             "$role": "expression",
             "type": "string",
             "title": "Skill endpoint ",
             "description": "The /api/messages endpoint for the skill.",
+            "default": "=settings.SkillName.skillEndpoint",
             "examples": [
                 "https://myskill.contoso.com/api/messages/"
             ]
         },
-        "cardNoMatchResponse ": {
+        "activity ": {
             "$kind": "Microsoft.IActivityTemplate",
             "title": "Activity",
             "description": "The activity to send to the skill."
         }
-  }
+    }
 }

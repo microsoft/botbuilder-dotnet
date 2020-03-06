@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,6 +38,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
         [JsonProperty("disabled")]
         public BoolExpression Disabled { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to have the new dialog should process the activity.
+        /// </summary>
+        /// <value>
+        /// The default for this will be true, which means the new dialog should not look the activity. You can set this to false to dispatch the activity to the new dialog.
+        /// </value>
+        [DefaultValue(true)]
+        [JsonProperty("activityProcessed")]
+        public BoolExpression ActivityProcessed { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the property path to store the dialog result in.
+        /// </summary>
+        /// <value>
+        /// The property path to store the dialog result in.
+        /// </value>
+        [JsonProperty("resultProperty")]
+        public StringExpression ResultProperty { get; set; }
+
         [JsonProperty("botId")]
         public StringExpression BotId { get; set; } = "=settings.MicrosoftAppId";
 
@@ -60,22 +80,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
+            var dcState = dc.GetState();
+            if (Disabled != null && Disabled.GetValue(dcState))
+            {
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
             // Update the dialog options with the runtime settings.
-            DialogOptions.BotId = BotId.GetValue(dc.GetState());
-            DialogOptions.SkillHostEndpoint = new Uri(SkillHostEndpoint.GetValue(dc.GetState()));
+            DialogOptions.BotId = BotId.GetValue(dcState);
+            DialogOptions.SkillHostEndpoint = new Uri(SkillHostEndpoint.GetValue(dcState));
             DialogOptions.ConversationIdFactory = HostContext.Current.Get<SkillConversationIdFactoryBase>() ?? throw new NullReferenceException("Unable to locate SkillConversationIdFactoryBase in HostContext");
             DialogOptions.SkillClient = HostContext.Current.Get<BotFrameworkClient>() ?? throw new NullReferenceException("Unable to locate BotFrameworkClient in HostContext");
-            DialogOptions.ConversationState = dc.Context.TurnState.Get<ConversationState>();
+            DialogOptions.ConversationState = dc.Context.TurnState.Get<ConversationState>() ?? throw new NullReferenceException($"Unable to get an instance of {nameof(ConversationState)} from TurnState.");
 
             // Set the skill to call
-            DialogOptions.Skill.Id = SkillAppId.GetValue(dc.GetState());
-            DialogOptions.Skill.AppId = SkillAppId.GetValue(dc.GetState());
-            DialogOptions.Skill.SkillEndpoint = new Uri(SkillEndpoint.GetValue(dc.GetState()));
+            DialogOptions.Skill.Id = DialogOptions.Skill.AppId = SkillAppId.GetValue(dcState);
+            DialogOptions.Skill.SkillEndpoint = new Uri(SkillEndpoint.GetValue(dcState));
 
             // Get the activity to send to the skill.
-            var activity = await Activity.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
+            var activity = await Activity.BindToData(dc.Context, dcState).ConfigureAwait(false);
 
             return await base.BeginDialogAsync(dc, new BeginSkillDialogOptions { Activity = activity }, cancellationToken).ConfigureAwait(false);
+        }
+
+        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+        {
+            var dcState = dc.GetState();
+
+            if (ResultProperty != null)
+            {
+                dcState.SetValue(ResultProperty.GetValue(dcState), result);
+            }
+
+            // By default just end the current dialog and return result to parent.
+            return await base.ResumeDialogAsync(dc, reason, result, cancellationToken).ConfigureAwait(false);
         }
     }
 }
