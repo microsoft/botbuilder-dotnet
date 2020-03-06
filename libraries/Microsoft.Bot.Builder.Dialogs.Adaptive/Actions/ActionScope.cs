@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
@@ -173,10 +175,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var dcState = dc.GetState();
 
             dcState.SetValue(OFFSETKEY, offset);
-            var actionId = this.Actions[offset].Id;
+            var action = this.Actions[offset];
+            var actionName = action.GetType().Name.ToString();
+
+            var properties = new Dictionary<string, string>()
+            {
+                { "DialogId", action.Id },
+                { "Kind", $"Microsoft.{actionName}" },
+                { "Instance", JsonConvert.SerializeObject(action, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }).ToString() }
+            };
+            TelemetryClient.TrackEvent("AdaptiveDialogAction", properties);
 
             // begin Action dialog
-            return await dc.BeginDialogAsync(actionId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await dc.BeginDialogAsync(action.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         protected override string OnComputeId()
