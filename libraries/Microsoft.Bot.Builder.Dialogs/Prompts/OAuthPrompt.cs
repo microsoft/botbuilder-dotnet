@@ -348,7 +348,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var value = signInResource.SignInLink;
 
                 if (turnContext.Activity.IsFromStreamingConnection() ||
-                    (turnContext.TurnState.Get<ClaimsIdentity>("BotIdentity") is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims)))
+                    (turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims)))
                 {
                     if (turnContext.Activity.ChannelId == Channels.Emulator)
                     {
