@@ -4,6 +4,7 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
+    using System;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -25,17 +26,13 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="id">Unique identifier representing a team.</param>
         /// <param name="name">Name of team.</param>
         /// <param name="aadGroupId">Azure Active Directory (AAD) Group Id for.
-        /// <param name="channelCount">The count of channels in the team.
-        /// <param name="memberCount">The count of members in the team.
         /// </param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1611:Element parameters should be documented", Justification = "It is documented...")]
-        public TeamDetails(string id = default(string), string name = default(string), string aadGroupId = default(string), int channelCount = default(int), int memberCount = default(int))
+        [Obsolete("Use the parameter initialization method instead.")]
+        public TeamDetails(string id = default(string), string name = default(string), string aadGroupId = default(string))
         {
             Id = id;
             Name = name;
             AadGroupId = aadGroupId;
-            ChannelCount = channelCount;
-            MemberCount = memberCount;
             CustomInit();
         }
 
