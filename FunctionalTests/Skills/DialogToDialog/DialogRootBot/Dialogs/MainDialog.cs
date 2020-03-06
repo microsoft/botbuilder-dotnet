@@ -53,6 +53,9 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             // ChoicePrompt to render available skills and skill actions
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
 
+            // Register the tangent
+            AddDialog(new TangentDialog());
+
             // Create SkillDialog instances for the configured skills
             foreach (var skillInfo in _skillsConfig.Skills.Values)
             {
@@ -96,6 +99,12 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
                 // Cancel all dialog when the user says abort.
                 await innerDc.CancelAllDialogsAsync(cancellationToken);
                 return await innerDc.ReplaceDialogAsync(InitialDialogId, "Canceled! \n\n What skill would you like to call?", cancellationToken);
+            }
+
+            if (activeSkill != null && activity.Type == ActivityTypes.Message && activity.Text.Equals("tangent", StringComparison.CurrentCultureIgnoreCase))
+            {
+                // Start tangent.
+                return await innerDc.BeginDialogAsync(nameof(TangentDialog), cancellationToken: cancellationToken);
             }
 
             return await base.OnContinueDialogAsync(innerDc, cancellationToken);
@@ -159,14 +168,17 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
                     throw new Exception($"Unknown target skill id: {selectedSkill.Id}.");
             }
 
-            // Create the SkillDialogArgs
-            var skillDialogArgs = new SkillDialogArgs { Activity = skillActivity };
+            // Create the BeginSkillDialogOptions
+            var skillDialogArgs = new BeginSkillDialogOptions { Activity = skillActivity };
 
             // We are manually creating the activity to send to the skill, ensure we add the ChannelData and Properties 
             // from the original activity so the skill gets them.
             // Note: this is not necessary if we are just forwarding the current activity from context. 
             skillDialogArgs.Activity.ChannelData = stepContext.Context.Activity.ChannelData;
             skillDialogArgs.Activity.Properties = stepContext.Context.Activity.Properties;
+
+            // Comment or uncomment this line if you need to enable or disabled buffered replies.
+            skillDialogArgs.Activity.DeliveryMode = DeliveryModes.BufferedReplies;
 
             // Save active skill in state
             await _activeSkillProperty.SetAsync(stepContext.Context, selectedSkill, cancellationToken);
@@ -186,7 +198,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
                 message += $" Result: {JsonConvert.SerializeObject(stepContext.Result)}";
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text(message, inputHint: InputHints.IgnoringInput), cancellationToken: cancellationToken);
             }
-            
+
             // Clear the skill selected by the user.
             stepContext.Values[_selectedSkillKey] = null;
 

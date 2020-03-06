@@ -252,8 +252,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var templateNameLine = BuildTemplateNameLine(newTemplateName, parameters);
                 var newTemplateBody = ConvertTemplateBody(templateBody);
                 var content = $"{templateNameLine}\r\n{newTemplateBody}\r\n";
-                var startLine = template.ParseTree.Start.Line - 1;
-                var stopLine = template.ParseTree.Stop.Line - 1;
+                var (startLine, stopLine) = template.GetTemplateRange();
 
                 var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
                 Initialize(ParseText(newContent, Id, ImportResolver));
@@ -295,8 +294,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
             {
-                var startLine = template.ParseTree.Start.Line - 1;
-                var stopLine = template.ParseTree.Stop.Line - 1;
+                var (startLine, stopLine) = template.GetTemplateRange();
 
                 var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
                 Initialize(ParseText(newContent, Id, ImportResolver));

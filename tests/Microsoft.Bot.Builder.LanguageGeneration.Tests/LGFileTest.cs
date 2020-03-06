@@ -581,7 +581,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(lgFile.Templates.Count, 1);
             Assert.AreEqual(lgFile.Imports.Count, 0);
             Assert.AreEqual(lgFile.Templates[0].Name, "wPhrase");
-            Assert.AreEqual(lgFile.Templates[0].Body.Replace("\r\n", "\n"), "- Hi\n- Hello\n- Hiya\n- Hi");
+            Assert.AreEqual(lgFile.Templates[0].Body.Replace("\r\n", "\n"), "> this is an in-template comment\n- Hi\n- Hello\n- Hiya\n- Hi");
 
             lgFile.AddTemplate("newtemplate", new List<string> { "age", "name" }, "- hi ");
             Assert.AreEqual(lgFile.Templates.Count, 2);
@@ -590,12 +590,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(lgFile.Templates[1].Parameters.Count, 2);
             Assert.AreEqual(lgFile.Templates[1].Parameters[0], "age");
             Assert.AreEqual(lgFile.Templates[1].Parameters[1], "name");
-            Assert.AreEqual(lgFile.Templates[1].Body, "- hi ");
+            Assert.AreEqual(lgFile.Templates[1].Body.Replace("\r\n", "\n"), "- hi \n");
 
             lgFile.AddTemplate("newtemplate2", null, "- hi2 ");
             Assert.AreEqual(lgFile.Templates.Count, 3);
             Assert.AreEqual(lgFile.Templates[2].Name, "newtemplate2");
-            Assert.AreEqual(lgFile.Templates[2].Body, "- hi2 ");
+            Assert.AreEqual(lgFile.Templates[2].Body.Replace("\r\n", "\n"), "- hi2 \n");
 
             lgFile.UpdateTemplate("newtemplate", "newtemplateName", new List<string> { "newage", "newname" }, "- new hi\r\n#hi");
             Assert.AreEqual(lgFile.Templates.Count, 3);
@@ -604,13 +604,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(lgFile.Templates[1].Parameters.Count, 2);
             Assert.AreEqual(lgFile.Templates[1].Parameters[0], "newage");
             Assert.AreEqual(lgFile.Templates[1].Parameters[1], "newname");
-            Assert.AreEqual(lgFile.Templates[1].Body, "- new hi\r\n- #hi");
+            Assert.AreEqual(lgFile.Templates[1].Body.Replace("\r\n", "\n"), "- new hi\n- #hi\n");
 
             lgFile.UpdateTemplate("newtemplate2", "newtemplateName2", new List<string> { "newage2", "newname2" }, "- new hi\r\n#hi2");
             Assert.AreEqual(lgFile.Templates.Count, 3);
             Assert.AreEqual(lgFile.Imports.Count, 0);
             Assert.AreEqual(lgFile.Templates[2].Name, "newtemplateName2");
-            Assert.AreEqual(lgFile.Templates[2].Body, "- new hi\r\n- #hi2");
+            Assert.AreEqual(lgFile.Templates[2].Body.Replace("\r\n", "\n"), "- new hi\n- #hi2\n");
 
             lgFile.DeleteTemplate("newtemplateName");
             Assert.AreEqual(lgFile.Templates.Count, 2);

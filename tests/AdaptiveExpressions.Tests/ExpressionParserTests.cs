@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using AdaptiveExpressions.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions.Tests
@@ -824,6 +825,11 @@ namespace AdaptiveExpressions.Tests
                 var actualRefs = parsed.References();
                 Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
             }
+
+            // ToString re-parse
+            var newExpression = Expression.Parse(parsed.ToString());
+            var newActual = newExpression.TryEvaluate(scope).value;
+            AssertObjectEquals(actual, newActual);
         }
 
         [DataTestMethod]
@@ -841,6 +847,18 @@ namespace AdaptiveExpressions.Tests
                 var actualRefs = parsed.References();
                 Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
             }
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(Data))]
+        [Ignore]
+        public void Roundtrip(string input, object expected, HashSet<string> expectedRefs)
+        {
+            var parsed = Expression.Parse(input);
+            var json = JsonConvert.SerializeObject(parsed);
+            var newExpression = JsonConvert.DeserializeObject<Expression>(json);
+
+            Assert.AreEqual(parsed.ToString(), newExpression.ToString(), $"{input} should have round tripped as string");
         }
 
         [TestMethod]

@@ -129,16 +129,16 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         {
             if (string.IsNullOrWhiteSpace(_appSecret) || string.IsNullOrWhiteSpace(_accessToken) || string.IsNullOrWhiteSpace(_botEndpoint) || string.IsNullOrWhiteSpace(_senderId))
             {
-                _appSecret = Environment.GetEnvironmentVariable("FACEBOOK_APP_SECRET");
+                _appSecret = Environment.GetEnvironmentVariable("FacebookTestBotFaceBookAppSecret");
                 if (string.IsNullOrWhiteSpace(_appSecret))
                 {
-                    Assert.Inconclusive("Environment variable 'FACEBOOK_APP_SECRET' not found.");
+                    Assert.Inconclusive("Environment variable 'FacebookTestBotFaceBookAppSecret' not found.");
                 }
 
-                _accessToken = Environment.GetEnvironmentVariable("FACEBOOK_ACCESS_TOKEN");
+                _accessToken = Environment.GetEnvironmentVariable("FacebookTestBotFacebookAccessToken");
                 if (string.IsNullOrWhiteSpace(_accessToken))
                 {
-                    Assert.Inconclusive("Environment variable 'FACEBOOK_ACCESS_TOKEN' not found.");
+                    Assert.Inconclusive("Environment variable 'FacebookTestBotFacebookAccessToken' not found.");
                 }
 
                 _botEndpoint = Environment.GetEnvironmentVariable("BOT_ENDPOINT");
@@ -147,10 +147,10 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                     Assert.Inconclusive("Environment variable 'BOT_ENDPOINT' not found.");
                 }
 
-                _senderId = Environment.GetEnvironmentVariable("SENDER_ID");
+                _senderId = Environment.GetEnvironmentVariable("FacebookTestBotSenderId");
                 if (string.IsNullOrWhiteSpace(_senderId))
                 {
-                    Assert.Inconclusive("Environment variable 'SENDER_ID' not found.");
+                    Assert.Inconclusive("Environment variable 'FacebookTestBotSenderId' not found.");
                 }
             }
         }
