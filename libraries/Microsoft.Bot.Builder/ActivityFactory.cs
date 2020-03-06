@@ -8,7 +8,7 @@ using System.Reflection;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
+namespace Microsoft.Bot.Builder
 {
     /// <summary>
     /// The ActivityFactory
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             var diagnostics = CheckLGResult(lgResult);
             var errors = diagnostics.Where(u => u.StartsWith(ErrorPrefix));
-            
+
             if (errors.Any())
             {
                 throw new Exception(string.Join("\n", errors));
