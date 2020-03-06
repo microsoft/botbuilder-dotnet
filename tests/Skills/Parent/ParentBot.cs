@@ -147,7 +147,7 @@ namespace Microsoft.BotBuilderSamples
                         if (!string.IsNullOrWhiteSpace(result.Token))
                         {
                             // Send an invoke back to the skill
-                            return await SendTokenExchangeInvokeToSkill(turnContext, activity, oauthCard.TokenExchangeResource.Id, result.Token, cancellationToken);
+                            return await SendTokenExchangeInvokeToSkill(turnContext, activity, oauthCard.TokenExchangeResource.Id, oauthCard.ConnectionName, result.Token, cancellationToken);
                         }
                     }
                 }
@@ -156,7 +156,7 @@ namespace Microsoft.BotBuilderSamples
             return false;
         }
 
-        private async Task<bool> SendTokenExchangeInvokeToSkill(ITurnContext turnContext, Activity incomingActivity, string id, string token, CancellationToken cancellationToken)
+        private async Task<bool> SendTokenExchangeInvokeToSkill(ITurnContext turnContext, Activity incomingActivity, string id, string connectionName, string token, CancellationToken cancellationToken)
         {
             var activity = incomingActivity.CreateReply() as Activity;
             activity.Type = ActivityTypes.Invoke;
@@ -164,7 +164,8 @@ namespace Microsoft.BotBuilderSamples
             activity.Value = new TokenExchangeInvokeRequest()
             {
                 Id = id,
-                Token = token
+                Token = token,
+                ConnectionName = connectionName
             };
 
             // route the activity to the skill
@@ -178,7 +179,7 @@ namespace Microsoft.BotBuilderSamples
                 cancellationToken);
 
             // Check response status: true if success, false if failure
-            var success = response.Status >= 200 && response.Status <= 299;
+            var success = IsSucessStatusCode(response.Status);
             if (success)
             {
                 await turnContext.SendActivityAsync(MessageFactory.Text("Skill token exchange successful"), cancellationToken);
@@ -189,6 +190,11 @@ namespace Microsoft.BotBuilderSamples
             }
 
             return success;
+        }
+
+        private bool IsSucessStatusCode(int statusCode)
+        {
+            return statusCode >= 200 && statusCode <= 299;
         }
     }
 }

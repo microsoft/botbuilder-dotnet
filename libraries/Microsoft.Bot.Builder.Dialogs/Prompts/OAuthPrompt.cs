@@ -458,6 +458,19 @@ namespace Microsoft.Bot.Builder.Dialogs
                             FailureDetail = "The bot received an InvokeActivity that is missing a TokenExchangeInvokeRequest value. This is required to be sent with the InvokeActivity.",
                         }).ConfigureAwait(false);
                 }
+                else if (tokenExchangeRequest.ConnectionName != _settings.ConnectionName)
+                {
+                    await this.SendInvokeResponseAsync(
+                        turnContext,
+                        cancellationToken,
+                        HttpStatusCode.BadRequest,
+                        new TokenExchangeInvokeResponse()
+                        {
+                            Id = tokenExchangeRequest.Id,
+                            ConnectionName = _settings.ConnectionName,
+                            FailureDetail = "The bot received an InvokeActivity with a TokenExchangeInvokeRequest containing a ConnectionName that does not match the ConnectionName expected by the bot's active OAuthPrompt. Ensure these names match when sending the InvokeActivityInvalid ConnectionName in the TokenExchangeInvokeRequest",
+                        }).ConfigureAwait(false);
+                }
                 else if (!(turnContext.Adapter is IExtendedUserTokenProvider adapter))
                 {
                     await this.SendInvokeResponseAsync(
