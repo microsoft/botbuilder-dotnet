@@ -57,14 +57,12 @@
             "type": "string",
             "title": "Skill App ID",
             "description": "The Microsoft App ID for the skill.",
-            "default": "=settings.SkillName.skillAppId"
         },
         "skillEndpoint": {
             "$role": "expression",
             "type": "string",
             "title": "Skill endpoint ",
             "description": "The /api/messages endpoint for the skill.",
-            "default": "=settings.SkillName.skillEndpoint",
             "examples": [
                 "https://myskill.contoso.com/api/messages/"
             ]
