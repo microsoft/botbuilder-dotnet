@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
             // Get the activity to send to the skill.
             var activity = await Activity.BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
 
-            return await base.BeginDialogAsync(dc, new SkillDialogArgs { Activity = activity }, cancellationToken).ConfigureAwait(false);
+            return await base.BeginDialogAsync(dc, new BeginSkillDialogOptions { Activity = activity }, cancellationToken).ConfigureAwait(false);
         }
     }
 }
