@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 { "template", JsonConvert.SerializeObject(Text) },
                 { "result", text ?? string.Empty },
             };
-            TelemetryClient.TrackEvent("generatorResult", properties);
+            TelemetryClient.TrackEvent("GeneratorResult", properties);
 
             System.Diagnostics.Trace.TraceInformation(text);
 

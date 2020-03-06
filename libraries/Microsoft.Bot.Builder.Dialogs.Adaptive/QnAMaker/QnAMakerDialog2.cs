@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
                     { "template", JsonConvert.SerializeObject(this.NoAnswer) },
                     { "result", noAnswer == null ? string.Empty : JsonConvert.SerializeObject(noAnswer, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
                 };
-                TelemetryClient.TrackEvent("generatorResult", properties);
+                TelemetryClient.TrackEvent("GeneratorResult", properties);
             }
 
             if (cardNoMatchResponse != null)
@@ -191,7 +191,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
                     { "template", JsonConvert.SerializeObject(this.CardNoMatchResponse) },
                     { "result", cardNoMatchResponse == null ? string.Empty : JsonConvert.SerializeObject(cardNoMatchResponse, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
                 };
-                TelemetryClient.TrackEvent("generatorResult", properties);
+                TelemetryClient.TrackEvent("GeneratorResult", properties);
             }
 
             var responseOptions = new QnADialogResponseOptions
