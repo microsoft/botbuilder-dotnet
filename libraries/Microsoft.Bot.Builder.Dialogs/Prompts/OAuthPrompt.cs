@@ -347,9 +347,13 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var signInResource = await adapter.GetSignInResourceAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, turnContext.Activity.From.Id, null, cancellationToken).ConfigureAwait(false);
                 var value = signInResource.SignInLink;
 
-                if (turnContext.TurnState.Get<ClaimsIdentity>("BotIdentity") is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
+                if (turnContext.Activity.IsFromStreamingConnection() ||
+                    (turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims)))
                 {
-                    cardActionType = ActionTypes.OpenUrl;
+                    if (turnContext.Activity.ChannelId == Channels.Emulator)
+                    {
+                        cardActionType = ActionTypes.OpenUrl;
+                    }
                 }
                 else
                 {

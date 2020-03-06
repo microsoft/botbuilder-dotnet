@@ -234,6 +234,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     if (this.DefaultValueResponse != null)
                     {
                         var response = await this.DefaultValueResponse.BindToData(dc.Context, dcState).ConfigureAwait(false);
+
+                        var properties = new Dictionary<string, string>()
+                        {
+                            { "template", JsonConvert.SerializeObject(DefaultValueResponse) },
+                            { "result", response == null ? string.Empty : JsonConvert.SerializeObject(response, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+                        };
+                        TelemetryClient.TrackEvent("GeneratorResult", properties);
+
                         await dc.Context.SendActivityAsync(response).ConfigureAwait(false);
                     }
 
@@ -350,15 +358,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             IMessageActivity msg = null;
             var dcState = dc.GetState();
 
+            ITemplate<Activity> template = null;
             switch (state)
             {
                 case InputState.Unrecognized:
                     if (this.UnrecognizedPrompt != null)
                     {
+                        template = this.UnrecognizedPrompt;
                         msg = await this.UnrecognizedPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
                     }
                     else if (this.InvalidPrompt != null)
                     {
+                        template = this.InvalidPrompt;
                         msg = await this.InvalidPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
                     }
 
@@ -367,10 +378,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 case InputState.Invalid:
                     if (this.InvalidPrompt != null)
                     {
+                        template = this.InvalidPrompt;
                         msg = await this.InvalidPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
                     }
                     else if (this.UnrecognizedPrompt != null)
                     {
+                        template = this.UnrecognizedPrompt;
                         msg = await this.UnrecognizedPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
                     }
 
@@ -379,10 +392,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             if (msg == null)
             {
+                template = this.Prompt;
                 msg = await this.Prompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
             }
 
             msg.InputHint = InputHints.ExpectingInput;
+
+            var properties = new Dictionary<string, string>()
+            {
+                { "template", JsonConvert.SerializeObject(template) },
+                { "result", msg == null ? string.Empty : JsonConvert.SerializeObject(msg, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+            };
+            TelemetryClient.TrackEvent("GeneratorResult", properties);
 
             return msg;
         }
