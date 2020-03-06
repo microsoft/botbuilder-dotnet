@@ -999,6 +999,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var lgFile = LGParser.ParseFile(GetExampleFilePath("CustomFunction.lg"), null, parser);
             var evaled = lgFile.EvaluateTemplate("template");
             Assert.AreEqual(3, evaled);
+            evaled = lgFile.EvaluateTemplate("callRef");
+            Assert.AreEqual(12, evaled);
         }
 
         public class LoopClass
