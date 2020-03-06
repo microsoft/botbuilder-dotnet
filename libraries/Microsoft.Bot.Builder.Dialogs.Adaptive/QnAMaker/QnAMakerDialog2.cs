@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.AI.QnA;
@@ -172,6 +173,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
             var dcState = dc.GetState();
             var noAnswer = (this.NoAnswer != null) ? await this.NoAnswer.BindToData(dc.Context, dcState).ConfigureAwait(false) : null;
             var cardNoMatchResponse = (this.CardNoMatchResponse != null) ? await this.CardNoMatchResponse.BindToData(dc.Context, dcState).ConfigureAwait(false) : null;
+
+            if (noAnswer != null)
+            {
+                var properties = new Dictionary<string, string>()
+                {
+                    { "template", JsonConvert.SerializeObject(this.NoAnswer) },
+                    { "result", noAnswer == null ? string.Empty : JsonConvert.SerializeObject(noAnswer, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+                };
+                TelemetryClient.TrackEvent("GeneratorResult", properties);
+            }
+
+            if (cardNoMatchResponse != null)
+            {
+                var properties = new Dictionary<string, string>()
+                {
+                    { "template", JsonConvert.SerializeObject(this.CardNoMatchResponse) },
+                    { "result", cardNoMatchResponse == null ? string.Empty : JsonConvert.SerializeObject(cardNoMatchResponse, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+                };
+                TelemetryClient.TrackEvent("GeneratorResult", properties);
+            }
 
             var responseOptions = new QnADialogResponseOptions
             {
