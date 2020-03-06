@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         [JsonProperty("recognizers")]
         public IDictionary<string, Recognizer> Recognizers { get; set; } = new Dictionary<string, Recognizer>();
 
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken)
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             if (!LanguagePolicy.TryGetValue(activity.Locale ?? string.Empty, out string[] policy))
             {
@@ -52,10 +52,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             {
                 if (this.Recognizers.TryGetValue(option, out var recognizer))
                 {
-                    return await recognizer.RecognizeAsync(dialogContext, activity, cancellationToken).ConfigureAwait(false);
+                    var result = await recognizer.RecognizeAsync(dialogContext, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
+                    this.TelemetryClient.TrackEvent("MultiLanguagesRecognizerResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties), telemetryMetrics);
+                    return result;
                 }
             }
 
+            this.TelemetryClient.TrackEvent("MultiLanguagesRecognizerResult", this.FillRecognizerResultTelemetryProperties(new RecognizerResult() { }, telemetryProperties), telemetryMetrics);
+            
             // nothing recognized
             return new RecognizerResult() { };
         }
