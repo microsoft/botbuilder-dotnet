@@ -21,6 +21,11 @@
             "$ref": "#/definitions/Microsoft.AdaptiveDialog"
         },
         {
+            "title": "Microsoft.SkillDialog",
+            "description": "Begin a remote skill dialog.",
+            "$ref": "#/definitions/Microsoft.SkillDialog"
+        },
+        {
             "title": "Microsoft.AgeEntityRecognizer",
             "description": "Recognizer which recognizes age.",
             "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
@@ -426,9 +431,9 @@
             "$ref": "#/definitions/Microsoft.RecognizerSet"
         },
         {
-            "title": "Microsoft.RegexEntityRecognizer",
+            "title": "Microsoft.RegExEntityRecognizer",
             "description": "Recognizer which recognizes patterns of input based on regex.",
-            "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
+            "$ref": "#/definitions/Microsoft.RegExEntityRecognizer"
         },
         {
             "title": "Microsoft.RegexRecognizer",
@@ -763,6 +768,146 @@
                             "description": "Reference to JSON schema .dialog file."
                         }
                     ]
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.SkillDialog": {
+            "$role": "implements(Microsoft.IDialog)",
+            "title": "Begin a skill dialog",
+            "description": "Begin a remote skill dialog.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.SkillDialog"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the skill dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
+                "activityProcessed": {
+                    "$role": "expression",
+                    "title": "Activity Processed",
+                    "description": "When set to false, the dialog that is called can process the current activity.",
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
+                "resultProperty": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Property",
+                    "description": "Property to store any value returned by the dialog that is called.",
+                    "examples": [
+                        "dialog.userName"
+                    ]
+                },
+                "botId": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Skill host bot ID",
+                    "description": "The Microsoft App ID that will be calling the skill.",
+                    "default": "=settings.MicrosoftAppId"
+                },
+                "skillHostEndpoint": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Skill host",
+                    "description": "The callback Url for the skill host.",
+                    "default": "=settings.skillHostEndpoint",
+                    "examples": [
+                        "https://mybot.contoso.com/api/skills/"
+                    ]
+                },
+                "skillAppId": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Skill App ID",
+                    "description": "The Microsoft App ID for the skill."
+                },
+                "skillEndpoint": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Skill endpoint ",
+                    "description": "The /api/messages endpoint for the skill.",
+                    "examples": [
+                        "https://myskill.contoso.com/api/messages/"
+                    ]
+                },
+                "activity ": {
+                    "$kind": "Microsoft.IActivityTemplate",
+                    "title": "Activity",
+                    "description": "The activity to send to the skill.",
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 }
             },
             "additionalProperties": false,
@@ -3748,9 +3893,9 @@
                     "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
                 },
                 {
-                    "title": "Microsoft.RegexEntityRecognizer",
+                    "title": "Microsoft.RegExEntityRecognizer",
                     "description": "Recognizer which recognizes patterns of input based on regex.",
-                    "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
+                    "$ref": "#/definitions/Microsoft.RegExEntityRecognizer"
                 },
                 {
                     "title": "Microsoft.TemperatureEntityRecognizer",
@@ -4566,6 +4711,11 @@
                     "title": "Microsoft.AdaptiveDialog",
                     "description": "Flexible, data driven dialog that can adapt to the conversation.",
                     "$ref": "#/definitions/Microsoft.AdaptiveDialog"
+                },
+                {
+                    "title": "Microsoft.SkillDialog",
+                    "description": "Begin a remote skill dialog.",
+                    "$ref": "#/definitions/Microsoft.SkillDialog"
                 },
                 {
                     "title": "Microsoft.Ask",
@@ -9768,7 +9918,7 @@
                 }
             ]
         },
-        "Microsoft.RegexEntityRecognizer": {
+        "Microsoft.RegExEntityRecognizer": {
             "$role": "implements(Microsoft.EntityRecognizers)",
             "title": "Regex Entity Recognizer",
             "description": "Recognizer which recognizes patterns of input based on regex.",
@@ -9779,7 +9929,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexEntityRecognizer"
+                    "const": "Microsoft.RegExEntityRecognizer"
                 },
                 "$copy": {
                     "title": "$copy",
