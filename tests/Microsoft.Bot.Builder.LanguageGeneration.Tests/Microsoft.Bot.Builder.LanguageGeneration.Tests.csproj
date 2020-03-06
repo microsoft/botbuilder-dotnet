@@ -235,6 +235,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Examples\CustomFunctionSub.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Examples\Expand.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
