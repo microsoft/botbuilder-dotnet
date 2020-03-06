@@ -165,7 +165,9 @@
     <Content Include="Examples\CustomFunction.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  
+    <Content Include="Examples\CustomFunctionSub.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="ExceptionExamples\ConditionFormatError.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -236,9 +238,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Examples\CustomFunctionSub.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Examples\Expand.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
