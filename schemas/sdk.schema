@@ -21,9 +21,9 @@
             "$ref": "#/definitions/Microsoft.AdaptiveDialog"
         },
         {
-            "title": "Microsoft.AdaptiveSkillDialog",
+            "title": "Microsoft.SkillDialog",
             "description": "Begin a remote skill dialog.",
-            "$ref": "#/definitions/Microsoft.AdaptiveSkillDialog"
+            "$ref": "#/definitions/Microsoft.SkillDialog"
         },
         {
             "title": "Microsoft.AgeEntityRecognizer",
@@ -791,7 +791,7 @@
                 }
             ]
         },
-        "Microsoft.AdaptiveSkillDialog": {
+        "Microsoft.SkillDialog": {
             "$role": "implements(Microsoft.IDialog)",
             "title": "Begin a skill dialog",
             "description": "Begin a remote skill dialog.",
@@ -802,7 +802,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.AdaptiveSkillDialog"
+                    "const": "Microsoft.SkillDialog"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -4713,9 +4713,9 @@
                     "$ref": "#/definitions/Microsoft.AdaptiveDialog"
                 },
                 {
-                    "title": "Microsoft.AdaptiveSkillDialog",
+                    "title": "Microsoft.SkillDialog",
                     "description": "Begin a remote skill dialog.",
-                    "$ref": "#/definitions/Microsoft.AdaptiveSkillDialog"
+                    "$ref": "#/definitions/Microsoft.SkillDialog"
                 },
                 {
                     "title": "Microsoft.Ask",

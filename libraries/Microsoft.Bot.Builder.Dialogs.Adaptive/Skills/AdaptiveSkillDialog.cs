@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
     public class AdaptiveSkillDialog : SkillDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.AdaptiveSkillDialog";
+        public const string DeclarativeType = "Microsoft.SkillDialog";
 
         [JsonConstructor]
         public AdaptiveSkillDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -128,17 +128,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
             return await base.BeginDialogAsync(dc, new BeginSkillDialogOptions { Activity = activity }, cancellationToken).ConfigureAwait(false);
         }
 
-        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+        public override Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
-            var dcState = dc.GetState();
-
-            if (ResultProperty != null)
+            if (dc.Context.Activity.Type == ActivityTypes.EndOfConversation)
             {
-                dcState.SetValue(ResultProperty.GetValue(dcState), result);
+                // Capture the result of the dialog if the property is set
+                var dcState = dc.GetState();
+                if (ResultProperty != null)
+                {
+                    dcState.SetValue(ResultProperty.GetValue(dcState), dc.Context.Activity.Value);
+                }
             }
 
-            // By default just end the current dialog and return result to parent.
-            return await base.ResumeDialogAsync(dc, reason, result, cancellationToken).ConfigureAwait(false);
+            return base.ContinueDialogAsync(dc, cancellationToken);
         }
     }
 }
