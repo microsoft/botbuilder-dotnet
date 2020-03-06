@@ -5,12 +5,12 @@
 # "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
 name: $(Build.BuildId)
 
+pool:
+  vmImage: 'windows-2019'
+
 trigger: none
 
 pr: none
-
-pool:
-  vmImage: 'windows-2019'
 
 variables:
   BuildPlatform: 'any cpu'

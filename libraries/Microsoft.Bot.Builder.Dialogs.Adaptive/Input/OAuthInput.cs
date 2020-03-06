@@ -238,6 +238,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                         if (this.DefaultValueResponse != null)
                         {
                             var response = await this.DefaultValueResponse.BindToData(dc.Context, dcState).ConfigureAwait(false);
+                            var properties = new Dictionary<string, string>()
+                            {
+                                { "template", JsonConvert.SerializeObject(this.DefaultValueResponse) },
+                                { "result", response == null ? string.Empty : JsonConvert.SerializeObject(response, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+                            };
+                            TelemetryClient.TrackEvent("GeneratorResult", properties);
                             await dc.Context.SendActivityAsync(response).ConfigureAwait(false);
                         }
 

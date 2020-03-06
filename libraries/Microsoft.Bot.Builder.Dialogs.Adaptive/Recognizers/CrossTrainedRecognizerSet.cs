@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         [JsonProperty("recognizers")]
         public List<Recognizer> Recognizers { get; set; } = new List<Recognizer>();
 
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default)
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             if (dialogContext == null)
             {
@@ -82,12 +82,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             // run all of the recognizers in parallel
             var results = await Task.WhenAll(Recognizers.Select(async recognizer =>
             {
-                var result = await recognizer.RecognizeAsync(dialogContext, activity, cancellationToken).ConfigureAwait(false);
+                var result = await recognizer.RecognizeAsync(dialogContext, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
                 result.Properties["id"] = recognizer.Id;
                 return result;
             }));
 
-            return ProcessResults(results);
+            var result = ProcessResults(results);
+
+            this.TelemetryClient.TrackEvent("CrossTrainedRecognizerSetResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties), telemetryMetrics);
+
+            return result;
         }
 
         private RecognizerResult ProcessResults(IEnumerable<RecognizerResult> results)

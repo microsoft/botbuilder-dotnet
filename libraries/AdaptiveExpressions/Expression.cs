@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using AdaptiveExpressions.Converters;
 using AdaptiveExpressions.Memory;
 using Newtonsoft.Json;
 
@@ -46,6 +47,7 @@ namespace AdaptiveExpressions
     /// This provides an open-ended wrapper that supports a number of built-in functions and can also be extended at runtime.
     /// It also supports validation of the correctness of an expression and evaluation that should be exception free.
     /// </remarks>
+    [JsonConverter(typeof(ExpressionConverter))]
     public class Expression
     {
         /// <summary>
