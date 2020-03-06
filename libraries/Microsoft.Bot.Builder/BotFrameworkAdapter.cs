@@ -456,7 +456,7 @@ namespace Microsoft.Bot.Builder
 
                     return (InvokeResponse)activityInvokeResponse.Value;
                 }
-                else if (context.Activity.DeliveryMode == DeliveryModes.BufferedReplies)
+                else if (context.Activity.DeliveryMode == DeliveryModes.ExpectsReply)
                 {
                     return new InvokeResponse { Status = (int)HttpStatusCode.OK, Body = context.BufferedReplies };
                 }
