@@ -1,11 +1,9 @@
 #
-# This YAML build definition replaces the classic BotBuilder-DotNet-master-CI-PR-(MacLinux)
+# Replaces the classic BotBuilder-DotNet-master-CI-PR-(MacLinux)
 #
 
 # "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
 name: $(Build.BuildId)
-variables:
-  BuildConfiguration: debug
 
 pool:
     vmImage: 'macOS-10.14'
@@ -39,6 +37,9 @@ pr: # pr trigger
       - LICENSE
       - README.md
       - UsingMyGet.md
+
+variables:
+  BuildConfiguration: debug
 
 steps:
 # Note: Template ci-build-steps.yml is not supported in macOS because it calls VSBuild@1 in order to build the Windows-only ASP.NET Desktop assemblies.
