@@ -358,7 +358,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task DeliveryModeBufferedReplies()
+        public async Task DeliveryModeExpectsReply()
         {
             var mockCredentialProvider = new Mock<ICredentialProvider>();
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
@@ -381,7 +381,7 @@ namespace Microsoft.Bot.Builder.Tests
                 Type = ActivityTypes.Message,
                 ChannelId = Channels.Emulator,
                 ServiceUrl = "http://tempuri.org/whatever",
-                DeliveryMode = DeliveryModes.BufferedReplies,
+                DeliveryMode = DeliveryModes.ExpectsReply,
                 Text = "hello world"
             };
 

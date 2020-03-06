@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             Activity eocActivity = null;
-            if (activity.DeliveryMode == DeliveryModes.BufferedReplies && response.Body.Any())
+            if (activity.DeliveryMode == DeliveryModes.ExpectsReply && response.Body.Any())
             {
                 // Process replies in the response.Body.
                 foreach (var fromSkillActivity in response.Body)
