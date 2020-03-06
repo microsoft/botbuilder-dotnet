@@ -49,7 +49,7 @@ steps:
   condition: and(succeeded(), ne(variables['CoverallsTokenEncrypted'], ''), ne(variables['NoCoverageUpload'], 'true'))
 
 - task: PowerShell@2
-  displayName: 'Upload Coverage Files to Coveralls.io https://coveralls.io/github/Microsoft/botbuilder-dotnet'
+  displayName: 'Upload Coverage Files to Coveralls.io https://coveralls.io/github/microsoft/botbuilder-dotnet'
   inputs:
     targetType: filePath
     filePath: '$(Build.SourcesDirectory)\build\PublishToCoveralls.ps1'
