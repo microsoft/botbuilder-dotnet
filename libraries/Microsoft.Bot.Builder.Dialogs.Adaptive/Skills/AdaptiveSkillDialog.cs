@@ -57,15 +57,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
         [JsonProperty("resultProperty")]
         public StringExpression ResultProperty { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Microsoft App ID that will be calling the skill.
+        /// </summary>
+        /// <value>
+        /// The Microsoft App ID that will be calling the skill.
+        /// </value>
         [JsonProperty("botId")]
         public StringExpression BotId { get; set; } = "=settings.MicrosoftAppId";
 
+        /// <summary>
+        /// Gets or sets the callback Url for the skill host.
+        /// </summary>
+        /// <value>
+        /// The callback Url for the skill host.
+        /// </value>
         [JsonProperty("skillHostEndpoint")]
         public StringExpression SkillHostEndpoint { get; set; } = "=settings.SkillHostEndpoint";
 
+        /// <summary>
+        /// Gets or sets the Microsoft App ID for the skill.
+        /// </summary>
+        /// <value>
+        /// The Microsoft App ID for the skill.
+        /// </value>
         [JsonProperty("skillAppId")]
         public StringExpression SkillAppId { get; set; }
 
+        /// <summary>
+        /// Gets or sets the /api/messages endpoint for the skill.
+        /// </summary>
+        /// <value>
+        /// The /api/messages endpoint for the skill.
+        /// </value>
         [JsonProperty("skillEndpoint")]
         public StringExpression SkillEndpoint { get; set; }
 
@@ -100,6 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
             // Get the activity to send to the skill.
             var activity = await Activity.BindToData(dc.Context, dcState).ConfigureAwait(false);
 
+            // Call the base to invoke the skill
             return await base.BeginDialogAsync(dc, new BeginSkillDialogOptions { Activity = activity }, cancellationToken).ConfigureAwait(false);
         }
 
