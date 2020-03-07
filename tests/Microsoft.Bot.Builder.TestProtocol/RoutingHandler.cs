@@ -33,7 +33,9 @@ namespace Microsoft.Bot.Builder.TestProtocol
 
         protected override async Task<ResourceResponse> OnReplyToActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
+#pragma warning disable 618
             var conversationReference = await _factory.GetConversationReferenceAsync(conversationId, cancellationToken);
+#pragma warning restore 618
             var connectorClient = GetConnectorClient(conversationReference.ServiceUrl);
             activity.ApplyConversationReference(conversationReference);
 
@@ -42,7 +44,9 @@ namespace Microsoft.Bot.Builder.TestProtocol
 
         protected override async Task<ResourceResponse> OnSendToConversationAsync(ClaimsIdentity claimsIdentity, string conversationId, Activity activity, CancellationToken cancellationToken = default)
         {
+#pragma warning disable 618
             var conversationReference = await _factory.GetConversationReferenceAsync(conversationId, cancellationToken);
+#pragma warning restore 618
             var connectorClient = GetConnectorClient(conversationReference.ServiceUrl);
             activity.ApplyConversationReference(conversationReference);
 
@@ -51,7 +55,9 @@ namespace Microsoft.Bot.Builder.TestProtocol
 
         protected override async Task<ResourceResponse> OnUpdateActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
+#pragma warning disable 618
             var conversationReference = await _factory.GetConversationReferenceAsync(conversationId, cancellationToken);
+#pragma warning restore 618
             var connectorClient = GetConnectorClient(conversationReference.ServiceUrl);
             activity.ApplyConversationReference(conversationReference);
 
@@ -60,7 +66,9 @@ namespace Microsoft.Bot.Builder.TestProtocol
 
         protected override async Task OnDeleteActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, CancellationToken cancellationToken = default)
         {
+#pragma warning disable 618
             var conversationReference = await _factory.GetConversationReferenceAsync(conversationId, cancellationToken);
+#pragma warning restore 618
             var connectorClient = GetConnectorClient(conversationReference.ServiceUrl);
 
             await connectorClient.Conversations.DeleteActivityAsync(conversationReference.Conversation.Id, activityId, cancellationToken);
