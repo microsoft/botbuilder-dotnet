@@ -72,7 +72,10 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                 ServiceUrl = "http://testbot.com/api/messages"
             };
 
+            // Testing the deprecated method for backward compatibility.
+#pragma warning disable 618
             var conversationId = await legacycFatory.CreateSkillConversationIdAsync(conversationReference, CancellationToken.None);
+#pragma warning restore 618
             BotCallbackHandler botCallback = null;
             _mockAdapter.Setup(x => x.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
                 .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>((identity, reference, audience, callback, cancellationToken) =>
@@ -330,6 +333,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         {
             private readonly ConcurrentDictionary<string, string> _conversationRefs = new ConcurrentDictionary<string, string>();
 
+            // Testing the deprecated method for backward compatibility.
 #pragma warning disable 618
             public override Task<string> CreateSkillConversationIdAsync(ConversationReference conversationReference, CancellationToken cancellationToken)
             {
@@ -340,6 +344,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                 return Task.FromResult(key);
             }
 
+            // Testing the deprecated method for backward compatibility.
 #pragma warning disable 618
             public override Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
             {
