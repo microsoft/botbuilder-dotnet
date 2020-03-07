@@ -28,7 +28,7 @@ namespace Microsoft.BotBuilderSamples
 
             var activity = MessageFactory.Text("parent to child");
             activity.ApplyConversationReference(turnContext.Activity.GetConversationReference(), true);
-            activity.DeliveryMode = DeliveryModes.ExpectsReply;
+            activity.DeliveryMode = DeliveryModes.ExpectReplies;
 
             var response = await _client.PostActivityAsync<Activity[]>(
                 null,
