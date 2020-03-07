@@ -388,7 +388,7 @@ namespace Microsoft.Bot.Builder.Tests
             var invokeResponse = await adapter.ProcessActivityAsync(string.Empty, inboundActivity, callback, CancellationToken.None);
 
             Assert.AreEqual((int)HttpStatusCode.OK, invokeResponse.Status);
-            var activities = (List<Activity>)invokeResponse.Body;
+            var activities = ((ExpectedReplies)invokeResponse.Body).Activities;
             Assert.AreEqual(3, activities.Count);
             Assert.AreEqual("activity 1", activities[0].Text);
             Assert.AreEqual("activity 2", activities[1].Text);

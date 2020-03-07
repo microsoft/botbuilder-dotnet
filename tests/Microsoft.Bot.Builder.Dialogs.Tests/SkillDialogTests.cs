@@ -160,15 +160,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             if (captureAction != null)
             {
                 mockSkillClient
-                    .Setup(x => x.PostActivityAsync<Activity[]>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
-                    .Returns(Task.FromResult(new InvokeResponse<Activity[]> { Status = returnStatus }))
+                    .Setup(x => x.PostActivityAsync<ExpectedReplies>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
+                    .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies> { Status = returnStatus }))
                     .Callback(captureAction);
             }
             else
             {
                 mockSkillClient
-                    .Setup(x => x.PostActivityAsync<Activity[]>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
-                    .Returns(Task.FromResult(new InvokeResponse<Activity[]> { Status = returnStatus }));
+                    .Setup(x => x.PostActivityAsync<ExpectedReplies>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
+                    .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies> { Status = returnStatus }));
             }
 
             return mockSkillClient;
