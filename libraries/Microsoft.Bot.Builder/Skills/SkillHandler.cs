@@ -159,7 +159,8 @@ namespace Microsoft.Bot.Builder.Skills
             {
                 // Attempt to get SkillConversationReference using deprecated method.
                 // this catch should be removed once we remove the deprecated method. 
-#pragma warning disable 618 // We need to use the deprecated method for backward compatibility.
+                // We need to use the deprecated method for backward compatibility.
+#pragma warning disable 618
                 var conversationReference = await _conversationIdFactory.GetConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
 #pragma warning restore 618
                 skillConversationReference = new SkillConversationReference
