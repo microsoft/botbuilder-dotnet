@@ -358,7 +358,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task DeliveryModeBufferedReplies()
+        public async Task DeliveryModeExpectReplies()
         {
             var mockCredentialProvider = new Mock<ICredentialProvider>();
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
@@ -381,14 +381,14 @@ namespace Microsoft.Bot.Builder.Tests
                 Type = ActivityTypes.Message,
                 ChannelId = Channels.Emulator,
                 ServiceUrl = "http://tempuri.org/whatever",
-                DeliveryMode = DeliveryModes.BufferedReplies,
+                DeliveryMode = DeliveryModes.ExpectReplies,
                 Text = "hello world"
             };
 
             var invokeResponse = await adapter.ProcessActivityAsync(string.Empty, inboundActivity, callback, CancellationToken.None);
 
             Assert.AreEqual((int)HttpStatusCode.OK, invokeResponse.Status);
-            var activities = (List<Activity>)invokeResponse.Body;
+            var activities = ((ExpectedReplies)invokeResponse.Body).Activities;
             Assert.AreEqual(3, activities.Count);
             Assert.AreEqual("activity 1", activities[0].Text);
             Assert.AreEqual("activity 2", activities[1].Text);

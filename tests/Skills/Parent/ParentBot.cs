@@ -76,8 +76,8 @@ namespace Microsoft.BotBuilderSamples
                     // incoming activity needs to be cloned for buffered replies
                     var cloneActivity = MessageFactory.Text(turnContext.Activity.Text);
                     cloneActivity.ApplyConversationReference(turnContext.Activity.GetConversationReference(), true);
-                    cloneActivity.DeliveryMode = DeliveryModes.BufferedReplies;
-                    var response1 = await _client.PostActivityAsync<Activity[]>(
+                    cloneActivity.DeliveryMode = DeliveryModes.ExpectReplies;
+                    var response1 = await _client.PostActivityAsync<ExpectedReplies>(
                         _fromBotId,
                         _toBotId,
                         new Uri("http://localhost:2303/api/messages"),
@@ -86,11 +86,12 @@ namespace Microsoft.BotBuilderSamples
                         cloneActivity,
                         cancellationToken);
 
-                    if (response1.Status == (int)HttpStatusCode.OK)
+                    if (response1.Status == (int)HttpStatusCode.OK && response1.Body?.Activities != null)
                     {
-                        if (!(await InterceptOAuthCards(response1.Body, turnContext, cancellationToken)))
+                        var activities = response1.Body.Activities.ToArray();
+                        if (!(await InterceptOAuthCards(activities, turnContext, cancellationToken)))
                         {
-                            await turnContext.SendActivitiesAsync(response1.Body, cancellationToken);
+                            await turnContext.SendActivitiesAsync(activities, cancellationToken);
                         }
                     }
                 }
@@ -102,9 +103,9 @@ namespace Microsoft.BotBuilderSamples
 
             var activity = MessageFactory.Text("parent to child");
             activity.ApplyConversationReference(turnContext.Activity.GetConversationReference(), true);
-            activity.DeliveryMode = DeliveryModes.BufferedReplies;
+            activity.DeliveryMode = DeliveryModes.ExpectReplies;
 
-            var response = await _client.PostActivityAsync<Activity[]>(
+            var response = await _client.PostActivityAsync<ExpectedReplies>(
                 _fromBotId,
                 _toBotId,
                 new Uri("http://localhost:2303/api/messages"),
@@ -115,7 +116,7 @@ namespace Microsoft.BotBuilderSamples
 
             if (response.Status == (int)HttpStatusCode.OK)
             {
-                await turnContext.SendActivitiesAsync(response.Body, cancellationToken);
+                await turnContext.SendActivitiesAsync(response.Body?.Activities?.ToArray(), cancellationToken);
             }
 
             await turnContext.SendActivityAsync(MessageFactory.Text("parent: after child"), cancellationToken);
