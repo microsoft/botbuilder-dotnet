@@ -18,6 +18,6 @@ namespace Microsoft.Bot.Schema
     {
         public const string Normal = "normal";
         public const string Notification = "notification";
-        public const string ExpectsReply = "expectsReply";
+        public const string ExpectReplies = "expectReplies";
     }
 }

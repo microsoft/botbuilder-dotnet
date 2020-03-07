@@ -70,10 +70,10 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Gets a list of activities to send when `context.Activity.DeliveryMode == 'expectsReply'`.
+        /// Gets a list of activities to send when `context.Activity.DeliveryMode == 'expectReplies'.
         /// </summary>
         /// <value>A list of activities.</value></placeholder>
-        public List<Activity> BufferedReplies { get; } = new List<Activity>();
+        public List<Activity> BufferedReplyActivties { get; } = new List<Activity>();
 
         /// <summary>
         /// Adds a response handler for send activity operations.
@@ -267,7 +267,7 @@ namespace Microsoft.Bot.Builder
 
             async Task<ResourceResponse[]> SendActivitiesThroughAdapter()
             {
-                if (Activity.DeliveryMode == DeliveryModes.ExpectsReply)
+                if (Activity.DeliveryMode == DeliveryModes.ExpectReplies)
                 {
                     var responses = new ResourceResponse[bufferedActivities.Count];
                     var sentNonTraceActivity = false;
@@ -275,7 +275,7 @@ namespace Microsoft.Bot.Builder
                     for (var index = 0; index < responses.Length; index++)
                     {
                         var activity = bufferedActivities[index];
-                        BufferedReplies.Add(activity);
+                        BufferedReplyActivties.Add(activity);
                         responses[index] = new ResourceResponse();
 
                         sentNonTraceActivity |= activity.Type != ActivityTypes.Trace;

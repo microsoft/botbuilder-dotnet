@@ -456,9 +456,9 @@ namespace Microsoft.Bot.Builder
 
                     return (InvokeResponse)activityInvokeResponse.Value;
                 }
-                else if (context.Activity.DeliveryMode == DeliveryModes.ExpectsReply)
+                else if (context.Activity.DeliveryMode == DeliveryModes.ExpectReplies)
                 {
-                    return new InvokeResponse { Status = (int)HttpStatusCode.OK, Body = context.BufferedReplies };
+                    return new InvokeResponse { Status = (int)HttpStatusCode.OK, Body = context.BufferedReplyActivties };
                 }
 
                 // For all non-invoke scenarios, the HTTP layers above don't have to mess
