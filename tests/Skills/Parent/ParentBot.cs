@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -30,7 +31,7 @@ namespace Microsoft.BotBuilderSamples
             activity.ApplyConversationReference(turnContext.Activity.GetConversationReference(), true);
             activity.DeliveryMode = DeliveryModes.ExpectReplies;
 
-            var response = await _client.PostActivityAsync<Activity[]>(
+            var response = await _client.PostActivityAsync<ExpectedReplies>(
                 null,
                 "toBotId",
                 new Uri("http://localhost:3979/api/messages"),
@@ -41,7 +42,7 @@ namespace Microsoft.BotBuilderSamples
 
             if (response.Status == (int)HttpStatusCode.OK)
             {
-                await turnContext.SendActivitiesAsync(response.Body, cancellationToken);
+                await turnContext.SendActivitiesAsync(response.Body?.Activities?.ToArray(), cancellationToken);
             }
 
             await turnContext.SendActivityAsync(MessageFactory.Text("parent: after child"), cancellationToken);
