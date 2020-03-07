@@ -168,7 +168,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var skillInfo = DialogOptions.Skill;
             await DialogOptions.ConversationState.SaveChangesAsync(context, true, cancellationToken).ConfigureAwait(false);
 
-            var response = await DialogOptions.SkillClient.PostActivityAsync<Activity[]>(DialogOptions.BotId, skillInfo.AppId, skillInfo.SkillEndpoint, DialogOptions.SkillHostEndpoint, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
+            var response = await DialogOptions.SkillClient.PostActivityAsync<ExpectedReplies>(DialogOptions.BotId, skillInfo.AppId, skillInfo.SkillEndpoint, DialogOptions.SkillHostEndpoint, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
 
             // Inspect the skill response status
             if (!(response.Status >= 200 && response.Status <= 299))
@@ -177,10 +177,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             Activity eocActivity = null;
-            if (activity.DeliveryMode == DeliveryModes.ExpectReplies && response.Body.Any())
+            if (activity.DeliveryMode == DeliveryModes.ExpectReplies && response.Body.Activities != null && response.Body.Activities.Any())
             {
                 // Process replies in the response.Body.
-                foreach (var fromSkillActivity in response.Body)
+                foreach (var fromSkillActivity in response.Body.Activities)
                 {
                     if (fromSkillActivity.Type == ActivityTypes.EndOfConversation)
                     {
