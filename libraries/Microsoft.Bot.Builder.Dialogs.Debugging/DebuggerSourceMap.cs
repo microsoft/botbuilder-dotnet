@@ -228,7 +228,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 options = from sourceItem in sourceByItem
                           let source = sourceItem.Value
                           where PathEquals(source.Path, row.Source.Path)
-                          where source.StartPoint.LineIndex <= row.SourceBreakpoint.Line && source.EndPoint.LineIndex >= row.SourceBreakpoint.Line
+                          where source.StartPoint?.LineIndex <= row.SourceBreakpoint.Line && source.EndPoint?.LineIndex >= row.SourceBreakpoint.Line
                           let distance = row.SourceBreakpoint.Line - source.StartPoint.LineIndex
                           orderby distance
                           select sourceItem;
