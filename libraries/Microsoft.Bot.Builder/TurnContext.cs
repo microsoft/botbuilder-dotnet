@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder
         /// Gets a list of activities to send when `context.Activity.DeliveryMode == 'expectReplies'.
         /// </summary>
         /// <value>A list of activities.</value></placeholder>
-        public List<Activity> BufferedReplyActivties { get; } = new List<Activity>();
+        public List<Activity> BufferedReplyActivities { get; } = new List<Activity>();
 
         /// <summary>
         /// Adds a response handler for send activity operations.
@@ -275,7 +275,7 @@ namespace Microsoft.Bot.Builder
                     for (var index = 0; index < responses.Length; index++)
                     {
                         var activity = bufferedActivities[index];
-                        BufferedReplyActivties.Add(activity);
+                        BufferedReplyActivities.Add(activity);
                         responses[index] = new ResourceResponse();
 
                         sentNonTraceActivity |= activity.Type != ActivityTypes.Trace;
