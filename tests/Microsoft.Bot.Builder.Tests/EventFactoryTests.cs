@@ -11,11 +11,12 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
-    [TestCategory("Message")]
+    [TestCategory("Event")]
     public class EventFactoryTests
     {
         public TestContext TestContext { get; set; }
@@ -66,7 +67,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             var handoffEvent = EventFactory.CreateHandoffInitiation(context, new { Skill = "any" }, transcript);
             Assert.AreEqual(handoffEvent.Name, HandoffEventNames.InitiateHandoff);
-
+            var skill = (handoffEvent.Value as JObject)?.Value<string>("Skill");
+            Assert.AreEqual(skill, "any");
             Assert.AreEqual(handoffEvent.From.Id, fromID);
         }
 
@@ -77,10 +79,30 @@ namespace Microsoft.Bot.Builder.Tests
             var message = "timed out";
             var handoffEvent = EventFactory.CreateHandoffStatus(new ConversationAccount(), state, message);
             Assert.AreEqual(handoffEvent.Name, HandoffEventNames.HandoffStatus);
+
+            var stateFormEvent = (handoffEvent.Value as JObject)?.Value<string>("state");
+            Assert.AreEqual(stateFormEvent, state);
+
+            var messageFormEvent = (handoffEvent.Value as JObject)?.Value<string>("message");
+            Assert.AreEqual(messageFormEvent, message);
+
             string status = JsonConvert.SerializeObject(handoffEvent.Value, Formatting.None);
             Assert.AreEqual(status, $"{{\"state\":\"{state}\",\"message\":\"{message}\"}}");
             Assert.IsNotNull((handoffEvent as Activity).Attachments);
             Assert.IsNotNull(handoffEvent.Id);
+        }
+
+        [TestMethod]
+        public void TestCreateHandoffStatusNoMessage()
+        {
+            var state = "failed";
+            var handoffEvent = EventFactory.CreateHandoffStatus(new ConversationAccount(), state);
+
+            var stateFormEvent = (handoffEvent.Value as JObject)?.Value<string>("state");
+            Assert.AreEqual(state, stateFormEvent);
+
+            var messageFormEvent = (handoffEvent.Value as JObject)?.Value<string>("message");
+            Assert.AreEqual(null, messageFormEvent);
         }
     }
 }
