@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
     [TestClass]
-    public class LGFileDiagnosticTest
+    public class TemplateDiagnosticTest
     {
         [TestMethod]
         public void TestConditionFormatError()
@@ -17,25 +17,25 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(10, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains(LGErrors.NotEndWithElseInCondition));
+            Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.NotEndWithElseInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
-            Assert.IsTrue(diagnostics[1].Message.Contains(LGErrors.InvalidExpressionInCondition));
+            Assert.IsTrue(diagnostics[1].Message.Contains(TemplateErrors.InvalidExpressionInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[2].Severity);
-            Assert.IsTrue(diagnostics[2].Message.Contains(LGErrors.MultipleIfInCondition));
+            Assert.IsTrue(diagnostics[2].Message.Contains(TemplateErrors.MultipleIfInCondition));
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[3].Severity);
-            Assert.IsTrue(diagnostics[3].Message.Contains(LGErrors.NotEndWithElseInCondition));
+            Assert.IsTrue(diagnostics[3].Message.Contains(TemplateErrors.NotEndWithElseInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[4].Severity);
-            Assert.IsTrue(diagnostics[4].Message.Contains(LGErrors.ExtraExpressionInCondition));
+            Assert.IsTrue(diagnostics[4].Message.Contains(TemplateErrors.ExtraExpressionInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[5].Severity);
-            Assert.IsTrue(diagnostics[5].Message.Contains(LGErrors.MultipleIfInCondition));
+            Assert.IsTrue(diagnostics[5].Message.Contains(TemplateErrors.MultipleIfInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[6].Severity);
-            Assert.IsTrue(diagnostics[6].Message.Contains(LGErrors.InvalidMiddleInCondition));
+            Assert.IsTrue(diagnostics[6].Message.Contains(TemplateErrors.InvalidMiddleInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[7].Severity);
-            Assert.IsTrue(diagnostics[7].Message.Contains(LGErrors.InvalidWhitespaceInCondition));
+            Assert.IsTrue(diagnostics[7].Message.Contains(TemplateErrors.InvalidWhitespaceInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[8].Severity);
-            Assert.IsTrue(diagnostics[8].Message.Contains(LGErrors.InvalidWhitespaceInCondition));
+            Assert.IsTrue(diagnostics[8].Message.Contains(TemplateErrors.InvalidWhitespaceInCondition));
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[9].Severity);
-            Assert.IsTrue(diagnostics[9].Message.Contains(LGErrors.NotStartWithIfInCondition));
+            Assert.IsTrue(diagnostics[9].Message.Contains(TemplateErrors.NotStartWithIfInCondition));
         }
 
         [TestMethod]
@@ -45,18 +45,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(2, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains(LGErrors.DuplicatedTemplateInSameTemplate("template1")));
+            Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.DuplicatedTemplateInSameTemplate("template1")));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
-            Assert.IsTrue(diagnostics[1].Message.Contains(LGErrors.DuplicatedTemplateInSameTemplate("template1")));
+            Assert.IsTrue(diagnostics[1].Message.Contains(TemplateErrors.DuplicatedTemplateInSameTemplate("template1")));
 
-            var lgFile = GetLGFile("DuplicatedTemplates.lg");
+            var lgFile = GetTemplates("DuplicatedTemplates.lg");
             var allDiagnostics = lgFile.AllDiagnostics;
 
             Assert.AreEqual(4, allDiagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Error, allDiagnostics[0].Severity);
-            Assert.IsTrue(allDiagnostics[0].Message.Contains(LGErrors.DuplicatedTemplateInSameTemplate("template1")));
+            Assert.IsTrue(allDiagnostics[0].Message.Contains(TemplateErrors.DuplicatedTemplateInSameTemplate("template1")));
             Assert.AreEqual(DiagnosticSeverity.Error, allDiagnostics[1].Severity);
-            Assert.IsTrue(allDiagnostics[1].Message.Contains(LGErrors.DuplicatedTemplateInSameTemplate("template1")));
+            Assert.IsTrue(allDiagnostics[1].Message.Contains(TemplateErrors.DuplicatedTemplateInSameTemplate("template1")));
             Assert.AreEqual(DiagnosticSeverity.Error, allDiagnostics[2].Severity);
             Assert.IsTrue(allDiagnostics[2].Message.Contains("Duplicated definitions found for template: 'basicTemplate'"));
             Assert.AreEqual(DiagnosticSeverity.Error, allDiagnostics[3].Severity);
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(1, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains(LGErrors.NoTemplate));
+            Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.NoTemplate));
         }
 
         [TestMethod]
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(1, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains(LGErrors.NoTemplateBody("template")));
+            Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.NoTemplateBody("template")));
         }
 
         [TestMethod]
@@ -102,15 +102,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(5, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains(LGErrors.InvalidStrucBody));
+            Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.InvalidStrucBody));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
-            Assert.IsTrue(diagnostics[1].Message.Contains(LGErrors.EmptyStrucContent));
+            Assert.IsTrue(diagnostics[1].Message.Contains(TemplateErrors.EmptyStrucContent));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[2].Severity);
             Assert.IsTrue(diagnostics[2].Message.Contains("Error occurred when parsing expression 'NOTemplate()'. NOTemplate does not have an evaluator"));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[3].Severity);
             Assert.IsTrue(diagnostics[3].Message.Contains("Error occurred when parsing expression 'NOTemplate()'. NOTemplate does not have an evaluator"));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[4].Severity);
-            Assert.IsTrue(diagnostics[4].Message.Contains(LGErrors.InvalidStrucName));
+            Assert.IsTrue(diagnostics[4].Message.Contains(TemplateErrors.InvalidStrucName));
         }
 
         [TestMethod]
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             foreach (var diagnostic in diagnostics)
             {
                 Assert.AreEqual(DiagnosticSeverity.Error, diagnostic.Severity);
-                Assert.IsTrue(diagnostic.Message.Contains(LGErrors.InvalidTemplateName));
+                Assert.IsTrue(diagnostic.Message.Contains(TemplateErrors.InvalidTemplateName));
             }
         }
 
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(1, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains(LGErrors.NoEndingInMultiline));
+            Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.NoEndingInMultiline));
         }
 
         [TestMethod]
@@ -165,11 +165,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(3, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains(LGErrors.NotEndWithElseInCondition));
+            Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.NotEndWithElseInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
-            Assert.IsTrue(diagnostics[1].Message.Contains(LGErrors.MissingTemplateBodyInCondition));
+            Assert.IsTrue(diagnostics[1].Message.Contains(TemplateErrors.MissingTemplateBodyInCondition));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[2].Severity);
-            Assert.IsTrue(diagnostics[2].Message.Contains(LGErrors.MissingTemplateBodyInCondition));
+            Assert.IsTrue(diagnostics[2].Message.Contains(TemplateErrors.MissingTemplateBodyInCondition));
         }
 
         [TestMethod]
@@ -194,50 +194,50 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(14, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains(LGErrors.InvalidWhitespaceInSwitchCase));
+            Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.InvalidWhitespaceInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
-            Assert.IsTrue(diagnostics[1].Message.Contains(LGErrors.MultipleSwithStatementInSwitchCase));
+            Assert.IsTrue(diagnostics[1].Message.Contains(TemplateErrors.MultipleSwithStatementInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[2].Severity);
-            Assert.IsTrue(diagnostics[2].Message.Contains(LGErrors.NotStartWithSwitchInSwitchCase));
+            Assert.IsTrue(diagnostics[2].Message.Contains(TemplateErrors.NotStartWithSwitchInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[3].Severity);
-            Assert.IsTrue(diagnostics[3].Message.Contains(LGErrors.MissingCaseInSwitchCase));
+            Assert.IsTrue(diagnostics[3].Message.Contains(TemplateErrors.MissingCaseInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[4].Severity);
-            Assert.IsTrue(diagnostics[4].Message.Contains(LGErrors.InvalidStatementInMiddlerOfSwitchCase));
+            Assert.IsTrue(diagnostics[4].Message.Contains(TemplateErrors.InvalidStatementInMiddlerOfSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[5].Severity);
-            Assert.IsTrue(diagnostics[5].Message.Contains(LGErrors.NotEndWithDefaultInSwitchCase));
+            Assert.IsTrue(diagnostics[5].Message.Contains(TemplateErrors.NotEndWithDefaultInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[6].Severity);
-            Assert.IsTrue(diagnostics[6].Message.Contains(LGErrors.ExtraExpressionInSwitchCase));
+            Assert.IsTrue(diagnostics[6].Message.Contains(TemplateErrors.ExtraExpressionInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[7].Severity);
-            Assert.IsTrue(diagnostics[7].Message.Contains(LGErrors.MissingTemplateBodyInSwitchCase));
+            Assert.IsTrue(diagnostics[7].Message.Contains(TemplateErrors.MissingTemplateBodyInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[8].Severity);
-            Assert.IsTrue(diagnostics[8].Message.Contains(LGErrors.ExtraExpressionInSwitchCase));
+            Assert.IsTrue(diagnostics[8].Message.Contains(TemplateErrors.ExtraExpressionInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[9].Severity);
-            Assert.IsTrue(diagnostics[9].Message.Contains(LGErrors.MissingTemplateBodyInSwitchCase));
+            Assert.IsTrue(diagnostics[9].Message.Contains(TemplateErrors.MissingTemplateBodyInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[10].Severity);
-            Assert.IsTrue(diagnostics[10].Message.Contains(LGErrors.InvalidExpressionInSwiathCase));
+            Assert.IsTrue(diagnostics[10].Message.Contains(TemplateErrors.InvalidExpressionInSwiathCase));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[11].Severity);
-            Assert.IsTrue(diagnostics[11].Message.Contains(LGErrors.ExtraExpressionInSwitchCase));
+            Assert.IsTrue(diagnostics[11].Message.Contains(TemplateErrors.ExtraExpressionInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[12].Severity);
-            Assert.IsTrue(diagnostics[12].Message.Contains(LGErrors.MissingCaseInSwitchCase));
+            Assert.IsTrue(diagnostics[12].Message.Contains(TemplateErrors.MissingCaseInSwitchCase));
             Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[13].Severity);
-            Assert.IsTrue(diagnostics[13].Message.Contains(LGErrors.NotEndWithDefaultInSwitchCase));
+            Assert.IsTrue(diagnostics[13].Message.Contains(TemplateErrors.NotEndWithDefaultInSwitchCase));
         }
 
         [TestMethod]
         public void TestLoopDetected()
         {
-            var lgFile = GetLGFile("LoopDetected.lg");
-            var exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("wPhrase"));
-            Assert.IsTrue(exception.Message.Contains(LGErrors.LoopDetected));
+            var lgFile = GetTemplates("LoopDetected.lg");
+            var exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("wPhrase"));
+            Assert.IsTrue(exception.Message.Contains(TemplateErrors.LoopDetected));
 
             exception = Assert.ThrowsException<Exception>(() => lgFile.AnalyzeTemplate("wPhrase"));
-            Assert.IsTrue(exception.Message.Contains(LGErrors.LoopDetected));
+            Assert.IsTrue(exception.Message.Contains(TemplateErrors.LoopDetected));
         }
 
         [TestMethod]
         public void AddTextWithWrongId()
         {
-            var diagnostics = LGParser.ParseText("[import](xx.lg) \r\n # t \n - hi", "a.lg").Diagnostics;
+            var diagnostics = Templates.ParseText("[import](xx.lg) \r\n # t \n - hi", "a.lg").Diagnostics;
             Assert.AreEqual(1, diagnostics.Count);
             Assert.IsTrue(diagnostics[0].Message.Contains("Could not find file"));
         }
@@ -245,44 +245,44 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestErrorExpression()
         {
-            var lgFile = GetLGFile("ErrorExpression.lg");
-            var exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("template1"));
+            var lgFile = GetTemplates("ErrorExpression.lg");
+            var exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("template1"));
             Assert.IsTrue(exception.Message.Contains("Error occurred when evaluating"));
         }
 
         [TestMethod]
         public void TestRunTimeErrors()
         {
-            var lgFile = GetLGFile("RunTimeErrors.lg");
+            var lgFile = GetTemplates("RunTimeErrors.lg");
 
-            var exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("template1"));
+            var exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("template1"));
             Assert.AreEqual("'dialog.abc' evaluated to null. [template1]  Error occurred when evaluating '-I want ${dialog.abc}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("prebuilt1"));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("prebuilt1"));
             Assert.AreEqual("'dialog.abc' evaluated to null.[prebuilt1]  Error occurred when evaluating '-I want ${foreach(dialog.abc, item, template1())}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("template2"));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("template2"));
             Assert.AreEqual("'dialog.abc' evaluated to null. [template1]  Error occurred when evaluating '-I want ${dialog.abc}'. [template2]  Error occurred when evaluating '-With composition ${template1()}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("conditionalTemplate1", new { dialog = true }));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("conditionalTemplate1", new { dialog = true }));
             Assert.AreEqual("'dialog.abc' evaluated to null. [template1]  Error occurred when evaluating '-I want ${dialog.abc}'. [conditionalTemplate1] Condition '${dialog}':  Error occurred when evaluating '-I want ${template1()}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("conditionalTemplate2"));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("conditionalTemplate2"));
             Assert.AreEqual("'dialog.abc' evaluated to null. [conditionalTemplate2] Condition '${dialog.abc}': Error occurred when evaluating '-IF :${dialog.abc}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("structured1"));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("structured1"));
             Assert.AreEqual("'dialog.abc' evaluated to null. [structured1] Property 'Text': Error occurred when evaluating 'Text=I want ${dialog.abc}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("structured2"));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("structured2"));
             Assert.AreEqual("'dialog.abc' evaluated to null. [template1]  Error occurred when evaluating '-I want ${dialog.abc}'. [structured2] Property 'Text': Error occurred when evaluating 'Text=I want ${template1()}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("structured3"));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("structured3"));
             Assert.AreEqual("'dialog.abc' evaluated to null. [template1]  Error occurred when evaluating '-I want ${dialog.abc}'. [structured2] Property 'Text': Error occurred when evaluating 'Text=I want ${template1()}'. [structured3]  Error occurred when evaluating '${structured2()}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("switchcase1", new { turn = new { testValue = 1 } }));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("switchcase1", new { turn = new { testValue = 1 } }));
             Assert.AreEqual("'dialog.abc' evaluated to null. [switchcase1] Case '${1}': Error occurred when evaluating '-I want ${dialog.abc}'. ", exception.Message);
 
-            exception = Assert.ThrowsException<Exception>(() => lgFile.EvaluateTemplate("switchcase2", new { turn = new { testValue = 0 } }));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("switchcase2", new { turn = new { testValue = 0 } }));
             Assert.AreEqual("'dialog.abc' evaluated to null. [switchcase2] Case 'Default': Error occurred when evaluating '-I want ${dialog.abc}'. ", exception.Message);
         }
 
@@ -299,16 +299,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "ExceptionExamples" + Path.DirectorySeparatorChar + fileName;
         }
 
-        private LGFile GetLGFile(string fileName)
+        private Templates GetTemplates(string fileName)
         {
             var filePath = GetExceptionExampleFilePath(fileName);
-            return LGParser.ParseFile(filePath);
+            return Templates.ParseFile(filePath);
         }
 
         private IList<Diagnostic> GetDiagnostics(string fileName)
         {
             var filePath = GetExceptionExampleFilePath(fileName);
-            return LGParser.ParseFile(filePath).Diagnostics;
+            return Templates.ParseFile(filePath).Diagnostics;
         }
     }
 }

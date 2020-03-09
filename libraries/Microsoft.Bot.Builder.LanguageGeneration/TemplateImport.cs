@@ -4,16 +4,18 @@
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
+    /// Class which which does actual import definition.</summary>
+    /// <remarks>
     /// Here is a data model that can help users understand and use the LG import definition in LG files easily. 
-    /// </summary>
-    public class LGImport
+    /// </remarks>
+    public class TemplateImport
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LGImport"/> class.
+        /// Initializes a new instance of the <see cref="TemplateImport"/> class.
         /// </summary>
         /// <param name="parseTree">The parse tree of this template.</param>
         /// <param name="source">Source of this import.</param>
-        internal LGImport(LGFileParser.ImportDefinitionContext parseTree, string source = "")
+        internal TemplateImport(LGFileParser.ImportDefinitionContext parseTree, string source = "")
         {
             ParseTree = parseTree;
             Source = source;

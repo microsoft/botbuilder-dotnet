@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
                 if (languageGenerator != null)
                 {
                     var lgStringResult = await languageGenerator.Generate(context, this.Template, data).ConfigureAwait(false);
-                    var result = ActivityFactory.CreateActivity(lgStringResult);
+                    var result = ActivityFactory.FromObject(lgStringResult);
                     return result;
                 }
                 else

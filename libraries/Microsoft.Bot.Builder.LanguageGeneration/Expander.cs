@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="templates">template list.</param>
         /// <param name="expressionParser">Given expression parser.</param>
         /// <param name="strictMode">strict mode. If strictMode == true, exception in expression would throw outside.</param>
-        public Expander(List<LGTemplate> templates, ExpressionParser expressionParser, bool strictMode = false)
+        public Expander(List<Template> templates, ExpressionParser expressionParser, bool strictMode = false)
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Templates.
         /// </value>
-        public List<LGTemplate> Templates { get; }
+        public List<Template> Templates { get; }
 
         /// <summary>
         /// Gets templateMap.
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// TemplateMap.
         /// </value>
-        public Dictionary<string, LGTemplate> TemplateMap { get; }
+        public Dictionary<string, Template> TemplateMap { get; }
 
         /// <summary>
         /// Expand the results of a template with given name and scope.
@@ -73,12 +73,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (!TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception(LGErrors.TemplateNotExist(templateName));
+                throw new Exception(TemplateErrors.TemplateNotExist(templateName));
             }
 
             if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"{LGErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"{TemplateErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evaluation trace
@@ -368,12 +368,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else if (result == null)
                 {
-                    childErrorMsg += LGErrors.NullExpression(exp);
+                    childErrorMsg += TemplateErrors.NullExpression(exp);
                 }
 
                 if (context != null)
                 {
-                    errorMsg += LGErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
+                    errorMsg += TemplateErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
                 }
 
                 if (evaluationTargetStack.Count > 0)
@@ -410,12 +410,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else if (result == null)
                 {
-                    childErrorMsg += LGErrors.NullExpression(exp);
+                    childErrorMsg += TemplateErrors.NullExpression(exp);
                 }
 
                 if (context != null)
                 {
-                    errorMsg += LGErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
+                    errorMsg += TemplateErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
                 }
 
                 if (evaluationTargetStack.Count > 0)
@@ -518,7 +518,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (!this.TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception(LGErrors.TemplateNotExist(templateName));
+                throw new Exception(TemplateErrors.TemplateNotExist(templateName));
             }
 
             var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
@@ -526,7 +526,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (expectedArgsCount != actualArgsCount)
             {
-                throw new Exception(LGErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
+                throw new Exception(TemplateErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
             }
         }
 

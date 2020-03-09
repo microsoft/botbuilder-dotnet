@@ -8,18 +8,21 @@ using System.Linq;
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
-    /// Here is a data model that can easily understand and use the context for all kinds of visitors,
-    /// whether it's an evaluator, static checker, analyzer, and so on.
+    /// Class which represents a single template which can be evaluated.
     /// </summary>
-    public class LGTemplate
+    /// <remarks>
+    /// Defines a data model that can easily understand and use the context for all kinds of visitors,
+    /// whether it's an evaluator, static checker, analyzer, and so on.
+    /// </remarks>
+    public class Template
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LGTemplate"/> class.
+        /// Initializes a new instance of the <see cref="Template"/> class.
         /// </summary>
         /// <param name="parseTree">The parse tree of this template.</param>
         /// <param name="lgfileContent">lg file content.</param>
         /// <param name="source">Source of this template.</param>
-        internal LGTemplate(LGFileParser.TemplateDefinitionContext parseTree, string lgfileContent, string source = "")
+        internal Template(LGFileParser.TemplateDefinitionContext parseTree, string lgfileContent, string source = "")
         {
             ParseTree = parseTree;
             Source = source;
