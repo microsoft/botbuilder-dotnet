@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,25 +12,33 @@ using AdaptiveExpressions.Memory;
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
-    /// LG entrance, including properties that LG file has, and evaluate functions.
+    /// Class for working with Language Generation templates.
     /// </summary>
-    public class LGFile
+    /// <remarks>
+    /// Templates.ParseFile(path) will load a .LG file .
+    /// Templates.ParseText(text) will load language generation templates from text.
+    /// </remarks>
+    public class Templates : List<Template>
     {
-        public LGFile(
-            IList<LGTemplate> templates = null,
-            IList<LGImport> imports = null,
+        public Templates(
+            IList<Template> templates = null,
+            IList<TemplateImport> imports = null,
             IList<Diagnostic> diagnostics = null,
-            IList<LGFile> references = null,
+            IList<Templates> references = null,
             string content = null,
             string id = null,
             ExpressionParser expressionParser = null,
             ImportResolverDelegate importResolver = null,
             IList<string> options = null)
         {
-            Templates = templates ?? new List<LGTemplate>();
-            Imports = imports ?? new List<LGImport>();
+            if (templates != null)
+            {
+                this.AddRange(templates);
+            }
+
+            Imports = imports ?? new List<TemplateImport>();
             Diagnostics = diagnostics ?? new List<Diagnostic>();
-            References = references ?? new List<LGFile>();
+            References = references ?? new List<Templates>();
             Content = content ?? string.Empty;
             ImportResolver = importResolver;
             Id = id ?? string.Empty;
@@ -43,7 +52,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// All templates from current lg file and reference lg files.
         /// </value>
-        public IList<LGTemplate> AllTemplates => new List<LGFile> { this }.Union(References).SelectMany(x => x.Templates).ToList();
+        public IList<Template> AllTemplates => new List<Templates> { this }.Union(References).SelectMany(x => x).ToList();
 
         /// <summary>
         /// Gets get all diagnostics from current lg file and reference lg files.
@@ -51,7 +60,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// All diagnostics from current lg file and reference lg files.
         /// </value>
-        public IList<Diagnostic> AllDiagnostics => new List<LGFile> { this }.Union(References).SelectMany(x => x.Diagnostics).ToList();
+        public IList<Diagnostic> AllDiagnostics => new List<Templates> { this }.Union(References).SelectMany(x => x.Diagnostics).ToList();
 
         /// <summary>
         /// Gets or sets delegate for resolving resource id of imported lg file.
@@ -60,14 +69,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Delegate for resolving resource id of imported lg file.
         /// </value>
         public ImportResolverDelegate ImportResolver { get; set; }
-
-        /// <summary>
-        /// Gets or sets templates that this LG file contains directly.
-        /// </summary>
-        /// <value>
-        /// templates that this LG file contains directly.
-        /// </value>
-        public IList<LGTemplate> Templates { get; set; }
 
         /// <summary>
         /// Gets or sets expression parser.
@@ -83,7 +84,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// import elements that this LG file contains directly.
         /// </value>
-        public IList<LGImport> Imports { get; set; }
+        public IList<TemplateImport> Imports { get; set; }
 
         /// <summary>
         /// Gets or sets all references that this LG file has from <see cref="Imports"/>.
@@ -94,7 +95,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// all references that this LG file has from <see cref="Imports"/>.
         /// </value>
-        public IList<LGFile> References { get; set; }
+        public IList<Templates> References { get; set; }
 
         /// <summary>
         /// Gets or sets diagnostics.
@@ -141,12 +142,38 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public bool StrictMode => GetStrictModeFromOptions(Options);
 
         /// <summary>
+        /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
+        /// </summary>
+        /// <param name="filePath"> absolut path of a LG file.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <param name="expressionParser">expressionEngine Expression engine for evaluating expressions.</param>
+        /// <returns>new <see cref="LanguageGeneration.Templates"/> entity.</returns>
+        public static Templates ParseFile(
+            string filePath,
+            ImportResolverDelegate importResolver = null,
+            ExpressionParser expressionParser = null) => TemplatesParser.ParseFile(filePath, importResolver, expressionParser);
+
+        /// <summary>
+        /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
+        /// </summary>
+        /// <param name="content">Text content contains lg templates.</param>
+        /// <param name="id">id is the identifier of content. If importResolver is null, id must be a full path string. </param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <param name="expressionParser">expressionEngine parser engine for parsing expressions.</param>
+        /// <returns>new <see cref="LanguageGeneration.Templates"/> entity.</returns>
+        public static Templates ParseText(
+            string content,
+            string id = "",
+            ImportResolverDelegate importResolver = null,
+            ExpressionParser expressionParser = null) => TemplatesParser.ParseText(content, id, importResolver, expressionParser);
+
+        /// <summary>
         /// Evaluate a template with given name and scope.
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
         /// <param name="scope">The state visible in the evaluation.</param>
         /// <returns>Evaluate result.</returns>
-        public object EvaluateTemplate(string templateName, object scope = null)
+        public object Evaluate(string templateName, object scope = null)
         {
             CheckErrors();
 
@@ -157,12 +184,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Use to evaluate an inline template str.
         /// </summary>
-        /// <param name="inlineStr">inline string which will be evaluated.</param>
+        /// <param name="text">inline string which will be evaluated.</param>
         /// <param name="scope">scope object or JToken.</param>
         /// <returns>Evaluate result.</returns>
-        public object Evaluate(string inlineStr, object scope = null)
+        public object EvaluateText(string text, object scope = null)
         {
-            if (inlineStr == null)
+            if (text == null)
             {
                 throw new ArgumentException("inline string is null.");
             }
@@ -173,14 +200,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var fakeTemplateId = Guid.NewGuid().ToString();
             var multiLineMark = "```";
 
-            inlineStr = !inlineStr.Trim().StartsWith(multiLineMark) && inlineStr.Contains('\n')
-                   ? $"{multiLineMark}{inlineStr}{multiLineMark}" : inlineStr;
+            text = !text.Trim().StartsWith(multiLineMark) && text.Contains('\n')
+                   ? $"{multiLineMark}{text}{multiLineMark}" : text;
 
-            var newContent = $"# {fakeTemplateId} \r\n - {inlineStr}";
+            var newContent = $"# {fakeTemplateId} \r\n - {text}";
 
-            var newLgFile = LGParser.ParseTextWithRef(newContent, this);
+            var newLG = TemplatesParser.ParseTextWithRef(newContent, this);
 
-            return newLgFile.EvaluateTemplate(fakeTemplateId, scope);
+            return newLG.Evaluate(fakeTemplateId, scope);
         }
 
         /// <summary>
@@ -218,9 +245,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="parameters">new params.</param>
         /// <param name="templateBody">new template body.</param>
         /// <returns>updated LG file.</returns>
-        public LGFile UpdateTemplate(string templateName, string newTemplateName, List<string> parameters, string templateBody)
+        public Templates UpdateTemplate(string templateName, string newTemplateName, List<string> parameters, string templateBody)
         {
-            var template = Templates.FirstOrDefault(u => u.Name == templateName);
+            var template = this.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
             {
                 var templateNameLine = BuildTemplateNameLine(newTemplateName, parameters);
@@ -229,7 +256,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var (startLine, stopLine) = template.GetTemplateRange();
 
                 var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
-                Initialize(LGParser.ParseText(newContent, Id, ImportResolver));
+                Initialize(ParseText(newContent, Id, ImportResolver));
             }
 
             return this;
@@ -242,18 +269,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="parameters">new params.</param>
         /// <param name="templateBody">new  template body.</param>
         /// <returns>updated LG file.</returns>
-        public LGFile AddTemplate(string templateName, List<string> parameters, string templateBody)
+        public Templates AddTemplate(string templateName, List<string> parameters, string templateBody)
         {
-            var template = Templates.FirstOrDefault(u => u.Name == templateName);
+            var template = this.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
             {
-                throw new Exception(LGErrors.TemplateExist(templateName));
+                throw new Exception(TemplateErrors.TemplateExist(templateName));
             }
 
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
             var newContent = $"{Content.TrimEnd()}\r\n\r\n{templateNameLine}\r\n{newTemplateBody}\r\n";
-            Initialize(LGParser.ParseText(newContent, Id, ImportResolver));
+            Initialize(ParseText(newContent, Id, ImportResolver));
 
             return this;
         }
@@ -263,15 +290,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templateName">which template should delete.</param>
         /// <returns>updated LG file.</returns>
-        public LGFile DeleteTemplate(string templateName)
+        public Templates DeleteTemplate(string templateName)
         {
-            var template = Templates.FirstOrDefault(u => u.Name == templateName);
+            var template = this.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
             {
                 var (startLine, stopLine) = template.GetTemplateRange();
 
                 var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
-                Initialize(LGParser.ParseText(newContent, Id, ImportResolver));
+                Initialize(ParseText(newContent, Id, ImportResolver));
             }
 
             return this;
@@ -281,7 +308,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override bool Equals(object obj)
         {
-            if (!(obj is LGFile lgFileObj))
+            if (!(obj is Templates lgFileObj))
             {
                 return false;
             }
@@ -411,17 +438,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// use an existing LG file to override current object.
         /// </summary>
-        /// <param name="lgFile">Existing LG file.</param>
-        private void Initialize(LGFile lgFile)
+        /// <param name="templates">Existing LG file.</param>
+        private void Initialize(Templates templates)
         {
-            Templates = lgFile.Templates;
-            Imports = lgFile.Imports;
-            Diagnostics = lgFile.Diagnostics;
-            References = lgFile.References;
-            Content = lgFile.Content;
-            ImportResolver = lgFile.ImportResolver;
-            Id = lgFile.Id;
-            ExpressionParser = lgFile.ExpressionParser;
+            this.Clear();
+            this.AddRange(templates);
+            Imports = templates.Imports;
+            Diagnostics = templates.Diagnostics;
+            References = templates.References;
+            Content = templates.Content;
+            ImportResolver = templates.ImportResolver;
+            Id = templates.Id;
+            ExpressionParser = templates.ExpressionParser;
         }
 
         private void CheckErrors()

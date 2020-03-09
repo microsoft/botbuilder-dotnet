@@ -4,11 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Bot.Builder.LanguageGeneration;
+using System.Reflection;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
+namespace Microsoft.Bot.Builder
 {
     /// <summary>
     /// The ActivityFactory
@@ -16,7 +16,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// </summary>
     public class ActivityFactory
     {
-        public static readonly Dictionary<string, string> GenericCardTypeMapping = new Dictionary<string, string>
+        private const string LGType = "lgType";
+        private static readonly string ErrorPrefix = "[ERROR]";
+        private static readonly string WarningPrefix = "[WARNING]";
+
+        private static readonly IList<string> AllActivityTypes = GetAllPublicConstantValues<string>(typeof(ActivityTypes));
+        private static readonly IList<string> AllActivityProperties = GetAllProperties(typeof(Activity));
+        private static readonly IList<string> AllCardActionTypes = GetAllPublicConstantValues<string>(typeof(ActionTypes));
+        private static readonly IList<string> AllCardActionProperties = GetAllProperties(typeof(CardAction));
+        private static readonly Dictionary<string, string> GenericCardTypeMapping = new Dictionary<string, string>
         {
             { nameof(HeroCard).ToLowerInvariant(), HeroCard.ContentType },
             { nameof(ThumbnailCard).ToLowerInvariant(), ThumbnailCard.ContentType },
@@ -36,10 +44,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </summary>
         /// <param name="lgResult">lg result from languageGenerator.</param>
         /// <returns>activity.</returns>
-        public static Activity CreateActivity(object lgResult)
+        public static Activity FromObject(object lgResult)
         {
-            var diagnostics = ActivityChecker.Check(lgResult);
-            var errors = diagnostics.Where(u => u.Severity == DiagnosticSeverity.Error);
+            var diagnostics = CheckLGResult(lgResult);
+            var errors = diagnostics.Where(u => u.StartsWith(ErrorPrefix));
+
             if (errors.Any())
             {
                 throw new Exception(string.Join("\n", errors));
@@ -60,6 +69,53 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             catch
             {
                 return BuildActivityFromText(lgResult?.ToString()?.Trim());
+            }
+        }
+
+        /// <summary>
+        /// check the LG result before generate an Activity.
+        /// </summary>
+        /// <param name="lgResult">lg output.</param>
+        /// <returns>Diagnostic list.</returns>
+        public static IList<string> CheckLGResult(object lgResult)
+        {
+            if (lgResult is string lgStringResult)
+            {
+                if (string.IsNullOrWhiteSpace(lgStringResult))
+                {
+                    return new List<string> { BuildDiagnostic("LG output is empty", false) };
+                }
+
+                if (!lgStringResult.StartsWith("{") || !lgStringResult.EndsWith("}"))
+                {
+                    return new List<string> { BuildDiagnostic("LG output is not a json object, and will fallback to string format.", false) };
+                }
+
+                JObject lgStructuredResult;
+                try
+                {
+                    lgStructuredResult = JObject.Parse(lgStringResult);
+                }
+                catch
+                {
+                    return new List<string> { BuildDiagnostic("LG output is not a json object, and will fallback to string format.", false) };
+                }
+
+                return CheckStructuredResult(lgStructuredResult);
+            }
+            else
+            {
+                JObject lgStructuredResult;
+                try
+                {
+                    lgStructuredResult = JObject.FromObject(lgResult);
+                }
+                catch
+                {
+                    return new List<string> { BuildDiagnostic("LG output is not a json object, and will fallback to string format.", false) };
+                }
+
+                return CheckStructuredResult(lgStructuredResult);
             }
         }
 
@@ -111,7 +167,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             foreach (var item in lgJObj)
             {
                 var property = item.Key.Trim();
-                if (property == Evaluator.LGType)
+                if (property == LGType)
                 {
                     continue;
                 }
@@ -185,23 +241,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
 
             return cardAction;
-        }
-
-        private static string GetStructureType(JObject jObj)
-        {
-            if (jObj == null)
-            {
-                return string.Empty;
-            }
-
-            var type = jObj[Evaluator.LGType]?.ToString()?.Trim();
-            if (string.IsNullOrEmpty(type))
-            {
-                // Adaptive card type
-                type = jObj["type"]?.ToString()?.Trim();
-            }
-
-            return type.ToLowerInvariant() ?? string.Empty;
         }
 
         private static IList<Attachment> GetAttachments(JToken value)
@@ -430,6 +469,317 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
 
             return true;
+        }
+
+        private static IList<string> CheckStructuredResult(JObject lgJObj)
+        {
+            var result = new List<string>();
+            var type = GetStructureType(lgJObj);
+
+            if (GenericCardTypeMapping.ContainsKey(type)
+                || type == nameof(Attachment).ToLowerInvariant())
+            {
+                result.AddRange(CheckAttachment(lgJObj));
+            }
+            else if (type == nameof(Activity).ToLowerInvariant())
+            {
+                result.AddRange(CheckActivity(lgJObj));
+            }
+            else
+            {
+                var diagnosticMessage = string.IsNullOrWhiteSpace(type) ?
+                    $"'{LGType}' does not exist in lg output json object."
+                    : $"Type '{type}' is not supported currently.";
+                result.Add(BuildDiagnostic(diagnosticMessage));
+            }
+
+            return result;
+        }
+
+        private static IList<string> CheckActivity(JObject lgJObj)
+        {
+            var result = new List<string>();
+
+            var activityType = lgJObj["type"]?.ToString()?.Trim();
+
+            result.AddRange(CheckActivityType(activityType));
+            result.AddRange(CheckPropertyName(lgJObj, typeof(Activity)));
+            result.AddRange(CheckActivityProperties(lgJObj));
+
+            return result;
+        }
+
+        private static IList<string> CheckActivityType(string activityType)
+        {
+            var result = new List<string>();
+
+            if (!string.IsNullOrEmpty(activityType))
+            {
+                if (AllActivityTypes.All(u => u.ToLowerInvariant() != activityType.ToLowerInvariant()))
+                {
+                    result.Add(BuildDiagnostic($"'{activityType}' is not a valid activity type."));
+                }
+            }
+
+            return result;
+        }
+
+        private static IList<string> CheckActivityProperties(JObject lgJObj)
+        {
+            var result = new List<string>();
+
+            foreach (var item in lgJObj)
+            {
+                var property = item.Key.Trim();
+                var value = item.Value;
+
+                switch (property.ToLowerInvariant())
+                {
+                    case "attachments":
+                        result.AddRange(CheckAttachments(value));
+                        break;
+                    case "suggestedactions":
+                        result.AddRange(CheckSuggestions(value));
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return result;
+        }
+
+        private static IList<string> CheckSuggestions(JToken value)
+        {
+            var actions = NormalizedToList(value);
+            return CheckCardActions(actions);
+        }
+
+        private static IList<string> CheckButtons(JToken value)
+        {
+            var actions = NormalizedToList(value);
+            return CheckCardActions(actions);
+        }
+
+        private static IList<string> CheckCardActions(IList<JToken> actions)
+        {
+            var result = new List<string>();
+
+            foreach (var action in actions)
+            {
+                result.AddRange(CheckCardAction(action));
+            }
+
+            return result;
+        }
+
+        private static IList<string> CheckCardAction(JToken cardActionJtoken)
+        {
+            var result = new List<string>();
+
+            if (!IsStringValue(cardActionJtoken))
+            {
+                if (cardActionJtoken is JObject actionJObj)
+                {
+                    var type = GetStructureType(actionJObj);
+                    if (type != nameof(CardAction).ToLowerInvariant())
+                    {
+                        result.Add(BuildDiagnostic($"'{type}' is not card action type.", false));
+                    }
+                    else
+                    {
+                        result.AddRange(CheckPropertyName(actionJObj, typeof(CardAction)));
+                        var cardActionType = actionJObj["type"]?.ToString()?.Trim();
+
+                        result.AddRange(CheckCardActionType(cardActionType));
+                    }
+                }
+                else
+                {
+                    result.Add(BuildDiagnostic($"'{cardActionJtoken}' is not a valid card action format.", false));
+                }
+            }
+
+            return result;
+        }
+
+        private static IList<string> CheckCardActionType(string cardActionType)
+        {
+            var result = new List<string>();
+
+            if (!string.IsNullOrEmpty(cardActionType))
+            {
+                if (AllCardActionTypes.All(u => u.ToLowerInvariant() != cardActionType.ToLowerInvariant()))
+                {
+                    result.Add(BuildDiagnostic($"'{cardActionType}' is not a valid card action type."));
+                }
+            }
+
+            return result;
+        }
+
+        private static IList<string> CheckAttachments(JToken value)
+        {
+            var result = new List<string>();
+
+            var attachmentsJsonList = NormalizedToList(value);
+
+            foreach (var attachmentsJson in attachmentsJsonList)
+            {
+                if (attachmentsJson is JObject attachmentsJsonJObj)
+                {
+                    result.AddRange(CheckAttachment(attachmentsJsonJObj));
+                }
+            }
+
+            return result;
+        }
+
+        private static IList<string> CheckAttachment(JObject lgJObj)
+        {
+            var result = new List<string>();
+
+            var type = GetStructureType(lgJObj);
+
+            if (GenericCardTypeMapping.ContainsKey(type))
+            {
+                result.AddRange(CheckCardAtttachment(lgJObj));
+            }
+            else if (type == "adaptivecard")
+            {
+                // TODO
+                // check adaptivecard format
+                // it is hard to check the adaptive card without AdaptiveCards package
+            }
+            else if (type == nameof(Attachment).ToLowerInvariant())
+            {
+                // TODO
+                // Check attachment format
+            }
+            else
+            {
+                result.Add(BuildDiagnostic($"'{type}' is not an attachment type.", false));
+            }
+
+            return result;
+        }
+
+        private static IList<string> CheckCardAtttachment(JObject lgJObj)
+        {
+            var result = new List<string>();
+
+            foreach (var item in lgJObj)
+            {
+                var property = item.Key.Trim().ToLowerInvariant();
+                var value = item.Value;
+
+                switch (property)
+                {
+                    case "buttons":
+                        result.AddRange(CheckButtons(value));
+                        break;
+
+                    case "autostart":
+                    case "shareable":
+                    case "autoloop":
+                        if (!IsValidBooleanValue(value.ToString()))
+                        {
+                            result.Add(BuildDiagnostic($"'{value.ToString()}' is not a boolean value."));
+                        }
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return result;
+        }
+
+        private static IList<string> CheckPropertyName(JObject value, Type type)
+        {
+            var result = new List<string>();
+            if (value == null)
+            {
+                return result;
+            }
+
+            var properties = value.Properties().Select(u => u.Name.ToLowerInvariant()).Where(u => u != LGType.ToLowerInvariant());
+            IList<string> objectProperties;
+
+            if (type == typeof(Activity))
+            {
+                objectProperties = AllActivityProperties;
+            }
+            else if (type == typeof(CardAction))
+            {
+                objectProperties = AllCardActionProperties;
+            }
+            else
+            {
+                objectProperties = GetAllProperties(type);
+            }
+
+            var additionalProperties = properties.Where(u => !objectProperties.Contains(u));
+            if (additionalProperties.Any())
+            {
+                result.Add(BuildDiagnostic($"'{string.Join(",", additionalProperties)}' not support in {type.Name}.", false));
+            }
+
+            return result;
+        }
+
+        private static string GetStructureType(JObject jObj)
+        {
+            if (jObj == null)
+            {
+                return string.Empty;
+            }
+
+            var type = jObj[LGType]?.ToString()?.Trim();
+            if (string.IsNullOrEmpty(type))
+            {
+                // Adaptive card type
+                type = jObj["type"]?.ToString()?.Trim();
+            }
+
+            return type?.ToLowerInvariant() ?? string.Empty;
+        }
+
+        private static bool IsStringValue(JToken value)
+        {
+            return value is JValue jValue && jValue.Type == JTokenType.String;
+        }
+
+        private static bool IsValidBooleanValue(string boolStr)
+        {
+            if (string.IsNullOrWhiteSpace(boolStr))
+            {
+                return false;
+            }
+
+            return boolStr.ToLowerInvariant() == "true" || boolStr.ToLowerInvariant() == "false";
+        }
+
+        private static string BuildDiagnostic(string message, bool isError = true)
+        {
+            message = message ?? string.Empty;
+
+            return isError ? ErrorPrefix + message : WarningPrefix + message;
+        }
+
+        private static IList<T> GetAllPublicConstantValues<T>(Type type)
+        {
+            return type
+                .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                .Where(fi => fi.IsLiteral && !fi.IsInitOnly && fi.FieldType == typeof(T))
+                .Select(x => (T)x.GetRawConstantValue())
+                .ToList();
+        }
+
+        private static IList<string> GetAllProperties(Type type)
+        {
+            return type.GetProperties().Select(u => u.Name.ToLowerInvariant()).ToList();
         }
     }
 }
