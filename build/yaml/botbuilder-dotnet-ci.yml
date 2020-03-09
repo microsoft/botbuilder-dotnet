@@ -51,8 +51,8 @@ variables:
   IsBuildServer: true # This activates package versioning in the projects in Microsoft.Bot.Builder.sln.
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
   Parameters.solution: Microsoft.Bot.Builder.sln
-  PreviewPackageVersion: 4.8.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
-  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
+  PreviewPackageVersion: 4.9.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
+  ReleasePackageVersion: 4.9.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
 
 # The following 2 stages run multi-configuration, multi-agent parallel jobs.
 # Debug-Windows/Release-Windows => Builds everything in Debug/Release + the ASP.NET Desktop.
