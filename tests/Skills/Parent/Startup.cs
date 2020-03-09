@@ -35,6 +35,10 @@ namespace Microsoft.BotBuilderSamples
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
             services.AddHttpClient<BotFrameworkHttpClient>();
+            services.AddSingleton<IStorage, MemoryStorage>();
+            services.AddSingleton<UserState>();
+            services.AddSingleton<ConversationState>();
+            services.AddSingleton<MainDialog>();
             services.AddTransient<IBot, ParentBot>();
         }
 

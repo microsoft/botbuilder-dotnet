@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Schema
     {
         public const string Normal = "normal";
         public const string Notification = "notification";
-        public const string BufferedReplies = "bufferedReplies";
+        public const string ExpectReplies = "expectReplies";
+        public const string Ephemeral = "ephemeral";
     }
 }

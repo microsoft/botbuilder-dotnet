@@ -178,7 +178,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             skillDialogArgs.Activity.Properties = stepContext.Context.Activity.Properties;
 
             // Comment or uncomment this line if you need to enable or disabled buffered replies.
-            skillDialogArgs.Activity.DeliveryMode = DeliveryModes.BufferedReplies;
+            skillDialogArgs.Activity.DeliveryMode = DeliveryModes.ExpectReplies;
 
             // Save active skill in state
             await _activeSkillProperty.SetAsync(stepContext.Context, selectedSkill, cancellationToken);
