@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="templates">Template list.</param>
         /// <param name="expressionParser">expression parser.</param>
         /// <param name="strictMode">strict mode. If strictMode == true, exception in expression would throw outside.</param>
-        public Evaluator(List<LGTemplate> templates, ExpressionParser expressionParser, bool strictMode = false)
+        public Evaluator(List<Template> templates, ExpressionParser expressionParser, bool strictMode = false)
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Templates.
         /// </value>
-        public List<LGTemplate> Templates { get; }
+        public List<Template> Templates { get; }
 
         /// <summary>
         /// Gets expression parser.
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// TemplateMap.
         /// </value>
-        public Dictionary<string, LGTemplate> TemplateMap { get; }
+        public Dictionary<string, Template> TemplateMap { get; }
 
         /// <summary>
         /// Evaluate a template with given name and scope.
@@ -84,12 +84,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (!TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception(LGErrors.TemplateNotExist(templateName));
+                throw new Exception(TemplateErrors.TemplateNotExist(templateName));
             }
 
             if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"{LGErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"{TemplateErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             var templateTarget = new EvaluationTarget(templateName, scope);
@@ -276,7 +276,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (!TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception(LGErrors.TemplateNotExist(templateName));
+                throw new Exception(TemplateErrors.TemplateNotExist(templateName));
             }
 
             var parameters = TemplateMap[templateName].Parameters;
@@ -294,7 +294,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var memory = currentScope as CustomizedMemory;
             if (memory == null)
             {
-                throw new Exception(LGErrors.InvalidMemory);
+                throw new Exception(TemplateErrors.InvalidMemory);
             }
 
             // inherit current memory's global scope
@@ -367,12 +367,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else if (result == null)
                 {
-                    childErrorMsg += LGErrors.NullExpression(exp);
+                    childErrorMsg += TemplateErrors.NullExpression(exp);
                 }
 
                 if (context != null)
                 {
-                    errorMsg += LGErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
+                    errorMsg += TemplateErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
                 }
 
                 if (evaluationTargetStack.Count > 0)
@@ -409,12 +409,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else if (result == null)
                 {
-                    childErrorMsg += LGErrors.NullExpression(exp);
+                    childErrorMsg += TemplateErrors.NullExpression(exp);
                 }
 
                 if (context != null)
                 {
-                    errorMsg += LGErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
+                    errorMsg += TemplateErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
                 }
 
                 if (evaluationTargetStack.Count > 0)
@@ -575,7 +575,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (children0.ReturnType != ReturnType.Object && children0.ReturnType != ReturnType.String)
             {
-                throw new Exception(LGErrors.ErrorTemplateNameformat(children0.ToString()));
+                throw new Exception(TemplateErrors.ErrorTemplateNameformat(children0.ToString()));
             }
 
             // Validate more if the name is string constant
@@ -602,7 +602,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!this.TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception(LGErrors.TemplateNotExist(templateName));
+                throw new Exception(TemplateErrors.TemplateNotExist(templateName));
             }
 
             var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
@@ -610,7 +610,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (actualArgsCount != 0 && expectedArgsCount != actualArgsCount)
             {
-                throw new Exception(LGErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
+                throw new Exception(TemplateErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
             }
         }
 

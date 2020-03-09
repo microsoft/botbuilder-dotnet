@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         private readonly LanguagePolicy languageFallbackPolicy;
 
-        private readonly Dictionary<string, LG> lgPerLocale;
+        private readonly Dictionary<string, Templates> lgPerLocale;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MultiLanguageLG"/> class.
@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="localeLGFiles">A dictionary of locale and LG file.</param>
         public MultiLanguageLG(Dictionary<string, string> localeLGFiles)
         {
-            lgPerLocale = new Dictionary<string, LG>(StringComparer.OrdinalIgnoreCase);
+            lgPerLocale = new Dictionary<string, Templates>(StringComparer.OrdinalIgnoreCase);
             languageFallbackPolicy = new LanguagePolicy();
 
             if (localeLGFiles == null)
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             foreach (var filesPerLocale in localeLGFiles)
             {
-                lgPerLocale[filesPerLocale.Key] = LG.ParseFile(filesPerLocale.Value);
+                lgPerLocale[filesPerLocale.Key] = Templates.ParseFile(filesPerLocale.Value);
             }
         }
 

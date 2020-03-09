@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class Analyzer : LGFileParserBaseVisitor<AnalyzerResult>
     {
-        private readonly Dictionary<string, LGTemplate> templateMap;
+        private readonly Dictionary<string, Template> templateMap;
 
         private readonly IExpressionParser _expressionParser;
 
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templates">template list.</param>
         /// <param name="expressionParser">expression parser.</param>
-        public Analyzer(List<LGTemplate> templates, ExpressionParser expressionParser)
+        public Analyzer(List<Template> templates, ExpressionParser expressionParser)
         {
             Templates = templates;
             templateMap = templates.ToDictionary(t => t.Name);
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Templates.
         /// </value>
-        public List<LGTemplate> Templates { get; }
+        public List<Template> Templates { get; }
 
         /// <summary>
         /// Analyzer a template to get the static analyzer results.
@@ -52,12 +52,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!templateMap.ContainsKey(templateName))
             {
-                throw new Exception(LGErrors.TemplateNotExist(templateName));
+                throw new Exception(TemplateErrors.TemplateNotExist(templateName));
             }
 
             if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"{LGErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"{TemplateErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evaluation trace

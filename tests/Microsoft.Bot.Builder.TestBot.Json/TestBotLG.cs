@@ -10,11 +10,11 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 {
     public class TestBotLG : IBot
     {
-        private readonly LG lgFile;
+        private readonly Templates lgFile;
 
         public TestBotLG(TestBotAccessors accessors)
         {
-            lgFile = LG.ParseFile(GetLGResourceFile("8.LG"));
+            lgFile = Templates.ParseFile(GetLGResourceFile("8.LG"));
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))

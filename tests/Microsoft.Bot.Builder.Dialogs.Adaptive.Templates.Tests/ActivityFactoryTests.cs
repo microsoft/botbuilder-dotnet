@@ -683,16 +683,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("720", items[1].Quantity);
         }
 
-        private LG GetNormalStructureLGFile()
+        private Templates GetNormalStructureLGFile()
         {
             var path = Path.Combine(AppContext.BaseDirectory, "lg", "NormalStructuredLG.lg");
-            return LG.ParseFile(path);
+            return Templates.ParseFile(path);
         }
 
-        private LG GetDiagnosticStructureLGFile()
+        private Templates GetDiagnosticStructureLGFile()
         {
             var path = Path.Combine(AppContext.BaseDirectory, "lg", "DignosticStructuredLG.lg");
-            return LG.ParseFile(path);
+            return Templates.ParseFile(path);
         }
     }
 }

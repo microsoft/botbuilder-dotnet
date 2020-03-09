@@ -4,9 +4,9 @@
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
-    /// Centralized LG errors.
+    /// Centralized Template errors.
     /// </summary>
-    public class LGErrors
+    public class TemplateErrors
     {
         public const string NoTemplate = "LG file must have at least one template definition. ";
 

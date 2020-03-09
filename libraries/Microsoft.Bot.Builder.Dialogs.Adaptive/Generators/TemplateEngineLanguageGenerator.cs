@@ -21,23 +21,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private const string DEFAULTLABEL = "Unknown";
 
-        private readonly LG lg;
+        private readonly LanguageGeneration.Templates lg;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
         public TemplateEngineLanguageGenerator()
         {
-            this.lg = new LG();
+            this.lg = new LanguageGeneration.Templates();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
         /// <param name="engine">template engine.</param>
-        public TemplateEngineLanguageGenerator(LG engine = null)
+        public TemplateEngineLanguageGenerator(LanguageGeneration.Templates engine = null)
         {
-            this.lg = engine ?? new LG();
+            this.lg = engine ?? new LanguageGeneration.Templates();
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             this.Id = id ?? DEFAULTLABEL;
             var (_, locale) = LGResourceLoader.ParseLGFileName(id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
-            this.lg = LG.ParseText(lgText ?? string.Empty, Id, importResolver);
+            this.lg = LanguageGeneration.Templates.ParseText(lgText ?? string.Empty, Id, importResolver);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             var (_, locale) = LGResourceLoader.ParseLGFileName(Id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
-            this.lg = LG.ParseFile(filePath, importResolver);
+            this.lg = LanguageGeneration.Templates.ParseFile(filePath, importResolver);
         }
 
         /// <summary>
