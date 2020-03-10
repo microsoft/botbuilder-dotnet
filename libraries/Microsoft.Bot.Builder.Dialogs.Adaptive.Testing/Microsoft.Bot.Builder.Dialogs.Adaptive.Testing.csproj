@@ -12,8 +12,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Microsoft.Bot.Builder.Dialogs.Adaptive.Testing</PackageId>
-    <Description>Library for creating declarative test scripts for testing Adaptive Dialogs using Microsoft Bot Framework Connector</Description>
-    <Summary>Library for creating declarative test scripts for testing Adaptive Dialogs using Microsoft Bot Framework Connector</Summary>
+    <Description>Library for creating declarative test scripts for testing Bot Framework Adaptive Dialogs.</Description>
+    <Summary>Library for creating declarative test scripts for testing Bot Framework Adaptive Dialogs.</Summary>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
